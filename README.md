@@ -1,17 +1,36 @@
 <p align="center">
-   <img src="https://pbxt.replicate.delivery/2PX94viD6lJSDVayQrGyDH7CGu7IjQ6e8HEtOGDeelefXRdOC/out.png" alt="Dantotsu Banner" width=100% >
+   <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/main/20240111_235206.png" alt="Awery Banner" width=100% >
 </p>
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android-blueviolet?style=for-the-badge"/>
-   <a href="https://discord.gg/4HPZ5nAWwM"><img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white"></a>
-   <a href="https://github.com/rebelonion/Dantotsu/releases"><img src="https://img.shields.io/github/downloads/rebelonion/Dantotsu/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
+   <a href="https://github.com/rebelonion/Dantotsu/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
 </p>
 
 # **Awery** 🌟
 
 Awery is an [Anilist](https://anilist.co/) only client.
 
-[//]: # (> **Dantotsu &#40;断トツ; Dan-totsu&#41;** literally means "the best of the best" in Japanese. Try it out for yourself and be the judge!)
+[//]: # (> **Awery &#40;断トツ; Dan-totsu&#41;** literally means "the best of the best" in Japanese. Try it out for yourself and be the judge!)
+
+## FEATURES
+- Sync progress with your AniList account
+- The best style between other anime apps
+- Intuitive user interface
+
+## PLANNED FEATURES
+- Filter out tags like yaoi or yuri for the whole app for forever
+- Blacklist animes by keywords
+- Automatically select other sources if current is unavailable
+- More sections on anime page
+- Faster app experience
+- App languages like Spanish, France and Russian
+- Auto translate everything!
+- Easier extension development
+- Publish on F-Droid
+- Fancy cards instead of boring walls of text
+- Switch between different providers like Anilist, Shikimori, MyAnimeList and etc.
+- History page
+- Leave and read other comments
 
 ### 🚀 STAR THIS REPOSITORY TO SUPPORT THE DEVELOPER AND ENCOURAGE THE DEVELOPMENT OF THE APPLICATION!
 
@@ -37,7 +56,7 @@ All contributions are welcome, from code to documentation to graphics to design 
 
 ## VISITORS
 
-<img src="https://count.getloli.com/get/@:rebeloniondantotsu" alt=":awerymrboomdev" />
+<img src="https://count.getloli.com/get/@:awerymrboomdev" alt=":awerymrboomdev" />
 
 ## LICENSE 📜
 
