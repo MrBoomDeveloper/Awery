@@ -274,7 +274,7 @@
             android:layout_height="48dp"
             android:layout_gravity="center" />
 
-        <ani.dantotsu.FadingEdgeRecyclerView
+        <ani.awery.FadingEdgeRecyclerView
             android:id="@+id/animeUpdatedRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="250dp"

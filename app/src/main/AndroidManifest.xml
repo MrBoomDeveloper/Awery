@@ -16,7 +16,8 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
@@ -48,20 +49,21 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="${icon_placeholder}"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:banner="@drawable/ic_banner_foreground"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="${icon_placeholder_round}"
         android:supportsRtl="true"
         android:theme="@style/Theme.Dantotsu"
-        android:usesCleartextTraffic="true"
-        tools:ignore="AllowBackup"
-        android:banner="@drawable/ic_banner_foreground">
+        android:usesCleartextTraffic="true">
+
         <activity
-            android:name="ani.dantotsu.media.novel.novelreader.NovelReaderActivity"
+            android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true" >
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -103,9 +105,9 @@
         <activity
             android:name=".media.CalendarActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name="ani.dantotsu.media.user.ListActivity" />
+        <activity android:name="ani.awery.media.user.ListActivity" />
         <activity
-            android:name="ani.dantotsu.media.manga.mangareader.MangaReaderActivity"
+            android:name="ani.awery.media.manga.mangareader.MangaReaderActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="@string/manga"
@@ -118,7 +120,7 @@
         <activity android:name=".media.CharacterDetailsActivity" />
         <activity android:name=".home.NoInternet" />
         <activity
-            android:name="ani.dantotsu.media.anime.ExoplayerView"
+            android:name="ani.awery.media.anime.ExoplayerView"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -127,7 +129,7 @@
             android:supportsPictureInPicture="true"
             tools:targetApi="n" />
         <activity
-            android:name="ani.dantotsu.connections.anilist.Login"
+            android:name="ani.awery.connections.anilist.Login"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -144,7 +146,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ani.dantotsu.connections.mal.Login"
+            android:name="ani.awery.connections.mal.Login"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -161,7 +163,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="ani.dantotsu.connections.discord.Login"
+        <activity android:name="ani.awery.connections.discord.Login"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -180,7 +182,7 @@
         </activity>
 
         <activity
-            android:name="ani.dantotsu.connections.anilist.UrlMedia"
+            android:name="ani.awery.connections.anilist.UrlMedia"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:excludeFromRecents="true"
             android:exported="true"

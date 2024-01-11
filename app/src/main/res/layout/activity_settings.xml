@@ -74,7 +74,7 @@
             android:paddingStart="32dp"
             android:paddingEnd="32dp">
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -324,9 +324,9 @@
                     android:layout_marginBottom="8dp"
                     android:background="?android:attr/listDivider" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -594,9 +594,9 @@
                     app:drawableStartCompat="@drawable/ic_round_help_24"
                     app:drawableTint="?attr/colorPrimary" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -706,9 +706,9 @@
                     android:layout_marginBottom="8dp"
                     android:background="?android:attr/listDivider" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -952,9 +952,9 @@
                     app:showText="false"
                     app:thumbTint="@color/button_switch_track" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -1015,9 +1015,9 @@
                     app:showText="false"
                     app:thumbTint="@color/button_switch_track" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -1215,9 +1215,9 @@
                     android:layout_marginBottom="8dp"
                     android:background="?android:attr/listDivider" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -1358,9 +1358,9 @@
                     android:layout_marginBottom="8dp"
                     android:background="?android:attr/listDivider" />
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
-            <ani.dantotsu.others.Xpandable
+            <ani.awery.others.Xpandable
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -1482,7 +1482,7 @@
                     app:iconSize="24dp" />
 
 
-            </ani.dantotsu.others.Xpandable>
+            </ani.awery.others.Xpandable>
 
             <TextView
                 android:layout_width="match_parent"

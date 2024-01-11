@@ -22,7 +22,7 @@
         app:drawableTint="?attr/colorOnBackground"
         app:drawableStartCompat="@drawable/ic_round_arrow_back_ios_new_24" />
 
-    <ani.dantotsu.FadingEdgeRecyclerView
+    <ani.awery.FadingEdgeRecyclerView
         android:id="@+id/devsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -3,8 +3,8 @@ package eu.kanade.tachiyomi.extension.manga.util
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import ani.dantotsu.themes.ThemeManager
-import ani.dantotsu.others.LangSet
+import ani.awery.themes.ThemeManager
+import ani.awery.others.LangSet
 import eu.kanade.tachiyomi.extension.InstallStep
 import eu.kanade.tachiyomi.extension.manga.MangaExtensionManager
 import eu.kanade.tachiyomi.util.system.hasMiuiPackageInstaller

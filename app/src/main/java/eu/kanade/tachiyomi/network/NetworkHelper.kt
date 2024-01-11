@@ -2,8 +2,7 @@ package eu.kanade.tachiyomi.network
 
 import android.content.Context
 import android.os.Build
-import ani.dantotsu.Mapper
-import ani.dantotsu.defaultHeaders
+import ani.awery.Mapper
 import com.lagradost.nicehttp.Requests
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor

@@ -1,0 +1,315 @@
+package ani.awery.media.novel
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.os.Looper
+import android.os.Parcelable
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
+import ani.awery.databinding.FragmentAnimeWatchBinding
+import ani.awery.download.Download
+import ani.awery.download.DownloadsManager
+import ani.awery.download.novel.NovelDownloaderService
+import ani.awery.download.novel.NovelServiceDataSingleton
+import ani.awery.loadData
+import ani.awery.media.Media
+import ani.awery.media.MediaDetailsViewModel
+import ani.awery.media.novel.novelreader.NovelReaderActivity
+import ani.awery.navBarHeight
+import ani.awery.parsers.ShowResponse
+import ani.awery.saveData
+import ani.awery.settings.UserInterfaceSettings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
+import java.io.File
+
+class NovelReadFragment : Fragment(),
+    DownloadTriggerCallback,
+    DownloadedCheckCallback {
+
+    private var _binding: FragmentAnimeWatchBinding? = null
+    private val binding get() = _binding!!
+    private val model: MediaDetailsViewModel by activityViewModels()
+
+    private lateinit var media: Media
+    var source = 0
+    lateinit var novelName: String
+
+    private lateinit var headerAdapter: NovelReadAdapter
+    private lateinit var novelResponseAdapter: NovelResponseAdapter
+    private var progress = View.VISIBLE
+
+    private var continueEp: Boolean = false
+    var loaded = false
+
+    val uiSettings = loadData("ui_settings", toast = false)
+        ?: UserInterfaceSettings().apply { saveData("ui_settings", this) }
+
+    override fun downloadTrigger(novelDownloadPackage: NovelDownloadPackage) {
+        Log.e("downloadTrigger", novelDownloadPackage.link)
+        val downloadTask = NovelDownloaderService.DownloadTask(
+            title = media.nameMAL ?: media.nameRomaji,
+            chapter = novelDownloadPackage.novelName,
+            downloadLink = novelDownloadPackage.link,
+            originalLink = novelDownloadPackage.originalLink,
+            sourceMedia = media,
+            coverUrl = novelDownloadPackage.coverUrl,
+            retries = 2,
+        )
+        NovelServiceDataSingleton.downloadQueue.offer(downloadTask)
+        CoroutineScope(Dispatchers.IO).launch {
+
+            if (!NovelServiceDataSingleton.isServiceRunning) {
+                val intent = Intent(context, NovelDownloaderService::class.java)
+                withContext(Dispatchers.Main) {
+                    ContextCompat.startForegroundService(requireContext(), intent)
+                }
+                NovelServiceDataSingleton.isServiceRunning = true
+            }
+
+        }
+    }
+
+    override fun downloadedCheckWithStart(novel: ShowResponse): Boolean {
+        val downloadsManager = Injekt.get<DownloadsManager>()
+        if (downloadsManager.queryDownload(
+                Download(
+                    media.nameMAL ?: media.nameRomaji,
+                    novel.name,
+                    Download.Type.NOVEL
+                )
+            )
+        ) {
+            val file = File(
+                context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                "${DownloadsManager.novelLocation}/${media.nameMAL ?: media.nameRomaji}/${novel.name}/0.epub"
+            )
+            if (!file.exists()) return false
+            val fileUri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.provider",
+                file
+            )
+            val intent = Intent(context, NovelReaderActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                setDataAndType(fileUri, "application/epub+zip")
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
+            startActivity(intent)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    override fun downloadedCheck(novel: ShowResponse): Boolean {
+        val downloadsManager = Injekt.get<DownloadsManager>()
+        return downloadsManager.queryDownload(
+            Download(
+                media.nameMAL ?: media.nameRomaji,
+                novel.name,
+                Download.Type.NOVEL
+            )
+        )
+    }
+
+    override fun deleteDownload(novel: ShowResponse) {
+        val downloadsManager = Injekt.get<DownloadsManager>()
+        downloadsManager.removeDownload(
+            Download(
+                media.nameMAL ?: media.nameRomaji,
+                novel.name,
+                Download.Type.NOVEL
+            )
+        )
+    }
+
+    private val downloadStatusReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (!this@NovelReadFragment::novelResponseAdapter.isInitialized) return
+            when (intent.action) {
+                ACTION_DOWNLOAD_STARTED -> {
+                    val link = intent.getStringExtra(EXTRA_NOVEL_LINK)
+                    link?.let {
+                        novelResponseAdapter.startDownload(it)
+                    }
+                }
+
+                ACTION_DOWNLOAD_FINISHED -> {
+                    val link = intent.getStringExtra(EXTRA_NOVEL_LINK)
+                    link?.let {
+                        novelResponseAdapter.stopDownload(it)
+                    }
+                }
+
+                ACTION_DOWNLOAD_FAILED -> {
+                    val link = intent.getStringExtra(EXTRA_NOVEL_LINK)
+                    link?.let {
+                        novelResponseAdapter.purgeDownload(it)
+                    }
+                }
+
+                ACTION_DOWNLOAD_PROGRESS -> {
+                    val link = intent.getStringExtra(EXTRA_NOVEL_LINK)
+                    val progress = intent.getIntExtra("progress", 0)
+                    link?.let {
+                        novelResponseAdapter.updateDownloadProgress(it, progress)
+                    }
+                }
+            }
+        }
+    }
+
+    var response: List<ShowResponse>? = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val intentFilter = IntentFilter().apply {
+            addAction(ACTION_DOWNLOAD_STARTED)
+            addAction(ACTION_DOWNLOAD_FINISHED)
+            addAction(ACTION_DOWNLOAD_FAILED)
+            addAction(ACTION_DOWNLOAD_PROGRESS)
+        }
+
+        ContextCompat.registerReceiver(
+            requireContext(),
+            downloadStatusReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
+
+        binding.animeSourceRecycler.updatePadding(bottom = binding.animeSourceRecycler.paddingBottom + navBarHeight)
+
+        binding.animeSourceRecycler.layoutManager = LinearLayoutManager(requireContext())
+        model.scrolledToTop.observe(viewLifecycleOwner) {
+            if (it) binding.animeSourceRecycler.scrollToPosition(0)
+        }
+
+        continueEp = model.continueMedia ?: false
+        model.getMedia().observe(viewLifecycleOwner) {
+            if (it != null) {
+                media = it
+                novelName = media.userPreferredName
+                progress = View.GONE
+                binding.mediaInfoProgressBar.visibility = progress
+                if (!loaded) {
+                    val sel = media.selected
+                    searchQuery = sel?.server ?: media.name ?: media.nameRomaji
+                    headerAdapter = NovelReadAdapter(media, this, model.novelSources)
+                    novelResponseAdapter = NovelResponseAdapter(
+                        this,
+                        this,
+                        this
+                    )  // probably a better way to do this but it works
+                    binding.animeSourceRecycler.adapter =
+                        ConcatAdapter(headerAdapter, novelResponseAdapter)
+                    loaded = true
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        search(searchQuery, sel?.sourceIndex ?: 0, auto = sel?.server == null)
+                    }, 100)
+                }
+            }
+        }
+        model.novelResponses.observe(viewLifecycleOwner) {
+            if (it != null) {
+                response = it
+                searching = false
+                novelResponseAdapter.submitList(it)
+                headerAdapter.progress?.visibility = View.GONE
+            }
+        }
+    }
+
+    lateinit var searchQuery: String
+    private var searching = false
+    fun search(query: String, source: Int, save: Boolean = false, auto: Boolean = false) {
+        if (!searching) {
+            novelResponseAdapter.clear()
+            searchQuery = query
+            headerAdapter.progress?.visibility = View.VISIBLE
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (auto || query == "") model.autoSearchNovels(media)
+                //else model.searchNovels(query, source)
+                else model.autoSearchNovels(media) //testing
+            }
+            searching = true
+            if (save) {
+                val selected = model.loadSelected(media)
+                selected.server = query
+                model.saveSelected(media.id, selected, requireActivity())
+            }
+        }
+    }
+
+    fun onSourceChange(i: Int) {
+        val selected = model.loadSelected(media)
+        selected.sourceIndex = i
+        source = i
+        selected.server = null
+        model.saveSelected(media.id, selected, requireActivity())
+        media.selected = selected
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAnimeWatchBinding.inflate(inflater, container, false)
+        return _binding?.root
+    }
+
+    override fun onDestroy() {
+        model.mangaReadSources?.flushText()
+        requireContext().unregisterReceiver(downloadStatusReceiver)
+        super.onDestroy()
+    }
+
+    private var state: Parcelable? = null
+    override fun onResume() {
+        super.onResume()
+        binding.mediaInfoProgressBar.visibility = progress
+        binding.animeSourceRecycler.layoutManager?.onRestoreInstanceState(state)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        state = binding.animeSourceRecycler.layoutManager?.onSaveInstanceState()
+    }
+
+    companion object {
+        const val ACTION_DOWNLOAD_STARTED = "ani.dantotsu.ACTION_DOWNLOAD_STARTED"
+        const val ACTION_DOWNLOAD_FINISHED = "ani.dantotsu.ACTION_DOWNLOAD_FINISHED"
+        const val ACTION_DOWNLOAD_FAILED = "ani.dantotsu.ACTION_DOWNLOAD_FAILED"
+        const val ACTION_DOWNLOAD_PROGRESS = "ani.dantotsu.ACTION_DOWNLOAD_PROGRESS"
+        const val EXTRA_NOVEL_LINK = "extra_novel_link"
+    }
+}
+
+interface DownloadTriggerCallback {
+    fun downloadTrigger(novelDownloadPackage: NovelDownloadPackage)
+}
+
+interface DownloadedCheckCallback {
+    fun downloadedCheck(novel: ShowResponse): Boolean
+    fun downloadedCheckWithStart(novel: ShowResponse): Boolean
+    fun deleteDownload(novel: ShowResponse)
+}

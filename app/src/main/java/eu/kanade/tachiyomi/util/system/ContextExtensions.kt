@@ -21,11 +21,10 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.net.toUri
+import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.util.lang.truncateCenter
 import logcat.LogPriority
 import tachiyomi.core.util.system.logcat
-import ani.dantotsu.toast
-import com.hippo.unifile.UniFile
 import java.io.File
 import kotlin.math.roundToInt
 

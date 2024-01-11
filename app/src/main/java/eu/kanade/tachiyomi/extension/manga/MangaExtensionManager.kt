@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.extension.manga
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import ani.dantotsu.snackString
+import ani.awery.snackString
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.extension.InstallStep
 import eu.kanade.tachiyomi.extension.manga.api.MangaExtensionGithubApi
@@ -13,7 +13,6 @@ import eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallReceiver
 import eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstaller
 import eu.kanade.tachiyomi.extension.manga.util.MangaExtensionLoader
 import eu.kanade.tachiyomi.util.preference.plusAssign
-import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

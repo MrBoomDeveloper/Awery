@@ -237,7 +237,7 @@
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
-    <ani.dantotsu.CustomBottomNavBar
+    <ani.awery.CustomBottomNavBar
         android:id="@+id/mediaTab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

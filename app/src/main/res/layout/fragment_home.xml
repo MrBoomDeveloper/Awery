@@ -340,7 +340,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homeWatchingRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -414,7 +414,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homeFavAnimeRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -490,7 +490,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homePlannedAnimeRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -566,7 +566,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homeReadingRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -640,7 +640,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homeFavMangaRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -716,7 +716,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homePlannedMangaRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -787,7 +787,7 @@
                         android:layout_gravity="center"
                         android:layout_margin="90dp" />
 
-                    <ani.dantotsu.FadingEdgeRecyclerView
+                    <ani.awery.FadingEdgeRecyclerView
                         android:id="@+id/homeRecommendedRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

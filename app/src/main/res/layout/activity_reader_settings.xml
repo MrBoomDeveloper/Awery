@@ -130,7 +130,7 @@
 
             </com.google.android.material.switchmaterial.SwitchMaterial>
 
-        <ani.dantotsu.others.Xpandable
+        <ani.awery.others.Xpandable
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -674,7 +674,7 @@
                 app:showText="false"
                 app:thumbTint="@color/button_switch_track" />
 
-        </ani.dantotsu.others.Xpandable>
+        </ani.awery.others.Xpandable>
 
 
             <TextView

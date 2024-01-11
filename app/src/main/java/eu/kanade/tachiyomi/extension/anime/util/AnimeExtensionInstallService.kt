@@ -7,8 +7,8 @@ import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
+import ani.awery.R
 import eu.kanade.domain.base.BasePreferences
-import ani.dantotsu.R
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.extension.anime.installer.InstallerAnime
 import eu.kanade.tachiyomi.extension.anime.installer.PackageInstallerInstallerAnime

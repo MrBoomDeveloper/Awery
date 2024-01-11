@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.extension
 
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import ani.dantotsu.R
+import ani.awery.R
 import eu.kanade.tachiyomi.data.notification.NotificationReceiver
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.util.system.notify

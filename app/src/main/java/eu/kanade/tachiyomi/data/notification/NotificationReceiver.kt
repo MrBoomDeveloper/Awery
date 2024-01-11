@@ -4,7 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import ani.dantotsu.MainActivity
+import ani.awery.MainActivity
 import eu.kanade.tachiyomi.core.Constants
 /**
  * Global [BroadcastReceiver] that runs on UI thread

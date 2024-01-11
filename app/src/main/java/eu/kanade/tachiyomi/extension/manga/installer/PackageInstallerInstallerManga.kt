@@ -9,7 +9,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageInstaller
 import android.os.Build
 import androidx.core.content.ContextCompat
-import ani.dantotsu.snackString
+import ani.awery.snackString
 import eu.kanade.tachiyomi.extension.InstallStep
 import eu.kanade.tachiyomi.util.lang.use
 import eu.kanade.tachiyomi.util.system.getParcelableExtraCompat
