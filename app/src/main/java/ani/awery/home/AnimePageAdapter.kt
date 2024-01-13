@@ -69,11 +69,11 @@ class AnimePageAdapter : RecyclerView.Adapter<AnimePageAdapter.AnimePageViewHold
         val color = typedValue.data
 
 
-        val colorOverflow = currContext()?.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val colorOverflow = currContext()?.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             ?.getBoolean("colorOverflow", false) ?: false
         if (!colorOverflow) {
-            textInputLayout.boxBackgroundColor = (color and 0x00FFFFFF) or 0x28000000.toInt()
-            materialCardView.setCardBackgroundColor((color and 0x00FFFFFF) or 0x28000000.toInt())
+            textInputLayout.boxBackgroundColor = (color and 0x00FFFFFF) or 0x28000000
+            materialCardView.setCardBackgroundColor((color and 0x00FFFFFF) or 0x28000000)
         }
 
         binding.animeTitleContainer.updatePadding(top = statusBarHeight)

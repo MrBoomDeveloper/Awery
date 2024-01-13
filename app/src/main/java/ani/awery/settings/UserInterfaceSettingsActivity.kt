@@ -20,9 +20,9 @@ import com.google.android.material.snackbar.Snackbar
 class UserInterfaceSettingsActivity : AppCompatActivity() {
     lateinit var binding: ActivityUserInterfaceSettingsBinding
     private val ui = "ui_settings"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityUserInterfaceSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)

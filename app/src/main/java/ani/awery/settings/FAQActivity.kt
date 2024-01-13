@@ -106,7 +106,6 @@ class FAQActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityFaqBinding.inflate(layoutInflater)
         setContentView(binding.root)

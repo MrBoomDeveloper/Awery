@@ -20,7 +20,6 @@ class Login : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val process = getProcessName()

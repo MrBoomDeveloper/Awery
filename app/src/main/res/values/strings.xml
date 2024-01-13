@@ -1,8 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:locale="en-rUS">
-
-    <string name="repo">MrBoomDeveloper/Awery</string>
-    <string name="preference_file_key" translatable="false">dantotsuprefs</string>
+<resources>
+    <string name="repo" translatable="false">MrBoomDeveloper/Awery</string>
+    <string name="preference_file_key" translatable="false">aweryprefs</string>
 
     <string name="app_name">Awery</string>
     <string name="slogan">The NEW Best Anime &amp; Manga app for Android.</string>
@@ -10,8 +8,10 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 
-    <string name="discord">https://discord.gg/4HPZ5nAWwM TODO: replace this link</string>
-    <string name="github">https://github.com/MrBoomDeveloper/Awery</string>
+    <string name="discord" translatable="false">https://mrboomdev.ru</string>
+    <string name="github" translatable="false">https://github.com/MrBoomDeveloper/Awery</string>
+
+    <string name="global_excluded_tags">Globally Exclude Tags</string>
 
     <string name="home">Home</string>
     <string name="anime">Anime</string>
@@ -25,9 +25,9 @@
     <string name="anime_list">Anime List</string>
     <string name="manga_list">Manga List</string>
 
-    <string name="sad">X(</string>
-    <string name="oh">:o</string>
-    <string name="colon">" : "</string>
+    <string name="sad" translatable="false">X(</string>
+    <string name="oh" translatable="false">:o</string>
+    <string name="colon" translatable="false">" : "</string>
 
     <string name="no_internet">No Internet Connection</string>
     <string name="refresh">Refresh</string>
@@ -174,7 +174,7 @@
     <string name="theme">Theme</string>
     <string name="ui_settings">UI Settings</string>
     <string name="about">About</string>
-    <string name="desc">"    Dantotsu is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream-download Anime through extensions &amp; Manga.\nAwery literally means the \"best of the best\" in japanese. Well, we would like to say this is the best open source app for anime and manga on Android, what would you say?"</string>
+    <string name="desc">"    Awery is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream-download Anime through extensions &amp; Manga.\nAwery literally means the \"best of the best\" in japanese. Well, we would like to say this is the best open source app for anime and manga on Android, what would you say?"</string>
     <string name="devs">Developers</string>
     <string name="disclaimer">Disclaimer</string>
     <string name="full_disclaimer">
@@ -182,7 +182,7 @@
         \n\n - Awery or any of its developer/staff don\'t host any of the content found inside Awery. Any and all images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).
         \n\n - Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff.
         \n\n - Awery or it\'s owners aren\'t liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.
-        \n\n - By using Awery, you comply to the fact that the developer of the app is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Dantotsu to download or stream any copyrighted content.
+        \n\n - By using Awery, you comply to the fact that the developer of the app is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.
         \n\n - If the internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.
     </string>
     <string name="version_current">Version %1$s</string>
@@ -335,8 +335,6 @@
     <string name="requires_time_stamps_to_be_enabled">Requires Time Stamps to be Enabled</string>
     <string name="total_repeats">TOTAL REPEATS</string>
     <string name="custom_lists">Custom Lists</string>
-    <string name="donate_desc">Want to support Dantotsu\'s Maintainer?\nConsider Donating</string>
-    <string name="donate_goal">No donation goal atm</string>
     <string name="filter">Filter</string>
     <string name="year">Year</string>
     <string name="apply">Apply</string>
@@ -362,7 +360,7 @@
     <string name="anilist">Anilist</string>
     <string name="account_help">How does this work\?</string>
     <string name="full_account_help">
-        Dantotsu is an Anilist Based App, so for syncing with your MAL Account, It needs an Anilist account to be logged in.
+        Awery is an Anilist Based App, so for syncing with your MAL Account, It needs an Anilist account to be logged in.
         \nOnce logged in with both Anilist and MAL accounts, the app will automatically update your MAL account whenever:
         \n- Add a new Media
         \n- Edit a Media
@@ -381,7 +379,7 @@
     <string name="checking_subscriptions">Notification for Checking Subscriptions</string>
     <string name="subscriptions_checking_time_s">Subscriptions Update Frequency : %1$s</string>
     <string name="subscriptions_checking_time">Subscriptions Update Frequency</string>
-    <string name="subscriptions_info">Amount of time for Dantotsu to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
+    <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
     <string name="do_not_update">Don\'t Update</string>
     <string name="loading_next_chap">Loading Next Chapter</string>
     <string name="grid">Grid</string>
@@ -478,8 +476,8 @@
     <string name="type_source">SOURCE</string>
     <string name="type_contains">CONTAINS</string>
 
-    <string name="read_on_dantotsu">Read on Dantotsu</string>
-    <string name="watch_on_dantotsu">Watch on Dantotsu</string>
+    <string name="read_on_dantotsu">Read on Awery</string>
+    <string name="watch_on_dantotsu">Watch on Awery</string>
     <string name="continue_episode">"Continue : Episode "</string>
     <string name="continue_chapter">"Continue : "</string>
     <string name="episode">"Episode "</string>
@@ -543,19 +541,19 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
 
-    <string name="question_1">What is Dantotsu?\n Why should you use Dantotsu?</string>
-    <string name="answer_1">Dantotsu is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream &amp; download Anime / Manga through extensions. \n>Dantotsu (断トツ; Dan-totsu) literally means the best of the best in Japanese. Well, we would like to say this is the best open source app for anime and manga on Android, but hey, Try it out yourself &amp; judge!</string>
+    <string name="question_1">What is Awery?\n Why should you use Awery?</string>
+    <string name="answer_1">Awery is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream &amp; download Anime / Manga through extensions. \n>Awery (断トツ; Dan-totsu) literally means the best of the best in Japanese. Well, we would like to say this is the best open source app for anime and manga on Android, but hey, Try it out yourself &amp; judge!</string>
 
-    <string name="question_2">What are some features of Dantotsu?</string>
-    <string name="answer_2">Some mentionable features of Dantotsu are\n\n- Easy and functional way to both, watch anime and read manga and light novels, Ad Free.\n- A completely open source app with a nice UI &amp; Animations\n- 3rd party plugin support \n- Synchronize anime and manga real-time with AniList. Easily categorize anime and manga based on your current status. (Powered by AniList)\n- Find all shows using thoroughly and frequently updated list of all trending, popular and ongoing anime based on scores.\n- View extensive details about anime shows, movies and manga titles. It also features ability to countdown to the next episode of airing anime. (Powered by AniList &amp; MyAnimeList)</string>
+    <string name="question_2">What are some features of Awery?</string>
+    <string name="answer_2">Some mentionable features of Awery are\n\n- Easy and functional way to both, watch anime and read manga and light novels, Ad Free.\n- A completely open source app with a nice UI &amp; Animations\n- 3rd party plugin support \n- Synchronize anime and manga real-time with AniList. Easily categorize anime and manga based on your current status. (Powered by AniList)\n- Find all shows using thoroughly and frequently updated list of all trending, popular and ongoing anime based on scores.\n- View extensive details about anime shows, movies and manga titles. It also features ability to countdown to the next episode of airing anime. (Powered by AniList &amp; MyAnimeList)</string>
 
     <string name="question_3">What are Artifacts?</string>
-    <string name="answer_3">Whenever a developer commits or pull requests a feature or fix, GitHub automatically makes an APK file for you to use. This APK is called an Artifact. Artifacts through pull requests may or may not be added to the main release of the app. Artifacts have a higher chance of having bugs and glitches. To know if new artifacts are available, star the Dantotsu repository and turn on notifications\n\nTo download an Artifact:\n1) Sign In/Up in GitHub\n2) Go to Dantotsu\n3) Go to actions\n4) Press on the workflow run you want to download the artifact of.\n5) Press on artifact\n6) Extract the file using a zip extractor\n7) Install and enjoy.</string>
+    <string name="answer_3">Whenever a developer commits or pull requests a feature or fix, GitHub automatically makes an APK file for you to use. This APK is called an Artifact. Artifacts through pull requests may or may not be added to the main release of the app. Artifacts have a higher chance of having bugs and glitches. To know if new artifacts are available, star the Awery repository and turn on notifications\n\nTo download an Artifact:\n1) Sign In/Up in GitHub\n2) Go to Awery\n3) Go to actions\n4) Press on the workflow run you want to download the artifact of.\n5) Press on artifact\n6) Extract the file using a zip extractor\n7) Install and enjoy.</string>
 
-    <string name="question_4">Is Dantotsu available for PC?</string>
-    <string name="answer_4">Currently no (for both Windows and Linux). There isn\'t any estimation when it will be available. But you can download any Android emulator and run Dantotsu on it. For Windows 11 users, they can use the Windows Subsystem for Android (WSA) to run Dantotsu in Windows.</string>
+    <string name="question_4">Is Awery available for PC?</string>
+    <string name="answer_4">Currently no (for both Windows and Linux). There isn\'t any estimation when it will be available. But you can download any Android emulator and run Awery on it. For Windows 11 users, they can use the Windows Subsystem for Android (WSA) to run Awery in Windows.</string>
 
-    <string name="question_5">Is Dantotsu available for iOS?</string>
+    <string name="question_5">Is Awery available for iOS?</string>
     <string name="answer_5">No, and currently no plans to support iOS</string>
 
     <string name="question_6">Why are my stats not updating?</string>
@@ -564,13 +562,13 @@
     <string name="question_7">How to download Episodes?</string>
     <string name="answer_7">1. Download 1DM or ADM from Google Play Store.
         \n2. Enter the app, give storage access and set your preferences (downloading speed, downloading path etc(optional))
-        \n3. Now go to Dantotsu > Settings > Common > Download Managers and choose the download manager you just set up.
+        \n3. Now go to Awery > Settings > Common > Download Managers and choose the download manager you just set up.
         \n4. Go to your desired episode and press on the download icon of any server. There may be a popup to set your preferences again, just press on "Download" and it will be saved in the directed path.
 
         \n\nNote: Direct downloads are also possible without a manager but it\'s not recommended.</string>
 
     <string name="question_8">How to download Manga Chapters?</string>
-    <string name="answer_8">It is yet not possible to download chapters in Dantotsu but this feature will be implemented soon.</string>
+    <string name="answer_8">It is yet not possible to download chapters in Awery but this feature will be implemented soon.</string>
 
     <string name="question_9">How to enable NSFW content?</string>
     <string name="answer_9">You can enable nsfw content by enabling 18+ contents from this [link](https://anilist.co/settings/media).</string>
@@ -582,13 +580,13 @@
     <string name="answer_11">Here is how you do it,\n\nExport:\n\n1. Go to this [link](https://malscraper.azurewebsites.net/). \n2. Give your Anilist username/Kitsu ID in the \'Username/Kitsu User ID\' box. \n3. Select list type and enable \'update_on_import\'. \n4. Download the file; it will be in .xml format. Be sure to download both Anime and Manga lists.\n\nImport:\n1. To import it in your MAL account, go to this [link](https://myanimelist.net/import.php) and choose \'MyAnimeList Import\' as import type. \n2. Press on \'Choose File\'and select the downloaded anime/manga list XML file. \n3. Press on \'Import Data\'. \nCongratulations, you just imported the selected list to your MAL account.</string>
 
     <string name="question_12">Why can\'t I find a specific anime/manga title?</string>
-    <string name="answer_12">Let\'s say you are looking for Castlevania in Dantotsu. But Anilist doesn\'t have it, so Dantotsu doesn\'t either.\nA solution to the above problem is as follows:\n1) Go to any anime that\'s not in your list.\n2) Go to the watch section.\n3) Select any source and press on the \'Wrong Title?\'.\n4) Now search for Castlevania (The anime you were looking for) and select it.\n5) ENJOY!\n\nIf you can\'t find the anime even through these steps, then that\'s bad luck for you, bud. Even that source doesn\'t have it. Try a different source.</string>
+    <string name="answer_12">Let\'s say you are looking for Castlevania in Awery. But Anilist doesn\'t have it, so Awery doesn\'t either.\nA solution to the above problem is as follows:\n1) Go to any anime that\'s not in your list.\n2) Go to the watch section.\n3) Select any source and press on the \'Wrong Title?\'.\n4) Now search for Castlevania (The anime you were looking for) and select it.\n5) ENJOY!\n\nIf you can\'t find the anime even through these steps, then that\'s bad luck for you, bud. Even that source doesn\'t have it. Try a different source.</string>
 
     <string name="question_13">How to fix sources selecting a completely wrong title?</string>
-    <string name="answer_13">Dantotsu itself doesn\'t host anything but relies on other sources. When showing the episodes, it chooses the 1st result given by the source after searching for the title. Dantotsu has no way of detecting if that\'s legit or not. So, for this, we have the \'Wrong Title?\' just below the source name(above layouts). You can choose the correct result/title by pressing on it and enjoy its episodes.</string>
+    <string name="answer_13">Awery itself doesn\'t host anything but relies on other sources. When showing the episodes, it chooses the 1st result given by the source after searching for the title. Awery has no way of detecting if that\'s legit or not. So, for this, we have the \'Wrong Title?\' just below the source name(above layouts). You can choose the correct result/title by pressing on it and enjoy its episodes.</string>
 
     <string name="question_14">How to read coloured mangas?</string>
-    <string name="answer_14">Are you in search of coloured manga? Sorry to break it to you but an extremely small amount of mangas have coloured version. Those which has a coloured version is also available in Dantotsu. Let\'s say you want to read the coloured version of chainsaw man. Then follow the below steps ↓\n\n1) Go to Chainsaw Man\n2) Press on \'Read\'\n3) Select any working source\n4) Press on \'Wrong Title\'\n5) Select the colored version chainsaw man\n6) Enjoy\n\nNote: Many sources don\'t have the coloured version available even if it\'s available somewhere on the internet. So try a different source. If none of the sources have it, then a coloured version of your desired manga simply doesn\'t exist. If you can find it on any manga site on the internet, you can suggest that site through the Discord server.</string>
+    <string name="answer_14">Are you in search of coloured manga? Sorry to break it to you but an extremely small amount of mangas have coloured version. Those which has a coloured version is also available in Awery. Let\'s say you want to read the coloured version of chainsaw man. Then follow the below steps ↓\n\n1) Go to Chainsaw Man\n2) Press on \'Read\'\n3) Select any working source\n4) Press on \'Wrong Title\'\n5) Select the colored version chainsaw man\n6) Enjoy\n\nNote: Many sources don\'t have the coloured version available even if it\'s available somewhere on the internet. So try a different source. If none of the sources have it, then a coloured version of your desired manga simply doesn\'t exist. If you can find it on any manga site on the internet, you can suggest that site through the Discord server.</string>
 
     <string name="question_15">Handshake fails? Why are no timestamps not loading?</string>
     <string name="answer_15">You can fix this issue by enabling \'Proxy\' from \n\`Settings > Anime > Player Settings > Timestamps > Proxy\`.\nIf the timestamps are still not loading but the handshake failed popup is fixed, then the episode you are watching just doesn\'t have timestamps yet for it.</string>
@@ -597,7 +595,7 @@
     <string name="answer_16">Some basic fixes would be :\n\n• Restart the app. \n• Use a different DNS from your settings, preferably, CloudFlare. \n• VPN might work as well. \n\nIf you refuse to try the above steps then just use a different source.\n\nNote: Allanime fixes itself most of the time.</string>
 
     <string name="question_17">Some useful tips and tricks</string>
-    <string name="answer_17">The following presents some tips and tricks you may or may not know about - \n \n \n - By hold pressing the Dantotsu logo in settings, you can check if there are any new updates manually. \n \n - Hold pressing an error message/tag/synonym or title will copy it. \n \n - You can open an episode with other apps by hold pressing any server for that episode. This helps in streaming the episode using other video players or download the episode using download managers. \n \n - You can set up custom lists using this [link](https://anilist.co/settings/lists). (you need to be signed in) \n \n - If your episode/chapter is not being progressed automatically after you finish watching/reading it, then hold press the status bar(planning/repeating/watching button) of that anime/manga. The next time you start a chapter/finish an episode, you will stumble upon a popup. Press yes there. </string>
+    <string name="answer_17">The following presents some tips and tricks you may or may not know about - \n \n \n - By hold pressing the Awery logo in settings, you can check if there are any new updates manually. \n \n - Hold pressing an error message/tag/synonym or title will copy it. \n \n - You can open an episode with other apps by hold pressing any server for that episode. This helps in streaming the episode using other video players or download the episode using download managers. \n \n - You can set up custom lists using this [link](https://anilist.co/settings/lists). (you need to be signed in) \n \n - If your episode/chapter is not being progressed automatically after you finish watching/reading it, then hold press the status bar(planning/repeating/watching button) of that anime/manga. The next time you start a chapter/finish an episode, you will stumble upon a popup. Press yes there. </string>
     
 
     <string name="subscribed_notification">Subscribed! Receiving notifications, when new episodes are released on %1$s.</string>
@@ -621,7 +619,7 @@
     <string name="discord_logout_success">Successfully Logged Out</string>
     <string name="discord_try_again">Try logging-in again</string>
     <string name="error_loading_discord_user_data">Error loading Discord User Data</string>
-    <string name="discord_warning"><![CDATA[By logging in, your discord will now show what you are watching & reading on Dantotsu\n\nIf you are on invisible mode, logging in will make you online, when you open Dantotsu.\n\nThis does break the Discord TOS. \nAlthough Discord has never banned anyone for using Custom Rich Presence(what Dantotsu uses), You have still been warned.\n\nDantotsu is not responsible for anything that happens to your account.]]></string>
+    <string name="discord_warning"><![CDATA[By logging in, your discord will now show what you are watching & reading on Awery\n\nIf you are on invisible mode, logging in will make you online, when you open Awery.\n\nThis does break the Discord TOS. \nAlthough Discord has never banned anyone for using Custom Rich Presence(what Awery uses), You have still been warned.\n\nAwery is not responsible for anything that happens to your account.]]></string>
     <string name="warning">Warning</string>
     <string name="view_anime">View Anime</string>
     <string name="view_manga">View Manga</string>

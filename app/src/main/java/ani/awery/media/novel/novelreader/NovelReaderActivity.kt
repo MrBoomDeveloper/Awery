@@ -155,7 +155,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
             return
         }
 
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityNovelReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)

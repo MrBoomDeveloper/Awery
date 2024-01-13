@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.extension.anime
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import ani.awery.logger
 import ani.awery.snackString
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.extension.InstallStep
@@ -25,6 +26,7 @@ import tachiyomi.domain.source.anime.model.AnimeSourceData
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
+import kotlin.time.measureTime
 
 /**
  * The manager of anime extensions installed as another apk which extend the available sources. It handles
@@ -92,20 +94,24 @@ class AnimeExtensionManager(
     }
 
     /**
-     * Loads and registers the installed animeextensions.
+     * Loads and registers the installed animeExtensions.
      */
     private fun initAnimeExtensions() {
-        val animeextensions = AnimeExtensionLoader.loadExtensions(context)
+        val initDuration = measureTime {
+            val animeExtensions = AnimeExtensionLoader.loadExtensions(context)
 
-        _installedAnimeExtensionsFlow.value = animeextensions
-            .filterIsInstance<AnimeLoadResult.Success>()
-            .map { it.extension }
+            _installedAnimeExtensionsFlow.value = animeExtensions
+                .filterIsInstance<AnimeLoadResult.Success>()
+                .map { it.extension }
 
-        _untrustedAnimeExtensionsFlow.value = animeextensions
-            .filterIsInstance<AnimeLoadResult.Untrusted>()
-            .map { it.extension }
+            _untrustedAnimeExtensionsFlow.value = animeExtensions
+                .filterIsInstance<AnimeLoadResult.Untrusted>()
+                .map { it.extension }
 
-        isInitialized = true
+            isInitialized = true
+        }
+
+        println("Init anime extensions in: $initDuration")
     }
 
     /**

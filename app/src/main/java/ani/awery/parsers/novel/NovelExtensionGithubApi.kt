@@ -27,7 +27,7 @@ class NovelExtensionGithubApi {
     private val json: Json by injectLazy()
 
     private val lastExtCheck: Long =
-        currContext()?.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        currContext()?.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             ?.getLong("last_ext_check", 0) ?: 0
 
     private var requiresFallbackSource = false
@@ -86,7 +86,7 @@ class NovelExtensionGithubApi {
             novelExtensionManager.availableExtensionsFlow.value
         } else {
             findExtensions().also {
-                context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)?.edit()
+                context.getSharedPreferences("Awery", Context.MODE_PRIVATE)?.edit()
                     ?.putLong("last_ext_check", Date().time)?.apply()
             }
         }

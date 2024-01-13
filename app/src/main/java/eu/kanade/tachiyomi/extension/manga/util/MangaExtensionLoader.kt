@@ -15,11 +15,10 @@ import eu.kanade.tachiyomi.source.MangaSource
 import eu.kanade.tachiyomi.source.SourceFactory
 import eu.kanade.tachiyomi.util.lang.Hash
 import eu.kanade.tachiyomi.util.system.getApplicationIcon
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
 import tachiyomi.core.util.system.logcat
 import uy.kohesive.injekt.injectLazy
+import kotlin.time.measureTime
 
 /**
  * Class that handles the loading of the extensions installed in the system.
@@ -59,7 +58,6 @@ internal object MangaExtensionLoader {
     fun loadMangaExtensions(context: Context): List<MangaLoadResult> {
         val pkgManager = context.packageManager
 
-        @Suppress("DEPRECATION")
         val installedPkgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             pkgManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(PACKAGE_FLAGS.toLong()))
         } else {
@@ -68,14 +66,10 @@ internal object MangaExtensionLoader {
 
         val extPkgs = installedPkgs.filter { isPackageAnExtension(it) }
 
-        if (extPkgs.isEmpty()) return emptyList()
+        if(extPkgs.isEmpty()) return emptyList()
 
-        // Load each extension concurrently and wait for completion
-        return runBlocking {
-            val deferred = extPkgs.map {
-                async { loadMangaExtension(context, it.packageName, it) }
-            }
-            deferred.map { it.await() }
+        return extPkgs.map {
+            loadMangaExtension(context, it.packageName, it)
         }
     }
 
@@ -106,105 +100,112 @@ internal object MangaExtensionLoader {
      * @param pkgInfo The package info of the extension.
      */
     private fun loadMangaExtension(context: Context, pkgName: String, pkgInfo: PackageInfo): MangaLoadResult {
-        val pkgManager = context.packageManager
+        var extName: String?
+        var extension: MangaExtension?
 
-        val appInfo = try {
-            pkgManager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA)
-        } catch (error: PackageManager.NameNotFoundException) {
-            // Unlikely, but the package may have been uninstalled at this point
-            logcat(LogPriority.ERROR, error)
-            return MangaLoadResult.Error
-        }
+        val doneIn = measureTime {
+            val pkgManager = context.packageManager
 
-        val extName = pkgManager.getApplicationLabel(appInfo).toString().substringAfter("Tachiyomi: ")
-        val versionName = pkgInfo.versionName
-        val versionCode = PackageInfoCompat.getLongVersionCode(pkgInfo)
-
-        if (versionName.isNullOrEmpty()) {
-            logcat(LogPriority.WARN) { "Missing versionName for extension $extName" }
-            return MangaLoadResult.Error
-        }
-
-        // Validate lib version
-        val libVersion = versionName.substringBeforeLast('.').toDoubleOrNull()
-        if (libVersion == null || libVersion < LIB_VERSION_MIN || libVersion > LIB_VERSION_MAX) {
-            logcat(LogPriority.WARN) {
-                "Lib version is $libVersion, while only versions " +
-                    "$LIB_VERSION_MIN to $LIB_VERSION_MAX are allowed"
+            val appInfo = try {
+                pkgManager.getApplicationInfo(pkgName, PackageManager.GET_META_DATA)
+            } catch (error: PackageManager.NameNotFoundException) {
+                // Unlikely, but the package may have been uninstalled at this point
+                logcat(LogPriority.ERROR, error)
+                return MangaLoadResult.Error
             }
-            return MangaLoadResult.Error
-        }
 
-        val signatureHash = getSignatureHash(pkgInfo)
+            extName = pkgManager.getApplicationLabel(appInfo).toString().substringAfter("Tachiyomi: ")
+            val versionName = pkgInfo.versionName
+            val versionCode = PackageInfoCompat.getLongVersionCode(pkgInfo)
 
-        if (signatureHash == null) {
-            logcat(LogPriority.WARN) { "Package $pkgName isn't signed" }
-            return MangaLoadResult.Error
-        } else if (signatureHash !in trustedSignatures) {
-            val extension = MangaExtension.Untrusted(extName, pkgName, versionName, versionCode, libVersion, signatureHash)
-            logcat(LogPriority.WARN) { "Extension $pkgName isn't trusted" }
-            return MangaLoadResult.Untrusted(extension)
-        }
+            if (versionName.isNullOrEmpty()) {
+                logcat(LogPriority.WARN) { "Missing versionName for extension $extName" }
+                return MangaLoadResult.Error
+            }
 
-        val isNsfw = appInfo.metaData.getInt(METADATA_NSFW) == 1
-        if (!loadNsfwSource && isNsfw) {
-            logcat(LogPriority.WARN) { "NSFW extension $pkgName not allowed" }
-            return MangaLoadResult.Error
-        }
-
-        val hasReadme = appInfo.metaData.getInt(METADATA_HAS_README, 0) == 1
-        val hasChangelog = appInfo.metaData.getInt(METADATA_HAS_CHANGELOG, 0) == 1
-
-        val classLoader = PathClassLoader(appInfo.sourceDir, null, context.classLoader)
-
-        val sources = appInfo.metaData.getString(METADATA_SOURCE_CLASS)!!
-            .split(";")
-            .map {
-                val sourceClass = it.trim()
-                if (sourceClass.startsWith(".")) {
-                    pkgInfo.packageName + sourceClass
-                } else {
-                    sourceClass
+            // Validate lib version
+            val libVersion = versionName.substringBeforeLast('.').toDoubleOrNull()
+            if (libVersion == null || libVersion < LIB_VERSION_MIN || libVersion > LIB_VERSION_MAX) {
+                logcat(LogPriority.WARN) {
+                    "Lib version is $libVersion, while only versions " +
+                            "$LIB_VERSION_MIN to $LIB_VERSION_MAX are allowed"
                 }
+                return MangaLoadResult.Error
             }
-            .flatMap {
-                try {
-                    when (val obj = Class.forName(it, false, classLoader).newInstance()) {
-                        is MangaSource -> listOf(obj)
-                        is SourceFactory -> obj.createSources()
-                        else -> throw Exception("Unknown source class type! ${obj.javaClass}")
+
+            val signatureHash = getSignatureHash(pkgInfo)
+
+            if (signatureHash == null) {
+                logcat(LogPriority.WARN) { "Package $pkgName isn't signed" }
+                return MangaLoadResult.Error
+            } else if (signatureHash !in trustedSignatures) {
+                val untrustedExtension = MangaExtension.Untrusted(extName!!, pkgName, versionName, versionCode, libVersion, signatureHash)
+                logcat(LogPriority.WARN) { "Extension $pkgName isn't trusted" }
+                return MangaLoadResult.Untrusted(untrustedExtension)
+            }
+
+            val isNsfw = appInfo.metaData.getInt(METADATA_NSFW) == 1
+            if (!loadNsfwSource && isNsfw) {
+                logcat(LogPriority.WARN) { "NSFW extension $pkgName not allowed" }
+                return MangaLoadResult.Error
+            }
+
+            val hasReadme = appInfo.metaData.getInt(METADATA_HAS_README, 0) == 1
+            val hasChangelog = appInfo.metaData.getInt(METADATA_HAS_CHANGELOG, 0) == 1
+
+            val classLoader = PathClassLoader(appInfo.sourceDir, null, context.classLoader)
+
+            val sources = appInfo.metaData.getString(METADATA_SOURCE_CLASS)!!
+                .split(";")
+                .map {
+                    val sourceClass = it.trim()
+                    if (sourceClass.startsWith(".")) {
+                        pkgInfo.packageName + sourceClass
+                    } else {
+                        sourceClass
                     }
-                } catch (e: Throwable) {
-                    logcat(LogPriority.ERROR, e) { "Extension load error: $extName ($it)" }
-                    return MangaLoadResult.Error
                 }
+                .flatMap {
+                    try {
+                        when (val obj = Class.forName(it, false, classLoader).getDeclaredConstructor().newInstance()) {
+                            is MangaSource -> listOf(obj)
+                            is SourceFactory -> obj.createSources()
+                            else -> throw Exception("Unknown source class type! ${obj.javaClass}")
+                        }
+                    } catch (e: Throwable) {
+                        logcat(LogPriority.ERROR, e) { "Extension load error: $extName ($it)" }
+                        return MangaLoadResult.Error
+                    }
+                }
+
+            val langs = sources.filterIsInstance<CatalogueSource>()
+                .map { it.lang }
+                .toSet()
+            val lang = when (langs.size) {
+                0 -> ""
+                1 -> langs.first()
+                else -> "all"
             }
 
-        val langs = sources.filterIsInstance<CatalogueSource>()
-            .map { it.lang }
-            .toSet()
-        val lang = when (langs.size) {
-            0 -> ""
-            1 -> langs.first()
-            else -> "all"
+            extension = MangaExtension.Installed(
+                name = extName!!,
+                pkgName = pkgName,
+                versionName = versionName,
+                versionCode = versionCode,
+                libVersion = libVersion,
+                lang = lang,
+                isNsfw = isNsfw,
+                hasReadme = hasReadme,
+                hasChangelog = hasChangelog,
+                sources = sources,
+                pkgFactory = appInfo.metaData.getString(METADATA_SOURCE_FACTORY),
+                isUnofficial = signatureHash != officialSignature,
+                icon = context.getApplicationIcon(pkgName),
+            )
         }
 
-        val extension = MangaExtension.Installed(
-            name = extName,
-            pkgName = pkgName,
-            versionName = versionName,
-            versionCode = versionCode,
-            libVersion = libVersion,
-            lang = lang,
-            isNsfw = isNsfw,
-            hasReadme = hasReadme,
-            hasChangelog = hasChangelog,
-            sources = sources,
-            pkgFactory = appInfo.metaData.getString(METADATA_SOURCE_FACTORY),
-            isUnofficial = signatureHash != officialSignature,
-            icon = context.getApplicationIcon(pkgName),
-        )
-        return MangaLoadResult.Success(extension)
+        println("Load extension $extName in $doneIn")
+        return MangaLoadResult.Success(extension as MangaExtension.Installed)
     }
 
     /**

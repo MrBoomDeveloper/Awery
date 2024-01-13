@@ -31,11 +31,9 @@ class ExtensionsActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityExtensionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         val viewPager = findViewById<ViewPager2>(R.id.viewPager)

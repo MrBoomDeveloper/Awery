@@ -27,7 +27,7 @@ class SubscriptionHelper {
             isAdult: Boolean,
             isAnime: Boolean
         ): Selected {
-            val sharedPreferences = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+            val sharedPreferences = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             val data = loadData<Selected>("${mediaId}-select", context) ?: Selected().let {
                 it.sourceIndex =
                     if (isAdult) 0

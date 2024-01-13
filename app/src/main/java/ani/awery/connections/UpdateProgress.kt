@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 fun updateProgress(media: Media, number: String) {
-    val incognito = currContext()?.getSharedPreferences("Dantotsu", 0)
+    val incognito = currContext()?.getSharedPreferences("Awery", 0)
         ?.getBoolean("incognito", false) ?: false
     if (!incognito) {
         if (Anilist.userid != null) {

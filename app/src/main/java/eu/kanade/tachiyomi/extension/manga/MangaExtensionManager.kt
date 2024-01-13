@@ -25,6 +25,7 @@ import tachiyomi.domain.source.manga.model.MangaSourceData
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
+import kotlin.time.measureTime
 
 /**
  * The manager of extensions installed as another apk which extend the available sources. It handles
@@ -95,17 +96,21 @@ class MangaExtensionManager(
      * Loads and registers the installed extensions.
      */
     private fun initExtensions() {
-        val extensions = MangaExtensionLoader.loadMangaExtensions(context)
+        val initDuration = measureTime {
+            val extensions = MangaExtensionLoader.loadMangaExtensions(context)
 
-        _installedExtensionsFlow.value = extensions
-            .filterIsInstance<MangaLoadResult.Success>()
-            .map { it.extension }
+            _installedExtensionsFlow.value = extensions
+                .filterIsInstance<MangaLoadResult.Success>()
+                .map { it.extension }
 
-        _untrustedExtensionsFlow.value = extensions
-            .filterIsInstance<MangaLoadResult.Untrusted>()
-            .map { it.extension }
+            _untrustedExtensionsFlow.value = extensions
+                .filterIsInstance<MangaLoadResult.Untrusted>()
+                .map { it.extension }
 
-        isInitialized = true
+            isInitialized = true
+        }
+
+        println("Init manga extensions in: $initDuration")
     }
 
     /**
@@ -116,7 +121,7 @@ class MangaExtensionManager(
             api.findExtensions()
         } catch (e: Exception) {
             logcat(LogPriority.ERROR, e)
-            withUIContext { snackString("Failed to get manga extensions") }
+            //withUIContext { snackString("Failed to get manga extensions") }
             emptyList()
         }
 

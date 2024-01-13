@@ -38,7 +38,6 @@ import ani.awery.home.MangaFragment
 import ani.awery.home.NoInternet
 import ani.awery.media.MediaDetailsActivity
 import ani.awery.others.CustomBottomDialog
-import ani.awery.others.LangSet
 import ani.awery.settings.UserInterfaceSettings
 import ani.awery.subcriptions.Subscription.Companion.startSubscription
 import ani.awery.themes.ThemeManager
@@ -51,45 +50,39 @@ import kotlinx.coroutines.withContext
 import nl.joery.animatedbottombar.AnimatedBottomBar
 import java.io.Serializable
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val scope = lifecycleScope
     private var load = false
-
     private var uiSettings = UserInterfaceSettings()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemeManager(this).applyTheme()
-        LangSet.setLocale(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val _bottomBar = findViewById<AnimatedBottomBar>(R.id.navbar)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            val backgroundDrawable = _bottomBar.background as GradientDrawable
-            val currentColor = backgroundDrawable.color?.defaultColor ?: 0
-            val semiTransparentColor = (currentColor and 0x00FFFFFF) or 0xE8000000.toInt()
-            backgroundDrawable.setColor(semiTransparentColor)
-            _bottomBar.background = backgroundDrawable
-        }
-        val colorOverflow = this.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val backgroundDrawable = _bottomBar.background as GradientDrawable
+        val currentColor = backgroundDrawable.color?.defaultColor ?: 0
+        val semiTransparentColor = (currentColor and 0x00FFFFFF) or 0xE8000000.toInt()
+        backgroundDrawable.setColor(semiTransparentColor)
+        _bottomBar.background = backgroundDrawable
+        val colorOverflow = this.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("colorOverflow", false)
-        if (!colorOverflow) {
+
+        if(!colorOverflow) {
             _bottomBar.background = ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray)
-
         }
-
 
         var doubleBackToExitPressedOnce = false
         onBackPressedDispatcher.addCallback(this) {
-            if (doubleBackToExitPressedOnce) {
+            if(doubleBackToExitPressedOnce) {
                 finish()
             }
+
             doubleBackToExitPressedOnce = true
             snackString(this@MainActivity.getString(R.string.back_to_exit))
             Handler(Looper.getMainLooper()).postDelayed(
@@ -101,12 +94,12 @@ class MainActivity : AppCompatActivity() {
         binding.root.isMotionEventSplittingEnabled = false
 
         lifecycleScope.launch {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 val splash = SplashScreenBinding.inflate(layoutInflater)
                 binding.root.addView(splash.root)
                 (splash.splashImage.drawable as Animatable).start()
 
-                delay(1200)
+                delay(1000)
 
                 ObjectAnimator.ofFloat(
                     splash.root,
@@ -122,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             splashScreen.setOnExitAnimationListener { splashScreenView ->
                 ObjectAnimator.ofFloat(
                     splashScreenView,
@@ -214,7 +207,7 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (loadData<Boolean>("allow_opening_links", this) != true) {
                     CustomBottomDialog.newInstance().apply {
-                        title = "Allow Dantotsu to automatically open Anilist & MAL Links?"
+                        title = "Allow Awery to automatically open Anilist & MAL Links?"
                         val md = "Open settings & click +Add Links & select Anilist & Mal urls"
                         addView(TextView(this@MainActivity).apply {
                             val markWon =
@@ -243,7 +236,6 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
 
     //ViewPager
     private class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

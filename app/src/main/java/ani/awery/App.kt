@@ -44,7 +44,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val sharedPreferences = getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("Awery", Context.MODE_PRIVATE)
         val useMaterialYou = sharedPreferences.getBoolean("use_material_you", false)
 
         if(useMaterialYou) {

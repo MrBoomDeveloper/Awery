@@ -43,7 +43,6 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
-
 class AnimeFragment : Fragment() {
     private var _binding: FragmentAnimeBinding? = null
     private val binding get() = _binding!!
@@ -203,9 +202,9 @@ class AnimeFragment : Fragment() {
             }
         })
         animePageAdapter.ready.observe(viewLifecycleOwner) { i ->
-            if (i) {
+            if(i) {
                 model.getUpdated().observe(viewLifecycleOwner) {
-                    if (it != null) {
+                    if(it != null) {
                         animePageAdapter.updateRecent(MediaAdaptor(0, it, requireActivity()))
                     }
                 }

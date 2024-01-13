@@ -68,7 +68,7 @@ class MangaPageAdapter : RecyclerView.Adapter<MangaPageAdapter.MangaPageViewHold
         val color = typedValue.data
 
 
-        val colorOverflow = currContext()?.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val colorOverflow = currContext()?.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             ?.getBoolean("colorOverflow", false) ?: false
         if (!colorOverflow) {
             textInputLayout.boxBackgroundColor = (color and 0x00FFFFFF) or 0x28000000.toInt()

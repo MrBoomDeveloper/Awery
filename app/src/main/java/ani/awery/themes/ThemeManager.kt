@@ -11,15 +11,15 @@ import com.google.android.material.color.DynamicColorsOptions
 
 class ThemeManager(private val context: Context) {
     fun applyTheme(fromImage: Bitmap? = null) {
-        val useOLED = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val useOLED = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_oled", false) && isDarkThemeActive(context)
-        val useCustomTheme = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val useCustomTheme = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_custom_theme", false)
-        val customTheme = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val customTheme = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getInt("custom_theme_int", 16712221)
-        val useSource = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val useSource = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_source_theme", false)
-        val useMaterial = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val useMaterial = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_material_you", false)
         if (useSource) {
             val returnedEarly = applyDynamicColors(
@@ -38,7 +38,7 @@ class ThemeManager(private val context: Context) {
             val returnedEarly = applyDynamicColors(useMaterial, context, useOLED, useCustom = null)
             if (!returnedEarly) return
         }
-        val theme = context.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val theme = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getString("theme", "PURPLE")!!
 
         val themeToApply = when (theme) {

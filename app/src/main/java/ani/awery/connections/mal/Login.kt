@@ -21,8 +21,8 @@ import kotlinx.coroutines.launch
 class Login : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
+
         try {
             val data: Uri = intent?.data
                 ?: throw Exception(getString(R.string.mal_login_uri_not_found))

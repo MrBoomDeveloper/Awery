@@ -25,7 +25,7 @@ class OfflineMangaParser : MangaParser() {
     ): List<MangaChapter> {
         val directory = File(
             currContext()?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-            "Dantotsu/Manga/$mangaLink"
+            "Awery/Manga/$mangaLink"
         )
         //get all of the folder names and add them to the list
         val chapters = mutableListOf<MangaChapter>()
@@ -52,7 +52,7 @@ class OfflineMangaParser : MangaParser() {
     override suspend fun loadImages(chapterLink: String, sChapter: SChapter): List<MangaImage> {
         val directory = File(
             currContext()?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-            "Dantotsu/Manga/$chapterLink"
+            "Awery/Manga/$chapterLink"
         )
         val images = mutableListOf<MangaImage>()
         val imageNumberRegex = Regex("""(\d+)\.jpg$""")

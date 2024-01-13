@@ -13,6 +13,7 @@ import ani.awery.media.Media
 import ani.awery.others.AppUpdater
 import ani.awery.snackString
 import ani.awery.tryWithSuspend
+import com.mrboomdev.awery.anilist.search.SearchSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -103,7 +104,7 @@ class AnilistHomeViewModel : ViewModel() {
         Anilist.getSavedToken(context)
         MAL.getSavedToken(context)
         Discord.getSavedToken(context)
-        if (loadData<Boolean>("check_update") != false) AppUpdater.check(context)
+        if(loadData<Boolean>("check_update") != false) AppUpdater.check(context)
         genres.postValue(Anilist.query.getGenresAndTags(context))
     }
 
@@ -128,7 +129,7 @@ class AnilistAnimeViewModel : ViewModel() {
             Anilist.query.search(
                 type,
                 perPage = 12,
-                sort = Anilist.sortBy[2],
+                sort = SearchSort.TRENDING_DESCENDING.toString(),
                 season = season,
                 seasonYear = year,
                 hd = true
@@ -146,7 +147,7 @@ class AnilistAnimeViewModel : ViewModel() {
     fun getPopular(): LiveData<SearchResults?> = animePopular
     suspend fun loadPopular(
         type: String,
-        search_val: String? = null,
+        searchValue: String? = null,
         genres: ArrayList<String>? = null,
         sort: String = Anilist.sortBy[1],
         onList: Boolean = true,
@@ -154,7 +155,7 @@ class AnilistAnimeViewModel : ViewModel() {
         animePopular.postValue(
             Anilist.query.search(
                 type,
-                search = search_val,
+                search = searchValue,
                 onList = if (onList) null else false,
                 sort = sort,
                 genres = genres

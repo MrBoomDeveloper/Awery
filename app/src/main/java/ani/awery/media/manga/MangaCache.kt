@@ -69,7 +69,7 @@ fun saveImage(
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/${format.name.lowercase()}")
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    "${Environment.DIRECTORY_DOWNLOADS}/Dantotsu/Manga"
+                    "${Environment.DIRECTORY_DOWNLOADS}/Awery/Manga"
                 )
             }
 
@@ -83,7 +83,7 @@ fun saveImage(
             }
         } else {
             val directory =
-                File("${Environment.getExternalStorageDirectory()}${File.separator}Dantotsu${File.separator}Manga")
+                File("${Environment.getExternalStorageDirectory()}${File.separator}Awery${File.separator}Manga")
             if (!directory.exists()) {
                 directory.mkdirs()
             }

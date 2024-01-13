@@ -32,9 +32,9 @@ class NoInternet : AppCompatActivity() {
     private lateinit var binding: ActivityNoInternetBinding
     lateinit var bottomBar: AnimatedBottomBar
     private var uiSettings = UserInterfaceSettings()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
 
         binding = ActivityNoInternetBinding.inflate(layoutInflater)
@@ -49,7 +49,7 @@ class NoInternet : AppCompatActivity() {
             backgroundDrawable.setColor(semiTransparentColor)
             _bottomBar.background = backgroundDrawable
         }
-        val colorOverflow = this.getSharedPreferences("Dantotsu", Context.MODE_PRIVATE)
+        val colorOverflow = this.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("colorOverflow", false)
         if (!colorOverflow) {
             _bottomBar.background = ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray)

@@ -251,7 +251,7 @@ class NovelDownloaderService : Service() {
 
                             val file = File(
                                 this@NovelDownloaderService.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                                "Dantotsu/Novel/${task.title}/${task.chapter}/0.epub"
+                                "Awery/Novel/${task.title}/${task.chapter}/0.epub"
                             )
 
                             // Create directories if they don't exist
@@ -351,7 +351,7 @@ class NovelDownloaderService : Service() {
         GlobalScope.launch(Dispatchers.IO) {
             val directory = File(
                 getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                "Dantotsu/Novel/${task.title}"
+                "Awery/Novel/${task.title}"
             )
             if (!directory.exists()) directory.mkdirs()
 

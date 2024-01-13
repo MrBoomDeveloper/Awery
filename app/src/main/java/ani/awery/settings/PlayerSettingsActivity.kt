@@ -39,7 +39,6 @@ class PlayerSettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityPlayerSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)

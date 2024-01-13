@@ -26,8 +26,7 @@ class AnimeExtensionInstallActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
-ThemeManager(this).applyTheme()
+        ThemeManager(this).applyTheme()
 
         val installIntent = Intent(Intent.ACTION_INSTALL_PACKAGE)
             .setDataAndType(intent.data, intent.type)

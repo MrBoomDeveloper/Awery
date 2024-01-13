@@ -143,6 +143,7 @@ object Anilist {
                     data = data,
                     cacheTime = cache ?: 10
                 )
+
                 if (!json.text.startsWith("{")) throw Exception(currContext()?.getString(R.string.anilist_down))
                 if (show) println("Response : ${json.text}")
                 json.parsed()

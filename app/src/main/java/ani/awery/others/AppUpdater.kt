@@ -29,9 +29,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object AppUpdater {
+
     suspend fun check(activity: FragmentActivity, post: Boolean = false) {
         if (post) snackString(currContext()?.getString(R.string.checking_for_update))
         val repo = activity.getString(R.string.repo)
+
         tryWithSuspend {
             val (md, version) = if (BuildConfig.DEBUG) {
                 val res = client.get("https://api.github.com/repos/$repo/releases")
@@ -44,8 +46,7 @@ object AppUpdater {
                 val v = r.tagName.substringAfter("v", "")
                 (r.body ?: "") to v.ifEmpty { throw Exception("Weird Version : ${r.tagName}") }
             } else {
-                val res =
-                    client.get("https://raw.githubusercontent.com/$repo/main/stable.md").text
+                val res = client.get("https://raw.githubusercontent.com/$repo/main/stable.md").text
                 res to res.substringAfter("# ").substringBefore("\n")
             }
 
@@ -134,10 +135,10 @@ object AppUpdater {
 
         val request = DownloadManager.Request(Uri.parse(url))
             .setMimeType("application/vnd.android.package-archive")
-            .setTitle("Downloading Dantotsu $version")
+            .setTitle("Downloading Awery $version")
             .setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_DOWNLOADS,
-                "Dantotsu $version.apk"
+                "Awery $version.apk"
             )
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
             .setAllowedOverRoaming(true)

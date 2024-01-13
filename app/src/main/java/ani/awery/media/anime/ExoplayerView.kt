@@ -319,7 +319,6 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityExoplayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -996,7 +995,7 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
                 preloading = false
                 val context = this
 
-                val incognito = baseContext.getSharedPreferences("Dantotsu", MODE_PRIVATE)
+                val incognito = baseContext.getSharedPreferences("Awery", MODE_PRIVATE)
                     .getBoolean("incognito", false)
                 if (isOnline(context) && Discord.token != null && !incognito) {
                     lifecycleScope.launch {
@@ -1016,14 +1015,14 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
                                 )
                             },
                             smallImage = RPC.Link(
-                                "Dantotsu",
+                                "Awery",
                                 Discord.small_Image
                             ),
                             buttons = mutableListOf(
                                 RPC.Link(getString(R.string.view_anime), media.shareLink ?: ""),
                                 RPC.Link(
-                                    "Stream on Dantotsu",
-                                    "https://github.com/rebelonion/Dantotsu/"
+                                    "Stream on Awery",
+                                    "https://github.com/MrBoomDeveloper/Awery/"
                                 )
                             )
                         )
@@ -1487,7 +1486,6 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
 
     override fun onResume() {
         super.onResume()
-        LangSet.setLocale(this)
         orientationListener?.enable()
         hideSystemBars()
         if (isInitialized) {

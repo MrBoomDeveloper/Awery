@@ -48,7 +48,6 @@ class ImageSearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityImageSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)

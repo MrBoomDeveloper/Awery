@@ -37,7 +37,7 @@ internal class MangaExtensionGithubApi {
 
     suspend fun findExtensions(): List<MangaExtension.Available> {
         return withIOContext {
-            val githubResponse = if (requiresFallbackSource) {
+            val githubResponse = if(requiresFallbackSource) {
                 null
             } else {
                 try {

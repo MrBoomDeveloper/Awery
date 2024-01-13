@@ -134,7 +134,6 @@ class MangaReaderActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityMangaReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -313,7 +312,7 @@ class MangaReaderActivity : AppCompatActivity() {
                     chaptersTitleArr.getOrNull(currentChapterIndex - 1) ?: ""
                 applySettings()
                 val context = this
-                val incognito = context.getSharedPreferences("Dantotsu", 0)
+                val incognito = context.getSharedPreferences("Awery", 0)
                     ?.getBoolean("incognito", false) ?: false
                 if (isOnline(context) && Discord.token != null && !incognito) {
                     lifecycleScope.launch {
@@ -329,14 +328,14 @@ class MangaReaderActivity : AppCompatActivity() {
                                     RPC.Link(media.userPreferredName, cover)
                                 },
                                 smallImage = RPC.Link(
-                                    "Dantotsu",
+                                    "Awery",
                                     Discord.small_Image
                                 ),
                                 buttons = mutableListOf(
                                     RPC.Link(getString(R.string.view_manga), media.shareLink ?: ""),
                                     RPC.Link(
-                                        "Stream on Dantotsu",
-                                        "https://github.com/rebelonion/Dantotsu/"
+                                        "Stream on Awery",
+                                        "https://github.com/MrBoomDeveloper/Awery/"
                                     )
                                 )
                             )

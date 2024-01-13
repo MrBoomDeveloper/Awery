@@ -21,7 +21,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
             Intent.ACTION_BOOT_COMPLETED -> tryWith(true) {
-                logger("Starting Dantotsu Subscription Service on Boot")
+                logger("Starting Awery Subscription Service on Boot")
                 context?.startSubscription()
             }
         }

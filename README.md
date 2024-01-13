@@ -3,7 +3,7 @@
 </p>
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android-blueviolet?style=for-the-badge"/>
-   <a href="https://github.com/rebelonion/Dantotsu/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
+   <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
 </p>
 
 # **Awery** 🌟
@@ -13,12 +13,12 @@ Awery is an [Anilist](https://anilist.co/) only client.
 [//]: # (> **Awery &#40;断トツ; Dan-totsu&#41;** literally means "the best of the best" in Japanese. Try it out for yourself and be the judge!)
 
 ## FEATURES
+- Filter out tags like yaoi or yuri for the whole app for forever
 - Sync progress with your AniList account
 - The best style between other anime apps
 - Intuitive user interface
 
 ## PLANNED FEATURES
-- Filter out tags like yaoi or yuri for the whole app for forever
 - Blacklist animes by keywords
 - Automatically select other sources if current is unavailable
 - More sections on anime page

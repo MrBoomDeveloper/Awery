@@ -267,7 +267,7 @@ class MangaDownloaderService : Service() {
             // Define the directory within the private external storage space
             val directory = File(
                 this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                "Dantotsu/Manga/$title/$chapter"
+                "Awery/Manga/$title/$chapter"
             )
 
             if (!directory.exists()) {
@@ -293,7 +293,7 @@ class MangaDownloaderService : Service() {
         GlobalScope.launch(Dispatchers.IO) {
             val directory = File(
                 getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                "Dantotsu/Manga/${task.title}"
+                "Awery/Manga/${task.title}"
             )
             if (!directory.exists()) directory.mkdirs()
 

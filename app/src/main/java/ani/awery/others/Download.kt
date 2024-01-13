@@ -42,7 +42,7 @@ object Download {
             direct = File(parentDirectory)
             if (!direct.exists()) direct.mkdirs()
         } else {
-            direct = File("storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/Dantotsu/")
+            direct = File("storage/emulated/0/${Environment.DIRECTORY_DOWNLOADS}/Awery/")
             if (!direct.exists()) direct.mkdirs()
         }
         return direct
@@ -123,11 +123,11 @@ object Download {
                     if (!direct.exists()) direct.mkdirs()
                     request.setDestinationUri(Uri.fromFile(File("$parentDirectory$fileName")))
                 } else {
-                    val direct = File(Environment.DIRECTORY_DOWNLOADS + "/Dantotsu$folder")
+                    val direct = File(Environment.DIRECTORY_DOWNLOADS + "/Awery$folder")
                     if (!direct.exists()) direct.mkdirs()
                     request.setDestinationInExternalPublicDir(
                         Environment.DIRECTORY_DOWNLOADS,
-                        "/Dantotsu$folder$fileName"
+                        "/Awery$folder$fileName"
                     )
                 }
                 request.setTitle(notif)

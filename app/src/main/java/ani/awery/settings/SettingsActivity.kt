@@ -8,7 +8,9 @@ import android.graphics.drawable.Animatable
 import android.os.Build.*
 import android.os.Build.VERSION.*
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
@@ -16,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
@@ -26,7 +29,6 @@ import ani.awery.connections.mal.MAL
 import ani.awery.databinding.ActivitySettingsBinding
 import ani.awery.others.AppUpdater
 import ani.awery.others.CustomBottomDialog
-import ani.awery.others.LangSet
 import ani.awery.parsers.AnimeSources
 import ani.awery.parsers.MangaSources
 import ani.awery.subcriptions.Notifications
@@ -35,20 +37,25 @@ import ani.awery.subcriptions.Subscription.Companion.defaultTime
 import ani.awery.subcriptions.Subscription.Companion.startSubscription
 import ani.awery.subcriptions.Subscription.Companion.timeMinutes
 import ani.awery.themes.ThemeManager
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.mrboomdev.awery.anilist.AnilistApi
+import com.mrboomdev.awery.anilist.query.AnilistQuery
+import com.mrboomdev.awery.anilist.query.AnilistTagsQuery
+import com.mrboomdev.awery.data.DataPreferences
+import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorListener
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.tachiyomi.network.NetworkPreferences
+import eu.kanade.tachiyomi.util.system.toast
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
-import kotlin.random.Random
-
 
 class SettingsActivity : AppCompatActivity() {
     private val restartMainActivity = object : OnBackPressedCallback(false) {
@@ -57,23 +64,22 @@ class SettingsActivity : AppCompatActivity() {
     lateinit var binding: ActivitySettingsBinding
     private val extensionInstaller = Injekt.get<BasePreferences>().extensionInstaller()
     private val networkPreferences = Injekt.get<NetworkPreferences>()
-    private var cursedCounter = 0
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initActivity(this)
+        val prefs = DataPreferences.getInstance(this)
 
         binding.settingsVersion.text = getString(R.string.version_current, BuildConfig.VERSION_NAME)
         binding.settingsVersion.setOnLongClickListener {
             fun getArch(): String {
                 SUPPORTED_ABIS.forEach {
-                    when (it) {
+                    when(it) {
                         "arm64-v8a" -> return "aarch64"
                         "armeabi-v7a" -> return "arm"
                         "x86_64" -> return "x86_64"
@@ -85,7 +91,7 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             val info = """
-                dantotsu Version: ${BuildConfig.VERSION_NAME}
+                Awery Version: ${BuildConfig.VERSION_NAME}
                 Device: $BRAND $DEVICE
                 Architecture: ${getArch()}
                 OS Version: $CODENAME $RELEASE ($SDK_INT)
@@ -107,52 +113,43 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.settingsUseMaterialYou.isChecked =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getBoolean(
-                "use_material_you",
-                false
-            )
+            prefs.getBoolean(DataPreferences.USE_MATERIAL_YOU)
+
         binding.settingsUseMaterialYou.setOnCheckedChangeListener { _, isChecked ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
-                .putBoolean("use_material_you", isChecked).apply()
-            if (isChecked) binding.settingsUseCustomTheme.isChecked = false
+            prefs.setBoolean(DataPreferences.USE_MATERIAL_YOU, isChecked).saveAsync()
+            if(isChecked) binding.settingsUseCustomTheme.isChecked = false
             restartApp()
         }
 
         binding.settingsUseCustomTheme.isChecked =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getBoolean(
-                "use_custom_theme",
-                false
-            )
-        binding.settingsUseCustomTheme.setOnCheckedChangeListener { _, isChecked ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
-                .putBoolean("use_custom_theme", isChecked).apply()
-            if (isChecked) {
-                binding.settingsUseMaterialYou.isChecked = false
-            }
+            prefs.getBoolean(DataPreferences.USE_CUSTOM_THEME)
 
+        binding.settingsUseCustomTheme.setOnCheckedChangeListener { _, isChecked ->
+            prefs.setBoolean(DataPreferences.USE_CUSTOM_THEME, isChecked).saveAsync()
+            if(isChecked) binding.settingsUseMaterialYou.isChecked = false
             restartApp()
         }
 
         binding.settingsUseSourceTheme.isChecked =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getBoolean(
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).getBoolean(
                 "use_source_theme",
                 false
             )
         binding.settingsUseSourceTheme.setOnCheckedChangeListener { _, isChecked ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putBoolean("use_source_theme", isChecked).apply()
         }
 
         binding.settingsUseOLED.isChecked =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getBoolean("use_oled", false)
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).getBoolean("use_oled", false)
         binding.settingsUseOLED.setOnCheckedChangeListener { _, isChecked ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putBoolean("use_oled", isChecked).apply()
             restartApp()
         }
 
         val themeString =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getString("theme", "PURPLE")!!
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).getString("theme", "PURPLE")!!
         binding.themeSwitcher.setText(
             themeString.substring(0, 1) + themeString.substring(1).lowercase()
         )
@@ -166,23 +163,82 @@ class SettingsActivity : AppCompatActivity() {
         )
 
         binding.themeSwitcher.setOnItemClickListener { _, _, i, _ ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putString("theme", ThemeManager.Companion.Theme.values()[i].theme).apply()
             //ActivityHelper.shouldRefreshMainActivity = true
             binding.themeSwitcher.clearFocus()
             restartApp()
-
         }
 
+        binding.globalExcludedTags.setOnClickListener {
+            toast("Loading tags list...", 1)
+
+            AnilistTagsQuery.getTags(AnilistTagsQuery.ALL).executeQuery {
+                val excludedTags = prefs.getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+
+                runOnUiThread {
+                    val layout = layoutInflater.inflate(R.layout.dialog_exclude_tags, null)
+                    val chipGroup = layout.findViewById<ChipGroup>(R.id.excluded_tags_view)
+
+                    for(tag in it) {
+                        val theme = com.google.android.material.R.style.Widget_Material3_Chip_Filter
+                        val chip = Chip(ContextThemeWrapper(this, theme))
+                        chip.isCheckable = true
+                        chip.text = tag.name
+                        chipGroup.addView(chip)
+
+                        if(excludedTags.contains(tag.name)) {
+                            chip.isSelected = true
+                        }
+
+                        chip.setOnCheckedChangeListener { _, isChecked ->
+                            if(isChecked) {
+                                excludedTags.add(tag.name)
+                                return@setOnCheckedChangeListener
+                            }
+
+                            excludedTags.remove(tag.name)
+                        }
+
+                        chip.setOnLongClickListener {
+                            toast(tag.description, 1)
+                            false
+                        }
+                    }
+
+                    val alertDialog = AlertDialog.Builder(this, R.style.MyPopup)
+                        .setTitle("Globally Exclude Tags")
+                        .setView(layout)
+                        .setCancelable(false)
+                        .setPositiveButton("OK") { dialog, _ ->
+                            prefs.setStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS, excludedTags)
+                            prefs.saveAsync()
+
+                            dialog.dismiss()
+                            restartApp()
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+
+                    alertDialog.show()
+                    alertDialog.window?.setDimAmount(0.8f)
+                }
+            }.catchExceptions {
+                it.printStackTrace()
+                toast("Failed to load tags list!")
+            }
+        }
 
         binding.customTheme.setOnClickListener {
-            var passedColor: Int = 0
+            var passedColor = 0
             val dialogView = layoutInflater.inflate(R.layout.dialog_color_picker, null)
             val alertDialog = AlertDialog.Builder(this, R.style.MyPopup)
                 .setTitle("Custom Theme")
                 .setView(dialogView)
                 .setPositiveButton("OK") { dialog, _ ->
-                    getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+                    getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                         .putInt("custom_theme_int", passedColor).apply()
                     logger("Custom Theme: $passedColor")
                     dialog.dismiss()
@@ -192,25 +248,26 @@ class SettingsActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
                 .create()
-            val colorPickerView =
-                dialogView.findViewById<com.skydoves.colorpickerview.ColorPickerView>(R.id.colorPickerView)
+
+            val colorPickerView = dialogView.findViewById<ColorPickerView>(R.id.colorPickerView)
+
             colorPickerView.setColorListener(ColorListener { color, fromUser ->
                 val linearLayout = dialogView.findViewById<LinearLayout>(R.id.linear)
                 passedColor = color
                 linearLayout.setBackgroundColor(color)
             })
+
             alertDialog.show()
             alertDialog.window?.setDimAmount(0.8f)
         }
 
         //val animeSource = loadData<Int>("settings_def_anime_source_s")?.let { if (it >= AnimeSources.names.size) 0 else it } ?: 0
         val animeSource = getSharedPreferences(
-            "Dantotsu",
+            "Awery",
             Context.MODE_PRIVATE
         ).getInt("settings_def_anime_source_s_r", 0)
         if (AnimeSources.names.isNotEmpty() && animeSource in 0 until AnimeSources.names.size) {
             binding.animeSource.setText(AnimeSources.names[animeSource], false)
-
         }
 
         binding.animeSource.setAdapter(
@@ -223,7 +280,7 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.animeSource.setOnItemClickListener { _, _, i, _ ->
             //saveData("settings_def_anime_source_s", i)
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putInt("settings_def_anime_source_s_r", i).apply()
             binding.animeSource.clearFocus()
         }
@@ -235,6 +292,7 @@ class SettingsActivity : AppCompatActivity() {
         val managers = arrayOf("Default", "1DM", "ADM")
         val downloadManagerDialog =
             AlertDialog.Builder(this, R.style.DialogTheme).setTitle("Download Manager")
+
         var downloadManager = loadData<Int>("settings_download_manager") ?: 0
         binding.settingsDownloadManager.setOnClickListener {
             val dialog = downloadManagerDialog.setSingleChoiceItems(managers, downloadManager) { dialog, count ->
@@ -346,7 +404,7 @@ class SettingsActivity : AppCompatActivity() {
 
         //val mangaSource = loadData<Int>("settings_def_manga_source_s")?.let { if (it >= MangaSources.names.size) 0 else it } ?: 0
         val mangaSource = getSharedPreferences(
-            "Dantotsu",
+            "Awery",
             Context.MODE_PRIVATE
         ).getInt("settings_def_manga_source_s_r", 0)
         if (MangaSources.names.isNotEmpty() && mangaSource in 0 until MangaSources.names.size) {
@@ -365,7 +423,7 @@ class SettingsActivity : AppCompatActivity() {
         // Set up the item click listener for the dropdown.
         binding.mangaSource.setOnItemClickListener { _, _, i, _ ->
             //saveData("settings_def_manga_source_s", i)
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putInt("settings_def_manga_source_s_r", i).apply()
             binding.mangaSource.clearFocus()
         }
@@ -409,12 +467,12 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.settingsIncognito.isChecked =
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).getBoolean(
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).getBoolean(
                 "incognito",
                 false
             )
         binding.settingsIncognito.setOnCheckedChangeListener { _, isChecked ->
-            getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit()
+            getSharedPreferences("Awery", Context.MODE_PRIVATE).edit()
                 .putBoolean("incognito", isChecked).apply()
         }
 
@@ -501,20 +559,6 @@ class SettingsActivity : AppCompatActivity() {
             uiChp(1, it)
         }
 
-        binding.settingBuyMeCoffee.setOnClickListener {
-            lifecycleScope.launch {
-                it.pop()
-            }
-            openLinkInBrowser("https://www.buymeacoffee.com/rebelonion")
-        }
-        lifecycleScope.launch {
-            binding.settingBuyMeCoffee.pop()
-        }
-        binding.settingUPI.visibility = if (checkCountry(this)) View.VISIBLE else View.GONE
-        lifecycleScope.launch {
-            binding.settingUPI.pop()
-        }
-
         binding.loginDiscord.setOnClickListener {
             openLinkInBrowser(getString(R.string.discord))
         }
@@ -534,31 +578,14 @@ class SettingsActivity : AppCompatActivity() {
         val array = resources.getStringArray(R.array.tips)
 
         binding.settingsLogo.setSafeOnClickListener {
-            cursedCounter++
             (binding.settingsLogo.drawable as Animatable).start()
-            if (cursedCounter % 7 == 0) {
-                Toast.makeText(this, "youwu have been cuwsed :pwayge:", Toast.LENGTH_LONG).show()
-                val url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                openLinkInBrowser(url)
-                getSharedPreferences("Dantotsu", Context.MODE_PRIVATE).edit().putBoolean(
-                    "use_cursed_lang",
-                    getSharedPreferences(
-                        "Dantotsu",
-                        Context.MODE_PRIVATE
-                    ).getBoolean("use_cursed_lang", false).not()
-                ).apply()
-            } else {
-                snackString(array[(Math.random() * array.size).toInt()], this)
-            }
-
+            snackString(array[(Math.random() * array.size).toInt()], this)
         }
 
         binding.settingsDev.setOnClickListener {
             DevelopersDialogFragment().show(supportFragmentManager, "dialog")
         }
-        binding.settingsForks.setOnClickListener {
-            ForksDialogFragment().show(supportFragmentManager, "dialog")
-        }
+
         binding.settingsDisclaimer.setOnClickListener {
             val title = getString(R.string.disclaimer)
             val text = TextView(this)
@@ -740,34 +767,8 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+
         reload()
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            delay(2000)
-            runOnUiThread {
-                if (Random.nextInt(0, 100) > 69) {
-                    CustomBottomDialog.newInstance().apply {
-                        title = "Enjoying the App?"
-                        addView(TextView(this@SettingsActivity).apply {
-                            text =
-                                "Consider donating!"
-                        })
-
-                        setNegativeButton("no moners :(") {
-                            snackString("That's alright, you'll be a rich man soon :prayge:")
-                            dismiss()
-                        }
-
-                        setPositiveButton("denote :)") {
-                            if (binding.settingUPI.visibility == View.VISIBLE) binding.settingUPI.performClick()
-                            else binding.settingBuyMeCoffee.performClick()
-                            dismiss()
-                        }
-                        show(supportFragmentManager, "dialog")
-                    }
-                }
-            }
-        }
     }
 
     private fun restartApp() {

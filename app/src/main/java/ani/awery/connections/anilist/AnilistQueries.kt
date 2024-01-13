@@ -1,6 +1,7 @@
 package ani.awery.connections.anilist
 
 import android.app.Activity
+import ani.awery.App
 import ani.awery.R
 import ani.awery.checkGenreTime
 import ani.awery.checkId
@@ -19,12 +20,14 @@ import ani.awery.media.Studio
 import ani.awery.others.MalScraper
 import ani.awery.saveData
 import ani.awery.snackString
+import com.mrboomdev.awery.data.DataPreferences
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import kotlin.system.measureTimeMillis
 
 class AnilistQueries {
+
     suspend fun getUserData(): Boolean {
         val response: Query.Viewer?
         measureTimeMillis {
@@ -431,12 +434,11 @@ class AnilistQueries {
         return sorted
     }
 
-
     suspend fun getGenresAndTags(activity: Activity): Boolean {
         var genres: ArrayList<String>? = loadData("genres_list", activity)
         var tags: Map<Boolean, List<String>>? = loadData("tags_map", activity)
 
-        if (genres == null) {
+        if(genres == null) {
             executeQuery<Query.GenreCollection>(
                 """{GenreCollection}""",
                 force = true,
@@ -446,27 +448,33 @@ class AnilistQueries {
                 forEach {
                     genres?.add(it)
                 }
+
                 saveData("genres_list", genres!!)
             }
         }
-        if (tags == null) {
+
+        if(tags == null) {
             executeQuery<Query.MediaTagCollection>(
                 """{ MediaTagCollection { name isAdult } }""",
                 force = true
             )?.data?.mediaTagCollection?.apply {
                 val adult = mutableListOf<String>()
                 val good = mutableListOf<String>()
+
                 forEach { node ->
                     if (node.isAdult == true) adult.add(node.name)
                     else good.add(node.name)
                 }
+
                 tags = mapOf(
                     true to adult,
                     false to good
                 )
+
                 saveData("tags_map", tags)
             }
         }
+
         return if (genres != null && tags != null) {
             Anilist.genres = genres
             Anilist.tags = tags
@@ -574,18 +582,18 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
   }
 }
         """.replace("\n", " ").replace("""  """, "")
+
         val variables = """{"type":"$type","isAdult":$isAdult
-            ${if (onList != null) ""","onList":$onList""" else ""}
-            ${if (page != null) ""","page":"$page"""" else ""}
-            ${if (id != null) ""","id":"$id"""" else ""}
-            ${if (seasonYear != null) ""","seasonYear":"$seasonYear"""" else ""}
-            ${if (season != null) ""","season":"$season"""" else ""}
-            ${if (search != null) ""","search":"$search"""" else ""}
-            ${if (sort != null) ""","sort":"$sort"""" else ""}
-            ${if (format != null) ""","format":"${format.replace(" ", "_")}"""" else ""}
-            ${if (genres?.isNotEmpty() == true) ""","genres":[${genres.joinToString { "\"$it\"" }}]""" else ""}
-            ${
-            if (excludedGenres?.isNotEmpty() == true)
+            ${if(onList != null) ""","onList":$onList""" else ""}
+            ${if(page != null) ""","page":"$page"""" else ""}
+            ${if(id != null) ""","id":"$id"""" else ""}
+            ${if(seasonYear != null) ""","seasonYear":"$seasonYear"""" else ""}
+            ${if(season != null) ""","season":"$season"""" else ""}
+            ${if(search != null) ""","search":"$search"""" else ""}
+            ${if(sort != null) ""","sort":"$sort"""" else ""}
+            ${if(format != null) ""","format":"${format.replace(" ", "_")}"""" else ""}
+            ${if(genres?.isNotEmpty() == true) ""","genres":[${genres.joinToString { "\"$it\"" }}]""" else ""}
+            ${if(excludedGenres?.isNotEmpty() == true)
                 ""","excludedGenres":[${
                     excludedGenres.joinToString {
                         "\"${
@@ -596,11 +604,9 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
                         }\""
                     }
                 }]"""
-            else ""
-        }
-            ${if (tags?.isNotEmpty() == true) ""","tags":[${tags.joinToString { "\"$it\"" }}]""" else ""}
-            ${
-            if (excludedTags?.isNotEmpty() == true)
+            else ""}
+            ${if(tags?.isNotEmpty() == true) ""","tags":[${tags.joinToString { "\"$it\"" }}]""" else ""}
+            ${if(excludedTags?.isNotEmpty() == true)
                 ""","excludedTags":[${
                     excludedTags.joinToString {
                         "\"${
@@ -611,9 +617,8 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
                         }\""
                     }
                 }]"""
-            else ""
-        }
-            }""".replace("\n", " ").replace("""  """, "")
+            else ""}
+        }""".replace("\n", " ").replace("""  """, "")
 
         val response = executeQuery<Query.Page>(query, variables, true)?.data?.page
         if (response?.media != null) {
@@ -664,7 +669,7 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
     ): MutableList<Media>? {
         suspend fun execute(page: Int = 1): Page? {
             val query = """{
-Page(page:$page,perPage:50) {
+Page(page: $page, perPage: 50) {
     pageInfo {
         hasNextPage
         total
@@ -685,6 +690,7 @@ Page(page:$page,perPage:50) {
             nextAiringEpisode { episode }
             isAdult
             type
+            tags { name }
             meanScore
             isFavourite
             format
@@ -708,16 +714,24 @@ Page(page:$page,perPage:50) {
         }""".replace("\n", " ").replace("""  """, "")
             return executeQuery<Query.Page>(query, force = true)?.data?.page
         }
-        if (smaller) {
+
+        val excludedTags = DataPreferences.getInstance().getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+
+        if(smaller) {
             val response = execute()?.airingSchedules ?: return null
             val idArr = mutableListOf<Int>()
             val listOnly = loadData("recently_list_only") ?: false
+
             return response.mapNotNull { i ->
                 i.media?.let {
-                    if (!idArr.contains(it.id))
-                        if (!listOnly && (it.countryOfOrigin == "JP" && (if (!Anilist.adult) it.isAdult == false else true)) || (listOnly && it.mediaListEntry != null)) {
-                            idArr.add(it.id)
-                            Media(it)
+                    if(!idArr.contains(it.id))
+                        if(!listOnly && (it.countryOfOrigin == "JP" && (if(!Anilist.adult) it.isAdult == false else true)) || (listOnly && it.mediaListEntry != null)) {
+                            if(it.tags?.find { its ->
+                                 excludedTags!!.contains(its.name)
+                            } == null) {
+                                idArr.add(it.id)
+                                Media(it)
+                            } else null
                         } else null
                     else null
                 }
@@ -726,21 +740,29 @@ Page(page:$page,perPage:50) {
             var i = 1
             val list = mutableListOf<Media>()
             var res: Page? = null
+
             suspend fun next() {
                 res = execute(i)
                 list.addAll(res?.airingSchedules?.mapNotNull { j ->
                     j.media?.let {
-                        if (it.countryOfOrigin == "JP" && (if (!Anilist.adult) it.isAdult == false else true)) {
-                            Media(it).apply { relation = "${j.episode},${j.airingAt}" }
+                        if(it.countryOfOrigin == "JP" && (if (!Anilist.adult) it.isAdult == false else true)) {
+                            if(it.tags?.find { its ->
+                                    excludedTags!!.contains(its.name)
+                            } == null) {
+                                Media(it).apply { relation = "${j.episode},${j.airingAt}" }
+                            } else null
+
                         } else null
                     }
                 } ?: listOf())
             }
+
             next()
-            while (res?.pageInfo?.hasNextPage == true) {
+            while(res?.pageInfo?.hasNextPage == true) {
                 next()
                 i++
             }
+
             return list.reversed().toMutableList()
         }
     }

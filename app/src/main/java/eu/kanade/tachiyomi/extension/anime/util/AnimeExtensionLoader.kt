@@ -59,20 +59,18 @@ internal object AnimeExtensionLoader {
     fun loadExtensions(context: Context): List<AnimeLoadResult> {
         val pkgManager = context.packageManager
 
-        @Suppress("DEPRECATION")
-        val installedPkgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val installedPackages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             pkgManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(PACKAGE_FLAGS.toLong()))
         } else {
             pkgManager.getInstalledPackages(PACKAGE_FLAGS)
         }
 
-        val extPkgs = installedPkgs.filter { isPackageAnExtension(it) }
-
-        if (extPkgs.isEmpty()) return emptyList()
+        val extensionPackages = installedPackages.filter { isPackageAnExtension(it) }
+        if (extensionPackages.isEmpty()) return emptyList()
 
         // Load each extension concurrently and wait for completion
         return runBlocking {
-            val deferred = extPkgs.map {
+            val deferred = extensionPackages.map {
                 async { loadExtension(context, it.packageName, it) }
             }
             deferred.map { it.await() }
@@ -147,14 +145,13 @@ internal object AnimeExtensionLoader {
         }
 
         val isNsfw = appInfo.metaData.getInt(METADATA_NSFW) == 1
-        if (!loadNsfwSource && isNsfw) {
+        if(!loadNsfwSource && isNsfw) {
             logcat(LogPriority.WARN) { "NSFW extension $pkgName not allowed" }
             return AnimeLoadResult.Error
         }
 
         val hasReadme = appInfo.metaData.getInt(METADATA_HAS_README, 0) == 1
         val hasChangelog = appInfo.metaData.getInt(METADATA_HAS_CHANGELOG, 0) == 1
-
         val classLoader = PathClassLoader(appInfo.sourceDir, null, context.classLoader)
 
         val sources = appInfo.metaData.getString(METADATA_SOURCE_CLASS)!!
@@ -204,6 +201,7 @@ internal object AnimeExtensionLoader {
             isUnofficial = signatureHash != officialSignature,
             icon = context.getApplicationIcon(pkgName),
         )
+
         return AnimeLoadResult.Success(extension)
     }
 
