@@ -31,7 +31,6 @@ import ani.awery.databinding.ActivityNovelReaderBinding
 import ani.awery.hideSystemBars
 import ani.awery.loadData
 import ani.awery.others.ImageViewDialog
-import ani.awery.others.LangSet
 import ani.awery.saveData
 import ani.awery.setSafeOnClickListener
 import ani.awery.settings.CurrentNovelReaderSettings

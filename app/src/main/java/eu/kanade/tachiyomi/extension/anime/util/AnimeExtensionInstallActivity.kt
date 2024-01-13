@@ -3,7 +3,6 @@ package eu.kanade.tachiyomi.extension.anime.util
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import ani.awery.others.LangSet
 import ani.awery.themes.ThemeManager
 import eu.kanade.tachiyomi.extension.InstallStep
 import eu.kanade.tachiyomi.extension.anime.AnimeExtensionManager

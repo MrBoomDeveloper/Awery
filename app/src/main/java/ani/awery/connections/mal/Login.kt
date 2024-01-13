@@ -10,7 +10,6 @@ import ani.awery.connections.mal.MAL.clientId
 import ani.awery.connections.mal.MAL.saveResponse
 import ani.awery.loadData
 import ani.awery.logError
-import ani.awery.others.LangSet
 import ani.awery.snackString
 import ani.awery.startMainActivity
 import ani.awery.themes.ThemeManager

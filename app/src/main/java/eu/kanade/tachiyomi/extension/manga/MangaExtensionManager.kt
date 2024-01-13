@@ -25,6 +25,7 @@ import tachiyomi.domain.source.manga.model.MangaSourceData
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
+import kotlin.concurrent.thread
 import kotlin.time.measureTime
 
 /**
@@ -88,7 +89,10 @@ class MangaExtensionManager(
     val untrustedExtensionsFlow = _untrustedExtensionsFlow.asStateFlow()
 
     init {
-        initExtensions()
+        thread {
+            initExtensions()
+        }
+
         MangaExtensionInstallReceiver(InstallationListener()).register(context)
     }
 

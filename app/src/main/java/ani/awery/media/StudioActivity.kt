@@ -18,7 +18,6 @@ import ani.awery.Refresh
 import ani.awery.databinding.ActivityStudioBinding
 import ani.awery.initActivity
 import ani.awery.navBarHeight
-import ani.awery.others.LangSet
 import ani.awery.others.getSerialized
 import ani.awery.px
 import ani.awery.statusBarHeight
@@ -36,7 +35,6 @@ class StudioActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityStudioBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -21,7 +21,6 @@ import ani.awery.loadData
 import ani.awery.loadImage
 import ani.awery.navBarHeight
 import ani.awery.others.ImageViewDialog
-import ani.awery.others.LangSet
 import ani.awery.others.getSerialized
 import ani.awery.px
 import ani.awery.settings.UserInterfaceSettings
@@ -42,7 +41,6 @@ class CharacterDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChang
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityCharacterBinding.inflate(layoutInflater)
         setContentView(binding.root)

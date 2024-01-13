@@ -6,15 +6,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ani.awery.logError
 import ani.awery.logger
-import ani.awery.others.LangSet
 import ani.awery.startMainActivity
 import ani.awery.themes.ThemeManager
 
 class Login : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
+
         val data: Uri? = intent?.data
         logger(data.toString())
         try {

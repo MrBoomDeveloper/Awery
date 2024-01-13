@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ani.awery.R
 import ani.awery.connections.discord.Discord.saveToken
-import ani.awery.others.LangSet
 import ani.awery.startMainActivity
 import ani.awery.themes.ThemeManager
 

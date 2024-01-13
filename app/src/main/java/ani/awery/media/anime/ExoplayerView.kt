@@ -72,7 +72,6 @@ import ani.awery.media.SubtitleDownloader
 import ani.awery.others.AniSkip
 import ani.awery.others.AniSkip.getType
 import ani.awery.others.Download.download
-import ani.awery.others.LangSet
 import ani.awery.others.ResettableTimer
 import ani.awery.others.getSerialized
 import ani.awery.parsers.*

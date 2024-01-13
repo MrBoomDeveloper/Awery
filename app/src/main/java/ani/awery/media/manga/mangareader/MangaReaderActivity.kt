@@ -39,7 +39,6 @@ import ani.awery.media.manga.MangaCache
 import ani.awery.media.manga.MangaChapter
 import ani.awery.media.manga.MangaNameAdapter
 import ani.awery.others.ImageViewDialog
-import ani.awery.others.LangSet
 import ani.awery.parsers.HMangaSources
 import ani.awery.parsers.MangaImage
 import ani.awery.parsers.MangaSources

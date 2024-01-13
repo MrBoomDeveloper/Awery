@@ -9,7 +9,6 @@ import ani.awery.databinding.ActivityReaderSettingsBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight
-import ani.awery.others.LangSet
 import ani.awery.saveData
 import ani.awery.snackString
 import ani.awery.statusBarHeight

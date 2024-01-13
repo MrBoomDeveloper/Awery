@@ -22,7 +22,6 @@ import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight
 import ani.awery.offline.OfflineFragment
-import ani.awery.others.LangSet
 import ani.awery.selectedOption
 import ani.awery.settings.UserInterfaceSettings
 import ani.awery.themes.ThemeManager

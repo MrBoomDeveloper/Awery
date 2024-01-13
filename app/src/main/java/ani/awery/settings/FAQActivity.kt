@@ -7,7 +7,6 @@ import ani.awery.R
 import ani.awery.currContext
 import ani.awery.databinding.ActivityFaqBinding
 import ani.awery.initActivity
-import ani.awery.others.LangSet
 import ani.awery.themes.ThemeManager
 
 class FAQActivity : AppCompatActivity() {

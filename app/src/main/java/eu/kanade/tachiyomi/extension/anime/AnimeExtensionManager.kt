@@ -26,6 +26,7 @@ import tachiyomi.domain.source.anime.model.AnimeSourceData
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.util.Locale
+import kotlin.concurrent.thread
 import kotlin.time.measureTime
 
 /**
@@ -89,7 +90,10 @@ class AnimeExtensionManager(
     val untrustedExtensionsFlow = _untrustedAnimeExtensionsFlow.asStateFlow()
 
     init {
-        initAnimeExtensions()
+        thread {
+            initAnimeExtensions()
+        }
+
         AnimeExtensionInstallReceiver(AnimeInstallationListener()).register(context)
     }
 

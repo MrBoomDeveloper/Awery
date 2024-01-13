@@ -16,7 +16,6 @@ import ani.awery.Refresh
 import ani.awery.databinding.ActivityListBinding
 import ani.awery.loadData
 import ani.awery.media.user.ListViewPagerAdapter
-import ani.awery.others.LangSet
 import ani.awery.settings.UserInterfaceSettings
 import ani.awery.themes.ThemeManager
 import com.google.android.material.tabs.TabLayout
@@ -34,7 +33,6 @@ class CalendarActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityListBinding.inflate(layoutInflater)
 

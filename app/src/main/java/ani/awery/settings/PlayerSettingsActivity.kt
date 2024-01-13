@@ -17,7 +17,6 @@ import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.media.Media
 import ani.awery.navBarHeight
-import ani.awery.others.LangSet
 import ani.awery.others.getSerialized
 import ani.awery.parsers.Subtitle
 import ani.awery.saveData

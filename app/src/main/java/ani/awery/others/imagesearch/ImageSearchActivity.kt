@@ -15,7 +15,6 @@ import ani.awery.R
 import ani.awery.connections.anilist.Anilist
 import ani.awery.databinding.ActivityImageSearchBinding
 import ani.awery.media.MediaDetailsActivity
-import ani.awery.others.LangSet
 import ani.awery.themes.ThemeManager
 import ani.awery.toast
 import kotlinx.coroutines.Dispatchers

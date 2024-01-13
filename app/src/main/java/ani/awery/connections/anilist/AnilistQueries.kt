@@ -1,7 +1,6 @@
 package ani.awery.connections.anilist
 
 import android.app.Activity
-import ani.awery.App
 import ani.awery.R
 import ani.awery.checkGenreTime
 import ani.awery.checkId
@@ -130,7 +129,8 @@ class AnilistQueries {
                                 }
                             }
                         }
-                        if (fetchedMedia.relations != null) {
+
+                        if(fetchedMedia.relations != null) {
                             media.relations = arrayListOf()
                             fetchedMedia.relations?.edges?.forEach { mediaEdge ->
                                 val m = Media(mediaEdge)
@@ -223,7 +223,7 @@ class AnilistQueries {
                                     "vrv" -> media.vrvId = i.url?.split("/")?.getOrNull(4)
                                 }
                             }
-                        } else if (media.manga != null) {
+                        } else if(media.manga != null) {
                             fetchedMedia.staff?.edges?.find { authorRoles.contains(it.role?.trim()) }?.node?.let {
                                 media.manga.author = Author(
                                     it.id.toString(),
@@ -231,6 +231,7 @@ class AnilistQueries {
                                 )
                             }
                         }
+
                         media.shareLink = fetchedMedia.siteUrl
                     }
 
@@ -303,10 +304,11 @@ class AnilistQueries {
         }
 
         val responseArray = arrayListOf<Media>()
-        while (hasNextPage) {
+        while(hasNextPage) {
             page++
             responseArray.addAll(getNextPage(page))
         }
+
         return responseArray
     }
 
@@ -402,9 +404,11 @@ class AnilistQueries {
 
         val options = response?.data?.mediaListCollection?.user?.mediaListOptions
         val mediaList = if (anime) options?.animeList else options?.mangaList
+
         mediaList?.sectionOrder?.forEach {
             if (unsorted.containsKey(it)) sorted[it] = unsorted[it]!!
         }
+
         unsorted.forEach {
             if (!sorted.containsKey(it.key)) sorted[it.key] = it.value
         }
@@ -531,12 +535,15 @@ class AnilistQueries {
         isAdult: Boolean = false,
         onList: Boolean? = null,
         excludedGenres: MutableList<String>? = null,
-        excludedTags: MutableList<String>? = null,
+        excludedTags: MutableList<String>? = mutableListOf(),
         seasonYear: Int? = null,
         season: String? = null,
         id: Int? = null,
-        hd: Boolean = false,
+        hd: Boolean = false
     ): SearchResults? {
+        val globallyExcludedTags = DataPreferences.getInstance().getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+        excludedTags?.addAll(globallyExcludedTags)
+
         val query = """
 query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult: Boolean = false, ${"$"}search: String, ${"$"}format: [MediaFormat], ${"$"}status: MediaStatus, ${"$"}countryOfOrigin: CountryCode, ${"$"}source: MediaSource, ${"$"}season: MediaSeason, ${"$"}seasonYear: Int, ${"$"}year: String, ${"$"}onList: Boolean, ${"$"}yearLesser: FuzzyDateInt, ${"$"}yearGreater: FuzzyDateInt, ${"$"}episodeLesser: Int, ${"$"}episodeGreater: Int, ${"$"}durationLesser: Int, ${"$"}durationGreater: Int, ${"$"}chapterLesser: Int, ${"$"}chapterGreater: Int, ${"$"}volumeLesser: Int, ${"$"}volumeGreater: Int, ${"$"}licensedBy: [String], ${"$"}isLicensed: Boolean, ${"$"}genres: [String], ${"$"}excludedGenres: [String], ${"$"}tags: [String], ${"$"}excludedTags: [String], ${"$"}minimumTagRank: Int, ${"$"}sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC]) {
   Page(page: ${"$"}page, perPage: ${perPage ?: 50}) {
@@ -626,11 +633,13 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
             response.media?.forEach { i ->
                 val userStatus = i.mediaListEntry?.status.toString()
                 val genresArr = arrayListOf<String>()
-                if (i.genres != null) {
+
+                if(i.genres != null) {
                     i.genres?.forEach { genre ->
                         genresArr.add(genre)
                     }
                 }
+
                 val media = Media(i)
                 if (!hd) media.cover = i.coverImage?.large
                 media.relation = if (onList == true) userStatus else null

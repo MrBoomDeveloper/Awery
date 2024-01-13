@@ -42,7 +42,6 @@ import ani.awery.media.novel.NovelReadFragment
 import ani.awery.navBarHeight
 import ani.awery.openLinkInBrowser
 import ani.awery.others.ImageViewDialog
-import ani.awery.others.LangSet
 import ani.awery.others.getSerialized
 import ani.awery.saveData
 import ani.awery.settings.UserInterfaceSettings
@@ -72,7 +71,6 @@ class MediaDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChangedLi
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        LangSet.setLocale(this)
         var media: Media = intent.getSerialized("media") ?: return
         ThemeManager(this).applyTheme(MediaSingleton.bitmap)
         MediaSingleton.bitmap = null

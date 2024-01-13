@@ -14,6 +14,7 @@ import ani.awery.others.AppUpdater
 import ani.awery.snackString
 import ani.awery.tryWithSuspend
 import com.mrboomdev.awery.anilist.search.SearchSort
+import com.mrboomdev.awery.data.DataPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

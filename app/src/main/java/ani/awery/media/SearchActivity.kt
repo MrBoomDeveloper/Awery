@@ -16,7 +16,6 @@ import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistSearch
 import ani.awery.connections.anilist.SearchResults
 import ani.awery.databinding.ActivitySearchBinding
-import ani.awery.others.LangSet
 import ani.awery.themes.ThemeManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,7 +38,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -16,7 +16,6 @@ import ani.awery.R
 import ani.awery.Refresh
 import ani.awery.databinding.ActivityListBinding
 import ani.awery.loadData
-import ani.awery.others.LangSet
 import ani.awery.settings.UserInterfaceSettings
 import ani.awery.themes.ThemeManager
 import com.google.android.material.tabs.TabLayout

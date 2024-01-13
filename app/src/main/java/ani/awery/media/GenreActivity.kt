@@ -14,7 +14,6 @@ import ani.awery.databinding.ActivityGenreBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight
-import ani.awery.others.LangSet
 import ani.awery.statusBarHeight
 import ani.awery.themes.ThemeManager
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +26,6 @@ class GenreActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        LangSet.setLocale(this)
         ThemeManager(this).applyTheme()
         binding = ActivityGenreBinding.inflate(layoutInflater)
         setContentView(binding.root)
