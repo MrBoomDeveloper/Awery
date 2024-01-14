@@ -225,11 +225,12 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Requires Android 12+"
+                    android:text="@string/android12_requires"
                     android:fontFamily="@font/poppins_bold"
                     android:textColor="?attr/colorSecondary"
                     android:gravity="center"
                     android:padding="16dp"/>
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/settingsUseMaterialYou"
                     android:layout_width="match_parent"
@@ -837,8 +838,8 @@
                     android:id="@+id/globalExcludedTags"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
-                    android:layout_marginTop="-16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="-12dp"
+                    android:layout_marginBottom="12dp"
                     android:layout_marginStart="-32dp"
                     android:layout_marginEnd="-32dp"
                     android:background="@drawable/ui_bg"

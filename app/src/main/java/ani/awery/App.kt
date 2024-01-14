@@ -88,9 +88,7 @@ class App : Application() {
             logger("Novel Extensions: ${novelExtensionManager.installedExtensionsFlow.first()}")
             NovelSources.init(novelExtensionManager.installedExtensionsFlow)
         }
-
     }
-
 
     private fun setupNotificationChannels() {
         try {
@@ -120,6 +118,7 @@ class App : Application() {
     companion object {
         private var instance: App? = null
         var context: Context? = null
+
         fun currentContext(): Context? {
             return instance?.mFTActivityLifecycleCallbacks?.currentActivity ?: context
         }

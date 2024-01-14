@@ -4,12 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
+
 import ani.awery.R
+
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 
+import com.mrboomdev.awery.data.DataPreferences
 
 class ThemeManager(private val context: Context) {
+
     fun applyTheme(fromImage: Bitmap? = null) {
         val useOLED = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_oled", false) && isDarkThemeActive(context)

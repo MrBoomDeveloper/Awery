@@ -308,7 +308,7 @@
             android:text="@string/popular_anime"
             android:textSize="16sp" />
 
-<androidx.appcompat.widget.SwitchCompat
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/animeIncludeList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -12,6 +12,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/animePageRecyclerView"
             android:layout_width="match_parent"
@@ -21,6 +22,7 @@
             android:paddingEnd="16dp"
             tools:itemCount="1"
             tools:listitem="@layout/item_anime_page" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.cardview.widget.CardView
@@ -40,6 +42,7 @@
             app:srcCompat="@drawable/ic_round_arrow_back_ios_new_24"
             app:tint="?attr/colorOnSurface"
             tools:ignore="ContentDescription" />
+
     </androidx.cardview.widget.CardView>
 
 </FrameLayout>

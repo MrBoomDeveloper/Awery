@@ -17,6 +17,8 @@ android {
         versionCode ((System.currentTimeMillis() / 60000).toInteger())
         versionName "2.1.0-beta"
         signingConfig signingConfigs.debug
+
+        resourceConfigurations.addAll(["en", "ru"])
     }
 
     buildTypes {

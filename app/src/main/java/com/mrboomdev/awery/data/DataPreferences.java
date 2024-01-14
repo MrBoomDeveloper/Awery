@@ -17,6 +17,9 @@ public class DataPreferences {
 	public static final String GLOBAL_EXCLUDED_TAGS = "GLOBAL_EXCLUDED_TAGS";
 	public static final String USE_MATERIAL_YOU = "use_material_you";
 	public static final String USE_CUSTOM_THEME = "use_custom_theme";
+	public static final String USE_SOURCE_THEME = "use_source_theme";
+	public static final String CUSTOM_THEME_INT = "custom_theme_int";
+	public static final String USE_OLDED = "use_oled";
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
@@ -35,6 +38,20 @@ public class DataPreferences {
 	public DataPreferences setBoolean(String key, boolean value) {
 		checkEditorExistence();
 		editor.putBoolean(key, value);
+		return this;
+	}
+
+	public int getInt(String key, int defaultValue) {
+		return prefs.getInt(key, defaultValue);
+	}
+
+	public int getInt(String key) {
+		return getInt(key, 0);
+	}
+
+	public DataPreferences setInt(String key, int value) {
+		checkEditorExistence();
+		editor.putInt(key, value);
 		return this;
 	}
 

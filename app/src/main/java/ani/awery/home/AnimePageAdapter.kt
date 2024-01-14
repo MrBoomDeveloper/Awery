@@ -183,6 +183,7 @@ class AnimePageAdapter : RecyclerView.Adapter<AnimePageAdapter.AnimePageViewHold
     fun updateRecent(adaptor: MediaAdaptor) {
         binding.animeUpdatedProgressBar.visibility = View.GONE
         binding.animeUpdatedRecyclerView.adapter = adaptor
+
         binding.animeUpdatedRecyclerView.layoutManager =
             LinearLayoutManager(
                 binding.animeUpdatedRecyclerView.context,

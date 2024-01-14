@@ -32,7 +32,6 @@ import com.flaviofaria.kenburnsview.RandomTransitionGenerator
 import jp.wasabeef.glide.transformations.BlurTransformation
 import java.io.Serializable
 
-
 class MediaAdaptor(
     var type: Int,
     private val mediaList: MutableList<Media>?,
@@ -90,6 +89,7 @@ class MediaAdaptor(
                 val b = (holder as MediaViewHolder).binding
                 setAnimation(activity, b.root, uiSettings)
                 val media = mediaList?.getOrNull(position)
+
                 if (media != null) {
                     b.itemCompactImage.loadImage(media.cover)
                     b.itemCompactOngoing.visibility =
@@ -379,6 +379,7 @@ class MediaAdaptor(
         if ((mediaList?.size ?: 0) > position && position != -1) {
             val media = mediaList?.get(position)
             if (bitmap != null) MediaSingleton.bitmap = bitmap
+
             ContextCompat.startActivity(
                 activity,
                 Intent(activity, MediaDetailsActivity::class.java).putExtra(

@@ -131,7 +131,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         binding.root.doOnAttach {
             initActivity(this)
             uiSettings = loadData("ui_settings") ?: uiSettings
@@ -153,6 +152,7 @@ class MainActivity : AppCompatActivity() {
                         bottomBar = navbar
                         navbar.visibility = View.VISIBLE
                         binding.mainProgressBar.visibility = View.GONE
+
                         val mainViewPager = binding.viewpager
                         mainViewPager.isUserInputEnabled = false
                         mainViewPager.adapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
@@ -170,6 +170,7 @@ class MainActivity : AppCompatActivity() {
                                 mainViewPager.setCurrentItem(newIndex, false)
                             }
                         })
+
                         navbar.selectTabAt(selectedOption)
                         mainViewPager.post { mainViewPager.setCurrentItem(selectedOption, false) }
                     } else {
@@ -177,8 +178,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             //Load Data
-            if (!load) {
+            if(!load) {
                 scope.launch(Dispatchers.IO) {
                     model.loadMain(this@MainActivity)
                     val id = intent.extras?.getInt("mediaId", 0)
@@ -198,21 +200,25 @@ class MainActivity : AppCompatActivity() {
                             snackString(this@MainActivity.getString(R.string.anilist_not_found))
                         }
                     }
+
                     delay(500)
                     startSubscription()
                 }
+
                 load = true
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (loadData<Boolean>("allow_opening_links", this) != true) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if(loadData<Boolean>("allow_opening_links", this) != true) {
                     CustomBottomDialog.newInstance().apply {
                         title = "Allow Awery to automatically open Anilist & MAL Links?"
                         val md = "Open settings & click +Add Links & select Anilist & Mal urls"
+
                         addView(TextView(this@MainActivity).apply {
-                            val markWon =
-                                Markwon.builder(this@MainActivity)
-                                    .usePlugin(SoftBreakAddsNewLinePlugin.create()).build()
+                            val markWon = Markwon.builder(this@MainActivity)
+                                    .usePlugin(SoftBreakAddsNewLinePlugin.create())
+                                    .build()
+
                             markWon.setMarkdown(this, md)
                         })
 

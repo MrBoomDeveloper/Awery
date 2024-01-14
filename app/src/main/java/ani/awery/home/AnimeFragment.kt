@@ -86,6 +86,7 @@ class AnimeFragment : Fragment() {
                 }
             }
         }
+
         binding.animeRefresh.setSlingshotDistance(height + 128)
         binding.animeRefresh.setProgressViewEndTarget(false, height + 128)
         binding.animeRefresh.setOnRefreshListener {
@@ -97,7 +98,7 @@ class AnimeFragment : Fragment() {
         val animePageAdapter = AnimePageAdapter()
 
         var loading = true
-        if (model.notSet) {
+        if(model.notSet) {
             model.notSet = false
             model.searchResults = SearchResults(
                 "ANIME",
@@ -108,6 +109,7 @@ class AnimeFragment : Fragment() {
                 sort = Anilist.sortBy[1]
             )
         }
+
         val popularAdaptor = MediaAdaptor(1, model.searchResults.results, requireActivity())
         val progressAdaptor = ProgressAdapter(searched = model.searched)
         val adapter = ConcatAdapter(animePageAdapter, popularAdaptor, progressAdaptor)
@@ -119,11 +121,13 @@ class AnimeFragment : Fragment() {
         fun animate() {
             val start = if (visible) 0f else 1f
             val end = if (!visible) 0f else 1f
+
             ObjectAnimator.ofFloat(binding.animePageScrollTop, "scaleX", start, end).apply {
                 duration = 300
                 interpolator = OvershootInterpolator(2f)
                 start()
             }
+
             ObjectAnimator.ofFloat(binding.animePageScrollTop, "scaleY", start, end).apply {
                 duration = 300
                 interpolator = OvershootInterpolator(2f)
@@ -149,8 +153,8 @@ class AnimeFragment : Fragment() {
         }
 
         model.getPopular().observe(viewLifecycleOwner) {
-            if (it != null) {
-                if (oldIncludeList == (it.onList != false)) {
+            if(it != null) {
+                if(oldIncludeList == (it.onList != false)) {
                     val prev = model.searchResults.results.size
                     model.searchResults.results.addAll(it.results)
                     popularAdaptor.notifyItemRangeInserted(prev, it.results.size)
@@ -159,15 +163,18 @@ class AnimeFragment : Fragment() {
                     popularAdaptor.notifyDataSetChanged()
                     oldIncludeList = it.onList ?: true
                 }
+
                 model.searchResults.onList = it.onList
                 model.searchResults.hasNextPage = it.hasNextPage
                 model.searchResults.page = it.page
-                if (it.hasNextPage)
+
+                if(it.hasNextPage)
                     progressAdaptor.bar?.visibility = View.VISIBLE
                 else {
                     snackString(getString(R.string.jobless_message))
                     progressAdaptor.bar?.visibility = View.GONE
                 }
+
                 loading = false
             }
         }
@@ -175,21 +182,22 @@ class AnimeFragment : Fragment() {
         binding.animePageRecyclerView.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(v: RecyclerView, dx: Int, dy: Int) {
-                if (!v.canScrollVertically(1)) {
-                    if (model.searchResults.hasNextPage && model.searchResults.results.isNotEmpty() && !loading) {
+                if(!v.canScrollVertically(1)) {
+                    if(model.searchResults.hasNextPage && model.searchResults.results.isNotEmpty() && !loading) {
                         scope.launch(Dispatchers.IO) {
                             loading = true
                             model.loadNextPage(model.searchResults)
                         }
                     }
                 }
-                if (layout.findFirstVisibleItemPosition() > 1 && !visible) {
+
+                if(layout.findFirstVisibleItemPosition() > 1 && !visible) {
                     binding.animePageScrollTop.visibility = View.VISIBLE
                     visible = true
                     animate()
                 }
 
-                if (!v.canScrollVertically(-1)) {
+                if(!v.canScrollVertically(-1)) {
                     visible = false
                     animate()
                     scope.launch {
@@ -201,6 +209,7 @@ class AnimeFragment : Fragment() {
                 super.onScrolled(v, dx, dy)
             }
         })
+
         animePageAdapter.ready.observe(viewLifecycleOwner) { i ->
             if(i) {
                 model.getUpdated().observe(viewLifecycleOwner) {
@@ -208,6 +217,7 @@ class AnimeFragment : Fragment() {
                         animePageAdapter.updateRecent(MediaAdaptor(0, it, requireActivity()))
                     }
                 }
+
                 if (animePageAdapter.trendingViewPager != null) {
                     animePageAdapter.updateHeight()
                     model.getTrending().observe(viewLifecycleOwner) {
@@ -220,15 +230,16 @@ class AnimeFragment : Fragment() {
                                     viewPager = animePageAdapter.trendingViewPager
                                 )
                             )
+
                             animePageAdapter.updateAvatar()
                         }
                     }
                 }
+
                 binding.animePageScrollTop.translationY =
                     -(navBarHeight + bottomBar.height + bottomBar.marginBottom).toFloat()
             }
         }
-
 
         fun load() = scope.launch(Dispatchers.Main) {
             animePageAdapter.updateAvatar()
@@ -256,17 +267,19 @@ class AnimeFragment : Fragment() {
 
         val live = Refresh.activity.getOrPut(this.hashCode()) { MutableLiveData(false) }
         live.observe(viewLifecycleOwner) {
-            if (it) {
+            if(it) {
                 scope.launch {
                     withContext(Dispatchers.IO) {
                         getUserId(requireContext()) {
                             load()
                         }
+
                         model.loaded = true
                         model.loadTrending(1)
                         model.loadUpdated()
                         model.loadPopular("ANIME", sort = Anilist.sortBy[1])
                     }
+
                     live.postValue(false)
                     _binding?.animeRefresh?.isRefreshing = false
                 }
@@ -275,7 +288,7 @@ class AnimeFragment : Fragment() {
     }
 
     override fun onResume() {
-        if (!model.loaded) Refresh.activity[this.hashCode()]!!.postValue(true)
+        if(!model.loaded) Refresh.activity[this.hashCode()]!!.postValue(true)
         super.onResume()
     }
 }
