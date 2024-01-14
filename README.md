@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/main/20240111_235206.png" alt="Awery Banner" width=100% >
+   <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/20240111_235206.png" alt="Awery Banner" width=100% >
 </p>
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android-blueviolet?style=for-the-badge"/>
