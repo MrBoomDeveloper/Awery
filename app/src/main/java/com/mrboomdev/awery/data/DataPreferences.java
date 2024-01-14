@@ -17,6 +17,7 @@ public class DataPreferences {
 	public static final String GLOBAL_EXCLUDED_TAGS = "GLOBAL_EXCLUDED_TAGS";
 	public static final String USE_MATERIAL_YOU = "use_material_you";
 	public static final String USE_CUSTOM_THEME = "use_custom_theme";
+	public static final String DEFAULT_MAIN_PAGE = "DEFAULT_MAIN_PAGE";
 	public static final String USE_SOURCE_THEME = "use_source_theme";
 	public static final String CUSTOM_THEME_INT = "custom_theme_int";
 	public static final String COLOR_OVERFLOW = "colorOverflow";

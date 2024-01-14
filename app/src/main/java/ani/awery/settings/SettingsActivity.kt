@@ -366,6 +366,7 @@ class SettingsActivity : AppCompatActivity() {
             "Shecan",
             "Libre"
         )
+
         binding.settingsExtensionDns.setText(exDns[networkPreferences.dohProvider().get()], false)
         binding.settingsExtensionDns.setAdapter(ArrayAdapter(this, R.layout.item_dropdown, exDns))
         binding.settingsExtensionDns.setOnItemClickListener { _, _, i, _ ->
