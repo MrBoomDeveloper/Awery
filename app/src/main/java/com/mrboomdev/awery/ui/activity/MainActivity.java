@@ -18,18 +18,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.mrboomdev.awery.data.DataPreferences;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.fragments.AnimeFragment;
+import com.mrboomdev.awery.ui.fragments.HomeFragment;
+import com.mrboomdev.awery.ui.fragments.MangaFragment;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import ani.awery.R;
 import ani.awery.databinding.MainActivityLayoutBinding;
 import ani.awery.databinding.SplashScreenBinding;
-import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
 	private MainActivityLayoutBinding binding;
@@ -57,6 +62,21 @@ public class MainActivity extends AppCompatActivity {
 			binding.navbar.setBackground(backgroundDrawable);
 		}
 
+		startSplash();
+		registerBackListener();
+
+		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
+		binding.pages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+		binding.pages.setAdapter(pagesAdapter);
+		binding.navbar.setupWithViewPager2(binding.pages);
+
+		var currentPage = Pages.valueOf(prefs.getString(DataPreferences.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
+		int currentPageIndex = currentPage.ordinal();
+		binding.navbar.selectTabAt(currentPageIndex, false);
+		binding.pages.setCurrentItem(currentPageIndex, false);
+	}
+
+	private void registerBackListener() {
 		final var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 
 		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -74,11 +94,6 @@ public class MainActivity extends AppCompatActivity {
 						doubleBackToExitPressedOnce.set(false), 2000);
 			}
 		});
-
-		startSplash();
-
-		var currentPage = Pages.valueOf(prefs.getString(DataPreferences.DEFAULT_MAIN_PAGE, Pages.HOME.toString()));
-		binding.navbar.selectTabAt(currentPage.ordinal(), false);
 	}
 
 	private void startSplash() {
@@ -124,5 +139,29 @@ public class MainActivity extends AppCompatActivity {
 		ANIME,
 		HOME,
 		MANGA
+	}
+
+	private static class MainFragmentAdapter extends FragmentStateAdapter {
+
+
+		public MainFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+			super(fragmentManager, lifecycle);
+		}
+
+		@NonNull
+		@Override
+		public Fragment createFragment(int position) {
+			return switch(position) {
+				case 0 -> new AnimeFragment();
+				case 1 -> new HomeFragment();
+				case 2 -> new MangaFragment();
+				default -> throw new RuntimeException("Invalid page position!" + position);
+			};
+		}
+
+		@Override
+		public int getItemCount() {
+			return 3;
+		}
 	}
 }
