@@ -4,4 +4,4 @@
   - Now you can hide your most hated tags in the whole app
 
 - **Bugfixes:**
-  - Nothing was fixed...
+  - Statusbar is no longer black
