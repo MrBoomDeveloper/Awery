@@ -1,42 +1,43 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Base" parent="Theme.Material3.DayNight">
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">?android:colorBackground</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="elevationOverlayEnabled">false</item>
+        <item name="android:statusBarColor">#00000000</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowContentTransitions">true</item>
+
         <item name="android:fontFamily">@font/poppins</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearanceOverlay.Demo</item>
         <item name="android:ambientShadowAlpha">0.08</item>
         <item name="android:spotShadowAlpha">0.08</item>
+
         <item name="snackbarStyle">@style/MySnackbar</item>
         <item name="snackbarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Snackbar</item>
         <item name="snackbarTextViewStyle">@string/MySnackBarText</item>
         <item name="popupMenuStyle">@style/MyPopup</item>
-        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="s">1000</item>
+
+        <item name="android:windowContentTransitions">true</item>
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/anim_splash</item>
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
     </style>
 
-    <style name="Theme.Dantotsu" parent="Theme.Base">
-        <item name="android:windowLightStatusBar" >true</item>
+    <style name="Theme.Awery" parent="Theme.Base">
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="Theme.Dantotsu.NoActionBar">
+    <style name="Theme.Awery.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Dantotsu.AppBarOverlay" parent="Theme.Dantotsu" />
-    <style name="Theme.Dantotsu.PopupOverlay" parent="Theme.Dantotsu" />
+    <style name="Theme.Awery.AppBarOverlay" parent="Theme.Awery" />
+    <style name="Theme.Awery.PopupOverlay" parent="Theme.Awery" />
 
-    <style name="Theme.Dantotsu.NeverCutout" parent="@style/Theme.Dantotsu.NoActionBar">
+    <style name="Theme.Awery.NeverCutout" parent="@style/Theme.Awery.NoActionBar">
         <item name="android:navigationBarColor">@color/nav_bg</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.Dantotsu">
+    <style name="DialogTheme" parent="Theme.Awery">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="windowActionBar">false</item>
@@ -46,7 +47,7 @@
         <item name="android:windowBackground">@drawable/shape_corner_16dp</item>
     </style>
 
-    <style name="Theme.Dantotsu.ALLBLACK" parent="Theme.Base">
+    <style name="Theme.Awery.ALLBLACK" parent="Theme.Base">
         <item name="colorPrimary">@color/bg_black</item>
         <item name="colorOnPrimary">@color/bg_black</item>
         <item name="colorPrimaryContainer">@color/bg_black</item>
@@ -75,7 +76,7 @@
         <item name="colorPrimaryInverse">@color/bg_black</item>
     </style>
 
-    <style name="Theme.Dantotsu.Blue" parent="Theme.Base">
+    <style name="Theme.Awery.Blue" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_light_1_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_1_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_1_primaryContainer</item>
@@ -104,7 +105,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_1_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Green" parent="Theme.Base">
+    <style name="Theme.Awery.Green" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_light_2_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_2_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_2_primaryContainer</item>
@@ -133,7 +134,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_2_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Purple" parent="Theme.Base">
+    <style name="Theme.Awery.Purple" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_light_3_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_3_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_3_primaryContainer</item>
@@ -162,7 +163,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_3_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Pink" parent="Theme.Base">
+    <style name="Theme.Awery.Pink" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_light_4_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_4_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_4_primaryContainer</item>
@@ -191,7 +192,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_4_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Monochrome" parent="Theme.Base">
+    <style name="Theme.Awery.Monochrome" parent="Theme.Base">
         <item name="colorPrimary">@color/bg_black</item>
         <item name="colorOnPrimary">@color/bg_white</item>
         <item name="colorPrimaryContainer">@color/bg_black</item>
@@ -220,7 +221,7 @@
         <item name="colorPrimaryInverse">@color/bg_white</item>
     </style>
 
-    <style name="Theme.Dantotsu.Red" parent="Theme.Base">
+    <style name="Theme.Awery.Red" parent="Theme.Base">
         <item name="colorPrimary">@color/md_0_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_0_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_0_theme_light_primaryContainer</item>
@@ -249,7 +250,7 @@
         <item name="colorPrimaryInverse">@color/md_0_theme_light_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Lavender" parent="Theme.Base">
+    <style name="Theme.Awery.Lavender" parent="Theme.Base">
         <item name="colorPrimary">@color/md_1_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_1_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_1_theme_light_primaryContainer</item>
@@ -278,7 +279,7 @@
         <item name="colorPrimaryInverse">@color/md_1_theme_light_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Saikou" parent="Theme.Base">
+    <style name="Theme.Awery.Saikou" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_light_5_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_5_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_5_primaryContainer</item>
@@ -306,5 +307,4 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_5_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_5_inversePrimary</item>
     </style>
-
 </resources>

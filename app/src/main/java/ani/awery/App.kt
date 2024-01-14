@@ -32,10 +32,6 @@ class App : Application() {
     private lateinit var mangaExtensionManager: MangaExtensionManager
     private lateinit var novelExtensionManager: NovelExtensionManager
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-    }
-
     init {
         instance = this
     }

@@ -19,7 +19,9 @@ public class DataPreferences {
 	public static final String USE_CUSTOM_THEME = "use_custom_theme";
 	public static final String USE_SOURCE_THEME = "use_source_theme";
 	public static final String CUSTOM_THEME_INT = "custom_theme_int";
+	public static final String COLOR_OVERFLOW = "colorOverflow";
 	public static final String USE_OLDED = "use_oled";
+	public static final String THEME = "theme";
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 

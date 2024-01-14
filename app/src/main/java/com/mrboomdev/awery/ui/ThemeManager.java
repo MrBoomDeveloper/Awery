@@ -48,18 +48,15 @@ public class ThemeManager {
 			if(!returnedEarly) return;
 		}
 
-		var theme = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
-				.getString("theme", "PURPLE");
-
-		var themeToApply = switch(theme) {
-			case "BLUE" -> (useOLED) ? R.style.Theme_Dantotsu_BlueOLED : R.style.Theme_Dantotsu_Blue;
-			case "GREEN" -> (useOLED) ? R.style.Theme_Dantotsu_GreenOLED : R.style.Theme_Dantotsu_Green;
-			case "PINK" -> (useOLED) ? R.style.Theme_Dantotsu_PinkOLED : R.style.Theme_Dantotsu_Pink;
-			case "RED" -> (useOLED) ? R.style.Theme_Dantotsu_RedOLED : R.style.Theme_Dantotsu_Red;
-			case "LAVENDER" -> (useOLED) ? R.style.Theme_Dantotsu_LavenderOLED : R.style.Theme_Dantotsu_Lavender;
-			case "MONOCHROME (BETA)" -> (useOLED) ? R.style.Theme_Dantotsu_MonochromeOLED : R.style.Theme_Dantotsu_Monochrome;
-			case "SAIKOU" -> (useOLED) ? R.style.Theme_Dantotsu_SaikouOLED : R.style.Theme_Dantotsu_Saikou;
-            default -> (useOLED) ? R.style.Theme_Dantotsu_PurpleOLED : R.style.Theme_Dantotsu_Purple;
+		var themeToApply = switch(prefs.getString(DataPreferences.THEME, "PURPLE")) {
+			case "BLUE" -> (useOLED) ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
+			case "GREEN" -> (useOLED) ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
+			case "PINK" -> (useOLED) ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
+			case "RED" -> (useOLED) ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
+			case "LAVENDER" -> (useOLED) ? R.style.Theme_Awery_LavenderOLED : R.style.Theme_Awery_Lavender;
+			case "MONOCHROME (BETA)" -> (useOLED) ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
+			case "SAIKOU" -> (useOLED) ? R.style.Theme_Awery_SaikouOLED : R.style.Theme_Awery_Saikou;
+            default -> (useOLED) ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
 		};
 
 		context.setTheme(themeToApply);

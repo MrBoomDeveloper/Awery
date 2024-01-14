@@ -1,12 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.Dantotsu" parent="Theme.Base">
-        <item name="android:statusBarColor">@color/status</item>
+<resources>
+    <style name="Theme.Awery" parent="Theme.Base">
         <item name="colorOnPrimary">@color/bg_black</item>
         <item name="android:textColor">@color/bg_white</item>
         <item name="colorSecondaryVariant">@color/violet_400</item>
     </style>
 
-    <style name="Theme.Dantotsu.Blue" parent="Theme.Base">
+    <style name="Theme.Awery.Blue" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_dark_1_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_1_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_1_primaryContainer</item>
@@ -35,7 +34,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_1_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Green" parent="Theme.Base">
+    <style name="Theme.Awery.Green" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_dark_2_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_2_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_2_primaryContainer</item>
@@ -64,7 +63,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_2_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Purple" parent="Theme.Base">
+    <style name="Theme.Awery.Purple" parent="Theme.Base">
         <item name="colorPrimary">@color/mdmd_theme_dark_3_primary</item>
         <item name="colorOnPrimary">@color/mdmd_theme_dark_3_onPrimary</item>
         <item name="colorPrimaryContainer">@color/mdmd_theme_dark_3_primaryContainer</item>
@@ -93,7 +92,7 @@
         <item name="colorPrimaryInverse">@color/mdmd_theme_dark_3_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Pink" parent="Theme.Base">
+    <style name="Theme.Awery.Pink" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_dark_4_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_4_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_4_primaryContainer</item>
@@ -122,7 +121,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_4_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Monochrome" parent="Theme.Base">
+    <style name="Theme.Awery.Monochrome" parent="Theme.Base">
         <item name="colorPrimary">@color/bg_white</item>
         <item name="colorOnPrimary">@color/bg_black</item>
         <item name="colorPrimaryContainer">@color/bg_white</item>
@@ -151,7 +150,7 @@
         <item name="colorPrimaryInverse">@color/bg_black</item>
     </style>
 
-    <style name="Theme.Dantotsu.Red" parent="Theme.Base">
+    <style name="Theme.Awery.Red" parent="Theme.Base">
         <item name="colorPrimary">@color/md_0_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_0_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_0_theme_dark_primaryContainer</item>
@@ -180,7 +179,7 @@
         <item name="colorPrimaryInverse">@color/md_0_theme_dark_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Lavender" parent="Theme.Base">
+    <style name="Theme.Awery.Lavender" parent="Theme.Base">
         <item name="colorPrimary">@color/md_1_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_1_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_1_theme_dark_primaryContainer</item>
@@ -209,7 +208,7 @@
         <item name="colorPrimaryInverse">@color/md_1_theme_dark_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.Saikou" parent="Theme.Base">
+    <style name="Theme.Awery.Saikou" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_dark_5_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_5_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_5_primaryContainer</item>
@@ -238,44 +237,43 @@
         <item name="colorPrimaryInverse">@color/md_theme_dark_5_inversePrimary</item>
     </style>
 
-    <style name="Theme.Dantotsu.BlueOLED" parent="Theme.Dantotsu.Blue">
+    <style name="Theme.Awery.BlueOLED" parent="Theme.Awery.Blue">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.GreenOLED" parent="Theme.Dantotsu.Green">
+    <style name="Theme.Awery.GreenOLED" parent="Theme.Awery.Green">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.PurpleOLED" parent="Theme.Dantotsu.Purple">
+    <style name="Theme.Awery.PurpleOLED" parent="Theme.Awery.Purple">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.PinkOLED" parent="Theme.Dantotsu.Pink">
+    <style name="Theme.Awery.PinkOLED" parent="Theme.Awery.Pink">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.MonochromeOLED" parent="Theme.Dantotsu.Monochrome">
+    <style name="Theme.Awery.MonochromeOLED" parent="Theme.Awery.Monochrome">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.RedOLED" parent="Theme.Dantotsu.Red">
+    <style name="Theme.Awery.RedOLED" parent="Theme.Awery.Red">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.LavenderOLED" parent="Theme.Dantotsu.Lavender">
+    <style name="Theme.Awery.LavenderOLED" parent="Theme.Awery.Lavender">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
-    <style name="Theme.Dantotsu.SaikouOLED" parent="Theme.Dantotsu.Saikou">
+    <style name="Theme.Awery.SaikouOLED" parent="Theme.Awery.Saikou">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>
-
 </resources>

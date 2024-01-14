@@ -46,15 +46,15 @@ class ThemeManager(private val context: Context) {
             .getString("theme", "PURPLE")!!
 
         val themeToApply = when (theme) {
-            "PURPLE" -> if (useOLED) R.style.Theme_Dantotsu_PurpleOLED else R.style.Theme_Dantotsu_Purple
-            "BLUE" -> if (useOLED) R.style.Theme_Dantotsu_BlueOLED else R.style.Theme_Dantotsu_Blue
-            "GREEN" -> if (useOLED) R.style.Theme_Dantotsu_GreenOLED else R.style.Theme_Dantotsu_Green
-            "PINK" -> if (useOLED) R.style.Theme_Dantotsu_PinkOLED else R.style.Theme_Dantotsu_Pink
-            "RED" -> if (useOLED) R.style.Theme_Dantotsu_RedOLED else R.style.Theme_Dantotsu_Red
-            "LAVENDER" -> if (useOLED) R.style.Theme_Dantotsu_LavenderOLED else R.style.Theme_Dantotsu_Lavender
-            "MONOCHROME (BETA)" -> if (useOLED) R.style.Theme_Dantotsu_MonochromeOLED else R.style.Theme_Dantotsu_Monochrome
-            "SAIKOU" -> if (useOLED) R.style.Theme_Dantotsu_SaikouOLED else R.style.Theme_Dantotsu_Saikou
-            else -> if (useOLED) R.style.Theme_Dantotsu_PurpleOLED else R.style.Theme_Dantotsu_Purple
+            "PURPLE" -> if (useOLED) R.style.Theme_Awery_PurpleOLED else R.style.Theme_Awery_Purple
+            "BLUE" -> if (useOLED) R.style.Theme_Awery_BlueOLED else R.style.Theme_Awery_Blue
+            "GREEN" -> if (useOLED) R.style.Theme_Awery_GreenOLED else R.style.Theme_Awery_Green
+            "PINK" -> if (useOLED) R.style.Theme_Awery_PinkOLED else R.style.Theme_Awery_Pink
+            "RED" -> if (useOLED) R.style.Theme_Awery_RedOLED else R.style.Theme_Awery_Red
+            "LAVENDER" -> if (useOLED) R.style.Theme_Awery_LavenderOLED else R.style.Theme_Awery_Lavender
+            "MONOCHROME (BETA)" -> if (useOLED) R.style.Theme_Awery_MonochromeOLED else R.style.Theme_Awery_Monochrome
+            "SAIKOU" -> if (useOLED) R.style.Theme_Awery_SaikouOLED else R.style.Theme_Awery_Saikou
+            else -> if (useOLED) R.style.Theme_Awery_PurpleOLED else R.style.Theme_Awery_Purple
         }
 
         context.setTheme(themeToApply)

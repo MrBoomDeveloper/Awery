@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -59,8 +60,9 @@
         android:requestLegacyExternalStorage="true"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Dantotsu"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/Theme.Awery"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="tiramisu">
 
         <activity android:label="Awery (Experimental)"
             android:name="com.mrboomdev.awery.ui.activity.MainActivity"
@@ -131,7 +133,9 @@
         <activity
             android:name=".media.CalendarActivity"
             android:parentActivityName=".MainActivity" />
+
         <activity android:name="ani.awery.media.user.ListActivity" />
+
         <activity
             android:name="ani.awery.media.manga.mangareader.MangaReaderActivity"
             android:excludeFromRecents="true"
@@ -144,7 +148,7 @@
         <activity
             android:name=".media.MediaDetailsActivity"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.Dantotsu.NeverCutout" />
+            android:theme="@style/Theme.Awery.NeverCutout" />
 
         <activity android:name=".media.CharacterDetailsActivity" />
         <activity android:name=".home.NoInternet" />
@@ -176,12 +180,14 @@
                     android:scheme="dantotsu" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="ani.awery.connections.mal.Login"
             android:configChanges="orientation|screenSize|layoutDirection"
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask">
+
             <intent-filter android:label="Myanimelist Login for Awery">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -199,6 +205,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask">
+
             <intent-filter android:label="Discord Login for Awery">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -218,6 +225,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask">
+
             <intent-filter android:label="@string/read_on_dantotsu">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -230,6 +238,7 @@
                 <data android:host="myanimelist.net" />
                 <data android:pathPrefix="/manga" />
             </intent-filter>
+
             <intent-filter android:label="@string/watch_on_dantotsu">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -261,6 +270,7 @@
         </activity>
 
         <activity android:name=".download.DownloadContainerActivity" />
+
         <activity
             android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -274,6 +284,7 @@
         <receiver
             android:name=".subcriptions.AlarmReceiver"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="Aani.dantotsu.ACTION_ALARM"/>
@@ -290,6 +301,7 @@
             android:enabled="true"
             android:exported="false"
             android:grantUriPermissions="true">
+
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
@@ -297,11 +309,13 @@
 
         <service android:name=".download.video.MyDownloadService"
             android:exported="false">
+
             <intent-filter>
                 <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+
         <service android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
