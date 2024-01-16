@@ -53,48 +53,6 @@ public abstract class AnilistQuery<T> {
 		return this;
 	}
 
-	public ParameterizedType getItemWrapperType(Class<?> itemType) {
-		return Types.newParameterizedType(AnilistDataWrapper.class, itemType);
-	}
-
-	public ParameterizedType getListWrapperType(Class<?> itemType) {
-		var type = Types.newParameterizedType(List.class, itemType);
-		return Types.newParameterizedType(AnilistDataWrapper.class, type);
-	}
-
-	public <E> E simpleItemParse(Class<?> itemClass, String json, String root) throws IOException {
-		var type = getItemWrapperType(itemClass);
-		return simpleParse(type, json, root);
-	}
-
-	public <E> E simpleItemParse(Class<?> itemClass, String json) throws IOException {
-		return simpleItemParse(itemClass, json, null);
-	}
-
-	public <E> E simpleListParse(Class<?> itemClass, String json, String root) throws IOException {
-		var type = getListWrapperType(itemClass);
-		return simpleParse(type, json, root);
-	}
-
-	public <E> E simpleListParse(Class<?> itemClass, String json) throws IOException {
-		return simpleListParse(itemClass, json, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <E> E simpleParse(ParameterizedType type, String json, String root) throws IOException {
-		var moshi = new Moshi.Builder().build();
-		var adapter = moshi.adapter(type);
-
-		var data = adapter.fromJson(json);
-		if(data == null) return null;
-
-		if(data instanceof AnilistDataWrapper<?> wrapper) {
-			return (E)(root != null ? wrapper.get(root) : wrapper.first());
-		}
-
-		throw new RuntimeException("Not instanceof AnilistDataWrapper!");
-	}
-
 	private synchronized void resolveException(Exception e) {
 		if(e == null) return;
 		this.e = e;

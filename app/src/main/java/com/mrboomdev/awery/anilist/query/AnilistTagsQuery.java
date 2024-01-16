@@ -3,12 +3,12 @@ package com.mrboomdev.awery.anilist.query;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.anilist.data.AnilistTag;
+import com.mrboomdev.awery.util.graphql.GraphQLParser;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,9 +38,8 @@ public class AnilistTagsQuery {
 		}
 
 		@Override
-		protected Collection<AnilistTag> processJson(String json) throws IOException {
-			List<AnilistTag> data = simpleListParse(AnilistTag.class, json);
-			if(data == null) return Collections.emptyList();
+		protected List<AnilistTag> processJson(String json) throws IOException {
+			var data = GraphQLParser.parseList(json, AnilistTag.class);
 
 			return data.stream().filter(item -> {
 				if(item.isAdult() && !showAdult) return false;
@@ -66,8 +65,7 @@ public class AnilistTagsQuery {
 
 		@Override
 		protected Collection<String> processJson(String json) throws IOException {
-			List<String> data = simpleListParse(String.class, json);
-			if(data == null) return Collections.emptyList();
+			var data = GraphQLParser.parseList(json, String.class);
 
 			return data.stream().filter(item ->
 					(showAdult || !item.equalsIgnoreCase("Hentai")))
