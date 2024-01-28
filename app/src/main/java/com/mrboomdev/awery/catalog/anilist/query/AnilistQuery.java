@@ -1,13 +1,19 @@
 package com.mrboomdev.awery.catalog.anilist.query;
 
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
+import com.mrboomdev.awery.catalog.anilist.data.AnilistTrendingMedia;
+import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
+import com.mrboomdev.awery.util.graphql.GraphQLParser;
 import com.squareup.moshi.JsonDataException;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AnilistQuery<T> {
-	private ResponseCallback<Exception> exceptionCallback;
-	private Exception e;
+	private ResponseCallback<Throwable> exceptionCallback;
+	private Throwable e;
 
 	protected abstract T processJson(String json) throws IOException;
 
@@ -42,13 +48,23 @@ public abstract class AnilistQuery<T> {
 		return this;
 	}
 
-	public AnilistQuery<T> catchExceptions(ResponseCallback<Exception> callback) {
+	@SuppressWarnings("unchecked")
+	protected <E> List<E> parsePageList(Type childType, String json) throws IOException {
+		var listType = GraphQLParser.getTypeWithGenerics(List.class, childType);
+		var pageType = GraphQLParser.getTypeWithGenerics(Map.class, String.class, listType);
+		var wrapper = new GraphQLAdapter<Map<String, List<E>>>(pageType).parseFirst(json);
+		var data = wrapper.values().toArray()[0];
+
+		return (List<E>) data;
+	}
+
+	public AnilistQuery<T> catchExceptions(ResponseCallback<Throwable> callback) {
 		this.exceptionCallback = callback;
 		resolveException(e);
 		return this;
 	}
 
-	private synchronized void resolveException(Exception e) {
+	private synchronized void resolveException(Throwable e) {
 		if(e == null) return;
 		this.e = e;
 

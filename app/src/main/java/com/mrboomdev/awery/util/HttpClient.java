@@ -39,7 +39,6 @@ public class HttpClient {
 				var _response = new HttpResponse();
 				_response.text = response.body().string();
 
-				System.out.println(_response.text);
 				callback.onResponse(_response);
 			} catch(IOException e) {
 				callback.onError(new HttpException(e));

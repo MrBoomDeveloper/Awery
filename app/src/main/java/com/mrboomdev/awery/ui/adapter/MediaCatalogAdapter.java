@@ -10,6 +10,8 @@ import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
 
@@ -21,10 +23,10 @@ import ani.awery.databinding.MediaCatalogItemBinding;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
 	private final Map<Integer, ViewHolder> cachedItems = new HashMap<>();
-	private ObservableList<String> items;
+	private ObservableList<CatalogMedia<?>> items;
 	private ClickCallback clickCallback;
 
-	public MediaCatalogAdapter(ObservableList<String> items) {
+	public MediaCatalogAdapter(ObservableList<CatalogMedia<?>> items) {
 		setHasStableIds(true);
 		this.items = items;
 
@@ -47,7 +49,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(@NonNull ObservableList<String> items) {
+	public void setItems(@NonNull ObservableList<CatalogMedia<?>> items) {
 		boolean shouldResetList = (this.items == null)
 				|| (this.items.size() != items.size());
 
@@ -97,28 +99,40 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogItemBinding binding;
-		private String item;
+		private CatalogMedia<?> item;
 
 		public ViewHolder(@NonNull MediaCatalogItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
-		public String getItem() {
+		public CatalogMedia<?> getItem() {
 			return item;
 		}
 
-		public void bind(@NonNull String item) {
+		public void bind(@NonNull CatalogMedia<?> item) {
 			this.item = item;
-			binding.title.setText(item);
+			binding.title.setText(item.title);
 
 			Glide.with(binding.getRoot())
-					.load("https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx142984-nv2MWVWZ1yYH.jpg")
+					.load(item.poster.medium)
 					.into(binding.mediaItemBanner);
+
+			AweryApp.setTimeout(() -> {
+				Glide.with(binding.getRoot())
+						.load(item.poster.large)
+						.into(binding.mediaItemBanner);
+			}, 5000);
+
+			AweryApp.setTimeout(() -> {
+				Glide.with(binding.getRoot())
+						.load(item.poster.extraLarge)
+						.into(binding.mediaItemBanner);
+			}, 10000);
 		}
 	}
 
 	public interface ClickCallback {
-		void clicked(String media);
+		void clicked(CatalogMedia<?> media);
 	}
 }

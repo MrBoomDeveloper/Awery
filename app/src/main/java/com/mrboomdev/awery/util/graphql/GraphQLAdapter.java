@@ -1,10 +1,12 @@
 package com.mrboomdev.awery.util.graphql;
 
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 public class GraphQLAdapter<T> {
 	private static final Moshi moshi = new Moshi.Builder().build();
@@ -23,8 +25,14 @@ public class GraphQLAdapter<T> {
 		var wrapperType = GraphQLParser.getTypeWithGenerics(
 				GraphQLDataWrapper.class, ((clazz != null) ? clazz : type));
 
-		JsonAdapter<GraphQLDataWrapper<T>> adapter = moshi.adapter(wrapperType);
-		var result = adapter.fromJson(json);
+		GraphQLDataWrapper<T> result = null;
+
+		try {
+			var adapter = moshi.<GraphQLDataWrapper<T>>adapter(wrapperType);
+			result = adapter.fromJson(json);
+		} catch(IOException e) {
+			throw new IOException("Failed to parse with type " + wrapperType, e);
+		}
 
 		if(result == null) {
 			throw new IllegalArgumentException("Json was null!");

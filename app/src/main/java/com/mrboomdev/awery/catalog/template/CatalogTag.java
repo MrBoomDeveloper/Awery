@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.catalog.template;
 
 public class CatalogTag {
-	private final String name, description;
-	private final boolean isAdult;
+	public String name, id, description;
+	public boolean isAdult, isSpoiler;
 
 	public CatalogTag(String name, String description, boolean isAdult) {
 		this.name = name;
@@ -10,9 +10,7 @@ public class CatalogTag {
 		this.isAdult = isAdult;
 	}
 
-	public CatalogTag(String name, boolean isAdult) {
-		this(name, null, isAdult);
-	}
+	public CatalogTag() {}
 
 	public String getName() {
 		return name;

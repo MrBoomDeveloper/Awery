@@ -37,13 +37,7 @@ public class GraphQLParser {
 
 	@NonNull
 	@Contract("_, _ -> new")
-	public static Type getTypeWithGenerics(Class<?> firstClazz, Class<?>... otherClasses) {
-		return Types.newParameterizedType(firstClazz, otherClasses);
-	}
-
-	@NonNull
-	@Contract("_, _ -> new")
-	public static Type getTypeWithGenerics(Class<?> firstClazz, Type... otherClasses) {
+	public static Type getTypeWithGenerics(Type firstClazz, Type... otherClasses) {
 		return Types.newParameterizedType(firstClazz, otherClasses);
 	}
 }

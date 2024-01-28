@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
 
@@ -82,7 +83,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		public final ObservableList<String> items = new ObservableArrayList<>();
+		public final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
 		public final String title;
 
 		public Category(String title) {

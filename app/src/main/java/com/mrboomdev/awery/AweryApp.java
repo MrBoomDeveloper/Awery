@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -32,7 +33,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	private static final List<Disposable> disposables = new ArrayList<>();
 	public static final boolean USE_KT_APP_INIT = true;
 	private static AweryApp app;
-	private final Handler handler = new Handler(Looper.getMainLooper());
+	private static final Handler handler = new Handler(Looper.getMainLooper());
 
 	public static void registerDisposable(Disposable disposable) {
 		disposables.add(disposable);
@@ -62,6 +63,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(activity != null) return activity;
 
 		return app;
+	}
+
+	public static void runOnUiThread(Runnable runnable) {
+		var activity = Objects.requireNonNull(getAnyActivity());
+		activity.runOnUiThread(runnable);
 	}
 
 	@Nullable
@@ -139,11 +145,15 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		activities.remove(activity.getClass());
 
 		if(activities.size() == 0) {
-			handler.postDelayed(() -> {
+			setTimeout(() -> {
 				if(activities.size() > 0) return;
 				dispose();
 			}, 1000);
 		}
+	}
+
+	public static void setTimeout(Runnable runnable, long delay) {
+		handler.postDelayed(runnable, delay);
 	}
 
 	@Override

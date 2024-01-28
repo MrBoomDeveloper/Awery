@@ -1,7 +1,9 @@
 package com.mrboomdev.awery.util;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ObservableList<E> extends List<E> {
@@ -25,6 +27,27 @@ public interface ObservableList<E> extends List<E> {
 	default boolean remove(@Nullable Object o) {
 		return remove(o, true);
 	}
+
+	boolean addAll(Collection<? extends E> list, boolean callObservers);
+
+	@Override
+	default boolean addAll(@NonNull Collection<? extends E> c) {
+		return addAll(c, true);
+	}
+
+	@Override
+	default boolean addAll(int index, @NonNull Collection<? extends E> c) {
+		return addAll(index, c, true);
+	}
+
+	@Override
+	default void clear() {
+		clear(true);
+	}
+
+	void clear(boolean callObservers);
+
+	boolean addAll(int index, Collection<? extends E> list, boolean callObservers);
 
 	boolean remove(Object o, boolean callObservers);
 

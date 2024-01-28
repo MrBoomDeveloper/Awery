@@ -9,30 +9,18 @@ import androidx.recyclerview.widget.ConcatAdapter;
 
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistTrendingQuery;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 
 public class AnimeFragment extends MediaCatalogFragment {
+	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
+	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var pagerAdapter = new MediaPagerAdapter();
-		var categoriesAdapter = new MediaCategoriesAdapter();
-
-		for(int i = 0; i < 25; i++) {
-			var categoryRecent = new MediaCategoriesAdapter.Category("Recently updated " + i);
-
-			for(int a = 0; a < 25; a++) {
-				categoryRecent.items.add("(A) Attack on Titan " + i + " " + a, false);
-			}
-
-			categoriesAdapter.addCategory(categoryRecent, false);
-		}
-
-		pagerAdapter.addItem("sussy baka", false);
-		pagerAdapter.addItem("sussy baka 2", false);
-
 		var config = new ConcatAdapter.Config.Builder()
 				.setIsolateViewTypes(true)
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
@@ -42,9 +30,18 @@ public class AnimeFragment extends MediaCatalogFragment {
 		getBinding().catalogCategories.setHasFixedSize(true);
 		getBinding().catalogCategories.setAdapter(concatAdapter);
 
-		AnilistTagsQuery.getTags(AnilistTagsQuery.ALL).executeQuery(response -> {
-			AweryApp.toast("loaded! ", 1);
-			System.out.println(response);
+		loadData();
+		getBinding().swipeRefresher.setOnRefreshListener(this::loadData);
+	}
+
+	private void loadData() {
+		AnilistTrendingQuery.getAnime().executeQuery(items -> {
+			requireActivity().runOnUiThread(() -> pagerAdapter.setItems(items));
+			getBinding().swipeRefresher.setRefreshing(false);
+		}).catchExceptions(e -> {
+			AweryApp.toast("Failed to load data", 1);
+			getBinding().swipeRefresher.setRefreshing(false);
+			e.printStackTrace();
 		});
 	}
 }

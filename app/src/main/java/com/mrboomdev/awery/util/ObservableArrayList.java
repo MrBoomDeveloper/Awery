@@ -43,6 +43,71 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public boolean addAll(@NonNull Collection<? extends E> c, boolean callObservers) {
+		var result = super.addAll(c);
+
+		if(callObservers) {
+			var array = c.toArray();
+			var lastIndex = size() - 1;
+
+			for(int i = 0; i < array.length; i++) {
+				var item = array[i];
+				var newIndex = i + lastIndex;
+
+				for(var observer : addObservers) {
+					if(item == null) {
+						observer.added(null, newIndex);
+						continue;
+					}
+
+					observer.added((E) item, newIndex);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean addAll(int index, @NonNull Collection<? extends E> c, boolean callObservers) {
+		var result = super.addAll(index, c);
+
+		if(callObservers) {
+			var array = c.toArray();
+			var lastIndex = size() - 1 + index;
+
+			for(int i = 0; i < array.length; i++) {
+				var item = array[i];
+				var newIndex = i + lastIndex;
+
+				for(var observer : addObservers) {
+					if(item == null) {
+						observer.added(null, newIndex);
+						continue;
+					}
+
+					observer.added((E) item, newIndex);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void clear(boolean callObservers) {
+		super.clear();
+
+		if(callObservers) {
+			for(var observer : removeObservers) {
+				observer.removed(null, 0);
+			}
+		}
+	}
+
+	@Override
 	public void observeRemovals(RemoveObserver<E> callback) {
 		if(removeObservers == null) {
 			removeObservers = new ArrayList<>();
