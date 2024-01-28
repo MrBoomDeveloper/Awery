@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnticipateInterpolator;
+import android.view.animation.ScaleAnimation;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -32,9 +34,11 @@ import com.mrboomdev.awery.ui.fragments.MangaFragment;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ani.awery.MediaPageTransformer;
 import ani.awery.R;
 import ani.awery.databinding.MainActivityLayoutBinding;
 import ani.awery.databinding.SplashScreenBinding;
+import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
 	private MainActivityLayoutBinding binding;
@@ -68,12 +72,38 @@ public class MainActivity extends AppCompatActivity {
 		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
 		binding.pages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 		binding.pages.setAdapter(pagesAdapter);
-		binding.navbar.setupWithViewPager2(binding.pages);
+		binding.pages.setUserInputEnabled(false);
+
+		binding.pages.setPageTransformer((page, position) -> {
+			if(position != 0) return;
+			ObjectAnimator.ofFloat(page, "alpha", 0, 1).setDuration(150).start();
+
+			var anim = new ScaleAnimation(
+					1.25f, 1f, 1.25f, 1f,
+					Animation.RELATIVE_TO_SELF,
+					0.5f,
+					Animation.RELATIVE_TO_SELF,
+					0);
+
+			anim.setDuration(200);
+			anim.setInterpolator(this, R.anim.over_shoot);
+			page.startAnimation(anim);
+		});
 
 		var currentPage = Pages.valueOf(prefs.getString(DataPreferences.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
 		int currentPageIndex = currentPage.ordinal();
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);
+
+		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
+			@Override
+			public void onTabSelected(int was, @Nullable AnimatedBottomBar.Tab tab, int next, @NonNull AnimatedBottomBar.Tab tab1) {
+				binding.pages.setCurrentItem(next, false);
+			}
+
+			@Override
+			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
+		});
 	}
 
 	private void registerBackListener() {

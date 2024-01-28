@@ -8,9 +8,7 @@ import android.graphics.drawable.Animatable
 import android.os.Build.*
 import android.os.Build.VERSION.*
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
@@ -41,9 +39,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import com.mrboomdev.awery.anilist.AnilistApi
-import com.mrboomdev.awery.anilist.query.AnilistQuery
-import com.mrboomdev.awery.anilist.query.AnilistTagsQuery
+import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery
 import com.mrboomdev.awery.data.DataPreferences
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorListener

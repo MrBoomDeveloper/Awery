@@ -46,7 +46,7 @@
     </queries>
 
     <application
-        android:name=".App"
+        android:name="com.mrboomdev.awery.AweryApp"
         android:allowBackup="true"
         android:label="@string/app_name"
         android:largeHeap="true"

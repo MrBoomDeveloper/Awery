@@ -1,37 +1,25 @@
-package com.mrboomdev.awery.anilist.query;
+package com.mrboomdev.awery.catalog.template;
 
-import com.mrboomdev.awery.anilist.AnilistApi;
-import com.mrboomdev.awery.anilist.data.AnilistDataWrapper;
 import com.squareup.moshi.JsonDataException;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 
-public abstract class AnilistQuery<T> {
+public abstract class CatalogMethod<T> {
 	private ResponseCallback<Exception> exceptionCallback;
 	private Exception e;
 
 	protected abstract T processJson(String json) throws IOException;
 
+	protected abstract CatalogApi getApi();
+
 	public abstract String getQuery();
-
-	public String getVariables() {
-		return "";
-	}
-
-	public boolean useToken() {
-		return true;
-	}
 
 	public int getCacheTime() {
 		return 25;
 	}
 
-	public AnilistQuery<T> executeQuery(ResponseCallback<T> callback) {
-		AnilistApi.executeQuery(this, response -> {
+	protected CatalogMethod<T> executeMethod(ResponseCallback<T> callback) {
+		getApi().executeMethodImplementation(this, response -> {
 			T processed;
 
 			try {
@@ -47,7 +35,7 @@ public abstract class AnilistQuery<T> {
 		return this;
 	}
 
-	public AnilistQuery<T> catchExceptions(ResponseCallback<Exception> callback) {
+	public CatalogMethod<T> catchExceptions(ResponseCallback<Exception> callback) {
 		this.exceptionCallback = callback;
 		resolveException(e);
 		return this;

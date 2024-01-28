@@ -95,10 +95,11 @@ object Anilist {
     }
 
     fun getSavedToken(context: Context): Boolean {
-        if ("anilistToken" in context.fileList()) {
+        if("anilistToken" in context.fileList()) {
             token = File(context.filesDir, "anilistToken").readText()
             return true
         }
+
         return false
     }
 

@@ -63,30 +63,6 @@
     </string-array>
 
     <string name="status">СТАТУС</string>
-    <string-array name="status" translatable="false">
-        <item>ПЛАНИРУЮ</item>
-        <item>CURRENT</item>
-        <item>ЗАВЕРШЕНО</item>
-        <item>REPEATING</item>
-        <item>ОТЛОЖЕНО</item>
-        <item>БРОШЕНО</item>
-    </string-array>
-    <string-array name="status_anime">
-        <item>ПЛАНИРУЮ</item>
-        <item>СМОТРЮ</item>
-        <item>ЗАВЕРШЕНО</item>
-        <item>RE-WATCHING</item>
-        <item>ОТЛОЖЕНО</item>
-        <item>БРОШЕНО</item>
-    </string-array>
-    <string-array name="status_manga">
-        <item>ПЛАНИРУЮ</item>
-        <item>ЧИАТЮ</item>
-        <item>ЗАВЕРШЕНО</item>
-        <item>RE-READING</item>
-        <item>ОТЛОЖЕНО</item>
-        <item>БРОШЕНО</item>
-    </string-array>
     <string name="progress">ПРОГРЕСС</string>
     <string name="score">SCORE</string>
     <string name="score_suffix" translatable="false">" / 10"</string>

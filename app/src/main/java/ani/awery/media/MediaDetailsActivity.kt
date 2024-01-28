@@ -57,9 +57,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-
 class MediaDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChangedListener {
-
     private lateinit var binding: ActivityMediaBinding
     private val scope = lifecycleScope
     private val model: MediaDetailsViewModel by viewModels()
@@ -254,8 +252,10 @@ class MediaDetailsActivity : AppCompatActivity(), AppBarLayout.OnOffsetChangedLi
                 if (media.manga == null) resources.getStringArray(R.array.status_anime) else resources.getStringArray(
                     R.array.status_manga
                 )
+
             val userStatus =
-                if (media.userStatus != null) statusStrings[statuses.indexOf(media.userStatus)] else statusStrings[0]
+                if(media.userStatus != null) statusStrings[statuses.indexOf(media.userStatus).let { if(it == -1) 0 else it }]
+                else statusStrings[0]
 
             if (media.userStatus != null) {
                 binding.mediaTotal.visibility = View.VISIBLE

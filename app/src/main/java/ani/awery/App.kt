@@ -12,6 +12,7 @@ import ani.awery.parsers.MangaSources
 import ani.awery.parsers.NovelSources
 import ani.awery.parsers.novel.NovelExtensionManager
 import com.google.android.material.color.DynamicColors
+import com.mrboomdev.awery.AweryApp
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.extension.anime.AnimeExtensionManager
 import eu.kanade.tachiyomi.extension.manga.MangaExtensionManager
@@ -27,7 +28,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 
 @SuppressLint("StaticFieldLeak")
-class App : Application() {
+open class App : Application() {
     private lateinit var animeExtensionManager: AnimeExtensionManager
     private lateinit var mangaExtensionManager: MangaExtensionManager
     private lateinit var novelExtensionManager: NovelExtensionManager
@@ -50,39 +51,41 @@ class App : Application() {
 
         registerActivityLifecycleCallbacks(mFTActivityLifecycleCallbacks)
 
-        Injekt.importModule(AppModule(this))
-        Injekt.importModule(PreferenceModule(this))
+        if(AweryApp.USE_KT_APP_INIT) {
+            Injekt.importModule(AppModule(this))
+            Injekt.importModule(PreferenceModule(this))
 
-        initializeNetwork(baseContext)
+            initializeNetwork(baseContext)
 
-        setupNotificationChannels()
-        if(!LogcatLogger.isInstalled) {
-            LogcatLogger.install(AndroidLogcatLogger(LogPriority.VERBOSE))
-        }
+            setupNotificationChannels()
+            if(!LogcatLogger.isInstalled) {
+                LogcatLogger.install(AndroidLogcatLogger(LogPriority.VERBOSE))
+            }
 
-        animeExtensionManager = Injekt.get()
-        mangaExtensionManager = Injekt.get()
-        novelExtensionManager = Injekt.get()
+            animeExtensionManager = Injekt.get()
+            mangaExtensionManager = Injekt.get()
+            novelExtensionManager = Injekt.get()
 
-        val animeScope = CoroutineScope(Dispatchers.Default)
-        animeScope.launch {
-            animeExtensionManager.findAvailableExtensions()
-            logger("Anime Extensions: ${animeExtensionManager.installedExtensionsFlow.first()}")
-            AnimeSources.init(animeExtensionManager.installedExtensionsFlow)
-        }
+            val animeScope = CoroutineScope(Dispatchers.Default)
+            animeScope.launch {
+                animeExtensionManager.findAvailableExtensions()
+                logger("Anime Extensions: ${animeExtensionManager.installedExtensionsFlow.first()}")
+                AnimeSources.init(animeExtensionManager.installedExtensionsFlow)
+            }
 
-        val mangaScope = CoroutineScope(Dispatchers.Default)
-        mangaScope.launch {
-            mangaExtensionManager.findAvailableExtensions()
-            logger("Manga Extensions: ${mangaExtensionManager.installedExtensionsFlow.first()}")
-            MangaSources.init(mangaExtensionManager.installedExtensionsFlow)
-        }
+            val mangaScope = CoroutineScope(Dispatchers.Default)
+            mangaScope.launch {
+                mangaExtensionManager.findAvailableExtensions()
+                logger("Manga Extensions: ${mangaExtensionManager.installedExtensionsFlow.first()}")
+                MangaSources.init(mangaExtensionManager.installedExtensionsFlow)
+            }
 
-        val novelScope = CoroutineScope(Dispatchers.Default)
-        novelScope.launch {
-            novelExtensionManager.findAvailableExtensions()
-            logger("Novel Extensions: ${novelExtensionManager.installedExtensionsFlow.first()}")
-            NovelSources.init(novelExtensionManager.installedExtensionsFlow)
+            val novelScope = CoroutineScope(Dispatchers.Default)
+            novelScope.launch {
+                novelExtensionManager.findAvailableExtensions()
+                logger("Novel Extensions: ${novelExtensionManager.installedExtensionsFlow.first()}")
+                NovelSources.init(novelExtensionManager.installedExtensionsFlow)
+            }
         }
     }
 

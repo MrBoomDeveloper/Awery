@@ -13,8 +13,7 @@ import ani.awery.media.Media
 import ani.awery.others.AppUpdater
 import ani.awery.snackString
 import ani.awery.tryWithSuspend
-import com.mrboomdev.awery.anilist.search.SearchSort
-import com.mrboomdev.awery.data.DataPreferences
+import com.mrboomdev.awery.catalog.anilist.search.SearchSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

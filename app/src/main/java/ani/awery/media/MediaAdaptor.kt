@@ -190,7 +190,7 @@ class MediaAdaptor(
                         Glide.with(context as Context)
                             .load(GlideUrl(media.banner ?: media.cover))
                             .diskCacheStrategy(DiskCacheStrategy.ALL).override(400)
-                            .apply(RequestOptions.bitmapTransform(BlurTransformation(2, 3)))
+                            .apply(RequestOptions.bitmapTransform(BlurTransformation(1, 1)))
                             .into(banner)
                     b.itemCompactOngoing.visibility =
                         if (media.status == currActivity()!!.getString(R.string.status_releasing)) View.VISIBLE else View.GONE
@@ -246,7 +246,7 @@ class MediaAdaptor(
                         Glide.with(context as Context)
                             .load(GlideUrl(media.banner ?: media.cover))
                             .diskCacheStrategy(DiskCacheStrategy.ALL).override(400)
-                            .apply(RequestOptions.bitmapTransform(BlurTransformation(2, 3)))
+                            .apply(RequestOptions.bitmapTransform(BlurTransformation(1, 1)))
                             .into(banner)
                     b.itemCompactOngoing.visibility =
                         if (media.status == currActivity()!!.getString(R.string.status_releasing)) View.VISIBLE else View.GONE

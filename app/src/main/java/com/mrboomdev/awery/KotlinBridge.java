@@ -3,17 +3,15 @@ package com.mrboomdev.awery;
 import androidx.annotation.NonNull;
 
 import com.lagradost.nicehttp.NiceResponse;
-import com.mrboomdev.awery.anilist.query.AnilistQuery;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 
 import java.util.Map;
-import java.util.Objects;
 
-import ani.awery.App;
-import ani.awery.R;
 import kotlin.Result;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+
 public class KotlinBridge {
 
 	public static void clientPost(

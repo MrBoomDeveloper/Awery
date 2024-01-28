@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
-        <activity android:name="com.mrboomdev.awery.ui.activity.MainActivity" android:enabled="false" />
+        <activity android:name="com.mrboomdev.awery.ui.activity.MainActivity" android:enabled="true" />
     </application>
 </manifest>

@@ -79,7 +79,7 @@
         <item>PAUSED</item>
         <item>DROPPED</item>
     </string-array>
-    <string-array name="status_anime">
+    <string-array name="status_anime" translatable="false">
         <item>PLANNING</item>
         <item>WATCHING</item>
         <item>COMPLETED</item>
@@ -87,7 +87,7 @@
         <item>PAUSED</item>
         <item>DROPPED</item>
     </string-array>
-    <string-array name="status_manga">
+    <string-array name="status_manga" translatable="false">
         <item>PLANNING</item>
         <item>READING</item>
         <item>COMPLETED</item>

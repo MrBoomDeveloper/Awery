@@ -1,8 +1,8 @@
-package com.mrboomdev.awery.anilist.query;
+package com.mrboomdev.awery.catalog.anilist.query;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.anilist.data.AnilistTag;
+import com.mrboomdev.awery.catalog.template.CatalogTag;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
 
 import org.jetbrains.annotations.Contract;
@@ -29,7 +29,7 @@ public class AnilistTagsQuery {
 		return new TagsQuery(flags);
 	}
 
-	public static class TagsQuery extends AnilistQuery<Collection<AnilistTag>> {
+	public static class TagsQuery extends AnilistQuery<Collection<CatalogTag>> {
 		private final boolean showAdult, showSafe;
 
 		private TagsQuery(short flags) {
@@ -38,8 +38,8 @@ public class AnilistTagsQuery {
 		}
 
 		@Override
-		protected List<AnilistTag> processJson(String json) throws IOException {
-			var data = GraphQLParser.parseList(json, AnilistTag.class);
+		protected List<CatalogTag> processJson(String json) throws IOException {
+			var data = GraphQLParser.parseList(json, CatalogTag.class);
 
 			return data.stream().filter(item -> {
 				if(item.isAdult() && !showAdult) return false;
@@ -51,7 +51,7 @@ public class AnilistTagsQuery {
 		@Contract(pure = true)
 		@Override
 		public String getQuery() {
-			return "{ MediaTagCollection { name category description isAdult } }";
+			return "{ MediaTagCollection { name description isAdult } }";
 		}
 	}
 

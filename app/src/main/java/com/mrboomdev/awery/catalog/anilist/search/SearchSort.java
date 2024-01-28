@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.anilist.search;
+package com.mrboomdev.awery.catalog.anilist.search;
 
 import androidx.annotation.NonNull;
 

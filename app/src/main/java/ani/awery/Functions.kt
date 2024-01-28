@@ -649,7 +649,6 @@ class MediaPageTransformer : ViewPager2.PageTransformer {
     }
 
     override fun transformPage(view: View, position: Float) {
-
         val bannerContainer = view.findViewById<View>(R.id.itemCompactBanner)
         parallax(bannerContainer, position)
     }
