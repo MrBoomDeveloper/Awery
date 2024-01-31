@@ -117,17 +117,17 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 	}
 
 	@Override
-	public void removeObserver(AddObserver<E> observer) {
+	public void removeAdditionObserver(AddObserver<E> observer) {
 		addObservers.remove(observer);
 	}
 
 	@Override
-	public void removeObserver(RemoveObserver<E> observer) {
+	public void removeRemovalObserver(RemoveObserver<E> observer) {
 		removeObservers.remove(observer);
 	}
 
 	@Override
-	public void removeObserver(ChangeObserver<E> observer) {
+	public void removeChangesObserver(ChangeObserver<E> observer) {
 		changeObservers.remove(observer);
 	}
 

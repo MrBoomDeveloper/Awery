@@ -2,26 +2,22 @@ package com.mrboomdev.awery.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ani.awery.databinding.MediaCatalogItemBinding;
 
-public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
+public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia<?>> {
 	private final Map<Integer, ViewHolder> cachedItems = new HashMap<>();
 	private ObservableList<CatalogMedia<?>> items;
 	private ClickCallback clickCallback;
@@ -49,22 +45,20 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(@NonNull ObservableList<CatalogMedia<?>> items) {
-		boolean shouldResetList = (this.items == null)
-				|| (this.items.size() != items.size());
+	public void setItems(ObservableList<CatalogMedia<?>> items) {
+		if(this.items != null) {
+			this.items.removeAdditionObserver(this);
+		}
+
+		if(items == null) {
+			this.items = null;
+			return;
+		}
 
 		this.items = items;
+		this.items.observeAdditions(this);
 
-		if(shouldResetList) {
-			notifyDataSetChanged();
-		} else {
-			for(var entry : cachedItems.entrySet()) {
-				var index = entry.getKey();
-				var viewHolder = entry.getValue();
-				var item = items.get(index);
-				viewHolder.bind(item);
-			}
-		}
+		notifyDataSetChanged();
 	}
 
 	@NonNull
@@ -95,6 +89,11 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		}
 
 		return items.size();
+	}
+
+	@Override
+	public void added(CatalogMedia<?> item, int index) {
+		notifyItemInserted(index);
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {

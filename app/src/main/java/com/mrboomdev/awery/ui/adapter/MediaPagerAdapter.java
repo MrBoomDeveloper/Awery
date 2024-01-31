@@ -3,9 +3,11 @@ package com.mrboomdev.awery.ui.adapter;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -45,16 +47,9 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(Collection<CatalogMedia<?>> items) {
-		System.err.println(items);
 		this.items.clear(false);
 		this.items.addAll(items, false);
 		adapter.notifyDataSetChanged();
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	public void clearItems() {
-		this.items.clear(false);
-		notifyDataSetChanged();
 	}
 
 	@NonNull
@@ -88,13 +83,6 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		public PagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
 			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
-
-			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT,
-					ViewGroup.LayoutParams.MATCH_PARENT
-			);
-
-			binding.getRoot().setLayoutParams(params);
 			return new PagerViewHolder(binding);
 		}
 
@@ -144,10 +132,7 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 							@Override
 							public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
 								item.cachedBanner = resource;
-								binding.banner.setImageAlpha(0);
 								binding.banner.setImageDrawable(resource);
-								TransitionManager.beginDelayedTransition(binding.posterHolder);
-								binding.banner.setImageAlpha(255);
 							}
 
 							@Override

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -11,11 +12,13 @@ import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
 
+import java.util.Collection;
+
 import ani.awery.databinding.MediaCatalogCategoryBinding;
 
 public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> {
 	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
-	private final ObservableList<Category> categories = new ObservableArrayList<>();
+	private ObservableList<Category> categories = new ObservableArrayList<>();
 
 	public MediaCategoriesAdapter() {
 		AweryApp.registerDisposable(() -> itemsPool = null);
@@ -34,12 +37,10 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		categories.clear();
 	}
 
-	public void addCategory(Category category, boolean notify) {
-		categories.add(category, notify);
-	}
-
-	public void addCategory(Category category) {
-		categories.add(category);
+	@SuppressLint("NotifyDataSetChanged")
+	public void setCategories(ObservableList<Category> categories) {
+		this.categories = categories;
+		notifyDataSetChanged();
 	}
 
 	@NonNull
@@ -57,6 +58,11 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	@Override
+	public void onViewRecycled(@NonNull ViewHolder holder) {
+		holder.unbind();
+	}
+
+	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 		holder.bind(categories.get(position));
 	}
@@ -69,6 +75,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogCategoryBinding binding;
 		private final MediaCatalogAdapter adapter;
+		private Category associatedCategory;
 
 		public ViewHolder(@NonNull MediaCatalogCategoryBinding binding, MediaCatalogAdapter adapter) {
 			super(binding.getRoot());
@@ -79,12 +86,38 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		public void bind(@NonNull Category category) {
 			binding.mediaCatalogCategoryTitle.setText(category.title);
 			adapter.setItems(category.items);
+
+			this.associatedCategory = category;
+			category.setAssociatedViewHolder(this);
+		}
+
+		public void unbind() {
+			adapter.setItems(null);
+
+			if(associatedCategory != null) {
+				associatedCategory.setAssociatedViewHolder(null);
+			}
 		}
 	}
 
 	public static class Category {
-		public final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
+		private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
 		public final String title;
+		private ViewHolder associatedViewHolder;
+
+		@SuppressLint("NotifyDataSetChanged")
+		public void setItems(Collection<CatalogMedia<?>> items) {
+			this.items.clear(false);
+			this.items.addAll(items, false);
+
+			if(associatedViewHolder != null) {
+				associatedViewHolder.bind(this);
+			}
+		}
+
+		protected void setAssociatedViewHolder(ViewHolder holder) {
+			this.associatedViewHolder = holder;
+		}
 
 		public Category(String title) {
 			this.title = title;

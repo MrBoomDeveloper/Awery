@@ -8,6 +8,18 @@ import java.util.List;
 
 public interface ObservableList<E> extends List<E> {
 
+	@SafeVarargs
+	@NonNull
+	static <T> ObservableArrayList<T> of(@NonNull T... items) {
+		var list = new ObservableArrayList<T>();
+
+		for(var item : items) {
+			list.add(item, false);
+		}
+
+		return list;
+	}
+
 	@Override
 	default boolean add(E e) {
 		return add(e, true);
@@ -70,11 +82,11 @@ public interface ObservableList<E> extends List<E> {
 
 	void observeRemovals(RemoveObserver<E> callback);
 
-	void removeObserver(AddObserver<E> observer);
+	void removeAdditionObserver(AddObserver<E> observer);
 
-	void removeObserver(RemoveObserver<E> observer);
+	void removeRemovalObserver(RemoveObserver<E> observer);
 
-	void removeObserver(ChangeObserver<E> observer);
+	void removeChangesObserver(ChangeObserver<E> observer);
 
 	interface RemoveObserver<E> {
 		void removed(E item, int index);

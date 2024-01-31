@@ -13,6 +13,7 @@ import java.util.Map;
 
 public abstract class AnilistQuery<T> {
 	private ResponseCallback<Throwable> exceptionCallback;
+	private Runnable finallyCallback;
 	private Throwable e;
 
 	protected abstract T processJson(String json) throws IOException;
@@ -43,6 +44,10 @@ public abstract class AnilistQuery<T> {
 			}
 
 			callback.onResponse(processed);
+
+			if(finallyCallback != null) {
+				finallyCallback.run();
+			}
 		});
 
 		return this;
@@ -64,12 +69,21 @@ public abstract class AnilistQuery<T> {
 		return this;
 	}
 
+	public AnilistQuery<T> onFinally(Runnable callback) {
+		this.finallyCallback = callback;
+		return this;
+	}
+
 	private synchronized void resolveException(Throwable e) {
 		if(e == null) return;
 		this.e = e;
 
 		if(exceptionCallback != null) {
 			exceptionCallback.onResponse(e);
+		}
+
+		if(finallyCallback != null) {
+			finallyCallback.run();
 		}
 	}
 
