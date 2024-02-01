@@ -22,7 +22,7 @@ import ani.awery.connections.anilist.Anilist;
 public class AnilistApi {
 	public static final String DOMAIN = "https://graphql.anilist.co";
 
-	public static void __executeQueryImpl(@NonNull AnilistQuery<?> query, AnilistQuery.ResponseCallback<String> callback) {
+	public static void __executeQueryImpl(@NonNull AnilistQuery<?> query, AnilistQuery.ResponseCallback<String> callback, AnilistQuery.ResponseCallback<Throwable> exceptionCallback) throws HttpClient.HttpException {
 		var data = new HashMap<String, String>() {{
 			put("query", query.getQuery());
 			put("variables", query.getVariables());
@@ -55,8 +55,7 @@ public class AnilistApi {
 
 			@Override
 			public void onError(HttpClient.HttpException e) {
-				AweryApp.toast("Failed to load data", 1);
-				Log.e("Failed to load data", Log.getStackTraceString(e));
+				exceptionCallback.onResponse(e);
 			}
 		});
 	}

@@ -8,6 +8,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,8 +36,12 @@ import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
 public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
+	private View root;
+	private int visibility = View.VISIBLE;
 	private final PagerAdapter adapter = new PagerAdapter();
+	private ProgressBar progressBar;
 	private ViewPager2 pager;
+	private boolean isLoading;
 
 	public MediaPagerAdapter() {
 		setHasStableIds(true);
@@ -45,6 +50,27 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	@Override
 	public long getItemId(int position) {
 		return position;
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void setVisibility(int visibility) {
+		if(this.visibility == View.VISIBLE && visibility == View.GONE) {
+			notifyItemRemoved(0);
+		}
+
+		if(this.visibility == View.GONE && visibility == View.VISIBLE) {
+			notifyItemInserted(0);
+		}
+
+		this.visibility = visibility;
+	}
+
+	public void setIsLoading(boolean isLoading) {
+		this.isLoading = isLoading;
+
+		if(progressBar != null) {
+			progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+		}
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -63,7 +89,13 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		pager = binding.pager;
 		pager.setAdapter(adapter);
 
-		return new RecyclerView.ViewHolder(pager) {};
+		progressBar = binding.progress;
+		progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+		root = binding.getRoot();
+		setVisibility(visibility);
+
+		return new RecyclerView.ViewHolder(binding.getRoot()) {};
 	}
 
 	@Override
@@ -108,6 +140,10 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 		@Override
 		public int getItemCount() {
+			if(visibility == View.GONE) {
+				return 0;
+			}
+
 			return items.size();
 		}
 	}

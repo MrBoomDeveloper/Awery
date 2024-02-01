@@ -17,6 +17,8 @@ import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.ObservableList;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class AnimeFragment extends MediaCatalogFragment {
@@ -40,10 +42,16 @@ public class AnimeFragment extends MediaCatalogFragment {
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void loadData() {
-		AnilistTrendingQuery.getAnime().executeQuery(items -> {
-			requireActivity().runOnUiThread(() -> pagerAdapter.setItems(items));
-		}).catchExceptions(e -> {
-			AweryApp.toast("Failed to load data", 1);
+		pagerAdapter.setItems(Collections.emptyList());
+		pagerAdapter.setVisibility(View.VISIBLE);
+		pagerAdapter.setIsLoading(true);
+
+		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
+			pagerAdapter.setItems(items);
+			pagerAdapter.setIsLoading(false);
+		})).catchExceptions(e -> {
+			pagerAdapter.setVisibility(View.GONE);
+			AweryApp.toast("Failed to get trending items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
@@ -58,21 +66,21 @@ public class AnimeFragment extends MediaCatalogFragment {
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			cats.get(0).setItems(items);
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load data", 1);
+			AweryApp.toast("Failed to load trending items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			cats.get(1).setItems(items);
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load data", 1);
+			AweryApp.toast("Failed to load recommended items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			cats.get(2).setItems(items);
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load data", 1);
+			AweryApp.toast("Failed to load popular items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 	}

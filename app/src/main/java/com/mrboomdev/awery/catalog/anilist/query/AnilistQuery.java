@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.catalog.anilist.query;
 
+import android.util.Log;
+
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
 import com.mrboomdev.awery.catalog.anilist.data.AnilistTrendingMedia;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
@@ -15,6 +17,7 @@ public abstract class AnilistQuery<T> {
 	private ResponseCallback<Throwable> exceptionCallback;
 	private Runnable finallyCallback;
 	private Throwable e;
+	private boolean didFinished;
 
 	protected abstract T processJson(String json) throws IOException;
 
@@ -44,11 +47,12 @@ public abstract class AnilistQuery<T> {
 			}
 
 			callback.onResponse(processed);
+			didFinished = true;
 
 			if(finallyCallback != null) {
 				finallyCallback.run();
 			}
-		});
+		}, e -> resolveException(new RuntimeException("Failed to send a request!", e)));
 
 		return this;
 	}
@@ -70,12 +74,17 @@ public abstract class AnilistQuery<T> {
 	}
 
 	public AnilistQuery<T> onFinally(Runnable callback) {
+		if(didFinished) {
+			callback.run();
+		}
+
 		this.finallyCallback = callback;
 		return this;
 	}
 
 	private synchronized void resolveException(Throwable e) {
 		if(e == null) return;
+		this.didFinished = true;
 		this.e = e;
 
 		if(exceptionCallback != null) {

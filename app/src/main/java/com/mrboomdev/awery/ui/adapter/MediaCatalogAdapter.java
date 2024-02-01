@@ -113,9 +113,13 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			this.item = item;
 			binding.title.setText(item.title);
 
-			Glide.with(binding.getRoot())
-					.load(item.poster.large)
-					.into(binding.mediaItemBanner);
+			try {
+				Glide.with(binding.getRoot())
+						.load(item.poster.large)
+						.into(binding.mediaItemBanner);
+			} catch(IllegalArgumentException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
