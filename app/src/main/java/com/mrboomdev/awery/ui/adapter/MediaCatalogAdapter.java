@@ -114,20 +114,8 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			binding.title.setText(item.title);
 
 			Glide.with(binding.getRoot())
-					.load(item.poster.medium)
+					.load(item.poster.large)
 					.into(binding.mediaItemBanner);
-
-			AweryApp.setTimeout(() -> {
-				Glide.with(binding.getRoot())
-						.load(item.poster.large)
-						.into(binding.mediaItemBanner);
-			}, 5000);
-
-			AweryApp.setTimeout(() -> {
-				Glide.with(binding.getRoot())
-						.load(item.poster.extraLarge)
-						.into(binding.mediaItemBanner);
-			}, 10000);
 		}
 	}
 

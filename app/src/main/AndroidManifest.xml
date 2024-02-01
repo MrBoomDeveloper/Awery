@@ -61,7 +61,7 @@
 
         <activity android:label="Awery (Experimental)"
             android:name="com.mrboomdev.awery.ui.activity.MainActivity"
-            android:configChanges="orientation|screenSize|layoutDirection"
+            android:configChanges="screenSize|layoutDirection"
             android:exported="true">
 
             <intent-filter>

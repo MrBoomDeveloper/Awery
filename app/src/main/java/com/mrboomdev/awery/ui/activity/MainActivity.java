@@ -113,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
 		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, (view, insets) -> ViewUtil.setBottomMargin(view, insets.bottom));
 	}
 
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putInt("nav_index", binding.navbar.getSelectedIndex());
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+		binding.navbar.selectTabAt(savedInstanceState.getInt("nav_index"), false);
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
 	private void registerBackListener() {
 		final var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 

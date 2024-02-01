@@ -36,14 +36,11 @@
         android:id="@+id/poster_holder"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="H,5:7"
-        app:layout_constraintWidth_max="250dp"
         android:layout_margin="16dp"
-        android:layout_marginHorizontal="32dp"
-        app:layout_constraintBottom_toTopOf="@id/title"
+        app:layout_constraintDimensionRatio="H,7:5"
         app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
-        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
         app:layout_constraintTop_toBottomOf="@id/top_side_barrier"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="15dp">
 
         <ImageView
@@ -60,18 +57,18 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        tools:text="@tools:sample/lorem"
-        android:textAlignment="center"
+        android:layout_marginStart="24dp"
+        tools:text="@tools:sample/lorem/random"
         android:ellipsize="end"
         android:fontFamily="@font/poppins_bold"
         android:maxLines="3"
         android:textSize="18sp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="3dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="2dp"
         app:layout_constraintWidth_max="450dp"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
-        app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
+        app:layout_constraintLeft_toRightOf="@id/poster_holder"
         app:layout_constraintBottom_toTopOf="@id/description" />
 
     <TextView
@@ -80,15 +77,15 @@
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         android:textSize="14sp"
-        android:layout_marginTop="3dp"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="36dp"
         android:maxLines="2"
+        android:layout_marginEnd="10dp"
         app:layout_constraintWidth_max="375dp"
+        app:layout_constraintHorizontal_bias="0"
         tools:text="@tools:sample/lorem/random"
-        app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
-        app:layout_constraintBottom_toTopOf="@id/tags"
-        android:layout_marginBottom="6dp"
-        app:layout_constraintRight_toLeftOf="@id/right_side_barrier" />
+        app:layout_constraintLeft_toLeftOf="@id/title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/tags" />
 
     <TextView
         android:id="@+id/tags"
@@ -97,24 +94,24 @@
         tools:text="Action Comedy Fantasy"
         app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="3dp"
+        android:layout_marginBottom="36dp"
         android:textSize="14sp"
-        android:layout_marginRight="32dp"
+        android:layout_marginRight="16dp"
         tools:ignore="RtlHardcoded" />
 
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="2dp"
         android:alpha="0.75"
-        android:layout_marginTop="3dp"
-        android:layout_marginLeft="32dp"
         android:text="Ongoing"
         android:textColor="?attr/colorPrimary"
         android:textSize="14sp"
-        app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="RtlHardcoded" />
+        app:layout_constraintBottom_toTopOf="@id/tags"
+        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
+        tools:ignore="RtlHardcoded,TextContrastCheck" />
 
     <View
         android:id="@+id/right_side_barrier"

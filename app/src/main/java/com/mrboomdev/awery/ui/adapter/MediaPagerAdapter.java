@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import ani.awery.databinding.MediaCatalogFeaturedBinding;
+import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
 public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
@@ -56,9 +57,12 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 	@NonNull
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		pager = new ViewPager2(parent.getContext());
-		pager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+		var inflater = LayoutInflater.from(parent.getContext());
+		var binding = MediaCatalogFeaturedPagerBinding.inflate(inflater, parent, false);
+
+		pager = binding.pager;
 		pager.setAdapter(adapter);
+
 		return new RecyclerView.ViewHolder(pager) {};
 	}
 
