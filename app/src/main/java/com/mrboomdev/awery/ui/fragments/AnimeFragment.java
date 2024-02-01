@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistSeasonQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTrendingQuery;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
@@ -46,7 +47,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 		pagerAdapter.setVisibility(View.VISIBLE);
 		pagerAdapter.setIsLoading(true);
 
-		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
+		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setItems(items);
 			pagerAdapter.setIsLoading(false);
 		})).catchExceptions(e -> {

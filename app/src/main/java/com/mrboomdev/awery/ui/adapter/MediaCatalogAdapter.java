@@ -18,7 +18,6 @@ import java.util.Map;
 import ani.awery.databinding.MediaCatalogItemBinding;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia<?>> {
-	private final Map<Integer, ViewHolder> cachedItems = new HashMap<>();
 	private ObservableList<CatalogMedia<?>> items;
 	private ClickCallback clickCallback;
 
@@ -79,7 +78,6 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 		holder.bind(items.get(position));
-		cachedItems.put(position, holder);
 	}
 
 	@Override

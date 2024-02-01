@@ -161,40 +161,42 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 			binding.description.setText(Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT));
 
 			var tagsCount = new AtomicInteger(0);
-			binding.tags.setText(item.genres.stream()
-					.filter(tag -> tagsCount.getAndAdd(1) < 3)
-					.collect(Collectors.joining(", ")));
+			var formattedTags = item.genres != null ? (
+					item.genres.stream()
+							.filter(tag -> tagsCount.getAndAdd(1) < 3)
+							.collect(Collectors.joining(", "))
+					) : (
+							item.tags.stream()
+									.filter(tag -> tagsCount.getAndAdd(1) < 3)
+									.map(tag -> tag.name)
+									.collect(Collectors.joining(", ")));
+
+			binding.tags.setText(formattedTags);
 
 			Glide.with(binding.getRoot())
 					.load(item.poster.extraLarge)
 					.transition(withCrossFade())
 					.into(binding.poster);
 
-			if(item.banner != null) {
+			/*
+			 Because of some strange bug we have to load banner by our hands
+			 or else it'll in some moment will stretch
+			*/
 
-				/*
-				  Because of some strange bug we have to load banner by our hands
-				  or else it'll in some moment will stretch
-				*/
+			Glide.with(binding.getRoot())
+					.load(item.banner != null ? item.banner : item.poster.extraLarge)
+					.into(new CustomTarget<Drawable>() {
+						@Override
+						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+							item.cachedBanner = resource;
+							binding.banner.setImageDrawable(resource);
+						}
 
-				Glide.with(binding.getRoot())
-						.load(item.banner)
-						.into(new CustomTarget<Drawable>() {
-							@Override
-							public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-								item.cachedBanner = resource;
-								binding.banner.setImageDrawable(resource);
-							}
-
-							@Override
-							public void onLoadCleared(@Nullable Drawable placeholder) {
+						@Override
+						public void onLoadCleared(@Nullable Drawable placeholder) {
 								item.cachedBanner = null;
 							}
-						});
-			} else {
-				Glide.with(binding.getRoot()).clear(binding.banner);
-				binding.banner.setImageDrawable(null);
-			}
+					});
 		}
 	}
 }

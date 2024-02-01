@@ -41,7 +41,7 @@ public abstract class AnilistQuery<T> {
 
 			try {
 				processed = processJson(response);
-			} catch(IOException | JsonDataException e) {
+			} catch(Exception e) {
 				resolveException(new RuntimeException("Failed to process a json! " + response, e));
 				return;
 			}

@@ -35,7 +35,7 @@ public class AnilistTrendingQuery extends AnilistQuery<Collection<CatalogMedia<?
 	public String getQuery() {
 		return """
 			{
-				Page(page: 1, perPage: 10) {
+				Page(page: 1, perPage: 15) {
 					mediaTrends {
 						averageScore
 						media {

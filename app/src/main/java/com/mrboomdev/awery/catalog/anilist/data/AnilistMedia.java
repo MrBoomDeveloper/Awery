@@ -2,7 +2,10 @@ package com.mrboomdev.awery.catalog.anilist.data;
 
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AnilistMedia {
 	public  List<String> genres;
@@ -33,11 +36,16 @@ public class AnilistMedia {
 
 	public CatalogMedia<AnilistMedia> toCatalogMedia() {
 		var media = new CatalogMedia<AnilistMedia>();
-		media.title = title.english;
+		media.title = Objects.requireNonNullElse(title.english, title.romaji);
 		media.description = description;
 		media.banner = bannerImage;
 		media.color = coverImage.color;
 		media.originalData = this;
+		media.genres = new ArrayList<>(genres);
+
+		media.tags = tags.stream()
+				.map(AnilistTag::toCatalogTag)
+				.collect(Collectors.toList());
 
 		var posterVersions = new CatalogMedia.ImageVersions();
 		posterVersions.medium = coverImage.medium;

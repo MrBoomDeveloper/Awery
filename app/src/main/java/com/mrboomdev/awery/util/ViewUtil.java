@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util;
 
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -27,6 +29,51 @@ public class ViewUtil {
 		if(margins == null) return;
 
 		margins.rightMargin = margin;
+		view.setLayoutParams(margins);
+	}
+
+	public static void setStartMargin(View view, int margin) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.setMarginStart(margin);
+		view.setLayoutParams(margins);
+	}
+
+	public static void setHorizontalMargin(View view, int margin) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.leftMargin = margin;
+		margins.rightMargin = margin;
+		view.setLayoutParams(margins);
+	}
+
+	public static void setLeftPadding(@NonNull View view, int padding) {
+		view.setPadding(padding, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
+	}
+
+	public static void setRightPadding(@NonNull View view, int padding) {
+		view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), padding, view.getPaddingBottom());
+	}
+
+	public static void setTopPadding(@NonNull View view, int padding) {
+		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), view.getPaddingBottom());
+	}
+
+	public static void setBottomPadding(@NonNull View view, int padding) {
+		view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
+	}
+
+	public static void setHorizontalPadding(@NonNull View view, int padding) {
+		view.setPadding(padding, view.getPaddingTop(), padding, view.getPaddingBottom());
+	}
+
+	public static void setEndMargin(View view, int margin) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.setMarginEnd(margin);
 		view.setLayoutParams(margins);
 	}
 
@@ -83,6 +130,16 @@ public class ViewUtil {
 		}
 
 		return null;
+	}
+
+	public static int dpPx(int dp) {
+		var metrics = Resources.getSystem().getDisplayMetrics();
+		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
+	}
+
+	public static int spPx(int sp) {
+		var metrics = Resources.getSystem().getDisplayMetrics();
+		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics));
 	}
 
 	public interface InsetsUpdateListener<V, I> {

@@ -11,6 +11,7 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.ViewUtil;
 
 import java.util.Collection;
 
@@ -53,6 +54,12 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		binding.mediaCatalogCategoryItems.setRecycledViewPool(itemsPool);
 		binding.mediaCatalogCategoryItems.setHasFixedSize(true);
 		binding.mediaCatalogCategoryItems.setAdapter(adapter);
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, (view, insets) ->
+				ViewUtil.setHorizontalPadding(view, insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, (view, insets) ->
+				ViewUtil.setHorizontalPadding(view, insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
 
 		return new ViewHolder(binding, adapter);
 	}
