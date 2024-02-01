@@ -22,7 +22,7 @@ public class ThemeManager {
 		this.context = context;
 	}
 
-	public void applyTheme(Bitmap fromImage) {
+	public static void apply(Context context, Bitmap fromImage) {
 		var prefs = DataPreferences.getInstance(context);
 
 		boolean useOLED = prefs.getBoolean(DataPreferences.USE_OLDED) && isDarkThemeActive(context);
@@ -56,17 +56,27 @@ public class ThemeManager {
 			case "LAVENDER" -> (useOLED) ? R.style.Theme_Awery_LavenderOLED : R.style.Theme_Awery_Lavender;
 			case "MONOCHROME (BETA)" -> (useOLED) ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
 			case "SAIKOU" -> (useOLED) ? R.style.Theme_Awery_SaikouOLED : R.style.Theme_Awery_Saikou;
-            default -> (useOLED) ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
+			default -> (useOLED) ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
 		};
 
 		context.setTheme(themeToApply);
 	}
 
-	public void applyTheme() {
-		applyTheme(null);
+	public static void apply(Context context) {
+		apply(context, null);
 	}
 
-	private boolean applyDynamicColors(
+	@Deprecated
+	public void applyTheme(Bitmap fromImage) {
+		apply(context, fromImage);
+	}
+
+	@Deprecated
+	public void applyTheme() {
+		apply(context);
+	}
+
+	private static boolean applyDynamicColors(
 			boolean useMaterialYou,
 			Context context,
 			boolean useOLED,
@@ -111,7 +121,7 @@ public class ThemeManager {
 		return false;
 	}
 
-	private boolean isDarkThemeActive(@NonNull Context context) {
+	private static boolean isDarkThemeActive(@NonNull Context context) {
 		var uiMode = context.getResources().getConfiguration().uiMode;
 		return ((uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES);
 	}

@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.adapter;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -12,8 +11,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.transition.TransitionManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +23,7 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.ViewUtil;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -83,6 +84,16 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		public PagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
 			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
+
+			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, (view, insets) ->
+					ViewUtil.setLeftMargin(view, insets.left), parent.getRootWindowInsets());
+
+			ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, (view, insets) ->
+					ViewUtil.setRightMargin(view, insets.right), parent.getRootWindowInsets());
+
+			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, (view, insets) ->
+					ViewUtil.setTopMargin(view, insets.top), parent.getRootWindowInsets());
+
 			return new PagerViewHolder(binding);
 		}
 

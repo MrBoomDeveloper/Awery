@@ -15,11 +15,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.ScaleAnimation;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -31,6 +34,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.HomeFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
+import com.mrboomdev.awery.util.ViewUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		new ThemeManager(this).applyTheme();
+		ThemeManager.apply(this);
+		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
 		binding = MainActivityLayoutBinding.inflate(getLayoutInflater());
@@ -104,13 +109,14 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
 		});
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, (view, insets) -> ViewUtil.setBottomMargin(view, insets.bottom));
 	}
 
 	private void registerBackListener() {
 		final var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 
 		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-
 			@Override
 			public void handleOnBackPressed() {
 				if(doubleBackToExitPressedOnce.get()) {
