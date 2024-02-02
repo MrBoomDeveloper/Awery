@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -22,6 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import ani.awery.databinding.HeaderLayoutBinding;
+import ani.awery.media.SearchActivity;
+import ani.awery.settings.SettingsActivity;
+
 public class AnimeFragment extends MediaCatalogFragment {
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
@@ -32,6 +37,19 @@ public class AnimeFragment extends MediaCatalogFragment {
 				.setIsolateViewTypes(true)
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build();
+
+		var header = HeaderLayoutBinding.inflate(getLayoutInflater());
+		pagerAdapter.setHeaderView(header.getRoot());
+
+		header.search.setOnClickListener(v -> {
+			var intent = new Intent(requireActivity(), SearchActivity.class);
+			startActivity(intent);
+		});
+
+		header.settingsWrapper.setOnClickListener(v -> {
+			var intent = new Intent(requireActivity(), SettingsActivity.class);
+			startActivity(intent);
+		});
 
 		var concatAdapter = new ConcatAdapter(config, pagerAdapter, categoriesAdapter);
 		getBinding().catalogCategories.setHasFixedSize(true);
@@ -44,14 +62,20 @@ public class AnimeFragment extends MediaCatalogFragment {
 	@SuppressLint("NotifyDataSetChanged")
 	private void loadData() {
 		pagerAdapter.setItems(Collections.emptyList());
-		pagerAdapter.setVisibility(View.VISIBLE);
+
+		try {
+			pagerAdapter.setEnabled(true);
+		} catch(IllegalStateException e) {
+			e.printStackTrace();
+		}
+
 		pagerAdapter.setIsLoading(true);
 
 		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setItems(items);
 			pagerAdapter.setIsLoading(false);
 		})).catchExceptions(e -> {
-			pagerAdapter.setVisibility(View.GONE);
+			pagerAdapter.setEnabled(false);
 			AweryApp.toast("Failed to get trending items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));

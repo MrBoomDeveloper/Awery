@@ -3,17 +3,21 @@ package com.mrboomdev.awery.ui.adapter;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -24,45 +28,60 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.SingleViewAdapter;
 import com.mrboomdev.awery.util.ViewUtil;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import ani.awery.R;
 import ani.awery.databinding.MediaCatalogFeaturedBinding;
 import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
-public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MediaPagerAdapter extends SingleViewAdapter {
 	private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
-	private View root;
-	private int visibility = View.VISIBLE;
+	private final Handler handler = new Handler(Looper.getMainLooper());
+	private View headerView;
+	private LinearLayout headerLayout;
 	private final PagerAdapter adapter = new PagerAdapter();
 	private ProgressBar progressBar;
-	private ViewPager2 pager;
 	private boolean isLoading;
 
 	public MediaPagerAdapter() {
 		setHasStableIds(true);
 	}
 
-	@Override
-	public long getItemId(int position) {
-		return position;
+	private void attachHeaderView(View view) {
+		headerLayout.removeAllViews();
+		headerLayout.addView(view, ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+
+		handler.post(() -> notifyItemRangeChanged(0, items.size()));
+
+		if(Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			var logo = view.findViewById(R.id.logo);
+			logo.setVisibility(View.GONE);
+		}
+
+		ViewUtil.setOnApplyUiInsetsListener(view, (v, insets) -> {
+			ViewUtil.setTopMargin(v, insets.top);
+			ViewUtil.setRightMargin(v, insets.right);
+			ViewUtil.setLeftPadding(v, insets.left);
+		}, headerLayout.getRootWindowInsets());
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void setVisibility(int visibility) {
-		if(this.visibility == View.VISIBLE && visibility == View.GONE) {
-			notifyItemRemoved(0);
+	public void setHeaderView(View view) {
+		if(view == null && this.headerView != null) {
+			headerLayout.removeView(this.headerView);
 		}
 
-		if(this.visibility == View.GONE && visibility == View.VISIBLE) {
-			notifyItemInserted(0);
-		}
+		this.headerView = view;
 
-		this.visibility = visibility;
+		if(headerLayout != null && view != null) {
+			attachHeaderView(view);
+		}
 	}
 
 	public void setIsLoading(boolean isLoading) {
@@ -82,28 +101,24 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public View onCreateView(@NonNull ViewGroup parent) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = MediaCatalogFeaturedPagerBinding.inflate(inflater, parent, false);
 
-		pager = binding.pager;
+		ViewPager2 pager = binding.pager;
 		pager.setAdapter(adapter);
 
 		progressBar = binding.progress;
 		progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
 
-		root = binding.getRoot();
-		setVisibility(visibility);
+		headerLayout = binding.header;
+		setEnabled(isEnabled());
 
-		return new RecyclerView.ViewHolder(binding.getRoot()) {};
-	}
+		if(headerView != null) {
+			attachHeaderView(headerView);
+		}
 
-	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {}
-
-	@Override
-	public int getItemCount() {
-		return 1;
+		return binding.getRoot();
 	}
 
 	public class PagerAdapter extends RecyclerView.Adapter<PagerViewHolder> {
@@ -140,7 +155,7 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 		@Override
 		public int getItemCount() {
-			if(visibility == View.GONE) {
+			if(!isEnabled()) {
 				return 0;
 			}
 
@@ -148,7 +163,7 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 		}
 	}
 
-	public static class PagerViewHolder extends RecyclerView.ViewHolder {
+	public class PagerViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogFeaturedBinding binding;
 
 		public PagerViewHolder(@NonNull MediaCatalogFeaturedBinding binding) {
@@ -172,6 +187,9 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 									.collect(Collectors.joining(", ")));
 
 			binding.tags.setText(formattedTags);
+
+			binding.poster.setImageDrawable(null);
+			binding.banner.setImageDrawable(null);
 
 			Glide.with(binding.getRoot())
 					.load(item.poster.extraLarge)
@@ -197,6 +215,10 @@ public class MediaPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 								item.cachedBanner = null;
 							}
 					});
+
+			if(binding.headerBarrier != null) {
+				binding.headerBarrier.setVisibility(headerView != null ? View.VISIBLE : View.GONE);
+			}
 		}
 	}
 }

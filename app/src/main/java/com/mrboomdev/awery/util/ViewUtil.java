@@ -24,6 +24,14 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
+	public static void setMargin(View view, int margin) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.setMargins(margin, margin, margin, margin);
+		view.setLayoutParams(margins);
+	}
+
 	public static void setRightMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return;
