@@ -21,15 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.mrboomdev.awery.data.DataPreferences;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.HomeFragment;
@@ -38,7 +36,6 @@ import com.mrboomdev.awery.util.ViewUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ani.awery.MediaPageTransformer;
 import ani.awery.R;
 import ani.awery.databinding.MainActivityLayoutBinding;
 import ani.awery.databinding.SplashScreenBinding;
@@ -55,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
 		binding = MainActivityLayoutBinding.inflate(getLayoutInflater());
 		binding.getRoot().setMotionEventSplittingEnabled(false);
-		var prefs = DataPreferences.getInstance(this);
+		var prefs = AwerySettings.getInstance(this);
 		setContentView(binding.getRoot());
 
-		if(!prefs.getBoolean(DataPreferences.COLOR_OVERFLOW)) {
+		if(!prefs.getBoolean(AwerySettings.COLOR_OVERFLOW)) {
 			binding.navbar.setBackground(ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray));
 		} else {
 			var backgroundDrawable = (GradientDrawable)binding.navbar.getBackground();
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 			page.startAnimation(anim);
 		});
 
-		var currentPage = Pages.valueOf(prefs.getString(DataPreferences.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
+		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
 		int currentPageIndex = currentPage.ordinal();
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);

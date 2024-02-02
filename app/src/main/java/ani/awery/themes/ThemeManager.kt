@@ -10,8 +10,6 @@ import ani.awery.R
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 
-import com.mrboomdev.awery.data.DataPreferences
-
 class ThemeManager(private val context: Context) {
 
     fun applyTheme(fromImage: Bitmap? = null) {

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
-import com.mrboomdev.awery.data.DataPreferences;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 
 import java.util.Objects;
 
@@ -23,13 +23,13 @@ public class ThemeManager {
 	}
 
 	public static void apply(Context context, Bitmap fromImage) {
-		var prefs = DataPreferences.getInstance(context);
+		var prefs = AwerySettings.getInstance(context);
 
-		boolean useOLED = prefs.getBoolean(DataPreferences.USE_OLDED) && isDarkThemeActive(context);
-		boolean useCustomTheme = prefs.getBoolean(DataPreferences.USE_CUSTOM_THEME);
-		int customTheme = prefs.getInt(DataPreferences.CUSTOM_THEME_INT, 16712221);
-		boolean useSource = prefs.getBoolean(DataPreferences.USE_SOURCE_THEME);
-		boolean useMaterial = prefs.getBoolean(DataPreferences.USE_MATERIAL_YOU);
+		boolean useOLED = prefs.getBoolean(AwerySettings.USE_OLDED) && isDarkThemeActive(context);
+		boolean useCustomTheme = prefs.getBoolean(AwerySettings.USE_CUSTOM_THEME);
+		int customTheme = prefs.getInt(AwerySettings.CUSTOM_THEME_INT, 16712221);
+		boolean useSource = prefs.getBoolean(AwerySettings.USE_SOURCE_THEME);
+		boolean useMaterial = prefs.getBoolean(AwerySettings.USE_MATERIAL_YOU);
 
 		if(useSource) {
 			var returnedEarly = applyDynamicColors(
@@ -48,7 +48,7 @@ public class ThemeManager {
 			if(!returnedEarly) return;
 		}
 
-		var themeToApply = switch(prefs.getString(DataPreferences.THEME, "PURPLE")) {
+		var themeToApply = switch(prefs.getString(AwerySettings.THEME, "PURPLE")) {
 			case "BLUE" -> (useOLED) ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
 			case "GREEN" -> (useOLED) ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
 			case "PINK" -> (useOLED) ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;

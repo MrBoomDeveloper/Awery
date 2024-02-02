@@ -15,6 +15,7 @@ import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSeasonQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTrendingQuery;
+import com.mrboomdev.awery.ui.activity.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.ObservableList;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import ani.awery.databinding.HeaderLayoutBinding;
 import ani.awery.media.SearchActivity;
-import ani.awery.settings.SettingsActivity;
 
 public class AnimeFragment extends MediaCatalogFragment {
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();

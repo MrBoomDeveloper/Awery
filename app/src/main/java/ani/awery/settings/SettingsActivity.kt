@@ -40,7 +40,7 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery
-import com.mrboomdev.awery.data.DataPreferences
+import com.mrboomdev.awery.data.settings.AwerySettings
 import com.skydoves.colorpickerview.ColorPickerView
 import com.skydoves.colorpickerview.listeners.ColorListener
 import eu.kanade.domain.base.BasePreferences
@@ -69,7 +69,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initActivity(this)
-        val prefs = DataPreferences.getInstance(this)
+        val prefs = AwerySettings.getInstance(this)
 
         binding.settingsVersion.text = getString(R.string.version_current, BuildConfig.VERSION_NAME)
         binding.settingsVersion.setOnLongClickListener {
@@ -109,19 +109,19 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.settingsUseMaterialYou.isChecked =
-            prefs.getBoolean(DataPreferences.USE_MATERIAL_YOU)
+            prefs.getBoolean(AwerySettings.USE_MATERIAL_YOU)
 
         binding.settingsUseMaterialYou.setOnCheckedChangeListener { _, isChecked ->
-            prefs.setBoolean(DataPreferences.USE_MATERIAL_YOU, isChecked).saveAsync()
+            prefs.setBoolean(AwerySettings.USE_MATERIAL_YOU, isChecked).saveAsync()
             if(isChecked) binding.settingsUseCustomTheme.isChecked = false
             restartApp()
         }
 
         binding.settingsUseCustomTheme.isChecked =
-            prefs.getBoolean(DataPreferences.USE_CUSTOM_THEME)
+            prefs.getBoolean(AwerySettings.USE_CUSTOM_THEME)
 
         binding.settingsUseCustomTheme.setOnCheckedChangeListener { _, isChecked ->
-            prefs.setBoolean(DataPreferences.USE_CUSTOM_THEME, isChecked).saveAsync()
+            prefs.setBoolean(AwerySettings.USE_CUSTOM_THEME, isChecked).saveAsync()
             if(isChecked) binding.settingsUseMaterialYou.isChecked = false
             restartApp()
         }
@@ -170,7 +170,7 @@ class SettingsActivity : AppCompatActivity() {
             toast("Loading tags list...", 1)
 
             AnilistTagsQuery.getTags(AnilistTagsQuery.ALL).executeQuery {
-                val excludedTags = prefs.getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+                val excludedTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
 
                 runOnUiThread {
                     val layout = layoutInflater.inflate(R.layout.dialog_exclude_tags, null)
@@ -207,7 +207,7 @@ class SettingsActivity : AppCompatActivity() {
                         .setView(layout)
                         .setCancelable(false)
                         .setPositiveButton("OK") { dialog, _ ->
-                            prefs.setStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS, excludedTags)
+                            prefs.setStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS, excludedTags)
                             prefs.saveAsync()
 
                             dialog.dismiss()

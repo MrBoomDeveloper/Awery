@@ -70,6 +70,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity"
+            android:label="Awery - Settings (Experimental)"
+            android:configChanges="screenSize|layoutDirection"
+            android:exported="false" />
+
         <activity
             android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"
             android:configChanges="orientation|screenSize"

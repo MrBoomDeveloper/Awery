@@ -33,7 +33,7 @@ public class AnilistApi {
 			put("Accept", "application/json");
 		}};
 
-		if(query.useToken()) {
+		if(query.useToken() && Anilist.INSTANCE.getToken() != null) {
 			headers.put("Authorization", "Bearer " + Anilist.INSTANCE.getToken());
 		}
 

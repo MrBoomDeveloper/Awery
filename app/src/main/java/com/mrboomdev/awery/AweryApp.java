@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -121,7 +122,9 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	public void onActivityResumed(@NonNull Activity activity) {}
 
 	@Override
-	public void onActivityPaused(@NonNull Activity activity) {}
+	public void onActivityPaused(@NonNull Activity activity) {
+		SettingsFactory.saveInstance(activity);
+	}
 
 	@Override
 	public void onActivityStopped(@NonNull Activity activity) {

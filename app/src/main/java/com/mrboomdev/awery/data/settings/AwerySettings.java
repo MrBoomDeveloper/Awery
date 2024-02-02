@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.data;
+package com.mrboomdev.awery.data.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 import ani.awery.App;
 
-public class DataPreferences {
+public class AwerySettings {
 	public static final String AWERY_SETTINGS = "Awery";
 	public static final String GLOBAL_EXCLUDED_TAGS = "GLOBAL_EXCLUDED_TAGS";
 	public static final String USE_MATERIAL_YOU = "use_material_you";
@@ -26,7 +26,7 @@ public class DataPreferences {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
-	public DataPreferences(SharedPreferences prefs) {
+	public AwerySettings(SharedPreferences prefs) {
 		this.prefs = prefs;
 	}
 
@@ -38,7 +38,7 @@ public class DataPreferences {
 		return getBoolean(name, false);
 	}
 
-	public DataPreferences setBoolean(String key, boolean value) {
+	public AwerySettings setBoolean(String key, boolean value) {
 		checkEditorExistence();
 		editor.putBoolean(key, value);
 		return this;
@@ -52,7 +52,7 @@ public class DataPreferences {
 		return getInt(key, 0);
 	}
 
-	public DataPreferences setInt(String key, int value) {
+	public AwerySettings setInt(String key, int value) {
 		checkEditorExistence();
 		editor.putInt(key, value);
 		return this;
@@ -66,7 +66,7 @@ public class DataPreferences {
 		return getString(key, "");
 	}
 
-	public DataPreferences setString(String key, String value) {
+	public AwerySettings setString(String key, String value) {
 		checkEditorExistence();
 		editor.putString(key, value);
 		return this;
@@ -80,7 +80,7 @@ public class DataPreferences {
 		return getStringSet(name, new HashSet<>());
 	}
 
-	public DataPreferences setStringSet(String key, Set<String> value) {
+	public AwerySettings setStringSet(String key, Set<String> value) {
 		checkEditorExistence();
 		editor.putStringSet(key, value);
 		return this;
@@ -92,7 +92,7 @@ public class DataPreferences {
 		}
 	}
 
-	public DataPreferences saveAsync() {
+	public AwerySettings saveAsync() {
 		if(editor == null) {
 			return this;
 		}
@@ -102,7 +102,7 @@ public class DataPreferences {
 		return this;
 	}
 
-	public DataPreferences saveSync() {
+	public AwerySettings saveSync() {
 		if(editor == null) {
 			return this;
 		}
@@ -117,17 +117,17 @@ public class DataPreferences {
 	}
 
 	@NonNull
-	public static DataPreferences getInstance(@NonNull Context context, String name) {
-		return new DataPreferences(context.getSharedPreferences(name, 0));
+	public static AwerySettings getInstance(@NonNull Context context, String name) {
+		return new AwerySettings(context.getSharedPreferences(name, 0));
 	}
 
 	@NonNull
-	public static DataPreferences getInstance(@NonNull Context context) {
+	public static AwerySettings getInstance(@NonNull Context context) {
 		return getInstance(context, AWERY_SETTINGS);
 	}
 
 	@NonNull
-	public static DataPreferences getInstance(String name) {
+	public static AwerySettings getInstance(String name) {
 		var activity = App.Companion.currentActivity();
 
 		if(activity == null) {
@@ -139,7 +139,7 @@ public class DataPreferences {
 
 	@NonNull
 	@Contract(" -> new")
-	public static DataPreferences getInstance() {
+	public static AwerySettings getInstance() {
 		return getInstance(AWERY_SETTINGS);
 	}
 

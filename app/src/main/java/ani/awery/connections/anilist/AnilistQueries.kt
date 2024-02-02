@@ -19,7 +19,7 @@ import ani.awery.media.Studio
 import ani.awery.others.MalScraper
 import ani.awery.saveData
 import ani.awery.snackString
-import com.mrboomdev.awery.data.DataPreferences
+import com.mrboomdev.awery.data.settings.AwerySettings
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -541,7 +541,7 @@ class AnilistQueries {
         id: Int? = null,
         hd: Boolean = false
     ): SearchResults? {
-        val globallyExcludedTags = DataPreferences.getInstance().getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+        val globallyExcludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
         excludedTags?.addAll(globallyExcludedTags)
 
         val query = """
@@ -724,7 +724,7 @@ Page(page: $page, perPage: 50) {
             return executeQuery<Query.Page>(query, force = true)?.data?.page
         }
 
-        val excludedTags = DataPreferences.getInstance().getStringSet(DataPreferences.GLOBAL_EXCLUDED_TAGS)
+        val excludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
 
         if(smaller) {
             val response = execute()?.airingSchedules ?: return null

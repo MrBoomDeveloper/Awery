@@ -1,0 +1,53 @@
+{
+	"key": "settings",
+	"type": "screen",
+	"items": [
+		{
+			"key": "general",
+			"type": "screen",
+			"items": [
+				{
+					"key": "default_tab",
+					"type": "select",
+					"items": [
+						{ "key": "anime" },
+						{ "key": "home" },
+						{ "key": "manga" }
+					]
+				}
+			]
+		}, {
+			"key": "accounts",
+			"type": "screen"
+		}, {
+			"key": "data",
+			"type": "screen",
+			"items": []
+		}, {
+			"key": "ui",
+			"type": "screen",
+			"items": [
+				{
+					"key": "player",
+					"type": "screen",
+					"items": []
+				}, {
+					"key": "reader",
+					"type": "screen",
+					"items": []
+				}
+			]
+		}, {
+			"key": "flags",
+			"type": "screen",
+			"items": [
+				{ "key": "new_search", "type": "boolean" },
+				{ "key": "new_home", "type": "boolean" },
+				{ "key": "new_settings", "type": "boolean" },
+				{ "key": "disable_old_extensions", "type": "boolean" },
+				{ "key": "new_media_details", "type": "boolean" },
+				{ "key": "new_media_preview", "type": "boolean" }
+			]
+		}
+	]
+}
