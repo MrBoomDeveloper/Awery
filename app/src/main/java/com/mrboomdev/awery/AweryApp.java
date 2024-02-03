@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,9 @@ import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,10 +91,29 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Override
 	public void onCreate() {
-		super.onCreate();
-		registerActivityLifecycleCallbacks(this);
 		app = this;
+		super.onCreate();
+
+		setupCrashHandler();
+		registerActivityLifecycleCallbacks(this);
+
 		Anilist.INSTANCE.getSavedToken(this);
+	}
+
+	private void setupCrashHandler() {
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+			SettingsFactory.saveInstance(this);
+
+			var activity = getAnyActivity();
+			toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
+
+			if(activity != null) {
+				activity.finishAffinity();
+				return;
+			}
+
+			System.exit(-1);
+		});
 	}
 
 	@Override

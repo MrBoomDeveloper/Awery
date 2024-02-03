@@ -9,6 +9,7 @@
 				{
 					"key": "default_tab",
 					"type": "select",
+					"int_value": 1,
 					"items": [
 						{ "key": "anime" },
 						{ "key": "home" },

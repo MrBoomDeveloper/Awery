@@ -85,13 +85,11 @@ public class SettingsFactory {
 		if(instance != null) return instance;
 
 		var file = new File(context.getExternalFilesDir(null),"settings.json");
-		var predefined = fromAssets(context, "settings.json");
+		instance = fromAssets(context, "settings.json");
 
 		if(file.exists()) {
-			instance = fromFile(file);
-			instance.merge(predefined);
-		} else {
-			instance = predefined;
+			var saved = fromFile(file);
+			instance.mergeValues(saved);
 		}
 
 		instance.setAsParentForChildren();

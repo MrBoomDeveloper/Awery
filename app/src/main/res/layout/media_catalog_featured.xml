@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_height="@dimen/portrait_featured_height"
     android:layout_marginBottom="0dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    tools:layout_height="@dimen/portrait_featured_height">
 
     <ImageView
         android:id="@+id/banner"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:scaleType="centerCrop"
-        android:importantForAccessibility="no"
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <ImageView
         android:id="@+id/shadow"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/linear_gradient_bg"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:scaleType="fitXY"
-        android:visibility="visible"
-        android:src="@drawable/linear_gradient_bg"
-        android:importantForAccessibility="no" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/poster_holder"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="H,5:7"
-        app:layout_constraintWidth_max="250dp"
         android:layout_margin="@dimen/normal_margin"
         android:layout_marginHorizontal="@dimen/large_margin"
+        app:cardCornerRadius="15dp"
         app:layout_constraintBottom_toTopOf="@id/title"
+        app:layout_constraintDimensionRatio="H,5:7"
         app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
         app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
         app:layout_constraintTop_toBottomOf="@id/header_barrier"
-        app:cardCornerRadius="15dp">
+        app:layout_constraintWidth_max="250dp">
 
         <ImageView
             android:id="@+id/poster"
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"
-            tools:src="@tools:sample/backgrounds/scenic"/>
+            tools:src="@tools:sample/backgrounds/scenic" />
 
     </androidx.cardview.widget.CardView>
 
@@ -61,105 +61,159 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/large_margin"
         android:layout_marginTop="@dimen/normal_margin"
-        tools:text="@tools:sample/lorem"
-        android:textAlignment="center"
-        android:gravity="center"
+        android:layout_marginBottom="3dp"
         android:ellipsize="end"
         android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
         android:maxLines="2"
+        android:shadowColor="#000000"
+        android:shadowRadius="2"
+        android:textAlignment="center"
         android:textSize="20sp"
-        android:layout_marginHorizontal="@dimen/large_margin"
-        android:layout_marginBottom="3dp"
-        app:layout_constraintWidth_max="450dp"
-        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
+        app:layout_constraintBottom_toTopOf="@id/description"
         app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
-        app:layout_constraintBottom_toTopOf="@id/description" />
+        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
+        app:layout_constraintWidth_max="450dp"
+        tools:text="@tools:sample/lorem" />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/large_margin"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="6dp"
         android:alpha=".9"
         android:gravity="center"
-        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:shadowColor="#000000"
+        android:shadowRadius="2"
         android:text="@string/app_name"
         android:textSize="16sp"
-        android:layout_marginTop="3dp"
-        android:layout_marginHorizontal="@dimen/large_margin"
-        android:maxLines="2"
-        tools:text="@tools:sample/lorem/random"
+        app:layout_constraintBottom_toTopOf="@id/meta"
         app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
-        app:layout_constraintBottom_toTopOf="@id/tags"
-        android:layout_marginBottom="6dp"
-        app:layout_constraintRight_toLeftOf="@id/right_side_barrier" />
+        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
+        tools:text="@tools:sample/lorem/random" />
 
-    <TextView
-        android:id="@+id/tags"
+    <LinearLayout
+        android:id="@+id/meta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:lines="1"
-        app:layout_constraintHorizontal_bias="1"
-        android:alpha=".75"
-        android:ellipsize="end"
-        android:layout_marginLeft="@dimen/large_margin"
-        tools:text="Action, Comedy, Fantasy"
-        app:layout_constraintLeft_toRightOf="@id/status"
-        android:textAlignment="textEnd"
-        android:gravity="end"
-        app:layout_constraintRight_toLeftOf="@id/right_side_barrier"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="36dp"
-        android:textSize="15sp"
-        android:layout_marginRight="@dimen/normal_margin"
-        tools:ignore="RtlHardcoded" />
-
-    <TextView
-        android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.75"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginLeft="@dimen/large_margin"
-        android:text="Ongoing"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="15sp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/actions"
         app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
+        app:layout_constraintRight_toLeftOf="@id/right_side_barrier">
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:lines="1"
+            android:alpha=".8"
+            android:shadowColor="#000000"
+            android:shadowRadius="1"
+            android:text="Ongoing"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/meta_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:shadowColor="#000000"
+            android:shadowRadius="1"
+            android:alpha=".8"
+            android:text="•"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="15sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:shadowColor="#000000"
+            android:alpha=".8"
+            android:shadowRadius="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="15sp"
+            tools:text="Action, Comedy, Fantasy" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/actions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:ignore="RtlHardcoded" />
+        app:layout_constraintLeft_toRightOf="@id/left_side_barrier"
+        app:layout_constraintRight_toLeftOf="@id/right_side_barrier">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/watch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:paddingHorizontal="32dp"
+            android:text="Watch Now"
+            app:icon="@drawable/ic_round_play_arrow_24"
+            app:iconSize="26dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bookmark"
+            style="@style/Widget.Material3.Button.IconButton.Filled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="12dp"
+            android:importantForAccessibility="no"
+            app:icon="@drawable/ic_round_collections_bookmark_24" />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/right_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/left_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/top_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/header_barrier"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/top_side_barrier"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/top_side_barrier" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,8 @@ package com.mrboomdev.awery.data.settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.squareup.moshi.Json;
+
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collection;
@@ -11,11 +13,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class SettingsItem {
-	private String key;
-	private SettingsItemType type;
+	private final String key;
+	private final SettingsItemType type;
 	private List<SettingsItem> items;
 	private SettingsItem parent;
+	@Json(name = "boolean_value")
 	private Boolean booleanValue;
+	@Json(name = "int_value")
 	private Integer intValue;
 
 	public SettingsItem(String key, SettingsItemType type, List<SettingsItem> items) {
@@ -61,31 +65,18 @@ public class SettingsItem {
 		return parent;
 	}
 
-	public void merge(SettingsItem item) {
+	public void mergeValues(SettingsItem item) {
 		if(item == null) return;
 
-		booleanValue = item.booleanValue;
-		intValue = item.intValue;
+		if(item.booleanValue != null) booleanValue = item.booleanValue;
+		if(item.intValue != null) intValue = item.intValue;
 
 		if(items != null) {
 			for(var child : items) {
-				child.merge(item.findDirect(child.getKey()));
-			}
-
-			for(var child : item.items) {
-				if(findDirect(child.getKey()) == null) {
-					items.add(child);
-				}
+				child.mergeValues(item.findDirect(child.getKey()));
 			}
 		} else {
 			items = item.items;
-		}
-
-		if(items != null) {
-			for(var child : items) {
-				child.setParent(this);
-				child.setAsParentForChildren();
-			}
 		}
 	}
 
@@ -142,6 +133,14 @@ public class SettingsItem {
 	@Override
 	public String toString() {
 		var result = "{ \"key\": \"" + key + "\"";
+
+		if(intValue != null) {
+			result += ", \"int_value\": " + intValue;
+		}
+
+		if(booleanValue != null) {
+			result += ", \"boolean_value\": " + booleanValue;
+		}
 
 		if(type != null) {
 			result += ", \"type\": \"" + type.toString().toLowerCase(Locale.ROOT) + "\"";
