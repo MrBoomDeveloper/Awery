@@ -80,6 +80,10 @@ public interface ObservableList<E> extends List<E> {
 
 	void observeChanges(ChangeObserver<E> callback);
 
+	void observeLargeChanges(LargeChangeObserver callback);
+
+	void removeLargeChangeObserver(LargeChangeObserver callback);
+
 	void observeRemovals(RemoveObserver<E> callback);
 
 	void removeAdditionObserver(AddObserver<E> observer);
@@ -90,6 +94,10 @@ public interface ObservableList<E> extends List<E> {
 
 	interface RemoveObserver<E> {
 		void removed(E item, int index);
+	}
+
+	interface LargeChangeObserver {
+		boolean changed();
 	}
 
 	interface ChangeObserver<E> {

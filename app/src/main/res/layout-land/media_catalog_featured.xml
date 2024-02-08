@@ -98,7 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Action Comedy Fantasy"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/colorOnTertiaryContainer"
         android:shadowColor="#000000"
         android:shadowRadius="1"
         app:layout_constraintBottom_toTopOf="@id/title"
@@ -109,17 +109,32 @@
         tools:ignore="RtlHardcoded" />
 
     <TextView
+        android:id="@+id/meta_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:shadowColor="#000000"
+        android:shadowRadius="1"
+        android:alpha=".8"
+        app:layout_constraintLeft_toRightOf="@id/tags"
+        app:layout_constraintTop_toTopOf="@id/tags"
+        android:text="•"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="15sp"
+        tools:ignore="HardcodedText" />
+
+    <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/normal_margin"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="10dp"
         android:shadowColor="#000000"
         android:shadowRadius="1"
         android:text="Ongoing"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/colorOnTertiaryContainer"
         android:textSize="15sp"
-        app:layout_constraintLeft_toRightOf="@id/tags"
+        app:layout_constraintLeft_toRightOf="@id/meta_separator"
         app:layout_constraintBottom_toBottomOf="@id/tags"
         tools:ignore="RtlHardcoded,TextContrastCheck" />
 

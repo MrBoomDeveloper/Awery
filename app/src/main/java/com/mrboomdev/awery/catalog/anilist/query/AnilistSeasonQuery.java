@@ -51,7 +51,7 @@ public class AnilistSeasonQuery extends AnilistQuery<Collection<CatalogMedia<?>>
 	public String getQuery() {
 		return """
 			{
-				Page(page: 1, perPage: 15) {
+				Page(page: 1, perPage: 10) {
 					media(seasonYear: __SEASON_YEAR__, season: __SEASON_NAME__, isAdult: false, type: __TYPE__, sort: POPULARITY_DESC) {
 						type format
 						id description bannerImage

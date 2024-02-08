@@ -8,19 +8,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ConcatAdapter;
-
-import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.anilist.AnilistApi;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSeasonQuery;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistTrendingQuery;
 import com.mrboomdev.awery.ui.activity.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.ObservableArrayList;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,50 +56,35 @@ public class AnimeFragment extends MediaCatalogFragment {
 	@SuppressLint("NotifyDataSetChanged")
 	private void loadData() {
 		pagerAdapter.setItems(Collections.emptyList());
-
-		try {
-			pagerAdapter.setEnabled(true);
-		} catch(IllegalStateException e) {
-			e.printStackTrace();
-		}
-
+		pagerAdapter.setEnabled(true);
 		pagerAdapter.setIsLoading(true);
 
 		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setItems(items);
 			pagerAdapter.setIsLoading(false);
-		})).catchExceptions(e -> {
+		})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setEnabled(false);
-			AweryApp.toast("Failed to get trending items", 1);
 			e.printStackTrace();
-		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
+		})).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
-		var cats = ObservableList.of(
-				new MediaCategoriesAdapter.Category("Trending"),
-				new MediaCategoriesAdapter.Category("Recommended"),
-				new MediaCategoriesAdapter.Category("Popular")
-		);
-
+		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();
 		categoriesAdapter.setCategories(cats);
 
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.get(0).setItems(items);
+			cats.add(new MediaCategoriesAdapter.Category("Trending", items));
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load trending items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.get(1).setItems(items);
+			cats.add(new MediaCategoriesAdapter.Category("Recommended", items));
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load recommended items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.get(2).setItems(items);
+			cats.add(new MediaCategoriesAdapter.Category("Popular", items));
 		})).catchExceptions(e -> {
-			AweryApp.toast("Failed to load popular items", 1);
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 	}

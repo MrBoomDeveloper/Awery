@@ -37,6 +37,7 @@ public class AnilistMedia {
 	public CatalogMedia<AnilistMedia> toCatalogMedia() {
 		var media = new CatalogMedia<AnilistMedia>();
 		media.title = Objects.requireNonNullElse(title.english, title.romaji);
+		media.originalTitle = title.romaji;
 		media.description = description;
 		media.banner = bannerImage;
 		media.color = coverImage.color;

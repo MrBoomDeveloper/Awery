@@ -25,16 +25,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.catalog.template.CatalogCategory;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
-import com.mrboomdev.awery.util.SingleViewAdapter;
-import com.mrboomdev.awery.util.ViewUtil;
+import com.mrboomdev.awery.util.ui.SingleViewAdapter;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import ani.awery.R;
@@ -135,6 +135,26 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		public PagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
 			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
+			var holder = new PagerViewHolder(binding);
+
+			View.OnClickListener clickListener = v -> {
+				var item = holder.getItem();
+				if(item != null) item.handleClick(parent.getContext());
+			};
+
+			Runnable longClickListener = () -> {
+				var item = holder.getItem();
+				if(item != null) item.handleLongClick(parent.getContext());
+			};
+
+			binding.getRoot().setOnClickListener(clickListener);
+			binding.watch.setOnClickListener(clickListener);
+			binding.bookmark.setOnClickListener(v -> longClickListener.run());
+
+			binding.getRoot().setOnLongClickListener(v -> {
+				longClickListener.run();
+				return true;
+			});
 
 			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, (view, insets) ->
 					ViewUtil.setLeftMargin(view, insets.left), parent.getRootWindowInsets());
@@ -145,7 +165,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, (view, insets) ->
 					ViewUtil.setTopMargin(view, insets.top), parent.getRootWindowInsets());
 
-			return new PagerViewHolder(binding);
+			return holder;
 		}
 
 		@Override
@@ -165,13 +185,20 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 
 	public class PagerViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogFeaturedBinding binding;
+		private CatalogMedia<?> item;
 
 		public PagerViewHolder(@NonNull MediaCatalogFeaturedBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
+		public CatalogMedia<?> getItem() {
+			return item;
+		}
+
 		public void bind(@NonNull CatalogMedia<?> item) {
+			this.item = item;
+
 			binding.title.setText(item.title);
 			binding.description.setText(Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT));
 

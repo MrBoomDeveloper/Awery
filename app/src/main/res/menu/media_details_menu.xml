@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item android:title="@string/info"
+        android:id="@+id/info"
+        android:icon="@drawable/ic_round_info_24" />
+
+    <item android:title="@string/watch"
+        android:id="@+id/watch"
+        android:icon="@drawable/ic_round_play_arrow_24" />
+
+    <item android:title="@string/comments"
+        android:id="@+id/comments"
+        android:icon="@drawable/baseline_comment_24" />
+
+    <item android:title="@string/relations"
+        android:id="@+id/relations"
+        android:icon="@drawable/ic_round_collections_bookmark_24" />
+</menu>

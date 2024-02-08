@@ -11,13 +11,13 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
-import com.mrboomdev.awery.util.ViewUtil;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;
 
 import ani.awery.databinding.MediaCatalogCategoryBinding;
 
-public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> {
+public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> implements ObservableList.AddObserver<MediaCategoriesAdapter.Category> {
 	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
 	private ObservableList<Category> categories = new ObservableArrayList<>();
 
@@ -26,6 +26,12 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		categories.observeAdditions((category, index) -> notifyItemInserted(index));
 		categories.observeChanges((_new, _old, index) -> notifyItemChanged(index));
 		categories.observeRemovals((category, index) -> notifyItemRemoved(index));
+
+		categories.observeLargeChanges(() -> {
+			notifyDataSetChanged();
+			return true;
+		});
+
 		setHasStableIds(true);
 	}
 
@@ -40,7 +46,16 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setCategories(ObservableList<Category> categories) {
+		if(this.categories != null) {
+			this.categories.removeAdditionObserver(this);
+		}
+
 		this.categories = categories;
+
+		if(this.categories != null) {
+			this.categories.observeAdditions(this);
+		}
+
 		notifyDataSetChanged();
 	}
 
@@ -77,6 +92,11 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	@Override
 	public int getItemCount() {
 		return categories.size();
+	}
+
+	@Override
+	public void added(Category item, int index) {
+		notifyItemInserted(index);
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -126,8 +146,13 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			this.associatedViewHolder = holder;
 		}
 
-		public Category(String title) {
+		public Category(String title, Collection<CatalogMedia<?>> items) {
 			this.title = title;
+			setItems(items);
+		}
+
+		public Category(String title) {
+			this(title, null);
 		}
 	}
 }

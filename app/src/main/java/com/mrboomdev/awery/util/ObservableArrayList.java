@@ -11,6 +11,7 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 	private List<AddObserver<E>> addObservers;
 	private List<RemoveObserver<E>> removeObservers;
 	private List<ChangeObserver<E>> changeObservers;
+	private List<LargeChangeObserver> largeChangeObservers;
 
 	public ObservableArrayList(@NonNull Collection<? extends E> c) {
 		super(c);
@@ -43,57 +44,72 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean addAll(@NonNull Collection<? extends E> c, boolean callObservers) {
-		var result = super.addAll(c);
-
-		if(callObservers) {
-			var array = c.toArray();
-			var lastIndex = size() - 1;
-
-			for(int i = 0; i < array.length; i++) {
-				var item = array[i];
-				var newIndex = i + lastIndex;
-
-				for(var observer : addObservers) {
-					if(item == null) {
-						observer.added(null, newIndex);
-						continue;
-					}
-
-					observer.added((E) item, newIndex);
-				}
-			}
+	public void observeLargeChanges(LargeChangeObserver callback) {
+		if(largeChangeObservers == null) {
+			largeChangeObservers = new ArrayList<>();
 		}
 
-		return result;
+		largeChangeObservers.add(callback);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean addAll(int index, @NonNull Collection<? extends E> c, boolean callObservers) {
-		var result = super.addAll(index, c);
+	public void removeLargeChangeObserver(LargeChangeObserver callback) {
+		if(largeChangeObservers != null) {
+			largeChangeObservers.remove(callback);
+		}
+	}
 
-		if(callObservers) {
-			var array = c.toArray();
-			var lastIndex = size() - 1 + index;
+	@Override
+	public boolean addAll(@NonNull Collection<? extends E> c, boolean callObservers) {
+		boolean callSmallObservers = true;
 
-			for(int i = 0; i < array.length; i++) {
-				var item = array[i];
-				var newIndex = i + lastIndex;
+		if(callObservers && largeChangeObservers != null) {
+			for(var observer : largeChangeObservers) {
+				var result = observer.changed();
+				if(result) callSmallObservers = false;
+			}
+		}
 
+		for(var item : c) {
+			if(!super.add(item)) {
+				return false;
+			}
+
+			if(callObservers && callSmallObservers) {
 				for(var observer : addObservers) {
-					if(item == null) {
-						observer.added(null, newIndex);
-						continue;
-					}
-
-					observer.added((E) item, newIndex);
+					observer.added((E) item, size() - 1);
 				}
 			}
 		}
 
-		return result;
+		return true;
+	}
+
+	@Override
+	public boolean addAll(int index, @NonNull Collection<? extends E> c, boolean callObservers) {
+		int nextIndex = index;
+		boolean callSmallObservers = true;
+
+		if(callObservers && largeChangeObservers != null) {
+			for(var observer : largeChangeObservers) {
+				var result = observer.changed();
+				if(result) callSmallObservers = false;
+			}
+		}
+
+		for(var item : c) {
+			super.add(nextIndex, item);
+
+			if(callObservers && callSmallObservers) {
+				for(var observer : addObservers) {
+					observer.added((E) item, nextIndex);
+				}
+			}
+
+			nextIndex++;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -101,8 +117,19 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 		super.clear();
 
 		if(callObservers) {
-			for(var observer : removeObservers) {
-				observer.removed(null, 0);
+			boolean callSmallObservers = true;
+
+			if(largeChangeObservers != null) {
+				for(var observer : largeChangeObservers) {
+					var result = observer.changed();
+					if(result) callSmallObservers = false;
+				}
+			}
+
+			if(callSmallObservers) {
+				for(var observer : removeObservers) {
+					observer.removed(null, 0);
+				}
 			}
 		}
 	}
@@ -133,15 +160,21 @@ public class ObservableArrayList<E> extends ArrayList<E> implements ObservableLi
 
 	@Override
 	public boolean add(E e, boolean callObservers) {
+		var wasSize = size();
 		boolean result = super.add(e);
 
 		if(callObservers) {
 			for(var observer : addObservers) {
-				observer.added(e, size() - 1);
+				observer.added(e, wasSize);
 			}
 		}
 
 		return result;
+	}
+
+	@Override
+	public boolean add(E e) {
+		return ObservableList.super.add(e);
 	}
 
 	@Override

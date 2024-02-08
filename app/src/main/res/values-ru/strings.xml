@@ -64,10 +64,9 @@
 
     <string name="status">СТАТУС</string>
     <string name="progress">ПРОГРЕСС</string>
-    <string name="score">SCORE</string>
-    <string name="score_suffix" translatable="false">" / 10"</string>
-    <string name="started_at">STARTED AT</string>
-    <string name="completed_at">COMPLETED AT</string>
+    <string name="score">РЕЙТИНГ</string>
+    <string name="started_at">НАЧАТО</string>
+    <string name="completed_at">ЗАВЕРШЕНО</string>
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>
     <string name="remove">Удалить</string>
@@ -87,12 +86,12 @@
     <string name="source">Source</string>
     <string name="main_studio">Студия</string>
     <string name="genres">Жанры</string>
-    <string name="description">Synopsis</string>
+    <string name="description">Описание</string>
     <string name="characters">Персонажи</string>
-    <string name="relations">Relations</string>
+    <string name="relations">Связанное</string>
 
     <string name="roles">Роли</string>
-    <string name="details">Details</string>
+    <string name="details">Детали</string>
 
     <string name="play_yt">Смотреть на YouTube</string>
     <string name="eps">Эпизоды</string>
@@ -104,16 +103,16 @@
         Ничего не найдено X( \n
         Попробуйте другой источник.
     </string>
-    <string name="not_supported">%1$s is not supported!</string>
+    <string name="not_supported">%1$ не поддерживается!</string>
     <string name="server_selector">Выберите Сервер</string>
     <string name="auto_select_server">Auto Selecting Server</string>
-    <string name="make_default">Make Default</string>
+    <string name="make_default">Сделать по умолчанию</string>
     <string name="filler">Фильтр</string>
-    <string name="adult">Adult</string>
-    <string name="list_only">List Only</string>
+    <string name="adult">Для Взрослых</string>
+    <string name="list_only">Только из Списка</string>
     <string name="tag">Тег</string>
     <string name="tags">Теги</string>
-    <string name="synonyms">Synonyms</string>
+    <string name="synonyms">Синонимы</string>
     <string name="trailer">Трейлер</string>
     <string name="opening">Заставка</string>
     <string name="ending">Концовка</string>
@@ -136,7 +135,7 @@
     <string name="default_ep_view">Default Episode Layout</string>
     <string name="default_chp_view">Default Chapter Layout</string>
     <string name="ui">Пользовательский Интерфейс</string>
-    <string name="common">Common</string>
+    <string name="common">Общее</string>
     <string name="theme">Тема</string>
     <string name="ui_settings">Настройки Интерфейса</string>
     <string name="about">Об Приложении</string>
@@ -175,11 +174,13 @@
         <item> Theme 4</item>
     </string-array>
 
+    <string name="comments">Комментарии</string>
+
     <string name="video">Видео</string>
-    <string name="video_info">Show Video Info</string>
-    <string name="source_info">Show Source Name</string>
+    <string name="video_info">Показать информацию об видео</string>
+    <string name="source_info">Показать название источника</string>
     <string name="video_info_info">Shows what the Resolution of the current video playing, useful for <b>\"Multi Quality\"</b> servers.</string>
-    <string name="default_quality">Auto Quality Selection</string>
+    <string name="default_quality">Авто Выбор Качества</string>
     <string name="height">Высота</string>
     <string name="width">Ширина</string>
     <string name="default_quality_info">Automatically uses the closest quality provided by default, ONLY applied for \"Multi Quality\" Servers. Auto changes upon playing a video.</string>

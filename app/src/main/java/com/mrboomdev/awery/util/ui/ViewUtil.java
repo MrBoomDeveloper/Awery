@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.ui;
 
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -70,7 +70,15 @@ public class ViewUtil {
 	}
 
 	public static void setBottomPadding(@NonNull View view, int padding) {
-		view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
+		setBottomPadding(view, padding, true);
+	}
+
+	public static void setBottomPadding(@NonNull View view, int padding, boolean getOther) {
+		view.setPadding(
+				getOther ? view.getPaddingLeft() : 0,
+				getOther ? view.getPaddingTop() : 0,
+				getOther ? view.getPaddingRight() : 0,
+				padding);
 	}
 
 	public static void setHorizontalPadding(@NonNull View view, int padding) {

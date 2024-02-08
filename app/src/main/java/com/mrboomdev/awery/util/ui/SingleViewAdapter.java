@@ -1,5 +1,6 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.ui;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jetbrains.annotations.Contract;
 
 public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	private final Handler handler = new Handler(Looper.getMainLooper());
 	private boolean isEnabled = true;
 
 	@NonNull
@@ -24,16 +26,21 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		};
 	}
 
-	public void setEnabled(boolean isEnabled) {
-		if(this.isEnabled && !isEnabled) {
-			notifyItemRemoved(0);
-		}
-
-		if(!this.isEnabled && isEnabled) {
-			notifyItemInserted(0);
-		}
-
+	public synchronized void setEnabled(boolean isEnabled) {
+		boolean wasEnabled = this.isEnabled;
 		this.isEnabled = isEnabled;
+
+		try {
+			if(wasEnabled && !isEnabled) {
+				notifyItemRemoved(0);
+			}
+
+			if(!wasEnabled && isEnabled) {
+				notifyItemInserted(0);
+			}
+		} catch(IllegalStateException e) {
+			handler.post(() -> setEnabled(wasEnabled));
+		}
 	}
 
 	public boolean isEnabled() {

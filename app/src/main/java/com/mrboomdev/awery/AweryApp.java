@@ -3,10 +3,12 @@ package com.mrboomdev.awery;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -100,17 +102,31 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		Anilist.INSTANCE.getSavedToken(this);
 	}
 
+	public static Activity getActivity(@NonNull View view) {
+		return getActivity(view.getContext());
+	}
+
+	@Nullable
+	public static Activity getActivity(Context context) {
+		Context ctx = context;
+
+		while(ctx instanceof ContextWrapper wrapper) {
+			if(ctx instanceof Activity activity) {
+				return activity;
+			}
+
+			ctx = wrapper.getBaseContext();
+		}
+
+		return null;
+	}
+
 	private void setupCrashHandler() {
 		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
 			SettingsFactory.saveInstance(this);
 
 			var activity = getAnyActivity();
 			toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
-
-			if(activity != null) {
-				activity.finishAffinity();
-				return;
-			}
 
 			System.exit(-1);
 		});

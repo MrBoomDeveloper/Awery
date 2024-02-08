@@ -132,7 +132,7 @@
     <string name="chaps">Chapters</string>
     <string name="chap">Chapter</string>
     <string name="wrong"><u>Wrong Title?</u></string>
-    <string name="source_not_found" translatable="false">
+    <string name="source_not_found">
         Couldn\'t find anything X( \n
         Try another source.
     </string>
@@ -175,7 +175,7 @@
     <string name="desc">"    Awery is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream-download Anime through extensions &amp; Manga.\nAwery literally means the \"best of the best\" in japanese. Well, we would like to say this is the best open source app for anime and manga on Android, what would you say?"</string>
     <string name="devs">Developers</string>
     <string name="disclaimer">Disclaimer</string>
-    <string name="full_disclaimer" translatable="false">
+    <string name="full_disclaimer">
          - Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.
         \n\n - Awery or any of its developer/staff don\'t host any of the content found inside Awery. Any and all images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).
         \n\n - Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff.
@@ -357,7 +357,7 @@
     <string name="login_with_anilist">Login with Anilist!</string>
     <string name="anilist">Anilist</string>
     <string name="account_help">How does this work\?</string>
-    <string name="full_account_help" translatable="false">
+    <string name="full_account_help">
         Awery is an Anilist Based App, so for syncing with your MAL Account, It needs an Anilist account to be logged in.
         \nOnce logged in with both Anilist and MAL accounts, the app will automatically update your MAL account whenever:
         \n- Add a new Media
@@ -533,8 +533,8 @@
     <string name="found">Found</string>
 
     <string name="age">"__Age:__ "</string>
-    <string name="birthday" translatable="false">\n"__Birthday:__ "</string>
-    <string name="gender" translatable="false">\n"__Gender:__ "</string>"
+    <string name="birthday">\n"__Birthday:__ "</string>
+    <string name="gender">\n"__Gender:__ "</string>"
 
     <string name="male">Male</string>
     <string name="female">Female</string>
@@ -640,4 +640,5 @@
     <string name="random_selection">Random Selection</string>
     <string name="incognito_mode">Incognito Mode</string>
     <string name="android12_requires">Requires Android 12+</string>
+    <string name="comments">Comments</string>
 </resources>

@@ -118,7 +118,7 @@
             android:shadowColor="#000000"
             android:shadowRadius="1"
             android:text="Ongoing"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="?attr/colorOnTertiaryContainer"
             android:textSize="15sp" />
 
         <TextView
@@ -143,7 +143,7 @@
             android:shadowColor="#000000"
             android:alpha=".8"
             android:shadowRadius="1"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="?attr/colorOnTertiaryContainer"
             android:textSize="15sp"
             tools:text="Action, Comedy, Fantasy" />
 

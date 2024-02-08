@@ -70,10 +70,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.mrboomdev.awery.ui.activity.MediaDetailsActivity"
+            android:label="Awery - Media Details (Experimental)"
+            android:configChanges="screenSize|layoutDirection"
+            android:exported="false" />
+
         <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity"
             android:label="Awery - Settings (Experimental)"
             android:configChanges="screenSize|layoutDirection"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"

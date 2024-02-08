@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.AnticipateInterpolator;
-import android.view.animation.ScaleAnimation;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -25,14 +23,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.HomeFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
-import com.mrboomdev.awery.util.ViewUtil;
+import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.FadeTransformer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -72,25 +70,9 @@ public class MainActivity extends AppCompatActivity {
 		registerBackListener();
 
 		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
-		binding.pages.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
 		binding.pages.setAdapter(pagesAdapter);
 		binding.pages.setUserInputEnabled(false);
-
-		binding.pages.setPageTransformer((page, position) -> {
-			if(position != 0) return;
-			ObjectAnimator.ofFloat(page, "alpha", 0, 1).setDuration(150).start();
-
-			var anim = new ScaleAnimation(
-					1.25f, 1f, 1.25f, 1f,
-					Animation.RELATIVE_TO_SELF,
-					0.5f,
-					Animation.RELATIVE_TO_SELF,
-					0);
-
-			anim.setDuration(200);
-			anim.setInterpolator(this, R.anim.over_shoot);
-			page.startAnimation(anim);
-		});
+		binding.pages.setPageTransformer(new FadeTransformer());
 
 		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
 		int currentPageIndex = currentPage.ordinal();
@@ -98,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setCurrentItem(currentPageIndex, false);
 
 		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
+
 			@Override
 			public void onTabSelected(int was, @Nullable AnimatedBottomBar.Tab tab, int next, @NonNull AnimatedBottomBar.Tab tab1) {
 				binding.pages.setCurrentItem(next, false);

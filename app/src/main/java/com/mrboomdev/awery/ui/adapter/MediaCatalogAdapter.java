@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,18 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ani.awery.databinding.MediaCatalogItemBinding;
+import ani.awery.media.MediaDetailsActivity;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia<?>> {
 	private ObservableList<CatalogMedia<?>> items;
-	private ClickCallback clickCallback;
 
 	public MediaCatalogAdapter(ObservableList<CatalogMedia<?>> items) {
 		setHasStableIds(true);
 		this.items = items;
-
-		setOnClickListener(media -> {
-			System.out.println("clicked: " + media);
-		});
 	}
 
 	public MediaCatalogAdapter() {
@@ -37,10 +34,6 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	@Override
 	public long getItemId(int position) {
 		return position;
-	}
-
-	public void setOnClickListener(ClickCallback listener) {
-		this.clickCallback = listener;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -68,8 +61,19 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		var viewHolder = new ViewHolder(binding);
 
 		binding.getRoot().setOnClickListener(view -> {
-			if(clickCallback == null) return;
-			clickCallback.clicked(viewHolder.getItem());
+			var item = viewHolder.getItem();
+			if(item != null) item.handleClick(parent.getContext());
+		});
+
+		binding.getRoot().setOnLongClickListener(view -> {
+			var item = viewHolder.getItem();
+
+			if(item != null) {
+				item.handleLongClick(parent.getContext());
+				return true;
+			}
+
+			return false;
 		});
 
 		return viewHolder;
@@ -119,9 +123,5 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public interface ClickCallback {
-		void clicked(CatalogMedia<?> media);
 	}
 }
