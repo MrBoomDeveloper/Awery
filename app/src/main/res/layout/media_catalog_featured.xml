@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="0dp"
+    android:layout_marginBottom="15dp"
     tools:layout_height="@dimen/portrait_featured_height">
 
     <ImageView

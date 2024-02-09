@@ -14,6 +14,8 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private boolean isEnabled = true;
 
+	{ setHasStableIds(true); }
+
 	@NonNull
 	@Contract("_ -> new")
 	public static SingleViewAdapter fromView(@NonNull View view) {

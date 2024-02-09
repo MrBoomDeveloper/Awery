@@ -32,6 +32,10 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
+	public static void setPadding(@NonNull View view, int padding) {
+		view.setPadding(padding, padding, padding, padding);
+	}
+
 	public static void setRightMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return;

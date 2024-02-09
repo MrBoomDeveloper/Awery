@@ -27,27 +27,13 @@ public class AnimeFragment extends MediaCatalogFragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var config = new ConcatAdapter.Config.Builder()
-				.setIsolateViewTypes(true)
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build();
-
 		var header = HeaderLayoutBinding.inflate(getLayoutInflater());
 		pagerAdapter.setHeaderView(header.getRoot());
+		setupHeader(header);
 
-		header.search.setOnClickListener(v -> {
-			var intent = new Intent(requireActivity(), SearchActivity.class);
-			startActivity(intent);
-		});
-
-		header.settingsWrapper.setOnClickListener(v -> {
-			var intent = new Intent(requireActivity(), SettingsActivity.class);
-			startActivity(intent);
-		});
-
-		var concatAdapter = new ConcatAdapter(config, pagerAdapter, categoriesAdapter);
-		getBinding().catalogCategories.setHasFixedSize(true);
-		getBinding().catalogCategories.setAdapter(concatAdapter);
+		var concatAdapter = getConcatAdapter();
+		concatAdapter.addAdapter(pagerAdapter);
+		concatAdapter.addAdapter(categoriesAdapter);
 
 		loadData();
 		getBinding().swipeRefresher.setOnRefreshListener(this::loadData);
@@ -59,12 +45,16 @@ public class AnimeFragment extends MediaCatalogFragment {
 		pagerAdapter.setEnabled(true);
 		pagerAdapter.setIsLoading(true);
 
+		getConcatAdapter().removeAdapter(getHeaderAdapter());
+
 		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setItems(items);
 			pagerAdapter.setIsLoading(false);
 		})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setEnabled(false);
 			e.printStackTrace();
+
+			getConcatAdapter().addAdapter(0, getHeaderAdapter());
 		})).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();

@@ -50,10 +50,6 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 	private ProgressBar progressBar;
 	private boolean isLoading;
 
-	public MediaPagerAdapter() {
-		setHasStableIds(true);
-	}
-
 	private void attachHeaderView(View view) {
 		headerLayout.removeAllViews();
 		headerLayout.addView(view, ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
