@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.request.RequestOptions;
+import com.mrboomdev.awery.catalog.provider.ExtensionsManager;
 import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.util.Disposable;
 
@@ -56,8 +57,12 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	public static void toast(Activity activity, String text, int duration) {
-		Objects.requireNonNull(activity).runOnUiThread(() ->
-				Toast.makeText(activity, text, duration).show());
+		if(activity == null) {
+			Toast.makeText(app, text, duration).show();
+			return;
+		}
+
+		activity.runOnUiThread(() -> Toast.makeText(activity, text, duration).show());
 	}
 
 	public static void toast(String text, int duration) {
@@ -99,6 +104,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		setupCrashHandler();
 		registerActivityLifecycleCallbacks(this);
 
+		ExtensionsManager.init(this);
 		Anilist.INSTANCE.getSavedToken(this);
 	}
 
