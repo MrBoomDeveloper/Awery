@@ -1,25 +1,26 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.ConcatAdapter;
+
+import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSeasonQuery;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistTrendingQuery;
-import com.mrboomdev.awery.ui.activity.SettingsActivity;
+import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.ObservableArrayList;
+import com.mrboomdev.awery.util.ObservableList;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import ani.awery.databinding.HeaderLayoutBinding;
-import ani.awery.media.SearchActivity;
 
 public class AnimeFragment extends MediaCatalogFragment {
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
@@ -60,20 +61,46 @@ public class AnimeFragment extends MediaCatalogFragment {
 		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();
 		categoriesAdapter.setCategories(cats);
 
-		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.add(new MediaCategoriesAdapter.Category("Trending", items));
-		})).catchExceptions(e -> {
-			e.printStackTrace();
-		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
+		loadCategory("Trending", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.TRENDING_DESC,
+				null, null, false
+		), cats);
 
-		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.add(new MediaCategoriesAdapter.Category("Recommended", items));
-		})).catchExceptions(e -> {
-			e.printStackTrace();
-		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
+		loadCategory("Recent Updates", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.UPDATED_AT_DESC,
+				null, null, false
+		), cats);
 
-		AnilistTrendingQuery.getAnime().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			cats.add(new MediaCategoriesAdapter.Category("Popular", items));
+		loadCategory("Popular", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.POPULARITY_DESC,
+				null, null, false
+		), cats);
+
+		loadCategory("Movies", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.TRENDING_DESC,
+				AnilistMedia.MediaFormat.MOVIE, null, false
+		), cats);
+
+		loadCategory("Most Favorite", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.FAVOURITES_DESC,
+				null, null, false
+		), cats);
+
+		loadCategory("The Best Anime", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.SCORE_DESC,
+				null, null, false
+		), cats);
+	}
+
+	private void loadCategory(String title, @NonNull AnilistQuery<Collection<CatalogMedia<?>>> query, ObservableList<MediaCategoriesAdapter.Category> list) {
+		query.executeQuery(items -> requireActivity().runOnUiThread(() -> {
+			list.add(new MediaCategoriesAdapter.Category(title, items));
 		})).catchExceptions(e -> {
 			e.printStackTrace();
 		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));

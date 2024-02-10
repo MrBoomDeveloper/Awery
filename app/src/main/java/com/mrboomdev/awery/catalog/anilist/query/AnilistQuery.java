@@ -3,10 +3,8 @@ package com.mrboomdev.awery.catalog.anilist.query;
 import android.util.Log;
 
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
-import com.mrboomdev.awery.catalog.anilist.data.AnilistTrendingMedia;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
-import com.squareup.moshi.JsonDataException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -98,5 +96,19 @@ public abstract class AnilistQuery<T> {
 
 	public interface ResponseCallback<T> {
 		void onResponse(T response);
+	}
+
+	public enum MediaSort {
+		SCORE,
+		SCORE_DESC,
+		POPULARITY,
+		POPULARITY_DESC,
+		TRENDING,
+		TRENDING_DESC,
+		UPDATED_AT,
+		UPDATED_AT_DESC,
+		SEARCH_MATCH,
+		FAVOURITES,
+		FAVOURITES_DESC
 	}
 }
