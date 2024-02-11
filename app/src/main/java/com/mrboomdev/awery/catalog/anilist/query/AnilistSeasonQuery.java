@@ -53,9 +53,9 @@ public class AnilistSeasonQuery extends AnilistQuery<Collection<CatalogMedia<?>>
 			{
 				Page(page: 1, perPage: 10) {
 					media(seasonYear: __SEASON_YEAR__, season: __SEASON_NAME__, isAdult: false, type: __TYPE__, sort: POPULARITY_DESC) {
-						type format
+						type format status
 						id description bannerImage
-						genres
+						genres averageScore
 						duration episodes
 						coverImage { extraLarge large color medium }
 						tags { name id description isMediaSpoiler isGeneralSpoiler }

@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.adapter;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -113,7 +114,16 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 		public void bind(@NonNull CatalogMedia<?> item) {
 			this.item = item;
+
 			binding.title.setText(item.title);
+			binding.ongoing.setVisibility(item.status == CatalogMedia.MediaStatus.ONGOING ? View.VISIBLE : View.GONE);
+
+			if(item.averageScore != null) {
+				binding.scoreWrapper.setVisibility(View.VISIBLE);
+				binding.score.setText(String.valueOf(item.averageScore));
+			} else {
+				binding.scoreWrapper.setVisibility(View.GONE);
+			}
 
 			try {
 				Glide.with(binding.getRoot())

@@ -32,7 +32,7 @@
                 android:scaleType="centerCrop"/>
 
             <LinearLayout
-                android:id="@+id/itemCompactScoreBG"
+                android:id="@+id/score_wrapper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintRight_toRightOf="parent"
@@ -58,7 +58,7 @@
                     tools:text="0.0" />
 
                 <ImageView
-                    android:id="@+id/starIcon"
+                    android:id="@+id/star_icon"
                     android:layout_width="12dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_round_star_24"

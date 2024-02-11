@@ -90,7 +90,7 @@ public class MediaCatalogFragment extends Fragment {
 			ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), (v, insets) -> {
 				ViewUtil.setTopMargin(v, insets.top);
 				ViewUtil.setRightMargin(v, insets.right);
-				ViewUtil.setLeftPadding(v, insets.left);
+				ViewUtil.setLeftMargin(v, insets.left);
 			}, parent.getRootWindowInsets());
 
 			return binding.getRoot();

@@ -15,11 +15,16 @@ public class AnilistMedia {
 	public MediaTitle title;
 	public MediaType type;
 	public MediaFormat format;
-	public Integer id, duration, episodes;
+	public Integer id, duration, episodes, averageScore;
 	public boolean isAdult;
+	public MediaStatus status;
 
 	public enum MediaFormat {
 		TV, TV_SHORT, MOVIE, SPECIAL, OVA, ONA, MUSIC, ONE_SHOT, NOVEL, MANGA
+	}
+
+	public enum MediaStatus {
+		FINISHED, RELEASING, NOT_YET_RELEASED, CANCELLED, HIATUS
 	}
 
 	public enum MediaType {
@@ -42,11 +47,20 @@ public class AnilistMedia {
 		media.banner = bannerImage;
 		media.color = coverImage.color;
 		media.originalData = this;
+		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
 
 		media.tags = tags.stream()
 				.map(AnilistTag::toCatalogTag)
 				.collect(Collectors.toList());
+
+		media.status = switch(status) {
+			case RELEASING -> CatalogMedia.MediaStatus.ONGOING;
+			case FINISHED -> CatalogMedia.MediaStatus.COMPLETED;
+			case HIATUS -> CatalogMedia.MediaStatus.PAUSED;
+			case CANCELLED -> CatalogMedia.MediaStatus.CANCELLED;
+			default -> CatalogMedia.MediaStatus.COMING_SOON;
+		};
 
 		var posterVersions = new CatalogMedia.ImageVersions();
 		posterVersions.medium = coverImage.medium;

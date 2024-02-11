@@ -64,7 +64,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		ViewUtil.setOnApplyUiInsetsListener(view, (v, insets) -> {
 			ViewUtil.setTopMargin(v, insets.top);
 			ViewUtil.setRightMargin(v, insets.right);
-			ViewUtil.setLeftPadding(v, insets.left);
+			ViewUtil.setLeftMargin(v, insets.left);
 		}, headerLayout.getRootWindowInsets());
 	}
 
@@ -192,11 +192,21 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			return item;
 		}
 
+		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogMedia<?> item) {
 			this.item = item;
 
 			binding.title.setText(item.title);
 			binding.description.setText(Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT));
+
+			if(item.averageScore != null) {
+				binding.metaSeparator.setVisibility(View.VISIBLE);
+				binding.status.setVisibility(View.VISIBLE);
+				binding.status.setText(item.averageScore + "/10");
+			} else {
+				binding.metaSeparator.setVisibility(View.GONE);
+				binding.status.setVisibility(View.GONE);
+			}
 
 			var tagsCount = new AtomicInteger(0);
 			var formattedTags = item.genres != null ? (

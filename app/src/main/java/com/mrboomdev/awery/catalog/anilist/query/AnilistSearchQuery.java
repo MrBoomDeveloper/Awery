@@ -51,11 +51,11 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia<?>>
 	public String getQuery() {
 		return """
 			{
-				Page(page: 1, perPage: 25) {
+				Page(page: 1, perPage: 20) {
 					media(__PARAMS__) {
 						type format isAdult
-						id description bannerImage
-						genres
+						id description bannerImage status
+						genres averageScore
 						duration episodes
 						coverImage { extraLarge large color medium }
 						tags { name id description isMediaSpoiler isGeneralSpoiler }

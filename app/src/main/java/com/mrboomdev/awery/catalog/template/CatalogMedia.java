@@ -24,9 +24,11 @@ public class CatalogMedia<T> {
 	public String title, originalTitle, banner, description, color;
 	public MediaType type;
 	public ImageVersions poster;
-	public int latestEpisode, averageScore, id;
+	public int latestEpisode, id;
+	public Float averageScore;
 	public List<CatalogTag> tags;
 	public List<String> genres;
+	public MediaStatus status;
 	@Json(ignore = true)
 	public Drawable cachedBanner;
 
@@ -42,6 +44,10 @@ public class CatalogMedia<T> {
 		var sheet = new BottomSheetDialog(context);
 		sheet.setContentView(binding.getRoot());
 		sheet.show();
+	}
+
+	public enum MediaStatus {
+		ONGOING, COMPLETED, COMING_SOON, PAUSED, CANCELLED
 	}
 
 	public enum MediaType {
