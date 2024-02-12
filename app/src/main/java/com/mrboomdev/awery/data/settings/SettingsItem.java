@@ -2,10 +2,12 @@ package com.mrboomdev.awery.data.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
@@ -20,7 +22,7 @@ import java.util.Locale;
 import ani.awery.R;
 
 public class SettingsItem {
-	private final String key, title, description;
+	private final String key, title, description, icon;
 	private final SettingsItemType type;
 	private String parentKey;
 	private final boolean restart;
@@ -35,6 +37,7 @@ public class SettingsItem {
 		this.type = item.type;
 		this.items = item.items;
 		this.title = item.title;
+		this.icon = item.icon;
 		this.restart = item.restart;
 		this.description = item.description;
 		this.booleanValue = item.booleanValue;
@@ -42,17 +45,18 @@ public class SettingsItem {
 		this.parent = item.parent;
 	}
 
-	public SettingsItem(String key, String title, String description, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
+	public SettingsItem(String key, String title, String description, String icon, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
 		this.key = key;
 		this.type = type;
 		this.items = items;
 		this.title = title;
+		this.icon = icon;
 		this.restart = requireRestart;
 		this.description = description;
 	}
 
 	public SettingsItem(String key, String title, SettingsItemType type) {
-		this(key, title, null, false, type, Collections.emptyList());
+		this(key, title, null, null, false, type, Collections.emptyList());
 	}
 
 	public void setAsParentForChildren() {
@@ -61,6 +65,21 @@ public class SettingsItem {
 		for(var item : items) {
 			item.setParent(this);
 			item.setAsParentForChildren();
+		}
+	}
+
+	public Drawable getIcon(@NonNull Context context) {
+		if(icon == null) return null;
+
+		try {
+			var clazz = R.drawable.class;
+			var field = clazz.getField(icon);
+			var id = field.getInt(null);
+
+			return AppCompatResources.getDrawable(context, id);
+		} catch(NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 

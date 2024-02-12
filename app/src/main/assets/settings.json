@@ -2,12 +2,14 @@
 	"key": "settings", "type": "screen", "title": "settings",
 	"items": [
 		{
-			"key": "theme", "type": "screen", "title": "theme",
+			"key": "theme", "type": "screen",
+			"title": "theme", "icon": "ic_round_palette_24",
 			"items": [
-				{ "key": "amoled", "type": "boolean", "title": "amoled", "restart": true }
+				{ "key": "amoled", "type": "boolean", "title": "amoled", "icon": "ic_round_brightness_medium_24", "restart": true }
 			]
 		}, {
-			"key": "ui", "type": "screen", "title": "ui",
+			"key": "ui", "type": "screen",
+			"title": "ui", "icon": "ic_round_amp_stories_24",
 			"items": [
 				{
 					"key": "default_tab", "type": "select",  "title": "startUpTab",
@@ -20,10 +22,12 @@
 				}
 			]
 		}, {
-			"key": "player", "type": "screen", "title": "player",
+			"key": "player", "type": "screen",
+			"title": "player", "icon": "ic_round_play_circle_24",
 			"items": []
 		}, {
-			"key": "reader", "type": "screen", "title": "reader",
+			"key": "reader", "type": "screen",
+			"title": "reader", "icon": "ic_round_reader_settings",
 			"items": []
 		}
 	]

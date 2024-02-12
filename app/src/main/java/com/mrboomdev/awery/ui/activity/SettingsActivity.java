@@ -22,6 +22,7 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
+import ani.awery.R;
 import ani.awery.databinding.SettingsActivityLayoutBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {

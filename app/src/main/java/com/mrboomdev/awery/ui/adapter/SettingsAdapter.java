@@ -144,7 +144,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));
-			binding.description.setText(item.getDescription(context));
 
 			var description = item.getDescription(context);
 			if(description == null) {
@@ -152,6 +151,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			} else {
 				binding.description.setVisibility(View.VISIBLE);
 				binding.description.setText(description);
+			}
+
+			var icon = item.getIcon(context);
+			if(icon == null) {
+				binding.icon.setVisibility(View.GONE);
+			} else {
+				binding.icon.setVisibility(View.VISIBLE);
+				binding.icon.setImageDrawable(icon);
 			}
 
 			switch(item.getType()) {
