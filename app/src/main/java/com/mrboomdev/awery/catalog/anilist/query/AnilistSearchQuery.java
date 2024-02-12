@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia<?>>> {
+public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	private AnilistMedia.MediaType type;
 	private MediaSort sort;
 	private AnilistMedia.MediaFormat format;
@@ -39,7 +39,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia<?>>
 	}
 
 	@Override
-	protected Collection<CatalogMedia<?>> processJson(String json) throws IOException {
+	protected Collection<CatalogMedia> processJson(String json) throws IOException {
 		List<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
 
 		return data.stream()

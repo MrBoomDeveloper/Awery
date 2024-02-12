@@ -39,14 +39,13 @@ public class AnilistMedia {
 		public String extraLarge, large, color, medium;
 	}
 
-	public CatalogMedia<AnilistMedia> toCatalogMedia() {
-		var media = new CatalogMedia<AnilistMedia>();
+	public CatalogMedia toCatalogMedia() {
+		var media = new CatalogMedia();
 		media.title = Objects.requireNonNullElse(title.english, title.romaji);
 		media.originalTitle = title.romaji;
 		media.description = description;
 		media.banner = bannerImage;
 		media.color = coverImage.color;
-		media.originalData = this;
 		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
 

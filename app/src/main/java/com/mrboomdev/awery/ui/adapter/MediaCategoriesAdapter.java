@@ -128,12 +128,12 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
+		private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
 		public final String title;
 		private ViewHolder associatedViewHolder;
 
 		@SuppressLint("NotifyDataSetChanged")
-		public void setItems(Collection<CatalogMedia<?>> items) {
+		public void setItems(Collection<CatalogMedia> items) {
 			this.items.clear(false);
 			this.items.addAll(items, false);
 
@@ -146,7 +146,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			this.associatedViewHolder = holder;
 		}
 
-		public Category(String title, Collection<CatalogMedia<?>> items) {
+		public Category(String title, Collection<CatalogMedia> items) {
 			this.title = title;
 			setItems(items);
 		}

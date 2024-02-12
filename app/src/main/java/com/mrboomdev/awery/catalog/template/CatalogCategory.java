@@ -22,7 +22,7 @@ public abstract class CatalogCategory {
 	}
 
 	public interface OnLoadListener {
-		void onLoaded(List<CatalogMedia<?>> media);
+		void onLoaded(List<CatalogMedia> media);
 
 		void onFailed(Throwable t);
 	}

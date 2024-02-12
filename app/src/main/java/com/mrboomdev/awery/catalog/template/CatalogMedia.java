@@ -6,12 +6,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.ui.activity.MediaDetailsActivity;
 import com.squareup.moshi.Json;
+import com.squareup.moshi.Moshi;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,8 +23,7 @@ import ani.awery.databinding.ActivityNoInternetBinding;
 import ani.awery.media.Media;
 import ani.awery.media.anime.Anime;
 
-public class CatalogMedia<T> {
-	public T originalData;
+public class CatalogMedia {
 	public String title, originalTitle, banner, description, color;
 	public MediaType type;
 	public ImageVersions poster;
@@ -33,7 +36,11 @@ public class CatalogMedia<T> {
 	public Drawable cachedBanner;
 
 	public void handleClick(Context context) {
+		var moshi = new Moshi.Builder().build();
+		var adapter = moshi.adapter(CatalogMedia.class);
+
 		var intent = new Intent(context, MediaDetailsActivity.class);
+		intent.putExtra("media", adapter.toJson(this));
 		context.startActivity(intent);
 	}
 

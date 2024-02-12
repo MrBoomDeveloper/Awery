@@ -42,7 +42,7 @@ import ani.awery.databinding.MediaCatalogFeaturedBinding;
 import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
 public class MediaPagerAdapter extends SingleViewAdapter {
-	private final ObservableList<CatalogMedia<?>> items = new ObservableArrayList<>();
+	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private View headerView;
 	private LinearLayout headerLayout;
@@ -89,7 +89,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(Collection<CatalogMedia<?>> items) {
+	public void setItems(Collection<CatalogMedia> items) {
 		this.items.clear(false);
 		this.items.addAll(items, false);
 		adapter.notifyDataSetChanged();
@@ -181,19 +181,19 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 
 	public class PagerViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogFeaturedBinding binding;
-		private CatalogMedia<?> item;
+		private CatalogMedia item;
 
 		public PagerViewHolder(@NonNull MediaCatalogFeaturedBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
-		public CatalogMedia<?> getItem() {
+		public CatalogMedia getItem() {
 			return item;
 		}
 
 		@SuppressLint("SetTextI18n")
-		public void bind(@NonNull CatalogMedia<?> item) {
+		public void bind(@NonNull CatalogMedia item) {
 			this.item = item;
 
 			binding.title.setText(item.title);

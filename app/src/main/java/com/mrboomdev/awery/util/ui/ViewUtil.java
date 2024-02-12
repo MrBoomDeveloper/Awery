@@ -124,7 +124,28 @@ public class ViewUtil {
 		});
 	}
 
-	public static <V extends View> void setOnApplyUiInsetsListener(V view, InsetsUpdateListener<V, Insets> listener, WindowInsets rootInsets) {
+	public static <V extends View> void setOnApplyUiInsetsListener(
+			V view,
+			InsetsUpdateListener<V, Insets> listener,
+			View parentView
+	) {
+		if(parentView == null) {
+			setOnApplyUiInsetsListener(view, listener);
+			return;
+		}
+
+		setOnApplyUiInsetsListener(view, listener, parentView.getRootWindowInsets());
+	}
+
+	public static <V extends View> void setOnApplyUiInsetsListener(
+			V view,
+			InsetsUpdateListener<V, Insets> listener,
+			WindowInsets rootInsets
+	) {
+		if(rootInsets == null && view.getParent() instanceof View parent) {
+			rootInsets = parent.getRootWindowInsets();
+		}
+
 		if(rootInsets != null) {
 			var uiInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets).getInsets(UI_INSETS);
 			listener.updated(view, uiInsets);

@@ -9,7 +9,7 @@ import java.util.Map;
 public abstract class ExtensionProvider {
 	public static final UnsupportedOperationException NOT_IMPLEMENTED = new UnsupportedOperationException("Not implemented!");
 
-	public List<CatalogMedia<?>> search(Map<String, Object> params, int page) throws UnsupportedOperationException {
+	public List<CatalogMedia> search(Map<String, Object> params, int page) throws UnsupportedOperationException {
 		throw NOT_IMPLEMENTED;
 	}
 

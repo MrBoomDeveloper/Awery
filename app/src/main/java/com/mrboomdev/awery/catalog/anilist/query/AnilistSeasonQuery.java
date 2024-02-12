@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AnilistSeasonQuery extends AnilistQuery<Collection<CatalogMedia<?>>> {
+public class AnilistSeasonQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	private final String seasonName;
 	private final int seasonYear;
 	private final boolean isAnime;
@@ -42,7 +42,7 @@ public class AnilistSeasonQuery extends AnilistQuery<Collection<CatalogMedia<?>>
 	}
 
 	@Override
-	protected Collection<CatalogMedia<?>> processJson(String json) throws IOException {
+	protected Collection<CatalogMedia> processJson(String json) throws IOException {
 		List<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
 		return data.stream().map(AnilistMedia::toCatalogMedia).collect(Collectors.toList());
 	}

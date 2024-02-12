@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableList;
@@ -20,10 +21,10 @@ import java.util.Map;
 import ani.awery.databinding.MediaCatalogItemBinding;
 import ani.awery.media.MediaDetailsActivity;
 
-public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia<?>> {
-	private ObservableList<CatalogMedia<?>> items;
+public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
+	private ObservableList<CatalogMedia> items;
 
-	public MediaCatalogAdapter(ObservableList<CatalogMedia<?>> items) {
+	public MediaCatalogAdapter(ObservableList<CatalogMedia> items) {
 		setHasStableIds(true);
 		this.items = items;
 	}
@@ -38,7 +39,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(ObservableList<CatalogMedia<?>> items) {
+	public void setItems(ObservableList<CatalogMedia> items) {
 		if(this.items != null) {
 			this.items.removeAdditionObserver(this);
 		}
@@ -95,24 +96,24 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	@Override
-	public void added(CatalogMedia<?> item, int index) {
+	public void added(CatalogMedia item, int index) {
 		notifyItemInserted(index);
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogItemBinding binding;
-		private CatalogMedia<?> item;
+		private CatalogMedia item;
 
 		public ViewHolder(@NonNull MediaCatalogItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
-		public CatalogMedia<?> getItem() {
+		public CatalogMedia getItem() {
 			return item;
 		}
 
-		public void bind(@NonNull CatalogMedia<?> item) {
+		public void bind(@NonNull CatalogMedia item) {
 			this.item = item;
 
 			binding.title.setText(item.title);
@@ -128,6 +129,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			try {
 				Glide.with(binding.getRoot())
 						.load(item.poster.large)
+						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(binding.mediaItemBanner);
 			} catch(IllegalArgumentException e) {
 				e.printStackTrace();

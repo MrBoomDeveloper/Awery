@@ -98,7 +98,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 		), cats);
 	}
 
-	private void loadCategory(String title, @NonNull AnilistQuery<Collection<CatalogMedia<?>>> query, ObservableList<MediaCategoriesAdapter.Category> list) {
+	private void loadCategory(String title, @NonNull AnilistQuery<Collection<CatalogMedia>> query, ObservableList<MediaCategoriesAdapter.Category> list) {
 		query.executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			list.add(new MediaCategoriesAdapter.Category(title, items));
 		})).catchExceptions(e -> {
