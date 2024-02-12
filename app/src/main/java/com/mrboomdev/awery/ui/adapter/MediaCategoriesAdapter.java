@@ -70,11 +70,13 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		binding.mediaCatalogCategoryItems.setHasFixedSize(true);
 		binding.mediaCatalogCategoryItems.setAdapter(adapter);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, (view, insets) ->
-				ViewUtil.setHorizontalPadding(view, insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, insets ->
+				ViewUtil.setHorizontalPadding(binding.mediaCatalogCategoryTitle,
+						insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, (view, insets) ->
-				ViewUtil.setHorizontalPadding(view, insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, insets ->
+				ViewUtil.setHorizontalPadding(binding.mediaCatalogCategoryTitle,
+						insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
 
 		return new ViewHolder(binding, adapter);
 	}

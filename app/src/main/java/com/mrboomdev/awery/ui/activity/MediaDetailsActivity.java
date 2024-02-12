@@ -63,11 +63,11 @@ public class MediaDetailsActivity extends AppCompatActivity {
 
 		var navigation = (NavigationBarView) binding.navigation;
 
-		ViewUtil.setOnApplyUiInsetsListener(navigation, (view, insets) -> {
-			if(view instanceof NavigationRailView) {
-				view.setPadding(insets.left, insets.top, 0, 0);
+		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
+			if(navigation instanceof NavigationRailView) {
+				navigation.setPadding(insets.left, insets.top, 0, 0);
 			} else {
-				ViewUtil.setBottomPadding(view, insets.bottom, false);
+				ViewUtil.setBottomPadding(navigation, insets.bottom, false);
 			}
 		});
 	}

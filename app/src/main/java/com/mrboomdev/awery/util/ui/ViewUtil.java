@@ -117,16 +117,16 @@ public class ViewUtil {
 	 * Automatically calls a listener.
 	 * Provided insets will be used on the first call
 	 */
-	public static <V extends View> void setOnApplyInsetsListener(V view, InsetsUpdateListener<V, WindowInsetsCompat> listener) {
+	public static void setOnApplyInsetsListener(View view, InsetsUpdateListener<WindowInsetsCompat> listener) {
 		ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
-			listener.updated(view, insets);
+			listener.updated(insets);
 			return WindowInsetsCompat.CONSUMED;
 		});
 	}
 
-	public static <V extends View> void setOnApplyUiInsetsListener(
-			V view,
-			InsetsUpdateListener<V, Insets> listener,
+	public static void setOnApplyUiInsetsListener(
+			View view,
+			InsetsUpdateListener<Insets> listener,
 			View parentView
 	) {
 		if(parentView == null) {
@@ -137,9 +137,9 @@ public class ViewUtil {
 		setOnApplyUiInsetsListener(view, listener, parentView.getRootWindowInsets());
 	}
 
-	public static <V extends View> void setOnApplyUiInsetsListener(
-			V view,
-			InsetsUpdateListener<V, Insets> listener,
+	public static void setOnApplyUiInsetsListener(
+			View view,
+			InsetsUpdateListener<Insets> listener,
 			WindowInsets rootInsets
 	) {
 		if(rootInsets == null && view.getParent() instanceof View parent) {
@@ -148,17 +148,17 @@ public class ViewUtil {
 
 		if(rootInsets != null) {
 			var uiInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets).getInsets(UI_INSETS);
-			listener.updated(view, uiInsets);
+			listener.updated(uiInsets);
 		}
 
-		ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+		ViewCompat.setOnApplyWindowInsetsListener(view, (_view, insets) -> {
 			var uiInsets = insets.getInsets(UI_INSETS);
-			listener.updated(view, uiInsets);
+			listener.updated(uiInsets);
 			return WindowInsetsCompat.CONSUMED;
 		});
 	}
 
-	public static <V extends View> void setOnApplyUiInsetsListener(V view, InsetsUpdateListener<V, Insets> listener) {
+	public static void setOnApplyUiInsetsListener(View view, InsetsUpdateListener<Insets> listener) {
 		setOnApplyUiInsetsListener(view, listener, view.getRootWindowInsets());
 	}
 
@@ -183,7 +183,7 @@ public class ViewUtil {
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics));
 	}
 
-	public interface InsetsUpdateListener<V, I> {
-		void updated(V view, I insets);
+	public interface InsetsUpdateListener<I> {
+		void updated(I insets);
 	}
 }

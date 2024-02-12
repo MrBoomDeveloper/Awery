@@ -15,6 +15,7 @@ import android.view.animation.AnticipateInterpolator;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
@@ -90,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
 			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, (view, insets) -> ViewUtil.setBottomMargin(view, insets.bottom));
+		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets ->
+				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 	}
 
 	@Override
@@ -108,19 +111,16 @@ public class MainActivity extends AppCompatActivity {
 	private void registerBackListener() {
 		final var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 
-		getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-			@Override
-			public void handleOnBackPressed() {
-				if(doubleBackToExitPressedOnce.get()) {
-					finish();
-				}
-
-				doubleBackToExitPressedOnce.set(true);
-				snackString(getString(R.string.back_to_exit), null, null);
-
-				new Handler(Looper.getMainLooper()).postDelayed(() ->
-						doubleBackToExitPressedOnce.set(false), 2000);
+		AweryApp.setOnBackPressedListener(this, () -> {
+			if(doubleBackToExitPressedOnce.get()) {
+				finish();
 			}
+
+			doubleBackToExitPressedOnce.set(true);
+			snackString(getString(R.string.back_to_exit), null, null);
+
+			new Handler(Looper.getMainLooper()).postDelayed(() ->
+					doubleBackToExitPressedOnce.set(false), 2000);
 		});
 	}
 

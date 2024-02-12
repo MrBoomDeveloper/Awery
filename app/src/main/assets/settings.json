@@ -1,54 +1,30 @@
 {
-	"key": "settings",
-	"type": "screen",
+	"key": "settings", "type": "screen", "title": "settings",
 	"items": [
 		{
-			"key": "general",
-			"type": "screen",
+			"key": "theme", "type": "screen", "title": "theme",
+			"items": [
+				{ "key": "amoled", "type": "boolean", "title": "amoled", "restart": true }
+			]
+		}, {
+			"key": "ui", "type": "screen", "title": "ui",
 			"items": [
 				{
-					"key": "default_tab",
-					"type": "select",
+					"key": "default_tab", "type": "select",  "title": "startUpTab",
 					"int_value": 1,
 					"items": [
-						{ "key": "anime" },
-						{ "key": "home" },
-						{ "key": "manga" }
+						{ "key": "anime", "title": "Anime" },
+						{ "key": "home", "title": "Home" },
+						{ "key": "manga", "title": "Manga" }
 					]
 				}
 			]
 		}, {
-			"key": "accounts",
-			"type": "screen"
-		}, {
-			"key": "data",
-			"type": "screen",
+			"key": "player", "type": "screen", "title": "player",
 			"items": []
 		}, {
-			"key": "ui",
-			"type": "screen",
-			"items": [
-				{
-					"key": "player",
-					"type": "screen",
-					"items": []
-				}, {
-					"key": "reader",
-					"type": "screen",
-					"items": []
-				}
-			]
-		}, {
-			"key": "flags",
-			"type": "screen",
-			"items": [
-				{ "key": "new_search", "type": "boolean" },
-				{ "key": "new_home", "type": "boolean" },
-				{ "key": "new_settings", "type": "boolean" },
-				{ "key": "disable_old_extensions", "type": "boolean" },
-				{ "key": "new_media_details", "type": "boolean" },
-				{ "key": "new_media_preview", "type": "boolean" }
-			]
+			"key": "reader", "type": "screen", "title": "reader",
+			"items": []
 		}
 	]
 }

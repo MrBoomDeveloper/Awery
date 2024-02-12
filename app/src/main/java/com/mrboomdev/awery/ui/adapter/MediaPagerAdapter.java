@@ -61,10 +61,10 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			logo.setVisibility(View.GONE);
 		}
 
-		ViewUtil.setOnApplyUiInsetsListener(view, (v, insets) -> {
-			ViewUtil.setTopMargin(v, insets.top);
-			ViewUtil.setRightMargin(v, insets.right);
-			ViewUtil.setLeftMargin(v, insets.left);
+		ViewUtil.setOnApplyUiInsetsListener(view, insets -> {
+			ViewUtil.setTopMargin(view, insets.top);
+			ViewUtil.setRightMargin(view, insets.right);
+			ViewUtil.setLeftMargin(view, insets.left);
 		}, headerLayout.getRootWindowInsets());
 	}
 
@@ -152,14 +152,14 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 				return true;
 			});
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, (view, insets) ->
-					ViewUtil.setLeftMargin(view, insets.left), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, insets ->
+					ViewUtil.setLeftMargin(binding.leftSideBarrier, insets.left), parent.getRootWindowInsets());
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, (view, insets) ->
-					ViewUtil.setRightMargin(view, insets.right), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, insets ->
+					ViewUtil.setRightMargin(binding.rightSideBarrier, insets.right), parent.getRootWindowInsets());
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, (view, insets) ->
-					ViewUtil.setTopMargin(view, insets.top), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, insets ->
+					ViewUtil.setTopMargin(binding.topSideBarrier, insets.top), parent.getRootWindowInsets());
 
 			return holder;
 		}

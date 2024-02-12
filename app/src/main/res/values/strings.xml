@@ -158,6 +158,8 @@
     <string name="settings">Settings</string>
     <string name="extensions">Extensions</string>
     <string name="player_settings">Player Settings</string>
+    <string name="player">Player</string>
+    <string name="reader">Reader</string>
     <string name="recentlyListOnly">Only show My Shows in Recently Updated</string>
     <string name="download_manager_select">Download Manager</string>
     <string name="downloadInSd">Download in SD card</string>
@@ -255,6 +257,7 @@
     <string name="fast_forward">Fast Forward</string>
     <string name="double_tap_info">Turning off will show fast forward &amp; rewind buttons</string>
     <string name="seek_time">Seek Time</string>
+    <string name="amoled">Amoled Theme</string>
     <string name="seek_time_info">Amount of time in seconds for fast forward &amp; rewind.</string>
     <string name="skip_time">Skip Time</string>
     <string name="skip_time_info">Setting to 0, hides the Skip Button.</string>
@@ -498,7 +501,7 @@
     <string name="outline_type">Outline Type</string>
     <string name="subtitle_font">Subtitle Font</string>
 
-
+    <string name="content">Content</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="close">Close</string>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.request.RequestOptions;
@@ -75,6 +78,19 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(activity != null) return activity;
 
 		return app;
+	}
+
+	public static void setOnBackPressedListener(@NonNull AppCompatActivity activity, Runnable callback) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(0, callback::run);
+		} else {
+			activity.getOnBackPressedDispatcher().addCallback(activity, new OnBackPressedCallback(true) {
+				@Override
+				public void handleOnBackPressed() {
+					callback.run();
+				}
+			});
+		}
 	}
 
 	public static void runOnUiThread(Runnable runnable) {

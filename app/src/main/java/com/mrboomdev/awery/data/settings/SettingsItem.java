@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.data.settings;
 
+import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,24 +15,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import ani.awery.R;
+
 public class SettingsItem {
-	private final String key;
+	private final String key, title, description;
 	private final SettingsItemType type;
+	private boolean restart;
 	private List<SettingsItem> items;
+	@Json(ignore = true)
 	private SettingsItem parent;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
 	@Json(name = "int_value")
 	private Integer intValue;
 
-	public SettingsItem(String key, SettingsItemType type, List<SettingsItem> items) {
+	public SettingsItem(String key, String title, String description, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
 		this.key = key;
 		this.type = type;
 		this.items = items;
+		this.title = title;
+		this.restart = requireRestart;
+		this.description = description;
 	}
 
-	public SettingsItem(String key, SettingsItemType type) {
-		this(key, type, Collections.emptyList());
+	public SettingsItem(String key, String title, SettingsItemType type) {
+		this(key, title, null, false, type, Collections.emptyList());
 	}
 
 	public void setAsParentForChildren() {
@@ -38,6 +48,39 @@ public class SettingsItem {
 		for(var item : items) {
 			item.setParent(this);
 			item.setAsParentForChildren();
+		}
+	}
+
+	public boolean isRestartRequired() {
+		return restart;
+	}
+
+	public String getTitle(Context context) {
+		var got = getString(context, title);
+		if(got != null) return got;
+		if(title != null) return title;
+
+		return getKey();
+	}
+
+	public String getDescription(Context context) {
+		if(description == null) return null;
+
+		var got = getString(context, description);
+		if(got != null) return got;
+
+		return description;
+	}
+
+	@Nullable
+	private String getString(@NonNull Context context, String name) {
+		try {
+			var clazz = R.string.class;
+			var field = clazz.getField(name);
+			return context.getString(field.getInt(null));
+		} catch(NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 

@@ -53,7 +53,7 @@ public class MediaPlayFragment extends Fragment {
 		headerBinding.variantDropdown.setAdapter(new ArrayAdapter<>(inflater.getContext(),
 				R.layout.menu_dropdown_item, List.of("Anilibria", "AniDub", "StudioBand", "Onwave")));
 
-		ViewUtil.setOnApplyUiInsetsListener(headerBinding.getRoot(), (view, insets) -> {
+		ViewUtil.setOnApplyUiInsetsListener(headerBinding.getRoot(), insets -> {
 			ViewUtil.setTopPadding(headerBinding.getRoot(), insets.top);
 			ViewUtil.setRightPadding(headerBinding.getRoot(), insets.right);
 		}, container);
