@@ -145,8 +145,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	private void setupCrashHandler() {
 		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-			SettingsFactory.saveInstance(this);
-
 			var activity = getAnyActivity();
 			toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
 
@@ -183,9 +181,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	public void onActivityResumed(@NonNull Activity activity) {}
 
 	@Override
-	public void onActivityPaused(@NonNull Activity activity) {
-		SettingsFactory.saveInstance(activity);
-	}
+	public void onActivityPaused(@NonNull Activity activity) {}
 
 	@Override
 	public void onActivityStopped(@NonNull Activity activity) {

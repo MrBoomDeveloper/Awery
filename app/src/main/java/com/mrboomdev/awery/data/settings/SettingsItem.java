@@ -1,12 +1,14 @@
 package com.mrboomdev.awery.data.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.squareup.moshi.Json;
+import com.squareup.moshi.ToJson;
 
 import org.jetbrains.annotations.Contract;
 
@@ -20,14 +22,25 @@ import ani.awery.R;
 public class SettingsItem {
 	private final String key, title, description;
 	private final SettingsItemType type;
-	private boolean restart;
+	private String parentKey;
+	private final boolean restart;
 	private List<SettingsItem> items;
 	@Json(ignore = true)
 	private SettingsItem parent;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
-	@Json(name = "int_value")
-	private Integer intValue;
+
+	public SettingsItem(@NonNull SettingsItem item) {
+		this.key = item.key;
+		this.type = item.type;
+		this.items = item.items;
+		this.title = item.title;
+		this.restart = item.restart;
+		this.description = item.description;
+		this.booleanValue = item.booleanValue;
+		this.parentKey = item.parentKey;
+		this.parent = item.parent;
+	}
 
 	public SettingsItem(String key, String title, String description, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
 		this.key = key;
@@ -49,6 +62,24 @@ public class SettingsItem {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public void restoreValues(AwerySettings settings) {
+		switch(type) {
+			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey());
+
+			case SCREEN -> {
+				if(items == null) return;
+
+				for(var item : items) {
+					item.restoreValues(settings);
+				}
+			}
+		}
+	}
+
+	public void restoreValues() {
+		restoreValues(AwerySettings.getInstance());
 	}
 
 	public boolean isRestartRequired() {
@@ -92,14 +123,6 @@ public class SettingsItem {
 		booleanValue = value;
 	}
 
-	public int getIntValue() {
-		return intValue;
-	}
-
-	public void setIntValue(int value) {
-		intValue = value;
-	}
-
 	public void setParent(SettingsItem parent) {
 		this.parent = parent;
 	}
@@ -111,8 +134,9 @@ public class SettingsItem {
 	public void mergeValues(SettingsItem item) {
 		if(item == null) return;
 
-		if(item.booleanValue != null) booleanValue = item.booleanValue;
-		if(item.intValue != null) intValue = item.intValue;
+		if(item.booleanValue != null) {
+			booleanValue = item.booleanValue;
+		}
 
 		if(items != null) {
 			for(var child : items) {
@@ -129,6 +153,10 @@ public class SettingsItem {
 
 	public String getFullKey() {
 		if(!hasParent()) {
+			if(parentKey != null) {
+				return parentKey + "_" + key;
+			}
+
 			return key;
 		}
 
@@ -177,10 +205,6 @@ public class SettingsItem {
 	public String toString() {
 		var result = "{ \"key\": \"" + key + "\"";
 
-		if(intValue != null) {
-			result += ", \"int_value\": " + intValue;
-		}
-
 		if(booleanValue != null) {
 			result += ", \"boolean_value\": " + booleanValue;
 		}
@@ -194,5 +218,20 @@ public class SettingsItem {
 		}
 
 		return result + " }";
+	}
+
+	@SuppressWarnings("unused")
+	public static class Adapter {
+
+		@ToJson
+		public SettingsItem toJson(SettingsItem item) {
+			var newItem = new SettingsItem(item);
+
+			if(item.getParent() != null) {
+				newItem.parentKey = item.getParent().getFullKey();
+			}
+
+			return newItem;
+		}
 	}
 }

@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SettingsFactory {
-	private static SettingsItem instance;
 
 	@NonNull
 	public static SettingsItem fromJson(String json) {
@@ -58,42 +57,11 @@ public class SettingsFactory {
 	}
 
 	@NonNull
-	public static SettingsItem fromFile(File file) {
-		try(var stream = new FileInputStream(file)) {
-			return fromInputStream(stream);
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static void save(@NonNull SettingsItem item, File destination) {
-		var json = item.toString();
-
-		try(var stream = new FileOutputStream(destination)) {
-			stream.write(json.getBytes(StandardCharsets.UTF_8));
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static void saveInstance(Context context) {
-		if(instance == null) return;
-		save(instance, new File(context.getExternalFilesDir(null),"settings.json"));
-	}
-
 	public static SettingsItem getInstance(Context context) {
-		if(instance != null) return instance;
-
-		var file = new File(context.getExternalFilesDir(null),"settings.json");
-		instance = fromAssets(context, "settings.json");
-
-		if(file.exists()) {
-			var saved = fromFile(file);
-			instance.mergeValues(saved);
-		}
-
+		var instance = fromAssets(context, "settings.json");
 		instance.setAsParentForChildren();
-		saveInstance(context);
+		instance.restoreValues(AwerySettings.getInstance(context));
+
 		return instance;
 	}
 }

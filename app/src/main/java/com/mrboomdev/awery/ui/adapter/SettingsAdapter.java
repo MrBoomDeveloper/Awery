@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -25,25 +26,23 @@ import ani.awery.R;
 import ani.awery.databinding.SettingsItemBinding;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
-	private ScreenRequestListener screenRequestListener;
+	private DataHandler handler;
 	private SettingsItem data;
 
-	public SettingsAdapter(SettingsItem data) {
+	public SettingsAdapter(SettingsItem data, DataHandler handler) {
 		this.data = data;
+		this.handler = handler;
+	}
+
+	public interface DataHandler {
+		void onScreenLaunchRequest(SettingsItem item);
+		void save(SettingsItem item, Object newValue);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setData(SettingsItem data) {
 		this.data = data;
 		notifyDataSetChanged();
-	}
-
-	public void setScreenRequestListener(ScreenRequestListener listener) {
-		this.screenRequestListener = listener;
-	}
-
-	public interface ScreenRequestListener {
-		void request(SettingsItem item);
 	}
 
 	@NonNull
@@ -64,12 +63,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			switch(item.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
-
-				case SCREEN -> {
-					if(screenRequestListener != null) {
-						screenRequestListener.request(item);
-					}
-				}
+				case SCREEN -> handler.onScreenLaunchRequest(item);
 
 				case SELECT -> new MaterialAlertDialogBuilder(parent.getContext())
 						.setTitle(item.getTitle(parent.getContext()))
@@ -82,28 +76,35 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 		binding.toggle.setOnCheckedChangeListener((view, isChecked) -> {
 			var item = holder.getItem();
-			if(item == null) return;
+			if(item == null || !holder.didInit()) return;
+
+			item.setBooleanValue(isChecked);
+			handler.save(item, isChecked);
 
 			if(item.isRestartRequired()) {
-				Snackbar.make(parent, "Restart is required to apply changes", 2250)
-						.setAction("Restart", _view -> {
-							var context = _view.getContext();
-							var pm = context.getPackageManager();
-
-							var intent = pm.getLaunchIntentForPackage(context.getPackageName());
-							var component = Objects.requireNonNull(intent).getComponent();
-
-							var mainIntent = Intent.makeRestartActivityTask(component);
-							mainIntent.setPackage(context.getPackageName());
-							context.startActivity(mainIntent);
-
-							Runtime.getRuntime().exit(0);
-						})
-						.show();
+				suggestToRestart(parent);
 			}
 		});
 
 		return holder;
+	}
+
+	private void suggestToRestart(@NonNull View parentView) {
+		Snackbar.make(parentView, "Restart is required to apply changes", 2250)
+				.setAction("Restart", _view -> {
+					var context = parentView.getContext();
+					var pm = context.getPackageManager();
+
+					var intent = pm.getLaunchIntentForPackage(context.getPackageName());
+					var component = Objects.requireNonNull(intent).getComponent();
+
+					var mainIntent = Intent.makeRestartActivityTask(component);
+					mainIntent.setPackage(context.getPackageName());
+					context.startActivity(mainIntent);
+
+					Runtime.getRuntime().exit(0);
+				})
+				.show();
 	}
 
 	@Override
@@ -116,10 +117,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		return data.getItems().size();
 	}
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private final SettingsItemBinding binding;
 		private final Context context;
 		private SettingsItem item;
+		private boolean didInit;
 
 		public ViewHolder(@NonNull SettingsItemBinding binding) {
 			super(binding.getRoot());
@@ -132,9 +134,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			return item;
 		}
 
+		public boolean didInit() {
+			return didInit;
+		}
+
 		public void bind(@NonNull SettingsItem item) {
+			this.didInit = false;
 			this.item = item;
 
+			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));
 			binding.description.setText(item.getDescription(context));
 
@@ -146,7 +154,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				binding.description.setText(description);
 			}
 
-			binding.toggle.setVisibility(item.getType() == SettingsItemType.BOOLEAN ? View.VISIBLE : View.GONE);
+			switch(item.getType()) {
+				case BOOLEAN -> {
+					binding.toggle.setVisibility(View.VISIBLE);
+					binding.toggle.setChecked(item.getBooleanValue());
+				}
+			}
+
+			this.didInit = true;
 		}
 	}
 }

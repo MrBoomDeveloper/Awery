@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -23,8 +24,9 @@ import java.io.IOException;
 
 import ani.awery.databinding.SettingsActivityLayoutBinding;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+	private AwerySettings settings;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		var itemJson = getIntent().getStringExtra("item");
+		settings = AwerySettings.getInstance(this);
 		SettingsItem item;
 
 		if(itemJson == null) {
@@ -64,24 +67,35 @@ public class SettingsActivity extends AppCompatActivity {
 			RecyclerView.RecycledViewPool viewPool,
 			@NonNull FrameLayout frame
 	) {
-		var recyclerAdapter = new SettingsAdapter(item);
+		var recyclerAdapter = new SettingsAdapter(item, this);
 
 		var binding = SettingsActivityLayoutBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
 		binding.recycler.setAdapter(recyclerAdapter);
 
-		recyclerAdapter.setScreenRequestListener(_item -> {
-			var moshi = new Moshi.Builder().build();
-			var jsonAdapter = moshi.adapter(SettingsItem.class);
-
-			var intent = new Intent(this, SettingsActivity.class);
-			intent.putExtra("item", jsonAdapter.toJson(_item));
-			startActivity(intent);
-		});
-
 		ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets ->
 				ViewUtil.setTopPadding(binding.recycler, insets.top + ViewUtil.dpPx(12)), frame);
 
 		frame.addView(binding.getRoot());
+	}
+
+	@Override
+	public void onScreenLaunchRequest(@NonNull SettingsItem item) {
+		item.restoreValues();
+
+		var moshi = new Moshi.Builder().add(new SettingsItem.Adapter()).build();
+		var jsonAdapter = moshi.adapter(SettingsItem.class);
+
+		var intent = new Intent(SettingsActivity.this, SettingsActivity.class);
+		intent.putExtra("item", jsonAdapter.toJson(item));
+		startActivity(intent);
+	}
+
+	@Override
+	public void save(@NonNull SettingsItem item, Object newValue) {
+		switch(item.getType()) {
+			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue).saveAsync();
+			case SELECT -> settings.setString(item.getFullKey(), (String) newValue).saveAsync();
+		}
 	}
 }
