@@ -11,6 +11,8 @@
 
 Imagine the perfect app where you can customize everything, with tons of content and a **stylish** look. It's all about Awery!
 
+<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/Screenshot_20240212_224732.jpg" />
+
 ## Features 🎩
 
 - Filter out tags like yaoi or yuri for the whole app for forever
