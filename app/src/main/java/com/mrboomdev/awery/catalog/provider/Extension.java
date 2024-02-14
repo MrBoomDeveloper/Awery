@@ -1,12 +1,16 @@
 package com.mrboomdev.awery.catalog.provider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Extension {
 	private final boolean isNsfw;
 	private final String version, id;
 	private final String name;
 	private String error;
+	protected boolean isVideoExtension, isBookExtension;
 	private Exception exception;
-	private ExtensionProvider provider;
+	private final List<ExtensionProvider> providers = new ArrayList<>();
 
 	public Extension(String id, String name, boolean isNsfw, String version) {
 		this.name = name;
@@ -15,12 +19,12 @@ public class Extension {
 		this.id = id;
 	}
 
-	public ExtensionProvider getProvider() {
-		return provider;
+	public List<ExtensionProvider> getProviders() {
+		return providers;
 	}
 
-	public void setProvider(ExtensionProvider provider) {
-		this.provider = provider;
+	public void addProvider(ExtensionProvider provider) {
+		this.providers.add(provider);
 	}
 
 	public String getError() {
@@ -29,6 +33,14 @@ public class Extension {
 
 	public String getId() {
 		return id;
+	}
+
+	public boolean isVideoExtension() {
+		return isVideoExtension;
+	}
+
+	public boolean isBookExtension() {
+		return isBookExtension;
 	}
 
 	public void setError(String error, Exception e) {

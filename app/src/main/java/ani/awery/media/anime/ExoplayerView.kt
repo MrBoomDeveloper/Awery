@@ -97,7 +97,6 @@ import kotlin.math.roundToInt
 @UnstableApi
 @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
 class ExoplayerView : AppCompatActivity(), Player.Listener {
-
     private val resumeWindow = "resumeWindow"
     private val resumePosition = "resumePosition"
     private val playerFullscreen = "playerFullscreen"
@@ -472,17 +471,14 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
         }
 
         // Picture-in-picture
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            pipEnabled =
-                packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) && settings.pip
-            if (pipEnabled) {
-                exoPip.visibility = View.VISIBLE
-                exoPip.setOnClickListener {
-                    enterPipMode()
-                }
-            } else exoPip.visibility = View.GONE
-        }
-
+        pipEnabled =
+            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) && settings.pip
+        if (pipEnabled) {
+            exoPip.visibility = View.VISIBLE
+            exoPip.setOnClickListener {
+                enterPipMode()
+            }
+        } else exoPip.visibility = View.GONE
 
         //Lock Button
         var locked = false

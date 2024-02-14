@@ -59,7 +59,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 						duration episodes
 						coverImage { extraLarge large color medium }
 						tags { name id description isMediaSpoiler isGeneralSpoiler }
-						title { romaji english }
+						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
 					}
 				}
 			}

@@ -13,6 +13,11 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 
+    <string name="english">English</string>
+    <string name="russian">Russian</string>
+    <string name="japanese">Japanese</string>
+    <string name="chinese">Chinese</string>
+
     <string name="global_excluded_tags">Globally Exclude Tags</string>
 
     <string name="home">Home</string>
@@ -644,4 +649,5 @@
     <string name="incognito_mode">Incognito Mode</string>
     <string name="android12_requires">Requires Android 12+</string>
     <string name="comments">Comments</string>
+    <string name="variant">Variant</string>
 </resources>

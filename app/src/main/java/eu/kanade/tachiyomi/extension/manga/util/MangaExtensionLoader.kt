@@ -103,7 +103,6 @@ internal object MangaExtensionLoader {
         var extName: String?
         var extension: MangaExtension?
 
-        val doneIn = measureTime {
             val pkgManager = context.packageManager
 
             val appInfo = try {
@@ -202,10 +201,8 @@ internal object MangaExtensionLoader {
                 isUnofficial = signatureHash != officialSignature,
                 icon = context.getApplicationIcon(pkgName),
             )
-        }
 
-        println("Load extension $extName in $doneIn")
-        return MangaLoadResult.Success(extension as MangaExtension.Installed)
+        return MangaLoadResult.Success(extension)
     }
 
     /**

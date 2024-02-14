@@ -3,18 +3,21 @@ package com.mrboomdev.awery.catalog.provider;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import dalvik.system.PathClassLoader;
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 import eu.kanade.tachiyomi.source.MangaSource;
@@ -84,19 +87,34 @@ public class ExtensionsManager {
 		return extension;
 	}
 
-	private static void initTachiyomiExtensionClasses(@NonNull Context context, @NonNull PackageInfo pkg, Extension extension) {
+	private static void initTachiyomiExtensionClasses(
+			@NonNull Context context,
+			@NonNull PackageInfo pkg,
+			Extension extension
+	) {
 		var app = pkg.applicationInfo;
 		var clazzLoader = new PathClassLoader(app.sourceDir, null, context.getClassLoader());
 
 		var animeExtensionClass = app.metaData.getString(ANIYOMI_EXTENSION_CLASS);
 		var mangaExtensionClass = app.metaData.getString(TACHIYOMI_EXTENSION_CLASS);
 
-		List<AnimeSource> animeSources = null;
-		List<MangaSource> mangaSources = null;
+		List<AnimeSource> animeSources;
+		List<MangaSource> mangaSources;
 
 		if(animeExtensionClass != null) {
 			try {
 				animeSources = getAnimeSources(pkg, animeExtensionClass, clazzLoader);
+
+				for(var source : animeSources) {
+					if(source instanceof AnimeCatalogueSource catalogueSource) {
+						extension.isVideoExtension = true;
+						extension.addProvider(new AniyomiExtensionProvider(catalogueSource));
+						continue;
+					}
+
+					Log.e(TAG, "Source is being unused because" + source.getClass().getName() +
+							" does not extend " + AnimeCatalogueSource.class.getName());
+				}
 			} catch(Exception e) {
 				extension.setError("Failed to get anime sources!", e);
 				e.printStackTrace();
@@ -106,13 +124,16 @@ public class ExtensionsManager {
 		if(mangaExtensionClass != null) {
 			try {
 				mangaSources = getMangaSources(pkg, mangaExtensionClass, clazzLoader);
+
+				for(var source : mangaSources) {
+					extension.isBookExtension = true;
+					extension.addProvider(new TachiyomiExtensionProvider(source));
+				}
 			} catch(Exception e) {
 				extension.setError("Failed to get manga sources!", e);
 				e.printStackTrace();
 			}
 		}
-
-		extension.setProvider(new TachiyomiExtensionProvider(animeSources, mangaSources));
 	}
 
 	@NonNull
@@ -235,8 +256,21 @@ public class ExtensionsManager {
 		}
 	}
 
-	public static Map<String, Extension> getAllExtensions() {
-		return extensions;
+	@NonNull
+	public static Collection<Extension> getAllExtensions() {
+		return extensions.values();
+	}
+
+	public static Collection<Extension> getVideoExtensions() {
+		return extensions.values().stream()
+				.filter(Extension::isVideoExtension)
+				.collect(Collectors.toList());
+	}
+
+	public static Collection<Extension> getBookExtensions() {
+		return extensions.values().stream()
+				.filter(Extension::isBookExtension)
+				.collect(Collectors.toList());
 	}
 
 	public static Extension getExtension(String packageName) {

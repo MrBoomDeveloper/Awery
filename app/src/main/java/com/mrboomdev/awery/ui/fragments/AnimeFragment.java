@@ -67,6 +67,13 @@ public class AnimeFragment extends MediaCatalogFragment {
 				null, null, false
 		), cats);
 
+		//TODO: REMOVE THIS SHIT BEFORE RELEASE
+		/*loadCategory("Hentai", AnilistSearchQuery.search(
+				AnilistMedia.MediaType.ANIME,
+				AnilistQuery.MediaSort.TRENDING_DESC,
+				null, null, true
+		), cats);*/
+
 		loadCategory("Recent Updates", AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.UPDATED_AT_DESC,

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -18,9 +19,10 @@
             android:layout_height="wrap_content"
             app:layout_flexGrow="1"
             android:layout_marginRight="8dp"
-            android:hint="Select a source">
+            android:hint="@string/source">
 
             <AutoCompleteTextView
+                android:hint="@string/source"
                 android:padding="14dp"
                 android:id="@+id/source_dropdown"
                 android:layout_width="match_parent"
@@ -37,9 +39,12 @@
             app:layout_flexGrow="1"
             android:layout_marginRight="8dp"
             android:layout_height="wrap_content"
-            android:hint="Select a season">
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:hint="@string/season">
 
             <AutoCompleteTextView
+                android:hint="@string/season"
                 android:padding="14dp"
                 android:id="@+id/season_dropdown"
                 android:layout_width="match_parent"
@@ -54,11 +59,14 @@
             android:id="@+id/variant_wrapper"
             android:layout_width="180dp"
             android:layout_marginRight="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_flexGrow="1"
             android:layout_height="wrap_content"
-            android:hint="Select a variant">
+            android:hint="@string/variant">
 
             <AutoCompleteTextView
+                android:hint="@string/variant"
                 android:padding="14dp"
                 android:id="@+id/variant_dropdown"
                 android:layout_width="match_parent"

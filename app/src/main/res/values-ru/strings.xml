@@ -7,6 +7,11 @@
 
     <string name="global_excluded_tags">Глобально Исключить Теги</string>
 
+    <string name="english">Английский</string>
+    <string name="russian">Русский</string>
+    <string name="japanese">Японский</string>
+    <string name="chinese">Китайский</string>
+
     <string name="content">Контент</string>
     <string name="home">Главная</string>
     <string name="anime">Аниме</string>
@@ -581,7 +586,7 @@
     <string name="invalid_url">Неправильный URL</string>
     <string name="player">Проигрыватель</string>
     <string name="reader">Читалка</string>
-    <string name="amoled">Amoled Тема</string>
+    <string name="amoled">Amoled Режим</string>
     <string name="no_anilist_id_found">No Anilist ID found</string>
     <string name="error_loading_image">Ошибка загрузки изображения</string>
     <string name="discord_logout_success">Successfully Logged Out</string>
@@ -610,4 +615,5 @@
     <string name="random_selection">Random Selection</string>
     <string name="incognito_mode">Режим Инкогнито</string>
     <string name="android12_requires">Требуется Android 12+</string>
+    <string name="variant">Вариант</string>
 </resources>

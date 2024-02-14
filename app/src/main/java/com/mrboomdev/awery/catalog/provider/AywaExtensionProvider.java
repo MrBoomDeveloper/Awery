@@ -7,4 +7,9 @@ public class AywaExtensionProvider extends ExtensionProvider {
 	public AywaExtensionProvider(File directory) {
 
 	}
+
+	@Override
+	public String getName() {
+		return null;
+	}
 }

@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.catalog.anilist.data;
 
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.squareup.moshi.Json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ public class AnilistMedia {
 	}
 
 	public static class MediaTitle {
+		@Json(name = "native")
+		public String nativeTitle;
 		public String romaji, english;
 	}
 
@@ -48,6 +51,10 @@ public class AnilistMedia {
 		media.color = coverImage.color;
 		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
+
+		if(title.english != null) media.titles.add(title.english);
+		if(title.romaji != null) media.titles.add(title.romaji);
+		if(title.nativeTitle != null) media.titles.add(title.nativeTitle);
 
 		media.tags = tags.stream()
 				.map(AnilistTag::toCatalogTag)

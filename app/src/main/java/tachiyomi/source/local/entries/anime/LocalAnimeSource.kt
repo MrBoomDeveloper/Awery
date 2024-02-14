@@ -8,15 +8,12 @@ import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.SEpisode
-import eu.kanade.tachiyomi.util.lang.compareToCaseInsensitiveNaturalOrder
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 //import eu.kanade.tachiyomi.util.storage.toFFmpegString
-import kotlinx.serialization.json.Json
 import rx.Observable
 import tachiyomi.core.util.lang.withIOContext
 import tachiyomi.domain.entries.anime.model.Anime
 import tachiyomi.source.local.filter.anime.AnimeOrderBy
-import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -24,8 +21,8 @@ class LocalAnimeSource(
     private val context: Context,
 ) : AnimeCatalogueSource, UnmeteredSource {
 
-    private val POPULAR_FILTERS = AnimeFilterList(AnimeOrderBy.Popular(context))
-    private val LATEST_FILTERS = AnimeFilterList(AnimeOrderBy.Latest(context))
+    private val POPULAR_FILTERS = AnimeFilterList(AnimeOrderBy.Popular())
+    private val LATEST_FILTERS = AnimeFilterList(AnimeOrderBy.Latest())
 
     override val name ="Local anime source"
 
@@ -60,7 +57,7 @@ class LocalAnimeSource(
     }
 
     // Filters
-    override fun getFilterList() = AnimeFilterList(AnimeOrderBy.Popular(context))
+    override fun getFilterList() = AnimeFilterList(AnimeOrderBy.Popular())
 
     // Unused stuff
     override suspend fun getVideoList(episode: SEpisode) = throw UnsupportedOperationException("Unused")

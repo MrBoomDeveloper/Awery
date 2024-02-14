@@ -16,6 +16,7 @@ import com.squareup.moshi.Json;
 import com.squareup.moshi.Moshi;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +25,7 @@ import ani.awery.media.Media;
 import ani.awery.media.anime.Anime;
 
 public class CatalogMedia {
+	public final List<String> titles = new ArrayList<>();
 	public String title, originalTitle, banner, description, color;
 	public MediaType type;
 	public ImageVersions poster;
