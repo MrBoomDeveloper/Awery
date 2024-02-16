@@ -33,7 +33,7 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 				t.printStackTrace();
 
 				if(t instanceof SocketException || t instanceof HttpException) {
-					callback.onSuccess((Collection<Episode>) ExtensionProvider.CONNECTION_FAILED_LIST);
+					callback.onFailure(ExtensionProvider.CONNECTION_FAILED);
 					return;
 				}
 
@@ -44,7 +44,7 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 			var animes = pag.getAnimes();
 
 			if(animes.isEmpty()) {
-				callback.onSuccess((Collection<Episode>) ZERO_RESULTS_LIST);
+				callback.onFailure(ExtensionProvider.ZERO_RESULTS);
 				return;
 			}
 

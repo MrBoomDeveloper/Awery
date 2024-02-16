@@ -13,9 +13,9 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider {
-	private static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
-	public static final Collection<?> ZERO_RESULTS_LIST = List.of();
-	public static final Collection<?> CONNECTION_FAILED_LIST = List.of();
+	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
+	public static final IllegalStateException CONNECTION_FAILED = new IllegalStateException("Failed to connect!");
+	public static final IllegalStateException ZERO_RESULTS = new IllegalStateException("Zero results were found!");
 
 	public void search(int page, @NonNull ResponseCallback<Collection<CatalogMedia>> callback) {
 		callback.onFailure(NOT_IMPLEMENTED);

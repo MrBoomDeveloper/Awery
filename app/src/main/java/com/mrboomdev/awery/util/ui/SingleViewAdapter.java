@@ -17,15 +17,24 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	{ setHasStableIds(true); }
 
 	@NonNull
-	@Contract("_ -> new")
-	public static SingleViewAdapter fromView(@NonNull View view) {
+	public static SingleViewAdapter fromView(@NonNull View view, ViewGroup.LayoutParams layoutParams) {
 		return new SingleViewAdapter() {
 			@NonNull
 			@Override
 			public View onCreateView(@NonNull ViewGroup parent) {
+				if(layoutParams != null) {
+					view.setLayoutParams(layoutParams);
+				}
+
 				return view;
 			}
 		};
+	}
+
+	@NonNull
+	@Contract("_ -> new")
+	public static SingleViewAdapter fromView(@NonNull View view) {
+		return fromView(view, null);
 	}
 
 	public synchronized void setEnabled(boolean isEnabled) {

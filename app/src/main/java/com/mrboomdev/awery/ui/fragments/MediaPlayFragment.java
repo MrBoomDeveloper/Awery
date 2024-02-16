@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +16,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.provider.Extension;
@@ -35,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +54,11 @@ public class MediaPlayFragment extends Fragment {
 	private final ConcatAdapter concatAdapter;
 	private final CatalogMedia media;
 	private MediaDetailsWatchVariantsBinding variantsBinding;
+	private final Map<String, ExtensionStatus> sourceStatuses = new HashMap<>();
+
+	private enum ExtensionStatus {
+		OK, OFFLINE, SERVER_DOWN, BROKEN_PARSER, NOT_FOUND, NONE
+	}
 
 	public MediaPlayFragment(CatalogMedia media) {
 		this.media = media;
@@ -56,6 +68,10 @@ public class MediaPlayFragment extends Fragment {
 				.build();
 
 		concatAdapter = new ConcatAdapter(config);
+	}
+
+	public MediaPlayFragment() {
+		this(null);
 	}
 
 	@Override
@@ -71,7 +87,7 @@ public class MediaPlayFragment extends Fragment {
 		var groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
 
 		var sourcesDropdownAdapter = new CustomArrayAdapter<>(view.getContext(), groupedByLangEntries, (
-				Map.Entry<String, Map<String, ExtensionProvider>> item,
+				Map.Entry<String, Map<String, ExtensionProvider>> itemEntry,
 				View recycled,
 				ViewGroup parent
 		) -> {
@@ -85,7 +101,31 @@ public class MediaPlayFragment extends Fragment {
 				var title = (TextView) group.getChildAt(0);
 				var icon = (ImageView) group.getChildAt(1);
 
-				title.setText(item.getKey());
+				title.setText(itemEntry.getKey());
+				var status = sourceStatuses.get(itemEntry.getKey());
+
+				if(status != null && itemEntry.getValue().size() == 1) {
+					var statusColor = status == ExtensionStatus.OK ? Color.GREEN : Color.RED;
+
+					var iconRes = switch(status) {
+						case OK -> R.drawable.ic_check;
+						case BROKEN_PARSER -> R.drawable.ic_round_error_24;
+						case SERVER_DOWN -> R.drawable.ic_round_block_24;
+						case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
+						case NOT_FOUND -> R.drawable.round_exposure_zero_24;
+						case NONE -> null;
+					};
+
+					if(iconRes != null) {
+						icon.setImageResource(iconRes);
+						icon.setVisibility(View.VISIBLE);
+						ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(statusColor));
+					} else {
+						icon.setVisibility(View.GONE);
+					}
+				} else {
+					icon.setVisibility(View.GONE);
+				}
 			} else {
 				throw new IllegalStateException("Recycled view is not a ViewGroup");
 			}
@@ -113,14 +153,13 @@ public class MediaPlayFragment extends Fragment {
 		}).collect(Collectors.toList());
 
 		var initialProvider = sortedSourceEntries.get(0);
-		variantsBinding.variantDropdown.setText(initialProvider.getKey(), false);
-		loadEpisodesFromSource(initialProvider.getValue());
+		selectVariant(initialProvider.getValue(), initialProvider.getKey());
 
 		if(sortedSourceEntries.size() > 1) {
 			variantsBinding.variantWrapper.setVisibility(View.VISIBLE);
 
 			var variantsDropdownAdapter = new CustomArrayAdapter<>(context, sortedSourceEntries, (
-					Map.Entry<String, ExtensionProvider> item,
+					Map.Entry<String, ExtensionProvider> itemEntry,
 					View recycled,
 					ViewGroup parent
 			) -> {
@@ -134,7 +173,7 @@ public class MediaPlayFragment extends Fragment {
 					var title = (TextView) group.getChildAt(0);
 					var icon = (ImageView) group.getChildAt(1);
 
-					title.setText(item.getKey());
+					title.setText(itemEntry.getKey());
 				} else {
 					throw new IllegalStateException("Recycled view is not a ViewGroup");
 				}
@@ -148,36 +187,46 @@ public class MediaPlayFragment extends Fragment {
 				var variant = sortedSourceEntries.get(position);
 				if(variant == null) return;
 
-				loadEpisodesFromSource(variant.getValue());
-				variantsBinding.variantDropdown.setText(variant.getKey(), false);
+				selectVariant(variant.getValue(), variant.getKey());
 			});
 		} else {
 			variantsBinding.variantWrapper.setVisibility(View.GONE);
 		}
 	}
 
+	private void selectVariant(ExtensionProvider provider, String variant) {
+		variantsBinding.variantDropdown.setText(variant, false);
+		loadEpisodesFromSource(provider);
+	}
+
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
 		source.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(Collection<Episode> episodes) {
-				if(episodes == ExtensionProvider.CONNECTION_FAILED_LIST) {
-					AweryApp.toast("Failed to connect to the server!", 0);
-					return;
-				}
-
 				if(episodes.isEmpty()) {
-					AweryApp.toast("Didn't find any episodes!", 0);
+					this.onFailure(ExtensionProvider.ZERO_RESULTS);
 					return;
 				}
 
+				sourceStatuses.put(source.getName(), ExtensionStatus.OK);
 				AweryApp.toast("yay", 0);
 				System.out.println(episodes);
 			}
 
 			@Override
-			public void onFailure(Throwable e) {
+			public void onFailure(@NonNull Throwable e) {
 				e.printStackTrace();
-				AweryApp.toast("Failed to load episodes list!", 1);
+
+				if(e == ExtensionProvider.CONNECTION_FAILED) {
+					AweryApp.toast("Failed to connect to the server!", 1);
+					sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);
+				} else if(e == ExtensionProvider.ZERO_RESULTS) {
+					AweryApp.toast("Didn't found any episodes!", 0);
+					sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
+				} else {
+					AweryApp.toast("Failed to load episodes list!", 1);
+					sourceStatuses.put(source.getName(), ExtensionStatus.BROKEN_PARSER);
+				}
 			}
 		});
 	}
@@ -185,10 +234,14 @@ public class MediaPlayFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		var layoutManager = new FlexboxLayoutManager(inflater.getContext());
+		var layoutManager = new LinearLayoutManager(inflater.getContext(), LinearLayoutManager.VERTICAL, false);
+
+		var variantsLayoutParams = new RecyclerView.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
 
 		variantsBinding = MediaDetailsWatchVariantsBinding.inflate(inflater, container, false);
-		SingleViewAdapter headerAdapter = SingleViewAdapter.fromView(variantsBinding.getRoot());
+		var headerAdapter = SingleViewAdapter.fromView(variantsBinding.getRoot(), variantsLayoutParams);
 		concatAdapter.addAdapter(headerAdapter);
 
 		ViewUtil.setOnApplyUiInsetsListener(variantsBinding.getRoot(), insets -> {
