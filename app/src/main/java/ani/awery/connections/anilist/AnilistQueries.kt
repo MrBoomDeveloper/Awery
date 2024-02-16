@@ -237,7 +237,6 @@ class AnilistQueries {
 
                     if (response.data?.media != null) parse()
                     else {
-                        snackString(currContext()?.getString(R.string.adult_stuff))
                         response = executeQuery(query, force = true, useToken = false)
                         if (response?.data?.media != null) parse()
                         else snackString(currContext()?.getString(R.string.what_did_you_open))

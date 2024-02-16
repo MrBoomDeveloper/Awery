@@ -567,10 +567,6 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent(this, UserInterfaceSettingsActivity::class.java))
         }
 
-        binding.settingsFAQ.setOnClickListener {
-            startActivity(Intent(this, FAQActivity::class.java))
-        }
-
         (binding.settingsLogo.drawable as Animatable).start()
         val array = resources.getStringArray(R.array.tips)
 
