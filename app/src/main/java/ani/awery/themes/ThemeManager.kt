@@ -23,7 +23,8 @@ class ThemeManager(private val context: Context) {
             .getBoolean("use_source_theme", false)
         val useMaterial = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getBoolean("use_material_you", false)
-        if (useSource) {
+
+        if(useSource) {
             val returnedEarly = applyDynamicColors(
                 useMaterial,
                 context,
@@ -31,14 +32,14 @@ class ThemeManager(private val context: Context) {
                 fromImage,
                 useCustom = if (useCustomTheme) customTheme else null
             )
-            if (!returnedEarly) return
-        } else if (useCustomTheme) {
+            if(!returnedEarly) return
+        } else if(useCustomTheme) {
             val returnedEarly =
                 applyDynamicColors(useMaterial, context, useOLED, useCustom = customTheme)
-            if (!returnedEarly) return
+            if(!returnedEarly) return
         } else {
             val returnedEarly = applyDynamicColors(useMaterial, context, useOLED, useCustom = null)
-            if (!returnedEarly) return
+            if(!returnedEarly) return
         }
         val theme = context.getSharedPreferences("Awery", Context.MODE_PRIVATE)
             .getString("theme", "PURPLE")!!

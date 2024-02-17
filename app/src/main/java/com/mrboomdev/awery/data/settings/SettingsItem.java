@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.android.material.color.DynamicColors;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
@@ -24,7 +25,7 @@ import ani.awery.R;
 public class SettingsItem {
 	private final String key, title, description, icon;
 	private final SettingsItemType type;
-	private String parentKey;
+	private String parentKey, showIf;
 	private final boolean restart;
 	private List<SettingsItem> items;
 	@Json(ignore = true)
@@ -66,6 +67,20 @@ public class SettingsItem {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public boolean isVisible() {
+		if(showIf != null) {
+			var requirements = showIf.split(",");
+
+			for(var requirement : requirements) {
+				if(requirement.equals("is_material_you_available")) {
+					return DynamicColors.isDynamicColorAvailable();
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public Drawable getIcon(@NonNull Context context) {
@@ -124,6 +139,8 @@ public class SettingsItem {
 
 	@Nullable
 	private String getString(@NonNull Context context, String name) {
+		if(name == null) return null;
+
 		try {
 			var clazz = R.string.class;
 			var field = clazz.getField(name);

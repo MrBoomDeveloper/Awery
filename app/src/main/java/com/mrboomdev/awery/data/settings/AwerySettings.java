@@ -5,26 +5,29 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.AweryApp;
+
 import org.jetbrains.annotations.Contract;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import ani.awery.App;
-
 public class AwerySettings {
 	public static final String AWERY_SETTINGS = "Awery";
-	public static final String GLOBAL_EXCLUDED_TAGS = "GLOBAL_EXCLUDED_TAGS";
-	public static final String USE_MATERIAL_YOU = "use_material_you";
-	public static final String USE_CUSTOM_THEME = "use_custom_theme";
-	public static final String DEFAULT_MAIN_PAGE = "DEFAULT_MAIN_PAGE";
-	public static final String USE_SOURCE_THEME = "use_source_theme";
-	public static final String CUSTOM_THEME_INT = "custom_theme_int";
-	public static final String COLOR_OVERFLOW = "colorOverflow";
-	public static final String USE_OLDED = "settings_theme_amoled";
-	public static final String THEME = "theme";
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
+
+	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
+	public static final String THEME_CUSTOM = "settings_theme_custom";
+	public static final String THEME_PALLET = "settings_theme_pallet";
+	public static final String THEME_USE_OLDED = "settings_theme_amoled";
+	public static final String THEME_USE_COLORS_FROM_MEDIA = "settings_theme_use_source_theme";
+
+	public static final String UI_DEFAULT_MAIN_PAGE = "settings_ui_default_main_page";
+
+	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_exclude_tags";
+
+	public static final String PLAYER_DEFAULT_VIDEO_QUALITY = "settings_player_default_video_quality";
 
 	public AwerySettings(SharedPreferences prefs) {
 		this.prefs = prefs;
@@ -128,13 +131,7 @@ public class AwerySettings {
 
 	@NonNull
 	public static AwerySettings getInstance(String name) {
-		var activity = App.Companion.currentActivity();
-
-		if(activity == null) {
-			throw new IllegalStateException("Failed to get a current activity!");
-		}
-
-		return getInstance(activity, name);
+		return getInstance(AweryApp.getAnyContext(), name);
 	}
 
 	@NonNull
@@ -144,13 +141,7 @@ public class AwerySettings {
 	}
 
 	public static SharedPreferences getPreferences(String fileName) {
-		var activity = App.Companion.currentActivity();
-
-		if(activity == null) {
-			throw new IllegalStateException("Failed to get a current activity!");
-		}
-
-		return activity.getSharedPreferences(fileName, 0);
+		return AweryApp.getAnyContext().getSharedPreferences(fileName, 0);
 	}
 
 	public static SharedPreferences getPreferences() {

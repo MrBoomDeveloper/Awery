@@ -7,71 +7,62 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.flexbox.FlexboxLayoutManager;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.provider.Extension;
 import com.mrboomdev.awery.catalog.provider.ExtensionProvider;
 import com.mrboomdev.awery.catalog.provider.ExtensionsManager;
-import com.mrboomdev.awery.catalog.provider.data.Episode;
+import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.provider.data.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.ui.CustomArrayAdapter;
 import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import ani.awery.R;
-import ani.awery.databinding.HeaderLayoutBinding;
+import ani.awery.databinding.ItemListDropdownBinding;
 import ani.awery.databinding.MediaDetailsWatchVariantsBinding;
-import ani.awery.databinding.MenuDropdownItemBinding;
 
 public class MediaPlayFragment extends Fragment {
-	private final ConcatAdapter concatAdapter;
-	private final CatalogMedia media;
-	private MediaDetailsWatchVariantsBinding variantsBinding;
 	private final Map<String, ExtensionStatus> sourceStatuses = new HashMap<>();
+	private CatalogMedia media;
+	private ConcatAdapter concatAdapter;
+	private MediaPlayEpisodesAdapter episodesAdapter;
+	private MediaDetailsWatchVariantsBinding variantsBinding;
+	private ExtensionProvider selectedSource;
 
 	private enum ExtensionStatus {
 		OK, OFFLINE, SERVER_DOWN, BROKEN_PARSER, NOT_FOUND, NONE
 	}
 
 	public MediaPlayFragment(CatalogMedia media) {
-		this.media = media;
-
-		var config = new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build();
-
-		concatAdapter = new ConcatAdapter(config);
+		setMedia(media);
 	}
 
 	public MediaPlayFragment() {
 		this(null);
+	}
+
+	public void setMedia(CatalogMedia media) {
+		if(media == null) return;
+		this.media = media;
 	}
 
 	@Override
@@ -93,7 +84,7 @@ public class MediaPlayFragment extends Fragment {
 		) -> {
 			if(recycled == null) {
 				var inflater = LayoutInflater.from(parent.getContext());
-				var binding = MenuDropdownItemBinding.inflate(inflater, parent, false);
+				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
 				recycled = binding.getRoot();
 			}
 
@@ -165,14 +156,12 @@ public class MediaPlayFragment extends Fragment {
 			) -> {
 				if(recycled == null) {
 					var inflater = LayoutInflater.from(parent.getContext());
-					var binding = MenuDropdownItemBinding.inflate(inflater, parent, false);
+					var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
 					recycled = binding.getRoot();
 				}
 
 				if(recycled instanceof ViewGroup group) {
 					var title = (TextView) group.getChildAt(0);
-					var icon = (ImageView) group.getChildAt(1);
-
 					title.setText(itemEntry.getKey());
 				} else {
 					throw new IllegalStateException("Recycled view is not a ViewGroup");
@@ -200,17 +189,16 @@ public class MediaPlayFragment extends Fragment {
 	}
 
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
+		this.selectedSource = source;
+		episodesAdapter.setItems(Collections.emptyList());
+
 		source.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
 			@Override
-			public void onSuccess(Collection<Episode> episodes) {
-				if(episodes.isEmpty()) {
-					this.onFailure(ExtensionProvider.ZERO_RESULTS);
-					return;
-				}
+			public void onSuccess(Collection<CatalogEpisode> episodes) {
+				if(source != selectedSource) return;
 
 				sourceStatuses.put(source.getName(), ExtensionStatus.OK);
-				AweryApp.toast("yay", 0);
-				System.out.println(episodes);
+				episodesAdapter.setItems(episodes);
 			}
 
 			@Override
@@ -241,8 +229,15 @@ public class MediaPlayFragment extends Fragment {
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 
 		variantsBinding = MediaDetailsWatchVariantsBinding.inflate(inflater, container, false);
-		var headerAdapter = SingleViewAdapter.fromView(variantsBinding.getRoot(), variantsLayoutParams);
-		concatAdapter.addAdapter(headerAdapter);
+		var headerAdapter = SingleViewAdapter.fromView(variantsBinding.getRoot(), 0, variantsLayoutParams);
+
+		episodesAdapter = new MediaPlayEpisodesAdapter();
+
+		var config = new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build();
+
+		concatAdapter = new ConcatAdapter(config, headerAdapter, episodesAdapter);
 
 		ViewUtil.setOnApplyUiInsetsListener(variantsBinding.getRoot(), insets -> {
 			ViewUtil.setTopPadding(variantsBinding.getRoot(), insets.top);

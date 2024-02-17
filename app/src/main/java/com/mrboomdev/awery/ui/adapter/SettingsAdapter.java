@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -23,7 +21,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.util.Objects;
 
 import ani.awery.R;
-import ani.awery.databinding.SettingsItemBinding;
+import ani.awery.databinding.ItemListSettingBinding;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private DataHandler handler;
@@ -49,7 +47,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
-		var binding = SettingsItemBinding.inflate(inflater, parent, false);
+		var binding = ItemListSettingBinding.inflate(inflater, parent, false);
 		var holder = new ViewHolder(binding);
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
@@ -118,12 +116,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private final SettingsItemBinding binding;
+		private final ItemListSettingBinding binding;
 		private final Context context;
 		private SettingsItem item;
 		private boolean didInit;
 
-		public ViewHolder(@NonNull SettingsItemBinding binding) {
+		public ViewHolder(@NonNull ItemListSettingBinding binding) {
 			super(binding.getRoot());
 
 			this.binding = binding;
@@ -141,6 +139,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		public void bind(@NonNull SettingsItem item) {
 			this.didInit = false;
 			this.item = item;
+
+			binding.getRoot().setVisibility(item.isVisible() ? View.VISIBLE : View.GONE);
 
 			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));

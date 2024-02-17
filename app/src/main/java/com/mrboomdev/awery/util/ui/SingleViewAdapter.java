@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -13,11 +14,12 @@ import org.jetbrains.annotations.Contract;
 public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private boolean isEnabled = true;
+	private int id;
 
 	{ setHasStableIds(true); }
 
 	@NonNull
-	public static SingleViewAdapter fromView(@NonNull View view, ViewGroup.LayoutParams layoutParams) {
+	public static SingleViewAdapter fromView(@NonNull View view, int id, ViewGroup.LayoutParams layoutParams) {
 		return new SingleViewAdapter() {
 			@NonNull
 			@Override
@@ -32,9 +34,14 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	@NonNull
+	public static SingleViewAdapter fromView(@NonNull View view, int id) {
+		return fromView(view, id, null);
+	}
+
+	@NonNull
 	@Contract("_ -> new")
 	public static SingleViewAdapter fromView(@NonNull View view) {
-		return fromView(view, null);
+		return fromView(view, 0);
 	}
 
 	public synchronized void setEnabled(boolean isEnabled) {
@@ -54,6 +61,12 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		}
 	}
 
+	@SuppressLint("NotifyDataSetChanged")
+	public void setId(int id) {
+		this.id = id;
+		notifyDataSetChanged();
+	}
+
 	public boolean isEnabled() {
 		return isEnabled;
 	}
@@ -68,7 +81,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 	@Override
 	public long getItemId(int position) {
-		return 0;
+		return id;
 	}
 
 	@Override

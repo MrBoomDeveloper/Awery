@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <uses-feature
-        android:name="android.hardware.touchscreen"
-        android:required="false" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"
-        tools:ignore="ScopedStorage" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+    <!-- Manage storage on old devices -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
 
     <!-- For background jobs -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -32,11 +24,7 @@
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <!-- To view extension packages in API 30+ -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
-    <uses-permission android:name="android.permission.READ_APP_SPECIFIC_LOCALES"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
 
     <queries>
         <package android:name="idm.internet.download.manager.plus" />
@@ -60,26 +48,17 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
 
-        <activity android:label="Awery (Experimental)"
-            android:name="com.mrboomdev.awery.ui.activity.MainActivity"
-            android:configChanges="screenSize|layoutDirection"
-            android:exported="true">
-
+        <activity android:name="com.mrboomdev.awery.ui.activity.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.mrboomdev.awery.ui.activity.MediaDetailsActivity"
-            android:label="Awery - Media Details (Experimental)"
-            android:configChanges="screenSize|layoutDirection"
-            android:exported="false" />
-
-        <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity"
-            android:label="Awery - Settings (Experimental)"
-            android:configChanges="screenSize|layoutDirection"
-            android:exported="true" />
+        <activity android:name="com.mrboomdev.awery.ui.activity.MediaDetailsActivity" android:exported="false" />
+        <activity android:name="com.mrboomdev.awery.ui.activity.PlayerActivity" android:exported="true" />
+        <activity android:name="com.mrboomdev.awery.ui.activity.ReaderActivity" android:exported="true" />
+        <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity" android:exported="true" />
 
         <activity
             android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"
@@ -250,17 +229,6 @@
                 <data android:host="anilist.co" />
                 <data android:host="myanimelist.net" />
                 <data android:pathPrefix="/anime" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|layoutDirection"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 

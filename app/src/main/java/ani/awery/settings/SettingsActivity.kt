@@ -82,8 +82,10 @@ class SettingsActivity : AppCompatActivity() {
                         "x86" -> return "i686"
                     }
                 }
-                return System.getProperty("os.arch") ?: System.getProperty("os.product.cpu.abi")
-                ?: "Unknown Architecture"
+
+                return System.getProperty("os.arch")
+                    ?: System.getProperty("os.product.cpu.abi")
+                    ?: "Unknown Architecture"
             }
 
             val info = """
@@ -92,6 +94,7 @@ class SettingsActivity : AppCompatActivity() {
                 Architecture: ${getArch()}
                 OS Version: $CODENAME $RELEASE ($SDK_INT)
             """.trimIndent()
+
             copyToClipboard(info, false)
             toast(getString(R.string.copied_device_info))
             return@setOnLongClickListener true
@@ -109,19 +112,19 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.settingsUseMaterialYou.isChecked =
-            prefs.getBoolean(AwerySettings.USE_MATERIAL_YOU)
+            prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU)
 
         binding.settingsUseMaterialYou.setOnCheckedChangeListener { _, isChecked ->
-            prefs.setBoolean(AwerySettings.USE_MATERIAL_YOU, isChecked).saveAsync()
+            prefs.setBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, isChecked).saveAsync()
             if(isChecked) binding.settingsUseCustomTheme.isChecked = false
             restartApp()
         }
 
         binding.settingsUseCustomTheme.isChecked =
-            prefs.getBoolean(AwerySettings.USE_CUSTOM_THEME)
+            prefs.getBoolean(AwerySettings.THEME_CUSTOM)
 
         binding.settingsUseCustomTheme.setOnCheckedChangeListener { _, isChecked ->
-            prefs.setBoolean(AwerySettings.USE_CUSTOM_THEME, isChecked).saveAsync()
+            prefs.setBoolean(AwerySettings.THEME_CUSTOM, isChecked).saveAsync()
             if(isChecked) binding.settingsUseMaterialYou.isChecked = false
             restartApp()
         }
@@ -170,7 +173,7 @@ class SettingsActivity : AppCompatActivity() {
             toast("Loading tags list...", 1)
 
             AnilistTagsQuery.getTags(AnilistTagsQuery.ALL).executeQuery {
-                val excludedTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
+                val excludedTags = prefs.getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS)
 
                 runOnUiThread {
                     val layout = layoutInflater.inflate(R.layout.dialog_exclude_tags, null)
@@ -207,7 +210,7 @@ class SettingsActivity : AppCompatActivity() {
                         .setView(layout)
                         .setCancelable(false)
                         .setPositiveButton("OK") { dialog, _ ->
-                            prefs.setStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS, excludedTags)
+                            prefs.setStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS, excludedTags)
                             prefs.saveAsync()
 
                             dialog.dismiss()

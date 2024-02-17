@@ -30,6 +30,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/media_catalog_category_title"
-        tools:listitem="@layout/media_catalog_item" />
+        tools:listitem="@layout/item_grid_media_catalog" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

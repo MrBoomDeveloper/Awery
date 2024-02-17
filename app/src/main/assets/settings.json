@@ -5,7 +5,17 @@
 			"key": "theme", "type": "screen",
 			"title": "theme", "icon": "ic_round_palette_24",
 			"items": [
-				{ "key": "amoled", "type": "boolean", "title": "amoled", "icon": "ic_round_brightness_medium_24", "restart": true }
+				{
+					"key": "use_material_you", "type": "boolean", "restart": true,
+					"title": "use_material_you", "icon": "ic_round_auto_awesome_24",
+					"show_if": "is_material_you_available"
+				}, {
+					"key": "amoled", "type": "boolean", "restart": true,
+					"title": "amoled", "icon": "ic_round_brightness_medium_24"
+				}, {
+					"key": "use_source_theme", "type": "boolean",
+					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24"
+				}
 			]
 		}, {
 			"key": "ui", "type": "screen",
@@ -22,13 +32,42 @@
 				}
 			]
 		}, {
+			"key": "content", "type": "screen",
+			"title": "content", "icon": "ic_extension",
+			"items": [
+				{
+					"key": "global_excluded_tags", "type": "select",
+					"icon": "ic_round_block_24"
+				}
+			]
+		}, {
 			"key": "player", "type": "screen",
-			"title": "player", "icon": "ic_round_play_circle_24",
-			"items": []
+			"title": "player", "icon": "ic_round_video_settings_24",
+			"items": [
+				{
+					"key": "default_video_quality", "type": "select",  "int_value": 5,
+					"title": "default_video_quality",
+					"items": [
+						{ "key": "select", "title": "always_ask_video_quality" },
+						{ "key": "144", "title": "144p" },
+						{ "key": "240", "title": "240p" },
+						{ "key": "360", "title": "360p" },
+						{ "key": "480", "title": "480p" },
+						{ "key": "720", "title": "720p" },
+						{ "key": "1080", "title": "1080p" },
+						{ "key": "1440", "title": "1440p" },
+						{ "key": "2160", "title": "2160p" }
+					]
+				}
+			]
 		}, {
 			"key": "reader", "type": "screen",
 			"title": "reader", "icon": "ic_round_reader_settings",
 			"items": []
+		}, {
+			"key": "accounts", "type": "screen",
+			"title": "accounts", "icon": "ic_round_account_circle_24",
+			"items": [], "behaviour": "list_accounts"
 		}
 	]
 }

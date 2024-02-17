@@ -5,6 +5,11 @@
         <item name="colorSecondaryVariant">@color/violet_400</item>
     </style>
 
+    <style name="AmoledThemeOverlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
+    </style>
+
     <style name="Theme.Awery.Blue" parent="Theme.Base">
         <item name="colorPrimary">@color/md_theme_dark_1_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_1_onPrimary</item>

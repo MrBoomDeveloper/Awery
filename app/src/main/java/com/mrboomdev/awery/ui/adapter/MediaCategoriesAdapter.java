@@ -15,7 +15,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;
 
-import ani.awery.databinding.MediaCatalogCategoryBinding;
+import ani.awery.databinding.ItemListMediaCategoryBinding;
 
 public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> implements ObservableList.AddObserver<MediaCategoriesAdapter.Category> {
 	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
@@ -63,7 +63,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
-		var binding = MediaCatalogCategoryBinding.inflate(inflater, parent, false);
+		var binding = ItemListMediaCategoryBinding.inflate(inflater, parent, false);
 		var adapter = new MediaCatalogAdapter();
 
 		binding.mediaCatalogCategoryItems.setRecycledViewPool(itemsPool);
@@ -102,11 +102,11 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private final MediaCatalogCategoryBinding binding;
+		private final ItemListMediaCategoryBinding binding;
 		private final MediaCatalogAdapter adapter;
 		private Category associatedCategory;
 
-		public ViewHolder(@NonNull MediaCatalogCategoryBinding binding, MediaCatalogAdapter adapter) {
+		public ViewHolder(@NonNull ItemListMediaCategoryBinding binding, MediaCatalogAdapter adapter) {
 			super(binding.getRoot());
 			this.binding = binding;
 			this.adapter = adapter;

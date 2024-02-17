@@ -20,7 +20,7 @@ import com.mrboomdev.awery.util.ObservableList;
 import java.util.Collection;
 import java.util.Collections;
 
-import ani.awery.databinding.HeaderLayoutBinding;
+import ani.awery.databinding.LayoutHeaderBinding;
 
 public class AnimeFragment extends MediaCatalogFragment {
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
@@ -28,7 +28,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var header = HeaderLayoutBinding.inflate(getLayoutInflater());
+		var header = LayoutHeaderBinding.inflate(getLayoutInflater());
 		pagerAdapter.setHeaderView(header.getRoot());
 		setupHeader(header);
 

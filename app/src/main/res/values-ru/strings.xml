@@ -416,7 +416,7 @@
     <string name="mal_login_code_not_present">Mal Login : Code not present in Redirected URI</string>
     <string name="refresh_token_load_failed">Refresh Token : Failed to load Saved Token</string>
     <string name="refreshing_token_failed">Refreshing Token Failed</string>
-    <string name="episode_release_countdown">Episode %1$d will be released in</string>
+    <string name="episode_release_countdown">Эпизод %1$d выйдет через</string>
     <string name="time_format">%1$d days %2$d hrs %3$d mins %4$d secs</string>
     <string-array name="sort_by">
         <item>Рейтинг</item>
@@ -433,14 +433,14 @@
     <string name="status_releasing">ВЫХОДИТ</string>
     <string name="status_not_yet_released">ЕЩЕ НЕ ВЫШЛО</string>
     <string name="status_cancelled">ОТМЕНЕНО</string>
-    <string name="status_hiatus">HIATUS</string>
+    <string name="status_hiatus">ОТЛОЖЕНО</string>
 
     <string name="type_adaptation">АДАПТАЦИЯ</string>
     <string name="type_parent">PARENT</string>
     <string name="type_character">ПЕРСОНАЖ</string>
     <string name="type_summary">SUMMARY</string>
     <string name="type_alternative">ALTERNATIVE</string>
-    <string name="type_other">OTHER</string>
+    <string name="type_other">ДРУГОЕ</string>
     <string name="type_source">ИСТОЧНИК</string>
     <string name="type_contains">CONTAINS</string>
 
@@ -456,25 +456,25 @@
     <string name="checking_subscriptions_title">Проверяем Подписки</string>
 
     <string name="speed">Скорость</string>
-    <string name="auto_update">Auto Update progress for %1$s?</string>
+    <string name="auto_update">Автоматически обновлять прогресс для %1$s?</string>
     <string name="continue_from">Продолжить с %1$s?</string>
-    <string name="title_update_progress">Update progress on anilist?</string>
+    <string name="title_update_progress">Обновить прогресс на Anilist?</string>
     <string name="incognito_will_not_update">Incognito mode will still ignore progress.</string>
-    <string name="dont_ask_again">"Don\'t ask again for %1$s"</string>
+    <string name="dont_ask_again">"Больше не спрашивать для %1$s"</string>
     <string name="default_speed">Скорость по умолчанию</string>
     <string name="default_resize_mode">Default Resize Mode</string>
-    <string name="primary_sub_color">Primary Sub Color</string>
-    <string name="outline_sub_color">Outline Sub Color</string>
-    <string name="outline_type">Outline Type</string>
+    <string name="primary_sub_color">Цвет Субтитров</string>
+    <string name="outline_sub_color">Цвет Контура Субтитров</string>
+    <string name="outline_type">Тип Контура</string>
     <string name="subtitle_font">Шрифт Субтитров</string>
 
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="close">Закрыть</string>
-    <string name= "no_chapter">No Chapter</string>
+    <string name= "no_chapter">Нет глав</string>
     <string name= "content_18">Включите 18+ Контент в Настройках Аккаунта Anilist</string>
     <string name= "available">Доступно</string>
-    <string name="lets_go">Let\'s Go</string>
+    <string name="lets_go">Поехали</string>
     <string name="cope">Cope</string>
 
     <string name="watched_num">"Просмотренно "</string>
@@ -502,8 +502,8 @@
     <string name="found">Найдено</string>
 
     <string name="age">"__Возраст:__ "</string>
-    <string name="birthday" translatable="false">\n"__День Рождения:__ "</string>
-    <string name="gender" translatable="false">\n"__Гендер:__ "</string>"
+    <string name="birthday">\n"__День Рождения:__ "</string>
+    <string name="gender">\n"__Гендер:__ "</string>"
 
     <string name="male">Мужчина</string>
     <string name="female">Женщина</string>
@@ -552,8 +552,10 @@
     <string name="available_anime">Доступное Аниме</string>
     <string name="installed_manga">Установленная Манга</string>
     <string name="color_picker">Выбор Цвета</string>
-    <string name="random_selection">Random Selection</string>
+    <string name="random_selection">Рандомный Выбор</string>
     <string name="incognito_mode">Режим Инкогнито</string>
     <string name="android12_requires">Требуется Android 12+</string>
     <string name="variant">Вариант</string>
+
+    <string name="default_video_quality">Качество видео по умолчанию</string>
 </resources>

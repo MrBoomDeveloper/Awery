@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableList;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import ani.awery.databinding.MediaCatalogItemBinding;
-import ani.awery.media.MediaDetailsActivity;
+import ani.awery.databinding.ItemGridMediaCatalogBinding;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
 	private ObservableList<CatalogMedia> items;
@@ -59,7 +53,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
-		var binding = MediaCatalogItemBinding.inflate(inflater, parent, false);
+		var binding = ItemGridMediaCatalogBinding.inflate(inflater, parent, false);
 		var viewHolder = new ViewHolder(binding);
 
 		binding.getRoot().setOnClickListener(view -> {
@@ -101,10 +95,10 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private final MediaCatalogItemBinding binding;
+		private final ItemGridMediaCatalogBinding binding;
 		private CatalogMedia item;
 
-		public ViewHolder(@NonNull MediaCatalogItemBinding binding) {
+		public ViewHolder(@NonNull ItemGridMediaCatalogBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}

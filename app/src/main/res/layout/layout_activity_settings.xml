@@ -14,6 +14,6 @@
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:id="@+id/recycler"
-        tools:listitem="@layout/settings_item" />
+        tools:listitem="@layout/item_list_setting" />
 
 </LinearLayout>

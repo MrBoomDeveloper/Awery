@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,12 +35,12 @@ import com.mrboomdev.awery.util.ui.FadeTransformer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ani.awery.R;
-import ani.awery.databinding.MainActivityLayoutBinding;
-import ani.awery.databinding.SplashScreenBinding;
+import ani.awery.databinding.LayoutActivityMainBinding;
+import ani.awery.databinding.LayoutSplashScreenBinding;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
-	private MainActivityLayoutBinding binding;
+	private LayoutActivityMainBinding binding;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,23 +48,10 @@ public class MainActivity extends AppCompatActivity {
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
-		binding = MainActivityLayoutBinding.inflate(getLayoutInflater());
+		binding = LayoutActivityMainBinding.inflate(getLayoutInflater());
 		binding.getRoot().setMotionEventSplittingEnabled(false);
 		var prefs = AwerySettings.getInstance(this);
 		setContentView(binding.getRoot());
-
-		if(!prefs.getBoolean(AwerySettings.COLOR_OVERFLOW)) {
-			binding.navbar.setBackground(ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray));
-		} else {
-			var backgroundDrawable = (GradientDrawable)binding.navbar.getBackground();
-			var colorStateList = backgroundDrawable.getColor();
-
-			var currentColor = colorStateList != null ? colorStateList.getDefaultColor() : 0;
-			var semiTransparentColor = (currentColor & 0x00FFFFFF) | 0xE8000000;
-
-			backgroundDrawable.setColor(semiTransparentColor);
-			binding.navbar.setBackground(backgroundDrawable);
-		}
 
 		startSplash();
 		registerBackListener();
@@ -76,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.DEFAULT_MAIN_PAGE, Pages.HOME.name()));
+		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.UI_DEFAULT_MAIN_PAGE, Pages.HOME.name()));
 		int currentPageIndex = currentPage.ordinal();
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);
+		binding.navbar.setBackground(ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray));
 
 		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
 
@@ -129,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 			getSplashScreen().setOnExitAnimationListener(
 					view -> slideFromSplash(view, view::remove));
 		} else {
-			var splash = SplashScreenBinding.inflate(getLayoutInflater());
+			var splash = LayoutSplashScreenBinding.inflate(getLayoutInflater());
 			binding.getRoot().addView(splash.getRoot());
 			((Animatable)splash.splashImage.getDrawable()).start();
 

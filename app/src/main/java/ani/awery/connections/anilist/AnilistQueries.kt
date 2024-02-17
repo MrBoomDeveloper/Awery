@@ -540,7 +540,7 @@ class AnilistQueries {
         id: Int? = null,
         hd: Boolean = false
     ): SearchResults? {
-        val globallyExcludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
+        val globallyExcludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS)
         excludedTags?.addAll(globallyExcludedTags)
 
         val query = """
@@ -723,7 +723,7 @@ Page(page: $page, perPage: 50) {
             return executeQuery<Query.Page>(query, force = true)?.data?.page
         }
 
-        val excludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS)
+        val excludedTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS)
 
         if(smaller) {
             val response = execute()?.airingSchedules ?: return null

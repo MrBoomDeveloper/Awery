@@ -17,7 +17,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import org.jetbrains.annotations.Contract;
 
-import ani.awery.databinding.HeaderLayoutBinding;
+import ani.awery.databinding.LayoutHeaderBinding;
 import ani.awery.databinding.MediaCatalogFragmentBinding;
 import ani.awery.media.SearchActivity;
 
@@ -35,7 +35,7 @@ public class MediaCatalogFragment extends Fragment {
 		concatAdapter = new ConcatAdapter(config);
 	}
 
-	public void setupHeader(@NonNull HeaderLayoutBinding header) {
+	public void setupHeader(@NonNull LayoutHeaderBinding header) {
 		header.search.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SearchActivity.class);
 			startActivity(intent);
@@ -71,9 +71,9 @@ public class MediaCatalogFragment extends Fragment {
 	}
 
 	private class HeaderAdapter extends SingleViewAdapter {
-		private HeaderLayoutBinding binding;
+		private LayoutHeaderBinding binding;
 
-		public HeaderLayoutBinding getBinding() {
+		public LayoutHeaderBinding getBinding() {
 			return binding;
 		}
 
@@ -82,7 +82,7 @@ public class MediaCatalogFragment extends Fragment {
 		@Override
 		protected View onCreateView(@NonNull ViewGroup parent) {
 			var inflater = LayoutInflater.from(parent.getContext());
-			this.binding = HeaderLayoutBinding.inflate(inflater, parent, false);
+			this.binding = LayoutHeaderBinding.inflate(inflater, parent, false);
 			setupHeader(binding);
 
 			ViewUtil.setPadding(binding.getRoot(), ViewUtil.dpPx(16));
