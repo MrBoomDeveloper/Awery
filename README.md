@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/banner.webp" alt="Awery Banner" width=100% >
+   <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/banner.webp" alt="Awery Banner" width=100% >
 </p>
 <p align="center">
    <img src="https://img.shields.io/badge/platforms-android-blueviolet?style=for-the-badge"/>
@@ -11,25 +11,24 @@
 
 Imagine the perfect app where you can customize everything, with tons of content and a **stylish** look. It's all about Awery!
 
-<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/Screenshot_20240212_224732.jpg" />
+<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot1.jpg" />
+<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot2.jpg" />
 
 ## Features 🎩
 
 - Filter out tags like yaoi or yuri for the whole app for forever
-- Sync progress with your AniList account
 - Best design among other anime apps
 
 ## Planned Features 🕒
 
+- Sync progress with your AniList account
 - Blacklist animes by keywords
 - Automatically select other sources if current is unavailable
 - App languages like Spanish, France and Russian
 - Auto translate everything!
-- Easier extension development
-- Publish on F-Droid
 - Switch between different providers like Anilist, Shikimori, MyAnimeList and etc.
 - History page
-- **Customize** app to look how you want
+- Customize app to look how you want
 - Leave and read other comments
 - News reader
 
