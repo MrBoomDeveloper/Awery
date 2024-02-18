@@ -92,7 +92,7 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 
 						return new CatalogVideo(
 								item.getVideoUrl(),
-								headers.toString()
+								headers != null ? headers.toString() : ""
 						);
 					}).collect(Collectors.toCollection(ArrayList::new)));
 		}))).start();

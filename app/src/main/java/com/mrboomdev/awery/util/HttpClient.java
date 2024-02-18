@@ -15,6 +15,10 @@ public class HttpClient {
 	private static final OkHttpClient client = new OkHttpClient();
 	private static int usedIds = 0;
 
+	public static OkHttpClient getClient() {
+		return client;
+	}
+
 	public static void run(Method method, String url, String body, MediaType contentType, Map<String, String> headers, HttpCallback callback) {
 		if(usedIds > 1000) usedIds = 0;
 		usedIds++;

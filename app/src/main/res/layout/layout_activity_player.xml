@@ -4,13 +4,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/player"
-        android:layout_width="0dp"
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/aspect_ratio_frame"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextureView
+            android:id="@+id/texture_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.media3.ui.AspectRatioFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
