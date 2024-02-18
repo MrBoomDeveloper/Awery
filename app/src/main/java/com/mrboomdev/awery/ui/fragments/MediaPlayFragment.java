@@ -59,6 +59,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private ExtensionProvider selectedSource;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+	private boolean autoChangeSource = true;
+	private int currentSourceIndex = 0;
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -215,14 +217,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		setMedia(media);
 	}
 
-	private void selectProvider(@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap, Context context) {
-		variantsAdapter.getBinding((binding, didJustCreated) -> binding.sourceDropdown.setText(sourcesMap.getKey(), false));
-
-		var sortedSourceEntries = sourcesMap.getValue().entrySet().stream().sorted((next, prev) -> {
+	private List<Map.Entry<String, ExtensionProvider>> getSortedSources(
+			@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap
+	) {
+		return sourcesMap.getValue().entrySet().stream().sorted((next, prev) -> {
 			if(next.getKey().equals("en") && !prev.getKey().equals("en")) return -1;
 			if(!next.getKey().equals("en") && prev.getKey().equals("en")) return 1;
 			return 0;
 		}).collect(Collectors.toList());
+	}
+
+	private void selectProvider(@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap, Context context) {
+		variantsAdapter.getBinding((binding, didJustCreated) -> binding.sourceDropdown.setText(sourcesMap.getKey(), false));
+		var sortedSourceEntries = getSortedSources(sourcesMap);
 
 		var initialProvider = sortedSourceEntries.get(0);
 		selectVariant(initialProvider.getValue(), initialProvider.getKey());
@@ -258,6 +265,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var variant = sortedSourceEntries.get(position);
 					if(variant == null) return;
 
+					autoChangeSource = false;
 					selectVariant(variant.getValue(), variant.getKey());
 				});
 			});
@@ -301,8 +309,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		variantsAdapter.getBinding((binding, didJustCreated) -> {
 			binding.searchDropdown.setText(searchParams.getQuery(), false);
-
-
 		});
 
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
@@ -326,6 +332,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 					@Override
 					public void onFailure(@NonNull Throwable e) {
+						if(autoSelectNextSource()) return;
 						handleException(source, e);
 					}
 				});
@@ -337,6 +344,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(callback == null) return;
 
 				if(e != ErrorUtil.ZERO_RESULTS) {
+					if(autoSelectNextSource()) return;
 					handleException(source, e);
 					return;
 				}
@@ -349,6 +357,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					AweryApp.runOnUiThread(() -> variantsAdapter.getBinding((binding, didJustCreated) ->
 							binding.searchDropdown.setText(searchParams.getQuery(), false)));
 				} else {
+					if(autoSelectNextSource()) return;
+
 					AweryApp.runOnUiThread(() -> placeholderAdapter.getBinding((binding, didJustCreated) -> {
 						binding.title.setText(R.string.nothing_found);
 						binding.message.setText(R.string.tried_all_titles);
@@ -361,6 +371,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 
 		source.search(searchParams.build(), foundMediaCallback.get());
+	}
+
+	private boolean autoSelectNextSource() {
+		if(!autoChangeSource) return false;
+		currentSourceIndex++;
+
+		if(currentSourceIndex >= groupedByLangEntries.size()) {
+			return false;
+		}
+
+		var nextSourceMap = groupedByLangEntries.get(currentSourceIndex);
+		selectProvider(nextSourceMap, requireContext());
+		return true;
 	}
 
 	private void handleException(ExtensionProvider source, Throwable throwable) {
@@ -382,6 +405,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(error.isProgramException()) {
 			sourceStatuses.put(source.getName(), ExtensionStatus.BROKEN_PARSER);
+		} else if(throwable == ErrorUtil.ZERO_RESULTS) {
+			sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
+		} else {
+			sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);
 		}
 
 		placeholderAdapter.getBinding((binding, didJustCreated) -> AweryApp.runOnUiThread(() -> {

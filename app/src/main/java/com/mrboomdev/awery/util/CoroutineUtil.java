@@ -5,14 +5,14 @@ import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.concurrent.Flow;
-
 import kotlin.Result;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class CoroutineUtil {
 
@@ -40,25 +40,27 @@ public class CoroutineUtil {
 	}
 
 	public static <T> void getObservableValue(@NonNull Observable<T> observable, CoroutineCallback<T> callback) {
-		observable.single().subscribe(new Subscriber<>() {
-			@Override
-			public void onCompleted() {}
+		observable.single().subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Subscriber<>() {
+					@Override
+					public void onCompleted() {}
 
-			@Override
-			public void onStart() {
-				request(1);
-			}
+					@Override
+					public void onStart() {
+						request(1);
+					}
 
-			@Override
-			public void onError(Throwable e) {
-				callback.onResult(null, e);
-			}
+					@Override
+					public void onError(Throwable e) {
+						callback.onResult(null, e);
+					}
 
-			@Override
-			public void onNext(T t) {
+					@Override
+					public void onNext(T t) {
 				callback.onResult(t, null);
 			}
-		});
+				});
 	}
 
 	public interface CoroutineCallback<T> {

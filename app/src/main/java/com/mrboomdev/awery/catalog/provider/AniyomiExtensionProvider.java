@@ -49,6 +49,11 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 				return;
 			}
 
+			if(episodes == null || episodes.isEmpty()) {
+				callback.onFailure(ErrorUtil.ZERO_RESULTS);
+				return;
+			}
+
 			callback.onSuccess(Objects.requireNonNull(episodes)
 					.stream().map(item -> new CatalogEpisode(
 							item.getName(),
@@ -73,6 +78,11 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 		new Thread(() -> CoroutineUtil.getObservableValue(source.fetchVideoList(animeEpisode), ((videos, _t) -> {
 			if(_t != null) {
 				callback.onFailure(_t);
+				return;
+			}
+
+			if(videos == null || videos.isEmpty()) {
+				callback.onFailure(ErrorUtil.ZERO_RESULTS);
 				return;
 			}
 

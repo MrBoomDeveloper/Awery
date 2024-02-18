@@ -15,6 +15,7 @@ import java.net.SocketTimeoutException;
 import javax.net.ssl.SSLHandshakeException;
 
 import eu.kanade.tachiyomi.network.HttpException;
+import kotlinx.serialization.json.internal.JsonDecodingException;
 
 public class ErrorUtil {
 	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
@@ -49,6 +50,8 @@ public class ErrorUtil {
 			};
 		} else if(t instanceof UnsupportedOperationException) {
 			return "Feature not implemented!";
+		} else if(t instanceof JsonDecodingException) {
+			return "Parser is broken!";
 		}
 
 		return getGenericTitle(context);
