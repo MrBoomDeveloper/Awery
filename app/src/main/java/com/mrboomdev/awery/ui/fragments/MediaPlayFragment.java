@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -101,9 +102,16 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		selectedSource.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(List<CatalogVideo> catalogVideos) {
+				Context context;
 				var video = catalogVideos.get(0);
 
-				var intent = new Intent(requireContext(), PlayerActivity.class);
+				try {
+					context = requireContext();
+				} catch(IllegalStateException e) {
+					return;
+				}
+
+				var intent = new Intent(context, PlayerActivity.class);
 				intent.putExtra("url", video.getUrl());
 				intent.putExtra("headers", video.getHeaders());
 				startActivity(intent);
@@ -111,13 +119,20 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 			@Override
 			public void onFailure(Throwable throwable) {
+				Context context;
 				var error = new ErrorUtil(throwable);
+
+				try {
+					context = requireContext();
+				} catch(IllegalStateException e) {
+					return;
+				}
 
 				if(!error.isGenericError()) {
 					throwable.printStackTrace();
 				}
 
-				AweryApp.toast(error.getTitle(requireContext()), 1);
+				AweryApp.toast(error.getTitle(context), 1);
 			}
 		});
 	}
@@ -321,10 +336,17 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					@Override
 					public void onSuccess(List<CatalogEpisode> episodes) {
 						if(source != selectedSource) return;
+						Activity activity;
+
+						try {
+							activity = requireActivity();
+						} catch(IllegalStateException e) {
+							return;
+						}
 
 						sourceStatuses.put(source.getName(), ExtensionStatus.OK);
 
-						requireActivity().runOnUiThread(() -> {
+						activity.runOnUiThread(() -> {
 							placeholderAdapter.setEnabled(false);
 							episodesAdapter.setItems(episodes);
 						});
@@ -374,6 +396,15 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private boolean autoSelectNextSource() {
+		Context context;
+
+		try {
+			context = requireContext();
+		} catch(IllegalStateException e) {
+			Log.e(TAG, "Damn... something went wrong. I guess we just restored the fragment or it was destroyed.");
+			return false;
+		}
+
 		if(!autoChangeSource) return false;
 		currentSourceIndex++;
 
@@ -382,7 +413,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		var nextSourceMap = groupedByLangEntries.get(currentSourceIndex);
-		selectProvider(nextSourceMap, requireContext());
+		selectProvider(nextSourceMap, context);
 		return true;
 	}
 

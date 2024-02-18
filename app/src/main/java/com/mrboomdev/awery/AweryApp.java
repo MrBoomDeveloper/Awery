@@ -144,7 +144,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	private void setupCrashHandler() {
-		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			throwable.printStackTrace();
 			var activity = getAnyActivity();
 
 			if(activity != null) {

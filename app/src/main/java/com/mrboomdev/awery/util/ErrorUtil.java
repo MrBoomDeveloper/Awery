@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -52,6 +53,8 @@ public class ErrorUtil {
 			return "Feature not implemented!";
 		} else if(t instanceof JsonDecodingException) {
 			return "Parser is broken!";
+		} else if(t instanceof UnknownHostException) {
+			return "No internet connection!";
 		}
 
 		return getGenericTitle(context);
@@ -91,6 +94,8 @@ public class ErrorUtil {
 				case 504 -> "The connection timed out, please try again later.";
 				default -> getGenericMessage();
 			};
+		} else if(t instanceof UnknownHostException e) {
+			return e.getMessage();
 		}
 
 		return getGenericMessage();
