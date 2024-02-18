@@ -17,6 +17,7 @@ import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -68,11 +69,15 @@ public class AnimeFragment extends MediaCatalogFragment {
 		), cats);
 
 		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
-			loadCategory("Hentai (If you see this, please contact me asap at Telegram @MrBoomDev)", AnilistSearchQuery.search(
-					AnilistMedia.MediaType.ANIME,
-					AnilistQuery.MediaSort.TRENDING_DESC,
-					null, null, true
-			), cats);
+			var file = new File(requireContext().getExternalFilesDir(null), "hentai.txt");
+
+			if(file.exists()) {
+				loadCategory("Hentai", AnilistSearchQuery.search(
+						AnilistMedia.MediaType.ANIME,
+						AnilistQuery.MediaSort.TRENDING_DESC,
+						null, null, true
+				), cats);
+			}
 		}
 
 		loadCategory("Recent Updates", AnilistSearchQuery.search(
