@@ -19,6 +19,7 @@ import java.util.List;
 import ani.awery.databinding.ItemListEpisodeBinding;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
+	private OnEpisodeSelectedListener onEpisodeSelectedListener;
 	private List<CatalogEpisode> items = List.of();
 
 	public MediaPlayEpisodesAdapter() {
@@ -31,6 +32,14 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		notifyDataSetChanged();
 	}
 
+	public void setOnEpisodeSelectedListener(OnEpisodeSelectedListener listener) {
+		this.onEpisodeSelectedListener = listener;
+	}
+
+	public interface OnEpisodeSelectedListener {
+		void onEpisodeSelected(@NonNull CatalogEpisode episode);
+	}
+
 	@Override
 	public long getItemId(int position) {
 		return position;
@@ -41,7 +50,14 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemListEpisodeBinding.inflate(inflater, parent, false);
-		return new ViewHolder(binding);
+		var holder = new ViewHolder(binding);
+
+		binding.container.setOnClickListener(v -> {
+			if(onEpisodeSelectedListener == null) return;
+			onEpisodeSelectedListener.onEpisodeSelected(holder.getItem());
+		});
+
+		return holder;
 	}
 
 	@Override

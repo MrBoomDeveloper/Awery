@@ -15,14 +15,14 @@ Imagine the perfect app where you can customize everything, with tons of content
 <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot2.jpg" />
 
 ## Features 🎩
-
-- Filter out tags like yaoi or yuri for the whole app for forever
+- Use any Aniyomi extension
 - Best design among other anime apps
 
 ## Planned Features 🕒
 
 - Sync progress with your AniList account
-- Blacklist animes by keywords
+- Filter out tags like yaoi from the whole app!
+- Blacklist unwanted media
 - Automatically select other sources if current is unavailable
 - App languages like Spanish, France and Russian
 - Auto translate everything!
@@ -36,9 +36,9 @@ Imagine the perfect app where you can customize everything, with tons of content
 
 There is currently no possibility of directly downloading ready-made apk files. The very idea of downloading unfinished software sounds strange to me.  Please be patient while I finish something working.  And if you can’t stand it, then build the project yourself!
 
-## Deployment 🐢
+## Build 🐢
 
-Download the **Android Studio** application to your computer or **AndroidIDE** if you do not have it on your mobile phone.  Click the clone repository button and enter the link to this repository.  Next, open the project, wait a couple of minutes and then click on the “▶” build button.
+Download the **Android Studio** application to your computer or **AndroidIDE** if you do not have it on your mobile phone. Click the clone repository button and enter the link to this repository.  Next, open the project, wait a couple of minutes and then click on the “▶” build button.
 
 ## Want to Contribute? 🤝
 

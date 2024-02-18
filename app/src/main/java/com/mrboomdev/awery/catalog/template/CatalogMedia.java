@@ -25,7 +25,7 @@ import ani.awery.media.Media;
 import ani.awery.media.anime.Anime;
 
 public class CatalogMedia {
-	public final List<String> titles = new ArrayList<>();
+	public List<String> titles = new ArrayList<>();
 	public String title, originalTitle, banner, description, color, url;
 	public MediaType type;
 	public ImageVersions poster;
@@ -44,6 +44,11 @@ public class CatalogMedia {
 		var intent = new Intent(context, MediaDetailsActivity.class);
 		intent.putExtra("media", adapter.toJson(this));
 		context.startActivity(intent);
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+		this.titles = List.of(title);
 	}
 
 	public void setPoster(String poster) {

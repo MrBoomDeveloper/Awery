@@ -20,6 +20,7 @@ import com.mrboomdev.awery.util.ObservableList;
 import java.util.Collection;
 import java.util.Collections;
 
+import ani.awery.BuildConfig;
 import ani.awery.databinding.LayoutHeaderBinding;
 
 public class AnimeFragment extends MediaCatalogFragment {
@@ -68,11 +69,13 @@ public class AnimeFragment extends MediaCatalogFragment {
 		), cats);
 
 		//TODO: REMOVE THIS SHIT BEFORE RELEASE
-		/*loadCategory("Hentai (If you see this, please contact me asap at Telegram @MrBoomDev)", AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.TRENDING_DESC,
-				null, null, true
-		), cats);*/
+		if(BuildConfig.DEBUG) {
+			loadCategory("Hentai (If you see this, please contact me asap at Telegram @MrBoomDev)", AnilistSearchQuery.search(
+					AnilistMedia.MediaType.ANIME,
+					AnilistQuery.MediaSort.TRENDING_DESC,
+					null, null, true
+			), cats);
+		}
 
 		loadCategory("Recent Updates", AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,

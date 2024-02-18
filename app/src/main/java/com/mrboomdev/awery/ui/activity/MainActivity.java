@@ -80,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets ->
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
+
+		binding.navbar.removeTabAt(2);
+		binding.navbar.removeTabAt(1);
+		binding.navbar.selectTabAt(0, false);
+		binding.navbar.setVisibility(View.GONE);
 	}
 
 	@Override

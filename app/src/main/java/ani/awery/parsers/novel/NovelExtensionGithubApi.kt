@@ -55,8 +55,6 @@ class NovelExtensionGithubApi {
                     .awaitSuccess()
             }
 
-            logger("response: $response")
-
             val extensions = with(json) {
                 response
                     .parseAs<List<NovelExtensionJsonObject>>()
@@ -68,7 +66,6 @@ class NovelExtensionGithubApi {
             /*if (extensions.size < 10) {  //TODO: uncomment when more extensions are added
                 throw Exception()
             }*/
-            logger("extensions: $extensions")
             extensions
         }
     }

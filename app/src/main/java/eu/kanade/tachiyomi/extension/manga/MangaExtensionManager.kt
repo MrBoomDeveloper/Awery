@@ -113,8 +113,6 @@ class MangaExtensionManager(
 
             isInitialized = true
         }
-
-        println("Init manga extensions in: $initDuration")
     }
 
     /**

@@ -55,8 +55,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.mrboomdev.awery.ui.activity.PlayerActivity"
+            android:supportsPictureInPicture="true"
+            android:screenOrientation="landscape"
+            android:exported="true" />
+
         <activity android:name="com.mrboomdev.awery.ui.activity.MediaDetailsActivity" android:exported="false" />
-        <activity android:name="com.mrboomdev.awery.ui.activity.PlayerActivity" android:exported="true" />
         <activity android:name="com.mrboomdev.awery.ui.activity.ReaderActivity" android:exported="true" />
         <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity" android:exported="true" />
 

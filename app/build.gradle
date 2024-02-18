@@ -63,7 +63,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.webkit:webkit:1.9.0'
+    implementation 'androidx.webkit:webkit:1.10.0'
 
     // Glide
     ext.glide_version = '4.16.0'
@@ -74,13 +74,14 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
     // Exoplayer
-    ext.exo_version = '1.2.0'
+    ext.exo_version = '1.2.1'
     implementation "androidx.media3:media3-exoplayer:$exo_version"
     implementation "androidx.media3:media3-ui:$exo_version"
     implementation "androidx.media3:media3-exoplayer-hls:$exo_version"
     implementation "androidx.media3:media3-exoplayer-dash:$exo_version"
     implementation "androidx.media3:media3-datasource-okhttp:$exo_version"
     implementation "androidx.media3:media3-session:$exo_version"
+    implementation "com.google.android.exoplayer:exoplayer-hls:2.19.1"
 
     // UI
     implementation 'com.google.android.material:material:1.11.0'

@@ -69,21 +69,18 @@ open class App : Application() {
             val animeScope = CoroutineScope(Dispatchers.Default)
             animeScope.launch {
                 animeExtensionManager.findAvailableExtensions()
-                logger("Anime Extensions: ${animeExtensionManager.installedExtensionsFlow.first()}")
                 AnimeSources.init(animeExtensionManager.installedExtensionsFlow)
             }
 
             val mangaScope = CoroutineScope(Dispatchers.Default)
             mangaScope.launch {
                 mangaExtensionManager.findAvailableExtensions()
-                logger("Manga Extensions: ${mangaExtensionManager.installedExtensionsFlow.first()}")
                 MangaSources.init(mangaExtensionManager.installedExtensionsFlow)
             }
 
             val novelScope = CoroutineScope(Dispatchers.Default)
             novelScope.launch {
                 novelExtensionManager.findAvailableExtensions()
-                logger("Novel Extensions: ${novelExtensionManager.installedExtensionsFlow.first()}")
                 NovelSources.init(novelExtensionManager.installedExtensionsFlow)
             }
         }

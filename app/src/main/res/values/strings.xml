@@ -590,4 +590,7 @@
 
     <string name="default_video_quality">Default Video Quality</string>
     <string name="user_agent">User Agent</string>
+
+    <string name="nothing_found">Nothing found</string>
+    <string name="tried_all_titles">Tried all media titles, nothing found!</string>
 </resources>

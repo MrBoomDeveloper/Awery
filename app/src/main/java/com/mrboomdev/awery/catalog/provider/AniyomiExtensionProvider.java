@@ -1,24 +1,25 @@
 package com.mrboomdev.awery.catalog.provider;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.util.CoroutineUtil;
+import com.mrboomdev.awery.util.ErrorUtil;
 
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList;
-import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import eu.kanade.tachiyomi.animesource.model.SEpisodeImpl;
-import eu.kanade.tachiyomi.network.HttpException;
+import okhttp3.Headers;
 
 public class AniyomiExtensionProvider extends ExtensionProvider {
 	private final AnimeCatalogueSource source;
@@ -27,57 +28,42 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 		this.source = source;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void getEpisodes(
 			int page,
 			@NonNull CatalogMedia media,
-			@NonNull ResponseCallback<Collection<CatalogEpisode>> callback
+			@NonNull ResponseCallback<List<CatalogEpisode>> callback
 	) {
-		var filter = new AnimeFilterList();
-		var observable = source.fetchSearchAnime(page, media.titles.get(1), filter);
+		var anime = new SAnimeImpl();
+		anime.setTitle(media.title);
+		anime.setUrl(media.url);
+		anime.setDescription(media.description);
+		anime.setThumbnail_url(media.poster.extraLarge);
 
-		new Thread(() -> CoroutineUtil.getObservableValue(observable, (pag, t) -> {
-			if(t != null) {
-				t.printStackTrace();
+		var observable = source.fetchEpisodeList(anime);
 
-				if(t instanceof SocketException || t instanceof HttpException) {
-					callback.onFailure(ExtensionProvider.CONNECTION_FAILED);
-					return;
-				}
-
-				callback.onFailure(t);
+		new Thread(() -> CoroutineUtil.getObservableValue(observable, ((episodes, _t) -> {
+			if(_t != null) {
+				callback.onFailure(_t);
 				return;
 			}
 
-			var animes = Objects.requireNonNull(pag).getAnimes();
-
-			if(animes.isEmpty()) {
-				callback.onFailure(ExtensionProvider.ZERO_RESULTS);
-				return;
-			}
-
-			CoroutineUtil.getObservableValue(source.fetchEpisodeList(animes.get(0)), ((episodes, _t) -> {
-				if(_t != null) {
-					_t.printStackTrace();
-					callback.onFailure(_t);
-					return;
-				}
-
-				callback.onSuccess(Objects.requireNonNull(episodes)
-						.stream().map(item -> new CatalogEpisode(
-								item.getName(),
-								item.getUrl(),
-								null,
-								null,
-								item.getDate_upload(),
-								item.getEpisode_number()
-						)).collect(Collectors.toCollection(ArrayList::new)));
-			}));
-		})).start();
+			callback.onSuccess(Objects.requireNonNull(episodes)
+					.stream().map(item -> new CatalogEpisode(
+							item.getName(),
+							item.getUrl(),
+							null,
+							null,
+							item.getDate_upload(),
+							item.getEpisode_number()
+					)).collect(Collectors.toCollection(ArrayList::new)));
+		}))).start();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void getVideos(@NonNull CatalogEpisode episode, @NonNull ResponseCallback<Collection<CatalogVideo>> callback) {
+	public void getVideos(@NonNull CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
 		var animeEpisode = new SEpisodeImpl();
 		animeEpisode.setUrl(episode.getUrl());
 		animeEpisode.setDate_upload(episode.getReleaseDate());
@@ -86,23 +72,35 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 
 		new Thread(() -> CoroutineUtil.getObservableValue(source.fetchVideoList(animeEpisode), ((videos, _t) -> {
 			if(_t != null) {
-				_t.printStackTrace();
 				callback.onFailure(_t);
 				return;
 			}
 
-			System.out.println(videos.get(0).getVideoUrl());
-			System.out.println(videos.get(0).getUrl());
-
 			callback.onSuccess(Objects.requireNonNull(videos)
-					.stream().map(item -> new CatalogVideo(
-							item.getVideoUrl()
-					)).collect(Collectors.toCollection(ArrayList::new)));
+					.stream().map(item -> {
+						var headers = item.getHeaders();
+
+						return new CatalogVideo(
+								item.getVideoUrl(),
+								headers.toString()
+						);
+					}).collect(Collectors.toCollection(ArrayList::new)));
 		}))).start();
 	}
 
+	@NonNull
+	private Bundle getHeaders(@NonNull Headers headers) {
+		var bundle = new Bundle();
+
+		for(var header : headers) {
+			bundle.putString(header.getFirst(), header.getSecond());
+		}
+
+		return bundle;
+	}
+
 	@Override
-	public void search(SearchParams params, @NonNull ResponseCallback<Collection<CatalogMedia>> callback) {
+	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
 		var filter = new AnimeFilterList();
 
 		new Thread(() -> CoroutineUtil.getObservableValue(source.fetchSearchAnime(
@@ -111,13 +109,6 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 				filter
 		), (pag, t) -> {
 			if(t != null) {
-				t.printStackTrace();
-
-				if(t instanceof SocketException || t instanceof HttpException) {
-					callback.onFailure(ExtensionProvider.CONNECTION_FAILED);
-					return;
-				}
-
 				callback.onFailure(t);
 				return;
 			}
@@ -125,17 +116,19 @@ public class AniyomiExtensionProvider extends ExtensionProvider {
 			var animes = Objects.requireNonNull(pag).getAnimes();
 
 			if(animes.isEmpty()) {
-				callback.onFailure(ExtensionProvider.ZERO_RESULTS);
+				callback.onFailure(ErrorUtil.ZERO_RESULTS);
 				return;
 			}
 
 			callback.onSuccess(animes.stream().map(item -> {
 				var media = new CatalogMedia();
-				media.title = item.getTitle();
+				media.setTitle(item.getTitle());
+				media.setPoster(item.getThumbnail_url());
+
 				media.url = item.getUrl();
 				media.genres = item.getGenres();
 				media.description = item.getDescription();
-				media.setPoster(item.getThumbnail_url());
+
 				return media;
 			}).collect(Collectors.toList()));
 		})).start();

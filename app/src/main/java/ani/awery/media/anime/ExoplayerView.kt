@@ -583,7 +583,7 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
         val overshoot = AnimationUtils.loadInterpolator(this, R.anim.over_shoot)
         val controllerDuration = (uiSettings.animationSpeed * 200).toLong()
         fun handleController() {
-            if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) !isInPictureInPictureMode else true) {
+            if(!isInPictureInPictureMode) {
                 if (playerView.isControllerFullyVisible) {
                     ObjectAnimator.ofFloat(
                         playerView.findViewById(R.id.exo_controller),

@@ -114,8 +114,6 @@ class AnimeExtensionManager(
 
             isInitialized = true
         }
-
-        println("Init anime extensions in: $initDuration")
     }
 
     /**

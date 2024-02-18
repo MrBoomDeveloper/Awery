@@ -2,23 +2,20 @@ package com.mrboomdev.awery.catalog.provider;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogCategory;
+import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
+import com.mrboomdev.awery.util.ErrorUtil;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider {
-	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
-	public static final IllegalStateException CONNECTION_FAILED = new IllegalStateException("Failed to connect!");
-	public static final IllegalStateException ZERO_RESULTS = new IllegalStateException("Zero results were found!");
 
-	public void search(SearchParams params, @NonNull ResponseCallback<Collection<CatalogMedia>> callback) {
-		callback.onFailure(NOT_IMPLEMENTED);
+	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
+		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
 	}
 
 	public record SearchParams(Integer page, String query) {
@@ -43,12 +40,12 @@ public abstract class ExtensionProvider {
 		}
 	}
 
-	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<Collection<CatalogEpisode>> callback) {
-		callback.onFailure(NOT_IMPLEMENTED);
+	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<CatalogEpisode>> callback) {
+		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
 	}
 
-	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<Collection<CatalogVideo>> callback) {
-		callback.onFailure(NOT_IMPLEMENTED);
+	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
+		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
 	}
 
 	public abstract String getName();
@@ -58,7 +55,7 @@ public abstract class ExtensionProvider {
 	}
 
 	public void getCatalogCategories(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
-		callback.onFailure(NOT_IMPLEMENTED);
+		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
 	}
 
 	public interface ResponseCallback<T> {
