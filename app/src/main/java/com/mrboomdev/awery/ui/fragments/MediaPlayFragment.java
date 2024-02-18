@@ -33,7 +33,9 @@ import com.mrboomdev.awery.util.ErrorUtil;
 import com.mrboomdev.awery.util.ui.CustomArrayAdapter;
 import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.squareup.moshi.Moshi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,16 +48,49 @@ import java.util.stream.Collectors;
 import ani.awery.R;
 import ani.awery.databinding.ItemListDropdownBinding;
 import ani.awery.databinding.LayoutLoadingBinding;
-import ani.awery.databinding.MediaDetailsWatchVariantsBinding;
+import ani.awery.databinding.LayoutWatchVariantsBinding;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	private final String TAG = "MediaPlayFragment";
 	private final Map<String, ExtensionStatus> sourceStatuses = new HashMap<>();
+	private ArrayList<Map.Entry<String, Map<String, ExtensionProvider>>> groupedByLangEntries;
 	private CatalogMedia media;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private ExtensionProvider selectedSource;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
-	private SingleViewAdapter.BindingSingleViewAdapter<MediaDetailsWatchVariantsBinding> variantsAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("media", media.toString());
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if(savedInstanceState != null) {
+			var moshi = new Moshi.Builder().build();
+			var adapter = moshi.adapter(CatalogMedia.class);
+
+			try {
+				var mediaJson = savedInstanceState.getString("media");
+				if(mediaJson == null) return;
+
+				var media = adapter.fromJson(mediaJson);
+
+				if(media != null) {
+					setMedia(media);
+				} else {
+					throw new IOException("Failed to restore media!");
+				}
+			} catch(IOException e) {
+				e.printStackTrace();
+				AweryApp.toast("Failed to restore media!", 1);
+			}
+		}
+	}
 
 	@Override
 	public void onEpisodeSelected(@NonNull CatalogEpisode episode) {
@@ -100,6 +135,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public void setMedia(CatalogMedia media) {
 		if(media == null) return;
 		this.media = media;
+
+		if(groupedByLangEntries == null) {
+			return;
+		}
+
+		var source = groupedByLangEntries.get(0);
+		selectProvider(source, requireContext());
 	}
 
 	@Override
@@ -112,7 +154,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		var groupedByLang = ExtensionProviderGroup.groupByLang(sources);
-		var groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
+		groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
 
 		var sourcesDropdownAdapter = new CustomArrayAdapter<>(view.getContext(), groupedByLangEntries, (
 				Map.Entry<String, Map<String, ExtensionProvider>> itemEntry,
@@ -170,7 +212,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			});
 		});
 
-		selectProvider(groupedByLangEntries.get(0), view.getContext());
+		setMedia(media);
 	}
 
 	private void selectProvider(@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap, Context context) {
@@ -257,6 +299,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.setPage(0)
 				.setQuery(media.titles.get(0));
 
+		variantsAdapter.getBinding((binding, didJustCreated) -> {
+			binding.searchDropdown.setText(searchParams.getQuery(), false);
+
+
+		});
+
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
 			@Override
@@ -297,6 +345,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var newIndex = lastUsedTitleIndex.incrementAndGet();
 					searchParams.setQuery(media.titles.get(newIndex));
 					source.search(searchParams.build(), callback);
+
+					AweryApp.runOnUiThread(() -> variantsAdapter.getBinding((binding, didJustCreated) ->
+							binding.searchDropdown.setText(searchParams.getQuery(), false)));
 				} else {
 					AweryApp.runOnUiThread(() -> placeholderAdapter.getBinding((binding, didJustCreated) -> {
 						binding.title.setText(R.string.nothing_found);
@@ -313,6 +364,15 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private void handleException(ExtensionProvider source, Throwable throwable) {
+		Context context;
+
+		try {
+			context = requireContext();
+		} catch(IllegalStateException e) {
+			Log.e(TAG, "Failed to get context. Pray that we just restored the fragment.");
+			return;
+		}
+
 		if(source != selectedSource) return;
 		var error = new ErrorUtil(throwable);
 
@@ -325,8 +385,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		placeholderAdapter.getBinding((binding, didJustCreated) -> AweryApp.runOnUiThread(() -> {
-			binding.title.setText(error.getTitle(requireContext()));
-			binding.message.setText(error.getMessage(requireContext()));
+			binding.title.setText(error.getTitle(context));
+			binding.message.setText(error.getMessage(context));
 
 			binding.info.setVisibility(View.VISIBLE);
 			binding.progressBar.setVisibility(View.GONE);
@@ -341,7 +401,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var layoutManager = new LinearLayoutManager(inflater.getContext(), LinearLayoutManager.VERTICAL, false);
 
 		variantsAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var binding = MediaDetailsWatchVariantsBinding.inflate(inflater, parent, false);
+			var binding = LayoutWatchVariantsBinding.inflate(inflater, parent, false);
 
 			ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 				ViewUtil.setTopPadding(binding.getRoot(), insets.top);

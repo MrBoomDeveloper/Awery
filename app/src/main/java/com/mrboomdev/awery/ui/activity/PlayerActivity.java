@@ -14,29 +14,29 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import ani.awery.databinding.LayoutActivityPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity {
+	private ExoPlayer player;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
-		ani.awery.databinding.LayoutActivityPlayerBinding binding = LayoutActivityPlayerBinding.inflate(getLayoutInflater());
+		var binding = LayoutActivityPlayerBinding.inflate(getLayoutInflater());
 
-		var player = new ExoPlayer.Builder(this)
-				//.setMediaSourceFactory(null)
-				.build();
+		player = new ExoPlayer.Builder(this).build();
+		binding.player.setPlayer(player);
 
-		player.setVideoTextureView(binding.textureView);
-
-		var url = getIntent()
-				.getStringExtra("url");
-
+		var url = getIntent().getStringExtra("url");
 		var item = MediaItem.fromUri(url);
-
 		player.setMediaItem(item);
-		player.prepare();
-		player.play();
 
 		AweryApp.setOnBackPressedListener(this, this::finish);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		player.prepare();
+		player.setPlayWhenReady(true);
 	}
 }

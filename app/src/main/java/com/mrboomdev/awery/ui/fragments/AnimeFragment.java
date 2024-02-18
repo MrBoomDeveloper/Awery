@@ -20,7 +20,6 @@ import com.mrboomdev.awery.util.ObservableList;
 import java.util.Collection;
 import java.util.Collections;
 
-import ani.awery.BuildConfig;
 import ani.awery.databinding.LayoutHeaderBinding;
 
 public class AnimeFragment extends MediaCatalogFragment {
@@ -68,8 +67,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 				null, null, false
 		), cats);
 
-		//TODO: REMOVE THIS SHIT BEFORE RELEASE
-		if(BuildConfig.DEBUG) {
+		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
 			loadCategory("Hentai (If you see this, please contact me asap at Telegram @MrBoomDev)", AnilistSearchQuery.search(
 					AnilistMedia.MediaType.ANIME,
 					AnilistQuery.MediaSort.TRENDING_DESC,
@@ -109,10 +107,9 @@ public class AnimeFragment extends MediaCatalogFragment {
 	}
 
 	private void loadCategory(String title, @NonNull AnilistQuery<Collection<CatalogMedia>> query, ObservableList<MediaCategoriesAdapter.Category> list) {
-		query.executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			list.add(new MediaCategoriesAdapter.Category(title, items));
-		})).catchExceptions(e -> {
-			e.printStackTrace();
-		}).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
+		query.executeQuery(items -> requireActivity().runOnUiThread(() ->
+				list.add(new MediaCategoriesAdapter.Category(title, items))))
+		.catchExceptions(Throwable::printStackTrace).onFinally(() ->
+				getBinding().swipeRefresher.setRefreshing(false));
 	}
 }

@@ -34,6 +34,14 @@ public abstract class ExtensionProvider {
 				return this;
 			}
 
+			public String getQuery() {
+				return query;
+			}
+
+			public Integer getPage() {
+				return page;
+			}
+
 			public SearchParams build() {
 				return new SearchParams(page, query);
 			}

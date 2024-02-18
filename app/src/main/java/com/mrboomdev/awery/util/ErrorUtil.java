@@ -47,6 +47,8 @@ public class ErrorUtil {
 				case 504 -> "Connection timed out!";
 				default -> getGenericTitle(context);
 			};
+		} else if(t instanceof UnsupportedOperationException) {
+			return "Feature not implemented!";
 		}
 
 		return getGenericTitle(context);
