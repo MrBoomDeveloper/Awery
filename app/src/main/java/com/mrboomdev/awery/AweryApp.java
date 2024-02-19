@@ -217,6 +217,10 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 	}
 
+	public static void cancelDelayed(Runnable runnable) {
+		handler.removeCallbacks(runnable);
+	}
+
 	public static void runDelayed(Runnable runnable, long delay) {
 		handler.postDelayed(runnable, delay);
 	}
