@@ -2,8 +2,8 @@
    <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/banner.webp" alt="Awery Banner" width=100% >
 </p>
 <p align="center">
-   <img src="https://img.shields.io/badge/platforms-android-blueviolet?style=for-the-badge"/>
    <a href="https://t.me/mrboomdev_awery"><img src="https://img.shields.io/badge/telegram-channel-blue?style=for-the-badge"></a>
+   <a href="https://discord.com/invite/yspVzD4Kbm"><img src="https://img.shields.io/discord/1208816442313805855.svg?style=for-the-badge&logo=discord&colorB=7289DA"></a>
    <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
 </p>
 

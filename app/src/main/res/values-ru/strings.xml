@@ -47,8 +47,8 @@
     <string name="continue_watching">Продолжить Смотреть</string>
     <string name="recommended">Рекомендуется</string>
 
-    <string name="get_recommendations">Watch/Read some Anime or Manga to get Recommendations</string>
-    <string name="empty">All caught up, when New?</string>
+    <string name="get_recommendations">Начните смотреть что-либо, чтобы получить рекосендации</string>
+    <string name="empty">Пусто. Просто пусто и все.</string>
     <string name="action_settings">Настройки</string>
 
     <string name="add">Добавить в Список</string>
@@ -87,9 +87,9 @@
     <string name="ep_duration">Средняя Продолжительность</string>
     <string name="min">" мин"</string>
     <string name="season">Сезон</string>
-    <string name="start_date">Start Date</string>
-    <string name="end_date">End Date</string>
-    <string name="source">Source</string>
+    <string name="start_date">Дата Начала</string>
+    <string name="end_date">Дата Конца</string>
+    <string name="source">Источник</string>
     <string name="main_studio">Студия</string>
     <string name="genres">Жанры</string>
     <string name="description">Описание</string>
@@ -111,7 +111,7 @@
     </string>
     <string name="not_supported">%1$ не поддерживается!</string>
     <string name="server_selector">Выберите Сервер</string>
-    <string name="auto_select_server">Auto Selecting Server</string>
+    <string name="auto_select_server">Автоматически Выберать Сервер</string>
     <string name="make_default">Сделать по умолчанию</string>
     <string name="filler">Фильтр</string>
     <string name="adult">Для Взрослых</string>
@@ -132,11 +132,11 @@
     <string name="extensions">Расширения</string>
     <string name="player_settings">Настройки Плеера</string>
     <string name="recentlyListOnly">Only show My Shows in Recently Updated</string>
-    <string name="download_manager_select">Download Manager</string>
-    <string name="downloadInSd">Download in SD card</string>
-    <string name="noSdFound">No SD card was Found.</string>
-    <string name="reader_settings">Reader Settings</string>
-    <string name="default_source">Default Source</string>
+    <string name="download_manager_select">Менеджер Загрузок</string>
+    <string name="downloadInSd">Скачать на SD карту</string>
+    <string name="noSdFound">SD карта не найдена.</string>
+    <string name="reader_settings">Настройки читалки</string>
+    <string name="default_source">Источник по умолчанию</string>
     <string name="show_yt">Показывать YouTube ссылку</string>
     <string name="default_ep_view">Default Episode Layout</string>
     <string name="default_chp_view">Default Chapter Layout</string>
@@ -190,20 +190,20 @@
     <string name="height">Высота</string>
     <string name="width">Ширина</string>
     <string name="default_quality_info">Automatically uses the closest quality provided by default, ONLY applied for \"Multi Quality\" Servers. Auto changes upon playing a video.</string>
-    <string name="default_playback_speed">Default Playback Speed : %1$s</string>
+    <string name="default_playback_speed">Скорость по умолчанию : %1$s</string>
     <string name="cursed_speeds">Cursed Speeds</string>
     <string name="resize_mode_button">Default Resize Mode</string>
     <string name="subtitles">Субтитры</string>
     <string name="subtitle_toggle">Субтитры</string>
     <string name="primary_sub_color_select">Цвет Субтитров</string>
     <string name="secondary_sub_color_select">Subtitle Outline Color</string>
-    <string name="secondary_sub_outline_type_select">Subtitle Outline Type</string>
-    <string name="sub_background_color_select">Subtitle Background Color</string>
+    <string name="secondary_sub_outline_type_select">Тип обводки Субтитров</string>
+    <string name="sub_background_color_select">Цвет фона Субтитров</string>
     <string name="sub_window_color_select">Subtitle Window Color</string>
     <string name="sub_window_color_info">"The subtitle window is the part left and right from them. (where the background isn\'t)"</string>
     <string name="sub_color_info"><b>Note:</b> Changing Subtitle formatting only works with Soft-Subbed Sources such as Zoro!</string>
     <string name="sub_font_select">Шрифт Субтитров</string>
-    <string name="subtitle_font_size">Subtitle Size</string>
+    <string name="subtitle_font_size">Размер Субтитров</string>
 
     <string name="auto">Автоматически</string>
     <string name="auto_play_next_episode">Автовоспроизведение следющего эпизода</string>
@@ -223,7 +223,7 @@
     <string name="watch_complete_percentage_info">The percentage at which your Anilist progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
 
     <string name="behaviour">Поведение</string>
-    <string name="always_continue">Always Continue from where you left off</string>
+    <string name="always_continue">Всегда продолжать с момента где остановились</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
     <string name="gestures">Volume &amp; Brightness Gestures</string>
     <string name="double_tap">Double tap to Seek</string>
@@ -381,7 +381,7 @@
     <string name="getting_user_data">Getting User Data</string>
     <string name="no_next_episode">Не найден следующий эпизод!</string>
     <string name="enable_banner_animations">Try Enabling Banner Animations from Settings</string>
-    <string name="please_login_anilist">Please Login with Anilist!</string>
+    <string name="please_login_anilist">Пожалуйста, аойдите в аккаунт Anilist!</string>
     <string name="auto_update_reset">Auto Update Progress has now been Reset-ed</string>
     <string name="cant_wait">Can\'t Wait, huh? fine X(</string>
     <string name="downloading">Скачиваем…</string>
