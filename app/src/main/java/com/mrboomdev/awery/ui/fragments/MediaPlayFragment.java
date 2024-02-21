@@ -55,11 +55,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private final String TAG = "MediaPlayFragment";
 	private final Map<String, ExtensionStatus> sourceStatuses = new HashMap<>();
 	private ArrayList<Map.Entry<String, Map<String, ExtensionProvider>>> groupedByLangEntries;
-	private CatalogMedia media;
-	private MediaPlayEpisodesAdapter episodesAdapter;
-	private ExtensionProvider selectedSource;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+	private MediaPlayEpisodesAdapter episodesAdapter;
+	private ExtensionProvider selectedSource;
+	private CatalogMedia media;
 	private boolean autoChangeSource = true;
 	private int currentSourceIndex = 0;
 
@@ -102,8 +102,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		selectedSource.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(List<CatalogVideo> catalogVideos) {
-				Context context;
 				var video = catalogVideos.get(0);
+				Context context;
 
 				try {
 					context = requireContext();
@@ -113,6 +113,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 				var intent = new Intent(context, PlayerActivity.class);
 				intent.putExtra("url", video.getUrl());
+				intent.putExtra("title", episode.getTitle());
 				intent.putExtra("headers", video.getHeaders());
 				startActivity(intent);
 			}
@@ -226,6 +227,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
 				var group = groupedByLangEntries.get(position);
 				selectProvider(group, _view.getContext());
+				autoChangeSource = false;
 			});
 		});
 

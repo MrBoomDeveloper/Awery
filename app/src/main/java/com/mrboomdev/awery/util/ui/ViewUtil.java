@@ -61,6 +61,15 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
+	public static void setHorizontalMargin(View view, int left, int right) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.leftMargin = left;
+		margins.rightMargin = right;
+		view.setLayoutParams(margins);
+	}
+
 	public static void setLeftPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
 	}
