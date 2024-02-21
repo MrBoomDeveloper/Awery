@@ -2,11 +2,9 @@ name: Artifact Build
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   build:
@@ -27,7 +25,7 @@ jobs:
     - name: Build Release Apk
       run: ./gradlew assembleRelease
 
-   - name: Build Debug Apk
+    - name: Build Debug Apk
       run: ./gradlew assembleDebug
 
     - name: Upload Release Apk
