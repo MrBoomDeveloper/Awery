@@ -1,9 +1,7 @@
 package com.mrboomdev.awery.data.settings;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,9 +11,6 @@ import com.google.android.material.color.DynamicColors;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
-import org.jetbrains.annotations.Contract;
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -32,16 +27,22 @@ public class SettingsItem {
 	private SettingsItem parent;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
+	@Json(name = "int_value")
+	private Integer intValue;
 
 	public SettingsItem(@NonNull SettingsItem item) {
 		this.key = item.key;
 		this.type = item.type;
 		this.items = item.items;
-		this.title = item.title;
-		this.icon = item.icon;
 		this.restart = item.restart;
+
+		this.icon = item.icon;
+		this.title = item.title;
 		this.description = item.description;
+
 		this.booleanValue = item.booleanValue;
+		this.intValue = item.intValue;
+
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
 	}
@@ -102,6 +103,8 @@ public class SettingsItem {
 		switch(type) {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey());
 
+			case INT -> intValue = settings.getInt(getFullKey());
+
 			case SCREEN -> {
 				if(items == null) return;
 
@@ -155,6 +158,14 @@ public class SettingsItem {
 		return booleanValue;
 	}
 
+	public int getIntValue() {
+		return intValue;
+	}
+
+	public void setIntValue(int value) {
+		intValue = value;
+	}
+
 	public void setBooleanValue(boolean value) {
 		booleanValue = value;
 	}
@@ -172,6 +183,10 @@ public class SettingsItem {
 
 		if(item.booleanValue != null) {
 			booleanValue = item.booleanValue;
+		}
+
+		if(item.intValue != null) {
+			intValue = item.intValue;
 		}
 
 		if(items != null) {
@@ -243,6 +258,10 @@ public class SettingsItem {
 
 		if(booleanValue != null) {
 			result += ", \"boolean_value\": " + booleanValue;
+		}
+
+		if(intValue != null) {
+			result += ", \"int_value\": " + intValue;
 		}
 
 		if(type != null) {

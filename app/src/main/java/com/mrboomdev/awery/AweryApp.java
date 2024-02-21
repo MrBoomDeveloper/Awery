@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mrboomdev.awery.catalog.provider.ExtensionsManager;
+import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -120,7 +120,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		setupCrashHandler();
 		registerActivityLifecycleCallbacks(this);
 
-		ExtensionsManager.init(this);
+		ExtensionsFactory.init(this);
 		Anilist.INSTANCE.getSavedToken(this);
 	}
 

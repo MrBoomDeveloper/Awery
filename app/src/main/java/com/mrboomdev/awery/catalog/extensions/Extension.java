@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.catalog.provider;
+package com.mrboomdev.awery.catalog.extensions;
 
 import java.util.ArrayList;
 import java.util.List;

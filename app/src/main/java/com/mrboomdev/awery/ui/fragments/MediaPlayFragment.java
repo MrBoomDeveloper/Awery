@@ -22,9 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.provider.ExtensionProvider;
-import com.mrboomdev.awery.catalog.provider.ExtensionsManager;
-import com.mrboomdev.awery.catalog.provider.data.ExtensionProviderGroup;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
+import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.catalog.extensions.data.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
@@ -164,7 +164,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var extensions = new ArrayList<>(ExtensionsManager.getVideoExtensions());
+		var extensions = new ArrayList<>(ExtensionsFactory.getVideoExtensions());
 		var sources = new ArrayList<ExtensionProvider>();
 
 		for(var extension : extensions) {

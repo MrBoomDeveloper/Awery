@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.catalog.provider;
+package com.mrboomdev.awery.catalog.extensions;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -7,10 +7,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.catalog.extensions.support.aniyomi.AniyomiProvider;
+import com.mrboomdev.awery.catalog.extensions.support.tachiyomi.TachiyomiProvider;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +27,8 @@ import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
 
-public class ExtensionsManager {
-	private static final String TAG = "ExtensionsManager";
+public class ExtensionsFactory {
+	private static final String TAG = "ExtensionFactory";
 	private static final int PM_FLAGS = PackageManager.GET_CONFIGURATIONS | PackageManager.GET_META_DATA;
 	private static final String ANIYOMI_EXTENSION_FEATURE = "tachiyomi.animeextension";
 	private static final String TACHIYOMI_EXTENSION_FEATURE = "tachiyomi.extension";
@@ -81,7 +85,11 @@ public class ExtensionsManager {
 		var extension = new Extension(pkg.packageName, label, isNsfw, pkg.versionName);
 
 		if(!extension.isError()) {
-			initTachiyomiExtensionClasses(context, pkg, extension);
+			try {
+				initTachiyomiExtensionClasses(context, pkg, extension);
+			} catch(IllegalStateException e) {
+				extension.setError("Failed to init extension's classes!", e);
+			}
 		}
 
 		return extension;
@@ -91,9 +99,15 @@ public class ExtensionsManager {
 			@NonNull Context context,
 			@NonNull PackageInfo pkg,
 			Extension extension
-	) {
+	) throws IllegalStateException {
+		ClassLoader clazzLoader;
 		var app = pkg.applicationInfo;
-		var clazzLoader = new PathClassLoader(app.sourceDir, null, context.getClassLoader());
+
+		try {
+			clazzLoader = new PathClassLoader(app.sourceDir, null, context.getClassLoader());
+		} catch(Exception e) {
+			throw new IllegalStateException("Failed to load extension classloader!", e);
+		}
 
 		var animeExtensionClass = app.metaData.getString(ANIYOMI_EXTENSION_CLASS);
 		var mangaExtensionClass = app.metaData.getString(TACHIYOMI_EXTENSION_CLASS);
@@ -108,7 +122,7 @@ public class ExtensionsManager {
 				for(var source : animeSources) {
 					if(source instanceof AnimeCatalogueSource catalogueSource) {
 						extension.isVideoExtension = true;
-						extension.addProvider(new AniyomiExtensionProvider(catalogueSource));
+						extension.addProvider(new AniyomiProvider(catalogueSource));
 						continue;
 					}
 
@@ -127,7 +141,7 @@ public class ExtensionsManager {
 
 				for(var source : mangaSources) {
 					extension.isBookExtension = true;
-					extension.addProvider(new TachiyomiExtensionProvider(source));
+					extension.addProvider(new TachiyomiProvider(source));
 				}
 			} catch(Exception e) {
 				extension.setError("Failed to get manga sources!", e);
@@ -261,10 +275,14 @@ public class ExtensionsManager {
 		return extensions.values();
 	}
 
-	public static Collection<Extension> getVideoExtensions() {
+	public static Collection<Extension> getVideoExtensions(boolean onlyWorking) {
 		return extensions.values().stream()
 				.filter(Extension::isVideoExtension)
 				.collect(Collectors.toList());
+	}
+
+	public static Collection<Extension> getVideoExtensions() {
+		return getVideoExtensions(true);
 	}
 
 	public static Collection<Extension> getBookExtensions() {
@@ -275,5 +293,10 @@ public class ExtensionsManager {
 
 	public static Extension getExtension(String packageName) {
 		return extensions.get(packageName);
+	}
+
+	@NonNull
+	public static Collection<ExtensionsManager> getAllManagers() {
+		return Collections.emptyList();
 	}
 }

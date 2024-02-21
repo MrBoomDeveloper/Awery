@@ -53,12 +53,11 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 			{
 				Page(page: 1, perPage: 20) {
 					media(__PARAMS__) {
-						type format isAdult
+						type format
 						id description bannerImage status
 						genres averageScore
-						duration episodes
 						coverImage { extraLarge large color medium }
-						tags { name id description isMediaSpoiler isGeneralSpoiler }
+						tags { name id description }
 						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
 					}
 				}

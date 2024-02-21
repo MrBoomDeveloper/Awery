@@ -1,9 +1,10 @@
-package com.mrboomdev.awery.catalog.provider;
+package com.mrboomdev.awery.catalog.extensions.support.aniyomi;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
@@ -21,10 +22,10 @@ import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import eu.kanade.tachiyomi.animesource.model.SEpisodeImpl;
 import okhttp3.Headers;
 
-public class AniyomiExtensionProvider extends ExtensionProvider {
+public class AniyomiProvider extends ExtensionProvider {
 	private final AnimeCatalogueSource source;
 
-	public AniyomiExtensionProvider(AnimeCatalogueSource source) {
+	public AniyomiProvider(AnimeCatalogueSource source) {
 		this.source = source;
 	}
 

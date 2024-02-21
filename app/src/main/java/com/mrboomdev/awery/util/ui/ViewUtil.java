@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.viewbinding.ViewBinding;
 
 public class ViewUtil {
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
@@ -80,6 +79,10 @@ public class ViewUtil {
 
 	public static void setTopPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), view.getPaddingBottom());
+	}
+
+	public static void setVerticalPadding(@NonNull View view, int padding) {
+		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), padding);
 	}
 
 	public static void setBottomPadding(@NonNull View view, int padding) {

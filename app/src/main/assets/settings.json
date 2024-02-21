@@ -58,6 +58,13 @@
 						{ "key": "1440", "title": "1440p" },
 						{ "key": "2160", "title": "2160p" }
 					]
+				}, {
+					"key": "subtitles", "type": "screen", "title": "subtitles",
+					"items": [
+						{
+							"key": "size", "type": "int", "title": "subtitles_size"
+						}
+					]
 				}
 			]
 		}, {

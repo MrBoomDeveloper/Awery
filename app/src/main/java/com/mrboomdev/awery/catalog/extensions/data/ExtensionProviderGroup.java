@@ -1,16 +1,13 @@
-package com.mrboomdev.awery.catalog.provider.data;
+package com.mrboomdev.awery.catalog.extensions.data;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.provider.Extension;
-import com.mrboomdev.awery.catalog.provider.ExtensionProvider;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.util.TranslationUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ExtensionProviderGroup {
