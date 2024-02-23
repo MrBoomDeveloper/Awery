@@ -31,10 +31,11 @@ import java.util.Objects;
 import ani.awery.R;
 import ani.awery.databinding.MediaDetailsActivityBinding;
 
-public class MediaDetailsActivity extends AppCompatActivity {
+public class MediaActivity extends AppCompatActivity {
 	private MediaDetailsActivityBinding binding;
 	private CatalogMedia media;
 
+	@SuppressLint("NonConstantResourceId")
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
@@ -55,27 +56,10 @@ public class MediaDetailsActivity extends AppCompatActivity {
 		}
 
 		binding = MediaDetailsActivityBinding.inflate(getLayoutInflater());
-		setContentView(binding.getRoot());
-
 		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
 		binding.pager.setUserInputEnabled(false);
 		binding.pager.setPageTransformer(new FadeTransformer());
 
-		var navigation = (NavigationBarView) binding.navigation;
-
-		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
-			if(navigation instanceof NavigationRailView) {
-				navigation.setPadding(insets.left, insets.top, 0, 0);
-			} else {
-				ViewUtil.setBottomPadding(navigation, insets.bottom, false);
-			}
-		});
-	}
-
-	@SuppressLint("NonConstantResourceId")
-	@Override
-	protected void onStart() {
-		super.onStart();
 		var navigation = (NavigationBarView) binding.navigation;
 
 		navigation.setOnItemSelectedListener(item -> {
@@ -88,6 +72,24 @@ public class MediaDetailsActivity extends AppCompatActivity {
 			}, false);
 			return true;
 		});
+
+		navigation.setSelectedItemId(switch(Objects.requireNonNull(getIntent().getStringExtra("action"))) {
+			case "info" -> R.id.info;
+			case "watch" -> R.id.watch;
+			case "comments" -> R.id.comments;
+			case "relations" -> R.id.relations;
+			default -> throw new IllegalArgumentException("Invalid action: " + getIntent().getStringExtra("action"));
+		});
+
+		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
+			if(navigation instanceof NavigationRailView) {
+				navigation.setPadding(insets.left, insets.top, 0, 0);
+			} else {
+				ViewUtil.setBottomPadding(navigation, insets.bottom, false);
+			}
+		});
+
+		setContentView(binding.getRoot());
 	}
 
 	private class PagerAdapter extends FragmentStateAdapter {

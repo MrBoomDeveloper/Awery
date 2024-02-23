@@ -25,7 +25,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.template.CatalogCategory;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
@@ -133,18 +132,21 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
 			var holder = new PagerViewHolder(binding);
 
-			View.OnClickListener clickListener = v -> {
-				var item = holder.getItem();
-				if(item != null) item.handleClick(parent.getContext());
-			};
-
 			Runnable longClickListener = () -> {
 				var item = holder.getItem();
 				if(item != null) item.handleLongClick(parent.getContext());
 			};
 
-			binding.getRoot().setOnClickListener(clickListener);
-			binding.watch.setOnClickListener(clickListener);
+			binding.getRoot().setOnClickListener(v -> {
+				var item = holder.getItem();
+				if(item != null) item.handleClick(parent.getContext());
+			});
+
+			binding.watch.setOnClickListener(v -> {
+				var item = holder.getItem();
+				if(item != null) item.handleClick(parent.getContext(), "watch");
+			});
+
 			binding.bookmark.setOnClickListener(v -> longClickListener.run());
 
 			binding.getRoot().setOnLongClickListener(v -> {

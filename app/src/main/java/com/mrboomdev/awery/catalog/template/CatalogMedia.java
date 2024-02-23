@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.mrboomdev.awery.ui.activity.MediaDetailsActivity;
+import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.Moshi;
 
@@ -30,10 +30,15 @@ public class CatalogMedia {
 	@Json(ignore = true)
 	public Drawable cachedBanner;
 
-	public void handleClick(Context context) {
-		var intent = new Intent(context, MediaDetailsActivity.class);
+	public void handleClick(Context context, String action) {
+		var intent = new Intent(context, MediaActivity.class);
 		intent.putExtra("media", this.toString());
+		intent.putExtra("action", action);
 		context.startActivity(intent);
+	}
+
+	public void handleClick(Context context) {
+		handleClick(context, "info");
 	}
 
 	@NonNull

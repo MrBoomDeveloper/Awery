@@ -109,17 +109,17 @@
         app:layout_constraintRight_toLeftOf="@id/right_side_barrier">
 
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:ellipsize="end"
             android:lines="1"
-            android:alpha=".8"
             android:shadowColor="#000000"
+            android:alpha=".8"
             android:shadowRadius="1"
-            android:text="Ongoing"
             android:textColor="?attr/colorOnTertiaryContainer"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="Action, Comedy, Fantasy" />
 
         <TextView
             android:id="@+id/meta_separator"
@@ -135,17 +135,17 @@
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:id="@+id/tags"
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
+            android:gravity="end"
             android:lines="1"
-            android:shadowColor="#000000"
             android:alpha=".8"
+            android:shadowColor="#000000"
             android:shadowRadius="1"
+            android:text="Ongoing"
             android:textColor="?attr/colorOnTertiaryContainer"
-            android:textSize="15sp"
-            tools:text="Action, Comedy, Fantasy" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 

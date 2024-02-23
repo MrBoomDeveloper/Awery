@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -9,34 +10,24 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
-import ani.awery.databinding.LayoutMediaDetailsBinding;
 import ani.awery.databinding.MediaDetailsOverviewLayoutBinding;
 
 public class MediaInfoFragment extends Fragment {
-	private final ConcatAdapter concatAdapter;
 	private MediaDetailsOverviewLayoutBinding binding;
-	private CatalogMedia pendingMedia, media;
+	private CatalogMedia media;
 
 	public MediaInfoFragment(CatalogMedia media) {
-		var config = new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build();
-
-		concatAdapter = new ConcatAdapter(config);
 		setMedia(media);
 	}
 
@@ -79,11 +70,7 @@ public class MediaInfoFragment extends Fragment {
 	public void setMedia(CatalogMedia media) {
 		if(media == null) return;
 		this.media = media;
-
-		if(binding == null) {
-			pendingMedia = media;
-			return;
-		}
+		if(binding == null) return;
 
 		Glide.with(binding.getRoot())
 				.load(media.poster.extraLarge)
@@ -97,19 +84,14 @@ public class MediaInfoFragment extends Fragment {
 					.into(binding.banner);
 		}
 
-		concatAdapter.addAdapter(SingleViewAdapter.fromBindingDynamic(parent -> {
-			var binding = LayoutMediaDetailsBinding.inflate(getLayoutInflater(), parent, false);
-			binding.title.setText(media.title);
-			binding.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
+		binding.details.title.setText(media.title);
+		binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
 
-			for(var tag : media.tags) {
-				var chip = new Chip(requireContext());
-				chip.setText(tag.name);
-				binding.tags.addView(chip);
-			}
-
-			return binding;
-		}));
+		for(var tag : media.tags) {
+			var chip = new Chip(requireContext());
+			chip.setText(tag.name);
+			binding.details.tags.addView(chip);
+		}
 	}
 
 	@Nullable
@@ -118,26 +100,19 @@ public class MediaInfoFragment extends Fragment {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
-			var margin = ViewUtil.dpPx(8);
+			var margin = ViewUtil.dpPx(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 8 : 16);
 			ViewUtil.setTopMargin(binding.posterWrapper, margin + insets.top);
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.items, insets -> {
+		if(binding.detailsScroller != null) ViewUtil.setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
 			var margin = ViewUtil.dpPx(8);
 
-			ViewUtil.setTopPadding(binding.items, insets.top + margin);
-			ViewUtil.setBottomPadding(binding.items, insets.bottom + margin);
-			ViewUtil.setRightPadding(binding.items, insets.right + (margin * 2));
+			ViewUtil.setTopPadding(binding.detailsScroller, insets.top + margin);
+			ViewUtil.setBottomPadding(binding.detailsScroller, insets.bottom + margin);
+			ViewUtil.setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
 		});
 
-		binding.items.setLayoutManager(new LinearLayoutManager(
-				inflater.getContext(),
-				LinearLayoutManager.VERTICAL,
-				false));
-
-		binding.items.setAdapter(concatAdapter);
-
-		setMedia(pendingMedia);
+		setMedia(media);
 		return binding.getRoot();
 	}
 }
