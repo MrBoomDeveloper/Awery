@@ -40,8 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="H,14:9"
         app:cardCornerRadius="15dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginHorizontal="16dp">
+        android:layout_margin="16dp">
 
         <ImageView
             android:id="@+id/poster"

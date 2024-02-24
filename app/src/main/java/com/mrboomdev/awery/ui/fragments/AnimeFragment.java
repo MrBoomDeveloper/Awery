@@ -21,21 +21,22 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
-import ani.awery.databinding.LayoutHeaderBinding;
-
 public class AnimeFragment extends MediaCatalogFragment {
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
+	private int loadId = 0, doneTasks, totalTasks, doneSuccessfully;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var header = LayoutHeaderBinding.inflate(getLayoutInflater());
-		pagerAdapter.setHeaderView(header.getRoot());
-		setupHeader(header);
+		pagerAdapter.getView((_view, didJustCreated) -> {
+			var headerBinding = pagerAdapter.getHeader();
+			setupHeader(headerBinding);
+		});
 
 		var concatAdapter = getConcatAdapter();
-		concatAdapter.addAdapter(getHeaderAdapter());
 		concatAdapter.addAdapter(pagerAdapter);
+		concatAdapter.addAdapter(getHeaderAdapter());
+		concatAdapter.addAdapter(getEmptyAdapter());
 		concatAdapter.addAdapter(categoriesAdapter);
 
 		loadData();
@@ -44,25 +45,36 @@ public class AnimeFragment extends MediaCatalogFragment {
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void loadData() {
+		totalTasks = 0;
+		doneSuccessfully = 0;
+		doneTasks = 0;
+		var currentLoadId = ++loadId;
+
 		pagerAdapter.setItems(Collections.emptyList());
-		pagerAdapter.setEnabled(true);
-		pagerAdapter.setIsLoading(true);
-		getHeaderAdapter().setEnabled(false);
+		pagerAdapter.setEnabled(false);
 
+		getHeaderAdapter().setEnabled(true);
+		getEmptyAdapter().setEnabled(true);
+		setEmptyData(true);
+
+		totalTasks++;
 		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			pagerAdapter.setItems(items);
-			pagerAdapter.setIsLoading(false);
-		})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
-			pagerAdapter.setEnabled(false);
-			e.printStackTrace();
+			if(currentLoadId != loadId) return;
 
-			getHeaderAdapter().setEnabled(true);
-		})).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
+			pagerAdapter.setItems(items);
+			pagerAdapter.setEnabled(true);
+			getHeaderAdapter().setEnabled(false);
+
+			finishedLoading(currentLoadId, null);
+		})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
+			if(currentLoadId != loadId) return;
+			finishedLoading(currentLoadId, e);
+		}));
 
 		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();
 		categoriesAdapter.setCategories(cats);
 
-		loadCategory("Trending", AnilistSearchQuery.search(
+		loadCategory("Trending", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.TRENDING_DESC,
 				null, null, false
@@ -72,7 +84,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 			var file = new File(requireContext().getExternalFilesDir(null), "hentai.txt");
 
 			if(file.exists()) {
-				loadCategory("Hentai", AnilistSearchQuery.search(
+				loadCategory("Hentai", currentLoadId, AnilistSearchQuery.search(
 						AnilistMedia.MediaType.ANIME,
 						AnilistQuery.MediaSort.TRENDING_DESC,
 						null, null, true
@@ -80,41 +92,75 @@ public class AnimeFragment extends MediaCatalogFragment {
 			}
 		}
 
-		loadCategory("Recent Updates", AnilistSearchQuery.search(
+		loadCategory("Recent Updates", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.UPDATED_AT_DESC,
 				null, null, false
 		), cats);
 
-		loadCategory("Popular", AnilistSearchQuery.search(
+		loadCategory("Popular", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.POPULARITY_DESC,
 				null, null, false
 		), cats);
 
-		loadCategory("Movies", AnilistSearchQuery.search(
+		loadCategory("Movies", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.TRENDING_DESC,
 				AnilistMedia.MediaFormat.MOVIE, null, false
 		), cats);
 
-		loadCategory("Most Favorite", AnilistSearchQuery.search(
+		loadCategory("Most Favorite", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.FAVOURITES_DESC,
 				null, null, false
 		), cats);
 
-		loadCategory("The Best Anime", AnilistSearchQuery.search(
+		loadCategory("The Best Anime", currentLoadId, AnilistSearchQuery.search(
 				AnilistMedia.MediaType.ANIME,
 				AnilistQuery.MediaSort.SCORE_DESC,
 				null, null, false
 		), cats);
 	}
 
-	private void loadCategory(String title, @NonNull AnilistQuery<Collection<CatalogMedia>> query, ObservableList<MediaCategoriesAdapter.Category> list) {
-		query.executeQuery(items -> requireActivity().runOnUiThread(() ->
-				list.add(new MediaCategoriesAdapter.Category(title, items))))
-		.catchExceptions(Throwable::printStackTrace).onFinally(() ->
-				getBinding().swipeRefresher.setRefreshing(false));
+	private void finishedLoading(int loadId, Throwable t) {
+		if(loadId != this.loadId) return;
+		doneTasks++;
+
+		if(t != null) {
+			t.printStackTrace();
+		} else {
+			doneSuccessfully++;
+
+			requireActivity().runOnUiThread(() -> {
+				getBinding().swipeRefresher.setRefreshing(false);
+				getEmptyAdapter().setEnabled(false);
+			});
+		}
+
+		if(doneTasks == totalTasks && doneSuccessfully == 0) {
+			requireActivity().runOnUiThread(() -> {
+				getBinding().swipeRefresher.setRefreshing(false);
+				getEmptyAdapter().setEnabledSuperForce(true);
+
+				setEmptyData(false, "Nothing found!",
+						"It looks like there's nothing here. Try installing some extensions to see something different!");
+			});
+		}
+	}
+
+	private void loadCategory(
+			String title,
+			int loadId,
+			@NonNull AnilistQuery<Collection<CatalogMedia>> query,
+			ObservableList<MediaCategoriesAdapter.Category> list
+	) {
+		totalTasks++;
+
+		query.executeQuery(items -> requireActivity().runOnUiThread(() -> {
+			if(loadId != this.loadId) return;
+			list.add(new MediaCategoriesAdapter.Category(title, items));
+			finishedLoading(loadId, null);
+		})).catchExceptions(t -> finishedLoading(loadId, t));
 	}
 }

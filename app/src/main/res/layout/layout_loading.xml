@@ -32,6 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/poppins"
+            android:textAlignment="center"
+            android:gravity="center"
             android:textIsSelectable="true"
             android:textSize="14sp"
             tools:text="@tools:sample/lorem/random"

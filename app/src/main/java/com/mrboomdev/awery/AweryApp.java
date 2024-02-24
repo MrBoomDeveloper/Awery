@@ -147,7 +147,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	private void setupCrashHandler() {
 		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-			if(thread == Looper.getMainLooper().getThread()) {
+			if(thread != Looper.getMainLooper().getThread()) {
 				Log.e(TAG, "THREAD WAS KILLED! [ Thread name: "
 						+ thread.getName() + ", Thread id: "
 						+ thread.getId() + " ]", throwable);

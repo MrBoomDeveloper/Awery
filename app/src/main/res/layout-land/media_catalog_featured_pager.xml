@@ -10,16 +10,8 @@
         android:layout_height="match_parent"
         android:orientation="horizontal" />
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_gravity="center" />
-
     <LinearLayout
-        android:id="@+id/header"
+        android:id="@+id/header_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="right|top"
@@ -27,6 +19,11 @@
         android:padding="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include android:id="@+id/header"
+            layout="@layout/layout_header" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -100,11 +100,6 @@ public class MediaInfoFragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
-			var margin = ViewUtil.dpPx(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 8 : 16);
-			ViewUtil.setTopMargin(binding.posterWrapper, margin + insets.top);
-		});
-
 		if(binding.detailsScroller != null) ViewUtil.setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
 			var margin = ViewUtil.dpPx(8);
 

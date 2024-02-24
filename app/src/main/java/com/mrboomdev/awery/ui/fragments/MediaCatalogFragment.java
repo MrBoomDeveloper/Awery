@@ -36,6 +36,10 @@ public class MediaCatalogFragment extends Fragment {
 	}
 
 	public void setupHeader(@NonNull LayoutHeaderBinding header) {
+		if(header == null) {
+			throw new IllegalArgumentException("Header cannot be null");
+		}
+
 		header.search.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SearchActivity.class);
 			startActivity(intent);

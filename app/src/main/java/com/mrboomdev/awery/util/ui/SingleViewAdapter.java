@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+	private final List<PendingViewOperation<View>> pendingViewOperations = new ArrayList<>();
 	private final Handler handler = new Handler(Looper.getMainLooper());
+	private Integer pendingVisibility;
 	private View view;
 	private boolean isEnabled = true;
 	private int id;
@@ -31,7 +33,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 	@NonNull
 	public static SingleViewAdapter fromView(@NonNull View view, int id, ViewGroup.LayoutParams layoutParams) {
-		return new SingleViewAdapter(id) {
+		var adapter = new SingleViewAdapter(id) {
 			@NonNull
 			@Override
 			public View onCreateView(@NonNull ViewGroup parent) {
@@ -42,6 +44,9 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 				return view;
 			}
 		};
+
+		adapter.setView(view);
+		return adapter;
 	}
 
 	public interface PendingViewOperation<V> {
@@ -56,6 +61,10 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 		public T getBinding() {
 			return binding;
+		}
+
+		protected void setBinding(T binding) {
+			this.binding = binding;
 		}
 
 		public void getBinding(@NonNull PendingViewOperation<T> operation) {
@@ -111,7 +120,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 	@NonNull
 	public static <T extends ViewBinding> BindingSingleViewAdapter<T> fromBinding(T binding, ViewGroup.LayoutParams layoutParams) {
-		return new BindingSingleViewAdapter<>() {
+		var adapter = new BindingSingleViewAdapter<T>() {
 			@Override
 			public T onCreateBinding(ViewGroup parent) {
 				if(layoutParams != null) {
@@ -122,6 +131,9 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 				return binding;
 			}
 		};
+
+		adapter.setBinding(binding);
+		return adapter;
 	}
 
 	@NonNull
@@ -142,6 +154,11 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 	public View getView() {
 		return view;
+	}
+
+	public void getView(@NonNull PendingViewOperation<View> operation) {
+		if(view != null) operation.onGotView(view, false);
+		else pendingViewOperations.add(operation);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -189,12 +206,34 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		view = onCreateView(parent);
 		ViewUtil.removeParent(view);
+
+		if(pendingVisibility != null) {
+			view.setVisibility(pendingVisibility);
+			pendingVisibility = null;
+		}
+
+		var iterator = pendingViewOperations.iterator();
+		while(iterator.hasNext()) {
+			var next = iterator.next();
+			next.onGotView(view, true);
+			iterator.remove();
+		}
+
 		return new RecyclerView.ViewHolder(view) {};
+	}
+
+	public void setVisibility(int visibility) {
+		if(view != null) view.setVisibility(visibility);
+		else pendingVisibility = visibility;
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return id;
+	}
+
+	protected void setView(View view) {
+		this.view = view;
 	}
 
 	@Override

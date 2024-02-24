@@ -6,14 +6,10 @@ import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,57 +31,17 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import ani.awery.R;
+import ani.awery.databinding.LayoutHeaderBinding;
 import ani.awery.databinding.MediaCatalogFeaturedBinding;
 import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
 public class MediaPagerAdapter extends SingleViewAdapter {
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
-	private final Handler handler = new Handler(Looper.getMainLooper());
-	private View headerView;
-	private LinearLayout headerLayout;
+	private LayoutHeaderBinding header;
 	private final PagerAdapter adapter = new PagerAdapter();
-	private ProgressBar progressBar;
-	private boolean isLoading;
 
-	private void attachHeaderView(View view) {
-		headerLayout.removeAllViews();
-
-		ViewUtil.removeParent(view);
-		headerLayout.addView(view, ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
-
-		handler.post(() -> notifyItemRangeChanged(0, items.size()));
-
-		if(Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			var logo = view.findViewById(R.id.logo);
-			logo.setVisibility(View.GONE);
-		}
-
-		ViewUtil.setOnApplyUiInsetsListener(view, insets -> {
-			ViewUtil.setTopMargin(view, insets.top);
-			ViewUtil.setRightMargin(view, insets.right);
-			ViewUtil.setLeftMargin(view, insets.left);
-		}, headerLayout.getRootWindowInsets());
-	}
-
-	public void setHeaderView(View view) {
-		if(view == null && this.headerView != null) {
-			headerLayout.removeView(this.headerView);
-		}
-
-		this.headerView = view;
-
-		if(headerLayout != null && view != null) {
-			attachHeaderView(view);
-		}
-	}
-
-	public void setIsLoading(boolean isLoading) {
-		this.isLoading = isLoading;
-
-		if(progressBar != null) {
-			progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-		}
+	public LayoutHeaderBinding getHeader() {
+		return header;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -104,15 +60,18 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		ViewPager2 pager = binding.pager;
 		pager.setAdapter(adapter);
 
-		progressBar = binding.progress;
-		progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-
-		headerLayout = binding.header;
+		this.header = binding.header;
 		setEnabled(isEnabled());
 
-		if(headerView != null) {
-			attachHeaderView(headerView);
+		if(Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			binding.header.logo.setVisibility(View.GONE);
 		}
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.headerWrapper, insets -> {
+			ViewUtil.setTopMargin(binding.headerWrapper, insets.top);
+			ViewUtil.setRightMargin(binding.headerWrapper, insets.right);
+			ViewUtil.setLeftMargin(binding.headerWrapper, insets.left);
+		}, parent);
 
 		return binding.getRoot();
 	}
@@ -251,10 +210,6 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 								item.cachedBanner = null;
 							}
 					});
-
-			if(binding.headerBarrier != null) {
-				binding.headerBarrier.setVisibility(headerView != null ? View.VISIBLE : View.GONE);
-			}
 		}
 	}
 }
