@@ -150,7 +150,7 @@ class DiscordService : Service() {
 
     fun saveProfile(response: String) {
         val sharedPref = baseContext.getSharedPreferences(
-            baseContext.getString(R.string.preference_file_key),
+            "aweryprefs",
             Context.MODE_PRIVATE
         )
         val user = json.decodeFromString<User.Response>(response).d.user
@@ -318,10 +318,7 @@ class DiscordService : Service() {
     }
 
     fun getToken(context: Context): String {
-        val sharedPref = context.getSharedPreferences(
-            context.getString(R.string.preference_file_key),
-            Context.MODE_PRIVATE
-        )
+        val sharedPref = context.getSharedPreferences("aweryprefs", Context.MODE_PRIVATE)
         val token = sharedPref.getString(Discord.TOKEN, null)
         if (token == null) {
             log("WebSocket: Token not found")

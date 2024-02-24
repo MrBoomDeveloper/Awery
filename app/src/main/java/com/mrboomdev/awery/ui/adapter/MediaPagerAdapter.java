@@ -17,7 +17,6 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -51,7 +50,9 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 
 	private void attachHeaderView(View view) {
 		headerLayout.removeAllViews();
-		headerLayout.addView(view, ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+
+		ViewUtil.removeParent(view);
+		headerLayout.addView(view, ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
 
 		handler.post(() -> notifyItemRangeChanged(0, items.size()));
 

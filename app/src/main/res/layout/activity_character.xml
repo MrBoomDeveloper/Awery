@@ -61,7 +61,7 @@
             android:minHeight="60dp"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:text="@string/slogan"
+            android:text="Naruto"
             android:textSize="16sp"
             android:transitionName="characterTitle" />
 

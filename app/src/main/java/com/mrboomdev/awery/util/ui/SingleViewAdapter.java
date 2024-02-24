@@ -110,14 +110,23 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	@NonNull
-	@Contract("_ -> new")
-	public static <T extends ViewBinding> BindingSingleViewAdapter<T> fromBinding(T binding) {
+	public static <T extends ViewBinding> BindingSingleViewAdapter<T> fromBinding(T binding, ViewGroup.LayoutParams layoutParams) {
 		return new BindingSingleViewAdapter<>() {
 			@Override
 			public T onCreateBinding(ViewGroup parent) {
+				if(layoutParams != null) {
+					//var newParams = ViewUtil.createFittingLayoutParams(parent, layoutParams);
+					binding.getRoot().setLayoutParams(/*newParams*/ layoutParams);
+				}
+
 				return binding;
 			}
 		};
+	}
+
+	@NonNull
+	public static <T extends ViewBinding> BindingSingleViewAdapter<T> fromBinding(T binding) {
+		return fromBinding(binding, null);
 	}
 
 	@NonNull
@@ -179,6 +188,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		view = onCreateView(parent);
+		ViewUtil.removeParent(view);
 		return new RecyclerView.ViewHolder(view) {};
 	}
 

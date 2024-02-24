@@ -18,6 +18,7 @@ import java.util.List;
 import ani.awery.databinding.ActivityNoInternetBinding;
 
 public class CatalogMedia {
+	public static final CatalogMedia INVALID_MEDIA;
 	public List<String> titles = new ArrayList<>();
 	public String title, originalTitle, banner, description, color, url;
 	public MediaType type;
@@ -54,6 +55,18 @@ public class CatalogMedia {
 		this.titles = List.of(title);
 	}
 
+	public String getBestBanner() {
+		if(banner != null) return banner;
+		return getBestPoster();
+	}
+
+	public String getBestPoster() {
+		if(poster.extraLarge != null) return poster.extraLarge;
+		if(poster.large != null) return poster.large;
+		if(poster.medium != null) return poster.medium;
+		return banner;
+	}
+
 	public void setPoster(String poster) {
 		this.poster = new ImageVersions();
 		this.poster.extraLarge = poster;
@@ -80,5 +93,11 @@ public class CatalogMedia {
 
 	public static class ImageVersions {
 		public String extraLarge, large, medium;
+	}
+
+	static {
+		INVALID_MEDIA = new CatalogMedia();
+		INVALID_MEDIA.setTitle("Invalid!");
+		INVALID_MEDIA.description = "Invalid media item!";
 	}
 }

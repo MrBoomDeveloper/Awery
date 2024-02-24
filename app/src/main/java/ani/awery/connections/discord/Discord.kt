@@ -21,17 +21,14 @@ object Discord {
     const val TOKEN = "discord_token"
 
     fun getSavedToken(context: Context): Boolean {
-        val sharedPref = context.getSharedPreferences(
-            context.getString(R.string.preference_file_key),
-            Context.MODE_PRIVATE
-        )
+        val sharedPref = context.getSharedPreferences("aweryprefs", Context.MODE_PRIVATE)
         token = sharedPref.getString(TOKEN, null)
         return token != null
     }
 
     fun saveToken(context: Context, token: String) {
         val sharedPref = context.getSharedPreferences(
-            context.getString(R.string.preference_file_key),
+            "aweryprefs",
             Context.MODE_PRIVATE
         )
         sharedPref.edit {
@@ -41,10 +38,7 @@ object Discord {
     }
 
     fun removeSavedToken(context: Context) {
-        val sharedPref = context.getSharedPreferences(
-            context.getString(R.string.preference_file_key),
-            Context.MODE_PRIVATE
-        )
+        val sharedPref = context.getSharedPreferences("aweryprefs", Context.MODE_PRIVATE)
         sharedPref.edit {
             remove(TOKEN)
             commit()

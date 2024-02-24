@@ -14,12 +14,13 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
-            android:alpha=".25"
+            android:alpha=".5"
+            android:layout_marginBottom="-75dp"
             tools:src="@tools:sample/backgrounds/scenic"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintDimensionRatio="H,16:9"
+            app:layout_constraintBottom_toBottomOf="@id/poster_wrapper"
             android:importantForAccessibility="no" />
 
         <ImageView

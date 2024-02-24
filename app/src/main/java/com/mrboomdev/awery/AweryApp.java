@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import ani.awery.connections.anilist.Anilist;
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
 	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
 	private static final List<Disposable> disposables = new ArrayList<>();
+	private static final String TAG = "AweryApp";
 	public static final boolean USE_KT_APP_INIT = true;
 	private static AweryApp app;
 	private static final Handler handler = new Handler(Looper.getMainLooper());
@@ -145,7 +147,24 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	private void setupCrashHandler() {
 		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-			throwable.printStackTrace();
+			if(thread == Looper.getMainLooper().getThread()) {
+				Log.e(TAG, "THREAD WAS KILLED! [ Thread name: "
+						+ thread.getName() + ", Thread id: "
+						+ thread.getId() + " ]", throwable);
+
+				var activity = getAnyActivity();
+
+				if(activity != null) {
+					toast(activity, "Unexpected error has happened!", Toast.LENGTH_LONG);
+				}
+
+				return;
+			}
+
+			Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
+					+ thread.getName() + ", Thread id: "
+					+ thread.getId() + " ]", throwable);
+
 			var activity = getAnyActivity();
 
 			if(activity != null) {

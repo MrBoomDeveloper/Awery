@@ -32,7 +32,7 @@ object AppUpdater {
 
     suspend fun check(activity: FragmentActivity, post: Boolean = false) {
         if (post) snackString(currContext()?.getString(R.string.checking_for_update))
-        val repo = activity.getString(R.string.repo)
+        val repo = "MrBoomDeveloper/Awery"
 
         tryWithSuspend {
             val (md, version) = if (BuildConfig.DEBUG) {

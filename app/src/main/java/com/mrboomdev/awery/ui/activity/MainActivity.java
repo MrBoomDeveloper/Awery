@@ -5,7 +5,6 @@ import static ani.awery.FunctionsKt.snackString;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.graphics.drawable.Animatable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,10 +26,10 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
-import com.mrboomdev.awery.ui.fragments.HomeFragment;
+import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.UI_DEFAULT_MAIN_PAGE, Pages.HOME.name()));
+		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.UI_DEFAULT_MAIN_PAGE, Pages.ANIME.name()));
 		int currentPageIndex = currentPage.ordinal();
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);
@@ -82,9 +81,6 @@ public class MainActivity extends AppCompatActivity {
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 
 		binding.navbar.removeTabAt(2);
-		binding.navbar.removeTabAt(1);
-		binding.navbar.selectTabAt(0, false);
-		binding.navbar.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -155,9 +151,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	enum Pages {
-		ANIME,
-		HOME,
-		MANGA
+		ANIME, LIBRARY, MANGA
 	}
 
 	private static class MainFragmentAdapter extends FragmentStateAdapter {
@@ -172,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 		public Fragment createFragment(int position) {
 			return switch(position) {
 				case 0 -> new AnimeFragment();
-				case 1 -> new HomeFragment();
+				case 1 -> new LibraryFragment();
 				case 2 -> new MangaFragment();
 				default -> throw new RuntimeException("Invalid page position!" + position);
 			};

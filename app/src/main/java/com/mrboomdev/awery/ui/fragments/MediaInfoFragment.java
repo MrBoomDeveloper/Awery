@@ -77,12 +77,13 @@ public class MediaInfoFragment extends Fragment {
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(binding.poster);
 
-		if(media.banner != null) {
-			Glide.with(binding.getRoot())
-					.load(media.banner)
-					.transition(DrawableTransitionOptions.withCrossFade())
-					.into(binding.banner);
-		}
+		var banner = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+				? media.getBestBanner() : media.getBestPoster();
+
+		Glide.with(binding.getRoot())
+				.load(banner)
+				.transition(DrawableTransitionOptions.withCrossFade())
+				.into(binding.banner);
 
 		binding.details.title.setText(media.title);
 		binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());

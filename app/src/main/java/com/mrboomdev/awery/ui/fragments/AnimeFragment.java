@@ -34,6 +34,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 		setupHeader(header);
 
 		var concatAdapter = getConcatAdapter();
+		concatAdapter.addAdapter(getHeaderAdapter());
 		concatAdapter.addAdapter(pagerAdapter);
 		concatAdapter.addAdapter(categoriesAdapter);
 
@@ -46,8 +47,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 		pagerAdapter.setItems(Collections.emptyList());
 		pagerAdapter.setEnabled(true);
 		pagerAdapter.setIsLoading(true);
-
-		getConcatAdapter().removeAdapter(getHeaderAdapter());
+		getHeaderAdapter().setEnabled(false);
 
 		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
 			pagerAdapter.setItems(items);
@@ -56,7 +56,7 @@ public class AnimeFragment extends MediaCatalogFragment {
 			pagerAdapter.setEnabled(false);
 			e.printStackTrace();
 
-			getConcatAdapter().addAdapter(0, getHeaderAdapter());
+			getHeaderAdapter().setEnabled(true);
 		})).onFinally(() -> getBinding().swipeRefresher.setRefreshing(false));
 
 		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();

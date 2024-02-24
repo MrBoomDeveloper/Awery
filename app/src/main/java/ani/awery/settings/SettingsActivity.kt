@@ -559,13 +559,6 @@ class SettingsActivity : AppCompatActivity() {
             uiChp(1, it)
         }
 
-        binding.loginDiscord.setOnClickListener {
-            openLinkInBrowser(getString(R.string.discord))
-        }
-        binding.loginGithub.setOnClickListener {
-            openLinkInBrowser(getString(R.string.github))
-        }
-
         binding.settingsUi.setOnClickListener {
             startActivity(Intent(this, UserInterfaceSettingsActivity::class.java))
         }
@@ -731,15 +724,15 @@ class SettingsActivity : AppCompatActivity() {
 
             if (Discord.token != null) {
                 val id = getSharedPreferences(
-                    getString(R.string.preference_file_key),
+                    "aweryprefs",
                     Context.MODE_PRIVATE
                 ).getString("discord_id", null)
                 val avatar = getSharedPreferences(
-                    getString(R.string.preference_file_key),
+                    "aweryprefs",
                     Context.MODE_PRIVATE
                 ).getString("discord_avatar", null)
                 val username = getSharedPreferences(
-                    getString(R.string.preference_file_key),
+                    "aweryprefs",
                     Context.MODE_PRIVATE
                 ).getString("discord_username", null)
                 if (id != null && avatar != null) {

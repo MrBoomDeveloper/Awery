@@ -189,6 +189,8 @@ public class ExtensionsFactory {
 						throw new RuntimeException("Default constructor is inaccessible!", e);
 					} catch(InstantiationException e) {
 						throw new RuntimeException("Requested class cannot be instanciated!", e);
+					} catch(Throwable e) {
+						throw new RuntimeException("Unknown exception occurred!", e);
 					}
 				})
 				.collect(Collectors.toList());

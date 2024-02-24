@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -21,6 +22,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
 	private ObservableList<Category> categories = new ObservableArrayList<>();
 
+	@SuppressLint("NotifyDataSetChanged")
 	public MediaCategoriesAdapter() {
 		AweryApp.registerDisposable(() -> itemsPool = null);
 		categories.observeAdditions((category, index) -> notifyItemInserted(index));
@@ -88,7 +90,11 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		holder.bind(categories.get(position));
+		try {
+			holder.bind(categories.get(position));
+		} catch(IndexOutOfBoundsException e) {
+			Log.e("MediaCategoriesAdapter", "Failed to bind category at position " + position, e);
+		}
 	}
 
 	@Override

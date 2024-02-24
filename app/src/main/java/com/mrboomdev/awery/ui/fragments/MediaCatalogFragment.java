@@ -15,14 +15,14 @@ import com.mrboomdev.awery.ui.activity.SettingsActivity;
 import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
-import org.jetbrains.annotations.Contract;
-
 import ani.awery.databinding.LayoutHeaderBinding;
+import ani.awery.databinding.LayoutLoadingBinding;
 import ani.awery.databinding.MediaCatalogFragmentBinding;
 import ani.awery.media.SearchActivity;
 
 public class MediaCatalogFragment extends Fragment {
-	private final HeaderAdapter header = new HeaderAdapter();
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> emptyAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> headerAdapter;
 	private final ConcatAdapter concatAdapter;
 	private MediaCatalogFragmentBinding binding;
 
@@ -51,8 +51,30 @@ public class MediaCatalogFragment extends Fragment {
 		return binding;
 	}
 
-	public HeaderAdapter getHeaderAdapter() {
-		return header;
+	public SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> getEmptyAdapter() {
+		return emptyAdapter;
+	}
+
+	public SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> getHeaderAdapter() {
+		return headerAdapter;
+	}
+
+	public void setEmptyData(boolean isLoading, String title, String message) {
+		getEmptyAdapter().getBinding((binding, didJustCreated) -> {
+			binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+			if(title != null || message != null) {
+				binding.info.setVisibility(View.VISIBLE);
+				binding.title.setText(title);
+				binding.message.setText(message);
+			} else {
+				binding.info.setVisibility(View.GONE);
+			}
+		});
+	}
+
+	public void setEmptyData(boolean isLoading) {
+		setEmptyData(isLoading, null, null);
 	}
 
 	public ConcatAdapter getConcatAdapter() {
@@ -67,33 +89,26 @@ public class MediaCatalogFragment extends Fragment {
 		binding.catalogCategories.setHasFixedSize(true);
 		binding.catalogCategories.setAdapter(concatAdapter);
 
+		var headerBinding = LayoutHeaderBinding.inflate(inflater, container, false);
+		setupHeader(headerBinding);
+
+		ViewUtil.setPadding(headerBinding.getRoot(), ViewUtil.dpPx(16));
+
+		ViewUtil.setOnApplyUiInsetsListener(headerBinding.getRoot(), insets -> {
+			ViewUtil.setTopMargin(headerBinding.getRoot(), insets.top);
+			ViewUtil.setRightMargin(headerBinding.getRoot(), insets.right);
+			ViewUtil.setLeftMargin(headerBinding.getRoot(), insets.left);
+		}, container);
+
+		var headerParams = ViewUtil.createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
+		headerAdapter = SingleViewAdapter.fromBinding(headerBinding, headerParams);
+
+		var emptyBinding = LayoutLoadingBinding.inflate(inflater);
+		var emptyParams = ViewUtil.createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
+		ViewUtil.setVerticalMargin(emptyParams, ViewUtil.dpPx(64));
+		ViewUtil.setHorizontalMargin(emptyParams, ViewUtil.dpPx(16));
+		emptyAdapter = SingleViewAdapter.fromBinding(emptyBinding, emptyParams);
+
 		return binding.getRoot();
-	}
-
-	private class HeaderAdapter extends SingleViewAdapter {
-		private LayoutHeaderBinding binding;
-
-		public LayoutHeaderBinding getBinding() {
-			return binding;
-		}
-
-		@Nullable
-		@Contract(pure = true)
-		@Override
-		protected View onCreateView(@NonNull ViewGroup parent) {
-			var inflater = LayoutInflater.from(parent.getContext());
-			this.binding = LayoutHeaderBinding.inflate(inflater, parent, false);
-			setupHeader(binding);
-
-			ViewUtil.setPadding(binding.getRoot(), ViewUtil.dpPx(16));
-
-			ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-				ViewUtil.setTopMargin(binding.getRoot(), insets.top);
-				ViewUtil.setRightMargin(binding.getRoot(), insets.right);
-				ViewUtil.setLeftMargin(binding.getRoot(), insets.left);
-			}, parent.getRootWindowInsets());
-
-			return binding.getRoot();
-		}
 	}
 }

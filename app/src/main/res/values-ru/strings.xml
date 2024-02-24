@@ -21,6 +21,7 @@
     <string name="info">Информация</string>
     <string name="watch">Смотреть</string>
     <string name="read">Читать</string>
+    <string name="library">Библиотека</string>
 
     <string name="anime_list">Список Аниме</string>
     <string name="manga_list">Список Манги</string>
@@ -145,7 +146,6 @@
     <string name="theme">Тема</string>
     <string name="ui_settings">Настройки Интерфейса</string>
     <string name="about">Об Приложении</string>
-    <string name="desc">"    Awery is crafted from the ashes of Saikou and based on simplistic yet state-of-the-art elegance. It is an Anilist only client, which also lets you stream-download Anime through extensions &amp; Manga.\nAwery literally means the \"best of the best\" in japanese. Well, we would like to say this is the best open source app for anime and manga on Android, what would you say?"</string>
     <string name="devs">Разработчики</string>
     <string name="disclaimer">Дисклеймер</string>
     <string name="full_disclaimer" translatable="false">

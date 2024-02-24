@@ -4,16 +4,24 @@ import android.content.res.Resources;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.view.WindowInsets;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.jetbrains.annotations.Contract;
+
 public class ViewUtil {
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
+	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
 
 	public static void setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
@@ -21,6 +29,30 @@ public class ViewUtil {
 
 		margins.leftMargin = margin;
 		view.setLayoutParams(margins);
+	}
+
+	@NonNull
+	@Contract("_, _ -> new")
+	public static LinearLayout.LayoutParams createLinearParams(int width, int height) {
+		return new LinearLayout.LayoutParams(width, height);
+	}
+
+	@NonNull
+	@Contract("_, _ -> new")
+	public static ViewGroup.MarginLayoutParams createMarginParams(int width, int height) {
+		return new ViewGroup.MarginLayoutParams(width, height);
+	}
+
+	public static ViewGroup.LayoutParams createFittingLayoutParams(@NonNull View parent, ViewGroup.LayoutParams originalParams) {
+		if(parent instanceof LinearLayout) {
+			return new LinearLayout.LayoutParams(originalParams);
+		} else if(parent instanceof ConstraintLayout) {
+			return new ConstraintLayout.LayoutParams(originalParams);
+		} else if(parent instanceof FrameLayout) {
+			return new FrameLayout.LayoutParams(originalParams);
+		}
+
+		return originalParams;
 	}
 
 	public static void setMargin(View view, int margin) {
@@ -33,6 +65,32 @@ public class ViewUtil {
 
 	public static void setPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, padding, padding, padding);
+	}
+
+	public static void setTopMargin(ViewGroup.LayoutParams params, int margin) {
+		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+			marginLayoutParams.topMargin = margin;
+		}
+	}
+
+	public static void removeParent(@NonNull View view) {
+		if(view.getParent() instanceof ViewManager parent) {
+			parent.removeView(view);
+		}
+	}
+
+	public static void setVerticalMargin(ViewGroup.LayoutParams params, int margin) {
+		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+			marginLayoutParams.topMargin = margin;
+			marginLayoutParams.bottomMargin = margin;
+		}
+	}
+
+	public static void setHorizontalMargin(ViewGroup.LayoutParams params, int margin) {
+		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
+			marginLayoutParams.rightMargin = margin;
+			marginLayoutParams.leftMargin = margin;
+		}
 	}
 
 	public static void setRightMargin(View view, int margin) {
@@ -109,12 +167,12 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
-	public static void setTopMargin(View view, int margin) {
-		var margins = getMargins(view);
-		if(margins == null) return;
+	public static void setTopMargin(@NonNull View view, int margin) {
+		var params = view.getLayoutParams();
+		if(params == null) return;
 
-		margins.topMargin = margin;
-		view.setLayoutParams(margins);
+		setTopMargin(view.getLayoutParams(), margin);
+		view.setLayoutParams(params);
 	}
 
 	public static void setBottomMargin(View view, int margin) {

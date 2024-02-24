@@ -6,9 +6,9 @@
         android:title="@string/anime" />
 
     <item
-        android:id="@+id/home"
+        android:id="@+id/library"
         android:icon="@drawable/ic_round_home_24"
-        android:title="@string/home" />
+        android:title="@string/library" />
 
     <item
         android:id="@+id/manga"

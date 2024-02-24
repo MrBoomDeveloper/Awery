@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AwerySettings {
-	public static final String AWERY_SETTINGS = "Awery";
+	public static final String APP_SETTINGS = "Awery", APP_LIBRARY = "Library", APP_SECRETS = "Secrets";
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
@@ -126,7 +126,7 @@ public class AwerySettings {
 
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context) {
-		return getInstance(context, AWERY_SETTINGS);
+		return getInstance(context, APP_SETTINGS);
 	}
 
 	@NonNull
@@ -137,7 +137,7 @@ public class AwerySettings {
 	@NonNull
 	@Contract(" -> new")
 	public static AwerySettings getInstance() {
-		return getInstance(AWERY_SETTINGS);
+		return getInstance(APP_SETTINGS);
 	}
 
 	public static SharedPreferences getPreferences(String fileName) {
@@ -145,6 +145,6 @@ public class AwerySettings {
 	}
 
 	public static SharedPreferences getPreferences() {
-		return getPreferences(AWERY_SETTINGS);
+		return getPreferences(APP_SETTINGS);
 	}
 }
