@@ -13,11 +13,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.room.Room;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.catalog.extensions.support.js.JsManager;
+import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -32,15 +36,24 @@ import ani.awery.connections.anilist.Anilist;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
+	//TODO: Remove this field after JS extensions will be made
+	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
+	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX =
+			new JsManager().getId() + ";;;com.mrboomdev.awery.extension.anilist;;;";
 	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
 	private static final List<Disposable> disposables = new ArrayList<>();
 	private static final String TAG = "AweryApp";
 	public static final boolean USE_KT_APP_INIT = true;
 	private static AweryApp app;
 	private static final Handler handler = new Handler(Looper.getMainLooper());
+	private static AweryDB db;
 
 	public static void registerDisposable(Disposable disposable) {
 		disposables.add(disposable);
+	}
+
+	public static AweryDB getDatabase() {
+		return db;
 	}
 
 	@Nullable
@@ -77,16 +90,20 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return app;
 	}
 
-	public static void setOnBackPressedListener(@NonNull AppCompatActivity activity, Runnable callback) {
+	public static void setOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(0, callback::run);
 		} else {
-			activity.getOnBackPressedDispatcher().addCallback(activity, new OnBackPressedCallback(true) {
-				@Override
-				public void handleOnBackPressed() {
-					callback.run();
-				}
-			});
+			if(activity instanceof OnBackPressedDispatcherOwner owner && activity instanceof LifecycleOwner lifecycle) {
+				owner.getOnBackPressedDispatcher().addCallback(lifecycle, new OnBackPressedCallback(true) {
+					@Override
+					public void handleOnBackPressed() {
+						callback.run();
+					}
+				});
+			} else {
+				throw new IllegalArgumentException("Activity must implement OnBackPressedDispatcherOwner and LifecycleOwner");
+			}
 		}
 	}
 
@@ -124,6 +141,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 		ExtensionsFactory.init(this);
 		Anilist.INSTANCE.getSavedToken(this);
+		db = Room.databaseBuilder(this, AweryDB.class, "db").build();
 	}
 
 	public static Activity getActivity(@NonNull View view) {

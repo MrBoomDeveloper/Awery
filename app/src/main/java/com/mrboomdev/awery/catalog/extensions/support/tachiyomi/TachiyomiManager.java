@@ -8,4 +8,9 @@ public class TachiyomiManager extends ExtensionsManager<TachiyomiProvider> {
 	public String getName() {
 		return "Tachiyomi";
 	}
+
+	@Override
+	public String getId() {
+		return "TACHIYOMI_KOTLIN";
+	}
 }

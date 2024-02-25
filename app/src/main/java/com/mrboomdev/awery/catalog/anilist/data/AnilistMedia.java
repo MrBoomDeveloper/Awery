@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.catalog.anilist.data;
 
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.squareup.moshi.Json;
 
@@ -43,12 +44,12 @@ public class AnilistMedia {
 	}
 
 	public CatalogMedia toCatalogMedia() {
-		var media = new CatalogMedia();
+		var media = new CatalogMedia(AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id);
 		media.title = Objects.requireNonNullElse(title.english, title.romaji);
-		media.originalTitle = title.romaji;
 		media.description = description;
 		media.banner = bannerImage;
 		media.color = coverImage.color;
+		media.globalId = "";
 		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
 

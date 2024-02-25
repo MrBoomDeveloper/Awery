@@ -8,4 +8,9 @@ public class JsManager extends ExtensionsManager<JsProvider> {
 	public String getName() {
 		return "JavaScript";
 	}
+
+	@Override
+	public String getId() {
+		return "AWERY_JS";
+	}
 }

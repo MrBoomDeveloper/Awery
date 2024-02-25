@@ -8,4 +8,9 @@ public class AniyomiManager extends ExtensionsManager<AniyomiProvider> {
 	public String getName() {
 		return "Aniyomi";
 	}
+
+	@Override
+	public String getId() {
+		return "ANIYOMI_KOTLIN";
+	}
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
@@ -130,7 +131,11 @@ public class AnimeFragment extends MediaCatalogFragment {
 		if(t != null) {
 			t.printStackTrace();
 		} else {
-			doneSuccessfully++;
+			if(doneSuccessfully++ == 0) {
+				// We do this to prevent screen from being scrolling a little bit
+				AweryApp.runDelayed(() -> requireActivity().runOnUiThread(() ->
+						getBinding().catalogCategories.scrollToPosition(0)), 100);
+			}
 
 			requireActivity().runOnUiThread(() -> {
 				getBinding().swipeRefresher.setRefreshing(false);

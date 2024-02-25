@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
@@ -43,6 +44,17 @@ public class LibraryFragment extends MediaCatalogFragment {
 		setEmptyData(true);
 		getEmptyAdapter().setEnabled(true);
 
+		new Thread(() -> {
+			var db = AweryApp.getDatabase();
+			var mediaDao = db.getMediaDao();
+			var mediaList = mediaDao.getAll();
+
+			for(var a : mediaList) {
+				System.out.println(a.title);
+			}
+		}).start();
+
+		//TODO: Remove old load method
 		var saved = AwerySettings.getInstance(AwerySettings.APP_LIBRARY);
 		loadCategory("Continue Watching", saved.getStringSet("current"));
 		loadCategory("Planned", saved.getStringSet("planned"));
@@ -63,7 +75,7 @@ public class LibraryFragment extends MediaCatalogFragment {
 		if(items.isEmpty()) return;
 
 		var itemsList = items.stream().map(item -> {
-			var media = new CatalogMedia();
+			var media = new CatalogMedia("dhdhdhdhdh");
 			media.setTitle(item);
 			return media;
 		}).collect(Collectors.toList());

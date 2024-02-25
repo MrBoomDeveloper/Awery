@@ -8,4 +8,9 @@ public class CloudstreamManager extends ExtensionsManager<CloudstreamProvider> {
 	public String getName() {
 		return "CloudStream";
 	}
+
+	@Override
+	public String getId() {
+		return "CLOUDSTREAM_JAVA";
+	}
 }

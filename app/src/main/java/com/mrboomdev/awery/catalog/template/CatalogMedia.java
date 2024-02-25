@@ -19,17 +19,34 @@ import ani.awery.databinding.ActivityNoInternetBinding;
 
 public class CatalogMedia {
 	public static final CatalogMedia INVALID_MEDIA;
+
+	/**
+	 * Please use the following format:
+	 * <b>EXTENSION_TYPE;EXTENSION_ID;ITEM_ID</b>
+	 * <p>
+	 * Example:
+	 * <b>EXTENSION_JS;;;com.mrboomdev.awery.extension.anilist;;;1</b>
+	 * </p>
+	 */
+	@NonNull
+	public String globalId;
+
 	public List<String> titles = new ArrayList<>();
-	public String title, originalTitle, banner, description, color, url;
+	public String title, banner, description, color, url;
 	public MediaType type;
 	public ImageVersions poster;
-	public int latestEpisode, id;
+	public int id;
+	public int latestEpisode;
 	public Float averageScore;
 	public List<CatalogTag> tags;
 	public List<String> genres;
 	public MediaStatus status;
 	@Json(ignore = true)
 	public Drawable cachedBanner;
+
+	public CatalogMedia(@NonNull String globalId) {
+		this.globalId = globalId;
+	}
 
 	public void handleClick(Context context, String action) {
 		var intent = new Intent(context, MediaActivity.class);
@@ -96,7 +113,7 @@ public class CatalogMedia {
 	}
 
 	static {
-		INVALID_MEDIA = new CatalogMedia();
+		INVALID_MEDIA = new CatalogMedia("INTERNAL;;;com.mrboomdev.awery;;;0");
 		INVALID_MEDIA.setTitle("Invalid!");
 		INVALID_MEDIA.description = "Invalid media item!";
 	}

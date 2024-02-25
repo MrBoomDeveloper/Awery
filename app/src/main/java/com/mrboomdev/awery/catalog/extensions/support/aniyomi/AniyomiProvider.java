@@ -132,7 +132,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			callback.onSuccess(animes.stream().map(item -> {
-				var media = new CatalogMedia();
+				var media = new CatalogMedia("NULL");
 				media.setTitle(item.getTitle());
 				media.setPoster(item.getThumbnail_url());
 
