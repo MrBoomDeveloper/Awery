@@ -16,7 +16,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.room.Room;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
@@ -36,10 +35,9 @@ import ani.awery.connections.anilist.Anilist;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
-	//TODO: Remove this field after JS extensions will be made
+	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
-	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX =
-			new JsManager().getId() + ";;;com.mrboomdev.awery.extension.anilist;;;";
+	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
 	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
 	private static final List<Disposable> disposables = new ArrayList<>();
 	private static final String TAG = "AweryApp";
@@ -94,15 +92,15 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(0, callback::run);
 		} else {
-			if(activity instanceof OnBackPressedDispatcherOwner owner && activity instanceof LifecycleOwner lifecycle) {
-				owner.getOnBackPressedDispatcher().addCallback(lifecycle, new OnBackPressedCallback(true) {
+			if(activity instanceof OnBackPressedDispatcherOwner owner) {
+				owner.getOnBackPressedDispatcher().addCallback(owner, new OnBackPressedCallback(true) {
 					@Override
 					public void handleOnBackPressed() {
 						callback.run();
 					}
 				});
 			} else {
-				throw new IllegalArgumentException("Activity must implement OnBackPressedDispatcherOwner and LifecycleOwner");
+				throw new IllegalArgumentException("Activity must implement OnBackPressedDispatcherOwner!");
 			}
 		}
 	}

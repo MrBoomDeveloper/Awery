@@ -65,6 +65,7 @@
             android:paddingVertical="16dp"
             android:clipToPadding="false"
             android:paddingHorizontal="32dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/poster_wrapper">
 
             <include android:id="@+id/details"

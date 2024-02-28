@@ -30,7 +30,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistHomeViewModel
 import ani.awery.databinding.ActivityMainBinding
-import ani.awery.databinding.LayoutSplashScreenBinding
+import ani.awery.databinding.ScreenSplashBinding
 import ani.awery.home.AnimeFragment
 import ani.awery.home.HomeFragment
 import ani.awery.home.LoginFragment
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                val splash = LayoutSplashScreenBinding.inflate(layoutInflater)
+                val splash = ScreenSplashBinding.inflate(layoutInflater)
                 binding.root.addView(splash.root)
                 (splash.splashImage.drawable as Animatable).start()
 

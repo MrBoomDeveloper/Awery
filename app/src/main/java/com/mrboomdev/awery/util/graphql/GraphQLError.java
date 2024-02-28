@@ -1,8 +1,12 @@
 package com.mrboomdev.awery.util.graphql;
 
 import androidx.annotation.NonNull;
+
+import java.util.Arrays;
+
 public class GraphQLError {
 	public Location[] locations;
+	public String[] messages;
 	public String message;
 	public int status;
 
@@ -15,7 +19,7 @@ public class GraphQLError {
 	public String toString() {
 		var builder = new StringBuilder()
 				.append("{ ")
-				.append(message)
+				.append(messages != null ? Arrays.toString(messages) : message)
 				.append(", status: ")
 				.append(status);
 

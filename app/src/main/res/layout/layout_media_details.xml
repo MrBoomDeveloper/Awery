@@ -20,17 +20,41 @@
         tools:text="@tools:sample/lorem/random" />
 
     <TextView
+        android:id="@+id/general_meta"
+        android:layout_width="0dp"
+        tools:text="24 Episodes • 1 h 13 m Duration • 2021 • Japan"
+        android:fontFamily="sans-serif"
+        android:layout_marginTop="6dp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/play"
+        app:layout_constraintTop_toBottomOf="@id/general_meta"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/watch"
+        android:paddingRight="32dp"
+        app:icon="@drawable/ic_round_play_arrow_24"
+        app:iconSize="26dp"/>
+
+    <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="sans-serif"
         android:lineSpacingExtra="8sp"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:textIsSelectable="true"
         app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintRight_toRightOf="@id/title"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/play"
         tools:text="Hello everybody, my name is Markiplier and welcome to another episode of the SPAGETTI." />
 
     <TextView

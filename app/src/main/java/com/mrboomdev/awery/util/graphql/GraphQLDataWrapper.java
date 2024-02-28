@@ -6,6 +6,7 @@ import java.util.Map;
 public class GraphQLDataWrapper<T> {
 	private Map<String, T> data;
 	private List<GraphQLError> errors;
+	private GraphQLError error;
 
 	@SuppressWarnings("unchecked")
 	public T get() {
@@ -19,6 +20,10 @@ public class GraphQLDataWrapper<T> {
 	}
 
 	private void checkErrors() {
+		if(error != null) {
+			throw new GraphQLException(error);
+		}
+
 		if(errors != null && !errors.isEmpty()) {
 			if(errors.size() == 1) {
 				throw new GraphQLException(errors.get(0));

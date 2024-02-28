@@ -130,7 +130,7 @@
             android:shadowRadius="1"
             android:alpha=".8"
             android:text="•"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="?attr/colorOnTertiaryContainer"
             android:textSize="15sp"
             tools:ignore="HardcodedText" />
 

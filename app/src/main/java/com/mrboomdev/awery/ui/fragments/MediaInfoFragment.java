@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Html;
@@ -16,10 +17,13 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.util.TranslationUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import ani.awery.databinding.MediaDetailsOverviewLayoutBinding;
 
@@ -67,6 +71,7 @@ public class MediaInfoFragment extends Fragment {
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	public void setMedia(CatalogMedia media) {
 		if(media == null) return;
 		this.media = media;
@@ -85,14 +90,69 @@ public class MediaInfoFragment extends Fragment {
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(binding.banner);
 
-		binding.details.title.setText(media.title);
-		binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
+		binding.details.play.setOnClickListener(v -> {
+			if(requireActivity() instanceof MediaActivity activity) {
+				activity.launchAction("watch");
+			} else {
+				throw new IllegalStateException("Activity is not an instance of MediaActivity!");
+			}
+		});
 
-		for(var tag : media.tags) {
-			var chip = new Chip(requireContext());
-			chip.setText(tag.name);
-			binding.details.tags.addView(chip);
+		binding.details.title.setText(media.title);
+		binding.details.generalMeta.setText(generateGeneralMetaString(media));
+
+		if(media.description != null) {
+			binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
+		} else {
+			binding.details.description.setVisibility(View.GONE);
 		}
+
+		if(media.tags.isEmpty()) {
+			binding.details.tagsTitle.setVisibility(View.GONE);
+			binding.details.tags.setVisibility(View.GONE);
+		} else {
+			for(var tag : media.tags) {
+				var chip = new Chip(requireContext());
+				chip.setText(tag.name);
+				binding.details.tags.addView(chip);
+			}
+		}
+	}
+
+	@NonNull
+	private String generateGeneralMetaString(@NonNull CatalogMedia media) {
+		var builder = new StringBuilder();
+
+		if(media.episodesCount != null) {
+			builder.append(media.episodesCount);
+
+			if(media.episodesCount == 1) builder.append(" Episode");
+			else builder.append(" Episodes");
+		}
+
+		if(media.duration != null) {
+			if(builder.length() > 0) builder.append(" • ");
+
+			if(media.duration < 60) {
+				builder.append(media.duration).append(" min");
+			} else {
+				builder.append((media.duration / 60)).append(" h ").append((media.duration % 60)).append(" min");
+			}
+
+			builder.append(" Duration");
+		}
+
+		if(media.releaseDate != null) {
+			if(builder.length() > 0) builder.append(" • ");
+			builder.append(media.releaseDate.get(Calendar.YEAR));
+		}
+
+		if(media.country != null) {
+			if(builder.length() > 0) builder.append(" • ");
+			builder.append(TranslationUtil.getTranslatedLangName(requireContext(), media.country));
+		}
+
+		return builder.toString();
 	}
 
 	@Nullable

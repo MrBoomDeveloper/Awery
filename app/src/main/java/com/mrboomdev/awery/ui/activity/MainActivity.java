@@ -34,8 +34,10 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ani.awery.R;
-import ani.awery.databinding.LayoutActivityMainBinding;
-import ani.awery.databinding.LayoutSplashScreenBinding;
+import ani.awery.databinding.
+
+		LayoutActivityMainBinding;
+import ani.awery.databinding.ScreenSplashBinding;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 			getSplashScreen().setOnExitAnimationListener(
 					view -> slideFromSplash(view, view::remove));
 		} else {
-			var splash = LayoutSplashScreenBinding.inflate(getLayoutInflater());
+			var splash = ScreenSplashBinding.inflate(getLayoutInflater());
 			binding.getRoot().addView(splash.getRoot());
 			((Animatable)splash.splashImage.getDrawable()).start();
 

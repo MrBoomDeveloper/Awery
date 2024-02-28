@@ -11,7 +11,6 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistSeasonQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
@@ -59,69 +58,69 @@ public class AnimeFragment extends MediaCatalogFragment {
 		setEmptyData(true);
 
 		totalTasks++;
-		AnilistSeasonQuery.getCurrentAnimeSeason().executeQuery(items -> requireActivity().runOnUiThread(() -> {
-			if(currentLoadId != loadId) return;
+		AnilistSearchQuery.builder()
+				.setCurrentSeason()
+				.setIsAdult(false)
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
+				.build().executeQuery(items -> requireActivity().runOnUiThread(() -> {
+					if(currentLoadId != loadId) return;
 
-			pagerAdapter.setItems(items);
-			pagerAdapter.setEnabled(true);
-			getHeaderAdapter().setEnabled(false);
+					pagerAdapter.setItems(items);
+					pagerAdapter.setEnabled(true);
+					getHeaderAdapter().setEnabled(false);
 
-			finishedLoading(currentLoadId, null);
-		})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
-			if(currentLoadId != loadId) return;
-			finishedLoading(currentLoadId, e);
-		}));
+					finishedLoading(currentLoadId, null);
+				})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
+					if(currentLoadId != loadId) return;
+					finishedLoading(currentLoadId, e);
+				}));
 
 		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();
 		categoriesAdapter.setCategories(cats);
 
-		loadCategory("Trending", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.TRENDING_DESC,
-				null, null, false
-		), cats);
+		loadCategory("Trending", currentLoadId, AnilistSearchQuery.builder()
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
+				.setIsAdult(false)
+				.build(), cats);
 
 		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
 			var file = new File(requireContext().getExternalFilesDir(null), "hentai.txt");
 
 			if(file.exists()) {
-				loadCategory("Hentai", currentLoadId, AnilistSearchQuery.search(
-						AnilistMedia.MediaType.ANIME,
-						AnilistQuery.MediaSort.TRENDING_DESC,
-						null, null, true
-				), cats);
+				loadCategory("Hentai", currentLoadId, AnilistSearchQuery.builder()
+						.setType(AnilistMedia.MediaType.ANIME)
+						.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
+						.setIsAdult(true)
+						.build(), cats);
 			}
 		}
 
-		loadCategory("Recent Updates", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.UPDATED_AT_DESC,
-				null, null, false
-		), cats);
+		loadCategory("Popular", currentLoadId, AnilistSearchQuery.builder()
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
+				.setIsAdult(false)
+				.build(), cats);
 
-		loadCategory("Popular", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.POPULARITY_DESC,
-				null, null, false
-		), cats);
+		loadCategory("Movies", currentLoadId, AnilistSearchQuery.builder()
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
+				.setFormat(AnilistMedia.MediaFormat.MOVIE)
+				.setIsAdult(false)
+				.build(), cats);
 
-		loadCategory("Movies", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.TRENDING_DESC,
-				AnilistMedia.MediaFormat.MOVIE, null, false
-		), cats);
+		loadCategory("Most Favorited", currentLoadId, AnilistSearchQuery.builder()
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.FAVOURITES_DESC)
+				.setIsAdult(false)
+				.build(), cats);
 
-		loadCategory("Most Favorite", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.FAVOURITES_DESC,
-				null, null, false
-		), cats);
-
-		loadCategory("The Best Anime", currentLoadId, AnilistSearchQuery.search(
-				AnilistMedia.MediaType.ANIME,
-				AnilistQuery.MediaSort.SCORE_DESC,
-				null, null, false
-		), cats);
+		loadCategory("Top Rated", currentLoadId, AnilistSearchQuery.builder()
+				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.SCORE_DESC)
+				.setIsAdult(false)
+				.build(), cats);
 	}
 
 	private void finishedLoading(int loadId, Throwable t) {

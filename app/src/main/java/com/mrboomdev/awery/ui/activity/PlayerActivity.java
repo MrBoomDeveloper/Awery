@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 
 import ani.awery.R;
-import ani.awery.databinding.LayoutActivityPlayerBinding;
+import ani.awery.databinding.ScreenPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
 	private final int SHOW_UI_AFTER_MILLIS = 200;
@@ -41,7 +41,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			| WindowInsetsCompat.Type.statusBars()
 			| WindowInsetsCompat.Type.navigationBars();
 	private final List<View> buttons = new ArrayList<>();
-	private LayoutActivityPlayerBinding binding;
+	private ScreenPlayerBinding binding;
 	private CallbackUtil.Callback1<Boolean> hideUiRunnable;
 	private Runnable hideUiRunnableWrapper, showUiRunnableFromLeft, showUiRunnableFromRight;
 	private boolean areButtonsClickable, isSliderDragging;
@@ -56,7 +56,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		ThemeManager.apply(this);
 		super.onCreate(savedInstanceState);
 
-		binding = LayoutActivityPlayerBinding.inflate(getLayoutInflater());
+		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 		applyFullscreen();
 

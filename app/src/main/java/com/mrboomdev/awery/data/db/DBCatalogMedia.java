@@ -31,8 +31,6 @@ public class DBCatalogMedia {
 	public String title, banner, description, color, url;
 	public String type;
 	public int id;
-	@ColumnInfo(name = "latest_episode")
-	public int latestEpisode;
 	@ColumnInfo(name = "average_score")
 	public float averageScore;
 	public String tags, genres;
@@ -59,7 +57,6 @@ public class DBCatalogMedia {
 		dbMedia.url = media.url;
 		dbMedia.type = media.type.name();
 		dbMedia.id = media.id;
-		dbMedia.latestEpisode = media.latestEpisode;
 		dbMedia.averageScore = media.averageScore;
 		dbMedia.status = media.status.name();
 
@@ -90,7 +87,6 @@ public class DBCatalogMedia {
 		media.status = CatalogMedia.MediaStatus.valueOf(status);
 		media.type = CatalogMedia.MediaType.valueOf(type);
 		media.id = id;
-		media.latestEpisode = latestEpisode;
 		media.averageScore = averageScore;
 		media.url = url;
 		return media;

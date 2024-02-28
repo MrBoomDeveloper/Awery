@@ -119,7 +119,7 @@
         app:layout_constraintLeft_toRightOf="@id/tags"
         app:layout_constraintTop_toTopOf="@id/tags"
         android:text="•"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="?attr/colorOnTertiaryContainer"
         android:textSize="15sp"
         tools:ignore="HardcodedText" />
 

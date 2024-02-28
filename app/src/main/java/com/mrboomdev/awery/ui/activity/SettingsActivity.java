@@ -23,7 +23,7 @@ import com.squareup.moshi.Moshi;
 import java.io.IOException;
 
 import ani.awery.R;
-import ani.awery.databinding.LayoutActivitySettingsBinding;
+import ani.awery.databinding.ScreenSettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
@@ -70,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 	) {
 		var recyclerAdapter = new SettingsAdapter(item, this);
 
-		var binding = LayoutActivitySettingsBinding.inflate(getLayoutInflater());
+		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
 		binding.recycler.setAdapter(recyclerAdapter);
 

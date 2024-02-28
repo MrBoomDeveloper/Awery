@@ -43,7 +43,7 @@ public class MediaActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		try {
-			var moshi = new Moshi.Builder().build();
+			var moshi = new Moshi.Builder().add(new CatalogMedia.Adapter()).build();
 			var adapter = moshi.adapter(CatalogMedia.class);
 
 			var json = getIntent().getStringExtra("media");
@@ -73,14 +73,6 @@ public class MediaActivity extends AppCompatActivity {
 			return true;
 		});
 
-		navigation.setSelectedItemId(switch(Objects.requireNonNull(getIntent().getStringExtra("action"))) {
-			case "info" -> R.id.info;
-			case "watch" -> R.id.watch;
-			case "comments" -> R.id.comments;
-			case "relations" -> R.id.relations;
-			default -> throw new IllegalArgumentException("Invalid action: " + getIntent().getStringExtra("action"));
-		});
-
 		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
 			if(navigation instanceof NavigationRailView) {
 				navigation.setPadding(insets.left, insets.top, 0, 0);
@@ -89,7 +81,20 @@ public class MediaActivity extends AppCompatActivity {
 			}
 		});
 
+		launchAction(Objects.requireNonNull(getIntent().getStringExtra("action")));
 		setContentView(binding.getRoot());
+	}
+
+	public void launchAction(@NonNull String action) {
+		var navigation = (NavigationBarView) binding.navigation;
+
+		navigation.setSelectedItemId(switch(action) {
+			case "info" -> R.id.info;
+			case "watch" -> R.id.watch;
+			case "comments" -> R.id.comments;
+			case "relations" -> R.id.relations;
+			default -> throw new IllegalArgumentException("Invalid action: " + getIntent().getStringExtra("action"));
+		});
 	}
 
 	private class PagerAdapter extends FragmentStateAdapter {
