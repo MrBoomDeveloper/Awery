@@ -53,6 +53,7 @@ public class AnilistMedia {
 		var media = new CatalogMedia(AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id);
 		media.title = Objects.requireNonNullElse(title.english, title.romaji);
 		media.description = description;
+		media.id = id;
 		media.banner = bannerImage;
 		media.color = coverImage.color;
 		media.duration = duration;

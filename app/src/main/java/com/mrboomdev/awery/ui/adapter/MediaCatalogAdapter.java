@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ObservableList;
 
 import ani.awery.databinding.ItemGridMediaCatalogBinding;
@@ -56,20 +57,11 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		var binding = ItemGridMediaCatalogBinding.inflate(inflater, parent, false);
 		var viewHolder = new ViewHolder(binding);
 
-		binding.getRoot().setOnClickListener(view -> {
-			var item = viewHolder.getItem();
-			if(item != null) item.handleClick(parent.getContext());
-		});
+		binding.getRoot().setOnClickListener(view -> MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 		binding.getRoot().setOnLongClickListener(view -> {
-			var item = viewHolder.getItem();
-
-			if(item != null) {
-				item.handleLongClick(parent.getContext());
-				return true;
-			}
-
-			return false;
+			MediaUtils.openMediaActionsMenu(parent.getContext(), viewHolder.getItem());
+			return true;
 		});
 
 		return viewHolder;

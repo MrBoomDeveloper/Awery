@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -18,13 +19,14 @@ import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.TranslationUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.Calendar;
 
+import ani.awery.R;
 import ani.awery.databinding.MediaDetailsOverviewLayoutBinding;
 
 public class MediaInfoFragment extends Fragment {
@@ -50,8 +52,7 @@ public class MediaInfoFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		if(savedInstanceState != null) {
-			var moshi = new Moshi.Builder().build();
-			var adapter = moshi.adapter(CatalogMedia.class);
+			var adapter = CatalogMedia.getJsonAdapter();
 
 			try {
 				var mediaJson = savedInstanceState.getString("media");
@@ -77,12 +78,10 @@ public class MediaInfoFragment extends Fragment {
 		this.media = media;
 		if(binding == null) return;
 
-		Glide.with(binding.getRoot())
-				.load(media.poster.extraLarge)
-				.transition(DrawableTransitionOptions.withCrossFade())
-				.into(binding.poster);
+		binding.details.title.setText(media.title);
+		binding.details.generalMeta.setText(generateGeneralMetaString(media));
 
-		var banner = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+		var banner = AweryApp.getOrientation() == Configuration.ORIENTATION_LANDSCAPE
 				? media.getBestBanner() : media.getBestPoster();
 
 		Glide.with(binding.getRoot())
@@ -90,16 +89,22 @@ public class MediaInfoFragment extends Fragment {
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(binding.banner);
 
+		Glide.with(binding.getRoot())
+				.load(media.poster.extraLarge)
+				.transition(DrawableTransitionOptions.withCrossFade())
+				.into(binding.poster);
+
 		binding.details.play.setOnClickListener(v -> {
-			if(requireActivity() instanceof MediaActivity activity) {
-				activity.launchAction("watch");
-			} else {
-				throw new IllegalStateException("Activity is not an instance of MediaActivity!");
-			}
+			if(requireActivity() instanceof MediaActivity activity) activity.launchAction("watch");
+			else throw new IllegalStateException("Activity is not an instance of MediaActivity!");
 		});
 
-		binding.details.title.setText(media.title);
-		binding.details.generalMeta.setText(generateGeneralMetaString(media));
+		binding.details.share.setOnClickListener(v -> new ShareCompat.IntentBuilder(requireContext())
+				.setType("text/plain")
+				.setText("https://anilist.co/anime/" + media.id)
+				.startChooser());
+
+		binding.details.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
 		if(media.description != null) {
 			binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
@@ -124,22 +129,23 @@ public class MediaInfoFragment extends Fragment {
 		var builder = new StringBuilder();
 
 		if(media.episodesCount != null) {
-			builder.append(media.episodesCount);
+			builder.append(media.episodesCount).append(" ");
 
-			if(media.episodesCount == 1) builder.append(" Episode");
-			else builder.append(" Episodes");
+			if(media.episodesCount == 1) builder.append(getString(R.string.episode));
+			else builder.append(getString(R.string.episodes));
 		}
 
 		if(media.duration != null) {
 			if(builder.length() > 0) builder.append(" • ");
 
 			if(media.duration < 60) {
-				builder.append(media.duration).append(" min");
+				builder.append(media.duration).append("m ");
 			} else {
-				builder.append((media.duration / 60)).append(" h ").append((media.duration % 60)).append(" min");
+				builder.append((media.duration / 60)).append("h ")
+						.append((media.duration % 60)).append("m ");
 			}
 
-			builder.append(" Duration");
+			builder.append(getString(R.string.duration));
 		}
 
 		if(media.releaseDate != null) {
@@ -149,7 +155,7 @@ public class MediaInfoFragment extends Fragment {
 
 		if(media.country != null) {
 			if(builder.length() > 0) builder.append(" • ");
-			builder.append(TranslationUtil.getTranslatedLangName(requireContext(), media.country));
+			builder.append(TranslationUtil.getTranslatedCountryName(requireContext(), media.country));
 		}
 
 		return builder.toString();
@@ -159,6 +165,11 @@ public class MediaInfoFragment extends Fragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
+
+		if(AweryApp.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
+			ViewUtil.setOnApplyUiInsetsListener(binding.posterWrapper, insets ->
+					ViewUtil.setTopMargin(binding.posterWrapper, insets.top + ViewUtil.dpPx(8)));
+		}
 
 		if(binding.detailsScroller != null) ViewUtil.setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
 			var margin = ViewUtil.dpPx(8);

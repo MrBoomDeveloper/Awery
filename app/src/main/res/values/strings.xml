@@ -10,6 +10,13 @@
     <string name="russian">Russian</string>
     <string name="japanese">Japanese</string>
     <string name="chinese">Chinese</string>
+    <string name="korean">Korean</string>
+
+    <string name="us">USA</string>
+    <string name="russia">Russia</string>
+    <string name="japan">Japan</string>
+    <string name="china">China</string>
+    <string name="korea">Korea</string>
 
     <string name="global_excluded_tags">Globally Exclude Tags</string>
 
@@ -118,7 +125,7 @@
     <string name="source">Source</string>
     <string name="main_studio">Studio</string>
     <string name="genres">Genres</string>
-    <string name="description">Synopsis</string>
+    <string name="description">Description</string>
     <string name="characters">Characters</string>
     <string name="relations">Relations</string>
 
@@ -452,29 +459,33 @@
         <item>Z-A</item>
         <item>What?</item>
     </string-array>
-    <string name="main_role">MAIN</string>
-    <string name="supporting_role">SUPPORTING</string>
+    <string name="main_role">Main</string>
+    <string name="supporting_role">Supporting</string>
 
-    <string name="status_finished">FINISHED</string>
-    <string name="status_releasing">RELEASING</string>
+    <string name="status_finished">Finished</string>
+    <string name="status_releasing">Releasing</string>
     <string name="status_not_yet_released">NOT YET RELEASED</string>
-    <string name="status_cancelled">CANCELLED</string>
-    <string name="status_hiatus">HIATUS</string>
+    <string name="status_cancelled">Cancelled</string>
+    <string name="status_hiatus">Delayed</string>
 
-    <string name="type_adaptation">ADAPTATION</string>
-    <string name="type_parent">PARENT</string>
-    <string name="type_character">CHARACTER</string>
-    <string name="type_summary">SUMMARY</string>
-    <string name="type_alternative">ALTERNATIVE</string>
-    <string name="type_other">OTHER</string>
-    <string name="type_source">SOURCE</string>
-    <string name="type_contains">CONTAINS</string>
+    <string name="type_adaptation">Adaptation</string>
+    <string name="type_parent">Parent</string>
+    <string name="type_character">Character</string>
+    <string name="type_summary">Summary</string>
+    <string name="type_alternative">Alternative</string>
+    <string name="type_other">Other</string>
+    <string name="type_source">Source</string>
+    <string name="type_contains">Contains</string>
 
     <string name="read_on_dantotsu">Read in Awery</string>
     <string name="watch_on_dantotsu">Watch in Awery</string>
     <string name="continue_episode">"Continue : Episode "</string>
     <string name="continue_chapter">"Continue : "</string>
-    <string name="episode">"Episode "</string>
+
+    <string name="episode">Episode</string>
+    <string name="episodes">Episodes</string>
+    <string name="duration">Duration</string>
+
     <string name="episode_num">"Episode %1$s"</string>
     <string name="chapter">"Chapter "</string>
     <string name="chapter_num">"Chapter %1$s"</string>

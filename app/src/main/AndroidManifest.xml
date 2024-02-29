@@ -56,6 +56,7 @@
         </activity>
 
         <activity android:name="com.mrboomdev.awery.ui.activity.PlayerActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:screenOrientation="landscape"
             android:exported="true" />

@@ -11,6 +11,13 @@
     <string name="russian">Русский</string>
     <string name="japanese">Японский</string>
     <string name="chinese">Китайский</string>
+    <string name="korean">Корейский</string>
+
+    <string name="us">США</string>
+    <string name="russia">Россия</string>
+    <string name="japan">Япония</string>
+    <string name="china">Китай</string>
+    <string name="korea">Корея</string>
 
     <string name="content">Контент</string>
     <string name="home">Главная</string>
@@ -398,11 +405,11 @@
     <string name="deleted_from_list">Удалено из Списка</string>
     <string name="no_list_id">No List ID found, reloading…</string>
     <string name="checking_for_update">Ищем обновления</string>
-    <string name="dont_show_again">Don\'t show again for version %1$s</string>
+    <string name="dont_show_again">Больше не показывать для версии %1$s</string>
     <string name="no_update_found">Обновления не найдены</string>
-    <string name="downloading_update">Downloading Update %1$s</string>
-    <string name="permission_required">Please give permission to access Files &amp; Folders from Settings, &amp; Try again.</string>
-    <string name="started_downloading">Started Downloading\n%1$s</string>
+    <string name="downloading_update">Скачиваем Обновление %1$s</string>
+    <string name="permission_required">Пожалуйста, разрешите доступ к хранилищу в настройках устройства.</string>
+    <string name="started_downloading">Начинаем скачивание\n%1$s</string>
     <string name="install_1dm">Пожалуйста, установите 1DM</string>
     <string name="install_adm">Пожалуйста, установите ADM</string>
     <string name="error_getting_image_data">Не удалось получить информацию об изображении</string>
@@ -426,29 +433,33 @@
         <item>Я-А</item>
         <item>Что?</item>
     </string-array>
-    <string name="main_role">ГЛАВНЫЙ</string>
-    <string name="supporting_role">ПОДДЕРЖКА</string>
+    <string name="main_role">Главный</string>
+    <string name="supporting_role">Поддержка</string>
 
-    <string name="status_finished">ЗАВЕРШЕНО</string>
-    <string name="status_releasing">ВЫХОДИТ</string>
+    <string name="status_finished">Завершено</string>
+    <string name="status_releasing">Выходит</string>
     <string name="status_not_yet_released">ЕЩЕ НЕ ВЫШЛО</string>
-    <string name="status_cancelled">ОТМЕНЕНО</string>
-    <string name="status_hiatus">ОТЛОЖЕНО</string>
+    <string name="status_cancelled">Отменено</string>
+    <string name="status_hiatus">Отложено</string>
 
-    <string name="type_adaptation">АДАПТАЦИЯ</string>
+    <string name="type_adaptation">Адаптация</string>
     <string name="type_parent">PARENT</string>
-    <string name="type_character">ПЕРСОНАЖ</string>
+    <string name="type_character">Персонаж</string>
     <string name="type_summary">SUMMARY</string>
     <string name="type_alternative">ALTERNATIVE</string>
-    <string name="type_other">ДРУГОЕ</string>
-    <string name="type_source">ИСТОЧНИК</string>
+    <string name="type_other">Другое</string>
+    <string name="type_source">Источник</string>
     <string name="type_contains">CONTAINS</string>
 
     <string name="read_on_dantotsu">Читать в Awery</string>
     <string name="watch_on_dantotsu">Смотреть в Awery</string>
     <string name="continue_episode">"Продолжить : Эпизод "</string>
     <string name="continue_chapter">"Продолжить : "</string>
-    <string name="episode">"Эпизод "</string>
+
+    <string name="episode">Эпизод</string>
+    <string name="episodes">Эпизодов</string>
+    <string name="duration">Длительность</string>
+
     <string name="episode_num">"Эпизод %1$s"</string>
     <string name="chapter">"Глава "</string>
     <string name="chapter_num">"Глава %1$s"</string>

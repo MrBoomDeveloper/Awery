@@ -2,18 +2,32 @@ package com.mrboomdev.awery.util;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import ani.awery.R;
 
 public class TranslationUtil {
 
-	public static String getTranslatedLangName(Context context, @NonNull String input) {
+	public static String getTranslatedCountryName(Context context, String input) {
+		if(input == null) return null;
+
+		return switch(input.toLowerCase()) {
+			case "us", "usa" -> context.getString(R.string.us);
+			case "china", "cn", "ch", "chinese", "zh" -> context.getString(R.string.china);
+			case "ja", "jp", "japan", "jpn", "jap" -> context.getString(R.string.japan);
+			case "ru", "russia", "rus" -> context.getString(R.string.russia);
+			case "ko", "korea", "kor" -> context.getString(R.string.korea);
+			default -> input;
+		};
+	}
+
+	public static String getTranslatedLangName(Context context, String input) {
+		if(input == null) return null;
+
 		return switch(input.toLowerCase()) {
 			case "en", "eng", "english" -> context.getString(R.string.english);
 			case "zh", "chs", "chinese" -> context.getString(R.string.chinese);
 			case "ja", "jp", "japanese" -> context.getString(R.string.japanese);
 			case "ru", "rus", "russian" -> context.getString(R.string.russian);
+			case "ko", "kor", "korean" -> context.getString(R.string.korean);
 			/*case "de", "deu", "german" -> context.getString(R.string.german);
 			case "ko", "kor", "korean" -> context.getString(R.string.korean);
 			case "fr", "fra", "french" -> context.getString(R.string.french);

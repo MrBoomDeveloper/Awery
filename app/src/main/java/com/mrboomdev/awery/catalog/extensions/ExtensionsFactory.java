@@ -105,7 +105,7 @@ public class ExtensionsFactory {
 
 		try {
 			clazzLoader = new PathClassLoader(app.sourceDir, null, context.getClassLoader());
-		} catch(Exception e) {
+		} catch(Throwable e) {
 			throw new IllegalStateException("Failed to load extension classloader!", e);
 		}
 

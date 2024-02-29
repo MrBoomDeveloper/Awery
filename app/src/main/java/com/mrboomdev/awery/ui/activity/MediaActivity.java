@@ -23,7 +23,6 @@ import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -43,9 +42,7 @@ public class MediaActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		try {
-			var moshi = new Moshi.Builder().add(new CatalogMedia.Adapter()).build();
-			var adapter = moshi.adapter(CatalogMedia.class);
-
+			var adapter = CatalogMedia.getJsonAdapter();
 			var json = getIntent().getStringExtra("media");
 			media = adapter.fromJson(Objects.requireNonNull(json));
 		} catch(IOException e) {

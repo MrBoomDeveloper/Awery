@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -144,6 +145,10 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	public static Activity getActivity(@NonNull View view) {
 		return getActivity(view.getContext());
+	}
+
+	public static int getOrientation() {
+		return Resources.getSystem().getConfiguration().orientation;
 	}
 
 	@Nullable
