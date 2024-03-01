@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Map;
@@ -81,6 +81,26 @@ public class HttpClient {
 
 	public enum Method {
 		GET, POST
+	}
+
+	public interface SimpleHttpCallback extends HttpCallback {
+		void onResult(@Nullable HttpResponse response, @Nullable HttpException exception);
+
+		/**
+		 * Do not override this method, or else the whole idea of this interface will be lost!
+		 */
+		@Override
+		default void onResponse(HttpResponse response) {
+			onResult(response, null);
+		}
+
+		/**
+		 * Do not override this method, or else the whole idea of this interface will be lost!
+		 */
+		@Override
+		default void onError(HttpException exception) {
+			onResult(null, exception);
+		}
 	}
 
 	public interface HttpCallback {

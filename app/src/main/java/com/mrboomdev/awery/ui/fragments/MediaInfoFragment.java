@@ -107,7 +107,8 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
 		if(media.description != null) {
-			binding.details.description.setText(Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim());
+			var html = Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT);
+			binding.details.description.setText(html.toString().trim());
 		} else {
 			binding.details.description.setVisibility(View.GONE);
 		}
