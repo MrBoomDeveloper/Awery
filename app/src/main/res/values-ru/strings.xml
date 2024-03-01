@@ -2,23 +2,18 @@
 <resources>
     <string name="login">Войти</string>
     <string name="logout">Выйти</string>
-
-    <string name="slogan">НОВОЕ Лучшее Аниме &amp; Манга приложение для Android.</string>
-
+    <string name="slogan">Новое Лучшее Приложение для Просмотра Аниме на Android.</string>
     <string name="global_excluded_tags">Глобально Исключить Теги</string>
-
     <string name="english">Английский</string>
     <string name="russian">Русский</string>
     <string name="japanese">Японский</string>
     <string name="chinese">Китайский</string>
     <string name="korean">Корейский</string>
-
     <string name="us">США</string>
     <string name="russia">Россия</string>
     <string name="japan">Япония</string>
     <string name="china">Китай</string>
     <string name="korea">Корея</string>
-
     <string name="content">Контент</string>
     <string name="home">Главная</string>
     <string name="anime">Аниме</string>
@@ -29,13 +24,10 @@
     <string name="watch">Смотреть</string>
     <string name="read">Читать</string>
     <string name="library">Библиотека</string>
-
     <string name="anime_list">Список Аниме</string>
     <string name="manga_list">Список Манги</string>
-
     <string name="no_internet">Нет Подключения к Интернету</string>
     <string name="refresh">Перезагрузить</string>
-
     <string name="search">Поиск</string>
     <string name="search_results">Результаты Поиска</string>
     <string name="sort_by">Сортировать по</string>
@@ -47,18 +39,15 @@
     <string name="trending_manga">Трендовая Манга</string>
     <string name="trending_novel">Трендовые Новеллы</string>
     <string name="popular_manga">Популярная Манга</string>
-
     <string name="username">Никнейм</string>
     <string name="chapters_read">"Прочитано Глав "</string>
     <string name="episodes_watched">"Просмотренно Эпизодов "</string>
     <string name="continue_reading">Продолжить Читать</string>
     <string name="continue_watching">Продолжить Смотреть</string>
     <string name="recommended">Рекомендуется</string>
-
     <string name="get_recommendations">Начните смотреть что-либо, чтобы получить рекосендации</string>
     <string name="empty">Пусто. Просто пусто и все.</string>
     <string name="action_settings">Настройки</string>
-
     <string name="add">Добавить в Список</string>
     <string name="list_editor">Редактор Списка</string>
     <string name="add_fav">Добавить в Избранное</string>
@@ -75,7 +64,6 @@
         <item>Rereading</item>
         <item>All</item>
     </string-array>
-
     <string name="status">СТАТУС</string>
     <string name="progress">ПРОГРЕСС</string>
     <string name="score">РЕЙТИНГ</string>
@@ -84,7 +72,6 @@
     <string name="save">Сохранить</string>
     <string name="delete">Удалить</string>
     <string name="remove">Удалить</string>
-
     <string name="name">Название</string>
     <string name="name_romaji">Name Romaji</string>
     <string name="mean_score">Mean Score</string>
@@ -103,10 +90,8 @@
     <string name="description">Описание</string>
     <string name="characters">Персонажи</string>
     <string name="relations">Связанное</string>
-
     <string name="roles">Роли</string>
     <string name="details">Детали</string>
-
     <string name="play_yt">Смотреть на YouTube</string>
     <string name="eps">Эпизоды</string>
     <string name="ep">Эпизод</string>
@@ -132,7 +117,6 @@
     <string name="ending">Концовка</string>
     <string name="prequel">Прквел</string>
     <string name="sequel">Сиквел</string>
-
     <string name="anilist_settings">Настройки Anilist</string>
     <string name="extension_settings">Расширения</string>
     <string name="downloads">Скачанное</string>
@@ -178,7 +162,6 @@
         <item>Novels? more like NO vels.</item>
         <item>Long Click the logo to check for App Update</item>
     </string-array>
-
     <string-array name="themes">
         <item>Default</item>
         <item>Theme 1</item>
@@ -186,9 +169,7 @@
         <item>Theme 3</item>
         <item> Theme 4</item>
     </string-array>
-
     <string name="comments">Комментарии</string>
-
     <string name="video">Видео</string>
     <string name="video_info">Показать информацию об видео</string>
     <string name="source_info">Показать название источника</string>
@@ -211,13 +192,11 @@
     <string name="sub_color_info"><b>Note:</b> Changing Subtitle formatting only works with Soft-Subbed Sources such as Zoro!</string>
     <string name="sub_font_select">Шрифт Субтитров</string>
     <string name="subtitle_font_size">Размер Субтитров</string>
-
     <string name="auto">Автоматически</string>
     <string name="auto_play_next_episode">Автовоспроизведение следющего эпизода</string>
     <string name="auto_play_next_episode_info">Automatically disables if there is no interaction with player after 1 hour.</string>
     <string name="auto_skip_fillers">Автоматически пропускать Филлеры</string>
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
-
     <string name="update_progress">Обновить Прогресс</string>
     <string name="ask_update_progress_anime">Ask for each Anime \"Individually\"</string>
     <string name="ask_update_progress_manga">Ask for each Manga \"Individually\"</string>
@@ -228,7 +207,6 @@
     <string name="very_bold">very bold of you sar</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
     <string name="watch_complete_percentage_info">The percentage at which your Anilist progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
-
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с момента где остановились</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
@@ -245,7 +223,6 @@
     <string name="picture_in_picture">Picture in Picture</string>
     <string name="always_minimize">Always Minimize</string>
     <string name="always_minimize_info">Requires PiP to be enabled, makes the player behave like Youtube Player but better.\nAlso hides the PiP button.</string>
-
     <string name="app">Приложение</string>
     <string name="immersive_mode">Hide Status Bar</string>
     <string name="immersive_mode_info">Requires App restart to fully apply.</string>
@@ -259,7 +236,6 @@
         <item>Planned Manga</item>
         <item>Рекомендуемое</item>
     </string-array>
-
     <string name="startUpTab">Домашняя страница</string>
     <string name="small_view">Small View in Trending Shows</string>
     <string name="animations">Анимации</string>
@@ -283,7 +259,6 @@
     <string name="layout">Раскладка</string>
     <string name="spaced_pages">Spaced Pages</string>
     <string name="direction">Direction</string>
-
     <string name="general">Общее</string>
     <string name="show_system_bars">Show Status &amp; Navigation Bars</string>
     <string name="auto_detect_webtoon">Auto Detect Webtoon</string>
@@ -364,7 +339,6 @@
     <string name="sort_by_release_date">Сортировать по Дате Релиза</string>
     <string name="crop_borders">Crop Borders</string>
     <string name="note">ЗАМЕТКА</string>
-
     <string name="file_manager_not_found">Couldn\'t find any File Manager to open SD card</string>
     <string name="error_loading_data">Error loading data %1$s</string>
     <string name="long_click_to_check_update">You Long Click the button to check for App Update</string>
@@ -435,13 +409,11 @@
     </string-array>
     <string name="main_role">Главный</string>
     <string name="supporting_role">Поддержка</string>
-
     <string name="status_finished">Завершено</string>
     <string name="status_releasing">Выходит</string>
     <string name="status_not_yet_released">ЕЩЕ НЕ ВЫШЛО</string>
     <string name="status_cancelled">Отменено</string>
     <string name="status_hiatus">Отложено</string>
-
     <string name="type_adaptation">Адаптация</string>
     <string name="type_parent">PARENT</string>
     <string name="type_character">Персонаж</string>
@@ -450,22 +422,18 @@
     <string name="type_other">Другое</string>
     <string name="type_source">Источник</string>
     <string name="type_contains">CONTAINS</string>
-
     <string name="read_on_dantotsu">Читать в Awery</string>
     <string name="watch_on_dantotsu">Смотреть в Awery</string>
     <string name="continue_episode">"Продолжить : Эпизод "</string>
     <string name="continue_chapter">"Продолжить : "</string>
-
     <string name="episode">Эпизод</string>
     <string name="episodes">Эпизодов</string>
     <string name="duration">Длительность</string>
-
     <string name="episode_num">"Эпизод %1$s"</string>
     <string name="chapter">"Глава "</string>
     <string name="chapter_num">"Глава %1$s"</string>
     <string name="just_released">- только что вышло!</string>
     <string name="checking_subscriptions_title">Проверяем Подписки</string>
-
     <string name="speed">Скорость</string>
     <string name="auto_update">Автоматически обновлять прогресс для %1$s?</string>
     <string name="continue_from">Продолжить с %1$s?</string>
@@ -478,16 +446,14 @@
     <string name="outline_sub_color">Цвет Контура Субтитров</string>
     <string name="outline_type">Тип Контура</string>
     <string name="subtitle_font">Шрифт Субтитров</string>
-
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="close">Закрыть</string>
-    <string name= "no_chapter">Нет глав</string>
-    <string name= "content_18">Включите 18+ Контент в Настройках Аккаунта Anilist</string>
-    <string name= "available">Доступно</string>
+    <string name="no_chapter">Нет глав</string>
+    <string name="content_18">Включите 18+ Контент в Настройках Аккаунта Anilist</string>
+    <string name="available">Доступно</string>
     <string name="lets_go">Поехали</string>
     <string name="cope">Cope</string>
-
     <string name="watched_num">"Просмотренно "</string>
     <string name="read_num">"Прочитанно "</string>
     <string name="episodes_out_of">" из "</string>
@@ -495,38 +461,31 @@
     <string name="episodes_total_of">"Всего "</string>
     <string name="chapters_total_of">"Всего "</string>
     <string name="no_description_available">"Описание не доступно"</string>
-
     <string-array name="manga_directions">
         <item>Top to Bottom</item>
         <item>Right to Left</item>
         <item>Bottom to Top</item>
         <item>Left to Right</item>
     </string-array>
-
     <string-array name="manga_layouts">
         <item>Paged</item>
         <item>Continuous Paged</item>
         <item>Continuous</item>
     </string-array>
-
     <string name="selected">Выбранно</string>
     <string name="found">Найдено</string>
-
     <string name="age">"__Возраст:__ "</string>
     <string name="birthday">\n"__День Рождения:__ "</string>
     <string name="gender">\n"__Гендер:__ "</string>"
 
     <string name="male">Мужчина</string>
     <string name="female">Женщина</string>
-
     <string name="subscribed_notification">Subscribed! Receiving notifications, when new episodes are released on %1$s.</string>
-
     <string name="unsubscribed_notification">Unsubscribed, you will not receive any notifications.</string>
     <string name="episode_plural">Эпизодов</string>
     <string name="episode_singular">Эпизод</string>
     <string name="chapter_singular">Глава</string>
     <string name="chapter_plural">Глав</string>
-
     <string name="filter_format">"Формат : %1$s"</string>
     <string name="filter_sort">"Сортировка : %1$s"</string>
     <string name="filter_exclude">"Не %1$s"</string>
@@ -567,9 +526,7 @@
     <string name="incognito_mode">Режим Инкогнито</string>
     <string name="android12_requires">Требуется Android 12+</string>
     <string name="variant">Вариант</string>
-
     <string name="default_video_quality">Качество видео по умолчанию</string>
-
     <string name="nothing_found">Ничего не найдено</string>
     <string name="tried_all_titles">По данным названиям ничего не удалось найти</string>
 </resources>
