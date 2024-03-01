@@ -143,7 +143,7 @@
             android:alpha=".8"
             android:shadowColor="#000000"
             android:shadowRadius="1"
-            android:text="Ongoing"
+            tools:text="5.8"
             android:textColor="?attr/colorOnTertiaryContainer"
             android:textSize="15sp" />
 
@@ -166,7 +166,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:paddingHorizontal="32dp"
-            android:text="Watch Now"
+            android:text="@string/watch_now"
             app:icon="@drawable/ic_round_play_arrow_24"
             app:iconSize="26dp" />
 

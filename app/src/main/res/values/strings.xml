@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Awery</string>
 
-    <string name="slogan">The NEW Best Anime &amp; Manga app for Android.</string>
+    <string name="slogan">The new Best Anime app for Android.</string>
 
     <string name="login">Login</string>
     <string name="logout">Logout</string>
@@ -26,7 +26,8 @@
     <string name="manga">Manga</string>
     <string name="browse_manga">Browse Manga</string>
     <string name="info">Info</string>
-    <string name="watch">Watch Now</string>
+    <string name="watch">Watch</string>
+    <string name="watch_now">Watch Now</string>
     <string name="read">Read</string>
     <string name="library">Library</string>
 

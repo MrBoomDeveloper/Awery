@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.AweryApp;
@@ -77,6 +78,14 @@ public class MediaActivity extends AppCompatActivity {
 				ViewUtil.setBottomPadding(navigation, insets.bottom, false);
 			}
 		});
+
+		if(binding.navigation instanceof NavigationRailView rail) {
+			var style = com.google.android.material.R.attr.floatingActionButtonSmallSecondaryStyle;
+			var header = new FloatingActionButton(this, null, style);
+			header.setImageResource(R.drawable.ic_round_arrow_back_ios_new_24);
+			header.setOnClickListener(v -> finish());
+			rail.addHeaderView(header);
+		}
 
 		launchAction(Objects.requireNonNull(getIntent().getStringExtra("action")));
 		setContentView(binding.getRoot());

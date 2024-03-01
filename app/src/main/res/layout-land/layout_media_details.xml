@@ -39,7 +39,7 @@
         android:minWidth="175dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="@string/watch"
+        android:text="@string/watch_now"
         android:paddingRight="32dp"
         android:layout_marginRight="2dp"
         app:icon="@drawable/ic_round_play_arrow_24"

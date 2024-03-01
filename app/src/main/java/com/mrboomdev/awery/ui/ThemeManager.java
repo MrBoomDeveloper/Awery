@@ -6,10 +6,7 @@ import android.graphics.Bitmap;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.util.AweryUtil;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
-
-import java.util.Objects;
 
 import ani.awery.R;
 
