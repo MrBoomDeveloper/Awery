@@ -55,12 +55,18 @@ public class DBCatalogMedia {
 		dbMedia.description = media.description;
 		dbMedia.color = media.color;
 		dbMedia.url = media.url;
-		dbMedia.type = media.type.name();
 		dbMedia.id = media.id;
 		dbMedia.averageScore = media.averageScore;
-		dbMedia.status = media.status.name();
 
-		dbMedia.extraLargePoster = media.poster.extraLarge;
+		if(media.type != null) {
+			dbMedia.type = media.type.name();
+		}
+
+		if(media.status != null) {
+			dbMedia.status = media.status.name();
+		}
+
+		dbMedia.extraLargePoster = media.getBestPoster();
 		dbMedia.largePoster = media.poster.large;
 		dbMedia.mediumPoster = media.poster.medium;
 
@@ -75,7 +81,6 @@ public class DBCatalogMedia {
 		}
 
 		dbMedia.titles = String.join(";;;", media.titles);
-
 		return dbMedia;
 	}
 

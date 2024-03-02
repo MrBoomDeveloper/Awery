@@ -1,16 +1,32 @@
 package com.mrboomdev.awery.catalog.template;
 
 public class CatalogTag {
-	public String name, id, description;
-	public boolean isAdult, isSpoiler;
+	private String name, id, description;
+	private boolean isAdult, isSpoiler;
 
-	public CatalogTag(String name, String description, boolean isAdult) {
+	public void setName(String name) {
 		this.name = name;
-		this.description = description;
-		this.isAdult = isAdult;
 	}
 
-	public CatalogTag() {}
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setIsAdult(boolean adult) {
+		isAdult = adult;
+	}
+
+	public void setIsSpoiler(boolean spoiler) {
+		isSpoiler = spoiler;
+	}
 
 	public String getName() {
 		return name;
@@ -22,5 +38,9 @@ public class CatalogTag {
 
 	public boolean isAdult() {
 		return isAdult;
+	}
+
+	public boolean isSpoiler() {
+		return isSpoiler;
 	}
 }

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -99,11 +98,7 @@ public class MediaInfoFragment extends Fragment {
 			else throw new IllegalStateException("Activity is not an instance of MediaActivity!");
 		});
 
-		binding.details.share.setOnClickListener(v -> new ShareCompat.IntentBuilder(requireContext())
-				.setType("text/plain")
-				.setText("https://anilist.co/anime/" + media.id)
-				.startChooser());
-
+		binding.details.share.setOnClickListener(v -> MediaUtils.shareMedia(requireContext(), media));
 		binding.details.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
 		if(media.description != null) {
@@ -119,7 +114,7 @@ public class MediaInfoFragment extends Fragment {
 		} else {
 			for(var tag : media.tags) {
 				var chip = new Chip(requireContext());
-				chip.setText(tag.name);
+				chip.setText(tag.getName());
 				binding.details.tags.addView(chip);
 			}
 		}

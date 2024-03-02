@@ -18,6 +18,7 @@ public class AwerySettings {
 	private SharedPreferences.Editor editor;
 
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
+	@Deprecated
 	public static final String THEME_CUSTOM = "settings_theme_custom";
 	public static final String THEME_PALLET = "settings_theme_pallet";
 	public static final String THEME_USE_OLDED = "settings_theme_amoled";

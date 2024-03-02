@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -149,6 +150,10 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	public static int getOrientation() {
 		return Resources.getSystem().getConfiguration().orientation;
+	}
+
+	public static Configuration getConfiguration() {
+		return getAnyContext().getResources().getConfiguration();
 	}
 
 	@Nullable

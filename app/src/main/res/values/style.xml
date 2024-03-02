@@ -7,13 +7,26 @@
         <item name="android:padding">2sp</item>
     </style>
 
-    <style name="AppTheme.Amoled" parent="">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <!-- set colorSurface to black -->
-        <item name="colorSurface">@color/darkest_Black</item>
+    <style name="Sheet" parent="ThemeOverlay.Material3.BottomSheetDialog" />
+
+    <style name="AmoledSheet" parent="ThemeOverlay.Material3.DayNight.BottomSheetDialog">
+        <item name="colorSurfaceContainerLow">#000000</item>
     </style>
 
+    <style name="AppTheme.Amoled" parent="">
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
+    </style>
 
+    <style name="SheetAction" parent="Widget.Material3.Button.TextButton">
+        <item name="android:gravity">center_vertical|left</item>
+        <item name="iconSize">28dp</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="iconTint">?colorOnSurface</item>
+        <item name="iconPadding">24dp</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+    </style>
 
     <style name="Suffix">
         <item name="android:height">54dp</item>
@@ -37,15 +50,18 @@
         <item name="background">@id/bg</item>
         <item name="cornerFamily">rounded</item>
     </style>
+
     <style name="roundedImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
     </style>
+
     <style name="MySnackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:background">@drawable/round_corner</item>
     </style>
+
     <string name="MySnackBarText" parent="Widget.MaterialComponents.Snackbar.TextView" translatable="false">
         <item name="android:textColor">@color/bg_opp</item>
     </string>
@@ -68,10 +84,9 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:textSize">14sp</item>
-</style>
+    </style>
 
     <style name="BottomNavBar" parent="">
-        <!-- set background color  to transparent -->
         <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>

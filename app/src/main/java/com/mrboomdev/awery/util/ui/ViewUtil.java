@@ -67,6 +67,10 @@ public class ViewUtil {
 		view.setPadding(padding, padding, padding, padding);
 	}
 
+	public static void setPadding(@NonNull View view, int horizontal, int vertical) {
+		view.setPadding(horizontal, vertical, horizontal, vertical);
+	}
+
 	public static void setTopMargin(ViewGroup.LayoutParams params, int margin) {
 		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
 			marginLayoutParams.topMargin = margin;

@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.catalog.template.CatalogTag;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ObservableArrayList;
 import com.mrboomdev.awery.util.ObservableList;
@@ -166,7 +167,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 					) : (
 							item.tags.stream()
 									.filter(tag -> tagsCount.getAndAdd(1) < 3)
-									.map(tag -> tag.name)
+									.map(CatalogTag::getName)
 									.collect(Collectors.joining(", ")));
 
 			binding.tags.setText(formattedTags);
