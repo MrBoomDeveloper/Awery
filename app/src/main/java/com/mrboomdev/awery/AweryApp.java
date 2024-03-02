@@ -22,7 +22,10 @@ import androidx.room.Room;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.support.js.JsManager;
+import com.mrboomdev.awery.catalog.template.CatalogList;
 import com.mrboomdev.awery.data.db.AweryDB;
+import com.mrboomdev.awery.data.db.DBCatalogList;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -142,6 +145,26 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		ExtensionsFactory.init(this);
 		Anilist.INSTANCE.getSavedToken(this);
 		db = Room.databaseBuilder(this, AweryDB.class, "db").build();
+
+		var settings = AwerySettings.getInstance(this);
+		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
+			new Thread(() -> {
+				var lists = List.of(
+						DBCatalogList.fromCatalogList(new CatalogList("Currently watching", "1")),
+						DBCatalogList.fromCatalogList(new CatalogList("Plan to watch", "2")),
+						DBCatalogList.fromCatalogList(new CatalogList("Delayed", "3")),
+						DBCatalogList.fromCatalogList(new CatalogList("Completed", "4")),
+						DBCatalogList.fromCatalogList(new CatalogList("Dropped", "5")),
+						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6"))
+				);
+
+				var array = lists.toArray(new DBCatalogList[0]);
+				db.getListDao().insert(array);
+
+				settings.setInt(AwerySettings.LAST_OPENED_VERSION, 1);
+				settings.saveSync();
+			}).start();
+		}
 	}
 
 	public static Activity getActivity(@NonNull View view) {

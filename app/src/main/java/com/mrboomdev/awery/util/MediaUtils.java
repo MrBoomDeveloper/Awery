@@ -4,29 +4,30 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ShareCompat;
-import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.catalog.template.CatalogList;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.util.ui.SingleViewAdapter;
+import com.mrboomdev.awery.util.ui.DialogBuilder;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import ani.awery.R;
 import ani.awery.databinding.PopupMediaActionsBinding;
+import ani.awery.databinding.PopupMediaBookmarkBinding;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -90,61 +91,176 @@ public class MediaUtils {
 				.startChooser();
 	}
 
+	public static void requestCreateNewList(Context context, OnListCreatedListener callback) {
+		new DialogBuilder(context)
+				.setTitle("Create new list")
+				.addInputField(1, "List name")
+				.setPositiveButton("Create", dialog -> {
+					var input = dialog.getField(1, DialogBuilder.InputField.class);
+					var text = input.getText();
+
+					if(text.isBlank()) {
+						input.setError("List name cannot be empty");
+						return;
+					}
+
+					new Thread(() -> {
+						try {
+							var listsDao = AweryApp.getDatabase().getListDao();
+							var list = new CatalogList(text);
+							listsDao.insert(DBCatalogList.fromCatalogList(list));
+
+							AweryApp.runOnUiThread(() -> callback.onListCreated(list));
+						} catch(Exception e) {
+							AweryApp.toast("Failed to create list");
+							e.printStackTrace();
+						}
+					}).start();
+
+					dialog.dismiss();
+				})
+				.setCancelButton("Cancel", DialogBuilder::dismiss)
+				.show();
+
+
+		/*var dialog = new AlertDialog.Builder(context);
+		var hint = "List name";
+
+		var inputLayout = new TextInputLayout(dialog.getContext());
+		inputLayout.setHint(hint);
+		var input = new TextInputEditText(dialog.getContext());
+		inputLayout.addView(input);
+
+		dialog.setTitle("Create new list")
+				.setView(inputLayout)
+				.setPositiveButton("Create", (dialog1, which) -> {
+					var text = input.getText();
+
+					if(text == null || text.toString().isBlank()) {
+						inputLayout.setError("List name cannot be empty");
+						return;
+					}
+
+					new Thread(() -> {
+						try {
+							var listsDao = AweryApp.getDatabase().getListDao();
+							var list = new CatalogList(text.toString());
+							listsDao.insert(DBCatalogList.fromCatalogList(list));
+
+							AweryApp.runOnUiThread(() -> callback.onListCreated(list));
+						} catch(Exception e) {
+							AweryApp.toast("Failed to create list");
+							e.printStackTrace();
+						}
+					}).start();
+
+					dialog1.dismiss();
+				})
+				.setNegativeButton("Cancel", (dialog1, which) -> dialog1.dismiss())
+				.show();*/
+	}
+
+	public static void requestDeleteList(Context context, CatalogList list) {
+		new MaterialAlertDialogBuilder(context)
+				.setTitle("Delete list")
+				.setMessage("Are you sure you want to delete this list?")
+				.setPositiveButton("Delete", (dialog1, which) -> {
+					dialog1.dismiss();
+
+					// TODO
+				})
+				.setNegativeButton("Cancel", (dialog1, which) -> {
+					dialog1.dismiss();
+				}).show();
+	}
+
+	public static void requestEditList(Context context, CatalogList list) {
+		new MaterialAlertDialogBuilder(context)
+				.setTitle("Edit list")
+				.setPositiveButton("Edit", (dialog1, which) -> {
+					dialog1.dismiss();
+
+					// TODO
+				})
+				.setNegativeButton("Cancel", (dialog1, which) -> {
+					dialog1.dismiss();
+				}).show();
+	}
+
+	private interface OnListCreatedListener {
+		void onListCreated(CatalogList list);
+	}
+
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
-		final var dialog = new AtomicReference<Dialog>();
-		final var margin = ViewUtil.dpPx(4);
+		new Thread(() -> {
+			var lists = AweryApp.getDatabase().getListDao().getAll();
+			var mediaDao = AweryApp.getDatabase().getMediaDao();
 
-		var actionsView = new LinearLayout(context);
-		actionsView.setLayoutParams(new RecyclerView.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
-		ViewUtil.setPadding(actionsView, ViewUtil.dpPx(16), ViewUtil.dpPx(9));
-		var actionsAdapter = SingleViewAdapter.fromView(actionsView);
+			AweryApp.runOnUiThread(() -> {
+				final var dialog = new AtomicReference<Dialog>();
+				var binding = PopupMediaBookmarkBinding.inflate(LayoutInflater.from(context));
+				var checked = new HashMap<String, Boolean>();
 
-		var saveLayoutParams = new LinearLayout.LayoutParams(0, ViewUtil.WRAP_CONTENT);
-		saveLayoutParams.rightMargin = margin;
-		saveLayoutParams.weight = 1;
+				//TODO: Show this button after the list creation dialog will be finished
+				binding.create.setVisibility(View.GONE);
 
-		var saveButton = new MaterialButton(context);
-		saveButton.setText(R.string.save);
-		actionsView.addView(saveButton, saveLayoutParams);
+				for(var list : lists) {
+					var item = list.toCatalogList();
 
-		saveButton.setOnClickListener(v -> {
-			new Thread(() -> {
-				try {
-					AweryApp.getDatabase().getMediaDao().insert(DBCatalogMedia.fromCatalogMedia(media));
-					AweryApp.toast("Saved successfully!");
-				} catch(IllegalStateException e) {
-					AweryApp.toast("Failed to save!");
-					e.printStackTrace();
+					var checkbox = new MaterialCheckBox(context);
+					checkbox.setText(item.getTitle());
+					binding.lists.addView(checkbox);
+
+					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
+							checked.put(item.getId(), isChecked));
 				}
-			}).start();
 
-			dialog.get().dismiss();
-		});
+				binding.create.setOnClickListener(v -> requestCreateNewList(context, list -> {
+					var checkbox = new MaterialCheckBox(context);
+					checkbox.setText(list.getTitle());
+					binding.lists.addView(checkbox);
 
-		var cancelLayoutParams = new LinearLayout.LayoutParams(0, ViewUtil.WRAP_CONTENT);
-		cancelLayoutParams.leftMargin = margin;
-		cancelLayoutParams.weight = 1;
+					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
+							checked.put(list.getId(), isChecked));
+				}));
 
-		var cancelButton = new MaterialButton(context);
-		cancelButton.setText(R.string.cancel);
-		actionsView.addView(cancelButton, cancelLayoutParams);
-		cancelButton.setOnClickListener(v -> dialog.get().dismiss());
+				binding.save.setOnClickListener(v -> {
+					if(checked.isEmpty()) {
+						dialog.get().dismiss();
+						return;
+					}
 
-		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build(), actionsAdapter);
+					new Thread(() -> {
+						try {
+							for(var entry : checked.entrySet()) {
+								if(!entry.getValue()) continue;
+								media.addToList(entry.getKey());
+							}
 
-		var recycler = new RecyclerView(context);
-		recycler.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
-		recycler.setAdapter(concatAdapter);
+							var dbItem = DBCatalogMedia.fromCatalogMedia(media);
+							mediaDao.insert(dbItem);
 
-		var sheet = new BottomSheetDialog(context);
-		dialog.set(sheet);
+							AweryApp.toast("Saved successfully!");
+						} catch(Exception e) {
+							AweryApp.toast("Failed to save!");
+							e.printStackTrace();
+						}
+					}).start();
 
-		sheet.setContentView(recycler);
-		sheet.getBehavior().setPeekHeight(1000);
-		sheet.show();
+					dialog.get().dismiss();
+				});
 
-		limitDialogSize(sheet.getWindow());
+				binding.cancel.setOnClickListener(v -> dialog.get().dismiss());
+
+				var sheet = new BottomSheetDialog(context);
+				dialog.set(sheet);
+
+				sheet.getBehavior().setPeekHeight(1000);
+				sheet.setContentView(binding.getRoot());
+				sheet.show();
+
+				limitDialogSize(sheet.getWindow());
+			});
+		}).start();
 	}
 }

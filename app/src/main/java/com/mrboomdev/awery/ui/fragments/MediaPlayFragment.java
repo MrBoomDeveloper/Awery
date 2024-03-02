@@ -30,7 +30,7 @@ import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.ui.activity.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
-import com.mrboomdev.awery.util.ErrorUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 import com.mrboomdev.awery.util.ui.CustomArrayAdapter;
 import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -121,7 +121,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			@Override
 			public void onFailure(Throwable throwable) {
 				Context context;
-				var error = new ErrorUtil(throwable);
+				var error = new ExceptionUtil(throwable);
 
 				try {
 					context = requireContext();
@@ -367,7 +367,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				var callback = foundMediaCallback.get();
 				if(callback == null) return;
 
-				if(e != ErrorUtil.ZERO_RESULTS) {
+				if(e != ExceptionUtil.ZERO_RESULTS) {
 					if(autoSelectNextSource()) return;
 					handleException(source, e);
 					return;
@@ -430,7 +430,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		if(source != selectedSource) return;
-		var error = new ErrorUtil(throwable);
+		var error = new ExceptionUtil(throwable);
 
 		if(!error.isGenericError()) {
 			throwable.printStackTrace();
@@ -438,7 +438,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(error.isProgramException()) {
 			sourceStatuses.put(source.getName(), ExtensionStatus.BROKEN_PARSER);
-		} else if(throwable == ErrorUtil.ZERO_RESULTS) {
+		} else if(throwable == ExceptionUtil.ZERO_RESULTS) {
 			sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
 		} else {
 			sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);

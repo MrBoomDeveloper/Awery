@@ -6,7 +6,7 @@ import com.mrboomdev.awery.catalog.template.CatalogCategory;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.util.ErrorUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class ExtensionProvider {
 
 	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
-		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
+		callback.onFailure(ExceptionUtil.NOT_IMPLEMENTED);
 	}
 
 	public record SearchParams(Integer page, String query) {
@@ -49,11 +49,11 @@ public abstract class ExtensionProvider {
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<CatalogEpisode>> callback) {
-		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
+		callback.onFailure(ExceptionUtil.NOT_IMPLEMENTED);
 	}
 
 	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
-		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
+		callback.onFailure(ExceptionUtil.NOT_IMPLEMENTED);
 	}
 
 	public abstract String getName();
@@ -63,7 +63,7 @@ public abstract class ExtensionProvider {
 	}
 
 	public void getCatalogCategories(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
-		callback.onFailure(ErrorUtil.NOT_IMPLEMENTED);
+		callback.onFailure(ExceptionUtil.NOT_IMPLEMENTED);
 	}
 
 	public interface ResponseCallback<T> {

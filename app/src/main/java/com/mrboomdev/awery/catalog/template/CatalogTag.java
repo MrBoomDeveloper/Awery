@@ -4,6 +4,18 @@ public class CatalogTag {
 	private String name, id, description;
 	private boolean isAdult, isSpoiler;
 
+	public CatalogTag(String name) {
+		this.name = name;
+		this.id = name;
+	}
+
+	public CatalogTag() {}
+
+	public CatalogTag(String name, String id) {
+		this.name = name;
+		this.id = id;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}

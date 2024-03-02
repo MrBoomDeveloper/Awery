@@ -136,7 +136,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 			{
 				Page(page: 1, perPage: 20) {
 					media(__PARAMS__) {
-						type format duration
+						format duration
 						countryOfOrigin
 						id description bannerImage status
 						genres averageScore episodes

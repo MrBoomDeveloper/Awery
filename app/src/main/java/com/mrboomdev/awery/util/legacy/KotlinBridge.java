@@ -1,4 +1,4 @@
-package com.mrboomdev.awery;
+package com.mrboomdev.awery.util.legacy;
 
 import androidx.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.mrboomdev.awery
+package com.mrboomdev.awery.util.legacy
 
 import ani.awery.client
 import com.lagradost.nicehttp.NiceResponse

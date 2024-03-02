@@ -2,6 +2,9 @@ package com.mrboomdev.awery.util;
 
 import androidx.annotation.NonNull;
 
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 import java.util.Map;
 
 public class StringUtil {
@@ -28,6 +31,22 @@ public class StringUtil {
 		}
 
 		return paramsString.toString();
+	}
+
+	@NonNull
+	public static String listToUniqueString(@NonNull Iterable<String> iterable) {
+		var builder = new StringBuilder(";;;");
+
+		for(var string : iterable) {
+			builder.append(string).append(";;;");
+		}
+
+		return builder.toString();
+	}
+
+	@NonNull
+	public static @Unmodifiable List<String> uniqueStringToList(@NonNull String string) {
+		return List.of(string.substring(3, string.length() - 3).split(";;;"));
 	}
 
 	@NonNull

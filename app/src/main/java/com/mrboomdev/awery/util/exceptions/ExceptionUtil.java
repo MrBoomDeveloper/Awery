@@ -1,11 +1,9 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.exceptions;
 
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -18,12 +16,12 @@ import javax.net.ssl.SSLHandshakeException;
 import eu.kanade.tachiyomi.network.HttpException;
 import kotlinx.serialization.json.internal.JsonDecodingException;
 
-public class ErrorUtil {
+public class ExceptionUtil {
 	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
 	public static final IllegalStateException ZERO_RESULTS = new IllegalStateException("Zero results were found!");
 	private final Throwable t;
 
-	public ErrorUtil(Throwable t) {
+	public ExceptionUtil(Throwable t) {
 		this.t = t;
 	}
 

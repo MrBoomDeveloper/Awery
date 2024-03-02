@@ -2,7 +2,7 @@ package com.mrboomdev.awery.catalog.template;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.KotlinBridge;
+import com.mrboomdev.awery.util.legacy.KotlinBridge;
 
 import java.util.HashMap;
 import java.util.Map;

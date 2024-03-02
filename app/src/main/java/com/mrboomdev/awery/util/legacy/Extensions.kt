@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util
+package com.mrboomdev.awery.util.legacy
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint

@@ -1,6 +1,6 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.data;
 
-public class AweryUtil {
+public class Constants {
 
 	public static boolean alwaysTrue() {
 		return true;

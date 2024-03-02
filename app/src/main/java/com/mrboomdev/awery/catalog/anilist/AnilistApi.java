@@ -1,11 +1,8 @@
 package com.mrboomdev.awery.catalog.anilist;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.KotlinBridge;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.util.HttpClient;
 import com.squareup.moshi.Moshi;
@@ -13,9 +10,7 @@ import com.squareup.moshi.Types;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-import ani.awery.App;
 import ani.awery.R;
 import ani.awery.connections.anilist.Anilist;
 

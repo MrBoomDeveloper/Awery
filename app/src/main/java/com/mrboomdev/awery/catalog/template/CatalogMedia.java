@@ -32,13 +32,13 @@ public class CatalogMedia {
 	public List<String> titles = new ArrayList<>();
 	public String title, banner, description, color, url, country;
 	public MediaType type;
-	public ImageVersions poster;
+	public ImageVersions poster = new ImageVersions();
 	public Calendar releaseDate;
 	public int id;
 	public Integer duration, episodesCount;
 	public Float averageScore;
 	public List<CatalogTag> tags;
-	public List<String> genres;
+	public List<String> genres, trackers, lists;
 	public MediaStatus status;
 	@Json(ignore = true)
 	public Drawable cachedBanner;
@@ -63,6 +63,11 @@ public class CatalogMedia {
 		return getBestPoster();
 	}
 
+	public void addToList(String list) {
+		if(lists == null) lists = new ArrayList<>();
+		lists.add(list);
+	}
+
 	public String getBestPoster() {
 		if(poster.extraLarge != null) return poster.extraLarge;
 		if(poster.large != null) return poster.large;
@@ -71,7 +76,6 @@ public class CatalogMedia {
 	}
 
 	public void setPoster(String poster) {
-		this.poster = new ImageVersions();
 		this.poster.extraLarge = poster;
 		this.poster.large = poster;
 		this.poster.medium = poster;

@@ -8,8 +8,8 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.util.CoroutineUtil;
-import com.mrboomdev.awery.util.ErrorUtil;
+import com.mrboomdev.awery.util.legacy.CoroutineUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(episodes == null || episodes.isEmpty()) {
-				callback.onFailure(ErrorUtil.ZERO_RESULTS);
+				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
 				return;
 			}
 
@@ -83,7 +83,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(videos == null || videos.isEmpty()) {
-				callback.onFailure(ErrorUtil.ZERO_RESULTS);
+				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
 				return;
 			}
 
@@ -127,7 +127,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			var animes = Objects.requireNonNull(pag).getAnimes();
 
 			if(animes.isEmpty()) {
-				callback.onFailure(ErrorUtil.ZERO_RESULTS);
+				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
 				return;
 			}
 

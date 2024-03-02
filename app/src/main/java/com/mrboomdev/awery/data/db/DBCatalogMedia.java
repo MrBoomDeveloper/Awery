@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogTag;
+import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;
 
@@ -27,7 +28,7 @@ public class DBCatalogMedia {
 	@NonNull
 	public String globalId;
 
-	public String titles;
+	public String titles, lists, trackers;
 	public String title, banner, description, color, url;
 	public String type;
 	public int id;
@@ -66,21 +67,29 @@ public class DBCatalogMedia {
 			dbMedia.status = media.status.name();
 		}
 
+		if(media.trackers != null) {
+			dbMedia.trackers = StringUtil.listToUniqueString(media.trackers);
+		}
+
+		if(media.lists != null) {
+			dbMedia.lists = StringUtil.listToUniqueString(media.lists);
+		}
+
 		dbMedia.extraLargePoster = media.getBestPoster();
 		dbMedia.largePoster = media.poster.large;
 		dbMedia.mediumPoster = media.poster.medium;
 
 		if(media.genres != null) {
-			dbMedia.genres = String.join(";;;", media.genres);
+			dbMedia.genres = StringUtil.listToUniqueString(media.genres);
 		}
 
 		if(media.tags != null) {
-			dbMedia.tags = media.tags.stream()
+			dbMedia.tags = ";;;" + media.tags.stream()
 					.map(CatalogTag::getName)
-					.collect(Collectors.joining(";;;"));
+					.collect(Collectors.joining(";;;")) + ";;;";
 		}
 
-		dbMedia.titles = String.join(";;;", media.titles);
+		dbMedia.titles = StringUtil.listToUniqueString(media.titles);
 		return dbMedia;
 	}
 
@@ -94,6 +103,22 @@ public class DBCatalogMedia {
 		media.id = id;
 		media.averageScore = averageScore;
 		media.url = url;
+
+		media.poster.extraLarge = extraLargePoster;
+		media.poster.large = largePoster;
+		media.poster.medium = mediumPoster;
+
+		if(trackers != null) media.trackers = StringUtil.uniqueStringToList(trackers);
+		if(lists != null) media.lists = StringUtil.uniqueStringToList(lists);
+		if(genres != null) media.genres = StringUtil.uniqueStringToList(genres);
+		if(titles != null) media.titles = StringUtil.uniqueStringToList(titles);
+
+		if(tags != null) {
+			media.tags = StringUtil.uniqueStringToList(tags)
+					.stream().map(CatalogTag::new)
+					.collect(Collectors.toList());
+		}
+
 		return media;
 	}
 }

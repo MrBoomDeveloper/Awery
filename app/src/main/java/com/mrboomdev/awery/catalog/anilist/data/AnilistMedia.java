@@ -16,7 +16,6 @@ public class AnilistMedia {
 	public String description, bannerImage, countryOfOrigin;
 	public CoverImage coverImage;
 	public MediaTitle title;
-	public MediaType type;
 	public MediaFormat format;
 	public Integer id, duration, episodes, averageScore;
 	public MediaDate startDate;
@@ -87,11 +86,9 @@ public class AnilistMedia {
 			default -> CatalogMedia.MediaStatus.COMING_SOON;
 		};
 
-		var posterVersions = new CatalogMedia.ImageVersions();
-		posterVersions.medium = coverImage.medium;
-		posterVersions.large = coverImage.large;
-		posterVersions.extraLarge = coverImage.extraLarge;
-		media.poster = posterVersions;
+		media.poster.medium = coverImage.medium;
+		media.poster.large = coverImage.large;
+		media.poster.extraLarge = coverImage.extraLarge;
 
 		return media;
 	}
