@@ -194,6 +194,7 @@ public class MediaUtils {
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
 		new Thread(() -> {
 			var lists = AweryApp.getDatabase().getListDao().getAll();
+			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();
 
 			AweryApp.runOnUiThread(() -> {
@@ -210,6 +211,10 @@ public class MediaUtils {
 					var checkbox = new MaterialCheckBox(context);
 					checkbox.setText(item.getTitle());
 					binding.lists.addView(checkbox);
+
+					if(current != null && current.lists.contains(item.getId())) {
+						checkbox.setChecked(true);
+					}
 
 					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
 							checked.put(item.getId(), isChecked));
@@ -232,6 +237,8 @@ public class MediaUtils {
 
 					new Thread(() -> {
 						try {
+							media.clearBookmarks();
+
 							for(var entry : checked.entrySet()) {
 								if(!entry.getValue()) continue;
 								media.addToList(entry.getKey());

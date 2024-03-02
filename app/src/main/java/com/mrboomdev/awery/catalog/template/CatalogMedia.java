@@ -63,6 +63,11 @@ public class CatalogMedia {
 		return getBestPoster();
 	}
 
+	public void clearBookmarks() {
+		if(lists == null) return;
+		lists.clear();
+	}
+
 	public void addToList(String list) {
 		if(lists == null) lists = new ArrayList<>();
 		lists.add(list);

@@ -5,6 +5,29 @@
         <attr name="outlineWidth" format="float" />
     </declare-styleable>
 
+    <attr name="expandableTextView" format="reference" />
+
+    <declare-styleable name="ExpandableTextView">
+        <!-- Number of lines to show -->
+        <attr name="collapsedLines" format="integer" />
+
+        <!-- Animation duration in milliseconds -->
+        <attr name="animDuration" format="integer" />
+
+        <attr name="readMoreText" format="string" />
+        <attr name="readLessText" format="string" />
+        <attr name="foregroundColor" format="color" />
+        <attr name="isUnderlined" format="boolean" />
+        <attr name="textIsExpanded" format="boolean" />
+        <attr name="ellipsizeTextColor" format="color" />
+
+        <attr name="expandType" format="integer">
+            <enum name="EXPAND_TYPE_DEFAULT" value="0" />
+            <enum name="EXPAND_TYPE_LAYOUT" value="1" />
+            <enum name="EXPAND_TYPE_POPUP" value="2" />
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="Xpandable">
         <attr name="isExpanded" format="boolean"/>
     </declare-styleable>

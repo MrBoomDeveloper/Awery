@@ -26,6 +26,9 @@ public interface CatalogMediaDao {
 	@Query("SELECT * FROM media WHERE titles LIKE :query OR description LIKE :query")
 	List<DBCatalogMedia> find(String query);
 
+	@Query("SELECT * FROM media WHERE global_id = :id")
+	DBCatalogMedia get(String id);
+
 	@Query("SELECT * FROM media WHERE lists LIKE :listId")
 	List<DBCatalogMedia> getAllFromList(String listId);
 
