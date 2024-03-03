@@ -3,24 +3,20 @@ package com.mrboomdev.awery.ui.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Objects;
 
-import ani.awery.R;
 import ani.awery.databinding.ItemListSettingBinding;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
@@ -38,7 +34,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setData(SettingsItem data) {
+	public void setData(@NonNull SettingsItem data) {
 		this.data = data;
 		notifyDataSetChanged();
 	}

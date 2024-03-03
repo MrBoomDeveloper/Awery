@@ -2,7 +2,6 @@ package com.mrboomdev.awery.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -22,7 +21,6 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
-import ani.awery.R;
 import ani.awery.databinding.ScreenSettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
@@ -62,7 +60,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		AweryApp.setOnBackPressedListener(this, this::finish);
 	}
 
-	@NonNull
 	private void createView(
 			SettingsItem item,
 			RecyclerView.RecycledViewPool viewPool,
@@ -87,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		var moshi = new Moshi.Builder().add(new SettingsItem.Adapter()).build();
 		var jsonAdapter = moshi.adapter(SettingsItem.class);
 
-		var intent = new Intent(SettingsActivity.this, SettingsActivity.class);
+		var intent = new Intent(this, SettingsActivity.class);
 		intent.putExtra("item", jsonAdapter.toJson(item));
 		startActivity(intent);
 	}

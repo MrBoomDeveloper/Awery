@@ -20,7 +20,9 @@ import ani.awery.R;
 public class SettingsItem {
 	private final String key, title, description, icon;
 	private final SettingsItemType type;
-	private String parentKey, showIf;
+	private String parentKey;
+	@Json(name = "show_if")
+	private String showIf;
 	private final boolean restart;
 	private List<SettingsItem> items;
 	@Json(ignore = true)
@@ -40,6 +42,7 @@ public class SettingsItem {
 		this.title = item.title;
 		this.description = item.description;
 
+		this.showIf = item.showIf;
 		this.booleanValue = item.booleanValue;
 		this.intValue = item.intValue;
 
@@ -47,7 +50,7 @@ public class SettingsItem {
 		this.parent = item.parent;
 	}
 
-	public SettingsItem(String key, String title, String description, String icon, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
+	public SettingsItem(String key, String title, String description, String icon, String showIf, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
 		this.key = key;
 		this.type = type;
 		this.items = items;
@@ -55,10 +58,11 @@ public class SettingsItem {
 		this.icon = icon;
 		this.restart = requireRestart;
 		this.description = description;
+		this.showIf = showIf;
 	}
 
 	public SettingsItem(String key, String title, SettingsItemType type) {
-		this(key, title, null, null, false, type, Collections.emptyList());
+		this(key, title, null, null, null, false, type, Collections.emptyList());
 	}
 
 	public void setAsParentForChildren() {
