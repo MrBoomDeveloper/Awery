@@ -48,7 +48,8 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
 
-        <activity android:name="com.mrboomdev.awery.ui.activity.MainActivity"
+        <activity android:name="com.mrboomdev.awery.ui.activity.SplashActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/Theme.Awery.Splash"
             android:exported="true">
 
@@ -64,6 +65,7 @@
             android:screenOrientation="landscape"
             android:exported="true" />
 
+        <activity android:name="com.mrboomdev.awery.ui.activity.MainActivity" android:exported="false" />
         <activity android:name="com.mrboomdev.awery.ui.activity.MediaActivity" android:exported="false" />
         <activity android:name="com.mrboomdev.awery.ui.activity.ReaderActivity" android:exported="true" />
         <activity android:name="com.mrboomdev.awery.ui.activity.SettingsActivity" android:exported="true" />

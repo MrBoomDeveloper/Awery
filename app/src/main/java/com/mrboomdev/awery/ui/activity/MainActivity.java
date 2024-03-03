@@ -5,6 +5,7 @@ import static ani.awery.FunctionsKt.snackString;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.applySplash(this);
+		ThemeManager.apply(this);
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 

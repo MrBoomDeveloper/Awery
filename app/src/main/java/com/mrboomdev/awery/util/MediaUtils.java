@@ -229,7 +229,10 @@ public class MediaUtils {
 							checked.put(list.getId(), isChecked));
 				}));
 
-				binding.save.setOnClickListener(v -> {
+				var sheet = new BottomSheetDialog(context);
+				dialog.set(sheet);
+
+				sheet.setOnDismissListener(_dialog -> {
 					if(checked.isEmpty()) {
 						dialog.get().dismiss();
 						return;
@@ -246,21 +249,12 @@ public class MediaUtils {
 
 							var dbItem = DBCatalogMedia.fromCatalogMedia(media);
 							mediaDao.insert(dbItem);
-
-							AweryApp.toast("Saved successfully!");
 						} catch(Exception e) {
 							AweryApp.toast("Failed to save!");
 							e.printStackTrace();
 						}
 					}).start();
-
-					dialog.get().dismiss();
 				});
-
-				binding.cancel.setOnClickListener(v -> dialog.get().dismiss());
-
-				var sheet = new BottomSheetDialog(context);
-				dialog.set(sheet);
 
 				sheet.getBehavior().setPeekHeight(1000);
 				sheet.setContentView(binding.getRoot());

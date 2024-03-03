@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.StyleRes;
-import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
@@ -14,6 +13,7 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import ani.awery.R;
 
 public class ThemeManager {
+	private static final Theme DEFAULT_THEME = Theme.PINK;
 
 	public static boolean isAmoled(Context context) {
 		var prefs = AwerySettings.getInstance(context);
@@ -23,35 +23,6 @@ public class ThemeManager {
 	public static boolean isMaterialYou(Context context) {
 		var prefs = AwerySettings.getInstance(context);
 		return prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, DynamicColors.isDynamicColorAvailable());
-	}
-
-	@StyleRes
-	public static int getCurrentTheme(Context context) {
-		var prefs = AwerySettings.getInstance(context);
-
-		boolean useOLED = prefs.getBoolean(AwerySettings.THEME_USE_OLDED);
-		boolean useMaterialYou = prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, DynamicColors.isDynamicColorAvailable());
-		if(useMaterialYou) return R.style.Theme_Awery;
-
-		var savedTheme = prefs.getString(AwerySettings.THEME_PALLET, Theme.PURPLE.name());
-		Theme enumTheme;
-
-		try {
-			enumTheme = Theme.valueOf(savedTheme);
-		} catch(IllegalArgumentException e) {
-			enumTheme = Theme.PURPLE;
-		}
-
-		return switch(enumTheme) {
-			case BLUE -> useOLED ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
-			case GREEN -> useOLED ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
-			case PINK -> useOLED ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
-			case RED -> useOLED ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
-			case LAVENDER -> useOLED ? R.style.Theme_Awery_LavenderOLED : R.style.Theme_Awery_Lavender;
-			case MONOCHROME -> useOLED ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
-			case SAIKOU -> useOLED ? R.style.Theme_Awery_SaikouOLED : R.style.Theme_Awery_Saikou;
-			case PURPLE -> useOLED ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
-		};
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
@@ -66,36 +37,23 @@ public class ThemeManager {
 			return;
 		}
 
-		var savedTheme = prefs.getString(AwerySettings.THEME_PALLET, Theme.PURPLE.name());
+		var savedTheme = prefs.getString(AwerySettings.THEME_PALLET, DEFAULT_THEME.name());
 		Theme enumTheme;
 
 		try {
 			enumTheme = Theme.valueOf(savedTheme);
 		} catch(IllegalArgumentException e) {
-			enumTheme = Theme.PURPLE;
+			enumTheme = DEFAULT_THEME;
+			prefs.setString(AwerySettings.THEME_PALLET, enumTheme.name());
 		}
 
-		var themeToApply = switch(enumTheme) {
-			case BLUE -> useOLED ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
-			case GREEN -> useOLED ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
-			case PINK -> useOLED ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
-			case RED -> useOLED ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
-			case LAVENDER -> useOLED ? R.style.Theme_Awery_LavenderOLED : R.style.Theme_Awery_Lavender;
-			case MONOCHROME -> useOLED ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
-			case SAIKOU -> useOLED ? R.style.Theme_Awery_SaikouOLED : R.style.Theme_Awery_Saikou;
-			case PURPLE -> useOLED ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
-		};
-
-		activity.setTheme(themeToApply);
+		activity.setTheme(useOLED ?
+				enumTheme.getOledRes() :
+				enumTheme.getRes());
 	}
 
 	public static void apply(Activity activity) {
 		apply(activity, null);
-	}
-
-	public static void applySplash(Activity activity) {
-		SplashScreen.installSplashScreen(activity);
-		apply(activity);
 	}
 
 	private static void applyMaterialYou(Activity activity, Bitmap bitmap, boolean useOLED) {
@@ -108,6 +66,30 @@ public class ThemeManager {
 	}
 
 	public enum Theme {
-		PURPLE, BLUE, GREEN, PINK, RED, LAVENDER, MONOCHROME, SAIKOU
+		PURPLE(R.style.Theme_Awery_Purple, R.style.Theme_Awery_PinkOLED),
+		BLUE(R.style.Theme_Awery_Blue, R.style.Theme_Awery_BlueOLED),
+		GREEN(R.style.Theme_Awery_Green, R.style.Theme_Awery_GreenOLED),
+		PINK(R.style.Theme_Awery_Pink, R.style.Theme_Awery_PinkOLED),
+		RED(R.style.Theme_Awery_Red, R.style.Theme_Awery_RedOLED),
+		LAVENDER(R.style.Theme_Awery_Lavender, R.style.Theme_Awery_LavenderOLED),
+		MONOCHROME(R.style.Theme_Awery_Monochrome, R.style.Theme_Awery_MonochromeOLED),
+		SAIKOU(R.style.Theme_Awery_Saikou, R.style.Theme_Awery_SaikouOLED);
+
+		private final int res, oledRes;
+
+		Theme(int res, int oledRes) {
+			this.res = res;
+			this.oledRes = oledRes;
+		}
+
+		@StyleRes
+		public int getOledRes() {
+			return oledRes;
+		}
+
+		@StyleRes
+		public int getRes() {
+			return res;
+		}
 	}
 }
