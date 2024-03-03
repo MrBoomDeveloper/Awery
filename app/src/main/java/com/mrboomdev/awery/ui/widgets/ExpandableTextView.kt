@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.widgets;
+package com.mrboomdev.awery.ui.widgets
 
 import android.animation.*
 import android.annotation.SuppressLint
@@ -64,7 +64,7 @@ class ExpandableTextView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if(event?.action == MotionEvent.ACTION_UP) {
+        if(event?.action == MotionEvent.ACTION_UP && (event.eventTime - event.downTime) < 500) {
             toggleExpandableTextView()
         }
 
