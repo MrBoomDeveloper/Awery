@@ -78,6 +78,10 @@ public class SettingsItem {
 				if(requirement.equals("is_material_you_available")) {
 					return DynamicColors.isDynamicColorAvailable();
 				}
+
+				if(requirement.equals("never")) {
+					return false;
+				}
 			}
 		}
 

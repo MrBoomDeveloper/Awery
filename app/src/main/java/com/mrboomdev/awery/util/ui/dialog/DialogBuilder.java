@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util.ui;
+package com.mrboomdev.awery.util.ui.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

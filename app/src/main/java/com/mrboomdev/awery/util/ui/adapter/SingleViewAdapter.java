@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util.ui;
+package com.mrboomdev.awery.util.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
+
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import org.jetbrains.annotations.Contract;
 

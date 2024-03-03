@@ -9,6 +9,7 @@ import android.util.Log
 import ani.awery.logger
 import ani.awery.parsers.NovelInterface
 import ani.awery.snackString
+import com.mrboomdev.awery.data.Constants
 import dalvik.system.PathClassLoader
 import eu.kanade.tachiyomi.util.lang.Hash
 import java.io.File
@@ -20,6 +21,10 @@ internal object NovelExtensionLoader {
         "a3061edb369278749b8e8de810d440d38e96417bbd67bbdfc5d9d9ed475ce4a5"  //dan's key
 
     fun loadExtensions(context: Context): List<NovelLoadResult> {
+        if(Constants.alwaysTrue()) {
+            return emptyList()
+        }
+
         val installDir = context.getExternalFilesDir(null)?.absolutePath + "/extensions/novel/"
         val results = mutableListOf<NovelLoadResult>()
         //the number of files

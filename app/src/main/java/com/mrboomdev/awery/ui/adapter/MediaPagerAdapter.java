@@ -25,7 +25,7 @@ import com.mrboomdev.awery.catalog.template.CatalogTag;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import com.mrboomdev.awery.util.observable.ObservableList;
-import com.mrboomdev.awery.util.ui.SingleViewAdapter;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;

@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.pm.PackageInfoCompat
+import com.mrboomdev.awery.data.Constants
 import dalvik.system.PathClassLoader
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
@@ -57,6 +58,10 @@ internal object AnimeExtensionLoader {
      * @param context The application context.
      */
     fun loadExtensions(context: Context): List<AnimeLoadResult> {
+        if(Constants.alwaysTrue()) {
+            return emptyList()
+        }
+
         val pkgManager = context.packageManager
 
         val installedPackages = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -11,6 +11,7 @@ import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Entity(tableName = "media")
@@ -147,7 +148,7 @@ public class DBCatalogMedia {
 		media.poster.medium = mediumPoster;
 
 		if(trackers != null) media.trackers = StringUtil.uniqueStringToList(trackers);
-		if(lists != null) media.lists = StringUtil.uniqueStringToList(lists);
+		if(lists != null) media.lists = new ArrayList<>(StringUtil.uniqueStringToList(lists));
 		if(genres != null) media.genres = StringUtil.uniqueStringToList(genres);
 		if(titles != null) media.titles = StringUtil.uniqueStringToList(titles);
 

@@ -1,7 +1,15 @@
 package com.mrboomdev.awery.catalog.template;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
+
 import java.util.List;
-public class CatalogEpisode {
+
+public class CatalogEpisode implements Parcelable {
 	private final String title, banner, description, url;
 	private final float number;
 	private final long releaseDate;
@@ -15,6 +23,31 @@ public class CatalogEpisode {
 		this.description = description;
 		this.releaseDate = releaseDate;
 	}
+
+	protected CatalogEpisode(@NonNull Parcel in) {
+		title = in.readString();
+		banner = in.readString();
+		description = in.readString();
+		url = in.readString();
+		number = in.readFloat();
+		releaseDate = in.readLong();
+	}
+
+	public static final Creator<CatalogEpisode> CREATOR = new Creator<>() {
+		@NonNull
+		@Contract("_ -> new")
+		@Override
+		public CatalogEpisode createFromParcel(Parcel in) {
+			return new CatalogEpisode(in);
+		}
+
+		@NonNull
+		@Contract(value = "_ -> new", pure = true)
+		@Override
+		public CatalogEpisode[] newArray(int size) {
+			return new CatalogEpisode[size];
+		}
+	};
 
 	public void setVideos(List<CatalogVideo> videos) {
 		this.videos = videos;
@@ -46,5 +79,20 @@ public class CatalogEpisode {
 
 	public float getNumber() {
 		return number;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
+		dest.writeString(title);
+		dest.writeString(banner);
+		dest.writeString(description);
+		dest.writeString(url);
+		dest.writeFloat(number);
+		dest.writeLong(releaseDate);
 	}
 }

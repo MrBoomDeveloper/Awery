@@ -27,14 +27,12 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.data.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.ui.activity.PlayerActivity;
+import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
-import com.mrboomdev.awery.util.ui.CustomArrayAdapter;
-import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.squareup.moshi.Moshi;
+import com.mrboomdev.awery.util.ui.adapter.CustomArrayAdapter;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,46 +93,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	@Override
-	public void onEpisodeSelected(@NonNull CatalogEpisode episode) {
-		AweryApp.toast("Loading videos list...", 1);
+	public void onEpisodeSelected(@NonNull CatalogEpisode episode, @NonNull ArrayList<CatalogEpisode> episodes) {
+		PlayerActivity.selectSource(selectedSource);
 
-		selectedSource.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
-			@Override
-			public void onSuccess(List<CatalogVideo> catalogVideos) {
-				var video = catalogVideos.get(0);
-				Context context;
-
-				try {
-					context = requireContext();
-				} catch(IllegalStateException e) {
-					return;
-				}
-
-				var intent = new Intent(context, PlayerActivity.class);
-				intent.putExtra("url", video.getUrl());
-				intent.putExtra("title", episode.getTitle());
-				intent.putExtra("headers", video.getHeaders());
-				startActivity(intent);
-			}
-
-			@Override
-			public void onFailure(Throwable throwable) {
-				Context context;
-				var error = new ExceptionUtil(throwable);
-
-				try {
-					context = requireContext();
-				} catch(IllegalStateException e) {
-					return;
-				}
-
-				if(!error.isGenericError()) {
-					throwable.printStackTrace();
-				}
-
-				AweryApp.toast(error.getTitle(context), 1);
-			}
-		});
+		var intent = new Intent(requireContext(), PlayerActivity.class);
+		intent.putExtra("episode", episode);
+		intent.putParcelableArrayListExtra("episodes", episodes);
+		startActivity(intent);
 	}
 
 	private enum ExtensionStatus {

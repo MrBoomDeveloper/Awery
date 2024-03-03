@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ShareCompat;
@@ -21,8 +19,8 @@ import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
-import com.mrboomdev.awery.util.ui.DialogBuilder;
-import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -76,13 +74,7 @@ public class MediaUtils {
 		sheet.setContentView(binding.getRoot());
 		sheet.show();
 
-		limitDialogSize(sheet.getWindow());
-	}
-
-	private static void limitDialogSize(Window window) {
-		if(AweryApp.getConfiguration().screenWidthDp > 400) {
-			window.setLayout(ViewUtil.dpPx(400), ViewGroup.LayoutParams.MATCH_PARENT);
-		}
+		DialogUtil.limitDialogSize(sheet);
 	}
 
 	public static void shareMedia(Context context, @NonNull CatalogMedia media) {
@@ -263,7 +255,7 @@ public class MediaUtils {
 				sheet.setContentView(binding.getRoot());
 				sheet.show();
 
-				limitDialogSize(sheet.getWindow());
+				DialogUtil.limitDialogSize(sheet);
 			});
 		}).start();
 	}

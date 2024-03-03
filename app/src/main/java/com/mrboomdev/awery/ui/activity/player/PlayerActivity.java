@@ -1,6 +1,5 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity.player;
 
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
 import android.os.Build;
@@ -26,34 +25,41 @@ import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
+import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.CallbackUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import ani.awery.R;
 import ani.awery.databinding.ScreenPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
+	protected static ExtensionProvider source;
 	private static final String ACTION_PAUSE = "pause";
 	private static final String ACTION_PREVIOUS = "previous";
 	private static final String ACTION_NEXT = "next";
-	private final int SHOW_UI_AFTER_MILLIS = 200;
-	private final int UI_INSETS = WindowInsetsCompat.Type.displayCutout()
+	protected final int SHOW_UI_AFTER_MILLIS = 200;
+	protected final int UI_INSETS = WindowInsetsCompat.Type.displayCutout()
 			| WindowInsetsCompat.Type.systemGestures()
 			| WindowInsetsCompat.Type.statusBars()
 			| WindowInsetsCompat.Type.navigationBars();
-	private final List<View> buttons = new ArrayList<>();
-	private ScreenPlayerBinding binding;
-	private CallbackUtil.Callback1<Boolean> hideUiRunnable;
-	private Runnable hideUiRunnableWrapper, showUiRunnableFromLeft, showUiRunnableFromRight;
-	private boolean areButtonsClickable, isSliderDragging;
-	private boolean isVideoPaused, isVideoBuffering = true;
-	private int forwardFastClicks, backwardFastClicks;
-	private ExoPlayer player;
+	protected final List<View> buttons = new ArrayList<>();
+	private final PlayerActivityController controller = new PlayerActivityController(this);
+	protected ScreenPlayerBinding binding;
+	protected CallbackUtil.Callback1<Boolean> hideUiRunnable;
+	protected Runnable hideUiRunnableWrapper, showUiRunnableFromLeft, showUiRunnableFromRight;
+	protected boolean areButtonsClickable, isSliderDragging;
+	protected boolean isVideoPaused, isVideoBuffering = true, didSelectedVideo;
+	protected int forwardFastClicks, backwardFastClicks;
+	protected ArrayList<CatalogEpisode> episodes;
+	protected CatalogEpisode episode;
+	protected ExoPlayer player;
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -69,13 +75,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.aspectRatioFrame.setAspectRatio(16f / 9f);
 		binding.aspectRatioFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
-		var url = getIntent().getStringExtra("url");
-		var item = MediaItem.fromUri(url);
-
 		player = new ExoPlayer.Builder(this).build();
 		player.setVideoTextureView(binding.textureView);
 		player.addListener(this);
-		player.setMediaItem(item);
 
 		binding.title.setText(getIntent().getStringExtra("title"));
 
@@ -90,9 +92,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 				binding.doubleTapBackward.setBackgroundResource(R.drawable.ripple_circle_white);
 				player.seekTo(player.getCurrentPosition() - 10_000);
-				updateTimers();
+				controller.updateTimers();
 			} else {
-				showUiRunnableFromLeft = this::toggleUiVisibility;
+				showUiRunnableFromLeft = controller::toggleUiVisibility;
 				AweryApp.runDelayed(showUiRunnableFromLeft, SHOW_UI_AFTER_MILLIS);
 			}
 
@@ -116,9 +118,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 				binding.doubleTapForward.setBackgroundResource(R.drawable.ripple_circle_white);
 				player.seekTo(player.getCurrentPosition() + 10_000);
-				updateTimers();
+				controller.updateTimers();
 			} else {
-				showUiRunnableFromRight = this::toggleUiVisibility;
+				showUiRunnableFromRight = controller::toggleUiVisibility;
 				AweryApp.runDelayed(showUiRunnableFromRight, SHOW_UI_AFTER_MILLIS);
 			}
 
@@ -137,7 +139,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				isSliderDragging = true;
 
 				player.seekTo(position);
-				updateTimers();
+				controller.updateTimers();
 
 				player.pause();
 			}
@@ -145,7 +147,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			@Override
 			public void onScrubMove(@NonNull TimeBar timeBar, long position) {
 				player.seekTo(position);
-				updateTimers();
+				controller.updateTimers();
 			}
 
 			@Override
@@ -153,7 +155,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				isSliderDragging = false;
 
 				player.seekTo(position);
-				updateTimers();
+				controller.updateTimers();
 
 				if(!isVideoPaused) {
 					player.play();
@@ -169,7 +171,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			if(event.getAction() == MotionEvent.ACTION_MOVE) return true;
 			if(event.getAction() == MotionEvent.ACTION_DOWN) return true;
 
-			toggleUiVisibility();
+			controller.toggleUiVisibility();
 			return true;
 		});
 
@@ -177,7 +179,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			@Override
 			public void run() {
 				if(isDestroyed()) return;
-				updateTimers();
+				controller.updateTimers();
 				AweryApp.runDelayed(this, 1_000);
 			}
 		};
@@ -187,10 +189,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.getRoot().performClick();
 
 		setupButton(binding.exit, this::finish);
+		setupButton(binding.settings, () -> controller.showVideoSelectionDialog(false));
 
 		setupButton(binding.quickSkip, () -> {
 			player.seekTo(player.getCurrentPosition() + 60_000);
-			updateTimers();
+			controller.updateTimers();
 		});
 
 		setupButton(binding.pause, () -> {
@@ -216,7 +219,55 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		});
 
 		registerPip();
-		toggleUiVisibility();
+		loadData();
+		controller.toggleUiVisibility();
+	}
+
+	public static void selectSource(ExtensionProvider source) {
+		PlayerActivity.source = source;
+	}
+
+	public void playVideo(@NonNull CatalogVideo video) {
+		var mediaItem = MediaItem.fromUri(video.getUrl());
+		player.setMediaItem(mediaItem);
+		player.play();
+	}
+
+	private void loadData() {
+		onPlaybackStateChanged(Player.STATE_BUFFERING);
+		var intent = getIntent();
+
+		this.episode = intent.getParcelableExtra("episode");
+		this.episodes = intent.getParcelableArrayListExtra("episodes");
+
+		if(episode != null) {
+			binding.title.setText(episode.getTitle());
+			source.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
+				@Override
+				public void onSuccess(List<CatalogVideo> catalogVideos) {
+					if(isDestroyed()) return;
+
+					episode.setVideos(catalogVideos);
+					controller.showVideoSelectionDialog(true);
+				}
+
+				@Override
+				public void onFailure(Throwable throwable) {
+					if(isDestroyed()) return;
+					var error = new ExceptionUtil(throwable);
+
+					if(!error.isGenericError()) {
+						throwable.printStackTrace();
+					}
+
+					AweryApp.toast(error.getTitle(PlayerActivity.this), 1);
+					finish();
+				}
+			});
+		} else {
+			AweryApp.toast("External videos are not supported yet");
+			finish();
+		}
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
@@ -251,30 +302,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.play();
 	}
 
-	private void toggleUiVisibility() {
-		if(hideUiRunnableWrapper != null) {
-			AweryApp.cancelDelayed(hideUiRunnableWrapper);
-			hideUiRunnable.run(true);
-			setHideUiRunnable(null);
-			return;
-		}
-
-		setButtonsClickability(true);
-		ObjectAnimator.ofFloat(binding.uiOverlay, "alpha", 0, 1).start();
-		ObjectAnimator.ofFloat(binding.darkOverlay, "alpha", 0, .6f).start();
-
-		setHideUiRunnable(isForced -> {
-			if(!isForced && (isVideoPaused || isSliderDragging)) return;
-
-			setButtonsClickability(false);
-			ObjectAnimator.ofFloat(binding.uiOverlay, "alpha", 1, 0).start();
-			ObjectAnimator.ofFloat(binding.darkOverlay, "alpha", .6f, 0).start();
-			setHideUiRunnable(null);
-		});
-
-		AweryApp.runDelayed(hideUiRunnableWrapper, 3_000);
-	}
-
 	@SuppressLint("ClickableViewAccessibility")
 	private void setupButton(@NonNull View view, Runnable clickListener) {
 		buttons.add(view);
@@ -289,7 +316,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
-	private void setButtonsClickability(boolean isClickable) {
+	public void setButtonsClickability(boolean isClickable) {
 		this.areButtonsClickable = isClickable;
 		binding.slider.setEnabled(isClickable);
 
@@ -318,7 +345,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				binding.pause.setVisibility(View.INVISIBLE);
 			}
 
-			case Player.STATE_ENDED -> finish();
+			case Player.STATE_ENDED -> {
+				if(!didSelectedVideo) return;
+				finish();
+			}
 
 			case Player.STATE_IDLE -> {}
 		}
@@ -370,31 +400,12 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+
 		player.stop();
 		player.release();
+
 		player = null;
-	}
-
-	@SuppressLint("SetTextI18n")
-	@OptIn(markerClass = UnstableApi.class)
-	private void updateTimers() {
-		binding.slider.setPosition(player.getCurrentPosition());
-		binding.timer.setText(formatTime(player.getCurrentPosition()) + "/" + formatTime(player.getDuration()));
-	}
-
-	@NonNull
-	private String formatTime(long value) {
-		value /= 1000;
-
-		var hours = (int) value / 3600;
-
-		if(hours >= 1) {
-			return String.format(Locale.ENGLISH, "%02d:%02d:%02d",
-					hours, (int) value / 60, (int) value % 60);
-		}
-
-		return String.format(Locale.ENGLISH, "%02d:%02d",
-				(int) value / 60, (int) value % 60);
+		source = null;
 	}
 
 	private void applyFullscreen() {
@@ -414,7 +425,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		});
 	}
 
-	private void setHideUiRunnable(CallbackUtil.Callback1<Boolean> runnable) {
+	public void setHideUiRunnable(CallbackUtil.Callback1<Boolean> runnable) {
 		hideUiRunnable = runnable;
 
 		hideUiRunnableWrapper = (runnable != null)

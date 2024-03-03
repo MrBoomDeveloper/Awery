@@ -92,6 +92,7 @@ public class AniyomiProvider extends ExtensionProvider {
 						var headers = item.getHeaders();
 
 						return new CatalogVideo(
+								item.getQuality(),
 								item.getVideoUrl(),
 								headers != null ? headers.toString() : ""
 						);

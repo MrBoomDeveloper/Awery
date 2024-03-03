@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util.ui;
+package com.mrboomdev.awery.util.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.view.ViewGroup;

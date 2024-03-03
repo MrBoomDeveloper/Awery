@@ -14,13 +14,12 @@ import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 import ani.awery.databinding.ItemListEpisodeBinding;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
-	private List<CatalogEpisode> items = List.of();
+	private ArrayList<CatalogEpisode> items = new ArrayList<>();
 
 	public MediaPlayEpisodesAdapter() {
 		setHasStableIds(true);
@@ -37,7 +36,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	public interface OnEpisodeSelectedListener {
-		void onEpisodeSelected(@NonNull CatalogEpisode episode);
+		void onEpisodeSelected(@NonNull CatalogEpisode episode, ArrayList<CatalogEpisode> episodes);
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 		binding.container.setOnClickListener(v -> {
 			if(onEpisodeSelectedListener == null) return;
-			onEpisodeSelectedListener.onEpisodeSelected(holder.getItem());
+			onEpisodeSelectedListener.onEpisodeSelected(holder.getItem(), items);
 		});
 
 		return holder;

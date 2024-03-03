@@ -14,7 +14,8 @@
 					"title": "amoled", "icon": "ic_round_brightness_medium_24"
 				}, {
 					"key": "use_source_theme", "type": "boolean",
-					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24"
+					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
+					"show_if": "never"
 				}
 			]
 		}, {
@@ -25,9 +26,8 @@
 					"key": "default_tab", "type": "select",  "title": "startUpTab",
 					"int_value": 1,
 					"items": [
-						{ "key": "anime", "title": "Anime" },
-						{ "key": "home", "title": "Home" },
-						{ "key": "manga", "title": "Manga" }
+						{ "key": "main", "title": "Anime" },
+						{ "key": "library", "title": "Library" }
 					]
 				}
 			]
@@ -37,7 +37,7 @@
 			"items": [
 				{
 					"key": "global_excluded_tags", "type": "select",
-					"icon": "ic_round_block_24"
+					"icon": "ic_round_block_24", "show_if": "never"
 				}
 			]
 		}, {
@@ -46,7 +46,7 @@
 			"items": [
 				{
 					"key": "default_video_quality", "type": "select",  "int_value": 5,
-					"title": "default_video_quality",
+					"title": "default_video_quality", "show_if": "never",
 					"items": [
 						{ "key": "select", "title": "always_ask_video_quality" },
 						{ "key": "144", "title": "144p" },
@@ -62,7 +62,7 @@
 					"key": "subtitles", "type": "screen", "title": "subtitles",
 					"items": [
 						{
-							"key": "size", "type": "int", "title": "subtitles_size"
+							"key": "size", "type": "int", "title": "subtitles_size", "show_if": "never"
 						}
 					]
 				}

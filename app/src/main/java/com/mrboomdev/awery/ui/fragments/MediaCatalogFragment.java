@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 
 import com.mrboomdev.awery.ui.activity.SettingsActivity;
-import com.mrboomdev.awery.util.ui.SingleViewAdapter;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import ani.awery.databinding.LayoutHeaderBinding;

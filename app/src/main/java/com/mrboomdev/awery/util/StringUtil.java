@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class StringUtil {
@@ -39,6 +40,34 @@ public class StringUtil {
 		}
 
 		return paramsString.toString();
+	}
+
+	/**
+	 * Converts long to string in format: 24:00.
+	 */
+	@NonNull
+	public static String formatTimestamp(long value) {
+		if(value < 0) {
+			return "00:00";
+		}
+
+		value /= 1000;
+
+		var hours = (int) value / 3600;
+		var days = hours / 24;
+
+		if(days >= 1) {
+			return String.format(Locale.ENGLISH, "%dd %02d:%02d:%02d",
+					days, hours % 24, (int) value / 60, (int) value % 60);
+		}
+
+		if(hours >= 1) {
+			return String.format(Locale.ENGLISH, "%02d:%02d:%02d",
+					hours, (int) value / 60, (int) value % 60);
+		}
+
+		return String.format(Locale.ENGLISH, "%02d:%02d",
+				(int) value / 60, (int) value % 60);
 	}
 
 	/**

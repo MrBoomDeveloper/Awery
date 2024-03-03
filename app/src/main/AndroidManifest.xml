@@ -59,7 +59,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.mrboomdev.awery.ui.activity.PlayerActivity"
+        <activity android:name="com.mrboomdev.awery.ui.activity.player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:screenOrientation="landscape"
