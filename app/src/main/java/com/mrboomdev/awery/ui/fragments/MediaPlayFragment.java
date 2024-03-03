@@ -74,8 +74,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		super.onCreate(savedInstanceState);
 
 		if(savedInstanceState != null) {
-			var moshi = new Moshi.Builder().build();
-			var adapter = moshi.adapter(CatalogMedia.class);
+			var adapter = CatalogMedia.getJsonAdapter();
 
 			try {
 				var mediaJson = savedInstanceState.getString("media");
