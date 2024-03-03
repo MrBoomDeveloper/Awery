@@ -108,6 +108,7 @@ dependencies {
     implementation "com.github.VipulOG:ebook-reader:0.1.6"
     implementation "androidx.paging:paging-runtime-ktx:3.2.1"
     implementation "com.github.skydoves:colorpickerview:2.3.0"
+    implementation "androidx.core:core-splashscreen:1.0.1"
 
     // Utils
     implementation "me.xdrop:fuzzywuzzy:1.4.0"

@@ -5,6 +5,12 @@
         <item name="colorSecondaryVariant">@color/violet_400</item>
     </style>
 
+    <style name="Theme.Awery.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0E0C2F</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Awery</item>
+    </style>
+
     <style name="AmoledThemeOverlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="android:colorBackground">#000000</item>
         <item name="colorSurface">#000000</item>

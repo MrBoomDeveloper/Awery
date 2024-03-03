@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.StyleRes;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
@@ -90,6 +91,11 @@ public class ThemeManager {
 
 	public static void apply(Activity activity) {
 		apply(activity, null);
+	}
+
+	public static void applySplash(Activity activity) {
+		SplashScreen.installSplashScreen(activity);
+		apply(activity);
 	}
 
 	private static void applyMaterialYou(Activity activity, Bitmap bitmap, boolean useOLED) {

@@ -816,7 +816,7 @@
                     android:contentDescription="@string/app_name"
                     android:padding="32dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/anim_splash" />
+                    android:src="@mipmap/ic_launcher" />
 
                 <TextView
                     android:layout_width="match_parent"

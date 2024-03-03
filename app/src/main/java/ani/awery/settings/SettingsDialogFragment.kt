@@ -76,18 +76,17 @@ class SettingsDialogFragment() : BottomSheetDialogFragment() {
             startActivity(Intent(activity, ExtensionsActivity::class.java))
             dismiss()
         }
-        binding.settingsSettings.setSafeOnClickListener {
-            startActivity(Intent(activity, SettingsActivity::class.java))
-            dismiss()
-        }
+
         binding.settingsAnilistSettings.setOnClickListener {
             openLinkInBrowser("https://anilist.co/settings/lists")
             dismiss()
         }
+
         binding.imageSearch.setOnClickListener {
             startActivity(Intent(activity, ImageSearchActivity::class.java))
             dismiss()
         }
+
         binding.settingsDownloads.setSafeOnClickListener {
             when (pageType) {
                 PageType.MANGA -> {

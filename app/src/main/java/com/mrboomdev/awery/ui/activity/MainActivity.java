@@ -4,8 +4,6 @@ import static ani.awery.FunctionsKt.snackString;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.graphics.drawable.Animatable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,10 +32,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ani.awery.R;
-import ani.awery.databinding.
-
-		LayoutActivityMainBinding;
-import ani.awery.databinding.ScreenSplashBinding;
+import ani.awery.databinding.LayoutActivityMainBinding;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,16 +40,15 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
+		ThemeManager.applySplash(this);
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
 		binding = LayoutActivityMainBinding.inflate(getLayoutInflater());
 		binding.getRoot().setMotionEventSplittingEnabled(false);
-		var prefs = AwerySettings.getInstance(this);
 		setContentView(binding.getRoot());
 
-		startSplash();
+		var prefs = AwerySettings.getInstance(this);
 		registerBackListener();
 
 		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
@@ -111,21 +105,6 @@ public class MainActivity extends AppCompatActivity {
 			new Handler(Looper.getMainLooper()).postDelayed(() ->
 					doubleBackToExitPressedOnce.set(false), 2000);
 		});
-	}
-
-	private void startSplash() {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			getSplashScreen().setOnExitAnimationListener(
-					view -> slideFromSplash(view, view::remove));
-		} else {
-			var splash = ScreenSplashBinding.inflate(getLayoutInflater());
-			binding.getRoot().addView(splash.getRoot());
-			((Animatable)splash.splashImage.getDrawable()).start();
-
-			new Handler(Looper.getMainLooper()).postDelayed(() ->
-					slideFromSplash(splash.getRoot(), () ->
-							binding.getRoot().removeView(splash.getRoot())), 1000);
-		}
 	}
 
 	private void slideFromSplash(View view, Runnable endCallback) {

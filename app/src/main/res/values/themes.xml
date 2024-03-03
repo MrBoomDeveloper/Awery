@@ -3,7 +3,6 @@
         <item name="android:navigationBarColor">?android:colorBackground</item>
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
-
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
@@ -19,11 +18,15 @@
         <item name="bottomSheetDialogTheme">@style/Sheet</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/anim_splash</item>
     </style>
 
     <style name="Theme.Awery" parent="Theme.Base">
         <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Awery.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Awery</item>
     </style>
 
     <style name="Theme.Awery.NoActionBar">

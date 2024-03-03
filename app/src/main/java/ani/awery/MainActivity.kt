@@ -30,7 +30,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistHomeViewModel
 import ani.awery.databinding.ActivityMainBinding
-import ani.awery.databinding.ScreenSplashBinding
 import ani.awery.home.AnimeFragment
 import ani.awery.home.HomeFragment
 import ani.awery.home.LoginFragment
@@ -92,28 +91,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.root.isMotionEventSplittingEnabled = false
-
-        lifecycleScope.launch {
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                val splash = ScreenSplashBinding.inflate(layoutInflater)
-                binding.root.addView(splash.root)
-                (splash.splashImage.drawable as Animatable).start()
-
-                delay(1000)
-
-                ObjectAnimator.ofFloat(
-                    splash.root,
-                    View.TRANSLATION_Y,
-                    0f,
-                    -splash.root.height.toFloat()
-                ).apply {
-                    interpolator = AnticipateInterpolator()
-                    duration = 200L
-                    doOnEnd { binding.root.removeView(splash.root) }
-                    start()
-                }
-            }
-        }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             splashScreen.setOnExitAnimationListener { splashScreenView ->
