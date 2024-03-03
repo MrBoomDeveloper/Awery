@@ -75,6 +75,9 @@ public class HttpClient {
 		run(Method.POST, url, body, JSON, null, callback);
 	}
 
+	/**
+	 * @see #postJson(String, String, HttpCallback)
+	 */
 	public static void postJson(String url, String body, Map<String, String> headers, HttpCallback callback) {
 		run(Method.POST, url, body, JSON, headers, callback);
 	}
@@ -84,6 +87,9 @@ public class HttpClient {
 	}
 
 	public interface SimpleHttpCallback extends HttpCallback {
+		/**
+		 * Called after the request was either successful or not.
+		 */
 		void onResult(@Nullable HttpResponse response, @Nullable HttpException exception);
 
 		/**

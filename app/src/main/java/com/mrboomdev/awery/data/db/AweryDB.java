@@ -6,8 +6,18 @@ import androidx.room.RoomDatabase;
 import com.mrboomdev.awery.data.db.dao.CatalogListDao;
 import com.mrboomdev.awery.data.db.dao.CatalogMediaDao;
 
-@Database(entities = {DBCatalogMedia.class, DBCatalogList.class}, version = 1, exportSchema = false)
-public abstract class AweryDB extends RoomDatabase {
+@Database(
+		version = 1,
+
+		/*autoMigrations = {
+				@AutoMigration(from = 1, to = 2)
+		},*/
+
+		entities = {
+				DBCatalogMedia.class,
+				DBCatalogList.class
+		}
+) public abstract class AweryDB extends RoomDatabase {
 
 	public abstract CatalogMediaDao getMediaDao();
 

@@ -23,8 +23,8 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogTag;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.ObservableArrayList;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.observable.ObservableArrayList;
+import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 

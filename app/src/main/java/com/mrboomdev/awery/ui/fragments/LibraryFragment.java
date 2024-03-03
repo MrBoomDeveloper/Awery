@@ -8,18 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
-import com.mrboomdev.awery.util.ObservableArrayList;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.observable.ObservableArrayList;
+import com.mrboomdev.awery.util.observable.ObservableList;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class LibraryFragment extends MediaCatalogFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 	private final ObservableList<MediaCategoriesAdapter.Category> categories = new ObservableArrayList<>();
+	private long loadId;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class LibraryFragment extends MediaCatalogFragment {
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void loadData() {
+		var wasLoadId = ++loadId;
 		categories.clear(false);
 		categoriesAdapter.notifyDataSetChanged();
 
@@ -46,42 +48,49 @@ public class LibraryFragment extends MediaCatalogFragment {
 
 		new Thread(() -> {
 			var db = AweryApp.getDatabase();
-			var mediaDao = db.getMediaDao();
-			var mediaList = mediaDao.getAll();
+			var lists = db.getListDao().getAll();
+			var categories = new ArrayList<MediaCategoriesAdapter.Category>();
 
-			for(var a : mediaList) {
-				System.out.println(a.title);
+			for(var list : lists) {
+				var dbMediaList = db.getMediaDao().getAllFromList(list.getId());
+				if(dbMediaList.isEmpty()) continue;
+
+				var mediaList = dbMediaList.stream()
+						.map(DBCatalogMedia::toCatalogMedia)
+						.collect(Collectors.toList());
+
+				var category = new MediaCategoriesAdapter.Category(list.getName(), mediaList);
+				categories.add(category);
 			}
+
+			loadCategories(categories, wasLoadId);
 		}).start();
-
-		//TODO: Remove old load method
-		var saved = AwerySettings.getInstance(AwerySettings.APP_LIBRARY);
-		loadCategory("Continue Watching", saved.getStringSet("current"));
-		loadCategory("Planned", saved.getStringSet("planned"));
-		loadCategory("Delayed", saved.getStringSet("delayed"));
-		loadCategory("History", saved.getStringSet("history"));
-		loadCategory("Favourite", saved.getStringSet("favourite"));
-		loadCategory("Done", saved.getStringSet("done"));
-		loadCategory("Dropped", saved.getStringSet("dropped"));
-
-		if(categories.isEmpty()) {
-			setEmptyData(false,
-					"Library is empty",
-					"Start browsing the catalog and new things will appear here!");
-		}
 	}
 
-	private void loadCategory(String name, @NonNull Set<String> items) {
-		if(items.isEmpty()) return;
+	@SuppressLint("NotifyDataSetChanged")
+	private void loadCategories(List<MediaCategoriesAdapter.Category> categories, long loadId) {
+		if(loadId != this.loadId) return;
 
-		var itemsList = items.stream().map(item -> {
-			var media = new CatalogMedia("dhdhdhdhdh");
-			media.setTitle(item);
-			return media;
-		}).collect(Collectors.toList());
+		AweryApp.runOnUiThread(() -> {
+			if(loadId != this.loadId) return;
 
-		var category = new MediaCategoriesAdapter.Category(name, itemsList);
-		categories.add(category);
-		getEmptyAdapter().setEnabled(false);
+			if(categories.isEmpty()) {
+				setEmptyData(false,
+						"Library is empty",
+						"Start browsing the catalog and new things will appear here!");
+
+				return;
+			}
+
+			this.categories.addAll(categories);
+			getEmptyAdapter().setEnabled(false);
+			categoriesAdapter.notifyDataSetChanged();
+
+			// We do this to prevent screen from being scrolling a little bit
+			AweryApp.runDelayed(() -> {
+				if(loadId != this.loadId) return;
+				getBinding().catalogCategories.scrollToPosition(0);
+			}, 100);
+		});
 	}
 }

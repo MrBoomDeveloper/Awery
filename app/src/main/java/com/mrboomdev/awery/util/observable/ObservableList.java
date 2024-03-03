@@ -1,7 +1,9 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.observable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.mrboomdev.awery.util.observable.ObservableArrayList;
 
 import java.util.Collection;
 import java.util.List;

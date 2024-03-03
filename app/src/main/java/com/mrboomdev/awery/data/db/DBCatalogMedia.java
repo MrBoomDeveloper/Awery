@@ -29,11 +29,13 @@ public class DBCatalogMedia {
 	public String globalId;
 
 	public String titles, lists, trackers;
-	public String title, banner, description, color, url;
-	public String type;
+	public String title, banner, description, color, url, country;
+	public String releaseDate, duration, type;
 	public int id;
+	@ColumnInfo(name = "episodes_count")
+	public String episodesCount;
 	@ColumnInfo(name = "average_score")
-	public float averageScore;
+	public String averageScore;
 	public String tags, genres;
 	public String status;
 	@ColumnInfo(name = "poster_extra_large")
@@ -57,7 +59,24 @@ public class DBCatalogMedia {
 		dbMedia.color = media.color;
 		dbMedia.url = media.url;
 		dbMedia.id = media.id;
-		dbMedia.averageScore = media.averageScore;
+		dbMedia.country = media.country;
+
+		if(media.averageScore != null) {
+			dbMedia.averageScore = Float.toString(media.averageScore);
+		}
+
+		if(media.episodesCount != null) {
+			dbMedia.episodesCount = Integer.toString(media.episodesCount);
+		}
+
+		if(media.releaseDate != null) {
+			var stringDate = CatalogMedia.adapter.toJson(media.releaseDate);
+			dbMedia.releaseDate = Long.toString(stringDate);
+		}
+
+		if(media.duration != null) {
+			dbMedia.duration = Integer.toString(media.duration);
+		}
 
 		if(media.type != null) {
 			dbMedia.type = media.type.name();
@@ -98,11 +117,30 @@ public class DBCatalogMedia {
 		media.title = title;
 		media.banner = banner;
 		media.description = description;
-		media.status = CatalogMedia.MediaStatus.valueOf(status);
-		media.type = CatalogMedia.MediaType.valueOf(type);
 		media.id = id;
-		media.averageScore = averageScore;
 		media.url = url;
+		media.color = color;
+		media.country = country;
+
+		if(averageScore != null) {
+			media.averageScore = Float.parseFloat(averageScore);
+		}
+
+		if(releaseDate != null) {
+			var dateLong = Long.parseLong(releaseDate);
+			media.releaseDate = CatalogMedia.adapter.fromJson(dateLong);
+		}
+
+		if(duration != null) {
+			media.duration = Integer.parseInt(duration);
+		}
+
+		if(episodesCount != null) {
+			media.episodesCount = Integer.parseInt(episodesCount);
+		}
+
+		media.type = StringUtil.parseEnum(type, CatalogMedia.MediaType.class);
+		media.status = StringUtil.parseEnum(status, CatalogMedia.MediaStatus.class);
 
 		media.poster.extraLarge = extraLargePoster;
 		media.poster.large = largePoster;

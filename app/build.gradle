@@ -19,6 +19,16 @@ android {
         signingConfig signingConfigs.debug
 
         resourceConfigurations.addAll(["en", "ru"])
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    sourceSets {
+        main.assets.srcDirs += files("$projectDir/schemas".toString())
     }
 
     buildTypes {

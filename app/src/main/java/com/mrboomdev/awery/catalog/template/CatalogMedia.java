@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class CatalogMedia {
+	public static final Adapter adapter = new Adapter();
 	public static final CatalogMedia INVALID_MEDIA;
 	private static JsonAdapter<CatalogMedia> moshiAdapter;
 
@@ -88,7 +89,7 @@ public class CatalogMedia {
 
 	public static JsonAdapter<CatalogMedia> getJsonAdapter() {
 		if(moshiAdapter == null) {
-			moshiAdapter = new Moshi.Builder().add(new Adapter())
+			moshiAdapter = new Moshi.Builder().add(adapter)
 					.build().adapter(CatalogMedia.class);
 		}
 

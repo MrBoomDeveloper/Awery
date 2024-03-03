@@ -14,8 +14,8 @@ import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
-import com.mrboomdev.awery.util.ObservableArrayList;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.observable.ObservableArrayList;
+import com.mrboomdev.awery.util.observable.ObservableList;
 
 import java.io.File;
 import java.util.Collection;
@@ -132,8 +132,10 @@ public class AnimeFragment extends MediaCatalogFragment {
 		} else {
 			if(doneSuccessfully++ == 0) {
 				// We do this to prevent screen from being scrolling a little bit
-				AweryApp.runDelayed(() -> requireActivity().runOnUiThread(() ->
-						getBinding().catalogCategories.scrollToPosition(0)), 100);
+				AweryApp.runDelayed(() -> {
+					if(loadId != this.loadId) return;
+					getBinding().catalogCategories.scrollToPosition(0);
+				}, 100);
 			}
 
 			requireActivity().runOnUiThread(() -> {

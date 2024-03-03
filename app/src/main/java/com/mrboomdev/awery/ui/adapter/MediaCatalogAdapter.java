@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.observable.ObservableList;
 
 import ani.awery.databinding.ItemGridMediaCatalogBinding;
 

@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.util.ObservableArrayList;
-import com.mrboomdev.awery.util.ObservableList;
+import com.mrboomdev.awery.util.observable.ObservableArrayList;
+import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;
@@ -136,16 +136,26 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
+		private ObservableList<CatalogMedia> items;
 		public final String title;
 		private ViewHolder associatedViewHolder;
 
+		private void createListIfNecessary() {
+			if(items == null) {
+				items = new ObservableArrayList<>();
+			}
+		}
+
 		@SuppressLint("NotifyDataSetChanged")
 		public void setItems(Collection<CatalogMedia> items) {
-			this.items.clear(false);
-			this.items.addAll(items, false);
+			if(items instanceof ObservableList<CatalogMedia> list) {
+				this.items = list;
+			} else if(items != null) {
+				this.items = new ObservableArrayList<>(items);
+			}
 
 			if(associatedViewHolder != null) {
+				createListIfNecessary();
 				associatedViewHolder.bind(this);
 			}
 		}
