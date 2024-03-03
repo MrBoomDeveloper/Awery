@@ -105,6 +105,9 @@
                 android:layout_height="50dp"
                 android:padding="11dp"
                 android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
                 android:src="@drawable/ic_round_picture_in_picture_alt_24"
                 android:layout_marginLeft="6dp" />
 
@@ -115,6 +118,9 @@
                 android:padding="11dp"
                 android:alpha=".6"
                 android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
                 android:src="@drawable/ic_round_subtitles_24"
                 android:layout_marginLeft="6dp"
                 app:tint="#fff" />
@@ -127,6 +133,9 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_round_settings_24"
                 android:layout_marginLeft="6dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
                 app:tint="#fff" />
 
         </LinearLayout>

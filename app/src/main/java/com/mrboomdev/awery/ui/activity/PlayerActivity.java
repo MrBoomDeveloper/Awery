@@ -2,7 +2,10 @@ package com.mrboomdev.awery.ui.activity;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.PictureInPictureParams;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Rational;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -35,6 +38,9 @@ import ani.awery.R;
 import ani.awery.databinding.ScreenPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
+	private static final String ACTION_PAUSE = "pause";
+	private static final String ACTION_PREVIOUS = "previous";
+	private static final String ACTION_NEXT = "next";
 	private final int SHOW_UI_AFTER_MILLIS = 200;
 	private final int UI_INSETS = WindowInsetsCompat.Type.displayCutout()
 			| WindowInsetsCompat.Type.systemGestures()
@@ -209,7 +215,40 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			isVideoPaused = !isVideoPaused;
 		});
 
+		registerPip();
 		toggleUiVisibility();
+	}
+
+	@OptIn(markerClass = UnstableApi.class)
+	private void registerPip() {
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+			binding.pip.setVisibility(View.GONE);
+			return;
+		}
+
+		var pipParams = new PictureInPictureParams.Builder();
+
+		setupButton(binding.pip, () -> {
+			var format = player.getVideoFormat();
+
+			if(format != null) {
+				var ratio = new Rational(format.width, format.height);
+				pipParams.setAspectRatio(ratio);
+			}
+
+			enterPictureInPictureMode(pipParams.build());
+		});
+	}
+
+	@Override
+	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+		super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+
+		var uiVisibility = isInPictureInPictureMode ? View.GONE : View.VISIBLE;
+		binding.uiOverlay.setVisibility(uiVisibility);
+		binding.darkOverlay.setVisibility(uiVisibility);
+
+		player.play();
 	}
 
 	private void toggleUiVisibility() {

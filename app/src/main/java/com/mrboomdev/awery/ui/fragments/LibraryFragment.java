@@ -20,7 +20,25 @@ import java.util.stream.Collectors;
 public class LibraryFragment extends MediaCatalogFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 	private final ObservableList<MediaCategoriesAdapter.Category> categories = new ObservableArrayList<>();
+	private static LibraryFragment instance;
+	private boolean didDataChanged;
 	private long loadId;
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if(didDataChanged) {
+			loadData();
+			didDataChanged = false;
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		instance = null;
+	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -35,10 +53,22 @@ public class LibraryFragment extends MediaCatalogFragment {
 			loadData();
 			getBinding().swipeRefresher.setRefreshing(false);
 		});
+
+		instance = this;
+	}
+
+	public static void notifyDataChanged() {
+		if(instance == null) return;
+
+		if(instance.isVisible()) {
+			instance.loadData();
+		} else {
+			instance.didDataChanged = true;
+		}
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	private void loadData() {
+	public void loadData() {
 		var wasLoadId = ++loadId;
 		categories.clear(false);
 		categoriesAdapter.notifyDataSetChanged();

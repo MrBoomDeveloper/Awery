@@ -20,6 +20,7 @@ import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.DialogBuilder;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -249,6 +250,8 @@ public class MediaUtils {
 
 							var dbItem = DBCatalogMedia.fromCatalogMedia(media);
 							mediaDao.insert(dbItem);
+
+							LibraryFragment.notifyDataChanged();
 						} catch(Exception e) {
 							AweryApp.toast("Failed to save!");
 							e.printStackTrace();
