@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.activity.player;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -21,6 +20,8 @@ import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ani.awery.databinding.PopupQualityItemBinding;
+
 public class PlayerActivityController {
 	private final PlayerActivity activity;
 
@@ -31,7 +32,7 @@ public class PlayerActivityController {
 	@SuppressLint("SetTextI18n")
 	@OptIn(markerClass = UnstableApi.class)
 	public void updateTimers() {
-		var position = activity.didSelectedVideo ? activity.player.getCurrentPosition() : 0;
+		var position = activity.player.getCurrentPosition();
 		var duration = activity.player.getDuration();
 
 		activity.binding.slider.setPosition(position);
@@ -79,14 +80,10 @@ public class PlayerActivityController {
 		dialog.set(sheet);
 
 		var adapter = new SimpleAdapter<>(parent -> {
-			var params = new RecyclerView.LayoutParams(
-					RecyclerView.LayoutParams.MATCH_PARENT,
-					RecyclerView.LayoutParams.WRAP_CONTENT);
+			var binding = PopupQualityItemBinding.inflate(
+					activity.getLayoutInflater(), parent, false);
 
-			var text = new TextView(parent.getContext());
-			text.setLayoutParams(params);
-
-			return new VideoHolder(text, video -> {
+			return new VideoHolder(binding, video -> {
 				activity.playVideo(video);
 				didSelectedVideo.set(true);
 				dialog.get().dismiss();
@@ -105,25 +102,27 @@ public class PlayerActivityController {
 
 		recycler.setAdapter(adapter);
 		sheet.setContentView(recycler);
+		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
 		DialogUtil.limitDialogSize(dialog.get());
 	}
 
 	private static class VideoHolder extends RecyclerView.ViewHolder {
-		private final TextView view;
+		private final PopupQualityItemBinding binding;
 		private CatalogVideo video;
 
-		public VideoHolder(@NonNull TextView view, VideoSelectListener selectCallback) {
-			super(view);
-			this.view = view;
+		public VideoHolder(@NonNull PopupQualityItemBinding binding, VideoSelectListener selectCallback) {
+			super(binding.getRoot());
+			this.binding = binding;
 
-			view.setOnClickListener(v -> selectCallback.onVideoSelected(video));
+			binding.text.setOnClickListener(v ->
+					selectCallback.onVideoSelected(video));
 		}
 
 		public void bind(@NonNull CatalogVideo video) {
 			this.video = video;
-			view.setText(video.getTitle());
+			binding.text.setText(video.getTitle());
 		}
 	}
 

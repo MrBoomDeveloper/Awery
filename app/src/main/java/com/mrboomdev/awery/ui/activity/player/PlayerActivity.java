@@ -231,6 +231,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		var mediaItem = MediaItem.fromUri(video.getUrl());
 		player.setMediaItem(mediaItem);
 		player.play();
+
+		didSelectedVideo = true;
 	}
 
 	private void loadData() {
