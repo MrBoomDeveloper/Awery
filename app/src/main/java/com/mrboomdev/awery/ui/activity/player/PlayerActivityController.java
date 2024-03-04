@@ -7,6 +7,7 @@ import android.app.Dialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,11 +16,13 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ani.awery.databinding.PopupQualityHeaderBinding;
 import ani.awery.databinding.PopupQualityItemBinding;
 
 public class PlayerActivityController {
@@ -79,7 +82,12 @@ public class PlayerActivityController {
 		var sheet = new BottomSheetDialog(activity);
 		dialog.set(sheet);
 
-		var adapter = new SimpleAdapter<>(parent -> {
+		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = activity.getLayoutInflater();
+			return PopupQualityHeaderBinding.inflate(inflater, parent, false);
+		});
+
+		var itemsAdapter = new SimpleAdapter<>(parent -> {
 			var binding = PopupQualityItemBinding.inflate(
 					activity.getLayoutInflater(), parent, false);
 
@@ -88,7 +96,7 @@ public class PlayerActivityController {
 				didSelectedVideo.set(true);
 				dialog.get().dismiss();
 			});
-		}, (item, holder) -> holder.bind(item), videos);
+		}, (item, holder) -> holder.bind(item), videos, true);
 
 		if(isRequired) {
 			sheet.setOnDismissListener(_dialog -> {
@@ -100,7 +108,11 @@ public class PlayerActivityController {
 			});
 		}
 
-		recycler.setAdapter(adapter);
+		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), headerAdapter, itemsAdapter);
+
+		recycler.setAdapter(concatAdapter);
 		sheet.setContentView(recycler);
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();

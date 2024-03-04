@@ -24,7 +24,7 @@
 			"items": [
 				{
 					"key": "default_tab", "type": "select",  "title": "startUpTab",
-					"int_value": 1,
+					"int_value": 1, "show_if": "never",
 					"items": [
 						{ "key": "main", "title": "Anime" },
 						{ "key": "library", "title": "Library" }
@@ -59,7 +59,7 @@
 						{ "key": "2160", "title": "2160p" }
 					]
 				}, {
-					"key": "subtitles", "type": "screen", "title": "subtitles",
+					"key": "subtitles", "type": "screen", "title": "subtitles", "show_if": "never",
 					"items": [
 						{
 							"key": "size", "type": "int", "title": "subtitles_size", "show_if": "never"

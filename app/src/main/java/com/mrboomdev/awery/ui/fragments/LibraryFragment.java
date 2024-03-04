@@ -61,7 +61,10 @@ public class LibraryFragment extends MediaCatalogFragment {
 		if(instance == null) return;
 
 		if(instance.isVisible()) {
-			instance.loadData();
+			AweryApp.runOnUiThread(() -> {
+				if(instance == null) return;
+				instance.loadData();
+			});
 		} else {
 			instance.didDataChanged = true;
 		}

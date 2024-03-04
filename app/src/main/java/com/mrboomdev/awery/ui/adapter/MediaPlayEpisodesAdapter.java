@@ -91,7 +91,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 			binding.title.setText(item.getTitle());
 
-			binding.date.setText(calendar.get(Calendar.DATE)
+			binding.description.setText(calendar.get(Calendar.DATE)
 					+ "/" + (calendar.get(Calendar.MONTH) + 1)
 					+ "/" + calendar.get(Calendar.YEAR));
 

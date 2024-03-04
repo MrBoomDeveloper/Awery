@@ -8,8 +8,8 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.util.legacy.CoroutineUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.legacy.CoroutineUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ public class AniyomiProvider extends ExtensionProvider {
 		this.source = source;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void getEpisodes(
 			int page,
@@ -42,11 +41,9 @@ public class AniyomiProvider extends ExtensionProvider {
 		anime.setDescription(media.description);
 		anime.setThumbnail_url(media.poster.extraLarge);
 
-		var observable = source.fetchEpisodeList(anime);
-
-		new Thread(() -> CoroutineUtil.getObservableValue(observable, ((episodes, _t) -> {
-			if(_t != null) {
-				callback.onFailure(_t);
+		new Thread(() -> AniyomiKotlinBridge.getEpisodesList(source, anime, (episodes, e) -> {
+			if(e != null) {
+				callback.onFailure(e);
 				return;
 			}
 
@@ -64,10 +61,9 @@ public class AniyomiProvider extends ExtensionProvider {
 							item.getDate_upload(),
 							item.getEpisode_number()
 					)).collect(Collectors.toCollection(ArrayList::new)));
-		}))).start();
+		})).start();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void getVideos(@NonNull CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
 		var animeEpisode = new SEpisodeImpl();
@@ -76,9 +72,9 @@ public class AniyomiProvider extends ExtensionProvider {
 		animeEpisode.setName(episode.getTitle());
 		animeEpisode.setEpisode_number(episode.getNumber());
 
-		new Thread(() -> CoroutineUtil.getObservableValue(source.fetchVideoList(animeEpisode), ((videos, _t) -> {
-			if(_t != null) {
-				callback.onFailure(_t);
+		new Thread(() -> AniyomiKotlinBridge.getVideosList(source, animeEpisode, (videos, e) -> {
+			if(e != null) {
+				callback.onFailure(e);
 				return;
 			}
 
@@ -97,7 +93,7 @@ public class AniyomiProvider extends ExtensionProvider {
 								headers != null ? headers.toString() : ""
 						);
 					}).collect(Collectors.toCollection(ArrayList::new)));
-		}))).start();
+		})).start();
 	}
 
 	@NonNull

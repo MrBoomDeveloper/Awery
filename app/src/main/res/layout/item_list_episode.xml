@@ -12,9 +12,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
+        android:paddingHorizontal="16dp"
         android:background="?android:selectableItemBackground">
 
         <ImageView
@@ -22,8 +23,8 @@
             android:layout_width="125dp"
             android:layout_height="70dp"
             android:scaleType="centerCrop"
+            tools:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             tools:src="@tools:sample/backgrounds/scenic"
             android:importantForAccessibility="no" />
@@ -35,17 +36,19 @@
             android:fontFamily="@font/poppins"
             android:layout_marginTop="12dp"
             android:layout_marginHorizontal="12dp"
+            app:layout_goneMarginLeft="2dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/banner"
             tools:text="Ep. 1 Akira of the Dead"
             android:textColor="?attr/colorOnBackground" />
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/description"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:textSize="12sp"
             android:layout_marginTop="6dp"
+            android:paddingBottom="12dp"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintLeft_toLeftOf="@id/title"
             app:layout_constraintRight_toRightOf="parent"

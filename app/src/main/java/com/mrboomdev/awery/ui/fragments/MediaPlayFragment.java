@@ -320,8 +320,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 					@Override
 					public void onFailure(@NonNull Throwable e) {
+						handleExceptionMark(source, e);
 						if(autoSelectNextSource()) return;
-						handleException(source, e);
+						handleExceptionUi(source, e);
 					}
 				});
 			}
@@ -332,8 +333,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(callback == null) return;
 
 				if(e != ExceptionUtil.ZERO_RESULTS) {
+					handleExceptionMark(source, e);
 					if(autoSelectNextSource()) return;
-					handleException(source, e);
+					handleExceptionUi(source, e);
 					return;
 				}
 
@@ -345,6 +347,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					AweryApp.runOnUiThread(() -> variantsAdapter.getBinding((binding, didJustCreated) ->
 							binding.searchDropdown.setText(searchParams.getQuery(), false)));
 				} else {
+					handleExceptionMark(source, ExceptionUtil.ZERO_RESULTS);
 					if(autoSelectNextSource()) return;
 
 					AweryApp.runOnUiThread(() -> placeholderAdapter.getBinding((binding, didJustCreated) -> {
@@ -383,16 +386,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		return true;
 	}
 
-	private void handleException(ExtensionProvider source, Throwable throwable) {
-		Context context;
-
-		try {
-			context = requireContext();
-		} catch(IllegalStateException e) {
-			Log.e(TAG, "Failed to get context. Pray that we just restored the fragment.");
-			return;
-		}
-
+	private void handleExceptionMark(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource) return;
 		var error = new ExceptionUtil(throwable);
 
@@ -406,6 +400,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
 		} else {
 			sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);
+		}
+	}
+
+	private void handleExceptionUi(ExtensionProvider source, Throwable throwable) {
+		if(source != selectedSource) return;
+		var error = new ExceptionUtil(throwable);
+		Context context;
+
+		try {
+			context = requireContext();
+		} catch(IllegalStateException e) {
+			Log.e(TAG, "Failed to get context. Pray that we just restored the fragment.");
+			return;
 		}
 
 		placeholderAdapter.getBinding((binding, didJustCreated) -> AweryApp.runOnUiThread(() -> {

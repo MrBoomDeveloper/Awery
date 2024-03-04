@@ -14,7 +14,23 @@ public class SimpleAdapter<T, V extends RecyclerView.ViewHolder> extends Recycle
 	private final OnBindViewHolder<T, V> onBindViewHolder;
 	private List<T> items;
 
-	public SimpleAdapter(OnCreateViewHolder<V> onCreateViewHolder, OnBindViewHolder<T, V> onBindViewHolder, List<T> items) {
+	public SimpleAdapter(
+			OnCreateViewHolder<V> onCreateViewHolder,
+			OnBindViewHolder<T, V> onBindViewHolder,
+			List<T> items,
+			boolean useStableIds
+	) {
+		this.items = items;
+		this.onCreateViewHolder = onCreateViewHolder;
+		this.onBindViewHolder = onBindViewHolder;
+		super.setHasStableIds(useStableIds);
+	}
+
+	public SimpleAdapter(
+			OnCreateViewHolder<V> onCreateViewHolder,
+			OnBindViewHolder<T, V> onBindViewHolder,
+			List<T> items
+	) {
 		this.items = items;
 		this.onCreateViewHolder = onCreateViewHolder;
 		this.onBindViewHolder = onBindViewHolder;
@@ -35,6 +51,16 @@ public class SimpleAdapter<T, V extends RecyclerView.ViewHolder> extends Recycle
 		this.items = new ArrayList<>();
 		this.onCreateViewHolder = onCreateViewHolder;
 		this.onBindViewHolder = onBindViewHolder;
+	}
+
+	@Override
+	public void setHasStableIds(boolean hasStableIds) {
+		throw new UnsupportedOperationException("You can't enable stable ids after the adapter has been created!");
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return super.getItemId(position);
 	}
 
 	public void setItems(List<T> items) {

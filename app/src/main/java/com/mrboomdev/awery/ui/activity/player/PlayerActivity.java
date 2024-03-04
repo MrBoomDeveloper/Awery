@@ -249,8 +249,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				public void onSuccess(List<CatalogVideo> catalogVideos) {
 					if(isDestroyed()) return;
 
-					episode.setVideos(catalogVideos);
-					controller.showVideoSelectionDialog(true);
+					AweryApp.runOnUiThread(() -> {
+						episode.setVideos(catalogVideos);
+						controller.showVideoSelectionDialog(true);
+					});
 				}
 
 				@Override
