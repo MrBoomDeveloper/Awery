@@ -105,7 +105,8 @@ public class MediaInfoFragment extends Fragment {
 			var html = Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT);
 			binding.details.description.setText(html.toString().trim());
 		} else {
-			binding.details.description.setText("No description.");
+			binding.details.description.setVisibility(View.GONE);
+			binding.details.descriptionTitle.setVisibility(View.GONE);
 		}
 
 		if(media.tags.isEmpty()) {

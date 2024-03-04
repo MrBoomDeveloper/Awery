@@ -19,6 +19,8 @@ import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,10 +28,22 @@ import ani.awery.databinding.PopupQualityHeaderBinding;
 import ani.awery.databinding.PopupQualityItemBinding;
 
 public class PlayerActivityController {
+	private static final int SHOW_UI_FOR_MILLIS = 3_000;
+	private final Set<String> lockedUiReasons = new HashSet<>();
 	private final PlayerActivity activity;
+	private final Runnable hideUiRunnable;
+	private boolean isUiFadeLocked, isUiVisible;
 
 	public PlayerActivityController(PlayerActivity activity) {
 		this.activity = activity;
+		this.hideUiRunnable = () -> {
+			if(!isUiVisible) return;
+
+			activity.setButtonsClickability(false);
+			ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 1, 0).start();
+			ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", .6f, 0).start();
+			isUiVisible = false;
+		};
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -45,28 +59,63 @@ public class PlayerActivityController {
 				StringUtil.formatTimestamp(duration));
 	}
 
-	public void toggleUiVisibility() {
-		if(activity.hideUiRunnableWrapper != null) {
-			AweryApp.cancelDelayed(activity.hideUiRunnableWrapper);
-			activity.hideUiRunnable.run(true);
-			activity.setHideUiRunnable(null);
-			return;
+	public void addLockedUiReason(String reason) {
+		if(lockedUiReasons.isEmpty()) {
+			setIsUiFadeLocked(true);
 		}
+
+		lockedUiReasons.add(reason);
+	}
+
+	public void removeLockedUiReason(String reason) {
+		lockedUiReasons.remove(reason);
+
+		if(lockedUiReasons.isEmpty()) {
+			setIsUiFadeLocked(false);
+		}
+	}
+
+	private void setIsUiFadeLocked(boolean isLocked) {
+		if(isLocked == this.isUiFadeLocked) return;
+		this.isUiFadeLocked = isLocked;
+
+		if(!isLocked) showUiTemporarily();
+		else AweryApp.cancelDelayed(hideUiRunnable);
+	}
+
+	public void toggleUiVisibility() {
+		if(!isUiVisible) {
+			if(isUiFadeLocked) {
+				showUi();
+			} else {
+				showUiTemporarily();
+			}
+		} else {
+			hideUi();
+		}
+	}
+
+	public void showUi() {
+		this.isUiVisible = true;
 
 		activity.setButtonsClickability(true);
 		ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 0, 1).start();
 		ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", 0, .6f).start();
+	}
 
-		activity.setHideUiRunnable(isForced -> {
-			if(!isForced && (activity.isVideoPaused || activity.isSliderDragging)) return;
+	public void hideUi() {
+		hideUiRunnable.run();
+	}
 
-			activity.setButtonsClickability(false);
-			ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 1, 0).start();
-			ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", .6f, 0).start();
-			activity.setHideUiRunnable(null);
-		});
+	public void showUiTemporarily() {
+		if(isUiFadeLocked) return;
 
-		AweryApp.runDelayed(activity.hideUiRunnableWrapper, 3_000);
+		if(!isUiVisible) {
+			showUi();
+		}
+
+		AweryApp.cancelDelayed(hideUiRunnable);
+		AweryApp.runDelayed(hideUiRunnable, SHOW_UI_FOR_MILLIS);
 	}
 
 	public void showVideoSelectionDialog(boolean isRequired) {

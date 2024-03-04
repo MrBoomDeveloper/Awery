@@ -29,7 +29,6 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.CallbackUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -52,9 +51,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected final List<View> buttons = new ArrayList<>();
 	private final PlayerActivityController controller = new PlayerActivityController(this);
 	protected ScreenPlayerBinding binding;
-	protected CallbackUtil.Callback1<Boolean> hideUiRunnable;
-	protected Runnable hideUiRunnableWrapper, showUiRunnableFromLeft, showUiRunnableFromRight;
-	protected boolean areButtonsClickable, isSliderDragging;
+	protected Runnable showUiRunnableFromLeft, showUiRunnableFromRight;
+	protected boolean areButtonsClickable;
 	protected boolean isVideoPaused, isVideoBuffering = true, didSelectedVideo;
 	protected int forwardFastClicks, backwardFastClicks;
 	protected ArrayList<CatalogEpisode> episodes;
@@ -78,8 +76,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player = new ExoPlayer.Builder(this).build();
 		player.setVideoTextureView(binding.textureView);
 		player.addListener(this);
-
-		binding.title.setText(getIntent().getStringExtra("title"));
 
 		binding.doubleTapBackward.setOnClickListener(view -> {
 			backwardFastClicks++;
@@ -136,7 +132,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.slider.addListener(new TimeBar.OnScrubListener() {
 			@Override
 			public void onScrubStart(@NonNull TimeBar timeBar, long position) {
-				isSliderDragging = true;
+				controller.addLockedUiReason("seek");
 
 				player.seekTo(position);
 				controller.updateTimers();
@@ -152,17 +148,13 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 			@Override
 			public void onScrubStop(@NonNull TimeBar timeBar, long position, boolean canceled) {
-				isSliderDragging = false;
+				controller.removeLockedUiReason("seek");
 
 				player.seekTo(position);
 				controller.updateTimers();
 
 				if(!isVideoPaused) {
 					player.play();
-
-					if(hideUiRunnable != null) {
-						hideUiRunnable.run(false);
-					}
 				}
 			}
 		});
@@ -202,17 +194,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			if(!isVideoPaused) {
 				Glide.with(this).load(R.drawable.anim_pause_to_play).into(binding.pause);
 				player.pause();
-
-				if(hideUiRunnableWrapper != null) {
-					AweryApp.cancelDelayed(hideUiRunnableWrapper);
-				}
+				controller.addLockedUiReason("pause");
 			} else {
 				Glide.with(this).load(R.drawable.anim_play_to_pause).into(binding.pause);
 				player.play();
-
-				if(hideUiRunnableWrapper != null) {
-					AweryApp.runDelayed(hideUiRunnableWrapper, 3_000);
-				}
+				controller.removeLockedUiReason("pause");
 			}
 
 			isVideoPaused = !isVideoPaused;
@@ -220,7 +206,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		registerPip();
 		loadData();
-		controller.toggleUiVisibility();
+		controller.showUiTemporarily();
 	}
 
 	public static void selectSource(ExtensionProvider source) {
@@ -427,12 +413,5 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom + margin);
 			ViewUtil.setHorizontalMargin(binding.slider, margin + systemInsets.left, margin + systemInsets.right);
 		});
-	}
-
-	public void setHideUiRunnable(CallbackUtil.Callback1<Boolean> runnable) {
-		hideUiRunnable = runnable;
-
-		hideUiRunnableWrapper = (runnable != null)
-				? (() -> runnable.run(false)) : null;
 	}
 }
