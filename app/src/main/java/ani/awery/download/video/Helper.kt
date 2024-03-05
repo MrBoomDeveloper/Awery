@@ -20,7 +20,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Requirements
 import androidx.media3.ui.TrackSelectionDialogBuilder
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.defaultHeaders
 import ani.awery.logError
 import ani.awery.okHttpClient

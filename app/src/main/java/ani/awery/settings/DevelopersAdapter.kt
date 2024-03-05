@@ -3,7 +3,7 @@ package ani.awery.settings
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.databinding.ItemDeveloperBinding
+import com.mrboomdev.awery.databinding.ItemDeveloperBinding
 import ani.awery.loadData
 import ani.awery.loadImage
 import ani.awery.openLinkInBrowser

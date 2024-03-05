@@ -16,8 +16,8 @@ import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
-import ani.awery.databinding.ItemExtensionAllBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ItemExtensionAllBinding
 import ani.awery.loadData
 import ani.awery.others.LanguageMapper
 import com.bumptech.glide.Glide

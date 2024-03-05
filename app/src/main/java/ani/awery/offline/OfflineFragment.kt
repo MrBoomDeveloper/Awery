@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
-import ani.awery.databinding.FragmentOfflineBinding
+import com.mrboomdev.awery.databinding.FragmentOfflineBinding
 import ani.awery.isOnline
 import ani.awery.navBarHeight
 import ani.awery.startMainActivity

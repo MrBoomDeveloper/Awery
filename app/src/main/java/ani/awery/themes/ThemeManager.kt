@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 
-import ani.awery.R
+import com.mrboomdev.awery.R
 
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions

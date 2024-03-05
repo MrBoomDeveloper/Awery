@@ -11,7 +11,7 @@ import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import ani.awery.FileUrl
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
 import ani.awery.defaultHeaders
 import ani.awery.loadData

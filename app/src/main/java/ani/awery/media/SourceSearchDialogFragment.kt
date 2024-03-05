@@ -13,7 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.databinding.BottomSheetSourceSearchBinding
+import com.mrboomdev.awery.databinding.BottomSheetSourceSearchBinding
 import ani.awery.media.anime.AnimeSourceAdapter
 import ani.awery.media.manga.MangaSourceAdapter
 import ani.awery.navBarHeight

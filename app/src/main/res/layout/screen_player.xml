@@ -71,14 +71,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:padding="6dp">
+            android:paddingVertical="6dp">
 
             <ImageView
                 android:id="@+id/exit"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:padding="11dp"
-                tools:layout_marginLeft="5dp"
                 android:scaleType="fitCenter"
                 android:focusable="true"
                 android:clickable="true"
@@ -87,7 +86,7 @@
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:layout_marginHorizontal="8dp"
@@ -133,6 +132,7 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_round_settings_24"
                 android:layout_marginLeft="6dp"
+                android:layout_marginRight="16dp"
                 android:focusable="true"
                 android:clickable="true"
                 android:background="@drawable/ripple_circle_white"
@@ -179,12 +179,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/bottom_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:paddingBottom="2dp"
-            android:paddingHorizontal="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="24dp">
 
             <TextView
                 android:id="@+id/timer"
@@ -214,8 +216,9 @@
         <androidx.media3.ui.DefaultTimeBar
             android:id="@+id/slider"
             android:layout_width="match_parent"
-            tools:layout_marginHorizontal="5dp"
-            tools:layout_marginBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="10dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>

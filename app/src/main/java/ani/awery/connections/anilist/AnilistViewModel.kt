@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.discord.Discord
 import ani.awery.connections.mal.MAL
 import ani.awery.loadData

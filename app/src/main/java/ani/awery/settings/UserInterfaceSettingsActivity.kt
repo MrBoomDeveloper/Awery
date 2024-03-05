@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
-import ani.awery.R
-import ani.awery.databinding.ActivityUserInterfaceSettingsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ActivityUserInterfaceSettingsBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight

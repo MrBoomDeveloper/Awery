@@ -3,7 +3,7 @@ package ani.awery.download
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.themes.ThemeManager
 
 class DownloadContainerActivity : AppCompatActivity() {

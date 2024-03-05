@@ -17,6 +17,7 @@ import eu.kanade.tachiyomi.network.HttpException;
 import kotlinx.serialization.json.internal.JsonDecodingException;
 
 public class ExceptionUtil {
+	public static final IllegalStateException NO_EXTENSIONS = new IllegalStateException("No extensions found!");
 	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
 	public static final IllegalStateException ZERO_RESULTS = new IllegalStateException("Zero results were found!");
 	private final Throwable t;
@@ -34,7 +35,9 @@ public class ExceptionUtil {
 			return "Nothing found!";
 		} else if(t == NOT_IMPLEMENTED) {
 			return "Feature not implemented!";
-		} else if(t instanceof SocketTimeoutException) {
+		} else if(t == NO_EXTENSIONS) {
+			return "No extensions found!";
+		}else if(t instanceof SocketTimeoutException) {
 			return "Connection timed out!";
 		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
@@ -61,6 +64,7 @@ public class ExceptionUtil {
 	public boolean isProgramException() {
 		return !(t == ZERO_RESULTS ||
 				t == NOT_IMPLEMENTED ||
+				t == NO_EXTENSIONS ||
 				t instanceof SocketTimeoutException ||
 				t instanceof HttpException ||
 				t instanceof SSLHandshakeException);
@@ -78,12 +82,16 @@ public class ExceptionUtil {
 	}
 
 	public String getMessage(Context context) {
-		if(t instanceof SocketTimeoutException) {
+		if(t == NO_EXTENSIONS) {
+			return "Please make sure you have at least one extension installed.";
+		} else if(t instanceof SocketTimeoutException) {
 			return "The connection timed out, please try again later.";
 		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
 		} else if(t instanceof HttpException e) {
 			return switch(e.getCode()) {
+				case 400 -> "The request was invalid, please try again later.";
+				case 401 -> "You are not logged in, please log in and try again.";
 				case 403 -> "You have no access to this resource, try logging into your account.";
 				case 404 -> "The resource you requested does not exist!";
 				case 429 -> "You have exceeded the rate limit, please try again later.";

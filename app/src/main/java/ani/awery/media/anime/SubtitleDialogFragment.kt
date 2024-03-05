@@ -10,9 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.R
-import ani.awery.databinding.BottomSheetSubtitlesBinding
-import ani.awery.databinding.ItemSubtitleTextBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.BottomSheetSubtitlesBinding
+import com.mrboomdev.awery.databinding.ItemSubtitleTextBinding
 import ani.awery.loadData
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.parsers.Subtitle

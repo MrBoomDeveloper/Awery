@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
-import ani.awery.databinding.FragmentLoginBinding
+import com.mrboomdev.awery.databinding.FragmentLoginBinding
 import ani.awery.openLinkInBrowser
 
 class LoginFragment : Fragment() {

@@ -9,7 +9,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.discord.Discord.saveToken
 import ani.awery.startMainActivity
 import ani.awery.themes.ThemeManager

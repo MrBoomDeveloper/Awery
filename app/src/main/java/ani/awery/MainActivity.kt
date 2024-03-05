@@ -29,7 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistHomeViewModel
-import ani.awery.databinding.ActivityMainBinding
+import com.mrboomdev.awery.databinding.ActivityMainBinding
 import ani.awery.home.AnimeFragment
 import ani.awery.home.HomeFragment
 import ani.awery.home.LoginFragment
@@ -47,6 +47,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nl.joery.animatedbottombar.AnimatedBottomBar
+import com.mrboomdev.awery.R
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity() {

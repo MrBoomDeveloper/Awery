@@ -6,7 +6,7 @@ import android.net.Uri
 import android.util.Base64
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.FragmentActivity
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.client
 import ani.awery.currContext
 import ani.awery.loadData

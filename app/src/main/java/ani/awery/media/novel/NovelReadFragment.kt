@@ -21,7 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import ani.awery.databinding.FragmentAnimeWatchBinding
+import com.mrboomdev.awery.databinding.FragmentAnimeWatchBinding
 import ani.awery.download.Download
 import ani.awery.download.DownloadsManager
 import ani.awery.download.novel.NovelDownloaderService

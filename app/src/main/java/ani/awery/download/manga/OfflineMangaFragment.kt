@@ -19,7 +19,7 @@ import android.widget.GridView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
 import ani.awery.download.Download
 import ani.awery.download.DownloadsManager

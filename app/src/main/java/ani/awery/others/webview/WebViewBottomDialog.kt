@@ -9,7 +9,7 @@ import android.webkit.CookieManager
 import android.webkit.WebViewClient
 import ani.awery.BottomSheetDialogFragment
 import ani.awery.FileUrl
-import ani.awery.databinding.BottomSheetWebviewBinding
+import com.mrboomdev.awery.databinding.BottomSheetWebviewBinding
 import ani.awery.defaultHeaders
 
 abstract class WebViewBottomDialog : BottomSheetDialogFragment() {

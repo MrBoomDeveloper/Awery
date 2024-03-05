@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.client
 import ani.awery.connections.mal.MAL.clientId
 import ani.awery.connections.mal.MAL.saveResponse

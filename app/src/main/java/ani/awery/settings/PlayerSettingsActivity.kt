@@ -11,8 +11,8 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.addTextChangedListener
-import ani.awery.R
-import ani.awery.databinding.ActivityPlayerSettingsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ActivityPlayerSettingsBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.media.Media

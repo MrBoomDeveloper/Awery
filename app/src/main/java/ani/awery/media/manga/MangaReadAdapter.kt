@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import com.mrboomdev.awery.R
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.NumberPicker
@@ -14,8 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.*
-import ani.awery.databinding.ItemAnimeWatchBinding
-import ani.awery.databinding.ItemChipBinding
+import com.mrboomdev.awery.databinding.ItemAnimeWatchBinding
+import com.mrboomdev.awery.databinding.ItemChipBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaDetailsActivity
 import ani.awery.media.SourceSearchDialogFragment

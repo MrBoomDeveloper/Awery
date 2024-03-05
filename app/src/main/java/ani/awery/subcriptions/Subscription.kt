@@ -7,6 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ani.awery.*
 import ani.awery.parsers.Episode
+import com.mrboomdev.awery.R
 import ani.awery.parsers.MangaChapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

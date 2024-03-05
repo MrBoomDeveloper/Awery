@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.download.Download
 import ani.awery.download.DownloadsManager
 import ani.awery.logger

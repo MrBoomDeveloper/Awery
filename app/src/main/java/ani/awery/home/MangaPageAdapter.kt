@@ -18,10 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.MediaPageTransformer
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
 import ani.awery.currContext
-import ani.awery.databinding.ItemMangaPageBinding
+import com.mrboomdev.awery.databinding.ItemMangaPageBinding
 import ani.awery.loadData
 import ani.awery.loadImage
 import ani.awery.media.GenreActivity

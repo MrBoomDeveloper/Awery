@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import ani.awery.R
-import ani.awery.databinding.FragmentAnimeExtensionsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.FragmentAnimeExtensionsBinding
 import ani.awery.loadData
 import ani.awery.others.LanguageMapper
 import ani.awery.settings.extensionprefs.AnimeSourcePreferencesFragment

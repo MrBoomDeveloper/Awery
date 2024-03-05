@@ -32,8 +32,8 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ani.awery.R;
-import ani.awery.databinding.LayoutActivityMainBinding;
+import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {

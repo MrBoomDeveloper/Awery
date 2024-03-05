@@ -12,9 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
-import ani.awery.databinding.BottomSheetSettingsBinding
+import com.mrboomdev.awery.databinding.BottomSheetSettingsBinding
 import ani.awery.download.DownloadContainerActivity
 import ani.awery.download.manga.OfflineMangaFragment
 import ani.awery.loadData

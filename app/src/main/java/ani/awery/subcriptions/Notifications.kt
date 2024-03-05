@@ -11,7 +11,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import ani.awery.FileUrl
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.UrlMedia
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl

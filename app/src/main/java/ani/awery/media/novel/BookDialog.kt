@@ -8,7 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.databinding.BottomSheetBookBinding
+import com.mrboomdev.awery.databinding.BottomSheetBookBinding
 import ani.awery.loadImage
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.others.getSerialized

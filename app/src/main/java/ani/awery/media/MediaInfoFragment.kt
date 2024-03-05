@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ani.awery.*
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.GenresViewModel
-import ani.awery.databinding.*
+import com.mrboomdev.awery.databinding.*
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +32,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.net.URLEncoder
+import com.mrboomdev.awery.R
 
 
 @SuppressLint("SetTextI18n")

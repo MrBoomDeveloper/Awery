@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
-import ani.awery.databinding.FragmentNovelExtensionsBinding
+import com.mrboomdev.awery.databinding.FragmentNovelExtensionsBinding
 import ani.awery.loadData
 import ani.awery.others.LanguageMapper
 import ani.awery.parsers.novel.NovelExtension

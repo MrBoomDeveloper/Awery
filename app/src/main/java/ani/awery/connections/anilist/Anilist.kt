@@ -4,7 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.client
 import ani.awery.currContext
 import ani.awery.openLinkInBrowser

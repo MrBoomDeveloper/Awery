@@ -37,10 +37,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import ani.awery.BuildConfig.APPLICATION_ID
+import com.mrboomdev.awery.BuildConfig.APPLICATION_ID
 import ani.awery.connections.anilist.Genre
 import ani.awery.connections.anilist.api.FuzzyDate
-import ani.awery.databinding.ItemCountDownBinding
+import com.mrboomdev.awery.databinding.ItemCountDownBinding
 import ani.awery.media.Media
 import ani.awery.parsers.ShowResponse
 import ani.awery.settings.UserInterfaceSettings
@@ -55,12 +55,12 @@ import com.google.android.material.internal.ViewUtils
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import nl.joery.animatedbottombar.AnimatedBottomBar
+import com.mrboomdev.awery.R
 import java.io.*
 import java.lang.Runnable
 import java.lang.reflect.Field
 import java.util.*
 import kotlin.math.*
-
 
 var statusBarHeight = 0
 var navBarHeight = 0

@@ -9,7 +9,6 @@ import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
-import com.mrboomdev.awery.util.legacy.CoroutineUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,11 +110,7 @@ public class AniyomiProvider extends ExtensionProvider {
 	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
 		var filter = new AnimeFilterList();
 
-		new Thread(() -> CoroutineUtil.getObservableValue(source.fetchSearchAnime(
-				params.page(),
-				params.query(),
-				filter
-		), (pag, t) -> {
+		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.page(), params.query(), filter, (pag, t) -> {
 			if(t != null) {
 				callback.onFailure(t);
 				return;

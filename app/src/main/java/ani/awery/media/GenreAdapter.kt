@@ -7,10 +7,10 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
 import ani.awery.currActivity
-import ani.awery.databinding.ItemGenreBinding
+import com.mrboomdev.awery.databinding.ItemGenreBinding
 import ani.awery.loadImage
 import ani.awery.px
 

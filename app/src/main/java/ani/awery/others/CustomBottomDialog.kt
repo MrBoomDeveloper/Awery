@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.databinding.BottomSheetCustomBinding
+import com.mrboomdev.awery.databinding.BottomSheetCustomBinding
 
 open class CustomBottomDialog : BottomSheetDialogFragment() {
     private var _binding: BottomSheetCustomBinding? = null

@@ -2,12 +2,14 @@ package com.mrboomdev.awery.ui.activity.player;
 
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -25,18 +27,17 @@ import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
+import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import ani.awery.R;
-import ani.awery.databinding.ScreenPlayerBinding;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
 	protected static ExtensionProvider source;
@@ -64,6 +65,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@OptIn(markerClass = UnstableApi.class)
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
+		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
@@ -73,7 +75,13 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.aspectRatioFrame.setAspectRatio(16f / 9f);
 		binding.aspectRatioFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
+		/*var audioAttributes = new AudioAttributes.Builder()
+				.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+				.setUsage(C.USAGE_MEDIA)
+				.build();*/
+
 		player = new ExoPlayer.Builder(this).build();
+		//player.setAudioAttributes(audioAttributes, true);
 		player.setVideoTextureView(binding.textureView);
 		player.addListener(this);
 
@@ -191,22 +199,26 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupButton(binding.pause, () -> {
 			if(isVideoBuffering) return;
 
-			if(!isVideoPaused) {
-				Glide.with(this).load(R.drawable.anim_pause_to_play).into(binding.pause);
+			if(player.isPlaying()) {
 				player.pause();
 				controller.addLockedUiReason("pause");
 			} else {
-				Glide.with(this).load(R.drawable.anim_play_to_pause).into(binding.pause);
 				player.play();
 				controller.removeLockedUiReason("pause");
 			}
 
-			isVideoPaused = !isVideoPaused;
+			isVideoPaused = !player.isPlaying();
 		});
 
-		registerPip();
+		setupPip();
 		loadData();
 		controller.showUiTemporarily();
+	}
+
+	@Override
+	public void onIsPlayingChanged(boolean isPlaying) {
+		var res = isPlaying ? R.drawable.anim_play_to_pause : R.drawable.anim_pause_to_play;
+		Glide.with(this).load(res).into(binding.pause);
 	}
 
 	public static void selectSource(ExtensionProvider source) {
@@ -261,8 +273,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
-	private void registerPip() {
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+	private void setupPip() {
+		if((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ||
+				(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE))) {
 			binding.pip.setVisibility(View.GONE);
 			return;
 		}
@@ -301,6 +314,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				return;
 			}
 
+			controller.showUiTemporarily();
 			clickListener.run();
 		});
 	}
@@ -379,6 +393,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		if(!isVideoPaused) {
 			player.play();
 		}
+
+		controller.showUiTemporarily();
 	}
 
 	@Override
@@ -405,13 +421,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		ViewUtil.setOnApplyInsetsListener(binding.uiOverlay, insets -> {
 			var systemInsets = insets.getInsets(UI_INSETS);
-			var margin = ViewUtil.dpPx(10);
 
-			ViewUtil.setLeftMargin(binding.exit, margin + systemInsets.left);
-			ViewUtil.setRightMargin(binding.settings, systemInsets.right + margin);
-
-			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom + margin);
-			ViewUtil.setHorizontalMargin(binding.slider, margin + systemInsets.left, margin + systemInsets.right);
+			ViewUtil.setLeftMargin(binding.exit, systemInsets.left);
+			ViewUtil.setLeftMargin(binding.slider, systemInsets.left);
+			ViewUtil.setLeftMargin(binding.bottomControls, systemInsets.left);
+			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom);
 		});
 	}
 }

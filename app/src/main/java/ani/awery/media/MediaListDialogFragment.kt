@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mrboomdev.awery.R
 import android.widget.ArrayAdapter
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
@@ -15,7 +16,7 @@ import ani.awery.*
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.api.FuzzyDate
 import ani.awery.connections.mal.MAL
-import ani.awery.databinding.BottomSheetMediaListBinding
+import com.mrboomdev.awery.databinding.BottomSheetMediaListBinding
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

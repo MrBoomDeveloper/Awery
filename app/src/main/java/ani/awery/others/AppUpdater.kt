@@ -6,6 +6,7 @@ import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.mrboomdev.awery.R
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
@@ -15,6 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.fragment.app.FragmentActivity
 import ani.awery.*
+import com.mrboomdev.awery.BuildConfig
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import kotlinx.coroutines.Dispatchers

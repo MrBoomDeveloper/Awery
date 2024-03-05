@@ -15,7 +15,7 @@ import ani.awery.*
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistSearch
 import ani.awery.connections.anilist.SearchResults
-import ani.awery.databinding.ActivitySearchBinding
+import com.mrboomdev.awery.databinding.ActivitySearchBinding
 import ani.awery.themes.ThemeManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

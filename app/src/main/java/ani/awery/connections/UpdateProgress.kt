@@ -1,6 +1,6 @@
 package ani.awery.connections
 
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.mal.MAL

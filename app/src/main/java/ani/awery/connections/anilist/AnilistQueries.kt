@@ -1,7 +1,7 @@
 package ani.awery.connections.anilist
 
 import android.app.Activity
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.checkGenreTime
 import ani.awery.checkId
 import ani.awery.connections.anilist.Anilist.authorRoles

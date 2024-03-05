@@ -16,7 +16,7 @@ import android.text.style.UnderlineSpan
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatTextView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import java.lang.Integer.min
 import kotlin.math.max
 import kotlin.math.roundToInt

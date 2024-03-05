@@ -21,7 +21,7 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
-import ani.awery.databinding.ScreenSettingsBinding;
+import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();

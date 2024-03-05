@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
+import com.mrboomdev.awery.R
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
@@ -17,9 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.*
-import ani.awery.databinding.BottomSheetSelectorBinding
-import ani.awery.databinding.ItemStreamBinding
-import ani.awery.databinding.ItemUrlBinding
+import com.mrboomdev.awery.databinding.BottomSheetSelectorBinding
+import com.mrboomdev.awery.databinding.ItemStreamBinding
+import com.mrboomdev.awery.databinding.ItemUrlBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.others.Download.download

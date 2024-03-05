@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 
 public class DialogBuilder {
 	private final Map<Integer, Field> fieldMap = new HashMap<>();

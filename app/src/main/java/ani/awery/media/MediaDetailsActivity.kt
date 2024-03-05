@@ -27,12 +27,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import ani.awery.CustomBottomNavBar
 import ani.awery.GesturesListener
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
 import ani.awery.ZoomOutPageTransformer
 import ani.awery.connections.anilist.Anilist
 import ani.awery.copyToClipboard
-import ani.awery.databinding.ActivityMediaBinding
+import com.mrboomdev.awery.databinding.ActivityMediaBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.loadImage

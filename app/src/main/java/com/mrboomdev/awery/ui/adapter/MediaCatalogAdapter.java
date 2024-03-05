@@ -14,7 +14,7 @@ import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.observable.ObservableList;
 
-import ani.awery.databinding.ItemGridMediaCatalogBinding;
+import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
 	private ObservableList<CatalogMedia> items;

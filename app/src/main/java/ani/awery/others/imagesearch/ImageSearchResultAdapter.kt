@@ -3,8 +3,8 @@ package ani.awery.others.imagesearch
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
-import ani.awery.databinding.ItemSearchByImageBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ItemSearchByImageBinding
 import ani.awery.loadImage
 
 class ImageSearchResultAdapter(private val searchResults: List<ImageSearchViewModel.ImageResult>) :

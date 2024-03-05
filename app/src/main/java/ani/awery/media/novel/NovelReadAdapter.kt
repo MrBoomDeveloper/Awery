@@ -8,8 +8,8 @@ import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
-import ani.awery.databinding.ItemNovelHeaderBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ItemNovelHeaderBinding
 import ani.awery.media.Media
 import ani.awery.parsers.NovelReadSources
 

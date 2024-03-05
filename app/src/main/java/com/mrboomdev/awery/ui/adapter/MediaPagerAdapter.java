@@ -33,9 +33,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import ani.awery.databinding.LayoutHeaderBinding;
-import ani.awery.databinding.MediaCatalogFeaturedBinding;
-import ani.awery.databinding.MediaCatalogFeaturedPagerBinding;
+import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
+import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
+import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 
 public class MediaPagerAdapter extends SingleViewAdapter {
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();

@@ -8,7 +8,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import ani.awery.R
+import com.mrboomdev.awery.R
 
 
 class OfflineMangaAdapter(

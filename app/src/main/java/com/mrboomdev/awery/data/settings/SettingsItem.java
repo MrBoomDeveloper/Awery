@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 
 public class SettingsItem {
 	private final String key, title, description, icon;

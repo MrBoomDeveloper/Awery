@@ -28,8 +28,8 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.io.IOException;
 import java.util.Objects;
 
-import ani.awery.R;
-import ani.awery.databinding.MediaDetailsActivityBinding;
+import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
 
 public class MediaActivity extends AppCompatActivity {
 	private MediaDetailsActivityBinding binding;

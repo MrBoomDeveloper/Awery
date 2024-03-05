@@ -17,14 +17,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
 import ani.awery.bottomBar
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistMangaViewModel
 import ani.awery.connections.anilist.SearchResults
 import ani.awery.connections.anilist.getUserId
-import ani.awery.databinding.FragmentMangaBinding
+import com.mrboomdev.awery.databinding.FragmentMangaBinding
 import ani.awery.loadData
 import ani.awery.media.MediaAdaptor
 import ani.awery.media.ProgressAdapter

@@ -9,11 +9,11 @@ import android.view.animation.LinearInterpolator
 import android.widget.NumberPicker
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.updateProgress
 import ani.awery.currContext
-import ani.awery.databinding.ItemChapterListBinding
-import ani.awery.databinding.ItemEpisodeCompactBinding
+import com.mrboomdev.awery.databinding.ItemChapterListBinding
+import com.mrboomdev.awery.databinding.ItemEpisodeCompactBinding
 import ani.awery.media.Media
 import ani.awery.setAnimation
 import kotlinx.coroutines.delay

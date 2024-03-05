@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.util.Pair
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.databinding.ItemCharacterBinding
+import com.mrboomdev.awery.databinding.ItemCharacterBinding
 import ani.awery.loadData
 import ani.awery.loadImage
 import ani.awery.setAnimation

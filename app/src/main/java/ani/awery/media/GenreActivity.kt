@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.GenresViewModel
-import ani.awery.databinding.ActivityGenreBinding
+import com.mrboomdev.awery.databinding.ActivityGenreBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight

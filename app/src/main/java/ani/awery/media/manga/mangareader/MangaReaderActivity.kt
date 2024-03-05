@@ -25,13 +25,14 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.*
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.discord.Discord
 import ani.awery.connections.discord.DiscordService
 import ani.awery.connections.discord.DiscordServiceRunningSingleton
 import ani.awery.connections.discord.RPC
 import ani.awery.connections.updateProgress
-import ani.awery.databinding.ActivityMangaReaderBinding
+import com.mrboomdev.awery.databinding.ActivityMangaReaderBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.media.MediaSingleton

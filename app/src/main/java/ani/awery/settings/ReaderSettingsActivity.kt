@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
-import ani.awery.R
-import ani.awery.databinding.ActivityReaderSettingsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ActivityReaderSettingsBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.navBarHeight

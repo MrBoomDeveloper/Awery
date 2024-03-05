@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
-import ani.awery.databinding.ActivityListBinding
+import com.mrboomdev.awery.databinding.ActivityListBinding
 import ani.awery.loadData
 import ani.awery.media.user.ListViewPagerAdapter
 import ani.awery.settings.UserInterfaceSettings

@@ -1,7 +1,7 @@
 package ani.awery.subcriptions
 
 import android.content.Context
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
 import ani.awery.loadData
 import ani.awery.media.Media

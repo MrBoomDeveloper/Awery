@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import ani.awery.databinding.FragmentListBinding
+import com.mrboomdev.awery.databinding.FragmentListBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaAdaptor
 import ani.awery.media.OtherDetailsViewModel

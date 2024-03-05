@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.InputFilter.LengthFilter
 import android.view.Gravity
 import android.view.LayoutInflater
+import com.mrboomdev.awery.R
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -13,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import ani.awery.*
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.mal.MAL
-import ani.awery.databinding.BottomSheetMediaListSmallBinding
+import com.mrboomdev.awery.databinding.BottomSheetMediaListSmallBinding
 import ani.awery.others.getSerialized
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -3,7 +3,7 @@ package ani.awery.media
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.databinding.ItemTitleBinding
+import com.mrboomdev.awery.databinding.ItemTitleBinding
 
 class TitleAdapter(private val text: String) :
     RecyclerView.Adapter<TitleAdapter.TitleViewHolder>() {

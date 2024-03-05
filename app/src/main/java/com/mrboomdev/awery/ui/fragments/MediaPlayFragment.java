@@ -22,11 +22,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.data.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
+import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
@@ -43,11 +47,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
-import ani.awery.R;
-import ani.awery.databinding.ItemListDropdownBinding;
-import ani.awery.databinding.LayoutLoadingBinding;
-import ani.awery.databinding.LayoutWatchVariantsBinding;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	private final String TAG = "MediaPlayFragment";
@@ -119,6 +118,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		this.media = media;
 
 		if(groupedByLangEntries == null) {
+			return;
+		}
+
+		if(groupedByLangEntries.isEmpty()) {
+			handleExceptionUi(null, ExceptionUtil.NO_EXTENSIONS);
+			variantsAdapter.setEnabled(false);
 			return;
 		}
 
@@ -332,32 +337,34 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				var callback = foundMediaCallback.get();
 				if(callback == null) return;
 
-				if(e != ExceptionUtil.ZERO_RESULTS) {
-					handleExceptionMark(source, e);
-					if(autoSelectNextSource()) return;
-					handleExceptionUi(source, e);
-					return;
-				}
+				AweryApp.runOnUiThread(() -> {
+					if(e != ExceptionUtil.ZERO_RESULTS) {
+						handleExceptionMark(source, e);
+						if(autoSelectNextSource()) return;
+						handleExceptionUi(source, e);
+						return;
+					}
 
-				if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
-					var newIndex = lastUsedTitleIndex.incrementAndGet();
-					searchParams.setQuery(media.titles.get(newIndex));
-					source.search(searchParams.build(), callback);
+					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
+						var newIndex = lastUsedTitleIndex.incrementAndGet();
+						searchParams.setQuery(media.titles.get(newIndex));
+						source.search(searchParams.build(), callback);
 
-					AweryApp.runOnUiThread(() -> variantsAdapter.getBinding((binding, didJustCreated) ->
-							binding.searchDropdown.setText(searchParams.getQuery(), false)));
-				} else {
-					handleExceptionMark(source, ExceptionUtil.ZERO_RESULTS);
-					if(autoSelectNextSource()) return;
+						variantsAdapter.getBinding((binding, didJustCreated) ->
+								binding.searchDropdown.setText(searchParams.getQuery(), false));
+					} else {
+						handleExceptionMark(source, ExceptionUtil.ZERO_RESULTS);
+						if(autoSelectNextSource()) return;
 
-					AweryApp.runOnUiThread(() -> placeholderAdapter.getBinding((binding, didJustCreated) -> {
-						binding.title.setText(R.string.nothing_found);
-						binding.message.setText(R.string.tried_all_titles);
-						binding.progressBar.setVisibility(View.GONE);
-						binding.info.setVisibility(View.VISIBLE);
-						placeholderAdapter.setEnabledSuperForce(true);
-					}));
-				}
+						placeholderAdapter.getBinding((binding, didJustCreated) -> {
+							binding.title.setText(R.string.nothing_found);
+							binding.message.setText(R.string.tried_all_titles);
+							binding.progressBar.setVisibility(View.GONE);
+							binding.info.setVisibility(View.VISIBLE);
+							placeholderAdapter.setEnabledSuperForce(true);
+						});
+					}
+				});
 			}
 		});
 
@@ -404,7 +411,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private void handleExceptionUi(ExtensionProvider source, Throwable throwable) {
-		if(source != selectedSource) return;
+		if(source != selectedSource && source != null) return;
 		var error = new ExceptionUtil(throwable);
 		Context context;
 

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.databinding.BottomSheetDevelopersBinding
+import com.mrboomdev.awery.databinding.BottomSheetDevelopersBinding
 
 class DevelopersDialogFragment : BottomSheetDialogFragment() {
     private var _binding: BottomSheetDevelopersBinding? = null

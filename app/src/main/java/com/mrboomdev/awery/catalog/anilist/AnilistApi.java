@@ -11,7 +11,7 @@ import com.squareup.moshi.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 import ani.awery.connections.anilist.Anilist;
 
 public class AnilistApi {

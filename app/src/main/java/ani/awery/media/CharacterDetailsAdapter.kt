@@ -5,9 +5,9 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currActivity
-import ani.awery.databinding.ItemCharacterDetailsBinding
+import com.mrboomdev.awery.databinding.ItemCharacterDetailsBinding
 import ani.awery.others.SpoilerPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin

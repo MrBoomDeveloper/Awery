@@ -15,9 +15,9 @@ import com.mrboomdev.awery.ui.activity.SettingsActivity;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
-import ani.awery.databinding.LayoutHeaderBinding;
-import ani.awery.databinding.LayoutLoadingBinding;
-import ani.awery.databinding.MediaCatalogFragmentBinding;
+import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
+import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
 import ani.awery.media.SearchActivity;
 
 public class MediaCatalogFragment extends Fragment {

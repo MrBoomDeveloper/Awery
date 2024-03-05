@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import com.mrboomdev.awery.R
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -28,7 +29,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.*
-import ani.awery.databinding.FragmentAnimeWatchBinding
+import com.mrboomdev.awery.databinding.FragmentAnimeWatchBinding
 import ani.awery.download.Download
 import ani.awery.download.DownloadsManager
 import ani.awery.download.manga.MangaDownloaderService

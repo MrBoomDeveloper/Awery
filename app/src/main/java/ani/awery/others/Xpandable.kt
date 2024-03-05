@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.children
-import ani.awery.R
+import com.mrboomdev.awery.R
 
 
 class Xpandable @JvmOverloads constructor(

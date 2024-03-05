@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.TextView
 import androidx.core.content.edit
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.others.CustomBottomDialog
 import ani.awery.toast
 import ani.awery.tryWith

@@ -19,10 +19,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.*
-import ani.awery.databinding.ItemMediaCompactBinding
-import ani.awery.databinding.ItemMediaLargeBinding
-import ani.awery.databinding.ItemMediaPageBinding
-import ani.awery.databinding.ItemMediaPageSmallBinding
+import com.mrboomdev.awery.databinding.ItemMediaCompactBinding
+import com.mrboomdev.awery.databinding.ItemMediaLargeBinding
+import com.mrboomdev.awery.databinding.ItemMediaPageBinding
+import com.mrboomdev.awery.databinding.ItemMediaPageSmallBinding
 import ani.awery.settings.UserInterfaceSettings
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator
 import jp.wasabeef.glide.transformations.BlurTransformation
 import java.io.Serializable
+import com.mrboomdev.awery.R
 
 class MediaAdaptor(
     var type: Int,

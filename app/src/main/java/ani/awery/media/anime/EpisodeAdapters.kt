@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.mrboomdev.awery.R
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.*
 import ani.awery.connections.updateProgress
-import ani.awery.databinding.ItemEpisodeCompactBinding
-import ani.awery.databinding.ItemEpisodeGridBinding
-import ani.awery.databinding.ItemEpisodeListBinding
+import com.mrboomdev.awery.databinding.ItemEpisodeCompactBinding
+import com.mrboomdev.awery.databinding.ItemEpisodeGridBinding
+import com.mrboomdev.awery.databinding.ItemEpisodeListBinding
 import ani.awery.media.Media
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl

@@ -17,6 +17,8 @@ import com.mrboomdev.awery.catalog.template.CatalogList;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
+import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
+import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -24,9 +26,6 @@ import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
-
-import ani.awery.databinding.PopupMediaActionsBinding;
-import ani.awery.databinding.PopupMediaBookmarkBinding;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -206,6 +205,7 @@ public class MediaUtils {
 					binding.lists.addView(checkbox);
 
 					if(current != null && current.lists.contains(item.getId())) {
+						checked.put(item.getId(), true);
 						checkbox.setChecked(true);
 					}
 

@@ -1,6 +1,6 @@
 package ani.awery.others
 
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.client
 import ani.awery.currContext
 import ani.awery.media.Media

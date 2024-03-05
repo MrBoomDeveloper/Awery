@@ -2,7 +2,7 @@ package ani.awery.parsers
 
 import android.net.Uri
 import ani.awery.FileUrl
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.asyncMap
 import ani.awery.currContext
 import ani.awery.loadData

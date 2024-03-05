@@ -8,7 +8,7 @@ import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import androidx.media3.exoplayer.scheduler.Scheduler
-import ani.awery.R
+import com.mrboomdev.awery.R
 
 @UnstableApi
 class MyDownloadService : DownloadService(1, 1, "download_service", R.string.downloads, 0) {

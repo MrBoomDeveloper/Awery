@@ -11,9 +11,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.GesturesListener
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
-import ani.awery.databinding.ItemProgressbarBinding
+import com.mrboomdev.awery.databinding.ItemProgressbarBinding
 import ani.awery.snackString
 
 class ProgressAdapter(private val horizontal: Boolean = true, searched: Boolean) :

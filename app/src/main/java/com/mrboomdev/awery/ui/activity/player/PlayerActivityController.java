@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import ani.awery.databinding.PopupQualityHeaderBinding;
-import ani.awery.databinding.PopupQualityItemBinding;
+import com.mrboomdev.awery.databinding.PopupQualityHeaderBinding;
+import com.mrboomdev.awery.databinding.PopupQualityItemBinding;
 
 public class PlayerActivityController {
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;

@@ -58,14 +58,14 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.*
 import androidx.media3.ui.CaptionStyleCompat.*
 import ani.awery.*
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.discord.Discord
 import ani.awery.connections.discord.DiscordService
 import ani.awery.connections.discord.DiscordServiceRunningSingleton
 import ani.awery.connections.discord.RPC
 import ani.awery.connections.updateProgress
-import ani.awery.databinding.ActivityExoplayerBinding
+import com.mrboomdev.awery.databinding.ActivityExoplayerBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.media.SubtitleDownloader

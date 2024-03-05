@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
-import ani.awery.R
+import com.mrboomdev.awery.R
 
 class OutlineTextView : AppCompatTextView {
 

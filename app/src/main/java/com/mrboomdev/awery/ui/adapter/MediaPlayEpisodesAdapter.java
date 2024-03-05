@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
-import ani.awery.databinding.ItemListEpisodeBinding;
+import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;

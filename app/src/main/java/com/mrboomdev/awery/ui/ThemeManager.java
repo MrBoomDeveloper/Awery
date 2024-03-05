@@ -10,7 +10,7 @@ import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 
 public class ThemeManager {
 	private static final Theme DEFAULT_THEME = Theme.PINK;

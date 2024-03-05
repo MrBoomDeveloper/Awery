@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import ani.awery.EmptyAdapter
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
-import ani.awery.databinding.ActivityStudioBinding
+import com.mrboomdev.awery.databinding.ActivityStudioBinding
 import ani.awery.initActivity
 import ani.awery.navBarHeight
 import ani.awery.others.getSerialized

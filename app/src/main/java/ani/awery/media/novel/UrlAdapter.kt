@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.FileUrl
 import ani.awery.copyToClipboard
-import ani.awery.databinding.ItemUrlBinding
+import com.mrboomdev.awery.databinding.ItemUrlBinding
 import ani.awery.parsers.Book
 import ani.awery.setSafeOnClickListener
 import ani.awery.tryWith

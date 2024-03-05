@@ -2,7 +2,7 @@
 
 package ani.awery.connections.anilist.api
 
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

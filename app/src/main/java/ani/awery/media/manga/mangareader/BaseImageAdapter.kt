@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uy.kohesive.injekt.api.get
 import java.io.File
+import com.mrboomdev.awery.R
 
 abstract class BaseImageAdapter(
     val activity: MangaReaderActivity,

@@ -7,16 +7,27 @@ plugins {
 }
 
 android {
-    namespace "ani.awery"
+    namespace "com.mrboomdev.awery"
     compileSdk 34
 
     defaultConfig {
-        applicationId "ani.awery"
+        applicationId "com.mrboomdev.awery"
         minSdk 24
         targetSdk 34
-        versionCode ((System.currentTimeMillis() / 60000).toInteger())
-        versionName "2.1.0-beta"
+        versionName "1.0.0"
         signingConfig signingConfigs.debug
+
+        /* We want to make sure that all build versions across the planet will be in sync */
+        var timezone = TimeZone.getTimeZone("UTC")
+        var calendarCurrent = Calendar.getInstance(timezone)
+
+        /* Just a random date to begin with */
+        var calendarBegin = Calendar.getInstance(timezone)
+        calendarBegin.set(2024, 2, 4)
+
+        /* Only one version can be published per hour or else horrible things will happen */
+        var newVersionCodeTimeout = 60 * 60 * 1000
+        versionCode (((calendarCurrent.timeInMillis - calendarBegin.timeInMillis) / newVersionCodeTimeout) as int)
 
         resourceConfigurations.addAll(["en", "ru"])
 
@@ -34,6 +45,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".beta"
+            versionNameSuffix "-beta"
             debuggable true
             minifyEnabled false
         }
@@ -41,6 +53,7 @@ android {
         release {
             debuggable false
             minifyEnabled false
+            versionNameSuffix "-release"
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
@@ -89,7 +102,6 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer-dash:$exo_version"
     implementation "androidx.media3:media3-datasource-okhttp:$exo_version"
     implementation "androidx.media3:media3-session:$exo_version"
-    implementation "com.google.android.exoplayer:exoplayer-hls:2.19.1"
 
     // Database
     def room_version = "2.6.1"

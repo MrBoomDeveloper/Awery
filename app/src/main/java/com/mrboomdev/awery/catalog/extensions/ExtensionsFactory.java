@@ -298,7 +298,7 @@ public class ExtensionsFactory {
 	}
 
 	@NonNull
-	public static Collection<ExtensionsManager> getAllManagers() {
+	public static Collection<ExtensionsManager<?>> getAllManagers() {
 		return Collections.emptyList();
 	}
 }

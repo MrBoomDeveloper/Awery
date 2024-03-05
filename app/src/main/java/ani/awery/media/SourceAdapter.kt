@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.databinding.ItemCharacterBinding
+import com.mrboomdev.awery.databinding.ItemCharacterBinding
 import ani.awery.loadImage
 import ani.awery.parsers.ShowResponse
 import kotlinx.coroutines.CoroutineScope

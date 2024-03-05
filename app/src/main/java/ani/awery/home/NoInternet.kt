@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.ZoomOutPageTransformer
-import ani.awery.databinding.ActivityNoInternetBinding
+import com.mrboomdev.awery.databinding.ActivityNoInternetBinding
 import ani.awery.download.manga.OfflineMangaFragment
 import ani.awery.initActivity
 import ani.awery.loadData

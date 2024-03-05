@@ -13,9 +13,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
-import ani.awery.databinding.ActivityCharacterBinding
+import com.mrboomdev.awery.databinding.ActivityCharacterBinding
 import ani.awery.initActivity
 import ani.awery.loadData
 import ani.awery.loadImage

@@ -11,9 +11,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currActivity
-import ani.awery.databinding.BottomSheetSelectorBinding
+import com.mrboomdev.awery.databinding.BottomSheetSelectorBinding
 import ani.awery.media.MediaDetailsViewModel
 import ani.awery.media.MediaSingleton
 import ani.awery.media.manga.MangaChapter

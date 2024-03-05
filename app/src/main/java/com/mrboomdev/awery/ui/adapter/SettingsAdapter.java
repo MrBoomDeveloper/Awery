@@ -17,7 +17,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Objects;
 
-import ani.awery.databinding.ItemListSettingBinding;
+import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private DataHandler handler;

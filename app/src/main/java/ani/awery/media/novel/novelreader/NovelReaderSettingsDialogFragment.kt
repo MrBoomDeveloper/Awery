@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import ani.awery.BottomSheetDialogFragment
 import ani.awery.NoPaddingArrayAdapter
-import ani.awery.R
-import ani.awery.databinding.BottomSheetCurrentNovelReaderSettingsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.BottomSheetCurrentNovelReaderSettingsBinding
 import ani.awery.settings.CurrentNovelReaderSettings
 import ani.awery.settings.CurrentReaderSettings
 

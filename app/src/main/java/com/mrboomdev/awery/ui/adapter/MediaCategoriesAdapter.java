@@ -16,7 +16,7 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Collection;
 
-import ani.awery.databinding.ItemListMediaCategoryBinding;
+import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
 
 public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> implements ObservableList.AddObserver<MediaCategoriesAdapter.Category> {
 	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();

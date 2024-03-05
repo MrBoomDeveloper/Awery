@@ -19,14 +19,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.Refresh
 import ani.awery.bottomBar
 import ani.awery.connections.anilist.Anilist
 import ani.awery.connections.anilist.AnilistHomeViewModel
 import ani.awery.connections.anilist.getUserId
 import ani.awery.currContext
-import ani.awery.databinding.FragmentHomeBinding
+import com.mrboomdev.awery.databinding.FragmentHomeBinding
 import ani.awery.loadData
 import ani.awery.loadImage
 import ani.awery.media.Media

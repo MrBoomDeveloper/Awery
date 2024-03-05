@@ -20,7 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ani.awery.MainActivity
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.discord.serializers.Presence
 import ani.awery.connections.discord.serializers.User
 import ani.awery.isOnline

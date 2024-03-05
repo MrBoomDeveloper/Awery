@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import ani.awery.BottomSheetDialogFragment
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
-import ani.awery.databinding.BottomSheetSearchFilterBinding
-import ani.awery.databinding.ItemChipBinding
+import com.mrboomdev.awery.databinding.BottomSheetSearchFilterBinding
+import com.mrboomdev.awery.databinding.ItemChipBinding
 import com.google.android.material.chip.Chip
 
 class SearchFilterBottomDialog : BottomSheetDialogFragment() {

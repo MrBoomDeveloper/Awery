@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
+import com.mrboomdev.awery.R
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -19,7 +20,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.*
-import ani.awery.databinding.FragmentAnimeWatchBinding
+import com.mrboomdev.awery.databinding.FragmentAnimeWatchBinding
 import ani.awery.media.Media
 import ani.awery.media.MediaDetailsActivity
 import ani.awery.media.MediaDetailsViewModel

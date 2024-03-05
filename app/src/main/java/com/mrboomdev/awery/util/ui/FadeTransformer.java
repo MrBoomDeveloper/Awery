@@ -8,7 +8,7 @@ import android.view.animation.ScaleAnimation;
 import androidx.annotation.NonNull;
 import androidx.viewpager2.widget.ViewPager2;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 
 public class FadeTransformer implements ViewPager2.PageTransformer {
 

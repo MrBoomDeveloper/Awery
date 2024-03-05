@@ -9,8 +9,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import ani.awery.BottomSheetDialogFragment
 import ani.awery.FileUrl
-import ani.awery.R
-import ani.awery.databinding.BottomSheetImageBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.BottomSheetImageBinding
 import ani.awery.media.manga.mangareader.BaseImageAdapter.Companion.loadBitmap
 import ani.awery.media.manga.mangareader.BaseImageAdapter.Companion.loadBitmap_old
 import ani.awery.media.manga.mangareader.BaseImageAdapter.Companion.mergeBitmap

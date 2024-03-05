@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import ani.awery.R
-import ani.awery.databinding.FragmentMangaExtensionsBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.FragmentMangaExtensionsBinding
 import ani.awery.settings.paging.MangaExtensionAdapter
 import ani.awery.settings.paging.MangaExtensionsViewModel
 import ani.awery.settings.paging.MangaExtensionsViewModelFactory

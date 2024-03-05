@@ -2,7 +2,7 @@ package com.mrboomdev.awery.util;
 
 import android.content.Context;
 
-import ani.awery.R;
+import com.mrboomdev.awery.R;
 
 public class TranslationUtil {
 

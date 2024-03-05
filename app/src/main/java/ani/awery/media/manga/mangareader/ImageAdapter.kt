@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
-import ani.awery.databinding.ItemImageBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ItemImageBinding
 import ani.awery.media.manga.MangaChapter
 import ani.awery.settings.CurrentReaderSettings.Directions.LEFT_TO_RIGHT
 import ani.awery.settings.CurrentReaderSettings.Directions.RIGHT_TO_LEFT

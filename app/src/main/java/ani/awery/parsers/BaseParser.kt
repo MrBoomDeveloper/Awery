@@ -1,7 +1,7 @@
 package ani.awery.parsers
 
 import ani.awery.FileUrl
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.currContext
 import ani.awery.loadData
 import ani.awery.logger

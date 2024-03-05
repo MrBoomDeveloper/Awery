@@ -11,9 +11,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ani.awery.App.Companion.context
-import ani.awery.R
+import com.mrboomdev.awery.R
 import ani.awery.connections.anilist.Anilist
-import ani.awery.databinding.ActivityImageSearchBinding
+import com.mrboomdev.awery.databinding.ActivityImageSearchBinding
 import ani.awery.media.MediaDetailsActivity
 import ani.awery.themes.ThemeManager
 import ani.awery.toast

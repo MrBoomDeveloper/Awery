@@ -26,8 +26,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.webkit.WebViewCompat
 import ani.awery.GesturesListener
 import ani.awery.NoPaddingArrayAdapter
-import ani.awery.R
-import ani.awery.databinding.ActivityNovelReaderBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ActivityNovelReaderBinding
 import ani.awery.hideSystemBars
 import ani.awery.loadData
 import ani.awery.others.ImageViewDialog

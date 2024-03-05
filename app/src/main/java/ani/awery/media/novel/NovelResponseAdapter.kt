@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ani.awery.R
-import ani.awery.databinding.ItemNovelResponseBinding
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.databinding.ItemNovelResponseBinding
 import ani.awery.parsers.ShowResponse
 import ani.awery.setAnimation
 import ani.awery.snackString

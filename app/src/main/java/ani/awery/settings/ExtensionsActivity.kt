@@ -9,13 +9,14 @@ import android.text.TextWatcher
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import androidx.activity.OnBackPressedCallback
+import com.mrboomdev.awery.R
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import ani.awery.*
-import ani.awery.databinding.ActivityExtensionsBinding
+import com.mrboomdev.awery.databinding.ActivityExtensionsBinding
 import ani.awery.themes.ThemeManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator

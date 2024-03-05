@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import ani.awery.connections.anilist.Anilist
-import ani.awery.databinding.ItemChipBinding
-import ani.awery.databinding.ItemSearchHeaderBinding
+import com.mrboomdev.awery.databinding.ItemChipBinding
+import com.mrboomdev.awery.databinding.ItemSearchHeaderBinding
 import ani.awery.saveData
 import com.google.android.material.checkbox.MaterialCheckBox.*
 
