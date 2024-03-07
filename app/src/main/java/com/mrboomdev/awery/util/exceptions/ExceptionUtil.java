@@ -52,7 +52,7 @@ public class ExceptionUtil {
 			};
 		} else if(t instanceof UnsupportedOperationException) {
 			return "Feature not implemented!";
-		} else if(t instanceof JsonDecodingException) {
+		} else if(t instanceof JsonDecodingException | t instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(t instanceof UnknownHostException) {
 			return "No internet connection!";
@@ -84,6 +84,8 @@ public class ExceptionUtil {
 	public String getMessage(Context context) {
 		if(t == NO_EXTENSIONS) {
 			return "Please make sure you have at least one extension installed.";
+		} else if(t == ZERO_RESULTS) {
+			return "There were no results found for your query.";
 		} else if(t instanceof SocketTimeoutException) {
 			return "The connection timed out, please try again later.";
 		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
