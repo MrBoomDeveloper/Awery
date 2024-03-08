@@ -26,6 +26,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -185,7 +186,9 @@ public class MediaUtils {
 
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
 		new Thread(() -> {
-			var lists = AweryApp.getDatabase().getListDao().getAll();
+			var lists = AweryApp.getDatabase().getListDao().getAll().stream().filter(item ->
+					!item.getId().equals(AweryApp.CATALOG_LIST_HIDDEN)).collect(Collectors.toList());
+
 			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();
 

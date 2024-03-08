@@ -15,7 +15,6 @@ android {
         minSdk 24
         targetSdk 34
         versionName "1.0.0"
-        signingConfig signingConfigs.debug
 
         /* We want to make sure that all build versions across the planet will be in sync */
         var timezone = TimeZone.getTimeZone("UTC")
@@ -55,6 +54,7 @@ android {
             minifyEnabled false
             versionNameSuffix "-release"
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
         }
     }
 

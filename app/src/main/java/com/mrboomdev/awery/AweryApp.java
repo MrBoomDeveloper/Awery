@@ -44,6 +44,7 @@ import ani.awery.connections.anilist.Anilist;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
+	public static final String CATALOG_LIST_HIDDEN = "7";
 	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
@@ -174,7 +175,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 						DBCatalogList.fromCatalogList(new CatalogList("Delayed", "3")),
 						DBCatalogList.fromCatalogList(new CatalogList("Completed", "4")),
 						DBCatalogList.fromCatalogList(new CatalogList("Dropped", "5")),
-						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6"))
+						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6")),
+						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_HIDDEN))
 				);
 
 				var array = lists.toArray(new DBCatalogList[0]);
