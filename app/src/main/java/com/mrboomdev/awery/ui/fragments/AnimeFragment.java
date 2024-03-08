@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -22,9 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class AnimeFragment extends MediaCatalogFragment {
-	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 	private int loadId = 0, doneTasks, totalTasks, doneSuccessfully;
+	private MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

@@ -22,6 +22,8 @@ public class ViewUtil {
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
+	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
+	public static final int MATCH_CONSTRAINT_PERCENT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
 
 	public static void setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
@@ -41,6 +43,16 @@ public class ViewUtil {
 	@Contract("_, _ -> new")
 	public static ViewGroup.MarginLayoutParams createMarginParams(int width, int height) {
 		return new ViewGroup.MarginLayoutParams(width, height);
+	}
+
+	public static void setWeight(@NonNull View view, float weight) {
+		var params = view.getLayoutParams();
+
+		if(params instanceof LinearLayout.LayoutParams layoutParams) {
+			layoutParams.weight = weight;
+		}
+
+		view.setLayoutParams(params);
 	}
 
 	public static ViewGroup.LayoutParams createFittingLayoutParams(@NonNull View parent, ViewGroup.LayoutParams originalParams) {
@@ -95,6 +107,15 @@ public class ViewUtil {
 			marginLayoutParams.rightMargin = margin;
 			marginLayoutParams.leftMargin = margin;
 		}
+	}
+
+	public static void setVerticalMargin(View view, int margin) {
+		var margins = getMargins(view);
+		if(margins == null) return;
+
+		margins.topMargin = margin;
+		margins.bottomMargin = margin;
+		view.setLayoutParams(margins);
 	}
 
 	public static void setRightMargin(View view, int margin) {

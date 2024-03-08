@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -22,25 +25,24 @@ import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogTag;
+import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
+import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
+import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import com.mrboomdev.awery.util.observable.ObservableList;
-import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
-import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
-import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
-
 public class MediaPagerAdapter extends SingleViewAdapter {
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
 	private LayoutHeaderBinding header;
-	private final PagerAdapter adapter = new PagerAdapter();
+	private PagerAdapter adapter = new PagerAdapter();
 
 	public LayoutHeaderBinding getHeader() {
 		return header;
@@ -58,9 +60,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 	public View onCreateView(@NonNull ViewGroup parent) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = MediaCatalogFeaturedPagerBinding.inflate(inflater, parent, false);
-
-		ViewPager2 pager = binding.pager;
-		pager.setAdapter(adapter);
+		binding.pager.setAdapter(adapter);
 
 		this.header = binding.header;
 		setEnabled(isEnabled());
@@ -76,6 +76,68 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		}, parent);
 
 		return binding.getRoot();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static class TvPagerAdapter extends FragmentStatePagerAdapter {
+		private MediaPagerAdapter main;
+
+		public TvPagerAdapter(FragmentManager manager) {
+			super(manager);
+		}
+
+		public void attachToMain(MediaPagerAdapter main) {
+			this.main = main;
+			notifyDataSetChanged();
+		}
+
+		@Override
+		public int getCount() {
+			if(main == null || !main.isEnabled()) {
+				return 0;
+			}
+
+			return main.items.size();
+		}
+
+		@NonNull
+		@Override
+		public Fragment getItem(int position) {
+			return new Fragment() {
+				@NonNull
+				@Override
+				public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle savedInstanceState) {
+					var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
+					var holder = new PagerViewHolder(binding);
+					holder.bind(main.items.get(position));
+
+					binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(
+							inflater.getContext(), holder.getItem()));
+
+					binding.watch.setOnClickListener(v -> MediaUtils.launchMediaActivity(
+							inflater.getContext(), holder.getItem(), "watch"));
+
+					binding.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(
+							inflater.getContext(), holder.getItem()));
+
+					binding.getRoot().setOnLongClickListener(v -> {
+						MediaUtils.openMediaActionsMenu(inflater.getContext(), holder.getItem());
+						return true;
+					});
+
+					ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, insets ->
+							ViewUtil.setLeftMargin(binding.leftSideBarrier, insets.left), parent);
+
+					ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, insets ->
+							ViewUtil.setRightMargin(binding.rightSideBarrier, insets.right), parent);
+
+					ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, insets ->
+							ViewUtil.setTopMargin(binding.topSideBarrier, insets.top), parent);
+
+					return holder.getView();
+				}
+			};
+		}
 	}
 
 	public class PagerAdapter extends RecyclerView.Adapter<PagerViewHolder> {
@@ -94,9 +156,14 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
 			var holder = new PagerViewHolder(binding);
 
-			binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(parent.getContext(), holder.getItem()));
-			binding.watch.setOnClickListener(v -> MediaUtils.launchMediaActivity(parent.getContext(), holder.getItem(), "watch"));
-			binding.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(parent.getContext(), holder.getItem()));
+			binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(
+					parent.getContext(), holder.getItem()));
+
+			binding.watch.setOnClickListener(v -> MediaUtils.launchMediaActivity(
+					parent.getContext(), holder.getItem(), "watch"));
+
+			binding.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(
+					parent.getContext(), holder.getItem()));
 
 			binding.getRoot().setOnLongClickListener(v -> {
 				MediaUtils.openMediaActionsMenu(parent.getContext(), holder.getItem());
@@ -130,13 +197,17 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		}
 	}
 
-	public class PagerViewHolder extends RecyclerView.ViewHolder {
+	public static class PagerViewHolder extends RecyclerView.ViewHolder {
 		private final MediaCatalogFeaturedBinding binding;
 		private CatalogMedia item;
 
 		public PagerViewHolder(@NonNull MediaCatalogFeaturedBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+		}
+
+		public View getView() {
+			return binding.getRoot();
 		}
 
 		public CatalogMedia getItem() {

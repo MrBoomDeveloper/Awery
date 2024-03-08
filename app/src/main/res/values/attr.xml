@@ -7,6 +7,18 @@
 
     <attr name="expandableTextView" format="reference" />
 
+    <declare-styleable name="GesturePreviewView">
+        <attr name="icon" format="reference" />
+        <attr name="progress" format="integer" />
+        <attr name="maxProgress" format="integer" />
+        <attr name="isVisible" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="TVTabView">
+        <attr name="android:text" format="string" />
+        <attr name="android:state_selected" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="ExpandableTextView">
         <!-- Number of lines to show -->
         <attr name="collapsedLines" format="integer" />

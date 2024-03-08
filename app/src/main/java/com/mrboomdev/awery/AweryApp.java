@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -11,13 +12,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
+import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
@@ -110,13 +114,28 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 	}
 
+	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
+		var typed = new TypedValue();
+		context.getTheme().resolveAttribute(res, typed, true);
+		return ContextCompat.getColor(context, typed.resourceId);
+	}
+
+	public static void postRunnable(Runnable runnable) {
+		handler.post(runnable);
+	}
+
+	public static boolean isTv() {
+		var pm = getAnyContext().getPackageManager();
+		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
+	}
+
 	public static void runOnUiThread(Runnable runnable) {
 		var activity = getAnyActivity();
 
 		if(activity != null) {
 			activity.runOnUiThread(runnable);
 		} else {
-			handler.post(runnable);
+			postRunnable(runnable);
 		}
 	}
 

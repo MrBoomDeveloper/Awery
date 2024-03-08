@@ -15,8 +15,7 @@
         <TextureView
             android:id="@+id/texture_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:foreground="@tools:sample/backgrounds/scenic" />
+            android:layout_height="match_parent" />
 
     </androidx.media3.ui.AspectRatioFrameLayout>
 
@@ -55,6 +54,36 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintDimensionRatio="H,1" />
+
+        <com.mrboomdev.awery.ui.widgets.GesturePreviewView
+            android:id="@+id/brightness_gesture"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            app:icon="@drawable/ic_round_brightness_4_24"
+            app:maxProgress="25"
+            tools:progress="10"
+            app:isVisible="false"
+            tools:isVisible="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginVertical="100dp"
+            android:layout_marginLeft="50dp" />
+
+        <com.mrboomdev.awery.ui.widgets.GesturePreviewView
+            android:id="@+id/volume_gesture"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            app:icon="@drawable/ic_round_volume_up_24"
+            tools:maxProgress="10"
+            tools:progress="9"
+            app:isVisible="false"
+            tools:isVisible="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginVertical="100dp"
+            android:layout_marginRight="50dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

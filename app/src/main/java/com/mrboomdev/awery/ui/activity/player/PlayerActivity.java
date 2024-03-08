@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Rational;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -16,7 +17,6 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
@@ -51,6 +51,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			| WindowInsetsCompat.Type.navigationBars();
 	protected final List<View> buttons = new ArrayList<>();
 	private final PlayerActivityController controller = new PlayerActivityController(this);
+	private PlayerGestures gestures;
 	protected ScreenPlayerBinding binding;
 	protected Runnable showUiRunnableFromLeft, showUiRunnableFromRight;
 	protected boolean areButtonsClickable;
@@ -72,6 +73,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setContentView(binding.getRoot());
 		applyFullscreen();
 
+		gestures = new PlayerGestures(this);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		binding.aspectRatioFrame.setAspectRatio(16f / 9f);
 		binding.aspectRatioFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
@@ -84,6 +88,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		//player.setAudioAttributes(audioAttributes, true);
 		player.setVideoTextureView(binding.textureView);
 		player.addListener(this);
+
+		binding.doubleTapBackward.setOnTouchListener((view, event) -> gestures.onTouchEventLeft(event));
+		binding.doubleTapForward.setOnTouchListener((view, event) -> gestures.onTouchEventRight(event));
 
 		binding.doubleTapBackward.setOnClickListener(view -> {
 			backwardFastClicks++;
@@ -185,7 +192,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		};
 
 		AweryApp.runDelayed(updateProgress, 1_000);
-		setButtonsClickability(false);
 		binding.getRoot().performClick();
 
 		setupButton(binding.exit, this::finish);
@@ -212,6 +218,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		setupPip();
 		loadData();
+		setButtonsClickability(false);
 		controller.showUiTemporarily();
 	}
 
@@ -242,6 +249,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		if(episode != null) {
 			binding.title.setText(episode.getTitle());
+
 			source.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
 				@Override
 				public void onSuccess(List<CatalogVideo> catalogVideos) {
@@ -372,9 +380,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 					"Connection error has occurred, please try again later";
 
 			default -> "Unknown error has occurred, please try again later";
-		});
+		}, 1);
 
-		finish();
+		controller.showVideoSelectionDialog(true);
 	}
 
 	@Override
@@ -416,7 +424,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 	private void applyFullscreen() {
 		var controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-		controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
 		controller.hide(UI_INSETS);
 
 		ViewUtil.setOnApplyInsetsListener(binding.uiOverlay, insets -> {

@@ -11,13 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 
-import com.mrboomdev.awery.ui.activity.SettingsActivity;
-import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
-import com.mrboomdev.awery.util.ui.ViewUtil;
-
 import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
+import com.mrboomdev.awery.ui.activity.MainActivity;
+import com.mrboomdev.awery.ui.activity.SettingsActivity;
+import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
+
 import ani.awery.media.SearchActivity;
 
 public class MediaCatalogFragment extends Fragment {
@@ -25,6 +26,8 @@ public class MediaCatalogFragment extends Fragment {
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> headerAdapter;
 	private final ConcatAdapter concatAdapter;
 	private MediaCatalogFragmentBinding binding;
+	private MainActivity mainActivity;
+	private int index;
 
 	public MediaCatalogFragment() {
 		var config = new ConcatAdapter.Config.Builder()
@@ -35,9 +38,25 @@ public class MediaCatalogFragment extends Fragment {
 		concatAdapter = new ConcatAdapter(config);
 	}
 
+	public Fragment setupWithMainActivity(MainActivity activity, int index) {
+		this.mainActivity = activity;
+		this.index = index;
+		return this;
+	}
+
 	public void setupHeader(@NonNull LayoutHeaderBinding header) {
-		if(header == null) {
-			throw new IllegalArgumentException("Header cannot be null");
+		if(header.tabsBar != null) {
+			header.tabsBar.selectTab(index, false);
+
+			header.tabsBar.setOnTabSelectedListener(tab -> {
+				var index = header.tabsBar.getTabIndex(tab);
+
+				if(mainActivity != null) {
+					mainActivity.binding.pages.setCurrentItem(index, false);
+				}
+
+				return false;
+			});
 		}
 
 		header.search.setOnClickListener(v -> {
@@ -87,7 +106,11 @@ public class MediaCatalogFragment extends Fragment {
 
 	@Nullable
 	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+	public View onCreateView(
+			@NonNull LayoutInflater inflater,
+			@Nullable ViewGroup container,
+			@Nullable Bundle savedInstanceState
+	) {
 		binding = MediaCatalogFragmentBinding.inflate(inflater, container, false);
 
 		binding.catalogCategories.setHasFixedSize(true);

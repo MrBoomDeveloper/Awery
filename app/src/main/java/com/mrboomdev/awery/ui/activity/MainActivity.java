@@ -5,7 +5,6 @@ import static ani.awery.FunctionsKt.snackString;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -22,7 +21,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
@@ -32,12 +33,10 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
-	private LayoutActivityMainBinding binding;
+	public LayoutActivityMainBinding binding;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 		ANIME, LIBRARY, MANGA
 	}
 
-	private static class MainFragmentAdapter extends FragmentStateAdapter {
+	private class MainFragmentAdapter extends FragmentStateAdapter {
 
 
 		public MainFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
@@ -147,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public Fragment createFragment(int position) {
 			return switch(position) {
-				case 0 -> new AnimeFragment();
-				case 1 -> new LibraryFragment();
-				case 2 -> new MangaFragment();
-				default -> throw new RuntimeException("Invalid page position!" + position);
+				case 0 -> new AnimeFragment().setupWithMainActivity(MainActivity.this, 0);
+				case 1 -> new LibraryFragment().setupWithMainActivity(MainActivity.this, 1);
+				case 2 -> new MangaFragment().setupWithMainActivity(MainActivity.this, 2);
+				default -> throw new IllegalArgumentException("Invalid page position!" + position);
 			};
 		}
 
