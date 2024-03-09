@@ -66,9 +66,11 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:screenOrientation="landscape"
-            android:exported="true" />
+            android:exported="true"
+            tools:ignore="DiscouragedApi" />
 
         <activity android:name=".ui.activity.MainActivity" android:exported="false" />
+        <activity android:name=".ui.activity.SearchActivity" android:exported="false" />
         <activity android:name=".ui.activity.MediaActivity" android:exported="false" />
         <activity android:name=".ui.activity.ReaderActivity" android:exported="true" />
         <activity android:name=".ui.activity.SettingsActivity" android:exported="true" />

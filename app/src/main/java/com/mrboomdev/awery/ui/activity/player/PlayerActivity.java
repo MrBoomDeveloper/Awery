@@ -5,6 +5,7 @@ import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Rational;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
+	private static final String TAG = "PlayerActivity";
 	protected static ExtensionProvider source;
 	private static final String ACTION_PAUSE = "pause";
 	private static final String ACTION_PREVIOUS = "previous";
@@ -267,7 +270,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 					var error = new ExceptionUtil(throwable);
 
 					if(!error.isGenericError()) {
-						throwable.printStackTrace();
+						Log.e(TAG, "Failed to load videos", throwable);
 					}
 
 					AweryApp.toast(error.getTitle(PlayerActivity.this), 1);
@@ -368,7 +371,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 	@Override
 	public void onPlayerError(@NonNull PlaybackException e) {
-		e.printStackTrace();
+		Log.e(TAG, "Player error has occurred", e);
 
 		AweryApp.toast(switch(e.errorCode) {
 			case PlaybackException.ERROR_CODE_TIMEOUT -> "Connection timeout has occurred, please try again later";
@@ -424,9 +427,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 	private void applyFullscreen() {
 		var controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+		controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
 		controller.hide(UI_INSETS);
 
-		ViewUtil.setOnApplyInsetsListener(binding.uiOverlay, insets -> {
+		ViewUtil.setOnApplyInsetsListener(getWindow().getDecorView(), insets -> {
 			var systemInsets = insets.getInsets(UI_INSETS);
 
 			ViewUtil.setLeftMargin(binding.exit, systemInsets.left);

@@ -30,7 +30,6 @@ public class GesturePreviewView extends FrameLayout {
 
 	public GesturePreviewView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		setBackgroundResource(R.drawable.view_gesture_background);
 		createViews(context);
 
 		var attributes = context.obtainStyledAttributes(attrs, R.styleable.GesturePreviewView);
@@ -45,6 +44,7 @@ public class GesturePreviewView extends FrameLayout {
 		linearView = new LinearLayoutCompat(context);
 		linearView.setOrientation(LinearLayoutCompat.VERTICAL);
 		linearView.setGravity(Gravity.CENTER_HORIZONTAL);
+		linearView.setBackgroundResource(R.drawable.view_gesture_background);
 		addView(linearView, ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 
 		if(alpha != -1) {
@@ -90,7 +90,7 @@ public class GesturePreviewView extends FrameLayout {
 				}
 			};
 
-			animation.setDuration(250);
+			animation.setDuration(isVisible ? 100 : 250);
 			animation.setInterpolator(new AccelerateDecelerateInterpolator());
 			linearView.startAnimation(animation);
 		} else {
