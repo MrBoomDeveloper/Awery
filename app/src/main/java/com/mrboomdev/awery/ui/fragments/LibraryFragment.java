@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LibraryFragment extends MediaCatalogFragment {
+public class LibraryFragment extends MediaCatalogListsFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 	private final ObservableList<MediaCategoriesAdapter.Category> categories = new ObservableArrayList<>();
 	private static LibraryFragment instance;

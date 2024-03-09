@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
+	private static final String TAG = "MediaCatalogAdapter";
 	private ObservableList<CatalogMedia> items;
 
 	public MediaCatalogAdapter(ObservableList<CatalogMedia> items) {
@@ -118,7 +120,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(binding.mediaItemBanner);
 			} catch(IllegalArgumentException e) {
-				e.printStackTrace();
+				Log.e(TAG, "Failed to load a poster", e);
 			}
 		}
 	}

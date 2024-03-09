@@ -184,6 +184,10 @@ public class ViewUtil {
 		view.setPadding(padding, view.getPaddingTop(), padding, view.getPaddingBottom());
 	}
 
+	public static void setHorizontalPadding(@NonNull View view, int left, int right) {
+		view.setPadding(left, view.getPaddingTop(), right, view.getPaddingBottom());
+	}
+
 	public static void setEndMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return;

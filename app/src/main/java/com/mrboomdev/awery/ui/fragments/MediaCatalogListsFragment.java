@@ -15,13 +15,12 @@ import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
 import com.mrboomdev.awery.ui.activity.MainActivity;
+import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.SettingsActivity;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
-import ani.awery.media.SearchActivity;
-
-public class MediaCatalogFragment extends Fragment {
+public class MediaCatalogListsFragment extends Fragment {
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> emptyAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> headerAdapter;
 	private final ConcatAdapter concatAdapter;
@@ -29,7 +28,7 @@ public class MediaCatalogFragment extends Fragment {
 	private MainActivity mainActivity;
 	private int index;
 
-	public MediaCatalogFragment() {
+	public MediaCatalogListsFragment() {
 		var config = new ConcatAdapter.Config.Builder()
 				.setIsolateViewTypes(true)
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)

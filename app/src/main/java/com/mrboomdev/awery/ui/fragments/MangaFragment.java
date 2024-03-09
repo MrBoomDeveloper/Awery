@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 
-public class MangaFragment extends MediaCatalogFragment {
+public class MangaFragment extends MediaCatalogListsFragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

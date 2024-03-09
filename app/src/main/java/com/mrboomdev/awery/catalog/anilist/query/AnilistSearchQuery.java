@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
@@ -20,7 +21,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	private MediaSort sort;
 	private AnilistMedia.MediaFormat format;
 	private String search, seasonName;
-	private Integer seasonYear;
+	private Integer seasonYear, page, itemsPerPage;
 	private Boolean isAdult;
 
 	private AnilistSearchQuery() {}
@@ -31,7 +32,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 		private AnilistMedia.MediaFormat format;
 		private String search, seasonName;
 		private Boolean isAdult;
-		private Integer seasonYear;
+		private Integer seasonYear, page, itemsPerPage;
 
 		public Builder setType(AnilistMedia.MediaType type) {
 			this.type = type;
@@ -40,6 +41,16 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 
 		public Builder setSort(MediaSort sort) {
 			this.sort = sort;
+			return this;
+		}
+
+		public Builder setItemsPerPage(Integer itemsPerPage) {
+			this.itemsPerPage = itemsPerPage;
+			return this;
+		}
+
+		public Builder setPage(Integer page) {
+			this.page = page;
 			return this;
 		}
 
@@ -94,6 +105,8 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 			query.isAdult = isAdult;
 			query.seasonName = seasonName;
 			query.seasonYear = seasonYear;
+			query.page = page;
+			query.itemsPerPage = itemsPerPage;
 			return query;
 		}
 	}
@@ -134,7 +147,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	public String getQuery() {
 		return """
 			{
-				Page(page: 1, perPage: 20) {
+				Page(page: __PAGE__, perPage: __ITEMS_PER_PAGE__) {
 					media(__PARAMS__) {
 						format duration
 						countryOfOrigin
@@ -152,10 +165,11 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 			if(type != null) put("type", type);
 			if(sort != null) put("sort", sort);
 			if(format != null) put("format", format);
-			if(search != null) put("search", search);
+			if(search != null) put("search", "\"" + search + "\"");
 			if(isAdult != null) put("isAdult", isAdult);
 			if(seasonName != null) put("season", seasonName);
 			if(seasonYear != null) put("seasonYear", seasonYear);
-		}}));
+		}})).replace("__PAGE__", Objects.requireNonNullElse(String.valueOf(page), "1"))
+			.replace("__ITEMS_PER_PAGE__", Objects.requireNonNullElse(String.valueOf(itemsPerPage), "20"));
 	}
 }

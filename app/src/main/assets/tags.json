@@ -1,0 +1,11 @@
+{
+	"gay": {
+		"title": "Gay",
+		"variants": [ "yaoi", "gay", "boys love" ]
+	},
+
+	"lesbian": {
+		"title": "Lesbian",
+		"variants": [ "lesbian", "yuri" ]
+	}
+}

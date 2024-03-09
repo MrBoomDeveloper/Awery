@@ -1,13 +1,13 @@
 package com.mrboomdev.awery.catalog.anilist.query;
 
-import android.util.Log;
-
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
+import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +42,13 @@ public abstract class AnilistQuery<T> {
 			} catch(Exception e) {
 				resolveException(new RuntimeException("Failed to process a json! " + response, e));
 				return;
+			}
+
+			if(processed instanceof Collection<?> collection) {
+				if(collection.isEmpty()) {
+					resolveException(ExceptionUtil.ZERO_RESULTS);
+					return;
+				}
 			}
 
 			callback.onResponse(processed);
