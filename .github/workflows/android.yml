@@ -25,28 +25,22 @@ jobs:
     - name: Build Release APK
       run: ./gradlew assembleRelease
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
-
     - name: Sign Release APK
       uses: r0adkll/sign-android-release@v1
+      id: sign_app
       with:
         releaseDirectory: "app/build/outputs/apk/release"
+        signedReleaseFile: "app/build/outputs/apk/release/signed.apk"
         signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
         alias: ${{ secrets.ANDROID_KEY_ALIAS }}
         keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: "Release APK"
         retention-days: 90
-        path: "app/build/outputs/apk/release/app-release-unsigned-signed.apk"
-
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: "Debug APK"
-        retention-days: 90
-        path: "app/build/outputs/apk/debug/*.apk"
+        path: "app/build/outputs/apk/release/signed.apk"
