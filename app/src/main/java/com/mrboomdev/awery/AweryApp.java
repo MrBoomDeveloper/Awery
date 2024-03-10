@@ -44,7 +44,9 @@ import ani.awery.connections.anilist.Anilist;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
-	public static final String CATALOG_LIST_HIDDEN = "7";
+	public static final String CATALOG_LIST_BLACKLIST = "7";
+	public static final String CATALOG_LIST_HISTORY = "8";
+	public static final List<String> HIDDEN_LISTS = List.of(CATALOG_LIST_BLACKLIST, CATALOG_LIST_HISTORY);
 	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
@@ -169,18 +171,15 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		var settings = AwerySettings.getInstance(this);
 		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
 			new Thread(() -> {
-				var lists = List.of(
+				db.getListDao().insert(
 						DBCatalogList.fromCatalogList(new CatalogList("Currently watching", "1")),
 						DBCatalogList.fromCatalogList(new CatalogList("Plan to watch", "2")),
 						DBCatalogList.fromCatalogList(new CatalogList("Delayed", "3")),
 						DBCatalogList.fromCatalogList(new CatalogList("Completed", "4")),
 						DBCatalogList.fromCatalogList(new CatalogList("Dropped", "5")),
 						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6")),
-						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_HIDDEN))
-				);
-
-				var array = lists.toArray(new DBCatalogList[0]);
-				db.getListDao().insert(array);
+						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_BLACKLIST)),
+						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_HISTORY)));
 
 				settings.setInt(AwerySettings.LAST_OPENED_VERSION, 1);
 				settings.saveSync();
@@ -225,6 +224,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				var activity = getAnyActivity();
 
 				if(activity != null) {
+					if(thread.getName().startsWith("Studio:")) {
+						toast(activity, "Failed to send message to Android Studio!", Toast.LENGTH_LONG);
+						return;
+					}
+
 					toast(activity, "Unexpected error has happened!", Toast.LENGTH_LONG);
 				}
 

@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.compose.runtime.AtomicInt;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -32,16 +35,22 @@ import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import com.mrboomdev.awery.util.observable.ObservableEmptyList;
 import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 public class SearchActivity extends AppCompatActivity {
+	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
 	private final Adapter adapter = new Adapter();
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private LayoutHeaderSearchBinding header;
-	private LayoutLoadingBinding loading;
 	private SwipeRefreshLayout refresher;
 	private RecyclerView recycler;
-	private int searchId;
+	/* We initially set this value to "true" so that list won't try
+	to load anything because we haven't typed anything yet. */
+	private boolean isLoading = true, didReachedEnd;
+	private int searchId, currentPage;
+	private String searchQuery;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,9 +65,17 @@ public class SearchActivity extends AppCompatActivity {
 		header = LayoutHeaderSearchBinding.inflate(getLayoutInflater(), linear, true);
 		header.back.setOnClickListener(v -> finish());
 
+		header.edittext.requestFocus();
+
+		var inputManager = getSystemService(InputMethodManager.class);
+		inputManager.showSoftInput(header.edittext, 0);
+
 		header.edittext.setOnEditorActionListener((v, action, event) -> {
 			if(action == EditorInfo.IME_ACTION_SEARCH) {
-				search();
+				this.searchQuery = v.getText().toString();
+				this.didReachedEnd = false;
+				search(0);
+				inputManager.hideSoftInputFromWindow(header.edittext.getWindowToken(), 0);
 				return true;
 			}
 
@@ -71,22 +88,55 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		refresher = new SwipeRefreshLayout(this);
-		refresher.setOnRefreshListener(this::search);
 		linear.addView(refresher, ViewUtil.createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT));
+
+		refresher.setOnRefreshListener(() -> {
+			this.didReachedEnd = false;
+			search(0);
+		});
 
 		var refresherContent = new LinearLayoutCompat(this);
 		refresherContent.setOrientation(LinearLayoutCompat.VERTICAL);
 		refresher.addView(refresherContent);
 
-		loading = LayoutLoadingBinding.inflate(getLayoutInflater(), refresherContent, true);
-		loading.getRoot().setVisibility(View.GONE);
+		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var binding = LayoutLoadingBinding.inflate(getLayoutInflater(), parent, false);
+			ViewUtil.useLayoutParams(binding.getRoot(), params -> params.width = ViewUtil.MATCH_PARENT);
+			return binding;
+		}, LOADING_VIEW_TYPE);
 
-		var layoutManager = new GridLayoutManager(this, 3);
+		loadingAdapter.setEnabled(false);
+
+		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), adapter, loadingAdapter);
+
+		var columnsCount = new AtomicInt(3);
+		var layoutManager = new GridLayoutManager(this, columnsCount.get());
+
 		recycler = new RecyclerView(this);
 		recycler.setLayoutManager(layoutManager);
 		recycler.setClipToPadding(false);
-		recycler.setAdapter(adapter);
+		recycler.setAdapter(concatAdapter);
 		refresherContent.addView(recycler);
+
+		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				if(newState == RecyclerView.SCROLL_STATE_IDLE && !isLoading && !didReachedEnd
+				&& layoutManager.findLastVisibleItemPosition() >= (items.size() - 1)) {
+					search(currentPage + 1);
+				}
+			}
+		});
+
+		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+			@Override
+			public int getSpanSize(int position) {
+				/* Don't ask. I don't know how it is working, so please don't ask about it. */
+				return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1 : columnsCount.get();
+			}
+		});
 
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
 			var padding = ViewUtil.dpPx(8);
@@ -95,39 +145,50 @@ public class SearchActivity extends AppCompatActivity {
 
 			float columnSize = ViewUtil.dpPx(110);
 			float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
-			var columnsCount = (int)(freeSpace / columnSize);
-			layoutManager.setSpanCount(columnsCount);
+			columnsCount.set((int)(freeSpace / columnSize));
+			layoutManager.setSpanCount(columnsCount.get());
 		});
 	}
 
-	private void search() {
-		var text = header.edittext.getText().toString();
-		if(text.isBlank()) return;
+	private void search(int page) {
+		if(searchQuery == null || searchQuery.isBlank()) return;
 		var wasSearchId = ++searchId;
 
-		loading.progressBar.setVisibility(View.VISIBLE);
-		loading.info.setVisibility(View.GONE);
+		if(page == 0) {
+			this.items.clear();
+			adapter.setItems(this.items);
+		}
 
-		loading.getRoot().setVisibility(View.VISIBLE);
-		recycler.setVisibility(View.GONE);
+		loadingAdapter.getBinding((binding, didJustCreated) -> {
+			binding.progressBar.setVisibility(View.VISIBLE);
+			binding.info.setVisibility(View.GONE);
+		});
+
+		loadingAdapter.setEnabled(true);
 
 		AnilistSearchQuery.builder()
-				.setSearchQuery(text)
+				.setSearchQuery(searchQuery)
 				.setIsAdult(false)
 				.setType(AnilistMedia.MediaType.ANIME)
+				.setPage(page)
 				.build()
 				.executeQuery(items -> {
 					if(wasSearchId != searchId) return;
 
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
+						this.isLoading = false;
+						this.currentPage = page;
 
-						this.items.clear();
-						this.items.addAll(items);
+						if(page == 0) {
+							this.items.addAll(items);
+							adapter.setItems(this.items);
+							return;
+						}
 
-						adapter.setItems(this.items);
-						loading.getRoot().setVisibility(View.GONE);
-						recycler.setVisibility(View.VISIBLE);
+						var wasSize = this.items.size();
+						this.items.addAll(items, false);
+						adapter.notifyItemRangeInserted(wasSize - 1, items.size());
 					});
 				}).catchExceptions(e -> {
 					if(wasSearchId != searchId) return;
@@ -138,14 +199,28 @@ public class SearchActivity extends AppCompatActivity {
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
 
-						loading.title.setText(error.getTitle(this));
-						loading.message.setText(error.getMessage(this));
+						loadingAdapter.getBinding((binding, didJustCreated) -> {
+							if(wasSearchId != searchId) return;
 
-						loading.progressBar.setVisibility(View.GONE);
-						loading.info.setVisibility(View.VISIBLE);
+							if(page == 0) {
+								this.items.clear();
+								adapter.setItems(this.items);
+							}
 
-						loading.getRoot().setVisibility(View.VISIBLE);
-						recycler.setVisibility(View.GONE);
+							if(e == ExceptionUtil.ZERO_RESULTS && page != 0) {
+								this.didReachedEnd = true;
+								binding.title.setText("You've reached the end.");
+								binding.message.setText("No more results was found. If you didn't found what wanted, then try to change your query.");
+							} else {
+								binding.title.setText(error.getTitle(this));
+								binding.message.setText(error.getMessage(this));
+							}
+
+							binding.progressBar.setVisibility(View.GONE);
+							binding.info.setVisibility(View.VISIBLE);
+
+							this.isLoading = false;
+						});
 					});
 				}).onFinally(() -> {
 					if(wasSearchId != searchId) return;
@@ -155,6 +230,10 @@ public class SearchActivity extends AppCompatActivity {
 
 	private static class Adapter extends RecyclerView.Adapter<ViewHolder> implements ObservableList.AddObserver<CatalogMedia>, ObservableList.RemoveObserver<CatalogMedia> {
 		private ObservableList<CatalogMedia> items = ObservableEmptyList.getInstance();
+
+		public Adapter() {
+			setHasStableIds(true);
+		}
 
 		@SuppressLint("NotifyDataSetChanged")
 		public void setItems(ObservableList<CatalogMedia> items) {
@@ -173,6 +252,11 @@ public class SearchActivity extends AppCompatActivity {
 			items.observeAdditions(this);
 			items.observeRemovals(this);
 			notifyDataSetChanged();
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return items.get(position).id;
 		}
 
 		@NonNull

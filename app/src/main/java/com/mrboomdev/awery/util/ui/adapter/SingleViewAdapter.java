@@ -23,7 +23,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	private Integer pendingVisibility;
 	private View view;
 	private boolean isEnabled = true;
-	private int id;
+	private int id, viewType;
 
 	{ setHasStableIds(true); }
 
@@ -118,6 +118,17 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 				return createListener.createBinding(parent);
 			}
 		};
+	}
+
+	@NonNull
+	public static <T extends ViewBinding> BindingSingleViewAdapter<T> fromBindingDynamic(ViewCreator<T> createListener, int viewType) {
+		var adapter = fromBindingDynamic(createListener);
+		adapter.setViewType(viewType);
+		return adapter;
+	}
+
+	public void setViewType(int viewType) {
+		this.viewType = viewType;
 	}
 
 	@NonNull
@@ -236,6 +247,11 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 
 	protected void setView(View view) {
 		this.view = view;
+	}
+
+	@Override
+	public int getItemViewType(int position) {
+		return viewType;
 	}
 
 	@Override

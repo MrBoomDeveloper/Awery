@@ -13,7 +13,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
@@ -169,7 +168,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 			if(isAdult != null) put("isAdult", isAdult);
 			if(seasonName != null) put("season", seasonName);
 			if(seasonYear != null) put("seasonYear", seasonYear);
-		}})).replace("__PAGE__", Objects.requireNonNullElse(String.valueOf(page), "1"))
-			.replace("__ITEMS_PER_PAGE__", Objects.requireNonNullElse(String.valueOf(itemsPerPage), "20"));
+		}})).replace("__PAGE__", (page != null) ? String.valueOf(page + 1) : "1")
+			.replace("__ITEMS_PER_PAGE__", (itemsPerPage != null) ? String.valueOf(itemsPerPage) : "20");
 	}
 }

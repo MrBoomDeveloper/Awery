@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util.ui;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class ViewUtil {
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
 	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
+	private static final String TAG = "ViewUtil";
 
 	public static boolean setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
@@ -106,6 +108,25 @@ public class ViewUtil {
 		}
 
 		return false;
+	}
+
+	public interface UseLayoutParamsCallback<T extends ViewGroup.LayoutParams> {
+		void onUse(T params);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(@NonNull View view, UseLayoutParamsCallback<T> callback) {
+		try {
+			var params = view.getLayoutParams();
+			if(params == null) return false;
+
+			callback.onUse((T) params);
+			view.setLayoutParams(params);
+			return true;
+		} catch(ClassCastException e) {
+			Log.e(TAG, "Failed to cast layout params!", e);
+			return false;
+		}
 	}
 
 	public static boolean setVerticalMargin(View view, int margin) {
