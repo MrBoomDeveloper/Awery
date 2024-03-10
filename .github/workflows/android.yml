@@ -22,20 +22,29 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Release Apk
+    - name: Build Release APK
       run: ./gradlew assembleRelease
 
-    - name: Build Debug Apk
+    - name: Build Debug APK
       run: ./gradlew assembleDebug
 
-    - name: Upload Release Apk
+    - name: Sign Release APK
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: "app/build/outputs/apk/release"
+        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+        alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+    - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: "Release APK"
         retention-days: 90
-        path: "app/build/outputs/apk/release/*.apk"
+        path: "app/build/outputs/apk/release/app-release-unsigned-signed.apk"
 
-    - name: Upload Debug Apk
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: "Debug APK"
