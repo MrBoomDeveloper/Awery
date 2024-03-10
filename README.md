@@ -34,7 +34,7 @@ Imagine the perfect app where you can customize everything, with tons of content
 
 ## Download 😎
 
-There is currently no possibility of directly downloading ready-made apk files. The very idea of downloading unfinished software sounds strange to me.  Please be patient while I finish something working.  And if you can’t stand it, then build the project yourself!
+Open the "Releases" button and select the first file. Download it and that's all! Extensions for watching media that can be downloaded from third parties are also required!
 
 ## Want to Contribute? 🤝
 
