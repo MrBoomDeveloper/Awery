@@ -124,7 +124,119 @@ public class PlayerActivityController {
 		AweryApp.runDelayed(hideUiRunnable, SHOW_UI_FOR_MILLIS);
 	}
 
-	public void showVideoSelectionDialog(boolean isRequired) {
+	@OptIn(markerClass = UnstableApi.class)
+	public void openScaleSettingsDialog() {
+		final var dialog = new AtomicReference<Dialog>();
+
+		var recycler = new RecyclerView(activity);
+		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
+
+		var sheet = new BottomSheetDialog(activity);
+		dialog.set(sheet);
+
+		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = activity.getLayoutInflater();
+			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
+			binding.text.setText("Select video aspect ratio");
+			return binding;
+		});
+
+		enum Mode { FIT, FILL, ZOOM }
+
+		var items = new LinkedHashMap<PopupItem, Mode>() {{
+			put(new PopupItem().setTitle("Fit"), Mode.FIT);
+			put(new PopupItem().setTitle("Fill"), Mode.FILL);
+			put(new PopupItem().setTitle("Zoom"), Mode.ZOOM);
+		}};
+
+		var itemsAdapter = new SimpleAdapter<>(parent -> {
+			var binding = PopupSimpleItemBinding.inflate(
+					activity.getLayoutInflater(), parent, false);
+
+			return new PopupItemHolder(binding, item -> {
+				var action = items.get(item);
+
+				if(action == null) {
+					throw new NullPointerException("Action was null");
+				}
+
+				activity.binding.aspectRatioFrame.setResizeMode(switch(action) {
+					case FIT -> AspectRatioFrameLayout.RESIZE_MODE_FIT;
+					case FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL;
+					case ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
+				});
+			});
+		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
+
+		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), headerAdapter, itemsAdapter);
+
+		recycler.setAdapter(concatAdapter);
+		sheet.setContentView(recycler);
+		sheet.getBehavior().setPeekHeight(9999);
+		sheet.show();
+
+		DialogUtil.limitDialogSize(dialog.get());
+	}
+
+	public void openSettingsDialog() {
+		final var dialog = new AtomicReference<Dialog>();
+
+		var recycler = new RecyclerView(activity);
+		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
+
+		var sheet = new BottomSheetDialog(activity);
+		dialog.set(sheet);
+
+		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = activity.getLayoutInflater();
+			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
+			binding.text.setVisibility(View.GONE);
+			binding.divider.setVisibility(View.INVISIBLE);
+			return binding;
+		});
+
+		enum Action { QUALITY, ASPECT }
+
+		var items = new LinkedHashMap<PopupItem, Action>() {{
+			put(new PopupItem().setTitle("Video quality").setIcon(R.drawable.ic_round_high_quality_24), Action.QUALITY);
+			put(new PopupItem().setTitle("Aspect ratio").setIcon(R.drawable.ic_round_fullscreen_24), Action.ASPECT);
+		}};
+
+		var itemsAdapter = new SimpleAdapter<>(parent -> {
+			var binding = PopupSimpleItemBinding.inflate(
+					activity.getLayoutInflater(), parent, false);
+
+			return new PopupItemHolder(binding, item -> {
+				var action = items.get(item);
+
+				if(action == null) {
+					throw new NullPointerException("Action was null");
+				}
+
+				switch(action) {
+					case QUALITY -> openQualityDialog(false);
+					case ASPECT -> openScaleSettingsDialog();
+				}
+
+				dialog.get().dismiss();
+			});
+		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
+
+		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), headerAdapter, itemsAdapter);
+
+		recycler.setAdapter(concatAdapter);
+		sheet.setContentView(recycler);
+		sheet.getBehavior().setPeekHeight(9999);
+		sheet.show();
+
+		DialogUtil.limitDialogSize(dialog.get());
+	}
+
+	public void openQualityDialog(boolean isRequired) {
 		var videos = activity.episode.getVideos();
 		if(videos == null) return;
 
