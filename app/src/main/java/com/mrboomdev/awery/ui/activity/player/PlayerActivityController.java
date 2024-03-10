@@ -3,29 +3,35 @@ package com.mrboomdev.awery.ui.activity.player;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
+import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
+import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
-import com.mrboomdev.awery.databinding.PopupQualityHeaderBinding;
-import com.mrboomdev.awery.databinding.PopupQualityItemBinding;
 
 public class PlayerActivityController {
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;
@@ -122,6 +128,12 @@ public class PlayerActivityController {
 		var videos = activity.episode.getVideos();
 		if(videos == null) return;
 
+		var items = new LinkedHashMap<PopupItem, CatalogVideo>();
+
+		for(var video : videos) {
+			items.put(new PopupItem().setTitle(video.getTitle()), video);
+		}
+
 		final var dialog = new AtomicReference<Dialog>();
 		final var didSelectedVideo = new AtomicBoolean();
 
@@ -133,19 +145,20 @@ public class PlayerActivityController {
 
 		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = activity.getLayoutInflater();
-			return PopupQualityHeaderBinding.inflate(inflater, parent, false);
+			return PopupSimpleHeaderBinding.inflate(inflater, parent, false);
 		});
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
-			var binding = PopupQualityItemBinding.inflate(
+			var binding = PopupSimpleItemBinding.inflate(
 					activity.getLayoutInflater(), parent, false);
 
-			return new VideoHolder(binding, video -> {
+			return new PopupItemHolder(binding, item -> {
+				var video = Objects.requireNonNull(items.get(item));
 				activity.playVideo(video);
 				didSelectedVideo.set(true);
 				dialog.get().dismiss();
 			});
-		}, (item, holder) -> holder.bind(item), videos, true);
+		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
 
 		if(isRequired) {
 			sheet.setOnDismissListener(_dialog -> {
@@ -169,25 +182,65 @@ public class PlayerActivityController {
 		DialogUtil.limitDialogSize(dialog.get());
 	}
 
-	private static class VideoHolder extends RecyclerView.ViewHolder {
-		private final PopupQualityItemBinding binding;
-		private CatalogVideo video;
+	public static class PopupItem {
+		private String title;
+		private int id, icon;
 
-		public VideoHolder(@NonNull PopupQualityItemBinding binding, VideoSelectListener selectCallback) {
-			super(binding.getRoot());
-			this.binding = binding;
-
-			binding.text.setOnClickListener(v ->
-					selectCallback.onVideoSelected(video));
+		public PopupItem setTitle(String title) {
+			this.title = title;
+			return this;
 		}
 
-		public void bind(@NonNull CatalogVideo video) {
-			this.video = video;
-			binding.text.setText(video.getTitle());
+		public String getTitle() {
+			return title;
+		}
+
+		public PopupItem setId(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public PopupItem setIcon(@DrawableRes int icon) {
+			this.icon = icon;
+			return this;
+		}
+
+		@DrawableRes
+		public int getIcon() {
+			return icon;
 		}
 	}
 
-	private interface VideoSelectListener {
-		void onVideoSelected(@NonNull CatalogVideo video);
+	private static class PopupItemHolder extends RecyclerView.ViewHolder {
+		private final PopupSimpleItemBinding binding;
+		private PopupItem item;
+
+		public PopupItemHolder(@NonNull PopupSimpleItemBinding binding, ItemSelectListener selectCallback) {
+			super(binding.getRoot());
+			this.binding = binding;
+
+			binding.getRoot().setOnClickListener(v ->
+					selectCallback.onItemSelected(item));
+		}
+
+		public void bind(@NonNull PopupItem item) {
+			if(item.icon == 0) {
+				binding.icon.setVisibility(View.GONE);
+			} else {
+				binding.icon.setVisibility(View.VISIBLE);
+				binding.icon.setImageResource(item.icon);
+			}
+
+			this.item = item;
+			binding.text.setText(item.title);
+		}
+	}
+
+	private interface ItemSelectListener {
+		void onItemSelected(@NonNull PopupItem item);
 	}
 }

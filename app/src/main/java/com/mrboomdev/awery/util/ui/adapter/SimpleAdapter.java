@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
-import android.annotation.SuppressLint;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -69,42 +68,6 @@ public class SimpleAdapter<T, V extends RecyclerView.ViewHolder> extends Recycle
 
 	public List<T> getItems() {
 		return items;
-	}
-
-	public T getItem(int position) {
-		return items.get(position);
-	}
-
-	public void addItem(T item) {
-		items.add(item);
-		notifyItemInserted(items.size() - 1);
-	}
-
-	public void removeItem(int position) {
-		items.remove(position);
-		notifyItemRemoved(position);
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	public void clearItems() {
-		items.clear();
-		notifyDataSetChanged();
-	}
-
-	public void addItems(List<T> items) {
-		this.items.addAll(items);
-		notifyItemRangeInserted(0, items.size());
-	}
-
-	public void removeItems(List<T> items) {
-		this.items.removeAll(items);
-		notifyItemRangeRemoved(0, items.size());
-	}
-
-	public void removeItem(T item) {
-		var index = items.indexOf(item);
-		items.remove(item);
-		notifyItemRemoved(index);
 	}
 
 	@NonNull

@@ -188,7 +188,7 @@ public class SearchActivity extends AppCompatActivity {
 
 						var wasSize = this.items.size();
 						this.items.addAll(items, false);
-						adapter.notifyItemRangeInserted(wasSize - 1, items.size());
+						adapter.notifyItemRangeInserted(wasSize, items.size());
 					});
 				}).catchExceptions(e -> {
 					if(wasSearchId != searchId) return;

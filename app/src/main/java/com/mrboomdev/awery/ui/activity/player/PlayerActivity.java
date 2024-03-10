@@ -198,7 +198,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.getRoot().performClick();
 
 		setupButton(binding.exit, this::finish);
-		setupButton(binding.settings, () -> controller.showVideoSelectionDialog(false));
+		setupButton(binding.settings, () -> controller.openSettingsDialog());
 
 		setupButton(binding.quickSkip, () -> {
 			player.seekTo(player.getCurrentPosition() + 60_000);
@@ -260,7 +260,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 					AweryApp.runOnUiThread(() -> {
 						episode.setVideos(catalogVideos);
-						controller.showVideoSelectionDialog(true);
+						controller.openQualityDialog(true);
 					});
 				}
 
@@ -385,7 +385,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			default -> "Unknown error has occurred, please try again later";
 		}, 1);
 
-		controller.showVideoSelectionDialog(true);
+		controller.openQualityDialog(true);
 	}
 
 	@Override
