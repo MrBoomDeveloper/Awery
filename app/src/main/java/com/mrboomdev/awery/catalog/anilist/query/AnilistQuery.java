@@ -57,7 +57,7 @@ public abstract class AnilistQuery<T> {
 			if(finallyCallback != null) {
 				finallyCallback.run();
 			}
-		}, e -> resolveException(new RuntimeException("Failed to send a request!", e)));
+		}, this::resolveException);
 
 		return this;
 	}

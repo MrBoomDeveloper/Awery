@@ -19,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
@@ -80,19 +81,22 @@ public class SearchActivity extends AppCompatActivity {
 		loading = LayoutLoadingBinding.inflate(getLayoutInflater(), refresherContent, true);
 		loading.getRoot().setVisibility(View.GONE);
 
-		float columnSize = ViewUtil.dpPx(120);
-		var columnsCount = Math.round(getResources().getDisplayMetrics().widthPixels / columnSize);
-
+		var layoutManager = new GridLayoutManager(this, 3);
 		recycler = new RecyclerView(this);
-		recycler.setLayoutManager(new GridLayoutManager(this, columnsCount));
+		recycler.setLayoutManager(layoutManager);
 		recycler.setClipToPadding(false);
 		recycler.setAdapter(adapter);
 		refresherContent.addView(recycler);
 
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
 			var padding = ViewUtil.dpPx(8);
-			ViewUtil.setVerticalPadding(recycler, padding);
+			ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
 			ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
+
+			float columnSize = ViewUtil.dpPx(110);
+			float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
+			var columnsCount = (int)(freeSpace / columnSize);
+			layoutManager.setSpanCount(columnsCount);
 		});
 	}
 
@@ -107,41 +111,46 @@ public class SearchActivity extends AppCompatActivity {
 		loading.getRoot().setVisibility(View.VISIBLE);
 		recycler.setVisibility(View.GONE);
 
-		AnilistSearchQuery.builder().setSearchQuery(text).build().executeQuery(items -> {
-			if(wasSearchId != searchId) return;
+		AnilistSearchQuery.builder()
+				.setSearchQuery(text)
+				.setIsAdult(false)
+				.setType(AnilistMedia.MediaType.ANIME)
+				.build()
+				.executeQuery(items -> {
+					if(wasSearchId != searchId) return;
 
-			runOnUiThread(() -> {
-				if(wasSearchId != searchId) return;
+					runOnUiThread(() -> {
+						if(wasSearchId != searchId) return;
 
-				this.items.clear();
-				this.items.addAll(items);
+						this.items.clear();
+						this.items.addAll(items);
 
-				adapter.setItems(this.items);
-				loading.getRoot().setVisibility(View.GONE);
-				recycler.setVisibility(View.VISIBLE);
-			});
-		}).catchExceptions(e -> {
-			if(wasSearchId != searchId) return;
+						adapter.setItems(this.items);
+						loading.getRoot().setVisibility(View.GONE);
+						recycler.setVisibility(View.VISIBLE);
+					});
+				}).catchExceptions(e -> {
+					if(wasSearchId != searchId) return;
 
-			var error = new ExceptionUtil(e);
-			Log.e(TAG, "Failed to search", e);
+					var error = new ExceptionUtil(e);
+					Log.e(TAG, "Failed to search", e);
 
-			runOnUiThread(() -> {
-				if(wasSearchId != searchId) return;
+					runOnUiThread(() -> {
+						if(wasSearchId != searchId) return;
 
-				loading.title.setText(error.getTitle(this));
-				loading.message.setText(error.getMessage(this));
+						loading.title.setText(error.getTitle(this));
+						loading.message.setText(error.getMessage(this));
 
-				loading.progressBar.setVisibility(View.GONE);
-				loading.info.setVisibility(View.VISIBLE);
+						loading.progressBar.setVisibility(View.GONE);
+						loading.info.setVisibility(View.VISIBLE);
 
-				loading.getRoot().setVisibility(View.VISIBLE);
-				recycler.setVisibility(View.GONE);
-			});
-		}).onFinally(() -> {
-			if(wasSearchId != searchId) return;
-			refresher.setRefreshing(false);
-		});
+						loading.getRoot().setVisibility(View.VISIBLE);
+						recycler.setVisibility(View.GONE);
+					});
+				}).onFinally(() -> {
+					if(wasSearchId != searchId) return;
+					refresher.setRefreshing(false);
+				});
 	}
 
 	private static class Adapter extends RecyclerView.Adapter<ViewHolder> implements ObservableList.AddObserver<CatalogMedia>, ObservableList.RemoveObserver<CatalogMedia> {
@@ -172,6 +181,15 @@ public class SearchActivity extends AppCompatActivity {
 			var inflater = LayoutInflater.from(parent.getContext());
 			var binding = ItemGridMediaCatalogBinding.inflate(inflater, parent, false);
 			var viewHolder = new ViewHolder(binding);
+
+			var params = binding.getRoot().getLayoutParams();
+			params.width = ViewUtil.MATCH_PARENT;
+
+			if(!ViewUtil.setHorizontalMargin(params, ViewUtil.dpPx(6))) {
+				throw new IllegalStateException("Failed to set horizontal margin for ItemGridMediaCatalogBinding!");
+			}
+
+			binding.getRoot().setLayoutParams(params);
 
 			binding.getRoot().setOnClickListener(view -> MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 

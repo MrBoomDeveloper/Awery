@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.observable.ObservableList;
-
-import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
 	private static final String TAG = "MediaCatalogAdapter";
@@ -57,9 +57,15 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemGridMediaCatalogBinding.inflate(inflater, parent, false);
+
+		if(!ViewUtil.setRightMargin(binding.getRoot(), ViewUtil.dpPx(12))) {
+			throw new IllegalStateException("Failed to set right margin!");
+		}
+
 		var viewHolder = new ViewHolder(binding);
 
-		binding.getRoot().setOnClickListener(view -> MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
+		binding.getRoot().setOnClickListener(view ->
+				MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 		binding.getRoot().setOnLongClickListener(view -> {
 			MediaUtils.openMediaActionsMenu(parent.getContext(), viewHolder.getItem());

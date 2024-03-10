@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.WindowInsets;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -23,14 +22,14 @@ public class ViewUtil {
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
 	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
-	public static final int MATCH_CONSTRAINT_PERCENT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
 
-	public static void setLeftMargin(View view, int margin) {
+	public static boolean setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
-		if(margins == null) return;
+		if(margins == null) return false;
 
 		margins.leftMargin = margin;
 		view.setLayoutParams(margins);
+		return true;
 	}
 
 	@NonNull
@@ -45,34 +44,25 @@ public class ViewUtil {
 		return new ViewGroup.MarginLayoutParams(width, height);
 	}
 
-	public static void setWeight(@NonNull View view, float weight) {
+	public static boolean setWeight(@NonNull View view, float weight) {
 		var params = view.getLayoutParams();
 
 		if(params instanceof LinearLayout.LayoutParams layoutParams) {
 			layoutParams.weight = weight;
+			view.setLayoutParams(params);
+			return true;
 		}
 
-		view.setLayoutParams(params);
+		return false;
 	}
 
-	public static ViewGroup.LayoutParams createFittingLayoutParams(@NonNull View parent, ViewGroup.LayoutParams originalParams) {
-		if(parent instanceof LinearLayout) {
-			return new LinearLayout.LayoutParams(originalParams);
-		} else if(parent instanceof ConstraintLayout) {
-			return new ConstraintLayout.LayoutParams(originalParams);
-		} else if(parent instanceof FrameLayout) {
-			return new FrameLayout.LayoutParams(originalParams);
-		}
-
-		return originalParams;
-	}
-
-	public static void setMargin(View view, int margin) {
+	public static boolean setMargin(View view, int margin) {
 		var margins = getMargins(view);
-		if(margins == null) return;
+		if(margins == null) return false;
 
 		margins.setMargins(margin, margin, margin, margin);
 		view.setLayoutParams(margins);
+		return true;
 	}
 
 	public static void setPadding(@NonNull View view, int padding) {
@@ -83,16 +73,22 @@ public class ViewUtil {
 		view.setPadding(horizontal, vertical, horizontal, vertical);
 	}
 
-	public static void setTopMargin(ViewGroup.LayoutParams params, int margin) {
+	public static boolean setTopMargin(ViewGroup.LayoutParams params, int margin) {
 		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
 			marginLayoutParams.topMargin = margin;
+			return true;
 		}
+
+		return false;
 	}
 
-	public static void removeParent(@NonNull View view) {
+	public static boolean removeParent(@NonNull View view) {
 		if(view.getParent() instanceof ViewManager parent) {
 			parent.removeView(view);
+			return true;
 		}
+
+		return false;
 	}
 
 	public static void setVerticalMargin(ViewGroup.LayoutParams params, int margin) {
@@ -102,28 +98,33 @@ public class ViewUtil {
 		}
 	}
 
-	public static void setHorizontalMargin(ViewGroup.LayoutParams params, int margin) {
+	public static boolean setHorizontalMargin(ViewGroup.LayoutParams params, int margin) {
 		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
 			marginLayoutParams.rightMargin = margin;
 			marginLayoutParams.leftMargin = margin;
+			return true;
 		}
+
+		return false;
 	}
 
-	public static void setVerticalMargin(View view, int margin) {
+	public static boolean setVerticalMargin(View view, int margin) {
 		var margins = getMargins(view);
-		if(margins == null) return;
+		if(margins == null) return false;
 
 		margins.topMargin = margin;
 		margins.bottomMargin = margin;
 		view.setLayoutParams(margins);
+		return true;
 	}
 
-	public static void setRightMargin(View view, int margin) {
+	public static boolean setRightMargin(View view, int margin) {
 		var margins = getMargins(view);
-		if(margins == null) return;
+		if(margins == null) return false;
 
 		margins.rightMargin = margin;
 		view.setLayoutParams(margins);
+		return true;
 	}
 
 	public static void setStartMargin(View view, int margin) {
@@ -134,13 +135,14 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
-	public static void setHorizontalMargin(View view, int margin) {
+	public static boolean setHorizontalMargin(View view, int margin) {
 		var margins = getMargins(view);
-		if(margins == null) return;
+		if(margins == null) return false;
 
 		margins.leftMargin = margin;
 		margins.rightMargin = margin;
 		view.setLayoutParams(margins);
+		return true;
 	}
 
 	public static void setHorizontalMargin(View view, int left, int right) {
