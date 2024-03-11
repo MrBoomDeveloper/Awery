@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public abstract class ExtensionProvider {
+public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
+
+	@Override
+	public int compareTo(@NonNull ExtensionProvider o) {
+		return getName().compareTo(o.getName());
+	}
 
 	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
 		callback.onFailure(ExceptionUtil.NOT_IMPLEMENTED);

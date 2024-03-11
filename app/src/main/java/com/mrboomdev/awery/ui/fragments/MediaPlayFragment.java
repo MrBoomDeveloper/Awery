@@ -23,9 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.catalog.extensions.Extension;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.catalog.extensions.data.ExtensionProviderGroup;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
@@ -133,12 +134,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var extensions = new ArrayList<>(ExtensionsFactory.getVideoExtensions());
-		var sources = new ArrayList<ExtensionProvider>();
-
-		for(var extension : extensions) {
-			sources.addAll(extension.getProviders());
-		}
+		var flags = Extension.FLAG_VIDEO_EXTENSION | Extension.FLAG_WORKING;
+		var sources = new ArrayList<>(ExtensionsFactory.getProviders(flags));
 
 		var groupedByLang = ExtensionProviderGroup.groupByLang(sources);
 		groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());

@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Extension {
+	public static final int FLAG_VIDEO_EXTENSION = 1;
+	public static final int FLAG_BOOK_EXTENSION = 2;
+	public static final int FLAG_SUBTITLES_EXTENSION = 4;
+	public static final int FLAG_TRACKER_EXTENSION = 8;
+	public static final int FLAG_ERROR = 16;
+	public static final int FLAG_WORKING = 32;
 	private final boolean isNsfw;
 	private final String version, id;
 	private final String name;
+	private int flags;
 	private String error;
 	protected boolean isVideoExtension, isBookExtension;
-	private Exception exception;
+	private Throwable exception;
 	private final List<ExtensionProvider> providers = new ArrayList<>();
 
 	public Extension(String id, String name, boolean isNsfw, String version) {
@@ -17,6 +24,23 @@ public class Extension {
 		this.isNsfw = isNsfw;
 		this.version = version;
 		this.id = id;
+		addFlags(FLAG_WORKING);
+	}
+
+	public int getFlags() {
+		return flags;
+	}
+
+	public void setFlags(int flags) {
+		this.flags = flags;
+	}
+
+	public void addFlags(int flags) {
+		this.flags |= flags;
+	}
+
+	public void removeFlags(int flags) {
+		this.flags &= ~flags;
 	}
 
 	public List<ExtensionProvider> getProviders() {
@@ -27,7 +51,7 @@ public class Extension {
 		this.providers.add(provider);
 	}
 
-	public String getError() {
+	public String getErrorTitle() {
 		return error;
 	}
 
@@ -36,32 +60,48 @@ public class Extension {
 	}
 
 	public boolean isVideoExtension() {
-		return isVideoExtension;
+		return (flags & FLAG_VIDEO_EXTENSION) == FLAG_VIDEO_EXTENSION;
 	}
 
 	public boolean isBookExtension() {
-		return isBookExtension;
+		return (flags & FLAG_BOOK_EXTENSION) == FLAG_BOOK_EXTENSION;
 	}
 
-	public void setError(String error, Exception e) {
+	public boolean isTrackerExtension() {
+		return (flags & FLAG_TRACKER_EXTENSION) == FLAG_TRACKER_EXTENSION;
+	}
+
+	public boolean isSubtitlesExtension() {
+		return (flags & FLAG_SUBTITLES_EXTENSION) == FLAG_SUBTITLES_EXTENSION;
+	}
+
+	public void setError(String error, Throwable e) {
+		if(error == null && e == null) {
+			removeFlags(FLAG_ERROR);
+			addFlags(FLAG_WORKING);
+
+			this.error = null;
+			this.exception = null;
+			return;
+		}
+
 		this.error = error;
 		this.exception = e;
+
+		addFlags(FLAG_ERROR);
+		removeFlags(FLAG_WORKING);
 	}
 
-	public Exception getException() {
+	public Throwable getError() {
 		return exception;
 	}
 
 	public void setError(String error) {
-		this.error = error;
-
-		if(error == null) {
-			exception = null;
-		}
+		setError(error, null);
 	}
 
 	public boolean isError() {
-		return error != null || exception != null;
+		return (flags & FLAG_ERROR) == FLAG_ERROR;
 	}
 
 	public String getName() {
