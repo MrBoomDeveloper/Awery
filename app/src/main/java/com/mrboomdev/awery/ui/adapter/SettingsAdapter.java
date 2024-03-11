@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.databinding.ItemListSettingBinding;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Objects;
 
-import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
-	private DataHandler handler;
+	private final DataHandler handler;
 	private SettingsItem data;
 
 	public SettingsAdapter(SettingsItem data, DataHandler handler) {
@@ -58,6 +58,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			switch(item.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
 				case SCREEN -> handler.onScreenLaunchRequest(item);
+				case ACTION -> SettingsActions.run(item.getFullKey());
 
 				case SELECT -> new MaterialAlertDialogBuilder(parent.getContext())
 						.setTitle(item.getTitle(parent.getContext()))

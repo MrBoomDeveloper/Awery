@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.catalog.extensions;
 
+import androidx.annotation.NonNull;
+
 import com.squareup.moshi.Json;
 
 import java.util.ArrayList;
@@ -112,5 +114,26 @@ public class Extension {
 
 	public String getVersion() {
 		return version;
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		var builder = new StringBuilder("{ \"");
+		builder.append(id);
+		builder.append("\": \"");
+		builder.append(name);
+		builder.append("\", ");
+		builder.append(version);
+		builder.append("\"");
+
+		if(exception != null) {
+			builder.append(", \"exception\": \"");
+			builder.append(exception.getLocalizedMessage());
+			builder.append("\"");
+		}
+
+		builder.append(" }");
+		return builder.toString();
 	}
 }

@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 
 		binding.navbar.removeTabAt(2);
+		AweryApp.checkCrashFile(this);
 	}
 
 	@Override

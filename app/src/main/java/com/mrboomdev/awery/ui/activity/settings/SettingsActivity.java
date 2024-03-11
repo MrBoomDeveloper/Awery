@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,14 +14,13 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.adapter.SettingsAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
-
-import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();

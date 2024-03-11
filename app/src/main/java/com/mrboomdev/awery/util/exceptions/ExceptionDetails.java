@@ -2,6 +2,7 @@ package com.mrboomdev.awery.util.exceptions;
 
 import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -25,8 +26,6 @@ public class ExceptionDetails {
 	private final Throwable exception;
 	@Json(ignore = true)
 	private final Context context;
-	@Json(name = "did_checked")
-	private boolean didChecked;
 
 	public ExceptionDetails(Context context, Throwable exception) {
 		List<Extension> extensions;
@@ -44,16 +43,15 @@ public class ExceptionDetails {
 		this.installedExtensions = extensions;
 	}
 
-	public boolean didChecked() {
-		return didChecked;
-	}
-
 	public Throwable getException() {
 		return exception;
 	}
 
-	public void setDidChecked(boolean didChecked) {
-		this.didChecked = didChecked;
+	@NonNull
+	@Override
+	public String toString() {
+		return "Primary exception:\n" + Log.getStackTraceString(exception)
+				+ "\nInstalled extensions:\n" + installedExtensions;
 	}
 
 	public static class Adapter {

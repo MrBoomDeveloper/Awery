@@ -16,7 +16,7 @@ import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
 import com.mrboomdev.awery.ui.activity.MainActivity;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
-import com.mrboomdev.awery.ui.activity.SettingsActivity;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 

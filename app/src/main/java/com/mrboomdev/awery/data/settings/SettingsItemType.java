@@ -12,5 +12,7 @@ public enum SettingsItemType {
 	@Json(name = "select")
 	SELECT,
 	@Json(name = "multiselect")
-	MULTISELECT
+	MULTISELECT,
+	@Json(name = "action")
+	ACTION
 }

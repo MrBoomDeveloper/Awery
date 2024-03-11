@@ -2,8 +2,11 @@ package com.mrboomdev.awery;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -24,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.support.js.JsManager;
 import com.mrboomdev.awery.catalog.template.CatalogList;
@@ -168,7 +172,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 		app = this;
 		super.onCreate();
-		checkCrashFile();
 
 		registerActivityLifecycleCallbacks(this);
 
@@ -222,8 +225,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return null;
 	}
 
-	public void checkCrashFile() {
-		var crashFile = new File(getExternalFilesDir(null), "crash.txt");
+	public static void checkCrashFile(@NonNull Context context) {
+		var crashFile = new File(context.getExternalFilesDir(null), "crash.txt");
 
 		try {
 			if(!crashFile.exists()) return;
@@ -241,7 +244,26 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				var details = adapter.fromJson(result.toString());
 				if(details == null) return;
 
-				Log.e(TAG, "At previous time app has crashed!", details.getException());
+				new MaterialAlertDialogBuilder(context)
+						.setTitle("Awery has crashed!")
+						.setMessage("Please send the following details to developers:\n\n" + result)
+						.setCancelable(false)
+						.setOnDismissListener(dialog -> crashFile.delete())
+						.setNeutralButton("Copy", (dialog, btn) -> {
+							var clipboard = context.getSystemService(ClipboardManager.class);
+							var clip = ClipData.newPlainText("crash report", result.toString());
+							clipboard.setPrimaryClip(clip);
+						})
+						.setNegativeButton("Share", (dialog, btn) -> {
+							var intent = new Intent(Intent.ACTION_SEND);
+							intent.setType("text/plain");
+							intent.putExtra(Intent.EXTRA_SUBJECT, "Awery crash report");
+							intent.putExtra(Intent.EXTRA_TEXT, result.toString());
+							context.startActivity(Intent.createChooser(intent, "Share crash report..."));
+						})
+						.setPositiveButton("OK", (dialog, btn) -> {
+							dialog.dismiss();
+						}).show();
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

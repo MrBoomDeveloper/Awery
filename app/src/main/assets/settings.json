@@ -75,6 +75,15 @@
 			"key": "accounts", "type": "screen",
 			"title": "accounts", "icon": "ic_round_account_circle_24",
 			"items": [], "behaviour": "list_accounts"
+		}, {
+			"key": "advanced", "type": "screen",
+			"title": "Advanced", "icon": "ic_round_settings_24",
+			"items": [
+				{
+					"key": "parse_crash_report", "type": "action",
+					"title": "Parse crash report"
+				}
+			]
 		}
 	]
 }
