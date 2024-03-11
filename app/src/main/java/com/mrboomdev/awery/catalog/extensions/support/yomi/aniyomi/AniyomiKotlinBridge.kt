@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.catalog.extensions.support.aniyomi
+package com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
@@ -9,10 +9,7 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.jetbrains.annotations.Contract
 
 object AniyomiKotlinBridge {
 

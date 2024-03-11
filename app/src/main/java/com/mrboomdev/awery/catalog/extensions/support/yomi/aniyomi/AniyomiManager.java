@@ -1,9 +1,15 @@
-package com.mrboomdev.awery.catalog.extensions.support.aniyomi;
+package com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi;
 
 import android.util.Log;
 
 import com.mrboomdev.awery.catalog.extensions.Extension;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.support.yomi.YomiManager;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
@@ -51,15 +57,16 @@ public class AniyomiManager extends YomiManager {
 	}
 
 	@Override
-	public void fillProvider(Extension extension, Object main) {
+	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeCatalogueSource source) {
-			extension.addProvider(new AniyomiProvider(source));
+			return List.of(new AniyomiProvider(source));
 		} else if(main instanceof AnimeSourceFactory factory) {
-			for(var source : factory.createSources()) {
-				fillProvider(extension, source);
-			}
-		} else {
-			Log.e("AniyomiManager", "Unknown source type: " + main.getClass().getName());
+			return factory.createSources().stream()
+					.map(source -> createProviders(extension, source))
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
 		}
+
+		return Collections.emptyList();
 	}
 }

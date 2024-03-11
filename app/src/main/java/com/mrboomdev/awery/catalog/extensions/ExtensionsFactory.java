@@ -4,10 +4,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.catalog.extensions.support.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.catalog.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.catalog.extensions.support.js.JsManager;
-import com.mrboomdev.awery.catalog.extensions.support.tachiyomi.TachiyomiManager;
+import com.mrboomdev.awery.catalog.extensions.support.yomi.tachiyomi.TachiyomiManager;
 
 import java.util.Collection;
 import java.util.List;

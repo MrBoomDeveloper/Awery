@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.catalog.extensions.support.tachiyomi;
+package com.mrboomdev.awery.catalog.extensions.support.yomi.tachiyomi;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 

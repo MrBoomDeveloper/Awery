@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.io;
 
 import androidx.annotation.Nullable;
 

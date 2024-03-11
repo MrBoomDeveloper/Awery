@@ -1,10 +1,20 @@
-package com.mrboomdev.awery.catalog.extensions.support.tachiyomi;
+package com.mrboomdev.awery.catalog.extensions.support.yomi.tachiyomi;
 
 import android.util.Log;
 
 import com.mrboomdev.awery.catalog.extensions.Extension;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.support.yomi.YomiManager;
+import com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi.AniyomiProvider;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
+import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
+import eu.kanade.tachiyomi.source.CatalogueSource;
 import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
 
@@ -51,15 +61,16 @@ public class TachiyomiManager extends YomiManager {
 	}
 
 	@Override
-	public void fillProvider(Extension extension, Object main) {
-		if(main instanceof MangaSource source) {
-			extension.addProvider(new TachiyomiProvider(source));
+	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
+		if(main instanceof CatalogueSource source) {
+			return List.of(new TachiyomiProvider(source));
 		} else if(main instanceof SourceFactory factory) {
-			for(var source : factory.createSources()) {
-				fillProvider(extension, source);
-			}
-		} else {
-			Log.e("TachiyomiManager", "Unknown source type: " + main.getClass().getName());
+			return factory.createSources().stream()
+					.map(source -> createProviders(extension, source))
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
 		}
+
+		return Collections.emptyList();
 	}
 }

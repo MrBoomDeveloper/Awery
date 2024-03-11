@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,13 +19,13 @@ public class CustomArrayAdapter<T> extends BaseAdapter implements Filterable {
 	private CustomFilter filter;
 	private List<T> items, filteredItems;
 
-	public CustomArrayAdapter(@NonNull Context context, Collection<T> items, OnCreateView<T> onCreate) {
+	public CustomArrayAdapter(Collection<T> items, OnCreateView<T> onCreate) {
 		this.onCreate = onCreate;
 		this.items = new ArrayList<>(items);
 	}
 
-	public CustomArrayAdapter(@NonNull Context context, OnCreateView<T> onCreate) {
-		this(context, new ArrayList<>(), onCreate);
+	public CustomArrayAdapter(OnCreateView<T> onCreate) {
+		this(new ArrayList<>(), onCreate);
 	}
 
 	@NonNull

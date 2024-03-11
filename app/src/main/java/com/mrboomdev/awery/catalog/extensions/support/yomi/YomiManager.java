@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.catalog.extensions.Extension;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsManager;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +39,7 @@ public abstract class YomiManager extends ExtensionsManager {
 
 	public abstract double getMaxVersion();
 
-	public abstract void fillProvider(Extension extension, Object main);
+	public abstract List<ExtensionProvider> createProviders(Extension extension, Object main);
 
 	@Override
 	public Extension getExtension(String id) {
@@ -76,8 +77,13 @@ public abstract class YomiManager extends ExtensionsManager {
 			}
 
 			var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
-			var extension = new Extension(pkg.packageName, label, isNsfw, pkg.versionName);
+			var extension = new Extension(pkg.packageName, label, pkg.versionName);
 			extension.addFlags(Extension.FLAG_VIDEO_EXTENSION);
+
+			if(isNsfw) {
+				extension.addFlags(Extension.FLAG_NSFW);
+			}
+
 			extensions.put(pkg.packageName, extension);
 
 			try {
@@ -99,8 +105,13 @@ public abstract class YomiManager extends ExtensionsManager {
 		var mains = loadMains(context, extension);
 		if(mains == null) return;
 
-		for(var main : mains) {
-			fillProvider(extension, main);
+		var providers = mains.stream()
+				.map(main -> createProviders(extension, main))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+
+		for(var provider : providers) {
+			extension.addProvider(provider);
 		}
 	}
 

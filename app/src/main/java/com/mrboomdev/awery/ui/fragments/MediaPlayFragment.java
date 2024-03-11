@@ -29,6 +29,7 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
@@ -140,7 +141,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var groupedByLang = ExtensionProviderGroup.groupByLang(sources);
 		groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
 
-		var sourcesDropdownAdapter = new CustomArrayAdapter<>(view.getContext(), groupedByLangEntries, (
+		var sourcesDropdownAdapter = new CustomArrayAdapter<>(groupedByLangEntries, (
 				Map.Entry<String, Map<String, ExtensionProvider>> itemEntry,
 				View recycled,
 				ViewGroup parent
@@ -221,7 +222,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			variantsAdapter.getBinding((binding, didJustCreated) -> {
 				binding.variantWrapper.setVisibility(View.VISIBLE);
 
-				var variantsDropdownAdapter = new CustomArrayAdapter<>(context, sortedSourceEntries, (
+				var variantsDropdownAdapter = new CustomArrayAdapter<>(sortedSourceEntries, (
 						Map.Entry<String, ExtensionProvider> itemEntry,
 						View recycled,
 						ViewGroup parent

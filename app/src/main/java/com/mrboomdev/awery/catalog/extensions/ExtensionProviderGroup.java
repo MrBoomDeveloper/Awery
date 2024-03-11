@@ -32,6 +32,8 @@ public class ExtensionProviderGroup extends ExtensionProvider {
 
 			if(result.containsKey(name)) {
 				var langs = result.get(name);
+				if(langs == null) continue;
+
 				langs.put(lang, provider);
 			} else {
 				var langs = new HashMap<String, ExtensionProvider>();

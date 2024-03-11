@@ -6,7 +6,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.util.HttpClient;
+import com.mrboomdev.awery.util.io.HttpClient;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;

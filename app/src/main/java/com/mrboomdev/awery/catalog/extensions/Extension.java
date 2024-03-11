@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.catalog.extensions;
 
+import com.squareup.moshi.Json;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +12,18 @@ public class Extension {
 	public static final int FLAG_TRACKER_EXTENSION = 8;
 	public static final int FLAG_ERROR = 16;
 	public static final int FLAG_WORKING = 32;
-	private final boolean isNsfw;
+	public static final int FLAG_NSFW = 64;
+	public static final int FLAG_ANY_STATUS = FLAG_ERROR | FLAG_WORKING;
 	private final String version, id;
 	private final String name;
 	private int flags;
 	private String error;
-	protected boolean isVideoExtension, isBookExtension;
 	private Throwable exception;
+	@Json(ignore = true)
 	private final List<ExtensionProvider> providers = new ArrayList<>();
 
-	public Extension(String id, String name, boolean isNsfw, String version) {
+	public Extension(String id, String name, String version) {
 		this.name = name;
-		this.isNsfw = isNsfw;
 		this.version = version;
 		this.id = id;
 		addFlags(FLAG_WORKING);
@@ -29,10 +31,6 @@ public class Extension {
 
 	public int getFlags() {
 		return flags;
-	}
-
-	public void setFlags(int flags) {
-		this.flags = flags;
 	}
 
 	public void addFlags(int flags) {
@@ -109,7 +107,7 @@ public class Extension {
 	}
 
 	public boolean isNsfw() {
-		return isNsfw;
+		return (flags & FLAG_NSFW) == FLAG_NSFW;
 	}
 
 	public String getVersion() {

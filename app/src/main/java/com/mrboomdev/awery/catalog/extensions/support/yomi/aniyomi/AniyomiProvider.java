@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.catalog.extensions.support.aniyomi;
+package com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi;
 
 import android.os.Bundle;
 

@@ -31,9 +31,15 @@ import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.Disposable;
+import com.mrboomdev.awery.util.exceptions.ExceptionDetails;
+import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,11 +57,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
 	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
+	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static final List<Disposable> disposables = new ArrayList<>();
 	private static final String TAG = "AweryApp";
 	public static final boolean USE_KT_APP_INIT = true;
 	private static AweryApp app;
-	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static AweryDB db;
 
 	public static void registerDisposable(Disposable disposable) {
@@ -145,7 +151,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	@Nullable
 	@Contract(pure = true)
 	public static Activity getAnyActivity() {
-		if(activities.size() == 0) return null;
+		if(activities.isEmpty()) return null;
 		if(activities.size() == 1) return activities.values().toArray(new ActivityInfo[0])[0].activity;
 
 		var sorted = activities.values()
@@ -158,10 +164,12 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Override
 	public void onCreate() {
+		setupCrashHandler();
+
 		app = this;
 		super.onCreate();
+		checkCrashFile();
 
-		setupCrashHandler();
 		registerActivityLifecycleCallbacks(this);
 
 		ExtensionsFactory.init(this);
@@ -179,7 +187,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 						DBCatalogList.fromCatalogList(new CatalogList("Dropped", "5")),
 						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6")),
 						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_BLACKLIST)),
-						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_HISTORY)));
+						DBCatalogList.fromCatalogList(new CatalogList("History", CATALOG_LIST_HISTORY)));
 
 				settings.setInt(AwerySettings.LAST_OPENED_VERSION, 1);
 				settings.saveSync();
@@ -214,6 +222,32 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return null;
 	}
 
+	public void checkCrashFile() {
+		var crashFile = new File(getExternalFilesDir(null), "crash.txt");
+
+		try {
+			if(!crashFile.exists()) return;
+
+			try(var reader = new BufferedReader(new FileReader(crashFile))) {
+				StringBuilder result = new StringBuilder();
+				String nextLine;
+
+				while((nextLine = reader.readLine()) != null) {
+					result.append(nextLine);
+				}
+
+				var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
+				var adapter = moshi.adapter(ExceptionDetails.class);
+				var details = adapter.fromJson(result.toString());
+				if(details == null) return;
+
+				Log.e(TAG, "At previous time app has crashed!", details.getException());
+			}
+		} catch(Throwable e) {
+			Log.e(TAG, "Failed to read a crash file!", e);
+		}
+	}
+
 	private void setupCrashHandler() {
 		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
 			if(thread != Looper.getMainLooper().getThread()) {
@@ -233,6 +267,23 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				}
 
 				return;
+			}
+
+			var crashFile = new File(getExternalFilesDir(null), "crash.txt");
+
+			try {
+				if(!crashFile.exists()) crashFile.createNewFile();
+
+				try(var writer = new FileWriter(crashFile)) {
+					var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
+					var adapter = moshi.adapter(ExceptionDetails.class);
+
+					var details = new ExceptionDetails(this, throwable);
+					writer.write(adapter.toJson(details));
+					Log.i(TAG, "Crash file saved successfully: " + crashFile.getAbsolutePath());
+				}
+			} catch(Throwable e) {
+				Log.e(TAG, "Failed to write crash file!", e);
 			}
 
 			Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
@@ -302,9 +353,9 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 		activities.remove(activity.getClass());
 
-		if(activities.size() == 0) {
+		if(activities.isEmpty()) {
 			runDelayed(() -> {
-				if(activities.size() > 0) return;
+				if(!activities.isEmpty()) return;
 				dispose();
 			}, 1000);
 		}
