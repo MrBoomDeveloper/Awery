@@ -4,7 +4,7 @@
 <p align="center">
    <a href="https://t.me/mrboomdev_awery"><img src="https://img.shields.io/badge/telegram-channel-blue?style=for-the-badge"></a>
    <a href="https://discord.com/invite/yspVzD4Kbm"><img src="https://img.shields.io/discord/1208816442313805855.svg?style=for-the-badge&logo=discord&colorB=7289DA"></a>
-   <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?color=%233DDC84&logo=android&logoColor=%23fff&style=for-the-badge"></a>
+   <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?style=for-the-badge" /></a>
 </p>
 
 # **Awery** - The Best Anime App
@@ -34,7 +34,7 @@ Imagine the perfect app where you can customize everything, with tons of content
 
 ## Download 😎
 
-There is currently no possibility of directly downloading ready-made apk files. The very idea of downloading unfinished software sounds strange to me.  Please be patient while I finish something working.  And if you can’t stand it, then build the project yourself!
+Open the "Releases" button and select the first file. Download it and that's all! Extensions for watching media that can be downloaded from third parties are also required!
 
 ## Want to Contribute? 🤝
 
