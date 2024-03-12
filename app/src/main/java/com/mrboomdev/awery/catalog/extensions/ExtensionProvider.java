@@ -21,7 +21,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {
-		return getName().compareTo(o.getName());
+		if(getName().equals(o.getName())) {
+			return getLang().compareToIgnoreCase(o.getLang());
+		}
+
+		return getName().compareToIgnoreCase(o.getName());
 	}
 
 	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {

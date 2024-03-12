@@ -25,6 +25,7 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.extensions.Extension;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
+import com.mrboomdev.awery.catalog.extensions.ExtensionProviderChild;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
@@ -34,6 +35,7 @@ import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
+import com.mrboomdev.awery.util.CachedValue;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -48,19 +50,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	private final String TAG = "MediaPlayFragment";
-	private final Map<String, ExtensionStatus> sourceStatuses = new HashMap<>();
-	private ArrayList<Map.Entry<String, Map<String, ExtensionProvider>>> groupedByLangEntries;
+	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
+	private final CachedValue<ExtensionProviderGroup, List<ExtensionProvider>> currentGroupProviders = new CachedValue<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private ExtensionProvider selectedSource;
+	private ExtensionProviderGroup selectedSourceGroup;
 	private CatalogMedia media;
 	private boolean autoChangeSource = true;
-	private int currentSourceIndex = 0;
+	private int currentSourceIndex = 0, currentGroupSourceIndex = 0;
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -104,7 +107,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private enum ExtensionStatus {
-		OK, OFFLINE, SERVER_DOWN, BROKEN_PARSER, NOT_FOUND, NONE
+		OK, OFFLINE, SERVER_DOWN, BROKEN_PARSER, NOT_FOUND, NONE;
+
+		public boolean isGood() {
+			return this == OK;
+		}
+
+		public boolean isBad() {
+			return this == OFFLINE || this == SERVER_DOWN || this == BROKEN_PARSER || this == NOT_FOUND;
+		}
+
+		public boolean isUnknown() {
+			return this == NONE;
+		}
 	}
 
 	public MediaPlayFragment(CatalogMedia media) {
@@ -119,82 +134,76 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(media == null) return;
 		this.media = media;
 
-		if(groupedByLangEntries == null) {
+		if(providers == null) {
 			return;
 		}
 
-		if(groupedByLangEntries.isEmpty()) {
+		if(providers.isEmpty()) {
 			handleExceptionUi(null, new ZeroResultsException());
 			variantsAdapter.setEnabled(false);
 			return;
 		}
 
-		var source = groupedByLangEntries.get(0);
-		selectProvider(source, requireContext());
+		selectProvider(providers.get(0));
+	}
+
+	@NonNull
+	private View bindDropdownItem(ExtensionProvider item, View recycled, ViewGroup parent) {
+		if(recycled == null) {
+			var inflater = LayoutInflater.from(parent.getContext());
+			var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
+			recycled = binding.getRoot();
+		}
+
+		if(recycled instanceof ViewGroup viewGroup) {
+			var title = (TextView) viewGroup.getChildAt(0);
+			title.setText(item.getName());
+
+			var icon = (ImageView) viewGroup.getChildAt(1);
+			var status = sourceStatuses.get(item);
+
+			if(status != null) {
+				var statusColor = status == ExtensionStatus.OK ? Color.GREEN : Color.RED;
+
+				var iconRes = switch(status) {
+					case OK -> R.drawable.ic_check;
+					case BROKEN_PARSER -> R.drawable.ic_round_error_24;
+					case SERVER_DOWN -> R.drawable.ic_round_block_24;
+					case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
+					case NOT_FOUND -> R.drawable.round_exposure_zero_24;
+					case NONE -> null;
+				};
+
+				if(iconRes != null) {
+					icon.setImageResource(iconRes);
+					icon.setVisibility(View.VISIBLE);
+					ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(statusColor));
+				} else {
+					icon.setVisibility(View.GONE);
+				}
+			} else {
+				icon.setVisibility(View.GONE);
+			}
+		} else {
+			throw new IllegalStateException("Recycled view is not a ViewGroup");
+		}
+
+		return recycled;
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		var flags = Extension.FLAG_VIDEO_EXTENSION | Extension.FLAG_WORKING;
-		var sources = new ArrayList<>(ExtensionsFactory.getProviders(flags));
-		Collections.sort(sources);
+		providers = new ArrayList<>(ExtensionsFactory.getProviders(flags));
+		Collections.sort(providers);
 
-		var groupedByLang = ExtensionProviderGroup.groupByLang(sources);
-		groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
-
-		var sourcesDropdownAdapter = new CustomArrayAdapter<>(groupedByLangEntries, (
-				Map.Entry<String, Map<String, ExtensionProvider>> itemEntry,
-				View recycled,
-				ViewGroup parent
-		) -> {
-			if(recycled == null) {
-				var inflater = LayoutInflater.from(parent.getContext());
-				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
-				recycled = binding.getRoot();
-			}
-
-			if(recycled instanceof ViewGroup group) {
-				var title = (TextView) group.getChildAt(0);
-				var icon = (ImageView) group.getChildAt(1);
-
-				title.setText(itemEntry.getKey());
-				var status = sourceStatuses.get(itemEntry.getKey());
-
-				if(status != null && itemEntry.getValue().size() == 1) {
-					var statusColor = status == ExtensionStatus.OK ? Color.GREEN : Color.RED;
-
-					var iconRes = switch(status) {
-						case OK -> R.drawable.ic_check;
-						case BROKEN_PARSER -> R.drawable.ic_round_error_24;
-						case SERVER_DOWN -> R.drawable.ic_round_block_24;
-						case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
-						case NOT_FOUND -> R.drawable.round_exposure_zero_24;
-						case NONE -> null;
-					};
-
-					if(iconRes != null) {
-						icon.setImageResource(iconRes);
-						icon.setVisibility(View.VISIBLE);
-						ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(statusColor));
-					} else {
-						icon.setVisibility(View.GONE);
-					}
-				} else {
-					icon.setVisibility(View.GONE);
-				}
-			} else {
-				throw new IllegalStateException("Recycled view is not a ViewGroup");
-			}
-
-			return recycled;
-		});
+		var sourcesDropdownAdapter = new CustomArrayAdapter<>(providers, this::bindDropdownItem);
 
 		variantsAdapter.getBinding((binding, didJustCreated) -> {
 			binding.sourceDropdown.setAdapter(sourcesDropdownAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
-				var group = groupedByLangEntries.get(position);
-				selectProvider(group, _view.getContext());
+				selectProvider(providers.get(position));
 				autoChangeSource = false;
 			});
 		});
@@ -202,60 +211,32 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		setMedia(media);
 	}
 
-	private List<Map.Entry<String, ExtensionProvider>> getSortedSources(
-			@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap
-	) {
-		return sourcesMap.getValue().entrySet().stream().sorted((next, prev) -> {
-			if(next.getKey().equals("en") && !prev.getKey().equals("en")) return -1;
-			if(!next.getKey().equals("en") && prev.getKey().equals("en")) return 1;
-			return 0;
-		}).collect(Collectors.toList());
-	}
+	private void selectProvider(@NonNull ExtensionProvider provider) {
+		variantsAdapter.getBinding((binding, didJustCreated) ->
+				binding.sourceDropdown.setText(provider.getName(), false));
 
-	private void selectProvider(@NonNull Map.Entry<String, Map<String, ExtensionProvider>> sourcesMap, Context context) {
-		variantsAdapter.getBinding((binding, didJustCreated) -> binding.sourceDropdown.setText(sourcesMap.getKey(), false));
-		var sortedSourceEntries = getSortedSources(sourcesMap);
-
-		var initialProvider = sortedSourceEntries.get(0);
-		selectVariant(initialProvider.getValue(), initialProvider.getKey());
-
-		if(sortedSourceEntries.size() > 1) {
+		if(provider instanceof ExtensionProviderGroup group) {
 			variantsAdapter.getBinding((binding, didJustCreated) -> {
-				binding.variantWrapper.setVisibility(View.VISIBLE);
+				var variants = new ArrayList<>(group.getProviders());
+				currentGroupProviders.set(group, variants);
+				Collections.sort(variants);
 
-				var variantsDropdownAdapter = new CustomArrayAdapter<>(sortedSourceEntries, (
-						Map.Entry<String, ExtensionProvider> itemEntry,
-						View recycled,
-						ViewGroup parent
-				) -> {
-					if(recycled == null) {
-						var inflater = LayoutInflater.from(parent.getContext());
-						var _binding = ItemListDropdownBinding.inflate(inflater, parent, false);
-						recycled = _binding.getRoot();
-					}
-
-					if(recycled instanceof ViewGroup group) {
-						var title = (TextView) group.getChildAt(0);
-						title.setText(itemEntry.getKey());
-					} else {
-						throw new IllegalStateException("Recycled view is not a ViewGroup");
-					}
-
-					return recycled;
-				});
-
-				binding.variantDropdown.setAdapter(variantsDropdownAdapter);
+				var variantsDropdownAdapter = new CustomArrayAdapter<>(variants, this::bindDropdownItem);
 
 				binding.variantDropdown.setOnItemClickListener((parent, _view, position, id) -> {
-					var variant = sortedSourceEntries.get(position);
+					var variant = variants.get(position);
 					if(variant == null) return;
 
 					autoChangeSource = false;
-					selectVariant(variant.getValue(), variant.getKey());
+					selectVariant(variant, variant.getName());
 				});
-			});
 
+				binding.variantDropdown.setAdapter(variantsDropdownAdapter);
+				binding.variantWrapper.setVisibility(View.VISIBLE);
+				selectVariant(variants.get(0), variants.get(0).getName());
+			});
 		} else {
+			selectVariant(provider, null);
 			variantsAdapter.getBinding((binding, didJustCreated) ->
 					binding.variantWrapper.setVisibility(View.GONE));
 		}
@@ -271,6 +252,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
 		placeholderAdapter.setEnabled(true);
 		this.selectedSource = source;
+
+		if(source instanceof ExtensionProviderChild child) {
+			selectedSourceGroup = child.getProviderParent();
+		} else {
+			selectedSourceGroup = null;
+		}
 
 		placeholderAdapter.getBinding((binding, didJustCreated) -> {
 			binding.info.setVisibility(View.GONE);
@@ -292,9 +279,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.setPage(0)
 				.setQuery(media.titles.get(0));
 
-		variantsAdapter.getBinding((binding, didJustCreated) -> {
-			binding.searchDropdown.setText(searchParams.getQuery(), false);
-		});
+		variantsAdapter.getBinding((binding, didJustCreated) ->
+				binding.searchDropdown.setText(searchParams.getQuery(), false));
 
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
@@ -314,7 +300,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 							return;
 						}
 
-						sourceStatuses.put(source.getName(), ExtensionStatus.OK);
+						sourceStatuses.put(source, ExtensionStatus.OK);
 
 						activity.runOnUiThread(() -> {
 							placeholderAdapter.setEnabled(false);
@@ -371,24 +357,33 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private boolean autoSelectNextSource() {
-		Context context;
+		if(!autoChangeSource) return false;
 
-		try {
-			context = requireContext();
-		} catch(IllegalStateException e) {
-			Log.e(TAG, "Damn... something went wrong. I guess we just restored the fragment or it was destroyed.");
-			return false;
+		if(selectedSourceGroup != null) {
+			var groupItems = currentGroupProviders.get(selectedSourceGroup);
+			currentGroupSourceIndex++;
+
+			if(groupItems == null) {
+				throw new IllegalStateException("Group's " + selectedSourceGroup + " cache doesn't exist.");
+			}
+
+			if(currentGroupSourceIndex >= groupItems.size()) {
+				currentGroupSourceIndex = 0;
+				selectedSourceGroup = null;
+				return autoSelectNextSource();
+			}
+
+			selectProvider(groupItems.get(currentGroupSourceIndex));
+			return true;
 		}
 
-		if(!autoChangeSource) return false;
 		currentSourceIndex++;
 
-		if(currentSourceIndex >= groupedByLangEntries.size()) {
+		if(currentSourceIndex >= providers.size()) {
 			return false;
 		}
 
-		var nextSourceMap = groupedByLangEntries.get(currentSourceIndex);
-		selectProvider(nextSourceMap, context);
+		selectProvider(providers.get(currentSourceIndex));
 		return true;
 	}
 
@@ -397,15 +392,48 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var error = new ExceptionDescriptor(throwable);
 
 		if(!error.isGenericError()) {
-			throwable.printStackTrace();
+			Log.w(TAG, "Error isn't generic.", throwable);
 		}
 
 		if(error.isProgramException()) {
-			sourceStatuses.put(source.getName(), ExtensionStatus.BROKEN_PARSER);
+			sourceStatuses.put(source, ExtensionStatus.BROKEN_PARSER);
 		} else if(throwable instanceof ZeroResultsException) {
-			sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
+			sourceStatuses.put(source, ExtensionStatus.NOT_FOUND);
 		} else {
-			sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);
+			sourceStatuses.put(source, ExtensionStatus.OFFLINE);
+		}
+
+		if(source instanceof ExtensionProviderChild child) {
+			var parent = child.getProviderParent();
+			enum AllAre { OK, BAD, UNKNOWN }
+			var status = AllAre.UNKNOWN;
+
+			for(var provider : parent.getProviders()) {
+				var providerStatus = sourceStatuses.get(provider);
+
+				if(providerStatus == null || providerStatus.isUnknown()) {
+					status = AllAre.UNKNOWN;
+					break;
+				}
+
+				if(providerStatus.isGood() && status == AllAre.BAD) {
+					status = AllAre.UNKNOWN;
+					break;
+				}
+
+				if(providerStatus.isBad() && status == AllAre.OK) {
+					status = AllAre.UNKNOWN;
+					break;
+				}
+
+				status = providerStatus.isGood() ? AllAre.OK : AllAre.BAD;
+			}
+
+			if(status == AllAre.OK) {
+				sourceStatuses.put(parent, ExtensionStatus.OK);
+			} else if(status == AllAre.BAD) {
+				sourceStatuses.put(parent, ExtensionStatus.BROKEN_PARSER);
+			}
 		}
 	}
 
