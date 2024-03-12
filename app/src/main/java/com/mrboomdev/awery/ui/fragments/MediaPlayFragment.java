@@ -36,6 +36,7 @@ import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.CachedValue;
+import com.mrboomdev.awery.util.TranslationUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -147,6 +148,14 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		selectProvider(providers.get(0));
 	}
 
+	private String getProviderName(ExtensionProvider provider) {
+		if(provider instanceof ExtensionProviderChild child && child.getProviderParent().areAllWithSameName()) {
+			return TranslationUtil.getTranslatedLangName(requireContext(), provider.getLang());
+		}
+
+		return provider.getName();
+	}
+
 	@NonNull
 	private View bindDropdownItem(ExtensionProvider item, View recycled, ViewGroup parent) {
 		if(recycled == null) {
@@ -157,7 +166,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(recycled instanceof ViewGroup viewGroup) {
 			var title = (TextView) viewGroup.getChildAt(0);
-			title.setText(item.getName());
+			title.setText(getProviderName(item));
 
 			var icon = (ImageView) viewGroup.getChildAt(1);
 			var status = sourceStatuses.get(item);
@@ -228,12 +237,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					if(variant == null) return;
 
 					autoChangeSource = false;
-					selectVariant(variant, variant.getName());
+					selectVariant(variant, getProviderName(variant));
 				});
 
 				binding.variantDropdown.setAdapter(variantsDropdownAdapter);
 				binding.variantWrapper.setVisibility(View.VISIBLE);
-				selectVariant(variants.get(0), variants.get(0).getName());
+				selectVariant(variants.get(0), getProviderName(variants.get(0)));
 			});
 		} else {
 			selectVariant(provider, null);

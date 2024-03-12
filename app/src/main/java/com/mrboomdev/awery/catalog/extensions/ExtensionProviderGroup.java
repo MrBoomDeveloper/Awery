@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.catalog.extensions;
 
+import androidx.annotation.NonNull;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -12,15 +14,43 @@ import java.util.List;
 public class ExtensionProviderGroup extends ExtensionProvider {
 	private final List<ExtensionProvider> providers;
 	private final String name;
+	private final boolean areAllWithSameName;
 
 	/**
 	 * @param name A human-readable name of this group
 	 * @param providers A list of {@link ExtensionProvider}
 	 * @author MrBoomDev
 	 */
-	public ExtensionProviderGroup(String name, List<ExtensionProvider> providers) {
+	public ExtensionProviderGroup(String name, @NonNull List<ExtensionProvider> providers) {
 		this.providers = providers;
 		this.name = name;
+
+		boolean areAllWithSameName = true;
+		String lastName = null;
+
+		for(var item : providers) {
+			if(lastName == null) {
+				lastName = item.getName();
+				continue;
+			}
+
+			if(lastName.equals(item.getName())) {
+				continue;
+			}
+
+			areAllWithSameName = false;
+			break;
+		}
+
+		this.areAllWithSameName = areAllWithSameName;
+	}
+
+	/**
+	 * @return True if all {@link ExtensionProvider} in this group have the same name
+	 * @author MrBoomDev
+	 */
+	public boolean areAllWithSameName() {
+		return areAllWithSameName;
 	}
 
 	/**

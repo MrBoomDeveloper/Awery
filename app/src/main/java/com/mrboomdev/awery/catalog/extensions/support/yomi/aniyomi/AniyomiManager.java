@@ -69,14 +69,14 @@ public class AniyomiManager extends YomiManager {
 		}
 
 		if(main instanceof AnimeSourceFactory factory) {
-			var sources = factory.createSources().stream()
+			var providers = factory.createSources().stream()
 					.map(source -> createProviders(extension, source, true))
 					.flatMap(Collection::stream)
 					.collect(Collectors.toList());
 
-			var parent = new ExtensionProviderGroup(extension.getName(), sources);
+			var parent = new ExtensionProviderGroup(extension.getName(), providers);
 
-			for(var source : sources) {
+			for(var source : providers) {
 				((ChildProvider) source).setParent(parent);
 			}
 
