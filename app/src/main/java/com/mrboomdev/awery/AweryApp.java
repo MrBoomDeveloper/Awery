@@ -161,9 +161,9 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		var sorted = activities.values()
 				.stream()
 				.sorted(ActivityInfo::compareTo)
-				.toArray();
+				.toArray(ActivityInfo[]::new);
 
-		return ((ActivityInfo)sorted[0]).activity;
+		return sorted[0].activity;
 	}
 
 	@Override
@@ -244,30 +244,42 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				var details = adapter.fromJson(result.toString());
 				if(details == null) return;
 
-				new MaterialAlertDialogBuilder(context)
-						.setTitle("Awery has crashed!")
-						.setMessage("Please send the following details to developers:\n\n" + result)
-						.setCancelable(false)
-						.setOnDismissListener(dialog -> crashFile.delete())
-						.setNeutralButton("Copy", (dialog, btn) -> {
-							var clipboard = context.getSystemService(ClipboardManager.class);
-							var clip = ClipData.newPlainText("crash report", result.toString());
-							clipboard.setPrimaryClip(clip);
-						})
-						.setNegativeButton("Share", (dialog, btn) -> {
-							var intent = new Intent(Intent.ACTION_SEND);
-							intent.setType("text/plain");
-							intent.putExtra(Intent.EXTRA_SUBJECT, "Awery crash report");
-							intent.putExtra(Intent.EXTRA_TEXT, result.toString());
-							context.startActivity(Intent.createChooser(intent, "Share crash report..."));
-						})
-						.setPositiveButton("OK", (dialog, btn) -> {
-							dialog.dismiss();
-						}).show();
+				showCrashMessage(context, details.toString(), false, crashFile);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);
 		}
+	}
+
+	public static void showCrashMessage(@NonNull Context context, String message, boolean finishOnClose, File file) {
+		new MaterialAlertDialogBuilder(context)
+				.setTitle("Awery has crashed!")
+				.setMessage("Please send the following details to developers:\n\n" + message)
+				.setCancelable(false)
+				.setOnDismissListener(dialog -> {
+					if(file != null) file.delete();
+
+					if(finishOnClose) {
+						var activity = getAnyActivity();
+
+						if(activity != null) activity.finishAffinity();
+						else System.exit(0);
+					}
+				})
+				.setNeutralButton("Copy", (dialog, btn) -> {
+					var clipboard = context.getSystemService(ClipboardManager.class);
+					var clip = ClipData.newPlainText("crash report", message);
+					clipboard.setPrimaryClip(clip);
+				})
+				.setNegativeButton("Share", (dialog, btn) -> {
+					var intent = new Intent(Intent.ACTION_SEND);
+					intent.setType("text/plain");
+					intent.putExtra(Intent.EXTRA_SUBJECT, "Awery crash report");
+					intent.putExtra(Intent.EXTRA_TEXT, message);
+					context.startActivity(Intent.createChooser(intent, "Share crash report..."));
+				})
+				.setPositiveButton("OK", (dialog, btn) -> dialog.dismiss())
+				.show();
 	}
 
 	private void setupCrashHandler() {
@@ -291,7 +303,13 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				return;
 			}
 
+			Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
+					+ thread.getName() + ", Thread id: "
+					+ thread.getId() + " ]", throwable);
+
 			var crashFile = new File(getExternalFilesDir(null), "crash.txt");
+			var details = new ExceptionDetails(this, throwable);
+			var activity = getAnyActivity();
 
 			try {
 				if(!crashFile.exists()) crashFile.createNewFile();
@@ -300,7 +318,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 					var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
 					var adapter = moshi.adapter(ExceptionDetails.class);
 
-					var details = new ExceptionDetails(this, throwable);
 					writer.write(adapter.toJson(details));
 					Log.i(TAG, "Crash file saved successfully: " + crashFile.getAbsolutePath());
 				}
@@ -308,18 +325,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				Log.e(TAG, "Failed to write crash file!", e);
 			}
 
-			Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
-					+ thread.getName() + ", Thread id: "
-					+ thread.getId() + " ]", throwable);
-
-			var activity = getAnyActivity();
-
 			if(activity != null) {
 				toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
-				activity.finishAffinity();
-			} else {
-				System.exit(0);
 			}
+
+			System.exit(-1);
 		});
 	}
 
@@ -333,8 +343,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 
 		info.isStopped = false;
-		info.isDestroyed = false;
-
 		info.activity = activity;
 		activities.put(activity.getClass(), info);
 	}
@@ -345,7 +353,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(info == null) return;
 
 		info.isStopped = false;
-		info.isDestroyed = false;
 	}
 
 	@Override
@@ -371,8 +378,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(info == null) return;
 
 		info.isStopped = true;
-		info.isDestroyed = true;
-
 		activities.remove(activity.getClass());
 
 		if(activities.isEmpty()) {
@@ -405,15 +410,15 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	private static class ActivityInfo implements Comparable<ActivityInfo> {
 		public Activity activity;
-		public boolean isStopped, isDestroyed;
+		public boolean isStopped;
 
 
 		@Override
 		public int compareTo(ActivityInfo o) {
+			if(activity.isDestroyed() && !o.activity.isDestroyed()) return 1;
+			if(!activity.isDestroyed() && o.activity.isDestroyed()) return -1;
 			if(this.isStopped && !o.isStopped) return 1;
 			if(!this.isStopped && o.isStopped) return -1;
-			if(this.isDestroyed && !o.isDestroyed) return 1;
-			if(!this.isDestroyed && o.isDestroyed) return -1;
 
 			return 0;
 		}

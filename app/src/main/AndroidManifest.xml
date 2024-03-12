@@ -74,7 +74,7 @@
         <activity android:name=".ui.activity.MediaActivity" android:exported="false" />
         <activity android:name=".ui.activity.ReaderActivity" android:exported="false" />
         <activity android:name=".ui.activity.settings.SettingsActivity" android:exported="false" />
-        <activity android:name=".ui.activity.DebugActivity" android:exported="false" />
+        <activity android:name=".ui.activity.IntentHandlerActivity" android:exported="false" />
 
         <activity
             android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"

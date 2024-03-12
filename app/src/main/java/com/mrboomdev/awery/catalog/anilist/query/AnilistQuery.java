@@ -1,7 +1,8 @@
 package com.mrboomdev.awery.catalog.anilist.query;
 
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
-import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
 
@@ -46,7 +47,7 @@ public abstract class AnilistQuery<T> {
 
 			if(processed instanceof Collection<?> collection) {
 				if(collection.isEmpty()) {
-					resolveException(ExceptionUtil.ZERO_RESULTS);
+					resolveException(new ZeroResultsException("Zero results were found!"));
 					return;
 				}
 			}

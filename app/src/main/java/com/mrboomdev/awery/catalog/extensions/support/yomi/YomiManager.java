@@ -51,6 +51,8 @@ public abstract class YomiManager extends ExtensionsManager {
 		return extensions.values();
 	}
 
+	public abstract int getFlags();
+
 	@Override
 	public void initAll(@NonNull Context context) {
 		var pm = context.getPackageManager();
@@ -78,7 +80,7 @@ public abstract class YomiManager extends ExtensionsManager {
 
 			var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
 			var extension = new Extension(pkg.packageName, label, pkg.versionName);
-			extension.addFlags(Extension.FLAG_VIDEO_EXTENSION);
+			extension.addFlags(getFlags());
 
 			if(isNsfw) {
 				extension.addFlags(Extension.FLAG_NSFW);

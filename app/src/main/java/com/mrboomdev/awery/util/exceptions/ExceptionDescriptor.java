@@ -16,32 +16,28 @@ import javax.net.ssl.SSLHandshakeException;
 import eu.kanade.tachiyomi.network.HttpException;
 import kotlinx.serialization.json.internal.JsonDecodingException;
 
-public class ExceptionUtil {
+public class ExceptionDescriptor {
 	public static final IllegalStateException NO_EXTENSIONS = new IllegalStateException("No extensions found!");
-	public static final UnimplementedException NOT_IMPLEMENTED = new UnimplementedException("Not implemented!");
-	public static final IllegalStateException ZERO_RESULTS = new IllegalStateException("Zero results were found!");
-	private final Throwable t;
+	private final Throwable exception;
 
-	public ExceptionUtil(Throwable t) {
-		this.t = t;
+	public ExceptionDescriptor(Throwable t) {
+		this.exception = t;
 	}
 
 	public boolean isGenericError() {
-		return t == NOT_IMPLEMENTED || t == ZERO_RESULTS;
+		return exception instanceof UnimplementedException || exception instanceof ZeroResultsException;
 	}
 
 	public String getTitle(Context context) {
-		if(t == ZERO_RESULTS) {
-			return "Nothing found!";
-		} else if(t == NOT_IMPLEMENTED) {
+		if(exception instanceof ZeroResultsException) {
+			return exception.getMessage();
+		} else if(exception instanceof UnimplementedException) {
 			return "Feature not implemented!";
-		} else if(t == NO_EXTENSIONS) {
-			return "No extensions found!";
-		}else if(t instanceof SocketTimeoutException) {
+		} else if(exception instanceof SocketTimeoutException) {
 			return "Connection timed out!";
-		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
+		} else if(exception instanceof SocketException || exception instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
-		} else if(t instanceof HttpException e) {
+		} else if(exception instanceof HttpException e) {
 			return switch(e.getCode()) {
 				case 403 -> "Access denied!";
 				case 404 -> "Nothing found!";
@@ -50,11 +46,11 @@ public class ExceptionUtil {
 				case 504 -> "Connection timed out!";
 				default -> getGenericTitle(context);
 			};
-		} else if(t instanceof UnsupportedOperationException) {
+		} else if(exception instanceof UnsupportedOperationException) {
 			return "Feature not implemented!";
-		} else if(t instanceof JsonDecodingException | t instanceof NullPointerException) {
+		} else if(exception instanceof JsonDecodingException | exception instanceof NullPointerException) {
 			return "Parser is broken!";
-		} else if(t instanceof UnknownHostException) {
+		} else if(exception instanceof UnknownHostException) {
 			return "No internet connection!";
 		}
 
@@ -62,12 +58,12 @@ public class ExceptionUtil {
 	}
 
 	public boolean isProgramException() {
-		return !(t == ZERO_RESULTS ||
-				t == NOT_IMPLEMENTED ||
-				t == NO_EXTENSIONS ||
-				t instanceof SocketTimeoutException ||
-				t instanceof HttpException ||
-				t instanceof SSLHandshakeException);
+		return !(exception instanceof ZeroResultsException ||
+				exception instanceof UnimplementedException ||
+				exception == NO_EXTENSIONS ||
+				exception instanceof SocketTimeoutException ||
+				exception instanceof HttpException ||
+				exception instanceof SSLHandshakeException);
 	}
 
 	@NonNull
@@ -78,19 +74,19 @@ public class ExceptionUtil {
 
 	@NonNull
 	private String getGenericMessage() {
-		return Log.getStackTraceString(t);
+		return Log.getStackTraceString(exception);
 	}
 
 	public String getMessage(Context context) {
-		if(t == NO_EXTENSIONS) {
-			return "Please make sure you have at least one extension installed.";
-		} else if(t == ZERO_RESULTS) {
-			return "There were no results found for your query.";
-		} else if(t instanceof SocketTimeoutException) {
+		if(exception instanceof ZeroResultsException) {
+			return exception.getMessage();
+		} else if(exception instanceof UnimplementedException) {
+			return exception.getMessage();
+		} else if(exception instanceof SocketTimeoutException) {
 			return "The connection timed out, please try again later.";
-		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
+		} else if(exception instanceof SocketException || exception instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
-		} else if(t instanceof HttpException e) {
+		} else if(exception instanceof HttpException e) {
 			return switch(e.getCode()) {
 				case 400 -> "The request was invalid, please try again later.";
 				case 401 -> "You are not logged in, please log in and try again.";
@@ -102,7 +98,7 @@ public class ExceptionUtil {
 				case 504 -> "The connection timed out, please try again later.";
 				default -> getGenericMessage();
 			};
-		} else if(t instanceof UnknownHostException e) {
+		} else if(exception instanceof UnknownHostException e) {
 			return e.getMessage();
 		}
 

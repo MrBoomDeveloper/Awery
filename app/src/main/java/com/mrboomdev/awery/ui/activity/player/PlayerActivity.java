@@ -35,7 +35,7 @@ import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
@@ -267,7 +267,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				@Override
 				public void onFailure(Throwable throwable) {
 					if(isDestroyed()) return;
-					var error = new ExceptionUtil(throwable);
+					var error = new ExceptionDescriptor(throwable);
 
 					if(!error.isGenericError()) {
 						Log.e(TAG, "Failed to load videos", throwable);

@@ -30,7 +30,8 @@ import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import com.mrboomdev.awery.util.observable.ObservableEmptyList;
 import com.mrboomdev.awery.util.observable.ObservableList;
@@ -193,7 +194,7 @@ public class SearchActivity extends AppCompatActivity {
 				}).catchExceptions(e -> {
 					if(wasSearchId != searchId) return;
 
-					var error = new ExceptionUtil(e);
+					var error = new ExceptionDescriptor(e);
 					Log.e(TAG, "Failed to search", e);
 
 					runOnUiThread(() -> {
@@ -207,7 +208,7 @@ public class SearchActivity extends AppCompatActivity {
 								adapter.setItems(this.items);
 							}
 
-							if(e == ExceptionUtil.ZERO_RESULTS && page != 0) {
+							if(e instanceof ZeroResultsException && page != 0) {
 								this.didReachedEnd = true;
 								binding.title.setText("You've reached the end.");
 								binding.message.setText("No more results was found. If you didn't found what wanted, then try to change your query.");

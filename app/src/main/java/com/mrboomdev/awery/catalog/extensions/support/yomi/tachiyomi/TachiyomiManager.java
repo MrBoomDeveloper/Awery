@@ -1,21 +1,15 @@
 package com.mrboomdev.awery.catalog.extensions.support.yomi.tachiyomi;
 
-import android.util.Log;
-
 import com.mrboomdev.awery.catalog.extensions.Extension;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.extensions.support.yomi.YomiManager;
-import com.mrboomdev.awery.catalog.extensions.support.yomi.aniyomi.AniyomiProvider;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
-import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 import eu.kanade.tachiyomi.source.CatalogueSource;
-import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
 
 public class TachiyomiManager extends YomiManager {
@@ -72,5 +66,10 @@ public class TachiyomiManager extends YomiManager {
 		}
 
 		return Collections.emptyList();
+	}
+
+	@Override
+	public int getFlags() {
+		return Extension.FLAG_BOOK_EXTENSION;
 	}
 }

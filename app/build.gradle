@@ -14,7 +14,7 @@ android {
         applicationId "com.mrboomdev.awery"
         minSdk 24
         targetSdk 34
-        versionName "1.0.0"
+        versionName "1.0.1"
 
         /* We want to make sure that all build versions across the planet will be in sync */
         var timezone = TimeZone.getTimeZone("UTC")

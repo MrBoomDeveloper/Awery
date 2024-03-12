@@ -25,17 +25,17 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.extensions.Extension;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
-import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProviderGroup;
+import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
-import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.CustomArrayAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -87,7 +87,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					throw new IOException("Failed to restore media!");
 				}
 			} catch(IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "Failed to restore media!", e);
 				AweryApp.toast("Failed to restore media!", 1);
 			}
 		}
@@ -124,7 +124,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		if(groupedByLangEntries.isEmpty()) {
-			handleExceptionUi(null, ExceptionUtil.NO_EXTENSIONS);
+			handleExceptionUi(null, new ZeroResultsException());
 			variantsAdapter.setEnabled(false);
 			return;
 		}
@@ -137,6 +137,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		var flags = Extension.FLAG_VIDEO_EXTENSION | Extension.FLAG_WORKING;
 		var sources = new ArrayList<>(ExtensionsFactory.getProviders(flags));
+		Collections.sort(sources);
 
 		var groupedByLang = ExtensionProviderGroup.groupByLang(sources);
 		groupedByLangEntries = new ArrayList<>(groupedByLang.entrySet());
@@ -336,7 +337,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(callback == null) return;
 
 				AweryApp.runOnUiThread(() -> {
-					if(e != ExceptionUtil.ZERO_RESULTS) {
+					if(!(e instanceof ZeroResultsException)) {
 						handleExceptionMark(source, e);
 						if(autoSelectNextSource()) return;
 						handleExceptionUi(source, e);
@@ -351,7 +352,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						variantsAdapter.getBinding((binding, didJustCreated) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
 					} else {
-						handleExceptionMark(source, ExceptionUtil.ZERO_RESULTS);
+						handleExceptionMark(source, new ZeroResultsException("Nothing found"));
 						if(autoSelectNextSource()) return;
 
 						placeholderAdapter.getBinding((binding, didJustCreated) -> {
@@ -393,7 +394,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	private void handleExceptionMark(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource) return;
-		var error = new ExceptionUtil(throwable);
+		var error = new ExceptionDescriptor(throwable);
 
 		if(!error.isGenericError()) {
 			throwable.printStackTrace();
@@ -401,7 +402,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(error.isProgramException()) {
 			sourceStatuses.put(source.getName(), ExtensionStatus.BROKEN_PARSER);
-		} else if(throwable == ExceptionUtil.ZERO_RESULTS) {
+		} else if(throwable instanceof ZeroResultsException) {
 			sourceStatuses.put(source.getName(), ExtensionStatus.NOT_FOUND);
 		} else {
 			sourceStatuses.put(source.getName(), ExtensionStatus.OFFLINE);
@@ -410,7 +411,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	private void handleExceptionUi(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource && source != null) return;
-		var error = new ExceptionUtil(throwable);
+		var error = new ExceptionDescriptor(throwable);
 		Context context;
 
 		try {

@@ -7,8 +7,9 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.catalog.template.CatalogSubtitle;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
-import com.mrboomdev.awery.util.exceptions.ExceptionUtil;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(episodes == null || episodes.isEmpty()) {
-				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
+				callback.onFailure(new ZeroResultsException("Aniyomi: No episodes found"));
 				return;
 			}
 
@@ -78,7 +79,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(videos == null || videos.isEmpty()) {
-				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
+				callback.onFailure(new ZeroResultsException("Aniyomi: No videos found"));
 				return;
 			}
 
@@ -89,7 +90,9 @@ public class AniyomiProvider extends ExtensionProvider {
 						return new CatalogVideo(
 								item.getQuality(),
 								item.getVideoUrl(),
-								headers != null ? headers.toString() : ""
+								headers != null ? headers.toString() : "",
+								item.getSubtitleTracks().stream().map(track ->
+										new CatalogSubtitle(track.getLang(), track.getUrl())).collect(Collectors.toList())
 						);
 					}).collect(Collectors.toCollection(ArrayList::new)));
 		})).start();
@@ -119,7 +122,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			var animes = Objects.requireNonNull(pag).getAnimes();
 
 			if(animes.isEmpty()) {
-				callback.onFailure(ExceptionUtil.ZERO_RESULTS);
+				callback.onFailure(new ZeroResultsException("Aniyomi: No animes found"));
 				return;
 			}
 

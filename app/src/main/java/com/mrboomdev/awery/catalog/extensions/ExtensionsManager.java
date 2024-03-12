@@ -16,7 +16,7 @@ public abstract class ExtensionsManager {
 
 	public Collection<Extension> getExtensions(int flags) {
 		return getAllExtensions().stream()
-				.filter(extension -> (flags & extension.getFlags()) != 0)
+				.filter(extension -> (extension.getFlags() & flags) == flags)
 				.collect(Collectors.toList());
 	}
 
