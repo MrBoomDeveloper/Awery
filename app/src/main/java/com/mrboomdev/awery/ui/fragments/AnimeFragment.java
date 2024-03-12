@@ -14,17 +14,21 @@ import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
-import com.mrboomdev.awery.util.observable.ObservableArrayList;
-import com.mrboomdev.awery.util.observable.ObservableList;
+import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class AnimeFragment extends MediaCatalogListsFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
-	private int loadId = 0, doneTasks, totalTasks, doneSuccessfully;
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
+	private int loadId = 0, doneTasks, totalTasks, doneSuccessfully;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -63,20 +67,27 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 				.setIsAdult(false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
-				.build().executeQuery(items -> requireActivity().runOnUiThread(() -> {
+				.build().executeQuery(items -> {
 					if(currentLoadId != loadId) return;
 
-					pagerAdapter.setItems(items);
-					pagerAdapter.setEnabled(true);
-					getHeaderAdapter().setEnabled(false);
+					var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
+					if(filtered.isEmpty()) throw new ZeroResultsException();
 
-					finishedLoading(currentLoadId, null);
-				})).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
+					requireActivity().runOnUiThread(() -> {
+						if(currentLoadId != loadId) return;
+
+						pagerAdapter.setItems(filtered);
+						pagerAdapter.setEnabled(true);
+						getHeaderAdapter().setEnabled(false);
+
+						finishedLoading(currentLoadId, null);
+					});
+				}).catchExceptions(e -> requireActivity().runOnUiThread(() -> {
 					if(currentLoadId != loadId) return;
 					finishedLoading(currentLoadId, e);
 				}));
 
-		var cats = new ObservableArrayList<MediaCategoriesAdapter.Category>();
+		var cats = new ArrayList<MediaCategoriesAdapter.Category>();
 		categoriesAdapter.setCategories(cats);
 
 		loadCategory("Trending", currentLoadId, AnilistSearchQuery.builder()
@@ -159,14 +170,28 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 			String title,
 			int loadId,
 			@NonNull AnilistQuery<Collection<CatalogMedia>> query,
-			ObservableList<MediaCategoriesAdapter.Category> list
+			List<MediaCategoriesAdapter.Category> list
 	) {
 		totalTasks++;
 
-		query.executeQuery(items -> requireActivity().runOnUiThread(() -> {
+		query.executeQuery(items -> {
 			if(loadId != this.loadId) return;
-			list.add(new MediaCategoriesAdapter.Category(title, items));
-			finishedLoading(loadId, null);
-		})).catchExceptions(t -> finishedLoading(loadId, t));
+
+			var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
+			if(filtered.isEmpty()) throw new ZeroResultsException();
+
+			requireActivity().runOnUiThread(() -> {
+				if(loadId != this.loadId) return;
+
+				var category = new MediaCategoriesAdapter.Category(title, filtered);
+				category.id = idGenerator.getLong();
+
+				var wasSize = list.size();
+				list.add(category);
+				categoriesAdapter.notifyItemInserted(wasSize);
+
+				finishedLoading(loadId, null);
+			});
+		}).catchExceptions(t -> finishedLoading(loadId, t));
 	}
 }

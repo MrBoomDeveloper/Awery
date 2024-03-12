@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +13,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -78,68 +74,6 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 		return binding.getRoot();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static class TvPagerAdapter extends FragmentStatePagerAdapter {
-		private MediaPagerAdapter main;
-
-		public TvPagerAdapter(FragmentManager manager) {
-			super(manager);
-		}
-
-		public void attachToMain(MediaPagerAdapter main) {
-			this.main = main;
-			notifyDataSetChanged();
-		}
-
-		@Override
-		public int getCount() {
-			if(main == null || !main.isEnabled()) {
-				return 0;
-			}
-
-			return main.items.size();
-		}
-
-		@NonNull
-		@Override
-		public Fragment getItem(int position) {
-			return new Fragment() {
-				@NonNull
-				@Override
-				public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle savedInstanceState) {
-					var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
-					var holder = new PagerViewHolder(binding);
-					holder.bind(main.items.get(position));
-
-					binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(
-							inflater.getContext(), holder.getItem()));
-
-					binding.watch.setOnClickListener(v -> MediaUtils.launchMediaActivity(
-							inflater.getContext(), holder.getItem(), "watch"));
-
-					binding.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(
-							inflater.getContext(), holder.getItem()));
-
-					binding.getRoot().setOnLongClickListener(v -> {
-						MediaUtils.openMediaActionsMenu(inflater.getContext(), holder.getItem());
-						return true;
-					});
-
-					ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, insets ->
-							ViewUtil.setLeftMargin(binding.leftSideBarrier, insets.left), parent);
-
-					ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, insets ->
-							ViewUtil.setRightMargin(binding.rightSideBarrier, insets.right), parent);
-
-					ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, insets ->
-							ViewUtil.setTopMargin(binding.topSideBarrier, insets.top), parent);
-
-					return holder.getView();
-				}
-			};
-		}
-	}
-
 	public class PagerAdapter extends RecyclerView.Adapter<PagerViewHolder> {
 
 		public PagerAdapter() {
@@ -166,7 +100,15 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 					parent.getContext(), holder.getItem()));
 
 			binding.getRoot().setOnLongClickListener(v -> {
-				MediaUtils.openMediaActionsMenu(parent.getContext(), holder.getItem());
+				var media = holder.getItem();
+				var index = items.indexOf(media);
+
+				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
+					if(MediaUtils.isMediaFiltered(media)) {
+						items.remove(index);
+						notifyItemRemoved(index);
+					}
+				});
 				return true;
 			});
 

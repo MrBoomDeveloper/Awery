@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
-import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
 	private ArrayList<CatalogEpisode> items = new ArrayList<>();
 
@@ -27,6 +28,12 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(@NonNull Collection<CatalogEpisode> items) {
+		idGenerator.clear();
+
+		for(var item : items) {
+			item.setId(idGenerator.getLong());
+		}
+
 		this.items = new ArrayList<>(items);
 		notifyDataSetChanged();
 	}
@@ -41,7 +48,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		return items.get(position).getId();
 	}
 
 	@NonNull

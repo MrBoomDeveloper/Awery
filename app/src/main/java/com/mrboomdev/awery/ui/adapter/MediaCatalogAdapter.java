@@ -14,40 +14,38 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
-public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> implements ObservableList.AddObserver<CatalogMedia> {
-	private static final String TAG = "MediaCatalogAdapter";
-	private ObservableList<CatalogMedia> items;
+import java.util.List;
 
-	public MediaCatalogAdapter(ObservableList<CatalogMedia> items) {
+public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
+	private static final String TAG = "MediaCatalogAdapter";
+	private final Runnable emptyCallback;
+	private List<CatalogMedia> items;
+
+	public MediaCatalogAdapter(List<CatalogMedia> items, Runnable emptyCallback) {
 		setHasStableIds(true);
 		this.items = items;
+		this.emptyCallback = emptyCallback;
 	}
 
-	public MediaCatalogAdapter() {
-		this(null);
+	public MediaCatalogAdapter(Runnable emptyCallback) {
+		this(null, emptyCallback);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		return items.get(position).id;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(ObservableList<CatalogMedia> items) {
-		if(this.items != null) {
-			this.items.removeAdditionObserver(this);
-		}
-
+	public void setItems(List<CatalogMedia> items) {
 		if(items == null) {
 			this.items = null;
 			return;
 		}
 
 		this.items = items;
-		this.items.observeAdditions(this);
 
 		notifyDataSetChanged();
 	}
@@ -68,7 +66,20 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 				MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 		binding.getRoot().setOnLongClickListener(view -> {
-			MediaUtils.openMediaActionsMenu(parent.getContext(), viewHolder.getItem());
+			var media = viewHolder.getItem();
+			var index = items.indexOf(media);
+
+			MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
+
+				if(MediaUtils.isMediaFiltered(media)) {
+					items.remove(media);
+					notifyItemRemoved(index);
+
+					if(items.isEmpty()) {
+						emptyCallback.run();
+					}
+				}
+			});
 			return true;
 		});
 
@@ -87,11 +98,6 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		}
 
 		return items.size();
-	}
-
-	@Override
-	public void added(CatalogMedia item, int index) {
-		notifyItemInserted(index);
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {

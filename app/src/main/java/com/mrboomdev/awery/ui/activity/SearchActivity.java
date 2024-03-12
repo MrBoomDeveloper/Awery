@@ -30,6 +30,7 @@ import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;
@@ -42,6 +43,7 @@ public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
 	private final Adapter adapter = new Adapter();
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private LayoutHeaderSearchBinding header;
@@ -158,6 +160,7 @@ public class SearchActivity extends AppCompatActivity {
 		if(page == 0) {
 			this.items.clear();
 			adapter.setItems(this.items);
+			idGenerator.clear();
 		}
 
 		loadingAdapter.getBinding((binding, didJustCreated) -> {
@@ -176,20 +179,27 @@ public class SearchActivity extends AppCompatActivity {
 				.executeQuery(items -> {
 					if(wasSearchId != searchId) return;
 
+					final var filteredItems = MediaUtils.filterMedia(items);
+					if(filteredItems.isEmpty()) throw new ZeroResultsException();
+
+					for(var item : filteredItems) {
+						item.visualId = idGenerator.getLong();
+					}
+
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
 						this.isLoading = false;
 						this.currentPage = page;
 
 						if(page == 0) {
-							this.items.addAll(items);
+							this.items.addAll(filteredItems);
 							adapter.setItems(this.items);
 							return;
 						}
 
 						var wasSize = this.items.size();
-						this.items.addAll(items, false);
-						adapter.notifyItemRangeInserted(wasSize, items.size());
+						this.items.addAll(filteredItems, false);
+						adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
 					});
 				}).catchExceptions(e -> {
 					if(wasSearchId != searchId) return;
@@ -229,7 +239,7 @@ public class SearchActivity extends AppCompatActivity {
 				});
 	}
 
-	private static class Adapter extends RecyclerView.Adapter<ViewHolder> implements ObservableList.AddObserver<CatalogMedia>, ObservableList.RemoveObserver<CatalogMedia> {
+	private static class Adapter extends RecyclerView.Adapter<ViewHolder> {
 		private ObservableList<CatalogMedia> items = ObservableEmptyList.getInstance();
 
 		public Adapter() {
@@ -238,11 +248,6 @@ public class SearchActivity extends AppCompatActivity {
 
 		@SuppressLint("NotifyDataSetChanged")
 		public void setItems(ObservableList<CatalogMedia> items) {
-			if(this.items != null) {
-				this.items.removeAdditionObserver(this);
-				this.items.removeRemovalObserver(this);
-			}
-
 			if(items == null) {
 				this.items = ObservableEmptyList.getInstance();
 				notifyDataSetChanged();
@@ -250,8 +255,6 @@ public class SearchActivity extends AppCompatActivity {
 			}
 
 			this.items = items;
-			items.observeAdditions(this);
-			items.observeRemovals(this);
 			notifyDataSetChanged();
 		}
 
@@ -279,7 +282,15 @@ public class SearchActivity extends AppCompatActivity {
 			binding.getRoot().setOnClickListener(view -> MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 			binding.getRoot().setOnLongClickListener(view -> {
-				MediaUtils.openMediaActionsMenu(parent.getContext(), viewHolder.getItem());
+				var media = viewHolder.getItem();
+				var index = items.indexOf(media);
+
+				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
+					if(MediaUtils.isMediaFiltered(media)) {
+						items.remove(media);
+						notifyItemRemoved(index);
+					}
+				});
 				return true;
 			});
 
@@ -294,16 +305,6 @@ public class SearchActivity extends AppCompatActivity {
 		@Override
 		public int getItemCount() {
 			return items.size();
-		}
-
-		@Override
-		public void added(CatalogMedia item, int index) {
-			notifyItemInserted(index);
-		}
-
-		@Override
-		public void removed(CatalogMedia item, int index) {
-			notifyItemRemoved(index);
 		}
 	}
 

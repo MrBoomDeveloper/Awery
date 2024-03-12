@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+@Deprecated
 public class ObservableEmptyList<E> implements ObservableList<E> {
 	private static final ObservableEmptyList<?> instance = new ObservableEmptyList<>();
 

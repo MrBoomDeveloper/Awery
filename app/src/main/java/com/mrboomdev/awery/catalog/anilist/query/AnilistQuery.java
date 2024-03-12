@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.catalog.anilist.query;
 
 import com.mrboomdev.awery.catalog.anilist.AnilistApi;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
+import com.squareup.moshi.JsonDataException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -41,7 +41,7 @@ public abstract class AnilistQuery<T> {
 			try {
 				processed = processJson(response);
 			} catch(Exception e) {
-				resolveException(new RuntimeException("Failed to process a json! " + response, e));
+				resolveException(new JsonDataException("Failed to process a json! " + response, e));
 				return;
 			}
 
@@ -52,7 +52,12 @@ public abstract class AnilistQuery<T> {
 				}
 			}
 
-			callback.onResponse(processed);
+			try {
+				callback.onResponse(processed);
+			} catch(Throwable t) {
+				resolveException(t);
+			}
+
 			didFinished = true;
 
 			if(finallyCallback != null) {

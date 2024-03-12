@@ -24,6 +24,9 @@ import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
+import org.jetbrains.annotations.Contract;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -45,7 +48,20 @@ public class MediaUtils {
 		launchMediaActivity(context, media, ACTION_INFO);
 	}
 
-	public static void openMediaActionsMenu(Context context, @NonNull CatalogMedia media) {
+	public static Collection<CatalogMedia> filterMedia(@NonNull Collection<CatalogMedia> items) {
+		return items.stream()
+				.filter(item -> !isMediaFiltered(item))
+				.collect(Collectors.toList());
+	}
+
+	@Contract(pure = true)
+	public static boolean isMediaFiltered(@NonNull CatalogMedia media) {
+		if(media.lists == null) return false;
+		if(media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
+		return false;
+	}
+
+	public static void openMediaActionsMenu(Context context, @NonNull CatalogMedia media, Runnable updateCallback) {
 		final var dialog = new AtomicReference<Dialog>();
 		var inflater = LayoutInflater.from(context);
 		var binding = PopupMediaActionsBinding.inflate(inflater);
@@ -64,6 +80,20 @@ public class MediaUtils {
 
 		binding.bookmark.setOnClickListener(v -> {
 			openMediaBookmarkMenu(context, media);
+			dialog.get().dismiss();
+		});
+
+		binding.hide.setOnClickListener(v -> {
+			new Thread(() -> {
+				media.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
+
+				var dao = AweryApp.getDatabase().getMediaDao();
+				var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
+				dao.insert(dbMedia);
+
+				AweryApp.runOnUiThread(updateCallback);
+			}).start();
+
 			dialog.get().dismiss();
 		});
 

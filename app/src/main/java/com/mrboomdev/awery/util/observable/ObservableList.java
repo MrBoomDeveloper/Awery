@@ -8,6 +8,7 @@ import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Deprecated
 public interface ObservableList<E> extends List<E> {
 
 	@SafeVarargs

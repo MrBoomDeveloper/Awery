@@ -14,6 +14,7 @@ public class CatalogEpisode implements Parcelable {
 	private final float number;
 	private final long releaseDate;
 	private List<CatalogVideo> videos;
+	private long id;
 
 	public CatalogEpisode(String title, String url, String banner, String description, long releaseDate, float number) {
 		this.title = title;
@@ -84,6 +85,14 @@ public class CatalogEpisode implements Parcelable {
 	@Override
 	public int describeContents() {
 		return 0;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	@Override

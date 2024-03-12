@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Deprecated
 public class ObservableArrayList<E> extends ArrayList<E> implements ObservableList<E> {
 	private List<AddObserver<E>> addObservers;
 	private List<RemoveObserver<E>> removeObservers;

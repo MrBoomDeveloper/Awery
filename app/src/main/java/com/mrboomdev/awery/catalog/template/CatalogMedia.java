@@ -43,6 +43,8 @@ public class CatalogMedia {
 	public MediaStatus status;
 	@Json(ignore = true)
 	public Drawable cachedBanner;
+	@Json(ignore = true)
+	public long visualId;
 
 	public CatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
