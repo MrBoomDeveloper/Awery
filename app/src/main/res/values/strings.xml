@@ -3,6 +3,9 @@
 
     <string name="slogan">The new Best Anime app for Android.</string>
 
+    <string name="empty_library_title">Library is empty</string>
+    <string name="empty_library_message">Start browsing the catalog and new things will appear here!</string>
+
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 

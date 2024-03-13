@@ -35,7 +35,7 @@ import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.Disposable;
-import com.mrboomdev.awery.util.exceptions.ExceptionDetails;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
@@ -44,7 +44,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ import ani.awery.connections.anilist.Anilist;
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
 	public static final String CATALOG_LIST_BLACKLIST = "7";
-	public static final String CATALOG_LIST_HISTORY = "8";
+	public static final String CATALOG_LIST_HISTORY = "9";
 	public static final List<String> HIDDEN_LISTS = List.of(CATALOG_LIST_BLACKLIST, CATALOG_LIST_HISTORY);
 	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
@@ -240,8 +239,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 					result.append(nextLine);
 				}
 
-				var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
-				var adapter = moshi.adapter(ExceptionDetails.class);
+				var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
+				var adapter = moshi.adapter(ExceptionDescriptor.class);
 				var details = adapter.fromJson(result.toString());
 				if(details == null) return;
 
@@ -309,15 +308,15 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 					+ thread.getId() + " ]", throwable);
 
 			var crashFile = new File(getExternalFilesDir(null), "crash.txt");
-			var details = new ExceptionDetails(this, throwable);
+			var details = new ExceptionDescriptor(throwable);
 			var activity = getAnyActivity();
 
 			try {
 				if(!crashFile.exists()) crashFile.createNewFile();
 
 				try(var writer = new FileWriter(crashFile)) {
-					var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
-					var adapter = moshi.adapter(ExceptionDetails.class);
+					var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
+					var adapter = moshi.adapter(ExceptionDescriptor.class);
 
 					writer.write(adapter.toJson(details));
 					Log.i(TAG, "Crash file saved successfully: " + crashFile.getAbsolutePath());

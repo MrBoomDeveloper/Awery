@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.util.exceptions.ExceptionDetails;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
@@ -34,8 +34,8 @@ public class SettingsActions {
 
 				if(text != null) {
 					try {
-						var moshi = new Moshi.Builder().add(new ExceptionDetails.Adapter()).build();
-						var adapter = moshi.adapter(ExceptionDetails.class);
+						var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
+						var adapter = moshi.adapter(ExceptionDescriptor.class);
 						var details = adapter.fromJson(text.toString());
 						if(details == null) return;
 

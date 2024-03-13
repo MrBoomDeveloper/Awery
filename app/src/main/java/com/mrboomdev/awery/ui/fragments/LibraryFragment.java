@@ -8,10 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
-import com.mrboomdev.awery.util.observable.ObservableArrayList;
-import com.mrboomdev.awery.util.observable.ObservableList;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 public class LibraryFragment extends MediaCatalogListsFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
-	private final ObservableList<MediaCategoriesAdapter.Category> categories = new ObservableArrayList<>();
+	private final List<MediaCategoriesAdapter.Category> categories = new ArrayList<>();
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private static LibraryFragment instance;
 	private boolean didDataChanged;
 	private long loadId;
@@ -73,7 +74,8 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 	@SuppressLint("NotifyDataSetChanged")
 	public void loadData() {
 		var wasLoadId = ++loadId;
-		categories.clear(false);
+		categories.clear();
+		idGenerator.clear();
 		categoriesAdapter.notifyDataSetChanged();
 
 		setEmptyData(true);
@@ -85,6 +87,8 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 			var categories = new ArrayList<MediaCategoriesAdapter.Category>();
 
 			for(var list : lists) {
+				if(list.getId().equals(AweryApp.CATALOG_LIST_BLACKLIST)) continue;
+
 				var dbMediaList = db.getMediaDao().getAllFromList(list.getId());
 				if(dbMediaList.isEmpty()) continue;
 
@@ -93,6 +97,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 						.collect(Collectors.toList());
 
 				var category = new MediaCategoriesAdapter.Category(list.getName(), mediaList);
+				category.id = idGenerator.getLong();
 				categories.add(category);
 			}
 
@@ -109,8 +114,8 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 
 			if(categories.isEmpty()) {
 				setEmptyData(false,
-						"Library is empty",
-						"Start browsing the catalog and new things will appear here!");
+						getString(R.string.empty_library_title),
+						getString(R.string.empty_library_message));
 
 				return;
 			}

@@ -44,12 +44,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemListMediaCategoryBinding.inflate(inflater, parent, false);
 		var viewHolder = new ViewHolder(binding);
-
-		var adapter = new MediaCatalogAdapter(() -> {
-			var category = viewHolder.getCategory();
-			var index = categories.indexOf(category);
-			notifyItemRemoved(index);
-		});
+		var adapter = new MediaCatalogAdapter();
 
 		binding.mediaCatalogCategoryItems.setRecycledViewPool(itemsPool);
 		binding.mediaCatalogCategoryItems.setHasFixedSize(true);

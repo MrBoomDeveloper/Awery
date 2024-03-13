@@ -23,6 +23,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
+import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
@@ -174,6 +175,7 @@ public class SearchActivity extends AppCompatActivity {
 				.setSearchQuery(searchQuery)
 				.setIsAdult(false)
 				.setType(AnilistMedia.MediaType.ANIME)
+				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
 				.setPage(page)
 				.build()
 				.executeQuery(items -> {

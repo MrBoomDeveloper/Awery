@@ -20,17 +20,15 @@ import java.util.List;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
 	private static final String TAG = "MediaCatalogAdapter";
-	private final Runnable emptyCallback;
 	private List<CatalogMedia> items;
 
-	public MediaCatalogAdapter(List<CatalogMedia> items, Runnable emptyCallback) {
+	public MediaCatalogAdapter(List<CatalogMedia> items) {
 		setHasStableIds(true);
 		this.items = items;
-		this.emptyCallback = emptyCallback;
 	}
 
-	public MediaCatalogAdapter(Runnable emptyCallback) {
-		this(null, emptyCallback);
+	public MediaCatalogAdapter() {
+		this(null);
 	}
 
 	@Override
@@ -74,10 +72,6 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 				if(MediaUtils.isMediaFiltered(media)) {
 					items.remove(media);
 					notifyItemRemoved(index);
-
-					if(items.isEmpty()) {
-						emptyCallback.run();
-					}
 				}
 			});
 			return true;

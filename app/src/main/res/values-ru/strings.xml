@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="empty_library_title">Библиотека пуста</string>
+    <string name="empty_library_message">Начните поиск и новые вещи появятся здесь!</string>
+
     <string name="login">Войти</string>
     <string name="logout">Выйти</string>
     <string name="slogan">Новое Лучшее Приложение для Просмотра Аниме на Android.</string>
