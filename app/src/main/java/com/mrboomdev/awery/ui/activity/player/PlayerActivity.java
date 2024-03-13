@@ -32,6 +32,7 @@ import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.catalog.template.CatalogSubtitle;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -39,7 +40,9 @@ import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
 	private static final String TAG = "PlayerActivity";
@@ -52,7 +55,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			| WindowInsetsCompat.Type.systemGestures()
 			| WindowInsetsCompat.Type.statusBars()
 			| WindowInsetsCompat.Type.navigationBars();
-	protected final List<View> buttons = new ArrayList<>();
+	protected final Set<View> buttons = new HashSet<>();
 	private final PlayerActivityController controller = new PlayerActivityController(this);
 	private PlayerGestures gestures;
 	protected ScreenPlayerBinding binding;
@@ -62,6 +65,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected int forwardFastClicks, backwardFastClicks;
 	protected ArrayList<CatalogEpisode> episodes;
 	protected CatalogEpisode episode;
+	protected CatalogVideo video;
 	protected ExoPlayer player;
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -73,6 +77,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
+		binding.subtitlesText.setVisibility(View.INVISIBLE);
 		setContentView(binding.getRoot());
 		applyFullscreen();
 
@@ -87,9 +92,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				.setUsage(C.USAGE_MEDIA)
 				.build();*/
 
-		player = new ExoPlayer.Builder(this).build();
-		//player.setAudioAttributes(audioAttributes, true);
-		player.setVideoTextureView(binding.textureView);
+		player = new ExoPlayer.Builder(this)
+				//.setAudioAttributes(audioAttributes, true)
+				.build();
+
+		player.setVideoSurfaceView(binding.surfaceView);
 		player.addListener(this);
 
 		binding.doubleTapBackward.setOnTouchListener((view, event) -> gestures.onTouchEventLeft(event));
@@ -198,7 +205,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.getRoot().performClick();
 
 		setupButton(binding.exit, this::finish);
-		setupButton(binding.settings, () -> controller.openSettingsDialog());
+		setupButton(binding.settings, controller::openSettingsDialog);
 
 		setupButton(binding.quickSkip, () -> {
 			player.seekTo(player.getCurrentPosition() + 60_000);
@@ -235,10 +242,31 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		PlayerActivity.source = source;
 	}
 
+	public void selectSubtitles(@Nullable CatalogSubtitle subtitles) {
+		if(subtitles == null) {
+			var isEmpty = video.getSubtitles().isEmpty();
+			binding.subtitles.setAlpha(isEmpty ? .35f : .6f);
+			return;
+		}
+
+		binding.subtitles.setAlpha(1f);
+	}
+
 	public void playVideo(@NonNull CatalogVideo video) {
 		var mediaItem = MediaItem.fromUri(video.getUrl());
+		this.video = video;
+
+		selectSubtitles(null);
 		player.setMediaItem(mediaItem);
 		player.play();
+
+		if(video.getSubtitles().isEmpty()) {
+			binding.subtitles.setAlpha(.35f);
+			setupButton(binding.subtitles, () -> {});
+		} else {
+			binding.subtitles.setAlpha(.6f);
+			setupButton(binding.subtitles, controller::openSubtitlesDialog);
+		}
 
 		didSelectedVideo = true;
 	}
@@ -273,7 +301,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 						Log.e(TAG, "Failed to load videos", throwable);
 					}
 
-					AweryApp.toast(error.getTitle(PlayerActivity.this), 1);
+					AweryApp.toast(error.getShortDescription(), 1);
 					finish();
 				}
 			});

@@ -8,13 +8,16 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 
 public class PlayerGestures {
+	private static final int GESTURE_START_Y = 150;
 	private static final String TAG = "PlayerGestures";
 	private final AudioManager audioManager;
 	private final PlayerActivity activity;
 	private float brightness, volume;
 	private final int maxVolume;
-	private float startLeftX, startLeftY, startRightX, startRightY;
-	private boolean isLeftDown, isRightDown, isLeftTracking, isRightTracking;
+	private float startLeftY, startRightY;
+	private boolean isLeftDown, isRightDown,
+			isLeftTracking, isRightTracking,
+			isLeftIgnored, isRightIgnored;
 
 	public PlayerGestures(@NonNull PlayerActivity activity) {
 		this.activity = activity;
@@ -29,13 +32,19 @@ public class PlayerGestures {
 					yield false;
 				}
 
+				if(event.getY() < GESTURE_START_Y) {
+					isRightIgnored = true;
+					yield false;
+				}
+
 				isRightDown = true;
-				startRightX = event.getX();
 				startRightY = event.getY();
 				yield false;
 			}
 
 			case MotionEvent.ACTION_MOVE -> {
+				if(isRightIgnored) yield false;
+
 				if(!isRightTracking) {
 					if(Math.abs(event.getY() - startRightY) > 15) {
 						isRightTracking = true;
@@ -67,6 +76,7 @@ public class PlayerGestures {
 
 				isRightDown = false;
 				isRightTracking = false;
+				isRightIgnored = false;
 
 				activity.binding.volumeGesture.setIsVisible(false);
 
@@ -84,13 +94,19 @@ public class PlayerGestures {
 					yield false;
 				}
 
+				if(event.getY() < GESTURE_START_Y) {
+					isLeftIgnored = true;
+					yield false;
+				}
+
 				isLeftDown = true;
-				startLeftX = event.getX();
 				startLeftY = event.getY();
 				yield false;
 			}
 
 			case MotionEvent.ACTION_MOVE -> {
+				if(isLeftIgnored) yield false;
+
 				if(!isLeftTracking) {
 					if(Math.abs(event.getY() - startLeftY) > 15) {
 						isLeftTracking = true;
@@ -133,6 +149,7 @@ public class PlayerGestures {
 
 				isLeftDown = false;
 				isLeftTracking = false;
+				isLeftIgnored = false;
 
 				activity.binding.brightnessGesture.setIsVisible(false);
 

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.catalog.template.CatalogSubtitle;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
@@ -220,6 +221,57 @@ public class PlayerActivityController {
 					case ASPECT -> openScaleSettingsDialog();
 				}
 
+				dialog.get().dismiss();
+			});
+		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
+
+		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), headerAdapter, itemsAdapter);
+
+		recycler.setAdapter(concatAdapter);
+		sheet.setContentView(recycler);
+		sheet.getBehavior().setPeekHeight(9999);
+		sheet.show();
+
+		DialogUtil.limitDialogSize(dialog.get());
+	}
+
+	public void openSubtitlesDialog() {
+		var subtitles = activity.video.getSubtitles();
+		if(subtitles == null) return;
+
+		var items = new LinkedHashMap<PopupItem, CatalogSubtitle>();
+		items.put(new PopupItem().setTitle("None"), null);
+
+		for(var subtitle : subtitles) {
+			items.put(new PopupItem().setTitle(subtitle.getTitle()), subtitle);
+		}
+
+		final var dialog = new AtomicReference<Dialog>();
+		final var didSelectedVideo = new AtomicBoolean();
+
+		var recycler = new RecyclerView(activity);
+		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
+
+		var sheet = new BottomSheetDialog(activity);
+		dialog.set(sheet);
+
+		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = activity.getLayoutInflater();
+			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
+			binding.text.setText("Select subtitles");
+			return binding;
+		});
+
+		var itemsAdapter = new SimpleAdapter<>(parent -> {
+			var binding = PopupSimpleItemBinding.inflate(
+					activity.getLayoutInflater(), parent, false);
+
+			return new PopupItemHolder(binding, item -> {
+				var subtitle = items.get(item);
+				activity.selectSubtitles(subtitle);
+				didSelectedVideo.set(true);
 				dialog.get().dismiss();
 			});
 		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);

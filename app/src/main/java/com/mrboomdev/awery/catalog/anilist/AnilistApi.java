@@ -3,6 +3,7 @@ package com.mrboomdev.awery.catalog.anilist;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.squareup.moshi.Moshi;
@@ -10,9 +11,6 @@ import com.squareup.moshi.Types;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.mrboomdev.awery.R;
-import ani.awery.connections.anilist.Anilist;
 
 public class AnilistApi {
 	public static final String DOMAIN = "https://graphql.anilist.co";
@@ -28,8 +26,8 @@ public class AnilistApi {
 			put("Accept", "application/json");
 		}};
 
-		if(query.useToken() && Anilist.INSTANCE.getToken() != null) {
-			headers.put("Authorization", "Bearer " + Anilist.INSTANCE.getToken());
+		if(query.useToken()/* && Anilist.INSTANCE.getToken() != null*/) {
+			//headers.put("Authorization", "Bearer " + Anilist.INSTANCE.getToken());
 		}
 
 		var moshi = new Moshi.Builder().build();

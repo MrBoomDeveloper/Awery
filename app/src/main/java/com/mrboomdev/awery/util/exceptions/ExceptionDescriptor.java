@@ -39,7 +39,7 @@ public class ExceptionDescriptor {
 
 	public String getTitle(Context context) {
 		if(exception instanceof ZeroResultsException) {
-			return exception.getMessage();
+			return "Nothing found!";
 		} else if(exception instanceof UnimplementedException) {
 			return "Feature not implemented!";
 		} else if(exception instanceof SocketTimeoutException) {
@@ -85,6 +85,10 @@ public class ExceptionDescriptor {
 		return Log.getStackTraceString(exception);
 	}
 
+	public String getShortDescription() {
+		return exception.getMessage();
+	}
+
 	public String getMessage(Context context) {
 		if(exception instanceof ZeroResultsException) {
 			return exception.getMessage();
@@ -96,14 +100,14 @@ public class ExceptionDescriptor {
 			return "Failed to connect to the server!";
 		} else if(exception instanceof HttpException e) {
 			return switch(e.getCode()) {
-				case 400 -> "The request was invalid, please try again later.";
-				case 401 -> "You are not logged in, please log in and try again.";
-				case 403 -> "You have no access to this resource, try logging into your account.";
-				case 404 -> "The resource you requested does not exist!";
-				case 429 -> "You have exceeded the rate limit, please try again later.";
-				case 500 -> "An internal server error has occurred, please try again later.";
-				case 503 -> "The service is temporarily unavailable, please try again later.";
-				case 504 -> "The connection timed out, please try again later.";
+				case 400 -> "Error 400. The request was invalid, please try again later.";
+				case 401 -> "Error 401. You are not logged in, please log in and try again.";
+				case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
+				case 404 -> "Error 404. The resource you requested does not exist!";
+				case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
+				case 500 -> "Error 500. An internal server error has occurred, please try again later.";
+				case 503 -> "Error 503. The service is temporarily unavailable, please try again later.";
+				case 504 -> "Error 504. The connection timed out, please try again later.";
 				default -> getGenericMessage();
 			};
 		} else if(exception instanceof UnknownHostException e) {
