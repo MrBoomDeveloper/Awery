@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.activity.player;
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,9 +20,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
+import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.AspectRatioFrameLayout;
@@ -44,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@OptIn(markerClass = UnstableApi.class)
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
 	private static final String TAG = "PlayerActivity";
 	protected static ExtensionProvider source;
@@ -66,18 +71,19 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected ArrayList<CatalogEpisode> episodes;
 	protected CatalogEpisode episode;
 	protected CatalogVideo video;
+	private CatalogSubtitle subtitle;
 	protected ExoPlayer player;
+	private MediaItem videoItem;
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
-	@OptIn(markerClass = UnstableApi.class)
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
-		binding.subtitlesText.setVisibility(View.INVISIBLE);
+		//binding.subtitlesText.setVisibility(View.INVISIBLE);
 		setContentView(binding.getRoot());
 		applyFullscreen();
 
@@ -93,6 +99,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				.build();*/
 
 		player = new ExoPlayer.Builder(this)
+				.setSeekBackIncrementMs(10_000)
+				.setSeekForwardIncrementMs(10_000)
 				//.setAudioAttributes(audioAttributes, true)
 				.build();
 
@@ -112,7 +120,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				}
 
 				binding.doubleTapBackward.setBackgroundResource(R.drawable.ripple_circle_white);
-				player.seekTo(player.getCurrentPosition() - 10_000);
+				//player.seekTo(player.getCurrentPosition() - 10_000);
+				player.seekBack();
 				controller.updateTimers();
 			} else {
 				showUiRunnableFromLeft = controller::toggleUiVisibility;
@@ -138,7 +147,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				}
 
 				binding.doubleTapForward.setBackgroundResource(R.drawable.ripple_circle_white);
-				player.seekTo(player.getCurrentPosition() + 10_000);
+				//player.seekTo(player.getCurrentPosition() + 10_000);
+				player.seekForward();
 				controller.updateTimers();
 			} else {
 				showUiRunnableFromRight = controller::toggleUiVisibility;
@@ -233,6 +243,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	@Override
+	public void onCues(@NonNull CueGroup cueGroup) {
+		binding.subtitleView.setCues(cueGroup.cues);
+	}
+
+	@Override
 	public void onIsPlayingChanged(boolean isPlaying) {
 		var res = isPlaying ? R.drawable.anim_play_to_pause : R.drawable.anim_pause_to_play;
 		Glide.with(this).load(res).into(binding.pause);
@@ -243,21 +258,40 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	public void selectSubtitles(@Nullable CatalogSubtitle subtitles) {
+		MediaItem.SubtitleConfiguration subtitleItem = null;
+
 		if(subtitles == null) {
 			var isEmpty = video.getSubtitles().isEmpty();
 			binding.subtitles.setAlpha(isEmpty ? .35f : .6f);
-			return;
+		} else {
+			binding.subtitles.setAlpha(1f);
+
+			subtitleItem = new MediaItem.SubtitleConfiguration.Builder(Uri.parse(subtitles.getUrl()))
+					.setMimeType(MimeTypes.TEXT_VTT)
+					.setLanguage("en")
+					.setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
+					.build();
 		}
 
-		binding.subtitles.setAlpha(1f);
+		if(subtitleItem != null) {
+			var item = videoItem.buildUpon()
+					.setSubtitleConfigurations(List.of(subtitleItem))
+					.build();
+
+			player.setMediaItem(item, false);
+		} else {
+			player.setMediaItem(videoItem, false);
+		}
+
+		player.play();
 	}
 
 	public void playVideo(@NonNull CatalogVideo video) {
-		var mediaItem = MediaItem.fromUri(video.getUrl());
+		this.videoItem = MediaItem.fromUri(video.getUrl());
 		this.video = video;
 
 		selectSubtitles(null);
-		player.setMediaItem(mediaItem);
+		selectSubtitles(subtitle);
 		player.play();
 
 		if(video.getSubtitles().isEmpty()) {
@@ -311,7 +345,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		}
 	}
 
-	@OptIn(markerClass = UnstableApi.class)
 	private void setupPip() {
 		if((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ||
 				(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE))) {
@@ -358,7 +391,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		});
 	}
 
-	@OptIn(markerClass = UnstableApi.class)
 	public void setButtonsClickability(boolean isClickable) {
 		this.areButtonsClickable = isClickable;
 		binding.slider.setEnabled(isClickable);
@@ -369,7 +401,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	@Override
-	@OptIn(markerClass = UnstableApi.class)
 	public void onPlaybackStateChanged(int playbackState) {
 		switch(playbackState) {
 			case Player.STATE_READY -> {

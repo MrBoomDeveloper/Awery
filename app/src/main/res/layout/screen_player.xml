@@ -88,7 +88,7 @@
             android:layout_marginVertical="85dp"
             android:layout_marginRight="50dp" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/subtitles_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,7 +105,21 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="@tools:sample/lorem/random" />
+            tools:text="@tools:sample/lorem/random" />-->
+
+        <androidx.media3.ui.SubtitleView
+            android:id="@+id/subtitle_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|bottom"
+            app:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="50dp"
+            app:layout_constraintWidth_max="400dp"
+            android:layout_marginHorizontal="128dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

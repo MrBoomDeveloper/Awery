@@ -87,12 +87,14 @@ public class AniyomiProvider extends ExtensionProvider {
 					.stream().map(item -> {
 						var headers = item.getHeaders();
 
+						var subtitles = item.getSubtitleTracks().stream().map(track ->
+								new CatalogSubtitle(track.getLang(), track.getUrl())).collect(Collectors.toList());
+
 						return new CatalogVideo(
 								item.getQuality(),
 								item.getVideoUrl(),
 								headers != null ? headers.toString() : "",
-								item.getSubtitleTracks().stream().map(track ->
-										new CatalogSubtitle(track.getLang(), track.getUrl())).collect(Collectors.toList())
+								subtitles
 						);
 					}).collect(Collectors.toCollection(ArrayList::new)));
 		})).start();
