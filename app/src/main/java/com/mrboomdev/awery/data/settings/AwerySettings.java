@@ -18,6 +18,7 @@ public class AwerySettings {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
+	public static final String ADULT_CONTENT = "settings_content_adult_content";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
 	@Deprecated

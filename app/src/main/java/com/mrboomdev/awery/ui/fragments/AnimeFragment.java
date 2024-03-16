@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -25,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnimeFragment extends MediaCatalogListsFragment {
+	private static final String TAG = "AnimeFragment";
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
 	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
@@ -64,7 +67,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		totalTasks++;
 		AnilistSearchQuery.builder()
 				.setCurrentSeason()
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
 				.build().executeQuery(items -> {
@@ -93,7 +96,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		loadCategory("Trending", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
@@ -111,26 +114,26 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		loadCategory("Popular", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Movies", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
 				.setFormat(AnilistMedia.MediaFormat.MOVIE)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Most Favorited", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.FAVOURITES_DESC)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Top Rated", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SCORE_DESC)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 	}
 
@@ -139,7 +142,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		doneTasks++;
 
 		if(t != null) {
-			t.printStackTrace();
+			Log.e(TAG, "Failed to load", t);
 		} else {
 			if(doneSuccessfully++ == 0) {
 				// We do this to prevent screen from being scrolling a little bit

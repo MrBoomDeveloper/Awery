@@ -38,6 +38,9 @@
 				{
 					"key": "global_excluded_tags", "type": "select",
 					"icon": "ic_round_block_24", "show_if": "never"
+				}, {
+					"key": "adult_content", "type": "boolean",
+					"title": "Show adult content"
 				}
 			]
 		}, {

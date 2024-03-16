@@ -26,6 +26,7 @@ import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -173,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		AnilistSearchQuery.builder()
 				.setSearchQuery(searchQuery)
-				.setIsAdult(false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
 				.setPage(page)
