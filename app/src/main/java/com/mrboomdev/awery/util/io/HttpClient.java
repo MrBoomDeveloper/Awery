@@ -2,6 +2,8 @@ package com.mrboomdev.awery.util.io;
 
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.data.settings.AwerySettings;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -9,11 +11,24 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-	private static final OkHttpClient client = new OkHttpClient();
+	private static final OkHttpClient client;
 	private static int usedIds = 0;
+
+	static {
+		var builder = new OkHttpClient.Builder();
+
+		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+			var httpLoggingInterceptor = new HttpLoggingInterceptor();
+			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+			builder.addNetworkInterceptor(httpLoggingInterceptor);
+		}
+
+		client = builder.build();
+	}
 
 	public static OkHttpClient getClient() {
 		return client;

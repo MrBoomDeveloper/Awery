@@ -29,6 +29,7 @@ import com.mrboomdev.awery.catalog.extensions.ExtensionProviderChild;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.catalog.template.CatalogFilter;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -284,7 +285,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var lastUsedTitleIndex = new AtomicInteger(0);
 		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<List<CatalogMedia>>>();
 
-		var searchParams = new ExtensionProvider.SearchParams.Builder()
+		var searchParams = new CatalogFilter.Builder()
 				.setPage(0)
 				.setQuery(media.titles.get(0));
 

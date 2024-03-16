@@ -44,13 +44,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import ani.awery.App;
 import ani.awery.connections.anilist.Anilist;
+import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
@@ -172,6 +176,34 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 		app = this;
 		super.onCreate();
+
+		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+			var logFile = new File(getExternalFilesDir(null), "ohttp3_log.txt");
+			logFile.delete();
+
+			try {
+				logFile.createNewFile();
+
+				Logger.getLogger(OkHttpClient.class.getName()).addHandler(new java.util.logging.Handler() {
+					@Override
+					public void publish(LogRecord record) {
+						try(var writer = new FileWriter(logFile, true)) {
+							writer.write("[" + record.getLevel() + "] " + record.getMessage() + "\n");
+						} catch(IOException e) {
+							Log.e(TAG, "Failed to write log file!", e);
+						}
+					}
+
+					@Override
+					public void flush() {}
+
+					@Override
+					public void close() throws SecurityException {}
+				});
+			} catch(IOException e) {
+				Log.e(TAG, "Failed to create log file!", e);
+			}
+		}
 
 		registerActivityLifecycleCallbacks(this);
 

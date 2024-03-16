@@ -46,6 +46,10 @@ public class CatalogMedia {
 	@Json(ignore = true)
 	public long visualId;
 
+	/**
+	 * @param globalId The unique id of the media in the following format:
+	 * <p>{@code EXTENSION_TYPE;;;EXTENSION_ID;;;ITEM_ID}</p>
+	 */
 	public CatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
 	}
@@ -99,7 +103,7 @@ public class CatalogMedia {
 	}
 
 	public enum MediaStatus {
-		ONGOING, COMPLETED, COMING_SOON, PAUSED, CANCELLED
+		ONGOING, COMPLETED, COMING_SOON, PAUSED, CANCELLED, UNKNOWN
 	}
 
 	public enum MediaType {

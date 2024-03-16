@@ -13,10 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AwerySettings {
-	public static final String APP_SETTINGS = "Awery", APP_LIBRARY = "Library", APP_SECRETS = "Secrets";
+	public static final String APP_SETTINGS = "Awery";
+	public static final String APP_SECRETS = "Secrets";
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
+	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
 	@Deprecated
 	public static final String THEME_CUSTOM = "settings_theme_custom";

@@ -1,11 +1,10 @@
 package com.mrboomdev.awery.catalog.extensions.support.yomi;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.catalog.extensions.Extension;
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 import dalvik.system.PathClassLoader;
 
 public abstract class YomiManager extends ExtensionsManager {
+	private static final String TAG = "YomiManager";
 	private static final int PM_FLAGS = PackageManager.GET_CONFIGURATIONS | PackageManager.GET_META_DATA;
 	private final Map<String, Extension> extensions = new HashMap<>();
 
@@ -101,11 +101,20 @@ public abstract class YomiManager extends ExtensionsManager {
 
 	@Override
 	public void init(Context context, String id) {
+		List<?> mains;
 		var extension = extensions.get(id);
-		if(extension == null) return;
 
-		var mains = loadMains(context, extension);
-		if(mains == null) return;
+		if(extension == null) {
+			throw new NullPointerException("Extension " + id + " not found!");
+		}
+
+		try {
+			mains = loadMains(context, extension);
+		} catch(Throwable t) {
+			Log.e(TAG, "Failed to load main classes!", t);
+			extension.setError("Failed to load main classes!", t);
+			return;
+		}
 
 		var providers = mains.stream()
 				.map(main -> createProviders(extension, main))
@@ -117,18 +126,18 @@ public abstract class YomiManager extends ExtensionsManager {
 		}
 	}
 
-	public List<?> loadMains(Context context, Extension extension) {
-		var classes = loadClasses(context, extension);
-		if(classes == null) return null;
-
-		return classes.stream().map(clazz -> {
+	public List<?> loadMains(
+			Context context,
+			Extension extension
+	) throws PackageManager.NameNotFoundException, ClassNotFoundException {
+		return loadClasses(context, extension).stream().map(clazz -> {
 			try {
 				var constructor = clazz.getConstructor();
 				return constructor.newInstance();
 			} catch(NoSuchMethodException e) {
 				throw new RuntimeException("Failed to get a default constructor!", e);
 			} catch(InvocationTargetException e) {
-				throw new RuntimeException("Exception was thrown by a constructor!", e);
+				throw new RuntimeException("Exception was thrown by a constructor!", e.getCause());
 			} catch(IllegalAccessException e) {
 				throw new RuntimeException("Default constructor is inaccessible!", e);
 			} catch(InstantiationException e) {
@@ -139,31 +148,20 @@ public abstract class YomiManager extends ExtensionsManager {
 		}).collect(Collectors.toList());
 	}
 
-	@Nullable
-	public List<Class<?>> loadClasses(@NonNull Context context, @NonNull Extension extension) {
-		AtomicReference<Exception> exception = new AtomicReference<>();
-		ClassLoader classLoader;
-		PackageInfo pkgInfo;
+	public List<Class<?>> loadClasses(
+			@NonNull Context context,
+			@NonNull Extension extension
+	) throws PackageManager.NameNotFoundException, ClassNotFoundException, NullPointerException {
+		var exception = new AtomicReference<Exception>();
+		var pkgInfo = context.getPackageManager().getPackageInfo(extension.getId(), PM_FLAGS);
 
-		try {
-			pkgInfo = context.getPackageManager().getPackageInfo(extension.getId(), PM_FLAGS);
-		} catch(PackageManager.NameNotFoundException e) {
-			extension.setError("Package not found!", e);
-			return null;
-		}
+		var classLoader = new PathClassLoader(
+				pkgInfo.applicationInfo.sourceDir,
+				null,
+				context.getClassLoader());
 
-		try {
-			classLoader = new PathClassLoader(
-					pkgInfo.applicationInfo.sourceDir,
-					null,
-					context.getClassLoader());
-		} catch(Throwable e) {
-			extension.setError("Failed to load a ClassLoader!", e);
-			return null;
-		}
-
-		var mainClassesString = pkgInfo.applicationInfo.metaData.getString(getMainClassMeta());
-		if(mainClassesString == null) return null;
+		var mainClassesString = Objects.requireNonNull(
+				pkgInfo.applicationInfo.metaData.getString(getMainClassMeta()));
 
 		List<Class<?>> classes = Arrays.stream(mainClassesString.split(";")).map(mainClass -> {
 			if(mainClass.startsWith(".")) {
@@ -177,16 +175,11 @@ public abstract class YomiManager extends ExtensionsManager {
 				return null;
 			}
 		}).filter(Objects::nonNull)
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 
-		if(classes.isEmpty()) {
-			var e = exception.get();
-
-			if(e != null) {
-				extension.setError("Failed to load classes!", e);
-			}
-
-			return null;
+		if(exception.get() != null) {
+			if(exception.get() instanceof ClassNotFoundException e) throw e;
+			else throw new RuntimeException("Unknown exception occurred!", exception.get());
 		}
 
 		return classes;

@@ -41,17 +41,18 @@ open class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val sharedPreferences = getSharedPreferences("Awery", Context.MODE_PRIVATE)
-        val useMaterialYou = sharedPreferences.getBoolean("use_material_you", false)
-
-        if(useMaterialYou) {
-            DynamicColors.applyToActivitiesIfAvailable(this)
-            //TODO: HarmonizedColors
-        }
-
-        registerActivityLifecycleCallbacks(mFTActivityLifecycleCallbacks)
 
         if(AweryApp.USE_KT_APP_INIT) {
+            val sharedPreferences = getSharedPreferences("Awery", Context.MODE_PRIVATE)
+            val useMaterialYou = sharedPreferences.getBoolean("use_material_you", false)
+
+            if(useMaterialYou) {
+                DynamicColors.applyToActivitiesIfAvailable(this)
+                //TODO: HarmonizedColors
+            }
+
+            registerActivityLifecycleCallbacks(mFTActivityLifecycleCallbacks)
+
             Injekt.importModule(AppModule(this))
             Injekt.importModule(PreferenceModule(this))
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.catalog.template.CatalogCategory;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.catalog.template.CatalogFilter;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -28,38 +29,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
-	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
+	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));
-	}
-
-	public record SearchParams(Integer page, String query) {
-
-		public static class Builder {
-			private String query;
-			private Integer page;
-
-			public Builder setPage(Integer page) {
-				this.page = page;
-				return this;
-			}
-
-			public Builder setQuery(String query) {
-				this.query = query;
-				return this;
-			}
-
-			public String getQuery() {
-				return query;
-			}
-
-			public Integer getPage() {
-				return page;
-			}
-
-			public SearchParams build() {
-				return new SearchParams(page, query);
-			}
-		}
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<CatalogEpisode>> callback) {

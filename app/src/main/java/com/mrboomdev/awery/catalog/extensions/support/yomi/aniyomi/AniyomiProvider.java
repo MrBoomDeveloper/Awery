@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.catalog.extensions.ExtensionProvider;
 import com.mrboomdev.awery.catalog.template.CatalogEpisode;
+import com.mrboomdev.awery.catalog.template.CatalogFilter;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
 import com.mrboomdev.awery.catalog.template.CatalogSubtitle;
 import com.mrboomdev.awery.catalog.template.CatalogVideo;
@@ -17,12 +18,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
-import eu.kanade.tachiyomi.animesource.model.AnimeFilterList;
+import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import eu.kanade.tachiyomi.animesource.model.SEpisodeImpl;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends ExtensionProvider {
+	public static final String EXTENSION_TYPE = "ANIYOMI_KT";
 	private final AnimeCatalogueSource source;
 
 	public AniyomiProvider(AnimeCatalogueSource source) {
@@ -112,10 +114,10 @@ public class AniyomiProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void search(SearchParams params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
-		var filter = new AnimeFilterList();
+	public void search(CatalogFilter params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
+		var filter = source.getFilterList();
 
-		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.page(), params.query(), filter, (pag, t) -> {
+		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.getPage(), params.getQuery(), filter, (pag, t) -> {
 			if(t != null) {
 				callback.onFailure(t);
 				return;
@@ -124,14 +126,22 @@ public class AniyomiProvider extends ExtensionProvider {
 			var animes = Objects.requireNonNull(pag).getAnimes();
 
 			if(animes.isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Aniyomi: No animes found"));
+				callback.onFailure(new ZeroResultsException("Found nothing in the catalog. Try changing your query."));
 				return;
 			}
 
 			callback.onSuccess(animes.stream().map(item -> {
-				var media = new CatalogMedia("NULL");
+				var media = new CatalogMedia(EXTENSION_TYPE + ";;;" + getName() + ";;;" + item.getUrl());
 				media.setTitle(item.getTitle());
 				media.setPoster(item.getThumbnail_url());
+
+				media.status = switch(item.getStatus()) {
+					case SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> CatalogMedia.MediaStatus.COMPLETED;
+					case SAnime.ONGOING -> CatalogMedia.MediaStatus.ONGOING;
+					case SAnime.ON_HIATUS -> CatalogMedia.MediaStatus.PAUSED;
+					case SAnime.CANCELLED -> CatalogMedia.MediaStatus.CANCELLED;
+					default -> CatalogMedia.MediaStatus.UNKNOWN;
+				};
 
 				media.url = item.getUrl();
 				media.genres = item.getGenres();

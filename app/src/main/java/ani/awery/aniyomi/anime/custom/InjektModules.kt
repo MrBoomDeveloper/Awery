@@ -16,6 +16,7 @@ import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.NetworkPreferences
 import eu.kanade.tachiyomi.source.anime.AndroidAnimeSourceManager
 import eu.kanade.tachiyomi.source.manga.AndroidMangaSourceManager
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import tachiyomi.core.preference.PreferenceStore
 import tachiyomi.domain.source.anime.service.AnimeSourceManager
@@ -27,13 +28,13 @@ import uy.kohesive.injekt.api.addSingletonFactory
 import uy.kohesive.injekt.api.get
 
 class AppModule(val app: Application) : InjektModule {
+
+    @OptIn(ExperimentalSerializationApi::class)
     override fun InjektRegistrar.registerInjectables() {
         addSingleton(app)
 
         addSingletonFactory { DownloadsManager(app) }
-
-        addSingletonFactory { NetworkHelper(app, get()) }
-
+        addSingletonFactory { NetworkHelper(app) }
         addSingletonFactory { AnimeExtensionManager(app) }
         addSingletonFactory { MangaExtensionManager(app) }
         addSingletonFactory { NovelExtensionManager(app) }
