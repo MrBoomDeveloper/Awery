@@ -15,13 +15,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.catalog.template.CatalogList;
 import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.data.db.DBCatalogList;
+import com.mrboomdev.awery.catalog.template.CatalogTag;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import org.jetbrains.annotations.Contract;
@@ -56,8 +56,11 @@ public class MediaUtils {
 
 	@Contract(pure = true)
 	public static boolean isMediaFiltered(@NonNull CatalogMedia media) {
-		if(media.lists == null) return false;
-		if(media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
+		var badTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
+
+		if(media.lists != null && media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
+		if(media.tags != null && media.tags.stream().map(CatalogTag::getName).anyMatch(badTags::contains)) return true;
+
 		return false;
 	}
 
@@ -115,11 +118,11 @@ public class MediaUtils {
 	}
 
 	public static void requestCreateNewList(Context context, OnListCreatedListener callback) {
-		new DialogBuilder(context)
+		/*new DialogBuilder(context)
 				.setTitle("Create new list")
-				.addInputField(1, "List name")
+				//.addInputField("1", "List name")
 				.setPositiveButton("Create", dialog -> {
-					var input = dialog.getField(1, DialogBuilder.InputField.class);
+					*//*var input = dialog.getField("1", DialogBuilder.InputField.class);
 					var text = input.getText();
 
 					if(text.isBlank()) {
@@ -140,10 +143,10 @@ public class MediaUtils {
 						}
 					}).start();
 
-					dialog.dismiss();
+					dialog.dismiss();*//*
 				})
 				.setCancelButton("Cancel", DialogBuilder::dismiss)
-				.show();
+				.show();*/
 
 
 		/*var dialog = new AlertDialog.Builder(context);

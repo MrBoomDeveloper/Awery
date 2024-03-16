@@ -1,23 +1,31 @@
-package com.mrboomdev.awery.ui.adapter;
+package com.mrboomdev.awery.ui.activity.settings;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private final DataHandler handler;
@@ -52,20 +60,75 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		}, parent);
 
 		binding.getRoot().setOnClickListener(view -> {
-			var item = holder.getItem();
-			if(item == null) return;
+			var setting = holder.getItem();
+			if(setting == null) return;
 
-			switch(item.getType()) {
+			switch(setting.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
-				case SCREEN -> handler.onScreenLaunchRequest(item);
-				case ACTION -> SettingsActions.run(item.getFullKey());
+				case SCREEN -> handler.onScreenLaunchRequest(setting);
+				case ACTION -> SettingsActions.run(setting.getFullKey());
 
-				case SELECT -> new MaterialAlertDialogBuilder(parent.getContext())
-						.setTitle(item.getTitle(parent.getContext()))
-						.setPositiveButton("Done", (_dialog, _button) -> {
+				case MULTISELECT -> {
+					var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
 
-						})
-						.show();
+					var contentView = new LinearLayoutCompat(parent.getContext());
+					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
+
+					var chips = new ChipGroup(parent.getContext());
+					chips.setChipSpacingVertical(ViewUtil.dpPx(-4));
+
+					var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
+					chips.setLayoutParams(chipsParams);
+
+					var dialog = new DialogBuilder(parent.getContext())
+							.setTitle(setting.getTitle(parent.getContext()))
+							.addView(contentView)
+							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setPositiveButton("Save", _dialog -> {
+								if(chips.getParent() == null) return;
+
+								var items = selectionItems.get();
+								if(items == null) return;
+
+								SettingsData.saveSelectionList(setting.getBehaviour(), items);
+								_dialog.dismiss();
+							})
+							.show();
+
+					SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
+						selectionItems.set(items);
+						if(!dialog.isShown()) return;
+
+						if(e != null) {
+							dialog.dismiss();
+							AweryApp.toast(e.getMessage());
+							return;
+						}
+
+						var sorted = new ArrayList<>(items).stream().sorted((a, b) ->
+								a.getTitle().compareToIgnoreCase(b.getTitle()))
+								.collect(Collectors.toList());
+
+						AweryApp.runOnUiThread(() -> {
+							for(var item : sorted) {
+								var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
+								var context = new ContextThemeWrapper(parent.getContext(), style);
+
+								var chip = new Chip(context);
+								chip.setCheckable(true);
+								chip.setText(item.getTitle());
+								chip.setChecked(item.isSelected());
+
+								chip.setOnCheckedChangeListener((_view, isChecked) ->
+										item.setSelected(isChecked));
+
+								chips.addView(chip);
+							}
+
+							contentView.addView(chips);
+						});
+					});
+				}
 			}
 		});
 

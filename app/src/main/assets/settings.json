@@ -36,11 +36,12 @@
 			"title": "content", "icon": "ic_extension",
 			"items": [
 				{
-					"key": "global_excluded_tags", "type": "select",
-					"icon": "ic_round_block_24", "show_if": "never"
+					"key": "global_excluded_tags", "type": "multiselect",
+					"title": "global_excluded_tags", "icon": "ic_round_block_24",
+					"behaviour": "excluded_tags"
 				}, {
 					"key": "adult_content", "type": "boolean",
-					"title": "Show adult content"
+					"title": "Show adult content", "icon": "ic_round_report"
 				}
 			]
 		}, {

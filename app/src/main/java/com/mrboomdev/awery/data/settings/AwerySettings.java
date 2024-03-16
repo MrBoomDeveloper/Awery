@@ -30,7 +30,7 @@ public class AwerySettings {
 
 	public static final String UI_DEFAULT_MAIN_PAGE = "settings_ui_default_main_page";
 
-	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_exclude_tags";
+	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
 
 	public static final String PLAYER_DEFAULT_VIDEO_QUALITY = "settings_player_default_video_quality";
 

@@ -16,7 +16,6 @@ import com.mrboomdev.awery.data.settings.SettingsFactory;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.ui.adapter.SettingsAdapter;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.squareup.moshi.Moshi;
 

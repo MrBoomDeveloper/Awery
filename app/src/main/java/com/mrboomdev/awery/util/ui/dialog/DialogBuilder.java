@@ -3,27 +3,25 @@ package com.mrboomdev.awery.util.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import com.mrboomdev.awery.R;
 
 public class DialogBuilder {
-	private final Map<Integer, Field> fieldMap = new HashMap<>();
-	private final List<Field> fields = new ArrayList<>();
+	private final List<Field> fields = new LinkedList<>();
 	private OnButtonClickListener okListener, cancelListener;
 	private final Context context;
+	private ViewGroup fieldsWrapper;
 	private String title, ok, cancel;
 	private Dialog dialog;
 
@@ -48,24 +46,29 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public DialogBuilder addField(int id, Field field) {
-		fieldMap.put(id, field);
-		fields.add(field);
+	public DialogBuilder addView(View view, int index) {
+		addField(new ViewField(view), index);
 		return this;
 	}
 
-	public DialogBuilder addInputField(int id, String hint) {
-		addField(id, new InputField(context, id, hint));
+	public DialogBuilder addView(View view) {
+		addView(view, fields.size());
 		return this;
 	}
 
-	public <T extends Field> T getField(int id, @NonNull Class<T> clazz) {
-		return clazz.cast(getField(id));
+	public DialogBuilder addField(Field field, int index) {
+		fields.add(index, field);
+
+		if(fieldsWrapper != null) {
+			fieldsWrapper.addView(field.getView(), index);
+		}
+
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T extends Field> T getField(int id) {
-		return (T) fieldMap.get(id);
+	public DialogBuilder addField(Field field) {
+		addField(field, fields.size());
+		return this;
 	}
 
 	public DialogBuilder create() {
@@ -73,19 +76,82 @@ public class DialogBuilder {
 			dismiss();
 		}
 
-		var linear = new LinearLayoutCompat(context);
+		/*var linear = new LinearLayoutCompat(context);
 		linear.setOrientation(LinearLayoutCompat.VERTICAL);
-		linear.setBackgroundResource(R.drawable.dialog_background);
+		linear.setBackgroundResource(R.drawable.dialog_background);*/
 
 		if(title != null) {
-			var text = new AppCompatTextView(context);
+			/*var text = new AppCompatTextView(context);
+			text.setTextSize(ViewUtil.spPx(18));
 			text.setText(title);
-			linear.addView(text);
+
+			ViewUtil.setPadding(text, ViewUtil.dpPx(16));
+			linear.addView(text);*/
 		}
 
-		dialog = new Dialog(context);
+		var scroller = new ScrollView(context);
+		ViewUtil.setTopPadding(scroller, ViewUtil.dpPx(8));
+		//linear.addView(scroller);
+
+		var fieldsLinear = new LinearLayoutCompat(context);
+		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(16));
+		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
+		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
+		fieldsWrapper = fieldsLinear;
+
+		for(var field : fields) {
+			fieldsLinear.addView(field.getView());
+		}
+
+		/*var actionsLinear = new LinearLayoutCompat(context);
+		actionsLinear.setOrientation(LinearLayoutCompat.HORIZONTAL);
+		linear.addView(actionsLinear);*/
+
+		/*if(cancel != null) {
+			var button = new AppCompatTextView(context);
+			button.setBackgroundResource(R.drawable.ripple_round_you);
+			ViewUtil.setPadding(button, ViewUtil.dpPx(16));
+			button.setText(cancel);
+			actionsLinear.addView(button);
+
+			button.setOnClickListener(v -> {
+				if(cancelListener == null) {
+					dialog.dismiss();
+					return;
+				}
+
+				cancelListener.clicked(this);
+			});
+		}
+
+		if(ok != null) {
+			var button = new AppCompatTextView(context);
+			button.setBackgroundResource(R.drawable.ripple_round_you);
+			ViewUtil.setPadding(button, ViewUtil.dpPx(16));
+			button.setText(ok);
+			actionsLinear.addView(button);
+
+			button.setOnClickListener(v -> {
+				if(okListener == null) {
+					dialog.dismiss();
+					return;
+				}
+
+				okListener.clicked(this);
+			});
+		}*/
+
+		var builder = new MaterialAlertDialogBuilder(context);
+		builder.setView(scroller);
+		if(title != null) builder.setTitle(title);
+		if(ok != null) builder.setPositiveButton(ok, (dialog, which) -> okListener.clicked(this));
+		if(cancel != null) builder.setNegativeButton(cancel, (dialog, which) -> cancelListener.clicked(this));
+		dialog = builder.show();
+
+		/*dialog = new Dialog(context);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setContentView(linear);
+		getWindow().setBackgroundDrawable(null);*/
 		return this;
 	}
 
@@ -96,6 +162,10 @@ public class DialogBuilder {
 
 		dialog.show();
 		return this;
+	}
+
+	public boolean isShown() {
+		return dialog != null && dialog.isShowing();
 	}
 
 	public DialogBuilder dismiss() {
@@ -126,14 +196,12 @@ public class DialogBuilder {
 
 	public static class InputField implements Field {
 		private final Context context;
-		private final int id;
 		private String hint, error;
 		private TextInputLayout view;
 		private TextInputEditText editText;
 
-		public InputField(Context context, int id, String hint) {
+		public InputField(Context context, String hint) {
 			this.hint = hint;
-			this.id = id;
 			this.context = context;
 		}
 
@@ -143,10 +211,6 @@ public class DialogBuilder {
 			if(view != null) {
 				view.setError(error);
 			}
-		}
-
-		public int getId() {
-			return id;
 		}
 
 		public String getText() {
@@ -181,6 +245,24 @@ public class DialogBuilder {
 		public void deAttach() {
 			view = null;
 			editText = null;
+		}
+	}
+
+	public static class ViewField implements Field {
+		private View view;
+
+		public ViewField(View view) {
+			this.view = view;
+		}
+
+		@Override
+		public View getView() {
+			return view;
+		}
+
+		@Override
+		public void deAttach() {
+			this.view = null;
 		}
 	}
 

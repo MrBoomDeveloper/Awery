@@ -333,13 +333,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(callback == null) return;
 
 				AweryApp.runOnUiThread(() -> {
-					if(!(e instanceof ZeroResultsException)) {
-						handleExceptionMark(source, e);
-						if(autoSelectNextSource()) return;
-						handleExceptionUi(source, e);
-						return;
-					}
-
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						searchParams.setQuery(media.titles.get(newIndex));
@@ -348,16 +341,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						variantsAdapter.getBinding((binding, didJustCreated) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
 					} else {
-						handleExceptionMark(source, new ZeroResultsException("Nothing found"));
+						handleExceptionMark(source, e);
 						if(autoSelectNextSource()) return;
-
-						placeholderAdapter.getBinding((binding, didJustCreated) -> {
-							binding.title.setText(R.string.nothing_found);
-							binding.message.setText(R.string.tried_all_titles);
-							binding.progressBar.setVisibility(View.GONE);
-							binding.info.setVisibility(View.VISIBLE);
-							placeholderAdapter.setEnabledSuperForce(true);
-						});
+						handleExceptionUi(source, e);
 					}
 				});
 			}

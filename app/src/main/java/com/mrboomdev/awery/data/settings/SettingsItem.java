@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.DynamicColors;
+import com.mrboomdev.awery.R;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
@@ -15,10 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import com.mrboomdev.awery.R;
-
 public class SettingsItem {
-	private final String key, title, description, icon;
+	private final String key, title, description, icon, behaviour;
 	private final SettingsItemType type;
 	private String parentKey;
 	@Json(name = "show_if")
@@ -37,6 +36,7 @@ public class SettingsItem {
 		this.type = item.type;
 		this.items = item.items;
 		this.restart = item.restart;
+		this.behaviour = item.behaviour;
 
 		this.icon = item.icon;
 		this.title = item.title;
@@ -50,19 +50,20 @@ public class SettingsItem {
 		this.parent = item.parent;
 	}
 
-	public SettingsItem(String key, String title, String description, String icon, String showIf, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
+	public SettingsItem(String key, String title, String description, String icon, String showIf, String behaviour, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
 		this.key = key;
 		this.type = type;
 		this.items = items;
 		this.title = title;
 		this.icon = icon;
+		this.behaviour = behaviour;
 		this.restart = requireRestart;
 		this.description = description;
 		this.showIf = showIf;
 	}
 
 	public SettingsItem(String key, String title, SettingsItemType type) {
-		this(key, title, null, null, null, false, type, Collections.emptyList());
+		this(key, title, null, null, null, null, false, type, Collections.emptyList());
 	}
 
 	public void setAsParentForChildren() {
@@ -92,6 +93,10 @@ public class SettingsItem {
 		return true;
 	}
 
+	public String getBehaviour() {
+		return behaviour;
+	}
+
 	public Drawable getIcon(@NonNull Context context) {
 		if(icon == null) return null;
 
@@ -102,7 +107,6 @@ public class SettingsItem {
 
 			return AppCompatResources.getDrawable(context, id);
 		} catch(NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -157,7 +161,6 @@ public class SettingsItem {
 			var field = clazz.getField(name);
 			return context.getString(field.getInt(null));
 		} catch(NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
 			return null;
 		}
 	}

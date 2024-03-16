@@ -87,7 +87,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.immutableListOf
 import java.util.*
 import java.util.concurrent.*
 import kotlin.math.max
@@ -1305,9 +1304,10 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
         logger("mimeType: $mimeType")
 
         if (sub != null) {
-            val listofnotnullsubs = immutableListOf(sub).filterNotNull()
+            val listofnotnullsubs = listOfNotNull(sub)
             builder.setSubtitleConfigurations(listofnotnullsubs)
         }
+
         mediaItem = builder.build()
 
         //Source
