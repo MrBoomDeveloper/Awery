@@ -18,6 +18,7 @@ public class AwerySettings {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
+	public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
 	public static final String ADULT_CONTENT = "settings_content_adult_content";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
@@ -27,8 +28,6 @@ public class AwerySettings {
 	public static final String THEME_PALLET = "settings_theme_pallet";
 	public static final String THEME_USE_OLDED = "settings_theme_amoled";
 	public static final String THEME_USE_COLORS_FROM_MEDIA = "settings_theme_use_source_theme";
-
-	public static final String UI_DEFAULT_MAIN_PAGE = "settings_ui_default_main_page";
 
 	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
 

@@ -24,10 +24,10 @@
 			"items": [
 				{
 					"key": "default_tab", "type": "select",  "title": "startUpTab",
-					"int_value": 1, "show_if": "never",
+					"string_value": "MAIN",
 					"items": [
-						{ "key": "main", "title": "Anime" },
-						{ "key": "library", "title": "Library" }
+						{ "key": "MAIN", "title": "Anime" },
+						{ "key": "LIBRARY", "title": "Library" }
 					]
 				}
 			]

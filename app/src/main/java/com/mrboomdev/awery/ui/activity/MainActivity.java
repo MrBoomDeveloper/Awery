@@ -28,6 +28,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
+import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -56,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		var currentPage = Pages.valueOf(prefs.getString(AwerySettings.UI_DEFAULT_MAIN_PAGE, Pages.ANIME.name()));
+		var savedDefaultTab = prefs.getString(AwerySettings.DEFAULT_HOME_TAB, Pages.MAIN.name());
+		var currentPage = StringUtil.parseEnum(savedDefaultTab, Pages.MAIN);
 		int currentPageIndex = currentPage.ordinal();
+
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);
 		binding.navbar.setBackground(ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray));
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	enum Pages {
-		ANIME, LIBRARY, MANGA
+		MAIN, LIBRARY, MANGA
 	}
 
 	private class MainFragmentAdapter extends FragmentStateAdapter {

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class StringUtil {
 
@@ -84,6 +85,12 @@ public class StringUtil {
 		} catch(IllegalArgumentException | NullPointerException e) {
 			return null;
 		}
+	}
+
+	@NonNull
+	public static <T extends Enum<T>> T parseEnum(String string, @NonNull T defaultValue) {
+		var result = parseEnum(string, defaultValue.getDeclaringClass());
+		return Objects.requireNonNullElse(result, defaultValue);
 	}
 
 	/**

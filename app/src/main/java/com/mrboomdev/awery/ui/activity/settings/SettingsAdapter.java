@@ -7,6 +7,8 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -14,14 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -67,6 +72,105 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case BOOLEAN -> binding.toggle.performClick();
 				case SCREEN -> handler.onScreenLaunchRequest(setting);
 				case ACTION -> SettingsActions.run(setting.getFullKey());
+
+				case SELECT -> {
+					var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
+
+					var contentView = new LinearLayoutCompat(parent.getContext());
+					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
+
+					var radioGroup = new RadioGroup(parent.getContext());
+					radioGroup.setOrientation(LinearLayout.VERTICAL);
+
+					var dialog = new DialogBuilder(parent.getContext())
+							.setTitle(setting.getTitle(parent.getContext()))
+							.addView(contentView)
+							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setPositiveButton("Save", _dialog -> {
+								if(radioGroup.getParent() == null) return;
+
+								var items = selectionItems.get();
+								if(items == null) return;
+
+								if(setting.getBehaviour() != null) {
+									SettingsData.saveSelectionList(setting.getBehaviour(), items);
+								} else {
+									var foundSelected = selectionItems.get().stream()
+											.filter(SettingsData.SelectionItem::isSelected)
+											.findAny();
+
+									if(!foundSelected.isPresent()) {
+										_dialog.dismiss();
+										return;
+									}
+
+									var prefs = AwerySettings.getInstance();
+									prefs.setString(setting.getFullKey(), foundSelected.get().getId());
+									prefs.saveAsync();
+								}
+
+								_dialog.dismiss();
+							})
+							.show();
+
+					if(setting.getBehaviour() != null) {
+						SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
+							selectionItems.set(items);
+							if(!dialog.isShown()) return;
+
+							if(e != null) {
+								dialog.dismiss();
+								AweryApp.toast(e.getMessage());
+								return;
+							}
+
+							var sorted = new ArrayList<>(items).stream().sorted((a, b) ->
+											a.getTitle().compareToIgnoreCase(b.getTitle()))
+									.collect(Collectors.toList());
+
+							AweryApp.runOnUiThread(() -> {
+								for(var item : sorted) {
+									var radio = new MaterialRadioButton(parent.getContext());
+									radio.setText(item.getTitle());
+									radio.setChecked(item.isSelected());
+
+									radio.setOnCheckedChangeListener((_view, isChecked) ->
+											item.setSelected(isChecked));
+
+									radioGroup.addView(radio);
+								}
+
+								contentView.addView(radioGroup);
+							});
+						});
+					} else if(setting.getItems() != null && !setting.getItems().isEmpty()) {
+						var selected = AwerySettings.getInstance().getString(setting.getFullKey());
+
+						var options = new HashSet<SettingsData.SelectionItem>();
+						selectionItems.set(options);
+
+						for(var item : setting.getItems()) {
+							var option = new SettingsData.SelectionItem(
+									item.getKey(),
+									item.getTitle(parent.getContext()),
+									item.getKey().equals(selected));
+
+							var radio = new MaterialRadioButton(parent.getContext());
+							radio.setText(option.getTitle());
+							radio.setChecked(option.isSelected());
+
+							radio.setOnCheckedChangeListener((_view, isChecked) ->
+									option.setSelected(isChecked));
+
+							options.add(option);
+							radioGroup.addView(radio);
+						}
+
+						contentView.addView(radioGroup);
+					} else {
+						throw new IllegalArgumentException("Failed to load items list");
+					}
+				}
 
 				case MULTISELECT -> {
 					var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();

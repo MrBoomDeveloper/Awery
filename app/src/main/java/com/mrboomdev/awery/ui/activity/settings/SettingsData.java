@@ -15,16 +15,27 @@ public class SettingsData {
 	private static final String TAG = "SettingsData";
 
 	public static class SelectionItem {
-		private final String title;
+		private final String title, id;
 		private boolean selected;
 
-		public SelectionItem(String title, boolean selected) {
+		public SelectionItem(String id, String title, boolean selected) {
+			this.id = id;
 			this.title = title;
 			this.selected = selected;
 		}
 
+		public SelectionItem(String title, boolean selected) {
+			this.title = title;
+			this.selected = selected;
+			this.id = null;
+		}
+
 		public String getTitle() {
 			return title;
+		}
+
+		public String getId() {
+			return id;
 		}
 
 		public boolean isSelected() {
