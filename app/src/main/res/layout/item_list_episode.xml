@@ -39,6 +39,8 @@
             app:layout_goneMarginLeft="2dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="@id/banner"
+            app:layout_constraintBottom_toTopOf="@id/description"
+            app:layout_goneMarginBottom="12dp"
             tools:text="Ep. 1 Akira of the Dead"
             android:textColor="?attr/colorOnBackground" />
 

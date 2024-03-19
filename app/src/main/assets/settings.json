@@ -49,8 +49,18 @@
 			"title": "player", "icon": "ic_round_video_settings_24",
 			"items": [
 				{
-					"key": "double_tab_seek", "type": "int",
-					"title": "Double tap seek"
+					"key": "double_tab_seek", "type": "select",
+					"title": "Double-tap to seek",
+					"items": [
+						{ "key": "0", "title": "Disabled" },
+						{ "key": "3", "title": "3s" },
+						{ "key": "5", "title": "5s" },
+						{ "key": "10", "title": "10s" },
+						{ "key": "15", "title": "15s" },
+						{ "key": "30", "title": "30s" },
+						{ "key": "60", "title": "60s" },
+						{ "key": "120", "title": "120s" }
+					]
 				}, {
 					"key": "gestures", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
 					"title": "Gestures mode",

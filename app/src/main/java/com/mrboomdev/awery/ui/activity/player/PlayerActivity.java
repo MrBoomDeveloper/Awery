@@ -105,8 +105,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				.build();*/
 
 		player = new ExoPlayer.Builder(this)
-				.setSeekBackIncrementMs(doubleTapSeek * 1000L)
-				.setSeekForwardIncrementMs(doubleTapSeek * 1000L)
+				.setSeekBackIncrementMs(doubleTapSeek * 1000L + 1)
+				.setSeekForwardIncrementMs(doubleTapSeek * 1000L + 1)
 				//.setAudioAttributes(audioAttributes, true)
 				.build();
 
@@ -117,6 +117,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.doubleTapForward.setOnTouchListener((view, event) -> gestures.onTouchEventRight(event));
 
 		binding.doubleTapBackward.setOnClickListener(view -> {
+			if(doubleTapSeek == 0) {
+				controller.toggleUiVisibility();
+				return;
+			}
+
 			backwardFastClicks++;
 
 			if(backwardFastClicks >= 2) {
@@ -144,6 +149,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		});
 
 		binding.doubleTapForward.setOnClickListener(view -> {
+			if(doubleTapSeek == 0) {
+				controller.toggleUiVisibility();
+				return;
+			}
+
 			forwardFastClicks++;
 
 			if(forwardFastClicks >= 2) {
@@ -153,7 +163,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				}
 
 				binding.doubleTapForward.setBackgroundResource(R.drawable.ripple_circle_white);
-				//player.seekTo(player.getCurrentPosition() + 10_000);
 				player.seekForward();
 				controller.updateTimers();
 			} else {
@@ -250,7 +259,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 	private void loadSettings() {
 		var prefs = AwerySettings.getInstance(this);
-		doubleTapSeek = prefs.getInt(AwerySettings.DOUBLE_TAP_SEEK, 10);
+
+		doubleTapSeek = StringUtil.parseInteger(
+				prefs.getString(AwerySettings.DOUBLE_TAP_SEEK,
+				"10"), 10);
 
 		gesturesMode = StringUtil.parseEnum(
 				prefs.getString(AwerySettings.PLAYER_GESTURES),

@@ -93,14 +93,20 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		public void bind(@NonNull CatalogEpisode item) {
 			this.item = item;
 
-			var calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(item.getReleaseDate());
-
 			binding.title.setText(item.getTitle());
 
-			binding.description.setText(calendar.get(Calendar.DATE)
-					+ "/" + (calendar.get(Calendar.MONTH) + 1)
-					+ "/" + calendar.get(Calendar.YEAR));
+			if(item.getReleaseDate() > 0) {
+				var calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(item.getReleaseDate());
+
+				binding.description.setVisibility(View.VISIBLE);
+
+				binding.description.setText(calendar.get(Calendar.DATE)
+						+ "/" + (calendar.get(Calendar.MONTH) + 1)
+						+ "/" + calendar.get(Calendar.YEAR));
+			} else {
+				binding.description.setVisibility(View.GONE);
+			}
 
 			if(item.getBanner() != null) {
 				binding.banner.setVisibility(View.VISIBLE);

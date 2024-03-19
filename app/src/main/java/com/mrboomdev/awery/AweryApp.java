@@ -298,8 +298,12 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 					if(finishOnClose) {
 						var activity = getAnyActivity();
 
-						if(activity != null) activity.finishAffinity();
-						else System.exit(0);
+						if(activity != null) {
+							activity.finishAffinity();
+							return;
+						}
+
+						System.exit(0);
 					}
 				})
 				.setNeutralButton("Copy", (dialog, btn) -> {
@@ -363,9 +367,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 			if(activity != null) {
 				toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
+				activity.finishAffinity();
+				return;
 			}
 
-			System.exit(-1);
+			System.exit(0);
 		});
 	}
 

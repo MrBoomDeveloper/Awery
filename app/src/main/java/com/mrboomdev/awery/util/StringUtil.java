@@ -93,6 +93,14 @@ public class StringUtil {
 		return Objects.requireNonNullElse(result, defaultValue);
 	}
 
+	public static int parseInteger(String string, int defaultValue) {
+		try {
+			return Integer.parseInt(string);
+		} catch(NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
 	/**
 	 * Converts list to unique string.
 	 * Used format: ";;;value1;;;value2;;;value3;;;"
