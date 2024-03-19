@@ -23,8 +23,8 @@
 			"title": "ui", "icon": "ic_round_amp_stories_24",
 			"items": [
 				{
-					"key": "default_tab", "type": "select",  "title": "startUpTab",
-					"string_value": "MAIN",
+					"key": "default_tab", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
+					"title": "startUpTab", "icon": "ic_round_home_24",
 					"items": [
 						{ "key": "MAIN", "title": "Anime" },
 						{ "key": "LIBRARY", "title": "Library" }

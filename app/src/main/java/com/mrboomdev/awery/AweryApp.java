@@ -28,9 +28,9 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mrboomdev.awery.catalog.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.catalog.extensions.support.js.JsManager;
-import com.mrboomdev.awery.catalog.template.CatalogList;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.template.CatalogList;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;

@@ -16,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
 import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;

@@ -5,8 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.mrboomdev.awery.catalog.template.CatalogMedia;
-import com.mrboomdev.awery.catalog.template.CatalogTag;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;

@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.catalog.anilist.query.AnilistTagsQuery;
+import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.CallbackUtil;
 

@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.catalog.anilist.data.AnilistMedia;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistSearchQuery;
-import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
+import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
+import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;

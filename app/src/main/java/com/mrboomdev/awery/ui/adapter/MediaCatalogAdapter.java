@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.mrboomdev.awery.catalog.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ui.ViewUtil;

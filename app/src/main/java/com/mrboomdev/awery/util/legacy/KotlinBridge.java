@@ -3,7 +3,7 @@ package com.mrboomdev.awery.util.legacy;
 import androidx.annotation.NonNull;
 
 import com.lagradost.nicehttp.NiceResponse;
-import com.mrboomdev.awery.catalog.anilist.query.AnilistQuery;
+import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 
 import java.util.Map;
 

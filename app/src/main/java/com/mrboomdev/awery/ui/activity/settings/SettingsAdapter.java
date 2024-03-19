@@ -27,8 +27,10 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,41 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	public void setData(@NonNull SettingsItem data) {
 		this.data = data;
 		notifyDataSetChanged();
+	}
+
+	private void createRadioButtons(
+			ViewGroup parent,
+			@NonNull List<SettingsData.SelectionItem> items,
+			AtomicReference<SettingsData.SelectionItem> selectedItem
+	) {
+		var isChecking = new AtomicBoolean();
+
+		for(var item : items) {
+			var radio = new MaterialRadioButton(parent.getContext());
+			radio.setText(item.getTitle());
+			radio.setChecked(item.isSelected());
+
+			radio.setOnCheckedChangeListener((v, isChecked) -> {
+				if(isChecking.getAndSet(true)) return;
+				selectedItem.set(item);
+
+				for(int i = 0; i < parent.getChildCount(); i++) {
+					var child = parent.getChildAt(i);
+					if(child == radio) continue;
+
+					if(child instanceof MaterialRadioButton materialRadio) {
+						materialRadio.setChecked(false);
+					} else {
+						throw new IllegalStateException("Unexpected child type: " + child);
+					}
+				}
+
+				item.setSelected(isChecked);
+				isChecking.set(false);
+			});
+
+			parent.addView(radio, ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
+		}
 	}
 
 	@NonNull
@@ -74,7 +111,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case ACTION -> SettingsActions.run(setting.getFullKey());
 
 				case SELECT -> {
-					var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
+					final var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
+					final var selectedItem = new AtomicReference<SettingsData.SelectionItem>();
 
 					var contentView = new LinearLayoutCompat(parent.getContext());
 					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -95,17 +133,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								if(setting.getBehaviour() != null) {
 									SettingsData.saveSelectionList(setting.getBehaviour(), items);
 								} else {
-									var foundSelected = selectionItems.get().stream()
-											.filter(SettingsData.SelectionItem::isSelected)
-											.findAny();
-
-									if(!foundSelected.isPresent()) {
+									if(selectedItem.get() == null) {
 										_dialog.dismiss();
 										return;
 									}
 
 									var prefs = AwerySettings.getInstance();
-									prefs.setString(setting.getFullKey(), foundSelected.get().getId());
+									prefs.setString(setting.getFullKey(), selectedItem.get().getId());
 									prefs.saveAsync();
 								}
 
@@ -129,17 +163,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									.collect(Collectors.toList());
 
 							AweryApp.runOnUiThread(() -> {
-								for(var item : sorted) {
-									var radio = new MaterialRadioButton(parent.getContext());
-									radio.setText(item.getTitle());
-									radio.setChecked(item.isSelected());
-
-									radio.setOnCheckedChangeListener((_view, isChecked) ->
-											item.setSelected(isChecked));
-
-									radioGroup.addView(radio);
-								}
-
+								createRadioButtons(radioGroup, sorted, selectedItem);
 								contentView.addView(radioGroup);
 							});
 						});
@@ -149,22 +173,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						var options = new HashSet<SettingsData.SelectionItem>();
 						selectionItems.set(options);
 
-						for(var item : setting.getItems()) {
-							var option = new SettingsData.SelectionItem(
-									item.getKey(),
-									item.getTitle(parent.getContext()),
-									item.getKey().equals(selected));
-
-							var radio = new MaterialRadioButton(parent.getContext());
-							radio.setText(option.getTitle());
-							radio.setChecked(option.isSelected());
-
-							radio.setOnCheckedChangeListener((_view, isChecked) ->
-									option.setSelected(isChecked));
-
-							options.add(option);
-							radioGroup.addView(radio);
-						}
+						createRadioButtons(radioGroup, setting.getItems().stream()
+								.map(settingItem -> new SettingsData.SelectionItem(
+										settingItem.getKey(),
+										settingItem.getTitle(parent.getContext()),
+										settingItem.getKey().equals(selected)))
+								.collect(Collectors.toList()), selectedItem);
 
 						contentView.addView(radioGroup);
 					} else {

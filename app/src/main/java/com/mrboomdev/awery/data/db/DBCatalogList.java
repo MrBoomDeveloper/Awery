@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.mrboomdev.awery.catalog.template.CatalogList;
+import com.mrboomdev.awery.extensions.support.template.CatalogList;
 
 @Entity(tableName = "list")
 public class DBCatalogList {
