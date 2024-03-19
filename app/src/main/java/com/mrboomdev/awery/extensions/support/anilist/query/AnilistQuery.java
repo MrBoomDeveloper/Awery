@@ -1,14 +1,20 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
-import com.mrboomdev.awery.extensions.support.anilist.AnilistApi;
+import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.util.exceptions.HttpException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
+import com.mrboomdev.awery.util.io.HttpClient;
 import com.squareup.moshi.JsonDataException;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +37,48 @@ public abstract class AnilistQuery<T> {
 	}
 
 	public int getCacheTime() {
-		return 25;
+		return 60_000;
+	}
+
+	private void executeQueryHttp(ResponseCallback<String> callback) throws HttpClient.HttpException {
+		var data = new HashMap<String, String>() {{
+			put("query", getQuery());
+			put("variables", getVariables());
+		}};
+
+		if(useToken()/* && Anilist.INSTANCE.getToken() != null*/) {
+			//headers.put("Authorization", "Bearer " + Anilist.INSTANCE.getToken());
+		}
+
+		var moshi = new Moshi.Builder().build();
+		var adapter = moshi.adapter(Types.newParameterizedType(Map.class, String.class, String.class));
+		var json = adapter.toJson(data);
+
+		HttpClient.post("https://graphql.anilist.co")
+				.setBody(json, HttpClient.ContentType.JSON)
+				.setCache(getCacheTime(), HttpClient.CacheMode.CACHE_FIRST)
+				.addHeader("Content-Type", "application/json")
+				.addHeader("Accept", "application/json")
+				.callAsync(new HttpClient.HttpCallback() {
+					@Override
+					public void onResponse(HttpClient.HttpResponse response) {
+						if(!response.getText().startsWith("{")) {
+							var context = AweryApp.getAnyContext();
+							throw new HttpException(context.getString(R.string.anilist_down));
+						}
+
+						callback.onResponse(response.getText());
+					}
+
+					@Override
+					public void onError(HttpClient.HttpException e) {
+						resolveException(e);
+					}
+				});
 	}
 
 	public AnilistQuery<T> executeQuery(ResponseCallback<T> callback) {
-		AnilistApi.__executeQueryImpl(this, response -> {
+		executeQueryHttp(response -> {
 			T processed;
 
 			try {
@@ -63,7 +106,7 @@ public abstract class AnilistQuery<T> {
 			if(finallyCallback != null) {
 				finallyCallback.run();
 			}
-		}, this::resolveException);
+		});
 
 		return this;
 	}

@@ -18,6 +18,7 @@ import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import java.io.File;
@@ -163,8 +164,17 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 				getBinding().swipeRefresher.setRefreshing(false);
 				getEmptyAdapter().setEnabledSuperForce(true);
 
-				setEmptyData(false, "Nothing found!",
-						"It looks like there's nothing here. Try installing some extensions to see something different!");
+				if(t == null) {
+					setEmptyData(false,
+							"Nothing found!",
+							"It looks like there's nothing here. Try installing some extensions to see something different!");
+				} else {
+					var details = new ExceptionDescriptor(t);
+
+					setEmptyData(false,
+							details.getTitle(requireContext()),
+							details.getMessage(requireContext()));
+				}
 			});
 		}
 	}

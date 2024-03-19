@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.widgets;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -10,14 +11,16 @@ import com.mrboomdev.awery.util.io.HttpClient;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class YouTubeEmbedView extends FrameLayout {
-	private final String PIPED_INSTANCE = "https://pipedapi.kavin.rocks";
-	private final String VIDEO_QUERY_URL = PIPED_INSTANCE + "/streams/";
-	private final String YOUTUBE_SHORT_DOMAIN = "youtu.be";
-	private final String YOUTUBE_DOMAIN = "youtube.com";
-	private final String YOUTUBE_MOBILE_SUBDOMAIN = "m.";
-	private final String WWW = "www.";
+	private static final String TAG = "YouTubeEmbedView";
+	private static final String PIPED_INSTANCE = "https://pipedapi.kavin.rocks";
+	private static final String VIDEO_QUERY_URL = PIPED_INSTANCE + "/streams/";
+	private static final String YOUTUBE_SHORT_DOMAIN = "youtu.be";
+	private static final String YOUTUBE_DOMAIN = "youtube.com";
+	private static final String YOUTUBE_MOBILE_SUBDOMAIN = "m.";
+	private static final String WWW = "www.";
 
 	public YouTubeEmbedView(@NonNull Context context) {
 		super(context);
@@ -27,28 +30,32 @@ public class YouTubeEmbedView extends FrameLayout {
 	}
 
 	public void loadById(String id) {
-		HttpClient.get(VIDEO_QUERY_URL + id, (HttpClient.SimpleHttpCallback) (response, exception) -> {
-			if(response != null) {
-				var moshi = new Moshi.Builder().build();
-				var adapter = moshi.adapter(PipedResponse.class);
+		new HttpClient.Request()
+				.setUrl(VIDEO_QUERY_URL + id)
+				.setCache(24 * 60 * 60 * 1000, HttpClient.CacheMode.CACHE_FIRST)
+				.callAsync((HttpClient.SimpleHttpCallback) (response, exception) -> {
+					if(response != null) {
+						var moshi = new Moshi.Builder().build();
+						var adapter = moshi.adapter(PipedResponse.class);
 
-				try {
-					var video = adapter.fromJson(response.getText());
+						try {
+							var video = adapter.fromJson(response.getText());
+							Objects.requireNonNull(video);
 
-					if(video.error != null) {
+							if(video.error != null) {
+								createErrorUi();
+								return;
+							}
+
+							createInfoUi();
+						} catch(IOException e) {
+							Log.e(TAG, e.getMessage(), e);
+						}
+					} else if(exception != null) {
 						createErrorUi();
-						return;
+						Log.e(TAG, exception.getMessage(), exception);
 					}
-
-					createInfoUi();
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-			} else if(exception != null) {
-				createErrorUi();
-				exception.printStackTrace();
-			}
-		});
+				});
 	}
 
 	public void loadByUrl(@NonNull String url) {

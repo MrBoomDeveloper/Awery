@@ -329,11 +329,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				@Override
 				public void onFailure(Throwable throwable) {
 					if(isDestroyed()) return;
-					var error = new ExceptionDescriptor(throwable);
 
-					if(!error.isGenericError()) {
-						Log.e(TAG, "Failed to load videos", throwable);
-					}
+					var error = new ExceptionDescriptor(throwable);
+					Log.e(TAG, "Failed to load videos", throwable);
 
 					AweryApp.toast(error.getShortDescription(), 1);
 					finish();

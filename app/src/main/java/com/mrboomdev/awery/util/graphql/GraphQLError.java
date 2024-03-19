@@ -5,13 +5,18 @@ import androidx.annotation.NonNull;
 import java.util.Arrays;
 
 public class GraphQLError {
-	public Location[] locations;
-	public String[] messages;
-	public String message;
-	public int status;
+	private Location[] locations;
+	private String[] messages;
+	private String message;
+	private int status;
 
 	public static class Location {
 		public int line, column;
+	}
+
+	public String toUserReadableString() {
+		return ((messages == null ? message : Arrays.toString(messages))
+				+ ", Error: " + status).replaceAll(".,", ",");
 	}
 
 	@NonNull
@@ -19,7 +24,7 @@ public class GraphQLError {
 	public String toString() {
 		var builder = new StringBuilder()
 				.append("{ ")
-				.append(messages != null ? Arrays.toString(messages) : message)
+				.append(messages == null ? message : Arrays.toString(messages))
 				.append(", status: ")
 				.append(status);
 

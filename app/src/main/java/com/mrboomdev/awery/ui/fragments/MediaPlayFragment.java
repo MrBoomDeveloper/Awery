@@ -387,11 +387,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(source != selectedSource) return;
 		var error = new ExceptionDescriptor(throwable);
 
-		if(!error.isGenericError()) {
-			Log.w(TAG, "Error isn't generic.", throwable);
-		}
-
-		if(error.isProgramException()) {
+		if(!error.isNetworkException()) {
 			sourceStatuses.put(source, ExtensionStatus.BROKEN_PARSER);
 		} else if(throwable instanceof ZeroResultsException) {
 			sourceStatuses.put(source, ExtensionStatus.NOT_FOUND);

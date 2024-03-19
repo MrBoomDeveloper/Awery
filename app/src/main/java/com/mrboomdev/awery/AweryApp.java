@@ -89,6 +89,10 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return null;
 	}
 
+	public static Context getContext() {
+		return app;
+	}
+
 	public static void toast(Activity activity, String text, int duration) {
 		if(activity == null) {
 			Toast.makeText(app, text, duration).show();
