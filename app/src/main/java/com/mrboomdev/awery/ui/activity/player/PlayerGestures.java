@@ -32,7 +32,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != PlayerActivity.GesturesMode.VOLUME_BRIGHTNESS) {
 					isRightIgnored = true;
 					yield false;
 				}
@@ -94,7 +94,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != PlayerActivity.GesturesMode.VOLUME_BRIGHTNESS) {
 					isLeftIgnored = true;
 					yield false;
 				}

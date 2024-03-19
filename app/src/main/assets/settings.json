@@ -49,6 +49,16 @@
 			"title": "player", "icon": "ic_round_video_settings_24",
 			"items": [
 				{
+					"key": "double_tab_seek", "type": "int",
+					"title": "Double tap seek"
+				}, {
+					"key": "gestures", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
+					"title": "Gestures mode",
+					"items": [
+						{ "key": "VOLUME_BRIGHTNESS", "title": "Volume and Brightness" },
+						{ "key": "DISABLED", "title": "Disabled" }
+					]
+				}, {
 					"key": "default_video_quality", "type": "select",  "int_value": 5,
 					"title": "default_video_quality", "show_if": "never",
 					"items": [

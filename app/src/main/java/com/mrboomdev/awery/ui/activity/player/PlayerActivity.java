@@ -34,12 +34,14 @@ import androidx.media3.ui.TimeBar;
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
 import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -73,6 +75,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected CatalogVideo video;
 	private CatalogSubtitle subtitle;
 	protected ExoPlayer player;
+	protected int doubleTapSeek;
+	protected GesturesMode gesturesMode;
 	private MediaItem videoItem;
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -80,7 +84,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
 		EdgeToEdge.enable(this);
+
 		super.onCreate(savedInstanceState);
+		loadSettings();
 
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
 		//binding.subtitlesText.setVisibility(View.INVISIBLE);
@@ -99,8 +105,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				.build();*/
 
 		player = new ExoPlayer.Builder(this)
-				.setSeekBackIncrementMs(10_000)
-				.setSeekForwardIncrementMs(10_000)
+				.setSeekBackIncrementMs(doubleTapSeek * 1000L)
+				.setSeekForwardIncrementMs(doubleTapSeek * 1000L)
 				//.setAudioAttributes(audioAttributes, true)
 				.build();
 
@@ -242,6 +248,15 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		controller.showUiTemporarily();
 	}
 
+	private void loadSettings() {
+		var prefs = AwerySettings.getInstance(this);
+		doubleTapSeek = prefs.getInt(AwerySettings.DOUBLE_TAP_SEEK, 10);
+
+		gesturesMode = StringUtil.parseEnum(
+				prefs.getString(AwerySettings.PLAYER_GESTURES),
+				GesturesMode.VOLUME_BRIGHTNESS);
+	}
+
 	@Override
 	public void onCues(@NonNull CueGroup cueGroup) {
 		binding.subtitleView.setCues(cueGroup.cues);
@@ -331,9 +346,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 					if(isDestroyed()) return;
 
 					var error = new ExceptionDescriptor(throwable);
-					Log.e(TAG, "Failed to load videos", throwable);
+					Log.e(TAG, "Failed to load videos list!", throwable);
 
-					AweryApp.toast(error.getShortDescription(), 1);
+					AweryApp.toast(error.getTitle(PlayerActivity.this), 1);
 					finish();
 				}
 			});
@@ -495,5 +510,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			ViewUtil.setLeftMargin(binding.bottomControls, systemInsets.left);
 			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom);
 		});
+	}
+
+	public enum GesturesMode {
+		VOLUME_BRIGHTNESS, DISABLED
 	}
 }

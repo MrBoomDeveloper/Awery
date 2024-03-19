@@ -18,6 +18,8 @@ public class AwerySettings {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
+	public static final String PLAYER_GESTURES = "settings_player_gestures";
+	public static final String DOUBLE_TAP_SEEK = "settings_player_double_tab_seek";
 	public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
 	public static final String ADULT_CONTENT = "settings_content_adult_content";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
