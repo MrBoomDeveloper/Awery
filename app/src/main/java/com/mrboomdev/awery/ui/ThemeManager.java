@@ -22,15 +22,25 @@ public class ThemeManager {
 
 	public static boolean isMaterialYou(Context context) {
 		var prefs = AwerySettings.getInstance(context);
-		return prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, DynamicColors.isDynamicColorAvailable());
+
+		if(!prefs.contains(AwerySettings.THEME_USE_MATERIAL_YOU)) {
+			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
+
+			prefs.setBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, isMaterialYouSupported);
+			prefs.saveAsync();
+
+			return isMaterialYouSupported;
+		}
+
+		return prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU);
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
 		var prefs = AwerySettings.getInstance(activity);
 
 		boolean useOLED = prefs.getBoolean(AwerySettings.THEME_USE_OLDED);
-		boolean useMaterialYou = prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, DynamicColors.isDynamicColorAvailable());
 		boolean useColorsFromPoster = prefs.getBoolean(AwerySettings.THEME_USE_COLORS_FROM_MEDIA);
+		boolean useMaterialYou = isMaterialYou(activity);
 
 		if(useMaterialYou || (useColorsFromPoster && bitmap != null)) {
 			applyMaterialYou(activity, bitmap, useOLED);

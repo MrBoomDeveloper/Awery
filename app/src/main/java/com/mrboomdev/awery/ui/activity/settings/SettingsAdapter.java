@@ -158,9 +158,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								return;
 							}
 
-							var sorted = new ArrayList<>(items).stream().sorted((a, b) ->
-											a.getTitle().compareToIgnoreCase(b.getTitle()))
-									.collect(Collectors.toList());
+							var sorted = new ArrayList<>(items).stream()
+									.sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
+									.toList();
 
 							AweryApp.runOnUiThread(() -> {
 								createRadioButtons(radioGroup, sorted, selectedItem);
@@ -178,7 +178,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 										settingItem.getKey(),
 										settingItem.getTitle(parent.getContext()),
 										settingItem.getKey().equals(selected)))
-								.collect(Collectors.toList()), selectedItem);
+								.toList(), selectedItem);
 
 						contentView.addView(radioGroup);
 					} else {

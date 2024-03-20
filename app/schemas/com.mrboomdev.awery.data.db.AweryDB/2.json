@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "6aaacfffb3e51c35cb67ef20833d4b33",
+    "identityHash": "8f75f6096ab783134a8453d60fc1ff8e",
     "entities": [
       {
         "tableName": "media",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `titles` TEXT, `lists` TEXT, `trackers` TEXT, `title` TEXT, `banner` TEXT, `description` TEXT, `color` TEXT, `url` TEXT, `country` TEXT, `releaseDate` TEXT, `duration` TEXT, `type` TEXT, `id` INTEGER NOT NULL, `episodes_count` TEXT, `average_score` TEXT, `tags` TEXT, `genres` TEXT, `status` TEXT, `poster_extra_large` TEXT, `poster_large` TEXT, `poster_medium` TEXT, PRIMARY KEY(`global_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `titles` TEXT, `lists` TEXT, `trackers` TEXT, `title` TEXT, `banner` TEXT, `description` TEXT, `color` TEXT, `url` TEXT, `country` TEXT, `releaseDate` TEXT, `duration` TEXT, `type` TEXT, `id` INTEGER NOT NULL, `episodes_count` TEXT, `average_score` TEXT, `tags` TEXT, `genres` TEXT, `status` TEXT, `poster_extra_large` TEXT, `poster_large` TEXT, `poster_medium` TEXT, `last_source` TEXT, `last_episode` REAL NOT NULL DEFAULT -1, `last_episode_progress` REAL NOT NULL DEFAULT -1, PRIMARY KEY(`global_id`))",
         "fields": [
           {
             "fieldPath": "globalId",
@@ -139,6 +139,26 @@
             "columnName": "poster_medium",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "lastSource",
+            "columnName": "last_source",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastEpisode",
+            "columnName": "last_episode",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "lastEpisodeProgress",
+            "columnName": "last_episode_progress",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "-1"
           }
         ],
         "primaryKey": {
@@ -180,7 +200,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6aaacfffb3e51c35cb67ef20833d4b33')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f75f6096ab783134a8453d60fc1ff8e')"
     ]
   }
 }

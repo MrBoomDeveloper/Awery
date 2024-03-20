@@ -62,6 +62,18 @@
 						{ "key": "120", "title": "120s" }
 					]
 				}, {
+					"key": "big_seek", "type": "select",
+					"title": "Quick Rewind ", "icon": "outline_fast_forward_24",
+					"items": [
+						{ "key": "0", "title": "Disabled" },
+						{ "key": "30", "title": "30s" },
+						{ "key": "60", "title": "1m" },
+						{ "key": "120", "title": "2m" },
+						{ "key": "180", "title": "3m" },
+						{ "key": "240", "title": "4m" },
+						{ "key": "300", "title": "5m" }
+					]
+				}, {
 					"key": "gestures", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
 					"title": "Gestures mode",
 					"items": [

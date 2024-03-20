@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -16,6 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
@@ -28,10 +31,8 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
-
 public class MediaActivity extends AppCompatActivity {
+	private static final String TAG = "MediaActivity";
 	private MediaDetailsActivityBinding binding;
 	private CatalogMedia media;
 
@@ -42,34 +43,11 @@ public class MediaActivity extends AppCompatActivity {
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
-		try {
-			var adapter = CatalogMedia.getJsonAdapter();
-			var json = getIntent().getStringExtra("media");
-			media = adapter.fromJson(Objects.requireNonNull(json));
-		} catch(IOException e) {
-			AweryApp.toast(this, "Failed to load media!", 1);
-			e.printStackTrace();
-			finish();
-			return;
-		}
-
 		binding = MediaDetailsActivityBinding.inflate(getLayoutInflater());
-		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
 		binding.pager.setUserInputEnabled(false);
 		binding.pager.setPageTransformer(new FadeTransformer());
 
 		var navigation = (NavigationBarView) binding.navigation;
-
-		navigation.setOnItemSelectedListener(item -> {
-			binding.pager.setCurrentItem(switch(item.getItemId()) {
-				case R.id.info -> 0;
-				case R.id.watch -> 1;
-				case R.id.comments -> 2;
-				case R.id.relations -> 3;
-				default -> throw new IllegalArgumentException("Invalid item id: " + item.getItemId());
-			}, false);
-			return true;
-		});
 
 		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
 			if(navigation instanceof NavigationRailView) {
@@ -86,6 +64,48 @@ public class MediaActivity extends AppCompatActivity {
 			header.setOnClickListener(v -> finish());
 			rail.addHeaderView(header);
 		}
+
+		try {
+			var adapter = CatalogMedia.getJsonAdapter();
+			var json = getIntent().getStringExtra("media");
+
+			var media = adapter.fromJson(Objects.requireNonNull(json));
+			if(media == null) throw new NullPointerException("Media is null!");
+
+			new Thread(() -> {
+				var db = AweryApp.getDatabase().getMediaDao();
+				var dbMedia = db.get(media.globalId);
+
+				if(dbMedia != null) {
+					media.merge(dbMedia.toCatalogMedia());
+				}
+
+				runOnUiThread(() -> setMedia(media));
+			}).start();
+		} catch(IOException e) {
+			AweryApp.toast(this, "Failed to load media!", 1);
+			Log.e(TAG, "Failed to load media!", e);
+			finish();
+		}
+	}
+
+	@SuppressLint("NonConstantResourceId")
+	public void setMedia(CatalogMedia media) {
+		this.media = media;
+		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
+
+		var navigation = (NavigationBarView) binding.navigation;
+
+		navigation.setOnItemSelectedListener(item -> {
+			binding.pager.setCurrentItem(switch(item.getItemId()) {
+				case R.id.info -> 0;
+				case R.id.watch -> 1;
+				case R.id.comments -> 2;
+				case R.id.relations -> 3;
+				default -> throw new IllegalArgumentException("Invalid item id: " + item.getItemId());
+			}, false);
+			return true;
+		});
 
 		launchAction(Objects.requireNonNull(getIntent().getStringExtra("action")));
 		setContentView(binding.getRoot());

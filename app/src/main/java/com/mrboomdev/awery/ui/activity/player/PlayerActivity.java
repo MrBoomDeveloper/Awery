@@ -75,7 +75,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected CatalogVideo video;
 	private CatalogSubtitle subtitle;
 	protected ExoPlayer player;
-	protected int doubleTapSeek;
+	protected int doubleTapSeek, bigSeek;
 	protected GesturesMode gesturesMode;
 	private MediaItem videoItem;
 
@@ -232,10 +232,17 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupButton(binding.exit, this::finish);
 		setupButton(binding.settings, controller::openSettingsDialog);
 
-		setupButton(binding.quickSkip, () -> {
-			player.seekTo(player.getCurrentPosition() + 60_000);
-			controller.updateTimers();
-		});
+		if(bigSeek > 0) {
+			var time = StringUtil.formatDate(bigSeek * 1000L);
+			binding.quickSkip.setText("Skip " + time);
+
+			setupButton(binding.quickSkip, () -> {
+				player.seekTo(player.getCurrentPosition() + bigSeek * 1000L);
+				controller.updateTimers();
+			});
+		} else {
+			binding.quickSkip.setVisibility(View.GONE);
+		}
 
 		setupButton(binding.pause, () -> {
 			if(isVideoBuffering) return;
@@ -267,6 +274,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		gesturesMode = StringUtil.parseEnum(
 				prefs.getString(AwerySettings.PLAYER_GESTURES),
 				GesturesMode.VOLUME_BRIGHTNESS);
+
+		bigSeek = StringUtil.parseInteger(
+				prefs.getString(AwerySettings.PLAYER_BIG_SEEK,
+				"60"), 60);
 	}
 
 	@Override

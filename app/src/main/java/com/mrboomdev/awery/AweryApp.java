@@ -67,8 +67,9 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
 	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static final List<Disposable> disposables = new ArrayList<>();
-	private static final String TAG = "AweryApp";
 	public static final boolean USE_KT_APP_INIT = true;
+	private static final String TAG = "AweryApp";
+	private static Thread mainThread;
 	private static AweryApp app;
 	private static AweryDB db;
 
@@ -94,12 +95,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	public static void toast(Activity activity, String text, int duration) {
-		if(activity == null) {
-			Toast.makeText(app, text, duration).show();
-			return;
-		}
-
-		activity.runOnUiThread(() -> Toast.makeText(activity, text, duration).show());
+		runOnUiThread(() -> Toast.makeText(activity, text, duration).show());
 	}
 
 	public static void toast(String text, int duration) {
@@ -151,13 +147,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	public static void runOnUiThread(Runnable runnable) {
-		var activity = getAnyActivity();
-
-		if(activity != null) {
-			activity.runOnUiThread(runnable);
-		} else {
-			postRunnable(runnable);
-		}
+		if(Thread.currentThread() != mainThread) handler.post(runnable);
+		else runnable.run();
 	}
 
 	@Nullable
@@ -179,6 +170,8 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		setupCrashHandler();
 
 		app = this;
+		mainThread = Thread.currentThread();
+
 		super.onCreate();
 
 		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {

@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,6 +72,30 @@ public class StringUtil {
 				(int) value / 60, (int) value % 60);
 	}
 
+	@NonNull
+	public static String formatDate(long value) {
+		if(value < 0) {
+			return "0s";
+		}
+
+		value /= 1000;
+
+		var seconds = (int) value % 60;
+		var minutes = (int) value / 60;
+
+		if(minutes >= 60) {
+			return String.format(Locale.ENGLISH, "%dh %02d:%02d",
+					minutes / 60, minutes % 60, seconds);
+		}
+
+		if(minutes >= 1) {
+			return String.format(Locale.ENGLISH, "%dm %02ds",
+					minutes, seconds);
+		}
+
+		return String.format(Locale.ENGLISH, "%ds", seconds);
+	}
+
 	/**
 	 * Parses string to enum. If string is null or enum class is null, returns null.
 	 * If string is not a valid enum, returns null.
@@ -124,6 +149,7 @@ public class StringUtil {
 	 */
 	@NonNull
 	public static @Unmodifiable List<String> uniqueStringToList(@NonNull String uniqueString) {
+		if(uniqueString.equals(";;;")) return Collections.emptyList();
 		return List.of(uniqueString.substring(3, uniqueString.length() - 3).split(";;;"));
 	}
 

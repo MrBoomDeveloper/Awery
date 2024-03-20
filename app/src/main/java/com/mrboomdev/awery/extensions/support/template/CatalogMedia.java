@@ -45,6 +45,9 @@ public class CatalogMedia {
 	public Drawable cachedBanner;
 	@Json(ignore = true)
 	public long visualId;
+	public String lastSource;
+	public float lastEpisode = -1;
+	public float lastEpisodeProgress = -1;
 
 	/**
 	 * @param globalId The unique id of the media in the following format:
@@ -68,6 +71,13 @@ public class CatalogMedia {
 	public String getBestBanner() {
 		if(banner != null) return banner;
 		return getBestPoster();
+	}
+
+	public void merge(@NonNull CatalogMedia media) {
+		if(media.lastEpisode != -1) lastEpisode = media.lastEpisode;
+		if(media.lastEpisodeProgress != -1) lastEpisodeProgress = media.lastEpisodeProgress;
+		if(media.lists != null) lists = media.lists;
+		if(media.lastSource != null) lastSource = media.lastSource;
 	}
 
 	public void clearBookmarks() {

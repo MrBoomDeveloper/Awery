@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 
-public class CatalogEpisode implements Parcelable {
+public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 	private final String title, banner, description, url;
 	private final float number;
 	private final long releaseDate;
@@ -103,5 +103,14 @@ public class CatalogEpisode implements Parcelable {
 		dest.writeString(url);
 		dest.writeFloat(number);
 		dest.writeLong(releaseDate);
+	}
+
+	@Override
+	public int compareTo(@NonNull CatalogEpisode o) {
+		if(o.getNumber() != getNumber()) {
+			return Float.compare(o.getNumber(), getNumber());
+		}
+
+		return o.getTitle().compareToIgnoreCase(getTitle());
 	}
 }

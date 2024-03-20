@@ -12,6 +12,10 @@ import org.jetbrains.annotations.Contract;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * An utility class for working with shared preferences, which contains constant key names for quick access.
+ * @author MrBoomDev
+ */
 public class AwerySettings {
 	public static final String APP_SETTINGS = "Awery";
 	public static final String APP_SECRETS = "Secrets";
@@ -19,6 +23,7 @@ public class AwerySettings {
 	private SharedPreferences.Editor editor;
 
 	public static final String PLAYER_GESTURES = "settings_player_gestures";
+	public static final String PLAYER_BIG_SEEK = "settings_player_big_seek";
 	public static final String DOUBLE_TAP_SEEK = "settings_player_double_tab_seek";
 	public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
 	public static final String ADULT_CONTENT = "settings_content_adult_content";
@@ -39,21 +44,50 @@ public class AwerySettings {
 		this.prefs = prefs;
 	}
 
-	public boolean getBoolean(String name, boolean defaultValue) {
-		return prefs.getBoolean(name, defaultValue);
+	/**
+	 * @see #getBoolean(String)
+	 * @return the value of the specified key, or the default value if the key does not exist
+	 * @author MrBoomDev
+	 */
+	public boolean getBoolean(String key, boolean defaultValue) {
+		if(!prefs.contains(key)) {
+			checkEditorExistence().putBoolean(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
+		return prefs.getBoolean(key, defaultValue);
 	}
 
-	public boolean getBoolean(String name) {
-		return getBoolean(name, false);
+	/**
+	 * @return whether the specified key exists
+	 * @author MrBoomDev
+	 */
+	public boolean contains(String key) {
+		return prefs.contains(key);
+	}
+
+	/**
+	 * @see #getBoolean(String, boolean)
+	 * @return the value of the specified key or false if the key does not exist
+	 * @author MrBoomDev
+	 */
+	public boolean getBoolean(String key) {
+		return getBoolean(key, false);
 	}
 
 	public AwerySettings setBoolean(String key, boolean value) {
-		checkEditorExistence();
-		editor.putBoolean(key, value);
+		checkEditorExistence().putBoolean(key, value);
 		return this;
 	}
 
 	public int getInt(String key, int defaultValue) {
+		if(!prefs.contains(key)) {
+			checkEditorExistence().putInt(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
 		return prefs.getInt(key, defaultValue);
 	}
 
@@ -62,27 +96,37 @@ public class AwerySettings {
 	}
 
 	public AwerySettings setInt(String key, int value) {
-		checkEditorExistence();
-		editor.putInt(key, value);
+		checkEditorExistence().putInt(key, value);
 		return this;
 	}
 
 	public String getString(String key, String defaultValue) {
+		if(!prefs.contains(key)) {
+			checkEditorExistence().putString(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
 		return prefs.getString(key, defaultValue);
 	}
 
 	public String getString(String key) {
-		return getString(key, "");
+		return getString(key, null);
 	}
 
 	public AwerySettings setString(String key, String value) {
-		checkEditorExistence();
-		editor.putString(key, value);
+		checkEditorExistence().putString(key, value);
 		return this;
 	}
 
-	public Set<String> getStringSet(String name, Set<String> defaultValue) {
-		return new HashSet<>(prefs.getStringSet(name, defaultValue));
+	public Set<String> getStringSet(String key, Set<String> defaultValue) {
+		if(!prefs.contains(key)) {
+			checkEditorExistence().putStringSet(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
+		return new HashSet<>(prefs.getStringSet(key, defaultValue));
 	}
 
 	public Set<String> getStringSet(String name) {
@@ -90,67 +134,100 @@ public class AwerySettings {
 	}
 
 	public AwerySettings setStringSet(String key, Set<String> value) {
-		checkEditorExistence();
-		editor.putStringSet(key, value);
+		checkEditorExistence().putStringSet(key, value);
 		return this;
 	}
 
-	private void checkEditorExistence() {
+	private SharedPreferences.Editor checkEditorExistence() {
 		if(editor == null) {
 			editor = prefs.edit();
 		}
+
+		return editor;
 	}
 
+	/**
+	 * Saves the changes to the shared preferences asynchronously.
+	 * @return this instance for chaining methods
+	 * @see #saveSync()
+	 * @author MrBoomDev
+	 */
 	public AwerySettings saveAsync() {
 		if(editor == null) {
 			return this;
 		}
 
 		editor.apply();
-		save();
+		editor = null;
 		return this;
 	}
 
+	/**
+	 * Saves the changes to the shared preferences synchronously.
+	 * @return this instance for chaining methods
+	 * @see #saveAsync()
+	 * @author MrBoomDev
+	 */
 	public AwerySettings saveSync() {
 		if(editor == null) {
 			return this;
 		}
 
 		editor.commit();
-		save();
+		editor = null;
 		return this;
 	}
 
-	private void save() {
-		editor = null;
-	}
-
+	/**
+	 * @param context Application context
+	 * @param name the name of file
+	 * @return the singleton instance of {@link AwerySettings}
+	 * @author MrBoomDev
+	 * @see #getInstance()
+	 * @see #getInstance(Context)
+	 * @see #getInstance(String)
+	 */
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context, String name) {
 		return new AwerySettings(context.getSharedPreferences(name, 0));
 	}
 
+	/**
+	 * @param context Application context
+	 * @return the singleton instance of {@link AwerySettings}
+	 * @author MrBoomDev
+	 * @see #getInstance()
+	 * @see #getInstance(String)
+	 * @see #getInstance(Context, String)
+	 */
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context) {
 		return getInstance(context, APP_SETTINGS);
 	}
 
+	/**
+	 * @param name the name of file
+	 * @return the singleton instance of {@link AwerySettings}
+	 * @see #getInstance()
+	 * @see #getInstance(Context)
+	 * @see #getInstance(Context, String)
+	 * @author MrBoomDev
+	 */
 	@NonNull
 	public static AwerySettings getInstance(String name) {
-		return getInstance(AweryApp.getAnyContext(), name);
+		return getInstance(AweryApp.getContext(), name);
 	}
 
+	/**
+	 * @return the singleton instance of {@link AwerySettings}
+	 * @see #getInstance(String)
+	 * @see #getInstance(Context)
+	 * @see #getInstance(Context, String)
+	 * @author MrBoomDev
+	 */
 	@NonNull
 	@Contract(" -> new")
 	public static AwerySettings getInstance() {
 		return getInstance(APP_SETTINGS);
-	}
-
-	public static SharedPreferences getPreferences(String fileName) {
-		return AweryApp.getAnyContext().getSharedPreferences(fileName, 0);
-	}
-
-	public static SharedPreferences getPreferences() {
-		return getPreferences(APP_SETTINGS);
 	}
 }

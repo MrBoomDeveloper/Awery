@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.data.db;
 
+import androidx.room.AutoMigration;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
@@ -7,11 +8,11 @@ import com.mrboomdev.awery.data.db.dao.CatalogListDao;
 import com.mrboomdev.awery.data.db.dao.CatalogMediaDao;
 
 @Database(
-		version = 1,
+		version = 2,
 
-		/*autoMigrations = {
+		autoMigrations = {
 				@AutoMigration(from = 1, to = 2)
-		},*/
+		},
 
 		entities = {
 				DBCatalogMedia.class,

@@ -9,25 +9,31 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
 	private ArrayList<CatalogEpisode> items = new ArrayList<>();
+	private CatalogMedia media;
 
 	public MediaPlayEpisodesAdapter() {
 		setHasStableIds(true);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(@NonNull Collection<CatalogEpisode> items) {
+	public void setItems(CatalogMedia media, @NonNull Collection<CatalogEpisode> items) {
+		this.media = media;
 		idGenerator.clear();
 
 		for(var item : items) {
@@ -35,6 +41,8 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}
 
 		this.items = new ArrayList<>(items);
+		Collections.sort(this.items);
+
 		notifyDataSetChanged();
 	}
 
@@ -59,8 +67,21 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		var holder = new ViewHolder(binding);
 
 		binding.container.setOnClickListener(v -> {
+			var item = holder.getItem();
+
+			if(media.lastEpisode < item.getNumber()) {
+				media.lastEpisode = item.getNumber();
+				notifyItemRangeChanged(0, items.size());
+
+				new Thread(() -> {
+					var db = AweryApp.getDatabase().getMediaDao();
+					var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
+					db.insert(dbMedia);
+				}).start();
+			}
+			
 			if(onEpisodeSelectedListener == null) return;
-			onEpisodeSelectedListener.onEpisodeSelected(holder.getItem(), items);
+			onEpisodeSelectedListener.onEpisodeSelected(item, items);
 		});
 
 		return holder;
@@ -76,7 +97,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		return items.size();
 	}
 
-	public static class ViewHolder extends RecyclerView.ViewHolder {
+	public class ViewHolder extends RecyclerView.ViewHolder {
 		private final ItemListEpisodeBinding binding;
 		private CatalogEpisode item;
 
@@ -94,6 +115,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			this.item = item;
 
 			binding.title.setText(item.getTitle());
+			binding.container.setAlpha((media.lastEpisode >= item.getNumber()) ? .5f : 1);
 
 			if(item.getReleaseDate() > 0) {
 				var calendar = Calendar.getInstance();

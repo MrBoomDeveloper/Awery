@@ -45,6 +45,12 @@ public class DBCatalogMedia {
 	public String largePoster;
 	@ColumnInfo(name = "poster_medium")
 	public String mediumPoster;
+	@ColumnInfo(name = "last_source")
+	public String lastSource;
+	@ColumnInfo(name = "last_episode", defaultValue = "-1")
+	public float lastEpisode;
+	@ColumnInfo(name = "last_episode_progress", defaultValue = "-1")
+	public float lastEpisodeProgress;
 
 	public DBCatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
@@ -61,6 +67,10 @@ public class DBCatalogMedia {
 		dbMedia.url = media.url;
 		dbMedia.id = media.id;
 		dbMedia.country = media.country;
+
+		dbMedia.lastEpisode = media.lastEpisode;
+		dbMedia.lastSource = media.lastSource;
+		dbMedia.lastEpisodeProgress = media.lastEpisodeProgress;
 
 		if(media.averageScore != null) {
 			dbMedia.averageScore = Float.toString(media.averageScore);
@@ -122,6 +132,10 @@ public class DBCatalogMedia {
 		media.url = url;
 		media.color = color;
 		media.country = country;
+
+		media.lastSource = lastSource;
+		media.lastEpisode = lastEpisode;
+		media.lastEpisodeProgress = lastEpisodeProgress;
 
 		if(averageScore != null) {
 			media.averageScore = Float.parseFloat(averageScore);

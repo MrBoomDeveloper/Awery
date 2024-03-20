@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 public class MediaInfoFragment extends Fragment {
+	private static final String TAG = "MediaInfoFragment";
 	private MediaDetailsOverviewLayoutBinding binding;
 	private CatalogMedia media;
 
@@ -64,7 +66,7 @@ public class MediaInfoFragment extends Fragment {
 					throw new IOException("Failed to restore media!");
 				}
 			} catch(IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "Failed to restore media!", e);
 				AweryApp.toast("Failed to restore media!", 1);
 			}
 		}

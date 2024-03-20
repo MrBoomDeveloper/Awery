@@ -23,6 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
+import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionProviderChild;
@@ -31,9 +34,6 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
 import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
-import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
-import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.CachedValue;
@@ -276,7 +276,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		AweryApp.runOnUiThread(() -> {
 			try {
-				episodesAdapter.setItems(Collections.emptyList());
+				episodesAdapter.setItems(media, Collections.emptyList());
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Lets hope that the episodes adapter was just created ._.");
 			}
@@ -314,7 +314,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 						activity.runOnUiThread(() -> {
 							placeholderAdapter.setEnabled(false);
-							episodesAdapter.setItems(episodes);
+							episodesAdapter.setItems(media, episodes);
 						});
 					}
 

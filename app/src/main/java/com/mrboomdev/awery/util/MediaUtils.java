@@ -3,6 +3,7 @@ package com.mrboomdev.awery.util;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -13,13 +14,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.extensions.support.template.CatalogList;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
+import com.mrboomdev.awery.extensions.support.template.CatalogList;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
@@ -29,7 +30,6 @@ import org.jetbrains.annotations.Contract;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -49,9 +49,7 @@ public class MediaUtils {
 	}
 
 	public static Collection<CatalogMedia> filterMedia(@NonNull Collection<CatalogMedia> items) {
-		return items.stream()
-				.filter(item -> !isMediaFiltered(item))
-				.collect(Collectors.toList());
+		return items.stream().filter(item -> !isMediaFiltered(item)).toList();
 	}
 
 	@Contract(pure = true)
@@ -221,7 +219,7 @@ public class MediaUtils {
 		new Thread(() -> {
 			var lists = AweryApp.getDatabase().getListDao().getAll().stream()
 					.filter(item -> !AweryApp.HIDDEN_LISTS.contains(item.getId()))
-					.collect(Collectors.toList());
+					.toList();
 
 			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();
@@ -241,7 +239,7 @@ public class MediaUtils {
 					checkbox.setText(item.getTitle());
 					binding.lists.addView(checkbox);
 
-					if(current != null && current.lists.contains(item.getId())) {
+					if(current != null && current.lists != null && current.lists.contains(item.getId())) {
 						checked.put(item.getId(), true);
 						checkbox.setChecked(true);
 					}
@@ -283,7 +281,7 @@ public class MediaUtils {
 							LibraryFragment.notifyDataChanged();
 						} catch(Exception e) {
 							AweryApp.toast("Failed to save!");
-							e.printStackTrace();
+							Log.e("MediaUtils", "Failed to save bookmark", e);
 						}
 					}).start();
 				});

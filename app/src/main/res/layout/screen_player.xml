@@ -268,7 +268,7 @@
                 android:id="@+id/quick_skip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Skip 1:00"
+                tools:text="Skip 1:00"
                 app:backgroundTint="#fff"
                 android:textColor="#000"
                 app:icon="@drawable/outline_fast_forward_24"
