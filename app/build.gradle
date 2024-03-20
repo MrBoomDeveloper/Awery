@@ -63,7 +63,6 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -76,7 +75,6 @@ android {
 
 dependencies {
     // Compatibility for new methods in old Api
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
     implementation "androidx.core:core-ktx:1.12.0"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
     implementation "androidx.appcompat:appcompat:1.6.1"

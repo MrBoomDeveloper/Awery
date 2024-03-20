@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -49,7 +50,7 @@ public class MediaUtils {
 	}
 
 	public static Collection<CatalogMedia> filterMedia(@NonNull Collection<CatalogMedia> items) {
-		return items.stream().filter(item -> !isMediaFiltered(item)).toList();
+		return items.stream().filter(item -> !isMediaFiltered(item)).collect(Collectors.toList());
 	}
 
 	@Contract(pure = true)
@@ -219,7 +220,7 @@ public class MediaUtils {
 		new Thread(() -> {
 			var lists = AweryApp.getDatabase().getListDao().getAll().stream()
 					.filter(item -> !AweryApp.HIDDEN_LISTS.contains(item.getId()))
-					.toList();
+					.collect(Collectors.toList());
 
 			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();
