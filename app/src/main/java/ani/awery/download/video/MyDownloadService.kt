@@ -27,7 +27,7 @@ class MyDownloadService : DownloadService(1, 1, "download_service", R.string.dow
     ): Notification =
         DownloadNotificationHelper(this, "download_service").buildProgressNotification(
             this,
-            R.drawable.mono,
+            0,
             null,
             null,
             downloads,

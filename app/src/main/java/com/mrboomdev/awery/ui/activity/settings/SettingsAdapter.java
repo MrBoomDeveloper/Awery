@@ -1,8 +1,11 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,14 +28,12 @@ import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private final DataHandler handler;
@@ -158,9 +159,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								return;
 							}
 
-							var sorted = new ArrayList<>(items).stream()
+							var sorted = stream(items)
 									.sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
-									.collect(Collectors.toList());
+									.toList();
 
 							AweryApp.runOnUiThread(() -> {
 								createRadioButtons(radioGroup, sorted, selectedItem);
@@ -173,12 +174,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						var options = new HashSet<SettingsData.SelectionItem>();
 						selectionItems.set(options);
 
-						createRadioButtons(radioGroup, setting.getItems().stream()
+						createRadioButtons(radioGroup, stream(setting.getItems())
 								.map(settingItem -> new SettingsData.SelectionItem(
 										settingItem.getKey(),
 										settingItem.getTitle(parent.getContext()),
 										settingItem.getKey().equals(selected)))
-								.collect(Collectors.toList()), selectedItem);
+								.toList(), selectedItem);
 
 						contentView.addView(radioGroup);
 					} else {
@@ -223,9 +224,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							return;
 						}
 
-						var sorted = new ArrayList<>(items).stream().sorted((a, b) ->
+						var sorted = stream(items).sorted((a, b) ->
 								a.getTitle().compareToIgnoreCase(b.getTitle()))
-								.collect(Collectors.toList());
+								.toList();
 
 						AweryApp.runOnUiThread(() -> {
 							for(var item : sorted) {
@@ -337,6 +338,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			} else {
 				binding.icon.setVisibility(View.VISIBLE);
 				binding.icon.setImageDrawable(icon);
+
+				if(item.tintIcon()) {
+					var context = binding.getRoot().getContext();
+					var colorAttr = com.google.android.material.R.attr.colorOnSecondaryContainer;
+					var color = AweryApp.resolveAttrColor(context, colorAttr);
+					binding.icon.setImageTintList(ColorStateList.valueOf(color));
+				} else {
+					binding.icon.setImageTintList(null);
+				}
 			}
 
 			switch(item.getType()) {

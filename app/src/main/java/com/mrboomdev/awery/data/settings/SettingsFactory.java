@@ -1,27 +1,17 @@
 package com.mrboomdev.awery.data.settings;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
 import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class SettingsFactory {
 
@@ -39,9 +29,14 @@ public class SettingsFactory {
 	@NonNull
 	public static SettingsItem fromInputStream(InputStream stream) {
 		try(var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-			var collector = Collectors.joining(System.lineSeparator());
-			var text = reader.lines().collect(collector);
-			return fromJson(text);
+			var builder = new StringBuilder();
+			String line;
+
+			while((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+
+			return fromJson(builder.toString());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}

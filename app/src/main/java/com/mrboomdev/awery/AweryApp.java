@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -28,12 +27,12 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.extensions.support.js.JsManager;
-import com.mrboomdev.awery.extensions.support.template.CatalogList;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.template.CatalogList;
 import com.mrboomdev.awery.util.Disposable;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.squareup.moshi.Moshi;
@@ -46,6 +45,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ import java.util.logging.Logger;
 
 import ani.awery.App;
 import ani.awery.connections.anilist.Anilist;
+import java9.util.stream.Stream;
+import java9.util.stream.StreamSupport;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
@@ -131,14 +134,27 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 	}
 
+	@NonNull
+	@Contract("_ -> new")
+	public static <E> Stream<E> stream(Collection<E> e) {
+		return StreamSupport.stream(e);
+	}
+
+	@SafeVarargs
+	@NonNull
+	@Contract("_ -> new")
+	public static <E> Stream<E> stream(E... e) {
+		return StreamSupport.stream(Arrays.asList(e));
+	}
+
+	public static boolean nonNull(@Nullable Object o) {
+		return o != null;
+	}
+
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		var typed = new TypedValue();
 		context.getTheme().resolveAttribute(res, typed, true);
 		return ContextCompat.getColor(context, typed.resourceId);
-	}
-
-	public static void postRunnable(Runnable runnable) {
-		handler.post(runnable);
 	}
 
 	public static boolean isTv() {
@@ -157,12 +173,9 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		if(activities.isEmpty()) return null;
 		if(activities.size() == 1) return activities.values().toArray(new ActivityInfo[0])[0].activity;
 
-		var sorted = activities.values()
-				.stream()
+		return stream(activities.values())
 				.sorted(ActivityInfo::compareTo)
-				.toArray(ActivityInfo[]::new);
-
-		return sorted[0].activity;
+				.findFirst().get().activity;
 	}
 
 	@Override
@@ -225,10 +238,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				settings.saveSync();
 			}).start();
 		}
-	}
-
-	public static Activity getActivity(@NonNull View view) {
-		return getActivity(view.getContext());
 	}
 
 	public static int getOrientation() {

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,11 +18,10 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
+import java9.util.stream.Collectors;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends ExtensionProvider {
@@ -34,7 +35,7 @@ public class AniyomiProvider extends ExtensionProvider {
 	public void getEpisodes(
 			int page,
 			@NonNull CatalogMedia media,
-			@NonNull ResponseCallback<List<CatalogEpisode>> callback
+			@NonNull ResponseCallback<List<? extends CatalogEpisode>> callback
 	) {
 		new Thread(() -> AniyomiKotlinBridge.getEpisodesList(source, AniyomiMedia.fromMedia(media), (episodes, e) -> {
 			if(e != null) {
@@ -47,9 +48,8 @@ public class AniyomiProvider extends ExtensionProvider {
 				return;
 			}
 
-			callback.onSuccess(episodes.stream()
-					.map(AniyomiEpisode::new)
-					.collect(Collectors.toCollection(ArrayList::new)));
+			callback.onSuccess(stream(episodes)
+					.map(AniyomiEpisode::new).toList());
 		})).start();
 	}
 
@@ -66,12 +66,11 @@ public class AniyomiProvider extends ExtensionProvider {
 				return;
 			}
 
-			callback.onSuccess(Objects.requireNonNull(videos)
-					.stream().map(item -> {
+			callback.onSuccess(stream(videos).map(item -> {
 						var headers = item.getHeaders();
 
-						var subtitles = item.getSubtitleTracks().stream().map(track ->
-								new CatalogSubtitle(track.getLang(), track.getUrl())).collect(Collectors.toList());
+						var subtitles = stream(item.getSubtitleTracks()).map(track ->
+								new CatalogSubtitle(track.getLang(), track.getUrl())).toList();
 
 						return new CatalogVideo(
 								item.getQuality(),
@@ -95,7 +94,7 @@ public class AniyomiProvider extends ExtensionProvider {
 	}
 
 	@Contract("null, _, _ -> false")
-	private boolean checkSearchResults(AnimesPage page, Throwable t, ResponseCallback<List<CatalogMedia>> callback) {
+	private boolean checkSearchResults(AnimesPage page, Throwable t, ResponseCallback<List<? extends CatalogMedia>> callback) {
 		if(t != null) {
 			callback.onFailure(t);
 			return false;
@@ -115,15 +114,15 @@ public class AniyomiProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void search(CatalogFilter params, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
+	public void search(CatalogFilter params, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		var filter = source.getFilterList();
 
 		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.getPage(), params.getQuery(), filter, (page, t) -> {
 			if(!checkSearchResults(page, t, callback)) return;
 
-			callback.onSuccess(page.getAnimes().stream()
+			callback.onSuccess(stream(page.getAnimes())
 					.map(item -> new AniyomiMedia(this, item))
-					.collect(Collectors.toList()));
+					.toList());
 		})).start();
 	}
 

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.anilist.data;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.squareup.moshi.Json;
@@ -8,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class AnilistMedia {
 	public List<String> genres;
@@ -74,9 +75,9 @@ public class AnilistMedia {
 		if(title.romaji != null) media.titles.add(title.romaji);
 		if(title.nativeTitle != null) media.titles.add(title.nativeTitle);
 
-		media.tags = tags.stream()
+		media.tags = stream(tags)
 				.map(AnilistTag::toCatalogTag)
-				.collect(Collectors.toList());
+				.toList();
 
 		media.status = switch(status) {
 			case RELEASING -> CatalogMedia.MediaStatus.ONGOING;

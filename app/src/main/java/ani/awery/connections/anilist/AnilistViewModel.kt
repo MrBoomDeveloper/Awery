@@ -34,7 +34,7 @@ suspend fun getUserId(context: Context, block: () -> Unit) {
         if (Anilist.query.getUserData()) {
             tryWithSuspend {
                 if (MAL.token != null && !MAL.query.getUserData())
-                    snackString(context.getString(R.string.error_loading_mal_user_data))
+                    snackString("context.getString(R.string.error_loading_mal_user_data)")
             }
             true
         } else {

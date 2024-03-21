@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +32,6 @@ import org.jetbrains.annotations.Contract;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class MediaUtils {
 	public static final String ACTION_INFO = "info";
@@ -50,7 +51,7 @@ public class MediaUtils {
 	}
 
 	public static Collection<CatalogMedia> filterMedia(@NonNull Collection<CatalogMedia> items) {
-		return items.stream().filter(item -> !isMediaFiltered(item)).collect(Collectors.toList());
+		return stream(items).filter(item -> !isMediaFiltered(item)).toList();
 	}
 
 	@Contract(pure = true)
@@ -58,7 +59,7 @@ public class MediaUtils {
 		var badTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
 
 		if(media.lists != null && media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
-		if(media.tags != null && media.tags.stream().map(CatalogTag::getName).anyMatch(badTags::contains)) return true;
+		if(media.tags != null && stream(media.tags).map(CatalogTag::getName).anyMatch(badTags::contains)) return true;
 
 		return false;
 	}
@@ -218,9 +219,9 @@ public class MediaUtils {
 
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
 		new Thread(() -> {
-			var lists = AweryApp.getDatabase().getListDao().getAll().stream()
+			var lists = stream(AweryApp.getDatabase().getListDao().getAll())
 					.filter(item -> !AweryApp.HIDDEN_LISTS.contains(item.getId()))
-					.collect(Collectors.toList());
+					.toList();
 
 			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();

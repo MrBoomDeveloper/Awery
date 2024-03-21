@@ -153,7 +153,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/poppins_bold"
-            android:text="@string/search_results"
             android:textSize="16sp" />
 
         <ImageView

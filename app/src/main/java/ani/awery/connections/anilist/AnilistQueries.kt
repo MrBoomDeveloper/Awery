@@ -242,7 +242,7 @@ class AnilistQueries {
                         else snackString(currContext()?.getString(R.string.what_did_you_open))
                     }
                 } else {
-                    snackString(currContext()?.getString(R.string.error_getting_data))
+                    snackString("currContext()?.getString(R.string.error_getting_data)")
                 }
             }
             val mal = async {
@@ -666,7 +666,7 @@ query (${"$"}page: Int = 1, ${"$"}id: Int, ${"$"}type: MediaType, ${"$"}isAdult:
                 page = pageInfo.currentPage.toString().toIntOrNull() ?: 0,
                 hasNextPage = pageInfo.hasNextPage == true,
             )
-        } else snackString(currContext()?.getString(R.string.empty_response))
+        } else snackString("currContext()?.getString(R.string.empty_response)")
         return null
     }
 

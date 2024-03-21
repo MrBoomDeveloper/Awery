@@ -29,11 +29,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
-	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<CatalogMedia>> callback) {
+	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));
 	}
 
-	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<CatalogEpisode>> callback) {
+	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {
 		callback.onFailure(new UnimplementedException("Episodes not implemented!"));
 	}
 

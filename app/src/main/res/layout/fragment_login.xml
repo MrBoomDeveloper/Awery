@@ -32,7 +32,6 @@
             android:id="@+id/loginAppSlogan"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:text="@string/slogan"
             android:textAlignment="center" />
 
         <Button
@@ -82,4 +81,3 @@
     </LinearLayout>
 
 </FrameLayout>
-

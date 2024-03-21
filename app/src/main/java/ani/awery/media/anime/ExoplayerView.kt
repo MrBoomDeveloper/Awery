@@ -76,7 +76,6 @@ import ani.awery.others.ResettableTimer
 import ani.awery.others.getSerialized
 import ani.awery.parsers.*
 import ani.awery.settings.PlayerSettings
-import ani.awery.settings.PlayerSettingsActivity
 import ani.awery.settings.UserInterfaceSettings
 import ani.awery.themes.ThemeManager
 import com.bumptech.glide.Glide
@@ -1013,7 +1012,7 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
                                 Discord.small_Image
                             ),
                             buttons = mutableListOf(
-                                RPC.Link(getString(R.string.view_anime), media.shareLink ?: ""),
+                                RPC.Link("getString(R.string.view_anime)", media.shareLink ?: ""),
                                 RPC.Link(
                                     "Stream on Awery",
                                     "https://github.com/MrBoomDeveloper/Awery/"
@@ -1079,11 +1078,6 @@ class ExoplayerView : AppCompatActivity(), Player.Listener {
                 exoPlayer.currentPosition,
                 this
             )
-            val intent = Intent(this, PlayerSettingsActivity::class.java).apply {
-                putExtra("subtitle", subtitle)
-            }
-            exoPlayer.pause()
-            startActivity(intent)
         }
 
         //Speed

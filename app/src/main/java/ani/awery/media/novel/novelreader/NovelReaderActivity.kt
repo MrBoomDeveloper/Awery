@@ -9,11 +9,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.animation.OvershootInterpolator
 import android.widget.AdapterView
 import android.widget.Toast
@@ -33,10 +31,6 @@ import ani.awery.loadData
 import ani.awery.others.ImageViewDialog
 import ani.awery.saveData
 import ani.awery.setSafeOnClickListener
-import ani.awery.settings.CurrentNovelReaderSettings
-import ani.awery.settings.CurrentReaderSettings
-import ani.awery.settings.NovelReaderSettings
-import ani.awery.settings.UserInterfaceSettings
 import ani.awery.snackString
 import ani.awery.themes.ThemeManager
 import ani.awery.tryWith
@@ -44,7 +38,6 @@ import com.google.android.material.slider.Slider
 import com.vipulog.ebookreader.Book
 import com.vipulog.ebookreader.EbookReaderEventListener
 import com.vipulog.ebookreader.ReaderError
-import com.vipulog.ebookreader.ReaderFlow
 import com.vipulog.ebookreader.ReaderTheme
 import com.vipulog.ebookreader.RelocationInfo
 import com.vipulog.ebookreader.TocItem
@@ -60,9 +53,6 @@ import kotlin.properties.Delegates
 class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
     private lateinit var binding: ActivityNovelReaderBinding
     private val scope = lifecycleScope
-
-    lateinit var settings: NovelReaderSettings
-    private lateinit var uiSettings: UserInterfaceSettings
 
     private var notchHeight: Int? = null
 
@@ -158,13 +148,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
         binding = ActivityNovelReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        settings = loadData("novel_reader_settings", this)
-            ?: NovelReaderSettings().apply { saveData("novel_reader_settings", this) }
-        uiSettings = loadData("ui_settings", this)
-            ?: UserInterfaceSettings().also { saveData("ui_settings", it) }
-
-        controllerDuration = (uiSettings.animationSpeed * 200).toLong()
-
         setupViews()
         setupBackPressedHandler()
     }
@@ -177,8 +160,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
 
         binding.novelReaderBack.setOnClickListener { finish() }
         binding.novelReaderSettings.setSafeOnClickListener {
-            NovelReaderSettingsDialogFragment.newInstance()
-                .show(supportFragmentManager, NovelReaderSettingsDialogFragment.TAG)
         }
 
         val gestureDetector = GestureDetectorCompat(this, object : GesturesListener() {
@@ -269,7 +250,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
         binding.bookReader.getAppearance {
             currentTheme = it
             themes.add(0, it)
-            settings.default = loadData("${sanitizedBookId}_current_settings") ?: settings.default
             applySettings()
         }
 
@@ -317,70 +297,11 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
 
     private var onVolumeUp: (() -> Unit)? = null
     private var onVolumeDown: (() -> Unit)? = null
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        return when (event.keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_PAGE_UP -> {
-                if (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP)
-                    if (!settings.default.volumeButtons)
-                        return false
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    onVolumeUp?.invoke()
-                    true
-                } else false
-            }
-
-            KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_PAGE_DOWN -> {
-                if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
-                    if (!settings.default.volumeButtons)
-                        return false
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    onVolumeDown?.invoke()
-                    true
-                } else false
-            }
-
-            else -> {
-                super.dispatchKeyEvent(event)
-            }
-        }
-    }
-
 
     fun applySettings() {
-        saveData("${sanitizedBookId}_current_settings", settings.default)
         hideBars()
-
-        currentTheme =
-            themes.first { it.name.equals(settings.default.currentThemeName, ignoreCase = true) }
-
-        when (settings.default.layout) {
-            CurrentNovelReaderSettings.Layouts.PAGED -> {
-                currentTheme?.flow = ReaderFlow.PAGINATED
-            }
-
-            CurrentNovelReaderSettings.Layouts.SCROLLED -> {
-                currentTheme?.flow = ReaderFlow.SCROLLED
-            }
-        }
-
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-        when (settings.default.dualPageMode) {
-            CurrentReaderSettings.DualPageModes.No -> currentTheme?.maxColumnCount = 1
-            CurrentReaderSettings.DualPageModes.Automatic -> currentTheme?.maxColumnCount = 2
-            CurrentReaderSettings.DualPageModes.Force -> requestedOrientation =
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-
-        currentTheme?.lineHeight = settings.default.lineHeight
-        currentTheme?.gap = settings.default.margin
-        currentTheme?.maxInlineSize = settings.default.maxInlineSize
-        currentTheme?.maxBlockSize = settings.default.maxBlockSize
-        currentTheme?.useDark = settings.default.useDarkTheme
-
         currentTheme?.let { binding.bookReader.setAppearance(it) }
-
-        if (settings.default.keepScreenOn) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
 
@@ -408,11 +329,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
 
     fun handleController(shouldShow: Boolean? = null) {
         if (!loaded) return
-
-        if (!settings.showSystemBars) {
-            hideBars()
-            applyNotchMargin()
-        }
 
         shouldShow?.apply { isContVisible = !this }
         if (isContVisible) {
@@ -442,7 +358,7 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
 
 
     private fun checkNotch() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !settings.showSystemBars) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P/* && !settings.showSystemBars*/) {
             val displayCutout = window.decorView.rootWindowInsets.displayCutout
             if (displayCutout != null) {
                 if (displayCutout.boundingRects.size > 0) {
@@ -465,6 +381,6 @@ class NovelReaderActivity : AppCompatActivity(), EbookReaderEventListener {
 
 
     private fun hideBars() {
-        if (!settings.showSystemBars) hideSystemBars()
+        hideSystemBars()
     }
 }

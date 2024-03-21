@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.data.db;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -12,7 +14,8 @@ import com.mrboomdev.awery.util.StringUtil;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+
+import java9.util.stream.Collectors;
 
 @Entity(tableName = "media")
 public class DBCatalogMedia {
@@ -114,7 +117,7 @@ public class DBCatalogMedia {
 		}
 
 		if(media.tags != null) {
-			dbMedia.tags = ";;;" + media.tags.stream()
+			dbMedia.tags = ";;;" + stream(media.tags)
 					.map(CatalogTag::getName)
 					.collect(Collectors.joining(";;;")) + ";;;";
 		}
@@ -167,9 +170,8 @@ public class DBCatalogMedia {
 		if(titles != null) media.titles = StringUtil.uniqueStringToList(titles);
 
 		if(tags != null) {
-			media.tags = StringUtil.uniqueStringToList(tags)
-					.stream().map(CatalogTag::new)
-					.collect(Collectors.toList());
+			media.tags = stream(StringUtil.uniqueStringToList(tags))
+					.map(CatalogTag::new).toList();
 		}
 
 		return media;

@@ -135,7 +135,6 @@
             android:textAlignment="center"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
-            app:drawableTopCompat="@drawable/anim_rewind"
             android:layout_marginTop="16dp"
             tools:ignore="HardcodedText,RtlCompat" />
         <View
@@ -155,7 +154,6 @@
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:layout_marginTop="16dp"
-            app:drawableTopCompat="@drawable/anim_skip"
             tools:ignore="HardcodedText,RtlCompat" />
     </LinearLayout>
 

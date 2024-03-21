@@ -1,15 +1,18 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.util.CallbackUtil;
 
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import java9.util.stream.Collectors;
 
 public class SettingsData {
 	private static final String TAG = "SettingsData";
@@ -60,7 +63,7 @@ public class SettingsData {
 				AnilistTagsQuery.getTags(flags).executeQuery(tags -> {
 					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
 
-					callback.onResult(tags.stream().map(tag ->
+					callback.onResult(stream(tags).map(tag ->
 							new SelectionItem(tag.getName(), excluded.contains(tag.getName())))
 					.collect(Collectors.toSet()), null);
 				}).catchExceptions(e -> callback.onResult(null, e));
@@ -75,7 +78,7 @@ public class SettingsData {
 			case "excluded_tags" -> {
 				var prefs = AwerySettings.getInstance();
 
-				prefs.setStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS, list.stream()
+				prefs.setStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS, stream(list)
 						.filter(SelectionItem::isSelected)
 						.map(SelectionItem::getTitle)
 						.collect(Collectors.toSet()));

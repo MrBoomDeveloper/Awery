@@ -48,7 +48,7 @@ public class StringUtil {
 	 * Converts long to string in format: 24:00.
 	 */
 	@NonNull
-	public static String formatTimestamp(long value) {
+	public static String formatClock(long value) {
 		if(value < 0) {
 			return "00:00";
 		}
@@ -73,8 +73,8 @@ public class StringUtil {
 	}
 
 	@NonNull
-	public static String formatDate(long value) {
-		if(value < 0) {
+	public static String formatTimer(long value) {
+		if(value <= 0) {
 			return "0s";
 		}
 
@@ -84,11 +84,19 @@ public class StringUtil {
 		var minutes = (int) value / 60;
 
 		if(minutes >= 60) {
+			if(seconds == 0) {
+				return String.format(Locale.ENGLISH, "%dh", minutes / 60);
+			}
+
 			return String.format(Locale.ENGLISH, "%dh %02d:%02d",
 					minutes / 60, minutes % 60, seconds);
 		}
 
 		if(minutes >= 1) {
+			if(seconds == 0) {
+				return String.format(Locale.ENGLISH, "%dm", minutes);
+			}
+
 			return String.format(Locale.ENGLISH, "%dm %02ds",
 					minutes, seconds);
 		}

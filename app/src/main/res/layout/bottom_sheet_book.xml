@@ -63,8 +63,7 @@
                 android:fontFamily="@font/poppins_bold"
                 android:minHeight="144dp"
                 android:textIsSelectable="true"
-                android:textSize="20sp"
-                tools:text="@string/empty" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 

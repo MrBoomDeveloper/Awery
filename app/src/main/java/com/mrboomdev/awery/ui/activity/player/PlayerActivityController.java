@@ -62,8 +62,8 @@ public class PlayerActivityController {
 		activity.binding.slider.setPosition(position);
 
 		activity.binding.timer.setText(
-				StringUtil.formatTimestamp(position) + "/" +
-				StringUtil.formatTimestamp(duration));
+				StringUtil.formatClock(position) + "/" +
+				StringUtil.formatClock(duration));
 	}
 
 	public void addLockedUiReason(String reason) {

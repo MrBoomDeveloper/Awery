@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +17,6 @@ import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LibraryFragment extends MediaCatalogListsFragment {
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
@@ -92,9 +93,9 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 				var dbMediaList = db.getMediaDao().getAllFromList(list.getId());
 				if(dbMediaList.isEmpty()) continue;
 
-				var mediaList = dbMediaList.stream()
+				var mediaList = stream(dbMediaList)
 						.map(DBCatalogMedia::toCatalogMedia)
-						.collect(Collectors.toList());
+						.toList();
 
 				var category = new MediaCategoriesAdapter.Category(list.getName(), mediaList);
 				category.id = idGenerator.getLong();

@@ -233,7 +233,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupButton(binding.settings, controller::openSettingsDialog);
 
 		if(bigSeek > 0) {
-			var time = StringUtil.formatDate(bigSeek * 1000L);
+			var time = StringUtil.formatTimer(bigSeek * 1000L);
 			binding.quickSkip.setText("Skip " + time);
 
 			setupButton(binding.quickSkip, () -> {

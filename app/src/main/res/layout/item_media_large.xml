@@ -124,7 +124,6 @@
                 android:maxLines="3"
                 android:textSize="14dp"
                 android:transitionName="mediaTitle"
-                tools:text="@string/slogan"
                 tools:ignore="SpUsage" />
 
             <LinearLayout

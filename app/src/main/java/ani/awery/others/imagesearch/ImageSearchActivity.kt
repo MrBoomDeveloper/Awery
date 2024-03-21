@@ -36,7 +36,7 @@ class ImageSearchActivity : AppCompatActivity() {
                     val inputStream = contentResolver.openInputStream(imageUri)
 
                     if (inputStream != null) viewModel.analyzeImage(inputStream)
-                    else toast(getString(R.string.error_loading_image))
+                    else toast("getString(R.string.error_loading_image)")
 
                     withContext(Dispatchers.Main) {
                         binding.progressBar.visibility = View.GONE
@@ -75,7 +75,7 @@ class ImageSearchActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     val id = searchResult.anilist?.id?.toInt()
                     if (id == null) {
-                        toast(getString(R.string.no_anilist_id_found))
+                        toast("getString(R.string.no_anilist_id_found)")
                         return@launch
                     }
                     val media = Anilist.query.getMedia(id, false)

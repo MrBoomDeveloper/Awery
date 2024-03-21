@@ -1,18 +1,19 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionProviderChild;
 import com.mrboomdev.awery.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
+import java9.util.stream.StreamSupport;
 
 public class AniyomiManager extends YomiManager {
 	protected static final String TYPE_ID = "ANIYOMI_KOTLIN";
@@ -70,10 +71,10 @@ public class AniyomiManager extends YomiManager {
 		}
 
 		if(main instanceof AnimeSourceFactory factory) {
-			var providers = factory.createSources().stream()
+			var providers = stream(factory.createSources())
 					.map(source -> createProviders(extension, source, true))
-					.flatMap(Collection::stream)
-					.collect(Collectors.toList());
+					.flatMap(StreamSupport::stream)
+					.toList();
 
 			var parent = new ExtensionProviderGroup(extension.getName(), providers);
 

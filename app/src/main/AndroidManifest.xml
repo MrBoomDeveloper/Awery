@@ -74,187 +74,19 @@
         <activity android:name=".ui.activity.MediaActivity" android:exported="false" />
         <activity android:name=".ui.activity.ReaderActivity" android:exported="false" />
         <activity android:name=".ui.activity.settings.SettingsActivity" android:exported="false" />
-        <activity android:name=".ui.activity.IntentHandlerActivity" android:exported="false" />
 
-        <activity
-            android:name="ani.awery.media.novel.novelreader.NovelReaderActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="true" >
-
+        <activity android:name=".ui.activity.IntentHandlerActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="application/epub+zip" />
-                <data android:mimeType="application/x-mobipocket-ebook" />
-                <data android:mimeType="application/vnd.amazon.ebook" />
-                <data android:mimeType="application/fb2+zip" />
-                <data android:mimeType="application/vnd.comicbook+zip" />
-
-                <data android:pathPattern=".*\\.epub" />
-                <data android:pathPattern=".*\\.mobi" />
-                <data android:pathPattern=".*\\.kf8" />
-                <data android:pathPattern=".*\\.fb2" />
-                <data android:pathPattern=".*\\.cbz" />
-
-                <data android:scheme="content" />
-                <data android:scheme="file" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="ani.awery.settings.ReaderSettingsActivity" />
-        <activity android:name="ani.awery.settings.UserInterfaceSettingsActivity" />
-        <activity android:name="ani.awery.settings.PlayerSettingsActivity" />
-
-        <activity
-            android:name="ani.awery.settings.ExtensionsActivity"
-            android:parentActivityName="ani.awery.MainActivity" />
-
-        <activity
-            android:name="ani.awery.others.imagesearch.ImageSearchActivity"
-            android:parentActivityName="ani.awery.MainActivity" />
-
-        <activity
-            android:name="ani.awery.media.SearchActivity"
-            android:parentActivityName="ani.awery.MainActivity" />
-
-        <activity android:name="ani.awery.media.StudioActivity" />
-        <activity android:name="ani.awery.media.AuthorActivity" />
-
-        <activity
-            android:name="ani.awery.media.CalendarActivity"
-            android:parentActivityName="ani.awery.MainActivity" />
-
-        <activity android:name="ani.awery.media.user.ListActivity" />
-
-        <activity
-            android:name="ani.awery.media.manga.mangareader.MangaReaderActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:label="@string/manga"
-            android:launchMode="singleTask" />
-
-        <activity android:name="ani.awery.media.GenreActivity" />
-
-        <activity
-            android:name="ani.awery.media.MediaDetailsActivity"
-            android:parentActivityName="ani.awery.MainActivity"
-            android:theme="@style/Theme.Awery.NeverCutout" />
-
-        <activity android:name="ani.awery.media.CharacterDetailsActivity" />
-        <activity android:name="ani.awery.home.NoInternet" />
-
-        <activity
-            android:name="ani.awery.media.anime.ExoplayerView"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:label="@string/video"
-            android:launchMode="singleTask"
-            android:supportsPictureInPicture="true" />
-
-        <activity
-            android:name="ani.awery.connections.anilist.Login"
-            android:configChanges="orientation|screenSize|layoutDirection"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTask">
-
-            <intent-filter android:label="Anilist Login for Awery">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="anilist"
-                    android:scheme="dantotsu" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="ani.awery.connections.mal.Login"
-            android:configChanges="orientation|screenSize|layoutDirection"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTask">
-
-            <intent-filter android:label="Myanimelist Login for Awery">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="mal"
-                    android:scheme="dantotsu" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="ani.awery.connections.discord.Login"
-            android:configChanges="orientation|screenSize|layoutDirection"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTask">
-
-            <intent-filter android:label="Discord Login for Awery">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="dantotsu"/>
-                <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="discord.dantotsu.com"/>
+                <data android:scheme="http" />
+                <data android:host="mrboomdev.ru" />
+                <data android:pathPrefix="/awery_app_login" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="ani.awery.connections.anilist.UrlMedia"
-            android:configChanges="orientation|screenSize|layoutDirection"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleTask">
-
-            <intent-filter android:label="@string/read_on_dantotsu">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:host="anilist.co" />
-                <data android:host="myanimelist.net" />
-                <data android:pathPrefix="/manga" />
-            </intent-filter>
-
-            <intent-filter android:label="@string/watch_on_dantotsu">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:host="anilist.co" />
-                <data android:host="myanimelist.net" />
-                <data android:pathPrefix="/anime" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="ani.awery.download.DownloadContainerActivity" />
-
-        <activity
-            android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:exported="false" />
-
-        <activity
-            android:name="eu.kanade.tachiyomi.extension.anime.util.AnimeExtensionInstallActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:exported="false" />
 
         <receiver
             android:name="ani.awery.subcriptions.AlarmReceiver"

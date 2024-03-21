@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+import static com.mrboomdev.awery.AweryApp.stream;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
@@ -19,11 +20,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
+import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;
 import com.mrboomdev.awery.util.observable.ObservableList;
@@ -33,7 +34,8 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
+import java9.util.stream.Collectors;
 
 public class MediaPagerAdapter extends SingleViewAdapter {
 	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
@@ -161,7 +163,7 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			this.item = item;
 
 			binding.title.setText(item.title);
-			binding.description.setText(Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT));
+			binding.description.setText(Html.fromHtml(item.description).toString().trim());
 
 			if(item.averageScore != null) {
 				binding.metaSeparator.setVisibility(View.VISIBLE);
@@ -173,15 +175,15 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			}
 
 			var tagsCount = new AtomicInteger(0);
-			var formattedTags = item.genres != null ? (
-					item.genres.stream()
+
+			var formattedTags = (item.genres != null ? (
+					stream(item.genres)
 							.filter(tag -> tagsCount.getAndAdd(1) < 3)
-							.collect(Collectors.joining(", "))
-					) : (
-							item.tags.stream()
-									.filter(tag -> tagsCount.getAndAdd(1) < 3)
-									.map(CatalogTag::getName)
-									.collect(Collectors.joining(", ")));
+				) : (
+					stream(item.tags)
+							.filter(tag -> tagsCount.getAndAdd(1) < 3)
+							.map(CatalogTag::getName)
+			)).collect(Collectors.joining(", "));
 
 			binding.tags.setText(formattedTags);
 

@@ -36,6 +36,20 @@
 			"title": "content", "icon": "ic_extension",
 			"items": [
 				{
+					"key": "extensions", "type": "screen",
+					"title": "extensions",
+					"items": [
+						{
+							"key": "aweryjs", "type": "screen",
+							"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false,
+							"behaviour": "extensions_aweryjs"
+						}, {
+							"key": "aniyomi", "type": "screen",
+							"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false,
+							"behaviour": "extensions_aniyomi"
+						}
+					]
+				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
 					"title": "global_excluded_tags", "icon": "ic_round_block_24",
 					"behaviour": "excluded_tags"
@@ -107,10 +121,6 @@
 			"key": "reader", "type": "screen",
 			"title": "reader", "icon": "ic_round_reader_settings",
 			"items": []
-		}, {
-			"key": "accounts", "type": "screen",
-			"title": "accounts", "icon": "ic_round_account_circle_24",
-			"items": [], "behaviour": "list_accounts"
 		}, {
 			"key": "advanced", "type": "screen",
 			"title": "Advanced", "icon": "ic_round_settings_24",

@@ -30,7 +30,6 @@ class Login : AppCompatActivity() {
             val code = data.getQueryParameter("code")
                 ?: throw Exception(getString(R.string.mal_login_code_not_present))
 
-            snackString(getString(R.string.logging_in_mal))
             lifecycleScope.launch(Dispatchers.IO) {
                 tryWithSuspend(true) {
                     val res = client.post(

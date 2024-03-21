@@ -102,7 +102,6 @@
                             android:maxLines="4"
                             android:scrollHorizontally="false"
                             android:singleLine="false"
-                            android:text="@string/slogan"
                             android:textSize="16sp"
                             android:textColor="?attr/colorOnBackground"
                             android:transitionName="mediaTitle" />
@@ -184,7 +183,6 @@
                         android:paddingEnd="64dp"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
-                        android:text="@string/slogan"
                         android:textSize="16sp"
                         android:transitionName="mediaTitle"
                         tools:visibility="gone" />

@@ -47,7 +47,6 @@
         android:layout_margin="16dp"
         android:elegantTextHeight="true"
         android:fontFamily="@font/poppins_bold"
-        android:text="@string/upload_image"
         android:textColor="?attr/colorOnPrimary"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_round_image_search_24"

@@ -1,18 +1,21 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
-import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import java9.util.stream.StreamSupport;
 
 public class ExtensionsFactory {
 	private static final List<ExtensionsManager> managers = List.of(
@@ -24,10 +27,9 @@ public class ExtensionsFactory {
 			extensionManager.initAll(context);
 		}
 
-		var failedExtensions = managers.stream()
+		var failedExtensions = stream(managers)
 				.map(manager -> manager.getExtensions(Extension.FLAG_ERROR))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.flatMap(StreamSupport::stream).toList();
 
 		if(!failedExtensions.isEmpty()) {
 			AweryApp.toast("Failed to load " + failedExtensions.size() + " extension(s)");
@@ -36,16 +38,14 @@ public class ExtensionsFactory {
 
 	@NonNull
 	public static Collection<Extension> getExtensions(int flags) {
-		return managers.stream()
+		return stream(managers)
 				.map(manager -> manager.getExtensions(flags))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.flatMap(StreamSupport::stream).toList();
 	}
 
 	public static Collection<ExtensionProvider> getProviders(int flags) {
-		return getExtensions(flags).stream()
+		return stream(getExtensions(flags))
 				.map(Extension::getProviders)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.flatMap(StreamSupport::stream).toList();
 	}
 }

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
@@ -15,7 +17,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	private AnilistMedia.MediaType type;
@@ -122,8 +123,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	protected Collection<CatalogMedia> processJson(String json) throws IOException {
 		List<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
 
-		return data.stream()
-				.map(item -> {
+		return stream(data).map(item -> {
 					var catalogMedia = item.toCatalogMedia();
 
 					var dbMedia = AweryApp.getDatabase().getMediaDao().get(catalogMedia.globalId);
@@ -133,8 +133,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 					}
 
 					return catalogMedia;
-				})
-				.collect(Collectors.toList());
+				}).toList();
 	}
 
 	@Override

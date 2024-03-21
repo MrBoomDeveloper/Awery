@@ -1,23 +1,25 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.content.Context;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+
+import java9.util.stream.StreamSupport;
 
 public abstract class ExtensionsManager {
 
 	public Collection<ExtensionProvider> getProviders(int flags) {
-		return getExtensions(flags).stream()
+		return stream(getExtensions(flags))
 				.map(Extension::getProviders)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.flatMap(StreamSupport::stream).toList();
 	}
 
 	public Collection<Extension> getExtensions(int flags) {
-		return getAllExtensions().stream()
+		return stream(getAllExtensions())
 				.filter(extension -> (extension.getFlags() & flags) == flags)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	public abstract Extension getExtension(String id);

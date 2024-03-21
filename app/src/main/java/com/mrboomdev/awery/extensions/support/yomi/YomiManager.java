@@ -1,26 +1,28 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import dalvik.system.PathClassLoader;
+import java9.util.stream.StreamSupport;
 
 public abstract class YomiManager extends ExtensionsManager {
 	private static final String TAG = "YomiManager";
@@ -57,8 +59,7 @@ public abstract class YomiManager extends ExtensionsManager {
 	public void initAll(@NonNull Context context) {
 		var pm = context.getPackageManager();
 
-		var packages = pm.getInstalledPackages(PM_FLAGS)
-				.stream()
+		var packages = stream(pm.getInstalledPackages(PM_FLAGS))
 				.filter(p -> {
 					if(p.reqFeatures == null) return false;
 
@@ -68,8 +69,7 @@ public abstract class YomiManager extends ExtensionsManager {
 					}
 
 					return false;
-				})
-				.collect(Collectors.toList());
+				}).toList();
 
 		for(var pkg : packages) {
 			var label = pkg.applicationInfo.loadLabel(pm).toString();
@@ -116,10 +116,10 @@ public abstract class YomiManager extends ExtensionsManager {
 			return;
 		}
 
-		var providers = mains.stream()
+		var providers = stream(mains)
 				.map(main -> createProviders(extension, main))
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
+				.flatMap(StreamSupport::stream)
+				.toList();
 
 		for(var provider : providers) {
 			extension.addProvider(provider);
@@ -130,7 +130,7 @@ public abstract class YomiManager extends ExtensionsManager {
 			Context context,
 			Extension extension
 	) throws PackageManager.NameNotFoundException, ClassNotFoundException {
-		return loadClasses(context, extension).stream().map(clazz -> {
+		return stream(loadClasses(context, extension)).map(clazz -> {
 			try {
 				var constructor = clazz.getConstructor();
 				return constructor.newInstance();
@@ -145,10 +145,10 @@ public abstract class YomiManager extends ExtensionsManager {
 			} catch(Throwable e) {
 				throw new RuntimeException("Unknown exception occurred!", e);
 			}
-		}).collect(Collectors.toList());
+		}).toList();
 	}
 
-	public List<Class<?>> loadClasses(
+	public List<? extends Class<?>> loadClasses(
 			@NonNull Context context,
 			@NonNull Extension extension
 	) throws PackageManager.NameNotFoundException, ClassNotFoundException, NullPointerException {
@@ -163,7 +163,7 @@ public abstract class YomiManager extends ExtensionsManager {
 		var mainClassesString = Objects.requireNonNull(
 				pkgInfo.applicationInfo.metaData.getString(getMainClassMeta()));
 
-		List<Class<?>> classes = Arrays.stream(mainClassesString.split(";")).map(mainClass -> {
+		var classes = stream(mainClassesString.split(";")).map(mainClass -> {
 			if(mainClass.startsWith(".")) {
 				mainClass = pkgInfo.packageName + mainClass;
 			}
@@ -174,8 +174,7 @@ public abstract class YomiManager extends ExtensionsManager {
 				exception.set(e);
 				return null;
 			}
-		}).filter(Objects::nonNull)
-			.collect(Collectors.toList());
+		}).filter(AweryApp::nonNull).toList();
 
 		if(exception.get() != null) {
 			if(exception.get() instanceof ClassNotFoundException e) throw e;

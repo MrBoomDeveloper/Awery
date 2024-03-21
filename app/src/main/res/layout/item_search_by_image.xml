@@ -47,8 +47,7 @@
                 android:maxLines="3"
                 android:textSize="14sp"
                 android:transitionName="mediaTitle"
-                tools:ignore="SpUsage"
-                tools:text="@string/slogan" />
+                tools:ignore="SpUsage" />
 
             <TextView
                 android:id="@+id/episode_number"

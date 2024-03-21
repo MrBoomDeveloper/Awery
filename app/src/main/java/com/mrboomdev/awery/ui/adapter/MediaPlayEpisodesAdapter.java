@@ -32,7 +32,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(CatalogMedia media, @NonNull Collection<CatalogEpisode> items) {
+	public void setItems(CatalogMedia media, @NonNull Collection<? extends CatalogEpisode> items) {
 		this.media = media;
 		idGenerator.clear();
 

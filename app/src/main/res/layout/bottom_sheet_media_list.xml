@@ -158,7 +158,6 @@
                 app:hintAnimationEnabled="true"
                 app:startIconDrawable="@drawable/ic_round_star_24"
                 app:boxStrokeColor="@color/text_input_layout_stroke_color"
-                app:suffixText="@string/score_suffix"
                 app:suffixTextAppearance="@style/Suffix">
 
                 <AutoCompleteTextView

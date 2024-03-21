@@ -48,7 +48,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:contentDescription="@string/random_selection"
                 app:tint="?attr/colorOnBackground"
                 app:srcCompat="@drawable/ic_shuffle_24" />
 

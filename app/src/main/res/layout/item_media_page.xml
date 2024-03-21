@@ -144,8 +144,7 @@
                     android:textAlignment="center"
                     android:textSize="18dp"
                     android:transitionName="mediaTitle"
-                    tools:ignore="SpUsage"
-                    tools:text="@string/slogan" />
+                    tools:ignore="SpUsage" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

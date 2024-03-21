@@ -283,7 +283,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 
 		var lastUsedTitleIndex = new AtomicInteger(0);
-		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<List<CatalogMedia>>>();
+		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<List<? extends CatalogMedia>>>();
 
 		var searchParams = new CatalogFilter.Builder()
 				.setPage(0)
@@ -295,12 +295,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
 			@Override
-			public void onSuccess(@NonNull List<CatalogMedia> mediaList) {
+			public void onSuccess(@NonNull List<? extends CatalogMedia> mediaList) {
 				if(source != selectedSource) return;
 
 				source.getEpisodes(0, mediaList.get(0), new ExtensionProvider.ResponseCallback<>() {
 					@Override
-					public void onSuccess(List<CatalogEpisode> episodes) {
+					public void onSuccess(List<? extends CatalogEpisode> episodes) {
 						if(source != selectedSource) return;
 						Activity activity;
 

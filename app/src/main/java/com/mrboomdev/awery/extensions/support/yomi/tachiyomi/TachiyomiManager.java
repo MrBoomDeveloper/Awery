@@ -1,16 +1,17 @@
 package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import eu.kanade.tachiyomi.source.CatalogueSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
+import java9.util.stream.StreamSupport;
 
 public class TachiyomiManager extends YomiManager {
 
@@ -59,10 +60,9 @@ public class TachiyomiManager extends YomiManager {
 		if(main instanceof CatalogueSource source) {
 			return List.of(new TachiyomiProvider(source));
 		} else if(main instanceof SourceFactory factory) {
-			return factory.createSources().stream()
+			return stream(factory.createSources())
 					.map(source -> createProviders(extension, source))
-					.flatMap(Collection::stream)
-					.collect(Collectors.toList());
+					.flatMap(StreamSupport::stream).toList();
 		}
 
 		return Collections.emptyList();

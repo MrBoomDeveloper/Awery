@@ -332,7 +332,7 @@ class MangaReaderActivity : AppCompatActivity() {
                                     Discord.small_Image
                                 ),
                                 buttons = mutableListOf(
-                                    RPC.Link(getString(R.string.view_manga), media.shareLink ?: ""),
+                                    RPC.Link("getString(R.string.view_manga)", media.shareLink ?: ""),
                                     RPC.Link(
                                         "Stream on Awery",
                                         "https://github.com/MrBoomDeveloper/Awery/"

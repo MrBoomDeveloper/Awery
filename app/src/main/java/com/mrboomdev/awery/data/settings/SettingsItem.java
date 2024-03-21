@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.data.settings;
 
+import static com.mrboomdev.awery.AweryApp.stream;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
@@ -12,14 +14,14 @@ import com.mrboomdev.awery.R;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class SettingsItem {
 	private final String key, title, description, icon, behaviour;
 	private final SettingsItemType type;
 	private String parentKey;
+	@Json(name = "tint_icon")
+	private Boolean tintIcon;
 	@Json(name = "show_if")
 	private String showIf;
 	private final boolean restart;
@@ -39,6 +41,7 @@ public class SettingsItem {
 		this.behaviour = item.behaviour;
 
 		this.icon = item.icon;
+		this.tintIcon = item.tintIcon;
 		this.title = item.title;
 		this.description = item.description;
 
@@ -50,22 +53,6 @@ public class SettingsItem {
 		this.parent = item.parent;
 	}
 
-	public SettingsItem(String key, String title, String description, String icon, String showIf, String behaviour, boolean requireRestart, SettingsItemType type, List<SettingsItem> items) {
-		this.key = key;
-		this.type = type;
-		this.items = items;
-		this.title = title;
-		this.icon = icon;
-		this.behaviour = behaviour;
-		this.restart = requireRestart;
-		this.description = description;
-		this.showIf = showIf;
-	}
-
-	public SettingsItem(String key, String title, SettingsItemType type) {
-		this(key, title, null, null, null, null, false, type, Collections.emptyList());
-	}
-
 	public void setAsParentForChildren() {
 		if(items == null) return;
 
@@ -73,6 +60,10 @@ public class SettingsItem {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public boolean tintIcon() {
+		return tintIcon == null || tintIcon;
 	}
 
 	public boolean isVisible() {
@@ -238,7 +229,7 @@ public class SettingsItem {
 	}
 
 	private SettingsItem findDirect(String key) {
-		return items.stream()
+		return stream(items)
 				.filter(item -> item.getKey().equals(key))
 				.findFirst()
 				.orElse(null);
@@ -252,7 +243,7 @@ public class SettingsItem {
 		}
 
 		if(parts.length > 1) {
-			return items.stream()
+			return stream(items)
 					.filter(item -> item.getKey().equals(parts[0]))
 					.map(item -> item.find(String.join(".", parts).substring(parts[0].length())))
 					.findFirst()
@@ -260,30 +251,6 @@ public class SettingsItem {
 		}
 
 		return null;
-	}
-
-	@NonNull
-	@Override
-	public String toString() {
-		var result = "{ \"key\": \"" + key + "\"";
-
-		if(booleanValue != null) {
-			result += ", \"boolean_value\": " + booleanValue;
-		}
-
-		if(intValue != null) {
-			result += ", \"int_value\": " + intValue;
-		}
-
-		if(type != null) {
-			result += ", \"type\": \"" + type.toString().toLowerCase(Locale.ROOT) + "\"";
-		}
-
-		if(items != null) {
-			result += ", \"items\": " + items;
-		}
-
-		return result + " }";
 	}
 
 	@SuppressWarnings("unused")

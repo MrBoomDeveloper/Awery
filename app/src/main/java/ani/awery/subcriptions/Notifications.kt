@@ -106,7 +106,7 @@ class Notifications {
             createChannel(context, group, channelId, title, silent)
             return NotificationCompat.Builder(context, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(group?.icon ?: R.drawable.monochrome)
+                .setSmallIcon(group?.icon ?: 0)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setAutoCancel(true)

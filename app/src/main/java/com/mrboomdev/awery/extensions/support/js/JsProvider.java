@@ -1,26 +1,31 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import androidx.annotation.NonNull;
-
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 
 import org.mozilla.javascript.Context;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class JsProvider extends ExtensionProvider {
+	private final File file;
 
-	@Override
-	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<CatalogEpisode>> callback) {
-		super.getEpisodes(page, media, callback);
-	}
+	public JsProvider(Context context, File file) throws IOException {
+		StringBuilder script = new StringBuilder();
+		this.file = file;
 
-	public JsProvider(String script) {
-		var context = Context.enter();
+		try(var reader = new BufferedReader(new FileReader(file))) {
+			String line;
+
+			while((line = reader.readLine()) != null) {
+				script.append(line).append("\n");
+			}
+		}
+
 		var scope = context.initSafeStandardObjects();
-		context.evaluateString(scope, script, null, 1,null);
+		context.evaluateString(scope, script.toString(), file.getName(), 1,null);
 	}
 
 	@Override

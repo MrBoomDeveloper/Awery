@@ -1,7 +1,11 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.AweryApp.toast;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +26,7 @@ import com.squareup.moshi.Moshi;
 import java.io.IOException;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
+	private static final String TAG = "SettingsActivity";
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private AwerySettings settings;
 
@@ -44,8 +49,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 			try {
 				item = adapter.fromJson(itemJson);
 			} catch(IOException e) {
-				e.printStackTrace();
-				AweryApp.toast(this, "Failed to get settings", 0);
+				Log.e(TAG, "Failed to parse settings", e);
+				toast(this, "Failed to get settings", 0);
 				finish();
 				return;
 			}
@@ -59,18 +64,23 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 	}
 
 	private void createView(
-			SettingsItem item,
+			@NonNull SettingsItem item,
 			RecyclerView.RecycledViewPool viewPool,
 			@NonNull FrameLayout frame
 	) {
-		var recyclerAdapter = new SettingsAdapter(item, this);
-
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
-		binding.recycler.setAdapter(recyclerAdapter);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets ->
+		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
 				ViewUtil.setTopPadding(binding.recycler, insets.top + ViewUtil.dpPx(12)), frame);
+
+		if(item.getItems() != null) {
+			var recyclerAdapter = new SettingsAdapter(item, this);
+			binding.recycler.setAdapter(recyclerAdapter);
+		} else {
+			toast(this, "This part of app is not yet done!", 0);
+			finish();
+		}
 
 		frame.addView(binding.getRoot());
 	}

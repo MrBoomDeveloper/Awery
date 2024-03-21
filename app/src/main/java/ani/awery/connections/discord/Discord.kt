@@ -47,7 +47,7 @@ object Discord {
         tryWith(true) {
             val dir = File(context.filesDir?.parentFile, "app_webview")
             if (dir.deleteRecursively())
-                toast(context.getString(R.string.discord_logout_success))
+                toast("context.getString(R.string.discord_logout_success)")
         }
     }
 
@@ -55,8 +55,8 @@ object Discord {
 
 
     fun warning(context: Context) = CustomBottomDialog().apply {
-        title = context.getString(R.string.warning)
-        val md = context.getString(R.string.discord_warning)
+        title = "context.getString(R.string.warning)"
+        val md = "context.getString(R.string.discord_warning)"
         addView(TextView(context).apply {
             val markWon =
                 Markwon.builder(context).usePlugin(SoftBreakAddsNewLinePlugin.create()).build()

@@ -77,7 +77,6 @@
             android:ellipsize="end"
             android:fontFamily="@font/poppins_bold"
             android:maxLines="3"
-            android:text="@string/slogan"
             android:textColor="@color/bg_white"
             android:textSize="14sp"
             app:lineHeight="14sp" />
