@@ -215,7 +215,7 @@ public class AwerySettings {
 	 */
 	@NonNull
 	public static AwerySettings getInstance(String name) {
-		return getInstance(AweryApp.getContext(), name);
+		return getInstance(AweryApp.getAnyContext(), name);
 	}
 
 	/**

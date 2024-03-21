@@ -8,10 +8,12 @@
 				{
 					"key": "use_material_you", "type": "boolean", "restart": true,
 					"title": "use_material_you", "icon": "ic_round_auto_awesome_24",
+					"description": "The app's colors will be generated based on your wallpaper",
 					"show_if": "is_material_you_available"
 				}, {
 					"key": "amoled", "type": "boolean", "restart": true,
-					"title": "amoled", "icon": "ic_round_brightness_medium_24"
+					"title": "amoled", "icon": "ic_round_brightness_medium_24",
+					"description": "I'm darker than the night itself!"
 				}, {
 					"key": "use_source_theme", "type": "boolean",
 					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
@@ -24,6 +26,7 @@
 			"items": [
 				{
 					"key": "default_tab", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
+					"description": "Will be opened when the app starts",
 					"title": "startUpTab", "icon": "ic_round_home_24",
 					"items": [
 						{ "key": "MAIN", "title": "Anime" },
@@ -33,29 +36,34 @@
 			]
 		}, {
 			"key": "content", "type": "screen",
-			"title": "content", "icon": "ic_extension",
+			"title": "content", "icon": "ic_round_grid_view_24",
 			"items": [
 				{
 					"key": "extensions", "type": "screen",
-					"title": "extensions",
+					"title": "extensions", "icon": "ic_extension", "icon_size": 0.88,
+					"description": "All videos and features come from here",
 					"items": [
 						{
 							"key": "aweryjs", "type": "screen",
-							"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false,
+							"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false, "icon_size": 1.2,
+							"description": "Watch Movies, TV with Tracking and Comments!",
 							"behaviour": "extensions_aweryjs"
 						}, {
 							"key": "aniyomi", "type": "screen",
-							"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false,
+							"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false, "icon_size": 1.2,
+							"description": "It seems there is only Anime here?",
 							"behaviour": "extensions_aniyomi"
 						}
 					]
 				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
 					"title": "global_excluded_tags", "icon": "ic_round_block_24",
+					"description": "You won't see any media with these tags",
 					"behaviour": "excluded_tags"
 				}, {
 					"key": "adult_content", "type": "boolean",
-					"title": "Show adult content", "icon": "ic_round_report"
+					"title": "Show adult content", "icon": "ic_round_report",
+					"description": "Show adult content in the app"
 				}
 			]
 		}, {
@@ -64,7 +72,8 @@
 			"items": [
 				{
 					"key": "double_tab_seek", "type": "select",
-					"title": "Double-tap to seek",
+					"title": "Double-tap to seek", "icon": "ic_round_touch_app_24",
+					"description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "0", "title": "Disabled" },
 						{ "key": "3", "title": "3s" },
@@ -78,6 +87,7 @@
 				}, {
 					"key": "big_seek", "type": "select",
 					"title": "Quick Rewind ", "icon": "outline_fast_forward_24",
+					"description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "0", "title": "Disabled" },
 						{ "key": "30", "title": "30s" },
@@ -89,7 +99,8 @@
 					]
 				}, {
 					"key": "gestures", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
-					"title": "Gestures mode",
+					"title": "Gestures mode", "icon": "ic_round_swipe_vertical_24",
+					"description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "VOLUME_BRIGHTNESS", "title": "Volume and Brightness" },
 						{ "key": "DISABLED", "title": "Disabled" }

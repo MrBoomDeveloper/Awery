@@ -7,8 +7,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.util.CallbackUtil;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.Set;
 
@@ -70,6 +73,22 @@ public class SettingsData {
 			}
 
 			default -> callback.onResult(null, new IllegalArgumentException("Failed to load tags list"));
+		}
+	}
+
+	@Contract(pure = true)
+	public static void getScreen(
+			@NonNull String behaviourId,
+			CallbackUtil.Errorable<SettingsItem, Throwable> callback
+	) {
+		if(behaviourId.startsWith("extensions_")) {
+			switch(behaviourId) {
+				case "extensions_aweryjs" -> callback.onResult(null, new IllegalArgumentException("Currently not supported"));
+				case "extensions_aniyomi" -> callback.onResult(null, new IllegalArgumentException("Will be supported very soon!"));
+				default -> callback.onResult(null, new IllegalArgumentException("Unknown extensions screen: " + behaviourId));
+			}
+		} else {
+			callback.onResult(null, new IllegalArgumentException("Unknown screen: " + behaviourId));
 		}
 	}
 

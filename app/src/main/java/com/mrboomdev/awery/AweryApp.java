@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -25,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
+import androidx.viewbinding.ViewBinding;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.data.db.AweryDB;
@@ -132,6 +134,14 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				throw new IllegalArgumentException("Activity must implement OnBackPressedDispatcherOwner!");
 			}
 		}
+	}
+
+	public static Context getContext(@NonNull ViewBinding binding) {
+		return binding.getRoot().getContext();
+	}
+
+	public static Context getContext(@NonNull View view) {
+		return view.getContext();
 	}
 
 	@NonNull

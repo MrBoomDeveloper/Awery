@@ -1,6 +1,10 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.AweryApp.getContext;
 import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -139,8 +144,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 										return;
 									}
 
+									var item = selectedItem.get().getId();
+									holder.updateDescription(item);
+
 									var prefs = AwerySettings.getInstance();
-									prefs.setString(setting.getFullKey(), selectedItem.get().getId());
+									prefs.setString(setting.getFullKey(), item);
 									prefs.saveAsync();
 								}
 
@@ -194,7 +202,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
 
 					var chips = new ChipGroup(parent.getContext());
-					chips.setChipSpacingVertical(ViewUtil.dpPx(-4));
+					chips.setChipSpacingVertical(dpPx(-4));
 
 					var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 					chips.setLayoutParams(chipsParams);
@@ -257,6 +265,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			item.setBooleanValue(isChecked);
 			handler.save(item, isChecked);
+			holder.updateDescription(String.valueOf(isChecked));
 
 			if(item.isRestartRequired()) {
 				suggestToRestart(parent);
@@ -304,7 +313,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			super(binding.getRoot());
 
 			this.binding = binding;
-			this.context = binding.getRoot().getContext();
+			this.context = getContext(binding);
 		}
 
 		public SettingsItem getItem() {
@@ -313,6 +322,46 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 		public boolean didInit() {
 			return didInit;
+		}
+
+		public void updateDescription(String payload) {
+			var description = resolveDescription(payload);
+			setTopMargin(binding.title, dpPx(description == null ? 3 : -5));
+
+			if(description == null) {
+				binding.description.setVisibility(View.GONE);
+			} else {
+				binding.description.setVisibility(View.VISIBLE);
+				binding.description.setText(description);
+			}
+		}
+
+		@Nullable
+		private String resolveDescription(String payload) {
+			var result = item.getDescription(context);
+			if(result == null) return null;
+
+			if(result.contains("${VALUE_TITLE}")) {
+				var prefs = payload == null ? AwerySettings.getInstance() : null;
+
+				var value = switch(item.getType()) {
+					case STRING -> payload != null ? payload : prefs.getString(item.getFullKey());
+					case BOOLEAN -> (payload != null ? Boolean.parseBoolean(payload) : prefs.getBoolean(item.getFullKey())) ? "Enabled" : "Disabled";
+					case INT -> payload != null ? payload : String.valueOf(prefs.getInt(item.getFullKey()));
+
+					case SELECT -> {
+						var selected = payload != null ? payload : prefs.getString(item.getFullKey());
+						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
+						yield found.isPresent() ? found.get().getTitle(context) : "";
+					}
+
+					default -> "";
+				};
+
+				result = result.replaceAll("\\$\\{VALUE_TITLE\\}", value);
+			}
+
+			return result;
 		}
 
 		public void bind(@NonNull SettingsItem item) {
@@ -324,20 +373,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));
 
-			var description = item.getDescription(context);
-			if(description == null) {
-				binding.description.setVisibility(View.GONE);
-			} else {
-				binding.description.setVisibility(View.VISIBLE);
-				binding.description.setText(description);
-			}
-
+			updateDescription(null);
 			var icon = item.getIcon(context);
+
 			if(icon == null) {
 				binding.icon.setVisibility(View.GONE);
 			} else {
 				binding.icon.setVisibility(View.VISIBLE);
 				binding.icon.setImageDrawable(icon);
+				setScale(binding.icon, item.getIconSize());
 
 				if(item.tintIcon()) {
 					var context = binding.getRoot().getContext();

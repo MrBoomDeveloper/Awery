@@ -14,6 +14,7 @@ import com.mrboomdev.awery.R;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
+import java.util.Collection;
 import java.util.List;
 
 public class SettingsItem {
@@ -28,26 +29,34 @@ public class SettingsItem {
 	private List<SettingsItem> items;
 	@Json(ignore = true)
 	private SettingsItem parent;
+	@Json(name = "icon_size")
+	private Float iconSize;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
 	@Json(name = "int_value")
 	private Integer intValue;
+	@Json(name = "string_value")
+	private String stringValue;
 
 	public SettingsItem(@NonNull SettingsItem item) {
 		this.key = item.key;
 		this.type = item.type;
+		this.booleanValue = item.booleanValue;
+		this.intValue = item.intValue;
+		this.stringValue = item.stringValue;
+
 		this.items = item.items;
-		this.restart = item.restart;
 		this.behaviour = item.behaviour;
+
+		this.restart = item.restart;
+		this.showIf = item.showIf;
 
 		this.icon = item.icon;
 		this.tintIcon = item.tintIcon;
+		this.iconSize = item.iconSize;
+
 		this.title = item.title;
 		this.description = item.description;
-
-		this.showIf = item.showIf;
-		this.booleanValue = item.booleanValue;
-		this.intValue = item.intValue;
 
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
@@ -60,6 +69,10 @@ public class SettingsItem {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public float getIconSize() {
+		return iconSize == null ? 1 : iconSize;
 	}
 
 	public boolean tintIcon() {
@@ -84,6 +97,10 @@ public class SettingsItem {
 		return true;
 	}
 
+	public void setItems(Collection<SettingsItem> items) {
+		this.items = List.copyOf(items);
+	}
+
 	public String getBehaviour() {
 		return behaviour;
 	}
@@ -105,8 +122,8 @@ public class SettingsItem {
 	public void restoreValues(AwerySettings settings) {
 		switch(type) {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey());
-
 			case INT -> intValue = settings.getInt(getFullKey());
+			case SELECT, STRING -> stringValue = settings.getString(getFullKey());
 
 			case SCREEN -> {
 				if(items == null) return;
@@ -168,6 +185,14 @@ public class SettingsItem {
 		intValue = value;
 	}
 
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String value) {
+		stringValue = value;
+	}
+
 	public void setBooleanValue(boolean value) {
 		booleanValue = value;
 	}
@@ -178,26 +203,6 @@ public class SettingsItem {
 
 	public SettingsItem getParent() {
 		return parent;
-	}
-
-	public void mergeValues(SettingsItem item) {
-		if(item == null) return;
-
-		if(item.booleanValue != null) {
-			booleanValue = item.booleanValue;
-		}
-
-		if(item.intValue != null) {
-			intValue = item.intValue;
-		}
-
-		if(items != null) {
-			for(var child : items) {
-				child.mergeValues(item.findDirect(child.getKey()));
-			}
-		} else {
-			items = item.items;
-		}
 	}
 
 	public boolean hasParent() {

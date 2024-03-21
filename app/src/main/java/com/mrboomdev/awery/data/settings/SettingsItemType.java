@@ -7,6 +7,8 @@ public enum SettingsItemType {
 	BOOLEAN,
 	@Json(name = "int")
 	INT,
+	@Json(name = "string")
+	STRING,
 	@Json(name = "screen")
 	SCREEN,
 	@Json(name = "select")

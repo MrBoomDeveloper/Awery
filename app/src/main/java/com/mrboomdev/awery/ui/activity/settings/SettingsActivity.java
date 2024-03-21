@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 
 			try {
 				item = adapter.fromJson(itemJson);
+				if(item == null) throw new IllegalArgumentException("Failed to parse settings");
 			} catch(IOException e) {
 				Log.e(TAG, "Failed to parse settings", e);
 				toast(this, "Failed to get settings", 0);
@@ -72,13 +74,36 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		binding.recycler.setRecycledViewPool(viewPool);
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
-				ViewUtil.setTopPadding(binding.recycler, insets.top + ViewUtil.dpPx(12)), frame);
+				setTopPadding(binding.recycler, insets.top + ViewUtil.dpPx(12)), frame);
 
 		if(item.getItems() != null) {
 			var recyclerAdapter = new SettingsAdapter(item, this);
 			binding.recycler.setAdapter(recyclerAdapter);
+		} else if(item.getBehaviour() != null) {
+			SettingsData.getScreen(item.getBehaviour(), (screen, e) -> {
+				if(e != null) {
+					Log.e(TAG, "Failed to get settings", e);
+					toast(this, "Failed to get settings", 0);
+					finish();
+					return;
+				}
+
+				var recyclerAdapter = new SettingsAdapter(screen, new SettingsAdapter.DataHandler() {
+
+					@Override
+					public void onScreenLaunchRequest(SettingsItem item) {
+						toast("Currently not supported", 1);
+					}
+
+					@Override
+					public void save(SettingsItem item, Object newValue) {
+						toast("Currently not supported", 1);
+					}
+				});
+				binding.recycler.setAdapter(recyclerAdapter);
+			});
 		} else {
-			toast(this, "This part of app is not yet done!", 0);
+			toast(this, "Failed to get settings", 0);
 			finish();
 		}
 

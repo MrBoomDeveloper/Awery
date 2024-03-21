@@ -58,6 +58,15 @@ public class ViewUtil {
 		return false;
 	}
 
+	public static void setScale(@NonNull View view, float scale) {
+		view.setScaleX(scale);
+		view.setScaleY(scale);
+	}
+
+	public static float getScale(@NonNull View view) {
+		return (view.getScaleX() + view.getScaleY()) / 2;
+	}
+
 	public static boolean setMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;
