@@ -4,6 +4,7 @@
     <string name="empty_library_message">Начните поиск и новые вещи появятся здесь!</string>
 
     <string name="login">Войти</string>
+    <string name="back">Назад</string>
     <string name="logout">Выйти</string>
     <string name="global_excluded_tags">Глобально Исключить Теги</string>
     <string name="english">Английский</string>

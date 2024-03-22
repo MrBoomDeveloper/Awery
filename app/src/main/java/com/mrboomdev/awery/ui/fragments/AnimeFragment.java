@@ -71,7 +71,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
-				.build().executeQuery(items -> {
+				.build().executeQuery(requireContext(), items -> {
 					if(currentLoadId != loadId) return;
 
 					var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
@@ -187,7 +187,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 	) {
 		totalTasks++;
 
-		query.executeQuery(items -> {
+		query.executeQuery(requireContext(), items -> {
 			if(loadId != this.loadId) return;
 
 			var filtered = new ArrayList<>(MediaUtils.filterMedia(items));

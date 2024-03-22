@@ -179,7 +179,7 @@ public class SearchActivity extends AppCompatActivity {
 				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
 				.setPage(page)
 				.build()
-				.executeQuery(items -> {
+				.executeQuery(this, items -> {
 					if(wasSearchId != searchId) return;
 
 					final var filteredItems = MediaUtils.filterMedia(items);

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
+import android.content.Context;
+
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.exceptions.HttpException;
@@ -40,7 +42,7 @@ public abstract class AnilistQuery<T> {
 		return 60_000;
 	}
 
-	private void executeQueryHttp(ResponseCallback<String> callback) throws HttpClient.HttpException {
+	private void executeQueryHttp(Context context, ResponseCallback<String> callback) throws HttpClient.HttpException {
 		var data = new HashMap<String, String>() {{
 			put("query", getQuery());
 			put("variables", getVariables());
@@ -59,7 +61,7 @@ public abstract class AnilistQuery<T> {
 				.setCache(getCacheTime(), HttpClient.CacheMode.CACHE_FIRST)
 				.addHeader("Content-Type", "application/json")
 				.addHeader("Accept", "application/json")
-				.callAsync(new HttpClient.HttpCallback() {
+				.callAsync(context, new HttpClient.HttpCallback() {
 					@Override
 					public void onResponse(HttpClient.HttpResponse response) {
 						if(!response.getText().startsWith("{")) {
@@ -77,8 +79,8 @@ public abstract class AnilistQuery<T> {
 				});
 	}
 
-	public AnilistQuery<T> executeQuery(ResponseCallback<T> callback) {
-		executeQueryHttp(response -> {
+	public AnilistQuery<T> executeQuery(Context context, ResponseCallback<T> callback) {
+		executeQueryHttp(context, response -> {
 			T processed;
 
 			try {

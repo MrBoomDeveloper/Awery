@@ -32,27 +32,27 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="3dp"
         android:fontFamily="@font/poppins_semi_bold"
         android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@id/icon"
+        app:layout_constraintRight_toLeftOf="@id/toggle"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
         app:layout_goneMarginLeft="18dp"
-        tools:text="Title - Загаловок" />
+        tools:text="dvdfvdfvdfvdfvdfvdfvdffbvdfvdfv" />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:paddingBottom="1dp"
         android:textSize="13sp"
         android:textColor="?attr/colorSecondary"
-        app:layout_constraintLeft_toRightOf="@id/icon"
+        app:layout_constraintRight_toRightOf="@id/title"
+        app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_goneMarginLeft="18dp"
-        tools:text="Description"
+        tools:text="@tools:sample/lorem/random"
         tools:visibility="visible" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial

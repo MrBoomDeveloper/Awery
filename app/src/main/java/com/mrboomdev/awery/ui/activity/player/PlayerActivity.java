@@ -271,13 +271,13 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				prefs.getString(AwerySettings.DOUBLE_TAP_SEEK,
 				"10"), 10);
 
+		bigSeek = StringUtil.parseInteger(
+				prefs.getString(AwerySettings.PLAYER_BIG_SEEK,
+						"60"), 60);
+
 		gesturesMode = StringUtil.parseEnum(
 				prefs.getString(AwerySettings.PLAYER_GESTURES),
 				GesturesMode.VOLUME_BRIGHTNESS);
-
-		bigSeek = StringUtil.parseInteger(
-				prefs.getString(AwerySettings.PLAYER_BIG_SEEK,
-				"60"), 60);
 	}
 
 	@Override

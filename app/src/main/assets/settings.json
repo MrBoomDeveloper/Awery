@@ -71,7 +71,7 @@
 			"title": "player", "icon": "ic_round_video_settings_24",
 			"items": [
 				{
-					"key": "double_tab_seek", "type": "select",
+					"key": "double_tap_seek", "type": "select", "string_value": "10",
 					"title": "Double-tap to seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -85,20 +85,20 @@
 						{ "key": "120", "title": "120s" }
 					]
 				}, {
-					"key": "big_seek", "type": "select",
+					"key": "big_seek", "type": "select", "string_value": "45",
 					"title": "Quick Rewind ", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "0", "title": "Disabled" },
 						{ "key": "30", "title": "30s" },
+						{ "key": "45", "title": "45s" },
 						{ "key": "60", "title": "1m" },
 						{ "key": "120", "title": "2m" },
 						{ "key": "180", "title": "3m" },
-						{ "key": "240", "title": "4m" },
-						{ "key": "300", "title": "5m" }
+						{ "key": "240", "title": "4m" }
 					]
 				}, {
-					"key": "gestures", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
+					"key": "gestures", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
 					"title": "Gestures mode", "icon": "ic_round_swipe_vertical_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -131,7 +131,13 @@
 		}, {
 			"key": "reader", "type": "screen",
 			"title": "reader", "icon": "ic_round_reader_settings",
-			"items": []
+			"items": [
+				{
+					"key": "bruh", "type": "boolean",
+					"title": "Sorry bro, but you currently can't read those chinese comics.",
+					"description": "Come here later..."
+				}
+			]
 		}, {
 			"key": "advanced", "type": "screen",
 			"title": "Advanced", "icon": "ic_round_settings_24",

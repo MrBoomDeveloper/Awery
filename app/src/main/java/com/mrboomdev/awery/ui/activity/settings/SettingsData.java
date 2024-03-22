@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.AweryApp.stream;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -54,6 +55,7 @@ public class SettingsData {
 	}
 
 	public static void getSelectionList(
+			Context context,
 			@NonNull String behaviourId,
 			CallbackUtil.Errorable<Set<SelectionItem>, Throwable> callback
 	) {
@@ -63,7 +65,7 @@ public class SettingsData {
 						? AnilistTagsQuery.ALL
 						: AnilistTagsQuery.SAFE;
 
-				AnilistTagsQuery.getTags(flags).executeQuery(tags -> {
+				AnilistTagsQuery.getTags(flags).executeQuery(context, tags -> {
 					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
 
 					callback.onResult(stream(tags).map(tag ->

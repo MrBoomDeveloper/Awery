@@ -1,5 +1,6 @@
 package com.mrboomdev.awery;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ClipData;
@@ -46,6 +47,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -116,7 +118,41 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		var activity = getAnyActivity();
 		if(activity != null) return activity;
 
+		if(app == null) {
+			return getContextUsingPrivateApi();
+		}
+
 		return app;
+	}
+
+	@Nullable
+	@SuppressLint({"PrivateApi","DiscouragedPrivateApi" })
+	private static Context getContextUsingPrivateApi() {
+		Context context = null;
+
+		try {
+			var activityThreadClass = Class.forName("android.app.ActivityThread");
+			var method = activityThreadClass.getDeclaredMethod("currentApplication");
+			context = (Application) method.invoke(null);
+		} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+			Log.e(TAG, "Failed to get Application from ActivityThread!", e);
+		}
+
+		if(context == null) {
+			try {
+				var appGlobalsClass = Class.forName("android.app.AppGlobals");
+				var method = appGlobalsClass.getDeclaredMethod("getInitialApplication");
+				context = (Application) method.invoke(null);
+			} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+				Log.e(TAG, "Failed to get Application from AppGlobals!", e);
+			}
+		}
+
+		if(context != null) {
+			Log.w(TAG, "Using Context from a static method!");
+		}
+
+		return context;
 	}
 
 	public static void setOnBackPressedListener(@NonNull Activity activity, Runnable callback) {

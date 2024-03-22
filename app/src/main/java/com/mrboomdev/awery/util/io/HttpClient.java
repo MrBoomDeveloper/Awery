@@ -1,9 +1,10 @@
 package com.mrboomdev.awery.util.io;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 
@@ -22,26 +23,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
 	private static final String TAG = "HttpClient";
-	private static final OkHttpClient client;
-
-	static {
-		var builder = new OkHttpClient.Builder();
-
-		var cacheDir = new File(
-				AweryApp.getContext().getCacheDir(),
-				Constants.DIRECTORY_NET_CACHE);
-
-		var cache = new Cache(cacheDir, /* 10mb */ 10 * 1024 * 1024);
-		builder.cache(cache);
-
-		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
-			var httpLoggingInterceptor = new HttpLoggingInterceptor();
-			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-			builder.addNetworkInterceptor(httpLoggingInterceptor);
-		}
-
-		client = builder.build();
-	}
+	private static OkHttpClient client;
 
 	public static class Request {
 		private ContentType contentType;
@@ -85,14 +67,14 @@ public class HttpClient {
 			return this;
 		}
 
-		public void call(HttpCallback callback) {
-			call(callback, true);
+		public void call(Context context, HttpCallback callback) {
+			call(context, callback, true);
 		}
 
-		public void callAsync(HttpCallback callback) {
+		public void callAsync(Context context, HttpCallback callback) {
 			checkFields();
 
-			var thread = new Thread(() -> call(callback, false));
+			var thread = new Thread(() -> call(context, callback, false));
 			thread.setName("HttpClient-" + thread.getId());
 
 			thread.setUncaughtExceptionHandler((t, e) ->
@@ -101,9 +83,9 @@ public class HttpClient {
 			thread.start();
 		}
 
-		private void call(HttpCallback callback, boolean check) {
+		private void call(Context context, HttpCallback callback, boolean check) {
 			if(check) checkFields();
-			HttpClient.call(this, callback);
+			HttpClient.call(context, this, callback);
 		}
 
 		private void checkFields() {
@@ -120,7 +102,22 @@ public class HttpClient {
 		}
 	}
 
-	public static OkHttpClient getClient() {
+	public static OkHttpClient getClient(Context context) {
+		if(client != null) return client;
+
+		var builder = new OkHttpClient.Builder();
+
+		var cacheDir = new File(context.getCacheDir(), Constants.DIRECTORY_NET_CACHE);
+		var cache = new Cache(cacheDir, /* 10mb */ 10 * 1024 * 1024);
+		builder.cache(cache);
+
+		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+			var httpLoggingInterceptor = new HttpLoggingInterceptor();
+			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+			builder.addNetworkInterceptor(httpLoggingInterceptor);
+		}
+
+		client = builder.build();
 		return client;
 	}
 
@@ -136,7 +133,7 @@ public class HttpClient {
 				.setUrl(url);
 	}
 
-	private static void call(@NonNull Request request, HttpCallback callback) {
+	private static void call(Context context, @NonNull Request request, HttpCallback callback) {
 		var okRequest = new okhttp3.Request.Builder();
 		okRequest.url(request.url);
 
@@ -158,14 +155,14 @@ public class HttpClient {
 					.build());
 		}
 
-		executeCall(okRequest, request.cacheMode, callback);
+		executeCall(context, okRequest, request.cacheMode, callback);
 	}
 
-	private static void executeCall(okhttp3.Request.Builder okRequest, CacheMode mode, HttpCallback callback) {
-		try(var response = client.newCall(okRequest.build()).execute()) {
+	private static void executeCall(Context context, okhttp3.Request.Builder okRequest, CacheMode mode, HttpCallback callback) {
+		try(var response = getClient(context).newCall(okRequest.build()).execute()) {
 			if(mode == CacheMode.CACHE_FIRST && response.code() == 504) {
 				var cacheControl = new CacheControl.Builder().noCache().build();
-				executeCall(okRequest.cacheControl(cacheControl), CacheMode.NETWORK_ONLY, callback);
+				executeCall(context, okRequest.cacheControl(cacheControl), CacheMode.NETWORK_ONLY, callback);
 				return;
 			}
 

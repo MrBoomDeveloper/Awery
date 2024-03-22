@@ -11,7 +11,7 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:layout_weight="1"
@@ -25,6 +25,7 @@
         android:visibility="gone"
         tools:visibility="visible"
         tools:src="@drawable/ic_round_settings_24"
-        app:tint="@color/material_dynamic_neutral10" />
+        app:tint="?attr/colorAccent"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>

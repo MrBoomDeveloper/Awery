@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.software.leanback" android:required="false" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,8 +15,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Manage storage on old devices -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
 
     <!-- For background jobs -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -25,7 +35,9 @@
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <!-- To view extension packages in API 30+ -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <queries>
         <package android:name="idm.internet.download.manager.plus" />
@@ -50,43 +62,59 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="tiramisu">
 
-        <activity android:name=".ui.activity.SplashActivity"
+        <activity
+            android:name=".ui.activity.SplashActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/Theme.Awery.Splash"
             android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.player.PlayerActivity"
+        <activity
+            android:name=".ui.activity.IntentHandlerActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="mrboomdev.ru" />
+                <data android:pathPrefix="/awery/app-login" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.activity.player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:screenOrientation="landscape"
             android:exported="true"
             tools:ignore="DiscouragedApi" />
 
-        <activity android:name=".ui.activity.MainActivity" android:exported="false" />
-        <activity android:name=".ui.activity.SearchActivity" android:exported="false" />
-        <activity android:name=".ui.activity.MediaActivity" android:exported="false" />
-        <activity android:name=".ui.activity.ReaderActivity" android:exported="false" />
-        <activity android:name=".ui.activity.settings.SettingsActivity" android:exported="false" />
-
-        <activity android:name=".ui.activity.IntentHandlerActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="https" />
-                <data android:scheme="http" />
-                <data android:host="mrboomdev.ru" />
-                <data android:pathPrefix="/awery_app_login" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.MediaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.ReaderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.settings.SettingsActivity"
+            android:exported="false" />
 
         <receiver
             android:name="ani.awery.subcriptions.AlarmReceiver"
@@ -94,7 +122,7 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="Aani.dantotsu.ACTION_ALARM"/>
+                <action android:name="Aani.dantotsu.ACTION_ALARM" />
             </intent-filter>
         </receiver>
 
@@ -102,32 +130,38 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <service android:name="ani.awery.download.video.MyDownloadService"
+        <service
+            android:name="ani.awery.download.video.MyDownloadService"
             android:exported="false">
 
             <intent-filter>
-                <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
-        <service android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallService"
+        <service
+            android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
 
-        <service android:name="eu.kanade.tachiyomi.extension.anime.util.AnimeExtensionInstallService"
+        <service
+            android:name="eu.kanade.tachiyomi.extension.anime.util.AnimeExtensionInstallService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
 
-        <service android:name="ani.awery.download.manga.MangaDownloaderService"
+        <service
+            android:name="ani.awery.download.manga.MangaDownloaderService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <service android:name="ani.awery.download.novel.NovelDownloaderService"
+        <service
+            android:name="ani.awery.download.novel.NovelDownloaderService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <service android:name="ani.awery.connections.discord.DiscordService"
+        <service
+            android:name="ani.awery.connections.discord.DiscordService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>

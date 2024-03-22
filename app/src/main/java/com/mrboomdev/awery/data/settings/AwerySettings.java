@@ -6,9 +6,15 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,9 +23,11 @@ import java.util.Set;
  * @author MrBoomDev
  */
 public class AwerySettings {
+	private static final String TAG = "AwerySettings";
 	public static final String APP_SETTINGS = "Awery";
-	public static final String APP_SECRETS = "Secrets";
+	private static SettingsItem settingsMapInstance;
 	private final SharedPreferences prefs;
+	private final Context context;
 	private SharedPreferences.Editor editor;
 
 	public static final String PLAYER_GESTURES = "settings_player_gestures";
@@ -29,19 +37,57 @@ public class AwerySettings {
 	public static final String ADULT_CONTENT = "settings_content_adult_content";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
-	@Deprecated
-	public static final String THEME_CUSTOM = "settings_theme_custom";
 	public static final String LAST_OPENED_VERSION = "last_opened_version";
 	public static final String THEME_PALLET = "settings_theme_pallet";
 	public static final String THEME_USE_OLDED = "settings_theme_amoled";
 	public static final String THEME_USE_COLORS_FROM_MEDIA = "settings_theme_use_source_theme";
-
 	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
 
-	public static final String PLAYER_DEFAULT_VIDEO_QUALITY = "settings_player_default_video_quality";
-
-	public AwerySettings(SharedPreferences prefs) {
+	private AwerySettings(Context context, SharedPreferences prefs) {
+		this.context = context;
 		this.prefs = prefs;
+	}
+
+	public static SettingsItem getSettingsMap(Context context) {
+		if(settingsMapInstance != null) return settingsMapInstance;
+
+		try(var reader = new BufferedReader(new InputStreamReader(context.getAssets().open("settings.json"), StandardCharsets.UTF_8))) {
+			var builder = new StringBuilder();
+			String line;
+
+			while((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+
+			try {
+				var moshi = new Moshi.Builder().build();
+				var adapter = moshi.adapter(SettingsItem.class);
+				settingsMapInstance = adapter.fromJson(builder.toString());
+
+				if(settingsMapInstance == null) {
+					throw new IllegalStateException("Failed to parse settings");
+				}
+
+				settingsMapInstance.setAsParentForChildren();
+				settingsMapInstance.restoreValues(AwerySettings.getInstance(context));
+
+				return settingsMapInstance;
+			} catch(IOException e) {
+				throw new InvalidSyntaxException("Failed to parse settings", e);
+			}
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String getDefaultString(Context context, String key) {
+		var settings = getSettingsMap(context);
+		return settings.find(key).getStringValue();
+	}
+
+	public static boolean getDefaultBoolean(Context context, String key) {
+		var settings = getSettingsMap(context);
+		return settings.find(key).getBooleanValue();
 	}
 
 	/**
@@ -189,7 +235,7 @@ public class AwerySettings {
 	 */
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context, String name) {
-		return new AwerySettings(context.getSharedPreferences(name, 0));
+		return new AwerySettings(context, context.getSharedPreferences(name, 0));
 	}
 
 	/**

@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -41,12 +42,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
+	private List<SettingsItem> items;
 	private final DataHandler handler;
-	private SettingsItem data;
 
 	public SettingsAdapter(SettingsItem data, DataHandler handler) {
-		this.data = data;
 		this.handler = handler;
+		setHasStableIds(true);
+		setData(data, false);
 	}
 
 	public interface DataHandler {
@@ -55,9 +57,23 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
+	private void setData(@NonNull SettingsItem data, boolean notify) {
+		this.items = stream(data.getItems())
+				.filter(SettingsItem::isVisible)
+				.toList();
+
+		if(notify) {
+			notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
 	public void setData(@NonNull SettingsItem data) {
-		this.data = data;
-		notifyDataSetChanged();
+		setData(data, true);
 	}
 
 	private void createRadioButtons(
@@ -157,7 +173,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.show();
 
 					if(setting.getBehaviour() != null) {
-						SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
+						SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
 							selectionItems.set(items);
 							if(!dialog.isShown()) return;
 
@@ -222,7 +238,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							})
 							.show();
 
-					SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
+					SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
 						selectionItems.set(items);
 						if(!dialog.isShown()) return;
 
@@ -295,12 +311,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		holder.bind(data.getItems().get(position));
+		holder.bind(items.get(position));
 	}
 
 	@Override
 	public int getItemCount() {
-		return data.getItems().size();
+		return items.size();
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -368,8 +384,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			this.didInit = false;
 			this.item = item;
 
-			binding.getRoot().setVisibility(item.isVisible() ? View.VISIBLE : View.GONE);
-
 			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));
 
@@ -393,11 +407,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 			}
 
-			switch(item.getType()) {
-				case BOOLEAN -> {
-					binding.toggle.setVisibility(View.VISIBLE);
-					binding.toggle.setChecked(item.getBooleanValue());
-				}
+			if(item.getType() == SettingsItemType.BOOLEAN) {
+				binding.toggle.setVisibility(View.VISIBLE);
+				binding.toggle.setChecked(item.getBooleanValue());
 			}
 
 			this.didInit = true;

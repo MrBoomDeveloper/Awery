@@ -33,7 +33,7 @@ public class YouTubeEmbedView extends FrameLayout {
 		new HttpClient.Request()
 				.setUrl(VIDEO_QUERY_URL + id)
 				.setCache(24 * 60 * 60 * 1000, HttpClient.CacheMode.CACHE_FIRST)
-				.callAsync((HttpClient.SimpleHttpCallback) (response, exception) -> {
+				.callAsync(getContext(), (HttpClient.SimpleHttpCallback) (response, exception) -> {
 					if(response != null) {
 						var moshi = new Moshi.Builder().build();
 						var adapter = moshi.adapter(PipedResponse.class);

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="4dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="14dp">
 
     <ImageView
         android:id="@+id/back"
@@ -20,21 +21,19 @@
         android:src="@drawable/ic_round_arrow_back_ios_new_24"
         android:contentDescription="@string/back" />
 
-    <EditText
-        android:id="@+id/edittext"
+    <TextView
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:paddingLeft="8dp"
+        android:text="@string/settings"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/back"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="@null"
-        android:autofillHints="searchQuery"
-        android:hint="@string/search"
-        android:maxLines="1"
-        android:textSize="14sp"
-        android:paddingLeft="8dp"
-        android:imeOptions="actionSearch|flagNoFullscreen"
-        android:inputType="textAutoCorrect" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

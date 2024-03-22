@@ -21,6 +21,8 @@
 
     <string name="global_excluded_tags">Globally Exclude Tags</string>
 
+    <string name="back">Back</string>
+
     <string name="home">Home</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>

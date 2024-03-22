@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class SettingsItem {
+	public static final String SEPARATOR = "_";
 	private final String key, title, description, icon, behaviour;
 	private final SettingsItemType type;
 	private String parentKey;
@@ -218,7 +219,7 @@ public class SettingsItem {
 			return key;
 		}
 
-		return parent.getFullKey() + "_" + key;
+		return parent.getFullKey() + SEPARATOR + key;
 	}
 
 	public String getKey() {
