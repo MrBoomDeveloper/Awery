@@ -14,19 +14,20 @@ import com.mrboomdev.awery.R;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class SettingsItem {
 	public static final String SEPARATOR = "_";
-	private final String key, title, description, icon, behaviour;
-	private final SettingsItemType type;
+	private String key, title, description, icon, behaviour;
+	private SettingsItemType type;
 	private String parentKey;
 	@Json(name = "tint_icon")
 	private Boolean tintIcon;
 	@Json(name = "show_if")
 	private String showIf;
-	private final boolean restart;
+	private boolean restart;
 	private List<SettingsItem> items;
 	@Json(ignore = true)
 	private SettingsItem parent;
@@ -38,6 +39,8 @@ public class SettingsItem {
 	private Integer intValue;
 	@Json(name = "string_value")
 	private String stringValue;
+	@Json(ignore = true)
+	private Drawable iconDrawable;
 
 	public SettingsItem(@NonNull SettingsItem item) {
 		this.key = item.key;
@@ -53,6 +56,7 @@ public class SettingsItem {
 		this.showIf = item.showIf;
 
 		this.icon = item.icon;
+		this.iconDrawable = item.iconDrawable;
 		this.tintIcon = item.tintIcon;
 		this.iconSize = item.iconSize;
 
@@ -62,6 +66,8 @@ public class SettingsItem {
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
 	}
+
+	private SettingsItem() {}
 
 	public void setAsParentForChildren() {
 		if(items == null) return;
@@ -107,6 +113,7 @@ public class SettingsItem {
 	}
 
 	public Drawable getIcon(@NonNull Context context) {
+		if(iconDrawable != null) return iconDrawable;
 		if(icon == null) return null;
 
 		try {
@@ -175,7 +182,7 @@ public class SettingsItem {
 	}
 
 	public boolean getBooleanValue() {
-		return booleanValue;
+		return booleanValue != null && booleanValue;
 	}
 
 	public int getIntValue() {
@@ -257,6 +264,73 @@ public class SettingsItem {
 		}
 
 		return null;
+	}
+
+	public static class Builder {
+		private final SettingsItem item = new SettingsItem();
+
+		public Builder(SettingsItemType type) {
+			item.type = type;
+		}
+
+		public Builder setKey(String key) {
+			item.key = key;
+			return this;
+		}
+
+		public Builder setTitle(String title) {
+			item.title = title;
+			return this;
+		}
+
+		public Builder setDescription(String description) {
+			item.description = description;
+			return this;
+		}
+
+		public Builder setIcon(String icon) {
+			item.icon = icon;
+			return this;
+		}
+
+		public Builder setRestartRequired(boolean restart) {
+			item.restart = restart;
+			return this;
+		}
+
+		public Builder setBehaviour(String behaviour) {
+			item.behaviour = behaviour;
+			return this;
+		}
+
+		public Builder setIcon(Drawable drawable) {
+			item.iconDrawable = drawable;
+			return this;
+		}
+
+		public Builder setIconSize(float size) {
+			item.iconSize = size;
+			return this;
+		}
+
+		public Builder setTintIcon(boolean tint) {
+			item.tintIcon = tint;
+			return this;
+		}
+
+		public Builder setItems(Collection<SettingsItem> items) {
+			item.items = new ArrayList<>(items);
+			return this;
+		}
+
+		public Builder setParent(SettingsItem parent) {
+			item.parent = parent;
+			return this;
+		}
+
+		public SettingsItem build() {
+			return item;
+		}
 	}
 
 	@SuppressWarnings("unused")

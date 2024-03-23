@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.LayoutHeaderSettingsBinding;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
@@ -29,7 +30,7 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.DataHandler {
+public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
 	private static final String TAG = "SettingsActivity";
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private AwerySettings settings;
@@ -109,8 +110,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 					return;
 				}
 
-				var recyclerAdapter = new SettingsAdapter(screen, new SettingsAdapter.DataHandler() {
-
+				var recyclerAdapter = new SettingsAdapter(screen, (screen instanceof SettingsDataHandler handler)
+						? handler : new SettingsDataHandler() {
 					@Override
 					public void onScreenLaunchRequest(SettingsItem item) {
 						toast("Currently not supported", 1);

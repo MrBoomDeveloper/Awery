@@ -36,6 +36,13 @@ public class ExtensionsFactory {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends ExtensionsManager> T getManager(Class<T> clazz) {
+		return (T) stream(managers)
+				.filter(manager -> manager.getClass() == clazz)
+				.findFirst().orElseThrow();
+	}
+
 	@NonNull
 	public static Collection<Extension> getExtensions(int flags) {
 		return stream(managers)

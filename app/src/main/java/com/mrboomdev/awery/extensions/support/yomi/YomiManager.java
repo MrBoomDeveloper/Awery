@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -79,7 +80,14 @@ public abstract class YomiManager extends ExtensionsManager {
 			}
 
 			var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
-			var extension = new Extension(pkg.packageName, label, pkg.versionName);
+
+			var extension = new Extension(pkg.packageName, label, pkg.versionName) {
+				@Override
+				public Drawable getIcon() {
+					return pkg.applicationInfo.loadIcon(pm);
+				}
+			};
+
 			extension.addFlags(getFlags());
 
 			if(isNsfw) {

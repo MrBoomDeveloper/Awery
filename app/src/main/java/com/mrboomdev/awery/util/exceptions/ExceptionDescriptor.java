@@ -32,6 +32,11 @@ public class ExceptionDescriptor {
 	private final Throwable throwable;
 
 	public ExceptionDescriptor(@NonNull Throwable t) {
+		if(!isUnknownException(t)) {
+			throwable = t;
+			return;
+		}
+
 		var firstCause = t.getCause();
 
 		if(firstCause != null) {
@@ -66,7 +71,9 @@ public class ExceptionDescriptor {
 			return "Feature not implemented!";
 		} else if(throwable instanceof SocketTimeoutException) {
 			return "Connection timed out!";
-		} else if(throwable instanceof SocketException || throwable instanceof SSLHandshakeException) {
+		} else if(throwable instanceof SocketException e) {
+			return e.getMessage();
+		} else if(throwable instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
 		} else if(throwable instanceof HttpException e) {
 			return switch(e.getCode()) {
@@ -94,6 +101,7 @@ public class ExceptionDescriptor {
 		return throwable instanceof ZeroResultsException ||
 				throwable instanceof UnimplementedException ||
 				throwable instanceof SocketTimeoutException ||
+				throwable instanceof SocketException ||
 				throwable instanceof HttpException ||
 				throwable instanceof SSLHandshakeException;
 	}

@@ -28,8 +28,6 @@ object NovelSources : NovelReadSources() {
     }
 
     private fun createParsersFromExtensions(extensions: List<NovelExtension.Installed>): List<Lazier<BaseParser>> {
-        Log.d("NovelSources", "createParsersFromExtensions")
-        Log.d("NovelSources", extensions.toString())
         return extensions.map { extension ->
             val name = extension.name
             Lazier({ DynamicNovelParser(extension) }, name)

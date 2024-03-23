@@ -28,6 +28,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
@@ -42,17 +43,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private List<SettingsItem> items;
-	private final DataHandler handler;
+	private final SettingsDataHandler handler;
 
-	public SettingsAdapter(SettingsItem data, DataHandler handler) {
+	public SettingsAdapter(SettingsItem data, SettingsDataHandler handler) {
 		this.handler = handler;
 		setHasStableIds(true);
 		setData(data, false);
-	}
-
-	public interface DataHandler {
-		void onScreenLaunchRequest(SettingsItem item);
-		void save(SettingsItem item, Object newValue);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -128,7 +124,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			switch(setting.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
-				case SCREEN -> handler.onScreenLaunchRequest(setting);
+				case SCREEN, SCREEN_BOOLEAN -> handler.onScreenLaunchRequest(setting);
 				case ACTION -> SettingsActions.run(setting.getFullKey());
 
 				case SELECT -> {
@@ -344,7 +340,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 				var value = switch(item.getType()) {
 					case STRING -> payload != null ? payload : prefs.getString(item.getFullKey());
-					case BOOLEAN -> (payload != null ? Boolean.parseBoolean(payload) : prefs.getBoolean(item.getFullKey())) ? "Enabled" : "Disabled";
+					case BOOLEAN, SCREEN_BOOLEAN -> (payload != null ? Boolean.parseBoolean(payload) : prefs.getBoolean(item.getFullKey())) ? "Enabled" : "Disabled";
 					case INT -> payload != null ? payload : String.valueOf(prefs.getInt(item.getFullKey()));
 
 					case SELECT -> {
@@ -366,9 +362,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			this.didInit = false;
 			this.item = item;
 
-			binding.toggle.setVisibility(View.GONE);
 			binding.title.setText(item.getTitle(context));
-
 			updateDescription(null);
 			var icon = item.getIcon(context);
 
@@ -389,9 +383,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 			}
 
-			if(item.getType() == SettingsItemType.BOOLEAN) {
+			if(item.getType() == SettingsItemType.BOOLEAN || item.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);
 				binding.toggle.setChecked(item.getBooleanValue());
+			} else {
+				binding.toggle.setVisibility(View.GONE);
 			}
 
 			this.didInit = true;

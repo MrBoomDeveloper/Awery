@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
 
 import com.squareup.moshi.Json;
@@ -41,6 +43,10 @@ public class Extension {
 
 	public void removeFlags(int flags) {
 		this.flags &= ~flags;
+	}
+
+	public Drawable getIcon() {
+		return null;
 	}
 
 	public List<ExtensionProvider> getProviders() {

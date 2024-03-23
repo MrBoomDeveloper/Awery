@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.activity.settings;
+package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
@@ -7,9 +7,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
+import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.util.CallbackUtil;
 
 import org.jetbrains.annotations.Contract;
@@ -85,9 +85,23 @@ public class SettingsData {
 	) {
 		if(behaviourId.startsWith("extensions_")) {
 			switch(behaviourId) {
-				case "extensions_aweryjs" -> callback.onResult(null, new IllegalArgumentException("Currently not supported"));
-				case "extensions_aniyomi" -> callback.onResult(null, new IllegalArgumentException("Will be supported very soon!"));
-				default -> callback.onResult(null, new IllegalArgumentException("Unknown extensions screen: " + behaviourId));
+				case "extensions_aweryjs" -> callback.onResult(null,
+						new IllegalArgumentException("Currently not supported"));
+
+				case "extensions_aniyomi" -> callback.onResult(new SettingsItem.Builder(SettingsItemType.SCREEN)
+						.setTitle("Aniyomi extensions")
+						.setItems(stream(ExtensionsFactory.getManager(AniyomiManager.class).getExtensions(0))
+								.map(ext -> new SettingsItem.Builder(SettingsItemType.SCREEN_BOOLEAN)
+										.setTitle(ext.getName())
+										.setDescription("v" + ext.getVersion() + "  id: " + ext.getId())
+										.setIcon(ext.getIcon())
+										.setIconSize(1.2f)
+										.setTintIcon(false)
+										.build()).toList())
+						.build(), null);
+
+				default -> callback.onResult(null,
+						new IllegalArgumentException("Unknown extensions screen: " + behaviourId));
 			}
 		} else {
 			callback.onResult(null, new IllegalArgumentException("Unknown screen: " + behaviourId));
