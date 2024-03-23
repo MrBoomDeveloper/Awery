@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -15,7 +15,7 @@ import androidx.core.app.ShareCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;

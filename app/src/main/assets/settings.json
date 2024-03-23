@@ -11,6 +11,10 @@
 					"description": "The app's colors will be generated based on your wallpaper",
 					"show_if": "is_material_you_available"
 				}, {
+					"key": "dark_theme", "type": "boolean", "restart": true,
+					"title": "Dark Theme", "icon": "ic_sharp_dark_mode",
+					"description": "I'm batman!"
+				}, {
 					"key": "amoled", "type": "boolean", "restart": true,
 					"title": "amoled", "icon": "ic_round_brightness_medium_24",
 					"description": "I'm darker than the night itself!"

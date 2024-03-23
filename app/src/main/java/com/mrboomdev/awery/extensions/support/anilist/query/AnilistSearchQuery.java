@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.util.StringUtil;

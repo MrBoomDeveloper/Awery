@@ -8,13 +8,13 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ConcatAdapter;
 
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
-import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
+import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
 
 public class MangaFragment extends MediaCatalogListsFragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var pagerAdapter = new MediaPagerAdapter();
+		var pagerAdapter = new FeaturedMediaAdapter();
 		var categoriesAdapter = new MediaCategoriesAdapter();
 
 		var config = new ConcatAdapter.Config.Builder()

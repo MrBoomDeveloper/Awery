@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import android.os.Bundle;
 

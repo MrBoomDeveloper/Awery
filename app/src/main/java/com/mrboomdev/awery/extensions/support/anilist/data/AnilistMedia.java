@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.extensions.support.anilist.data;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.squareup.moshi.Json;
 

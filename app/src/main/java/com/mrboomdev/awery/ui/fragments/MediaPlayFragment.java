@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;

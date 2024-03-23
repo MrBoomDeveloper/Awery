@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;

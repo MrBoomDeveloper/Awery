@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 public class DialogUtil {

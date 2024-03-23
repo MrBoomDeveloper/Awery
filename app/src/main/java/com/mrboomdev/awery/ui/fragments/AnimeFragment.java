@@ -8,14 +8,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
-import com.mrboomdev.awery.ui.adapter.MediaPagerAdapter;
+import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
@@ -30,7 +30,7 @@ import java.util.List;
 public class AnimeFragment extends MediaCatalogListsFragment {
 	private static final String TAG = "AnimeFragment";
 	private final MediaCategoriesAdapter categoriesAdapter = new MediaCategoriesAdapter();
-	private final MediaPagerAdapter pagerAdapter = new MediaPagerAdapter();
+	private final FeaturedMediaAdapter pagerAdapter = new FeaturedMediaAdapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private int loadId = 0, doneTasks, totalTasks, doneSuccessfully;
 

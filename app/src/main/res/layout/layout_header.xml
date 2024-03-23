@@ -50,6 +50,8 @@
         android:background="@drawable/button_popup_background"
         android:foreground="@drawable/button_popup_foreground"
         android:id="@+id/search"
+        app:tint="?attr/colorOnSecondaryContainer"
+        android:backgroundTint="?attr/colorSecondaryContainer"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@id/settings_wrapper"
         android:layout_marginRight="12dp"
@@ -73,6 +75,8 @@
 
         <ImageView
             android:background="@drawable/button_popup_background"
+            android:backgroundTint="?attr/colorSecondaryContainer"
+            app:tint="?attr/colorOnSecondaryContainer"
             android:id="@+id/settings"
             tools:visibility="invisible"
             android:layout_width="match_parent"

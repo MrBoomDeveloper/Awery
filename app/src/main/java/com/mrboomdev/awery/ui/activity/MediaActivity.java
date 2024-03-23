@@ -16,7 +16,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;

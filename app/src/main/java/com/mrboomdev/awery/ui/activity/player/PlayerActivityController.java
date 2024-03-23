@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.support.template.CatalogVideo;

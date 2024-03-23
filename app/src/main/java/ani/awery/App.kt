@@ -12,13 +12,12 @@ import ani.awery.parsers.MangaSources
 import ani.awery.parsers.NovelSources
 import ani.awery.parsers.novel.NovelExtensionManager
 import com.google.android.material.color.DynamicColors
-import com.mrboomdev.awery.AweryApp
+import com.mrboomdev.awery.app.AweryApp
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.extension.anime.AnimeExtensionManager
 import eu.kanade.tachiyomi.extension.manga.MangaExtensionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
@@ -43,14 +42,6 @@ open class App : Application() {
         super.onCreate()
 
         if(AweryApp.USE_KT_APP_INIT) {
-            val sharedPreferences = getSharedPreferences("Awery", Context.MODE_PRIVATE)
-            val useMaterialYou = sharedPreferences.getBoolean("use_material_you", false)
-
-            if(useMaterialYou) {
-                DynamicColors.applyToActivitiesIfAvailable(this)
-                //TODO: HarmonizedColors
-            }
-
             registerActivityLifecycleCallbacks(mFTActivityLifecycleCallbacks)
 
             Injekt.importModule(AppModule(this))
@@ -58,7 +49,6 @@ open class App : Application() {
 
             initializeNetwork(baseContext)
 
-            setupNotificationChannels()
             if(!LogcatLogger.isInstalled) {
                 LogcatLogger.install(AndroidLogcatLogger(LogPriority.VERBOSE))
             }
@@ -84,14 +74,6 @@ open class App : Application() {
                 novelExtensionManager.findAvailableExtensions()
                 NovelSources.init(novelExtensionManager.installedExtensionsFlow)
             }
-        }
-    }
-
-    private fun setupNotificationChannels() {
-        try {
-            Notifications.createChannels(this)
-        } catch(e: Exception) {
-            logcat(LogPriority.ERROR, e) { "Failed to modify notification channels" }
         }
     }
 

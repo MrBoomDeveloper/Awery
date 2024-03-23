@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.db;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

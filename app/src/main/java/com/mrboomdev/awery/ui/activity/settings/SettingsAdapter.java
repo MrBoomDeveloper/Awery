@@ -1,14 +1,14 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.AweryApp.getContext;
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.getContext;
+import static com.mrboomdev.awery.app.AweryApp.restartApp;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -26,7 +26,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -36,7 +36,6 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -284,29 +283,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			holder.updateDescription(String.valueOf(isChecked));
 
 			if(item.isRestartRequired()) {
-				suggestToRestart(parent);
+				Snackbar.make(parent, "Restart is required to apply changes", 2250)
+						.setAction("Restart", _view -> restartApp()).show();
 			}
 		});
 
 		return holder;
-	}
-
-	private void suggestToRestart(@NonNull View parentView) {
-		Snackbar.make(parentView, "Restart is required to apply changes", 2250)
-				.setAction("Restart", _view -> {
-					var context = parentView.getContext();
-					var pm = context.getPackageManager();
-
-					var intent = pm.getLaunchIntentForPackage(context.getPackageName());
-					var component = Objects.requireNonNull(intent).getComponent();
-
-					var mainIntent = Intent.makeRestartActivityTask(component);
-					mainIntent.setPackage(context.getPackageName());
-					context.startActivity(mainIntent);
-
-					Runtime.getRuntime().exit(0);
-				})
-				.show();
 	}
 
 	@Override

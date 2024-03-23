@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;

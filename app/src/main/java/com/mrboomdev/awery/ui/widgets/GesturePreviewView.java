@@ -17,7 +17,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 

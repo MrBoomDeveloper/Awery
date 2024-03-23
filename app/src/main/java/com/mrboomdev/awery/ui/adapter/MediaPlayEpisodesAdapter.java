@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;

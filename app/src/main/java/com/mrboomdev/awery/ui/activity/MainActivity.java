@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.CrashHandler.reportIfExistsCrash;
 import static ani.awery.FunctionsKt.snackString;
 
 import android.animation.Animator;
@@ -20,7 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 
 		binding.navbar.removeTabAt(2);
-		AweryApp.checkCrashFile(this);
+		reportIfExistsCrash(this);
 	}
 
 	@Override

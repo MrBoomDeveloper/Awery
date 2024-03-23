@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;

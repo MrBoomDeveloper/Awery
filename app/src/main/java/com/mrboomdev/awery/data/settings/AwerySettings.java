@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.squareup.moshi.Moshi;
 
@@ -35,6 +35,7 @@ public class AwerySettings {
 	public static final String DOUBLE_TAP_SEEK = "settings_player_double_tab_seek";
 	public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
 	public static final String ADULT_CONTENT = "settings_content_adult_content";
+	public static final String DARK_THEME = "settings_theme_dark_theme";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
 	public static final String LAST_OPENED_VERSION = "last_opened_version";
@@ -120,6 +121,11 @@ public class AwerySettings {
 	 */
 	public boolean getBoolean(String key) {
 		return getBoolean(key, false);
+	}
+
+	public Boolean getOptionalBoolean(String key) {
+		if(!prefs.contains(key)) return null;
+		return getBoolean(key);
 	}
 
 	public AwerySettings setBoolean(String key, boolean value) {

@@ -2,7 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 
 import org.jetbrains.annotations.Contract;
 

@@ -32,7 +32,7 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionProvider;

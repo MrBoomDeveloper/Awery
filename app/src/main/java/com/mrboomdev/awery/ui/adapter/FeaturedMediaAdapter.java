@@ -1,11 +1,14 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.getConfiguration;
+import static com.mrboomdev.awery.app.AweryApp.getContext;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -19,28 +22,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.mrboomdev.awery.AweryApp;
 import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.observable.ObservableArrayList;
-import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import java9.util.stream.Collectors;
 
-public class MediaPagerAdapter extends SingleViewAdapter {
-	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
+public class FeaturedMediaAdapter extends SingleViewAdapter {
+	private final List<CatalogMedia> items = new ArrayList<>();
 	private LayoutHeaderBinding header;
-	private PagerAdapter adapter = new PagerAdapter();
+	private final PagerAdapter adapter = new PagerAdapter();
 
 	public LayoutHeaderBinding getHeader() {
 		return header;
@@ -48,8 +49,8 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(Collection<CatalogMedia> items) {
-		this.items.clear(false);
-		this.items.addAll(items, false);
+		this.items.clear();
+		this.items.addAll(items);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -77,13 +78,6 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 	}
 
 	public class PagerAdapter extends RecyclerView.Adapter<PagerViewHolder> {
-
-		public PagerAdapter() {
-			items.observeAdditions((item, index) -> {
-				var activity = Objects.requireNonNull(AweryApp.getAnyActivity());
-				activity.runOnUiThread(() -> notifyItemInserted(index));
-			});
-		}
 
 		@NonNull
 		@Override
@@ -160,8 +154,6 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 
 		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogMedia item) {
-			this.item = item;
-
 			binding.title.setText(item.title);
 			binding.description.setText(Html.fromHtml(item.description).toString().trim());
 
@@ -190,6 +182,20 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 			binding.poster.setImageDrawable(null);
 			binding.banner.setImageDrawable(null);
 
+			if((getConfiguration(getContext(binding)).uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+				binding.metaSeparator.setShadowLayer(1, 0, 0, Color.BLACK);
+				binding.tags.setShadowLayer(1, 0, 0, Color.BLACK);
+				binding.status.setShadowLayer(1, 0, 0, Color.BLACK);
+				binding.title.setShadowLayer(3, 0, 0, Color.BLACK);
+				binding.description.setShadowLayer(2, 0, 0, Color.BLACK);
+			} else {
+				binding.metaSeparator.setShadowLayer(0, 0, 0, 0);
+				binding.tags.setShadowLayer(0, 0, 0, 0);
+				binding.status.setShadowLayer(0, 0, 0, 0);
+				binding.title.setShadowLayer(0, 0, 0, 0);
+				binding.description.setShadowLayer(0, 0, 0, 0);
+			}
+
 			Glide.with(binding.getRoot())
 					.load(item.poster.extraLarge)
 					.transition(withCrossFade())
@@ -205,6 +211,8 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 					.into(new CustomTarget<Drawable>() {
 						@Override
 						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+							if(item != PagerViewHolder.this.item) return;
+
 							item.cachedBanner = resource;
 							binding.banner.setImageDrawable(resource);
 						}
@@ -214,6 +222,8 @@ public class MediaPagerAdapter extends SingleViewAdapter {
 								item.cachedBanner = null;
 							}
 					});
+
+			this.item = item;
 		}
 	}
 }

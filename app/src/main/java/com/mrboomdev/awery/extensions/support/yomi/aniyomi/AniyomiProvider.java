@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.os.Bundle;
 

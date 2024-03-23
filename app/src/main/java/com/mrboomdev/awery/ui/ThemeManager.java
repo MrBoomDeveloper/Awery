@@ -8,9 +8,8 @@ import androidx.annotation.StyleRes;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
-import com.mrboomdev.awery.data.settings.AwerySettings;
-
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 
 public class ThemeManager {
 	private static final Theme DEFAULT_THEME = Theme.PINK;

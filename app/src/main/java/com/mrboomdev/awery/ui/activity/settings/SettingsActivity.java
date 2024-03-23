@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.LayoutHeaderSettingsBinding;

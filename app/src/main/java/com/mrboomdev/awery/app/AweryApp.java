@@ -1,10 +1,9 @@
-package com.mrboomdev.awery;
+package com.mrboomdev.awery.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.ClipData;
-import android.content.ClipboardManager;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -25,11 +24,11 @@ import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
@@ -37,14 +36,10 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.template.CatalogList;
 import com.mrboomdev.awery.util.Disposable;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -54,6 +49,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -101,16 +97,16 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return app;
 	}
 
-	public static void toast(Activity activity, String text, int duration) {
-		runOnUiThread(() -> Toast.makeText(activity, text, duration).show());
+	public static void toast(Context context, Object text, int duration) {
+		var string = text == null ? "null" : text.toString();
+		runOnUiThread(() -> Toast.makeText(context, string, duration).show());
 	}
 
-	public static void toast(String text, int duration) {
-		var activity = getAnyActivity();
-		toast(activity, text, duration);
+	public static void toast(Object text, int duration) {
+		toast(getAnyContext(), text, duration);
 	}
 
-	public static void toast(String text) {
+	public static void toast(Object text) {
 		toast(text, 0);
 	}
 
@@ -226,15 +222,32 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Override
 	public void onCreate() {
-		setupCrashHandler();
+		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
 
 		app = this;
 		mainThread = Thread.currentThread();
 
+		var isDarkModeEnabled = AwerySettings.getInstance(this)
+				.getOptionalBoolean(AwerySettings.DARK_THEME);
+
+		if(isDarkModeEnabled != null) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+				var uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+
+				uiModeManager.setApplicationNightMode(isDarkModeEnabled
+						? UiModeManager.MODE_NIGHT_YES
+						: UiModeManager.MODE_NIGHT_NO);
+			} else {
+				AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
+						? AppCompatDelegate.MODE_NIGHT_YES
+						: AppCompatDelegate.MODE_NIGHT_NO);
+			}
+		}
+
 		super.onCreate();
 
-		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
-			var logFile = new File(getExternalFilesDir(null), "ohttp3_log.txt");
+		if(AwerySettings.getInstance(this).getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+			var logFile = new File(getExternalFilesDir(null), "okttp3_log.txt");
 			logFile.delete();
 
 			try {
@@ -290,8 +303,26 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return Resources.getSystem().getConfiguration().orientation;
 	}
 
+	public static Configuration getConfiguration(@NonNull Context context) {
+		return context.getResources().getConfiguration();
+	}
+
 	public static Configuration getConfiguration() {
-		return getAnyContext().getResources().getConfiguration();
+		return getConfiguration(getAnyContext());
+	}
+
+	public static void restartApp() {
+		var context = getAnyContext();
+		var pm = context.getPackageManager();
+
+		var intent = pm.getLaunchIntentForPackage(context.getPackageName());
+		var component = Objects.requireNonNull(intent).getComponent();
+
+		var mainIntent = Intent.makeRestartActivityTask(component);
+		mainIntent.setPackage(context.getPackageName());
+		context.startActivity(mainIntent);
+
+		Runtime.getRuntime().exit(0);
 	}
 
 	@Nullable
@@ -307,120 +338,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 
 		return null;
-	}
-
-	public static void checkCrashFile(@NonNull Context context) {
-		var crashFile = new File(context.getExternalFilesDir(null), "crash.txt");
-
-		try {
-			if(!crashFile.exists()) return;
-
-			try(var reader = new BufferedReader(new FileReader(crashFile))) {
-				StringBuilder result = new StringBuilder();
-				String nextLine;
-
-				while((nextLine = reader.readLine()) != null) {
-					result.append(nextLine);
-				}
-
-				var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
-				var adapter = moshi.adapter(ExceptionDescriptor.class);
-				var details = adapter.fromJson(result.toString());
-				if(details == null) return;
-
-				showCrashMessage(context, details.toString(), false, crashFile);
-			}
-		} catch(Throwable e) {
-			Log.e(TAG, "Failed to read a crash file!", e);
-		}
-	}
-
-	public static void showCrashMessage(@NonNull Context context, String message, boolean finishOnClose, File file) {
-		new MaterialAlertDialogBuilder(context)
-				.setTitle("Awery has crashed!")
-				.setMessage("Please send the following details to developers:\n\n" + message)
-				.setCancelable(false)
-				.setOnDismissListener(dialog -> {
-					if(file != null) file.delete();
-
-					if(finishOnClose) {
-						var activity = getAnyActivity();
-
-						if(activity != null) {
-							activity.finishAffinity();
-							return;
-						}
-
-						System.exit(0);
-					}
-				})
-				.setNeutralButton("Copy", (dialog, btn) -> {
-					var clipboard = context.getSystemService(ClipboardManager.class);
-					var clip = ClipData.newPlainText("crash report", message);
-					clipboard.setPrimaryClip(clip);
-				})
-				.setNegativeButton("Share", (dialog, btn) -> {
-					var intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("text/plain");
-					intent.putExtra(Intent.EXTRA_SUBJECT, "Awery crash report");
-					intent.putExtra(Intent.EXTRA_TEXT, message);
-					context.startActivity(Intent.createChooser(intent, "Share crash report..."));
-				})
-				.setPositiveButton("OK", (dialog, btn) -> dialog.dismiss())
-				.show();
-	}
-
-	private void setupCrashHandler() {
-		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-			if(thread != Looper.getMainLooper().getThread()) {
-				Log.e(TAG, "THREAD WAS KILLED! [ Thread name: "
-						+ thread.getName() + ", Thread id: "
-						+ thread.getId() + " ]", throwable);
-
-				var activity = getAnyActivity();
-
-				if(activity != null) {
-					if(thread.getName().startsWith("Studio:")) {
-						toast(activity, "Failed to send message to Android Studio!", Toast.LENGTH_LONG);
-						return;
-					}
-
-					toast(activity, "Unexpected error has happened!", Toast.LENGTH_LONG);
-				}
-
-				return;
-			}
-
-			Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
-					+ thread.getName() + ", Thread id: "
-					+ thread.getId() + " ]", throwable);
-
-			var crashFile = new File(getExternalFilesDir(null), "crash.txt");
-			var details = new ExceptionDescriptor(throwable);
-			var activity = getAnyActivity();
-
-			try {
-				if(!crashFile.exists()) crashFile.createNewFile();
-
-				try(var writer = new FileWriter(crashFile)) {
-					var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
-					var adapter = moshi.adapter(ExceptionDescriptor.class);
-
-					writer.write(adapter.toJson(details));
-					Log.i(TAG, "Crash file saved successfully: " + crashFile.getAbsolutePath());
-				}
-			} catch(Throwable e) {
-				Log.e(TAG, "Failed to write crash file!", e);
-			}
-
-			if(activity != null) {
-				toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
-				activity.finishAffinity();
-				return;
-			}
-
-			System.exit(0);
-		});
 	}
 
 	@Override
@@ -501,7 +418,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	private static class ActivityInfo implements Comparable<ActivityInfo> {
 		public Activity activity;
 		public boolean isStopped;
-
 
 		@Override
 		public int compareTo(ActivityInfo o) {

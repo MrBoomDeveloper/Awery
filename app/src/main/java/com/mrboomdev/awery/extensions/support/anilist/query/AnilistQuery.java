@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions.support.anilist.query;
 
 import android.content.Context;
 
-import com.mrboomdev.awery.AweryApp;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.exceptions.HttpException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
