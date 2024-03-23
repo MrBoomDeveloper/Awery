@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
 		} else if(item.getBehaviour() != null) {
-			SettingsData.getScreen(item.getBehaviour(), (screen, e) -> {
+			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
 					toast(this, e.getMessage(), 0);

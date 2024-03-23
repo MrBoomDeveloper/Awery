@@ -9,7 +9,7 @@ import com.squareup.moshi.Json;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Extension {
+public class Extension implements Comparable<Extension> {
 	public static final int FLAG_VIDEO_EXTENSION = 1;
 	public static final int FLAG_BOOK_EXTENSION = 2;
 	public static final int FLAG_SUBTITLES_EXTENSION = 4;
@@ -17,24 +17,43 @@ public class Extension {
 	public static final int FLAG_ERROR = 16;
 	public static final int FLAG_WORKING = 32;
 	public static final int FLAG_NSFW = 64;
-	public static final int FLAG_ANY_STATUS = FLAG_ERROR | FLAG_WORKING;
 	private final String version, id;
 	private final String name;
+	private boolean isLoaded;
 	private int flags;
 	private String error;
 	private Throwable exception;
 	@Json(ignore = true)
 	private final List<ExtensionProvider> providers = new ArrayList<>();
+	@Json(ignore = true)
+	private final ExtensionsManager manager;
 
-	public Extension(String id, String name, String version) {
+	public Extension(ExtensionsManager manager, String id, String name, String version) {
 		this.name = name;
 		this.version = version;
 		this.id = id;
+		this.manager = manager;
 		addFlags(FLAG_WORKING);
+	}
+
+	public ExtensionsManager getManager() {
+		return manager;
 	}
 
 	public int getFlags() {
 		return flags;
+	}
+
+	public void clearProviders() {
+		providers.clear();
+	}
+
+	public void setIsLoaded(boolean isLoaded) {
+		this.isLoaded = isLoaded;
+	}
+
+	public boolean isLoaded() {
+		return isLoaded;
 	}
 
 	public void addFlags(int flags) {
@@ -141,5 +160,10 @@ public class Extension {
 
 		builder.append(" }");
 		return builder.toString();
+	}
+
+	@Override
+	public int compareTo(@NonNull Extension o) {
+		return name.compareToIgnoreCase(o.name);
 	}
 }

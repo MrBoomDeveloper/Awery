@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -81,7 +82,7 @@ public abstract class YomiManager extends ExtensionsManager {
 
 			var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
 
-			var extension = new Extension(pkg.packageName, label, pkg.versionName) {
+			var extension = new Extension(this, pkg.packageName, label, pkg.versionName) {
 				@Override
 				public Drawable getIcon() {
 					return pkg.applicationInfo.loadIcon(pm);
@@ -109,11 +110,17 @@ public abstract class YomiManager extends ExtensionsManager {
 
 	@Override
 	public void init(Context context, String id) {
+		unload(context, id);
+
 		List<?> mains;
 		var extension = extensions.get(id);
 
 		if(extension == null) {
 			throw new NullPointerException("Extension " + id + " not found!");
+		}
+
+		if(!AwerySettings.getInstance().getBoolean(YomiSettings.getExtensionKey(extension), true)) {
+			return;
 		}
 
 		try {
@@ -132,6 +139,30 @@ public abstract class YomiManager extends ExtensionsManager {
 		for(var provider : providers) {
 			extension.addProvider(provider);
 		}
+
+		extension.setIsLoaded(true);
+	}
+
+	@Override
+	public void unloadAll(Context context) {
+		for(var extension : extensions.values()) {
+			unload(context, extension.getId());
+		}
+	}
+
+	@Override
+	public void unload(Context context, String id) {
+		var extension = extensions.get(id);
+
+		if(extension == null) {
+			throw new NullPointerException("Extension " + id + " not found!");
+		}
+
+		if(!extension.isLoaded()) return;
+
+		extension.setIsLoaded(false);
+		extension.clearProviders();
+		extension.removeFlags(Extension.FLAG_ERROR | Extension.FLAG_WORKING);
 	}
 
 	public List<?> loadMains(

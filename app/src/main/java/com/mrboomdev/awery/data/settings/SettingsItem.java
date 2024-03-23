@@ -67,7 +67,7 @@ public class SettingsItem {
 		this.parent = item.parent;
 	}
 
-	private SettingsItem() {}
+	public SettingsItem() {}
 
 	public void setAsParentForChildren() {
 		if(items == null) return;
@@ -278,6 +278,11 @@ public class SettingsItem {
 			return this;
 		}
 
+		public Builder setBooleanValue(boolean value) {
+			item.booleanValue = value;
+			return this;
+		}
+
 		public Builder setTitle(String title) {
 			item.title = title;
 			return this;
@@ -318,7 +323,7 @@ public class SettingsItem {
 			return this;
 		}
 
-		public Builder setItems(Collection<SettingsItem> items) {
+		public Builder setItems(Collection<? extends SettingsItem> items) {
 			item.items = new ArrayList<>(items);
 			return this;
 		}

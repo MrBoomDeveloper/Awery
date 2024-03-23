@@ -2,6 +2,7 @@ package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -9,7 +10,9 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
+import com.mrboomdev.awery.extensions.support.yomi.YomiSettings;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.util.CallbackUtil;
 
 import org.jetbrains.annotations.Contract;
@@ -80,6 +83,7 @@ public class SettingsData {
 
 	@Contract(pure = true)
 	public static void getScreen(
+			Activity activity,
 			@NonNull String behaviourId,
 			CallbackUtil.Errorable<SettingsItem, Throwable> callback
 	) {
@@ -88,17 +92,17 @@ public class SettingsData {
 				case "extensions_aweryjs" -> callback.onResult(null,
 						new IllegalArgumentException("Currently not supported"));
 
-				case "extensions_aniyomi" -> callback.onResult(new SettingsItem.Builder(SettingsItemType.SCREEN)
-						.setTitle("Aniyomi extensions")
-						.setItems(stream(ExtensionsFactory.getManager(AniyomiManager.class).getExtensions(0))
-								.map(ext -> new SettingsItem.Builder(SettingsItemType.SCREEN_BOOLEAN)
-										.setTitle(ext.getName())
-										.setDescription("v" + ext.getVersion() + "  id: " + ext.getId())
-										.setIcon(ext.getIcon())
-										.setIconSize(1.2f)
-										.setTintIcon(false)
-										.build()).toList())
-						.build(), null);
+				case "extensions_miru" -> callback.onResult(null,
+						new IllegalArgumentException("Not now..."));
+
+				case "extensions_cloudstream" -> callback.onResult(null,
+						new IllegalArgumentException("Soon..."));
+
+				case "extensions_aniyomi" -> callback.onResult(
+						new YomiSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
+
+				case "extensions_tachiyomi" -> callback.onResult(
+						new YomiSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
 
 				default -> callback.onResult(null,
 						new IllegalArgumentException("Unknown extensions screen: " + behaviourId));

@@ -7,6 +7,8 @@ public enum SettingsItemType {
 	BOOLEAN,
 	@Json(name = "screen_boolean")
 	SCREEN_BOOLEAN,
+	@Json(name = "color")
+	COLOR,
 	@Json(name = "int")
 	INT,
 	@Json(name = "string")
