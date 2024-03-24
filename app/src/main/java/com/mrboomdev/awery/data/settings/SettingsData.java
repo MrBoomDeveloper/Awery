@@ -2,15 +2,15 @@ package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
-import com.mrboomdev.awery.extensions.support.yomi.YomiSettings;
+import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.util.CallbackUtil;
@@ -83,7 +83,7 @@ public class SettingsData {
 
 	@Contract(pure = true)
 	public static void getScreen(
-			Activity activity,
+			AppCompatActivity activity,
 			@NonNull String behaviourId,
 			CallbackUtil.Errorable<SettingsItem, Throwable> callback
 	) {
@@ -99,10 +99,10 @@ public class SettingsData {
 						new IllegalArgumentException("Soon..."));
 
 				case "extensions_aniyomi" -> callback.onResult(
-						new YomiSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
+						new ExtensionSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
 
 				case "extensions_tachiyomi" -> callback.onResult(
-						new YomiSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
+						new ExtensionSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
 
 				default -> callback.onResult(null,
 						new IllegalArgumentException("Unknown extensions screen: " + behaviourId));

@@ -17,8 +17,13 @@ import com.squareup.moshi.ToJson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class SettingsItem {
+	public static final SettingsItem INVALID_SETTING = new Builder(SettingsItemType.BOOLEAN)
+			.setTitle("Invalid!")
+			.setBooleanValue(false)
+			.build();
 	public static final String SEPARATOR = "_";
 	private String key, title, description, icon, behaviour;
 	private SettingsItemType type;
@@ -37,12 +42,20 @@ public class SettingsItem {
 	private Boolean booleanValue;
 	@Json(name = "int_value")
 	private Integer intValue;
+	@Json(name = "string_set_value")
+	private Set<String> stringSetValue;
 	@Json(name = "string_value")
 	private String stringValue;
 	@Json(ignore = true)
 	private Drawable iconDrawable;
 
 	public SettingsItem(@NonNull SettingsItem item) {
+		copyFrom(item);
+	}
+
+	protected SettingsItem() {}
+
+	protected void copyFrom(@NonNull SettingsItem item) {
 		this.key = item.key;
 		this.type = item.type;
 		this.booleanValue = item.booleanValue;
@@ -66,8 +79,6 @@ public class SettingsItem {
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
 	}
-
-	public SettingsItem() {}
 
 	public void setAsParentForChildren() {
 		if(items == null) return;
@@ -128,6 +139,8 @@ public class SettingsItem {
 	}
 
 	public void restoreValues(AwerySettings settings) {
+		if(type == null) return;
+
 		switch(type) {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey());
 			case INT -> intValue = settings.getInt(getFullKey());
@@ -195,6 +208,10 @@ public class SettingsItem {
 
 	public String getStringValue() {
 		return stringValue;
+	}
+
+	public Set<String> getStringSetValue() {
+		return stringSetValue;
 	}
 
 	public void setStringValue(String value) {
@@ -295,6 +312,11 @@ public class SettingsItem {
 
 		public Builder setIcon(String icon) {
 			item.icon = icon;
+			return this;
+		}
+
+		public Builder setStringSetValue(Set<String> values) {
+			item.stringSetValue = values;
 			return this;
 		}
 

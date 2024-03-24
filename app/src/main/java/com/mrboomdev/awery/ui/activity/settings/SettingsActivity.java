@@ -42,23 +42,31 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		super.onCreate(savedInstanceState);
 
 		var itemJson = getIntent().getStringExtra("item");
+		var path = getIntent().getStringExtra("path");
+
 		settings = AwerySettings.getInstance(this);
-		SettingsItem item;
+		SettingsItem item = null;
 
-		if(itemJson == null) {
-			item = AwerySettings.getSettingsMap(this);
-		} else {
-			var moshi = new Moshi.Builder().build();
-			var adapter = moshi.adapter(SettingsItem.class);
+		if(path != null) {
+			item = AwerySettings.getCached(path);
+		}
 
-			try {
-				item = adapter.fromJson(itemJson);
-				if(item == null) throw new IllegalArgumentException("Failed to parse settings");
-			} catch(IOException e) {
-				Log.e(TAG, "Failed to parse settings", e);
-				toast(this, "Failed to get settings", 0);
-				finish();
-				return;
+		if(item == null) {
+			if(itemJson == null) {
+				item = AwerySettings.getSettingsMap(this);
+			} else {
+				var moshi = new Moshi.Builder().build();
+				var adapter = moshi.adapter(SettingsItem.class);
+
+				try {
+					item = adapter.fromJson(itemJson);
+					if(item == null) throw new IllegalArgumentException("Failed to parse settings");
+				} catch(IOException e) {
+					Log.e(TAG, "Failed to parse settings", e);
+					toast(this, "Failed to get settings", 0);
+					finish();
+					return;
+				}
 			}
 		}
 
@@ -87,7 +95,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				.build();
 
 		if(item.getItems() != null) {
-			var recyclerAdapter = new SettingsAdapter(item, this);
+			var recyclerAdapter = new SettingsAdapter(item,
+					(item instanceof SettingsDataHandler handler) ? handler : this);
 
 			var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 				var headerBinding = LayoutHeaderSettingsBinding.inflate(getLayoutInflater(), parent, false);
@@ -137,7 +146,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
 			});
 		} else {
-			toast(this, "Failed to get settings", 0);
+			Log.w(TAG, "Screen has no items, finishing.");
 			finish();
 		}
 

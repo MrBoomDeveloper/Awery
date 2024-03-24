@@ -28,6 +28,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -40,6 +41,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import java9.util.stream.Collectors;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
 	private List<SettingsItem> items;
@@ -108,6 +111,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@NonNull
 	@Override
+	@SuppressWarnings("unchecked")
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemListSettingBinding.inflate(inflater, parent, false);
@@ -147,19 +151,37 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								var items = selectionItems.get();
 								if(items == null) return;
 
-								if(setting.getBehaviour() != null) {
-									SettingsData.saveSelectionList(setting.getBehaviour(), items);
-								} else {
-									if(selectedItem.get() == null) {
+								if(setting instanceof CustomSettingsItem customSetting) {
+									var item = selectedItem.get();
+
+									if(item == null) {
 										_dialog.dismiss();
 										return;
 									}
 
-									var item = selectedItem.get().getId();
-									holder.updateDescription(item);
+									var id = item.getId();
+									holder.updateDescription(id);
+									customSetting.saveValue(id);
+
+									_dialog.dismiss();
+									return;
+								}
+
+								if(setting.getBehaviour() != null) {
+									SettingsData.saveSelectionList(setting.getBehaviour(), items);
+								} else {
+									var item = selectedItem.get();
+
+									if(item == null) {
+										_dialog.dismiss();
+										return;
+									}
+
+									var id = item.getId();
+									holder.updateDescription(id);
 
 									var prefs = AwerySettings.getInstance();
-									prefs.setString(setting.getFullKey(), item);
+									prefs.setString(setting.getFullKey(), id);
 									prefs.saveAsync();
 								}
 
@@ -188,7 +210,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							});
 						});
 					} else if(setting.getItems() != null && !setting.getItems().isEmpty()) {
-						var selected = AwerySettings.getInstance().getString(setting.getFullKey());
+						var selected = setting instanceof CustomSettingsItem customSetting
+								? (String) customSetting.getSavedValue()
+								: AwerySettings.getInstance().getString(setting.getFullKey());
 
 						var options = new HashSet<SettingsData.SelectionItem>();
 						selectionItems.set(options);
@@ -228,23 +252,72 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								var items = selectionItems.get();
 								if(items == null) return;
 
+								if(setting instanceof CustomSettingsItem customSetting) {
+									customSetting.saveValue(stream(items)
+											.filter(SettingsData.SelectionItem::isSelected)
+											.map(SettingsData.SelectionItem::getId)
+											.collect(Collectors.toSet()));
+
+									_dialog.dismiss();
+									return;
+								}
+
 								SettingsData.saveSelectionList(setting.getBehaviour(), items);
 								_dialog.dismiss();
 							})
 							.show();
 
-					SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
+					if(setting.getBehaviour() != null) {
+						SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
+							selectionItems.set(items);
+							if(!dialog.isShown()) return;
+
+							if(e != null) {
+								dialog.dismiss();
+								AweryApp.toast(e.getMessage());
+								return;
+							}
+
+							var sorted = stream(items).sorted((a, b) ->
+											a.getTitle().compareToIgnoreCase(b.getTitle()))
+									.toList();
+
+							AweryApp.runOnUiThread(() -> {
+								for(var item : sorted) {
+									var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
+									var context = new ContextThemeWrapper(parent.getContext(), style);
+
+									var chip = new Chip(context);
+									chip.setCheckable(true);
+									chip.setText(item.getTitle());
+									chip.setChecked(item.isSelected());
+
+									chip.setOnCheckedChangeListener((_view, isChecked) ->
+											item.setSelected(isChecked));
+
+									chips.addView(chip);
+								}
+
+								contentView.addView(chips);
+							});
+						});
+					} else if(setting.getItems() != null) {
+						var selected = setting instanceof CustomSettingsItem customSetting
+								? (Set<String>) customSetting.getSavedValue()
+								: AwerySettings.getInstance().getStringSet(setting.getFullKey());
+
+						var items = stream(setting.getItems())
+								.map(settingItem -> new SettingsData.SelectionItem(
+										settingItem.getKey(),
+										settingItem.getTitle(parent.getContext()),
+										selected.contains(settingItem.getKey())))
+								.collect(Collectors.toSet());
+
 						selectionItems.set(items);
 						if(!dialog.isShown()) return;
 
-						if(e != null) {
-							dialog.dismiss();
-							AweryApp.toast(e.getMessage());
-							return;
-						}
-
 						var sorted = stream(items).sorted((a, b) ->
-								a.getTitle().compareToIgnoreCase(b.getTitle()))
+										a.getTitle().compareToIgnoreCase(b.getTitle()))
 								.toList();
 
 						AweryApp.runOnUiThread(() -> {
@@ -265,7 +338,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							contentView.addView(chips);
 						});
-					});
+					} else {
+						throw new IllegalArgumentException("Failed to load items list");
+					}
 				}
 			}
 		});
@@ -339,12 +414,21 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				var prefs = payload == null ? AwerySettings.getInstance() : null;
 
 				var value = switch(item.getType()) {
-					case STRING -> payload != null ? payload : prefs.getString(item.getFullKey());
-					case BOOLEAN, SCREEN_BOOLEAN -> (payload != null ? Boolean.parseBoolean(payload) : prefs.getBoolean(item.getFullKey())) ? "Enabled" : "Disabled";
+					case STRING -> payload != null ? payload : (item instanceof CustomSettingsItem customSetting
+							? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
+
+					case BOOLEAN, SCREEN_BOOLEAN -> (payload != null
+							? Boolean.parseBoolean(payload)
+							: (item instanceof CustomSettingsItem customSetting
+								? (Boolean) customSetting.getSavedValue()
+								: prefs.getBoolean(item.getFullKey()))) ? "Enabled" : "Disabled";
+
 					case INT -> payload != null ? payload : String.valueOf(prefs.getInt(item.getFullKey()));
 
 					case SELECT -> {
-						var selected = payload != null ? payload : prefs.getString(item.getFullKey());
+						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
+								? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
+
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";
 					}

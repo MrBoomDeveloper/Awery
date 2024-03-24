@@ -17,12 +17,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * An utility class for working with shared preferences, which contains constant key names for quick access.
  * @author MrBoomDev
  */
 public class AwerySettings {
+	private static final WeakHashMap<String, SettingsItem> cachedPaths = new WeakHashMap<>();
 	private static final String TAG = "AwerySettings";
 	public static final String APP_SETTINGS = "Awery";
 	private static SettingsItem settingsMapInstance;
@@ -47,6 +49,14 @@ public class AwerySettings {
 	private AwerySettings(Context context, SharedPreferences prefs) {
 		this.context = context;
 		this.prefs = prefs;
+	}
+
+	public static void cachePath(String path, SettingsItem item) {
+		cachedPaths.put(path, item);
+	}
+
+	public static SettingsItem getCached(String path) {
+		return cachedPaths.get(path);
 	}
 
 	public static SettingsItem getSettingsMap(Context context) {

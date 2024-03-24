@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
@@ -35,6 +36,7 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.template.CatalogList;
+import com.mrboomdev.awery.util.CallbackUtil;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -67,7 +69,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
-	private static final Map<Class<? extends Activity>, ActivityInfo> activities = new HashMap<>();
+	private static final Map<Class<? extends AppCompatActivity>, ActivityInfo> activities = new HashMap<>();
 	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static final List<Disposable> disposables = new ArrayList<>();
 	public static final boolean USE_KT_APP_INIT = true;
@@ -86,7 +88,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public static <A extends Activity> A getActivity(Class<A> clazz) {
+	public static <A extends AppCompatActivity> A getActivity(Class<A> clazz) {
 		ActivityInfo found = activities.get(clazz);
 		if(found != null) return (A) found.activity;
 
@@ -189,8 +191,10 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		return StreamSupport.stream(Arrays.asList(e));
 	}
 
-	public static boolean nonNull(@Nullable Object o) {
-		return o != null;
+	@NonNull
+	@Contract("_ -> new")
+	public static <K, V> Stream<Map.Entry<K,V>> stream(@NonNull Map<K, V> map) {
+		return StreamSupport.stream(map.entrySet());
 	}
 
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
@@ -211,13 +215,17 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Nullable
 	@Contract(pure = true)
-	public static Activity getAnyActivity() {
+	public static AppCompatActivity getAnyActivity() {
 		if(activities.isEmpty()) return null;
 		if(activities.size() == 1) return activities.values().toArray(new ActivityInfo[0])[0].activity;
 
 		return stream(activities.values())
 				.sorted(ActivityInfo::compareTo)
 				.findFirst().get().activity;
+	}
+
+	public static void wait(@NonNull CallbackUtil.Result<Boolean> callback) throws InterruptedException {
+		while(callback.run());
 	}
 
 	@Override
@@ -326,11 +334,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	@Nullable
-	public static Activity getActivity(Context context) {
+	public static AppCompatActivity getActivity(Context context) {
 		Context ctx = context;
 
 		while(ctx instanceof ContextWrapper wrapper) {
-			if(ctx instanceof Activity activity) {
+			if(ctx instanceof AppCompatActivity activity) {
 				return activity;
 			}
 
@@ -342,16 +350,20 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Override
 	public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-		var clazz = activity.getClass();
-		var info = activities.get(clazz);
+		if(activity instanceof AppCompatActivity appCompatActivity) {
+			var clazz = activity.getClass();
+			var info = activities.get(clazz);
 
-		if(info == null) {
-			info = new ActivityInfo();
+			if(info == null) {
+				info = new ActivityInfo();
+			}
+
+			info.isStopped = false;
+			info.activity = appCompatActivity;
+			activities.put(appCompatActivity.getClass(), info);
+		} else {
+			Log.e(TAG, "Activity is not an AppCompatActivity!");
 		}
-
-		info.isStopped = false;
-		info.activity = activity;
-		activities.put(activity.getClass(), info);
 	}
 
 	@Override
@@ -416,7 +428,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	}
 
 	private static class ActivityInfo implements Comparable<ActivityInfo> {
-		public Activity activity;
+		public AppCompatActivity activity;
 		public boolean isStopped;
 
 		@Override

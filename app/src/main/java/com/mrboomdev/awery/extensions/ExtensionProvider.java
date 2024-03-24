@@ -1,7 +1,11 @@
 package com.mrboomdev.awery.extensions;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.support.template.CatalogCategory;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
 import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
@@ -31,6 +35,10 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));
+	}
+
+	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {
+		callback.onFailure(new UnimplementedException("Settings not implemented!"));
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {

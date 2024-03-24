@@ -7,6 +7,10 @@ public class CallbackUtil {
 	public interface Callback1<T> {
 		void run(T t);
 	}
+
+	public interface Result<T> {
+		T run();
+	}
 	
 	public interface Errorable<T, E> {
 		void onResult(T t, E e);

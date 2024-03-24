@@ -9,10 +9,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dalvik.system.PathClassLoader;
+import java9.util.Objects;
 import java9.util.stream.StreamSupport;
 
 public abstract class YomiManager extends ExtensionsManager {
@@ -119,7 +119,7 @@ public abstract class YomiManager extends ExtensionsManager {
 			throw new NullPointerException("Extension " + id + " not found!");
 		}
 
-		if(!AwerySettings.getInstance().getBoolean(YomiSettings.getExtensionKey(extension), true)) {
+		if(!AwerySettings.getInstance().getBoolean(ExtensionSettings.getExtensionKey(extension), true)) {
 			return;
 		}
 
@@ -213,7 +213,7 @@ public abstract class YomiManager extends ExtensionsManager {
 				exception.set(e);
 				return null;
 			}
-		}).filter(AweryApp::nonNull).toList();
+		}).filter(Objects::nonNull).toList();
 
 		if(exception.get() != null) {
 			if(exception.get() instanceof ClassNotFoundException e) throw e;
