@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
+import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.util.CallbackUtil;
@@ -89,8 +90,8 @@ public class SettingsData {
 	) {
 		if(behaviourId.startsWith("extensions_")) {
 			switch(behaviourId) {
-				case "extensions_aweryjs" -> callback.onResult(null,
-						new IllegalArgumentException("Currently not supported"));
+				case "extensions_aweryjs" -> callback.onResult(
+						new ExtensionSettings(activity, ExtensionsFactory.getManager(JsManager.class)), null);
 
 				case "extensions_miru" -> callback.onResult(null,
 						new IllegalArgumentException("Not now..."));

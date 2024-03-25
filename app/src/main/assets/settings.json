@@ -43,23 +43,6 @@
 			"title": "content", "icon": "ic_round_grid_view_24",
 			"items": [
 				{
-					"key": "extensions", "type": "screen",
-					"title": "extensions", "icon": "ic_extension", "icon_size": 0.88,
-					"description": "All videos and features come from here",
-					"items": [
-						{
-							"key": "aweryjs", "type": "screen",
-							"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false, "icon_size": 1.2,
-							"description": "Watch Movies, TV with Tracking and Comments!",
-							"behaviour": "extensions_aweryjs"
-						}, {
-							"key": "aniyomi", "type": "screen",
-							"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false, "icon_size": 1.2,
-							"description": "It seems there is only Anime here?",
-							"behaviour": "extensions_aniyomi"
-						}
-					]
-				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
 					"title": "global_excluded_tags", "icon": "ic_round_block_24",
 					"description": "You won't see any media with these tags",
@@ -68,6 +51,22 @@
 					"key": "adult_content", "type": "boolean",
 					"title": "Show adult content", "icon": "ic_round_report",
 					"description": "Show adult content in the app"
+				}
+			]
+		}, {
+			"key": "extensions", "type": "screen",
+			"title": "extensions", "icon": "ic_extension", "icon_size": 0.88,
+			"items": [
+				{
+					"key": "aweryjs", "type": "screen",
+					"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false, "icon_size": 1.2,
+					"description": "Watch Movies, TV with Tracking and Comments!",
+					"behaviour": "extensions_aweryjs"
+				}, {
+					"key": "aniyomi", "type": "screen",
+					"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false, "icon_size": 1.2,
+					"description": "It seems there is only Anime here?",
+					"behaviour": "extensions_aniyomi"
 				}
 			]
 		}, {

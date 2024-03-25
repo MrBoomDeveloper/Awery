@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.util.MimeTypes;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -26,7 +26,7 @@ public class HttpClient {
 	private static OkHttpClient client;
 
 	public static class Request {
-		private ContentType contentType;
+		private MimeTypes contentType;
 		private Map<String, String> headers;
 		private CacheMode cacheMode;
 		private Method method;
@@ -61,7 +61,7 @@ public class HttpClient {
 			return this;
 		}
 
-		public Request setBody(String body, ContentType contentType) {
+		public Request setBody(String body, MimeTypes contentType) {
 			this.body = body;
 			this.contentType = contentType;
 			return this;
@@ -145,7 +145,7 @@ public class HttpClient {
 
 		switch(request.method) {
 			case GET -> okRequest.get();
-			case POST -> okRequest.post(RequestBody.create(request.body, request.contentType.type));
+			case POST -> okRequest.post(RequestBody.create(request.body, request.contentType.toMediaType()));
 		}
 
 		if(request.cacheTime != null) {
@@ -176,16 +176,6 @@ public class HttpClient {
 
 	public enum Method { GET, POST }
 	public enum CacheMode { NETWORK_ONLY, CACHE_FIRST }
-
-	public enum ContentType {
-		JSON(MediaType.parse("application/json; charset=utf-8"));
-
-		private final MediaType type;
-
-		ContentType(MediaType type) {
-			this.type = type;
-		}
-	}
 
 	public interface SimpleHttpCallback extends HttpCallback {
 		/**

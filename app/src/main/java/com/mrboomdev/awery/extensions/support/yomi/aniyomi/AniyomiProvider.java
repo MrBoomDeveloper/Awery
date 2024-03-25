@@ -14,7 +14,6 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
-import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -35,7 +34,6 @@ import java.util.Set;
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
-import eu.kanade.tachiyomi.source.anime.AnimeSourceExtensionsKt;
 import java9.util.stream.Collectors;
 import okhttp3.Headers;
 
@@ -135,9 +133,6 @@ public class AniyomiProvider extends ExtensionProvider {
 			var manager = new PreferenceManager(context);
 			var screen = manager.createPreferenceScreen(context);
 			configurableSource.setupPreferenceScreen(screen);
-
-			var file = AnimeSourceExtensionsKt.getPreferenceKey(source);
-			var prefs = AwerySettings.getInstance(context, file);
 
 			var items = new ArrayList<SettingsItem>();
 

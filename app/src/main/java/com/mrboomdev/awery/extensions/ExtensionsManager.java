@@ -4,6 +4,8 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.content.Context;
 
+import com.mrboomdev.awery.util.MimeTypes;
+
 import java.util.Collection;
 
 import java9.util.stream.StreamSupport;
@@ -29,6 +31,10 @@ public abstract class ExtensionsManager {
 	public abstract String getName();
 
 	public abstract String getId();
+
+	public MimeTypes[] getExtensionMimeTypes() {
+		return new MimeTypes[]{ MimeTypes.ANY };
+	}
 
 	public void initAll(Context context) {}
 

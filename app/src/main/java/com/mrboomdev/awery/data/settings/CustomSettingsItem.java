@@ -4,7 +4,7 @@ import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 public abstract class CustomSettingsItem extends SettingsItem {
 
-	public abstract void saveValue(Object value);
+	public void saveValue(Object value) {}
 
 	public Object getSavedValue() {
 		return switch(getType()) {

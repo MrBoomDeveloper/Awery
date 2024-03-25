@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.HttpException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
@@ -57,7 +58,7 @@ public abstract class AnilistQuery<T> {
 		var json = adapter.toJson(data);
 
 		HttpClient.post("https://graphql.anilist.co")
-				.setBody(json, HttpClient.ContentType.JSON)
+				.setBody(json, MimeTypes.JSON)
 				.setCache(getCacheTime(), HttpClient.CacheMode.CACHE_FIRST)
 				.addHeader("Content-Type", "application/json")
 				.addHeader("Accept", "application/json")

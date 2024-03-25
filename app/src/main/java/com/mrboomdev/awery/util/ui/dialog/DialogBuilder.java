@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ScrollView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -19,10 +21,10 @@ import java.util.List;
 
 public class DialogBuilder {
 	private final List<Field> fields = new LinkedList<>();
-	private OnButtonClickListener okListener, cancelListener;
+	private OnButtonClickListener okListener, cancelListener, neutralListener;
 	private final Context context;
 	private ViewGroup fieldsWrapper;
-	private String title, ok, cancel;
+	private String title, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
 	private Dialog dialog;
 
 	public DialogBuilder(Context context) {
@@ -36,13 +38,19 @@ public class DialogBuilder {
 
 	public DialogBuilder setPositiveButton(String ok, OnButtonClickListener listener) {
 		this.okListener = listener;
-		this.ok = ok;
+		this.okButtonLabel = ok;
+		return this;
+	}
+
+	public DialogBuilder setNeutralButton(String neutral, OnButtonClickListener listener) {
+		this.neutralListener = listener;
+		this.neutralButtonLabel = neutral;
 		return this;
 	}
 
 	public DialogBuilder setCancelButton(String cancel, OnButtonClickListener listener) {
 		this.cancelListener = listener;
-		this.cancel = cancel;
+		this.cancelButtonLabel = cancel;
 		return this;
 	}
 
@@ -144,9 +152,27 @@ public class DialogBuilder {
 		var builder = new MaterialAlertDialogBuilder(context);
 		builder.setView(scroller);
 		if(title != null) builder.setTitle(title);
-		if(ok != null) builder.setPositiveButton(ok, (dialog, which) -> okListener.clicked(this));
-		if(cancel != null) builder.setNegativeButton(cancel, (dialog, which) -> cancelListener.clicked(this));
-		dialog = builder.show();
+
+		if(okButtonLabel != null) builder.setPositiveButton(okButtonLabel,
+				(dialog, which) -> okListener.clicked(this));
+
+		if(cancelButtonLabel != null) builder.setNegativeButton(cancelButtonLabel,
+				(dialog, which) -> cancelListener.clicked(this));
+
+		if(neutralButtonLabel != null) builder.setNeutralButton(neutralButtonLabel,
+				(dialog, which) -> neutralListener.clicked(this));
+
+		var alertDialog = builder.show();
+		dialog = alertDialog;
+
+		if(okButtonLabel != null) alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+				.setOnClickListener(v -> okListener.clicked(this));
+
+		if(cancelButtonLabel != null) alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+				.setOnClickListener(v -> cancelListener.clicked(this));
+
+		if(neutralButtonLabel != null) alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+				.setOnClickListener(v -> neutralListener.clicked(this));
 
 		/*dialog = new Dialog(context);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -205,7 +231,7 @@ public class DialogBuilder {
 			this.context = context;
 		}
 
-		public void setError(String error) {
+		public void setError(@Nullable String error) {
 			this.error = error;
 
 			if(view != null) {

@@ -14,6 +14,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
+import com.mrboomdev.awery.util.MimeTypes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -27,9 +28,9 @@ import java9.util.Objects;
 import java9.util.stream.StreamSupport;
 
 public abstract class YomiManager extends ExtensionsManager {
-	private static final String TAG = "YomiManager";
 	private static final int PM_FLAGS = PackageManager.GET_CONFIGURATIONS | PackageManager.GET_META_DATA;
 	private final Map<String, Extension> extensions = new HashMap<>();
+	private static final String TAG = "YomiManager";
 
 	public abstract String getMainClassMeta();
 
@@ -187,6 +188,11 @@ public abstract class YomiManager extends ExtensionsManager {
 		}).toList();
 	}
 
+	@Override
+	public MimeTypes[] getExtensionMimeTypes() {
+		return new MimeTypes[] { MimeTypes.APK };
+	}
+
 	public List<? extends Class<?>> loadClasses(
 			@NonNull Context context,
 			@NonNull Extension extension
@@ -199,8 +205,8 @@ public abstract class YomiManager extends ExtensionsManager {
 				null,
 				context.getClassLoader());
 
-		var mainClassesString = Objects.requireNonNull(
-				pkgInfo.applicationInfo.metaData.getString(getMainClassMeta()));
+		var mainClassesString = pkgInfo.applicationInfo.metaData.getString(getMainClassMeta());
+		if(mainClassesString == null) throw new NullPointerException("Main classes not found!");
 
 		var classes = stream(mainClassesString.split(";")).map(mainClass -> {
 			if(mainClass.startsWith(".")) {

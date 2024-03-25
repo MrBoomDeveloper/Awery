@@ -1,22 +1,30 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsData;
@@ -24,7 +32,6 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.LayoutHeaderSettingsBinding;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -77,6 +84,44 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		AweryApp.setOnBackPressedListener(this, this::finish);
 	}
 
+	private void setupHeader(@NonNull LayoutHeaderSettingsBinding binding, @NonNull SettingsItem item, View parent) {
+		binding.back.setOnClickListener(v -> finish());
+		binding.title.setText(item.getTitle(this));
+		binding.actions.removeAllViews();
+
+		var headerItems = item.getHeaderItems();
+
+		if(headerItems != null && !headerItems.isEmpty()) {
+			for(var headerItem : headerItems) {
+				var view = new ImageView(this);
+				view.setOnClickListener(v -> headerItem.onClick(this));
+				setPadding(view, dpPx(10));
+
+				view.setForeground(AppCompatResources.getDrawable(this, R.drawable.ripple_circle_white));
+				view.setClickable(true);
+				view.setFocusable(true);
+
+				view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+				view.setImageDrawable(headerItem.getIcon(this));
+
+				if(headerItem.tintIcon()) {
+					var context = binding.getRoot().getContext();
+					var colorAttr = com.google.android.material.R.attr.colorOnSurface;
+					var color = AweryApp.resolveAttrColor(context, colorAttr);
+					view.setImageTintList(ColorStateList.valueOf(color));
+				} else {
+					view.setImageTintList(null);
+				}
+
+				binding.actions.addView(view, dpPx(48), dpPx(48));
+				setLeftMargin(view, dpPx(10));
+			}
+		}
+
+		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
+				setHorizontalPadding(binding.getRoot(), insets.left, insets.right), parent);
+	}
+
 	private void createView(
 			@NonNull SettingsItem item,
 			RecyclerView.RecycledViewPool viewPool,
@@ -88,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		binding.recycler.setRecycledViewPool(viewPool);
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
-				setTopPadding(binding.recycler, insets.top + ViewUtil.dpPx(12)), frame);
+				setTopPadding(binding.recycler, insets.top + dpPx(12)), frame);
 
 		var config = new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
@@ -100,12 +145,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 				var headerBinding = LayoutHeaderSettingsBinding.inflate(getLayoutInflater(), parent, false);
-				headerBinding.back.setOnClickListener(v -> finish());
-				headerBinding.title.setText(item.getTitle(this));
-
-				setOnApplyUiInsetsListener(headerBinding.getRoot(), insets ->
-						setHorizontalPadding(headerBinding.getRoot(), insets.left, insets.right), parent);
-
+				setupHeader(headerBinding, item, parent);
 				return headerBinding;
 			});
 
@@ -134,12 +174,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 				var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 					var headerBinding = LayoutHeaderSettingsBinding.inflate(getLayoutInflater(), parent, false);
-					headerBinding.back.setOnClickListener(v -> finish());
-					headerBinding.title.setText(screen.getTitle(this));
-
-					setOnApplyUiInsetsListener(headerBinding.getRoot(), insets ->
-							setHorizontalPadding(headerBinding.getRoot(), insets.left, insets.right), parent);
-
+					setupHeader(headerBinding, screen, parent);
 					return headerBinding;
 				});
 

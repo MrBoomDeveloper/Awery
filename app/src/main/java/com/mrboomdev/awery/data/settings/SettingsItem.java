@@ -34,6 +34,8 @@ public class SettingsItem {
 	private String showIf;
 	private boolean restart;
 	private List<SettingsItem> items;
+	@Json(name = "header_items")
+	private List<SettingsItem> headerItems;
 	@Json(ignore = true)
 	private SettingsItem parent;
 	@Json(name = "icon_size")
@@ -198,6 +200,10 @@ public class SettingsItem {
 		return booleanValue != null && booleanValue;
 	}
 
+	public List<SettingsItem> getHeaderItems() {
+		return headerItems;
+	}
+
 	public int getIntValue() {
 		return intValue;
 	}
@@ -213,6 +219,8 @@ public class SettingsItem {
 	public Set<String> getStringSetValue() {
 		return stringSetValue;
 	}
+
+	public void onClick(Context context) {}
 
 	public void setStringValue(String value) {
 		stringValue = value;
