@@ -125,6 +125,14 @@ public class Extension implements Comparable<Extension> {
 		setError(error, null);
 	}
 
+	public void setError(Throwable e) {
+		setError(e.getMessage(), e);
+	}
+
+	public void removeError() {
+		setError(null, null);
+	}
+
 	public boolean isError() {
 		return (flags & FLAG_ERROR) == FLAG_ERROR;
 	}

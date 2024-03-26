@@ -1,11 +1,15 @@
 package com.mrboomdev.awery.util;
 
-public class CallbackUtil {
+public class Callbacks {
 
-	private CallbackUtil() {}
+	private Callbacks() {}
 
 	public interface Callback1<T> {
 		void run(T t);
+	}
+
+	public interface Callback2<T, E> {
+		void run(T t, E e);
 	}
 
 	public interface Result<T> {

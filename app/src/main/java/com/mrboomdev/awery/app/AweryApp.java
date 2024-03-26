@@ -36,7 +36,7 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.template.CatalogList;
-import com.mrboomdev.awery.util.CallbackUtil;
+import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -224,7 +224,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				.findFirst().get().activity;
 	}
 
-	public static void wait(@NonNull CallbackUtil.Result<Boolean> callback) throws InterruptedException {
+	public static void wait(@NonNull Callbacks.Result<Boolean> callback) throws InterruptedException {
 		while(callback.run());
 	}
 

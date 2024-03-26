@@ -5,7 +5,10 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 import android.content.Context;
 
 import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 
 import java9.util.stream.StreamSupport;
@@ -34,6 +37,10 @@ public abstract class ExtensionsManager {
 
 	public MimeTypes[] getExtensionMimeTypes() {
 		return new MimeTypes[]{ MimeTypes.ANY };
+	}
+
+	public void installExtension(Context context, InputStream stream) throws IOException {
+		throw new UnimplementedException("This extension manager doesn't support installing extensions");
 	}
 
 	public void initAll(Context context) {}

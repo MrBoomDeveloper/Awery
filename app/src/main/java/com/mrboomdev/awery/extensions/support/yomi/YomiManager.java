@@ -120,7 +120,7 @@ public abstract class YomiManager extends ExtensionsManager {
 			throw new NullPointerException("Extension " + id + " not found!");
 		}
 
-		if(!AwerySettings.getInstance().getBoolean(ExtensionSettings.getExtensionKey(extension), true)) {
+		if(!AwerySettings.getInstance().getBoolean(ExtensionSettings.getExtensionKey(extension) + "_enabled", true)) {
 			return;
 		}
 

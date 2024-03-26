@@ -14,7 +14,7 @@ import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
-import com.mrboomdev.awery.util.CallbackUtil;
+import com.mrboomdev.awery.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 
@@ -61,7 +61,7 @@ public class SettingsData {
 	public static void getSelectionList(
 			Context context,
 			@NonNull String behaviourId,
-			CallbackUtil.Errorable<Set<SelectionItem>, Throwable> callback
+			Callbacks.Errorable<Set<SelectionItem>, Throwable> callback
 	) {
 		switch(behaviourId) {
 			case "excluded_tags" -> {
@@ -86,7 +86,7 @@ public class SettingsData {
 	public static void getScreen(
 			AppCompatActivity activity,
 			@NonNull String behaviourId,
-			CallbackUtil.Errorable<SettingsItem, Throwable> callback
+			Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
 		if(behaviourId.startsWith("extensions_")) {
 			switch(behaviourId) {

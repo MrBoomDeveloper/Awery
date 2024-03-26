@@ -14,6 +14,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class DialogBuilder {
 	private final List<Field> fields = new LinkedList<>();
+	private Callbacks.Callback1<DialogBuilder> dismissListener;
 	private OnButtonClickListener okListener, cancelListener, neutralListener;
 	private final Context context;
 	private ViewGroup fieldsWrapper;
@@ -51,6 +53,11 @@ public class DialogBuilder {
 	public DialogBuilder setCancelButton(String cancel, OnButtonClickListener listener) {
 		this.cancelListener = listener;
 		this.cancelButtonLabel = cancel;
+		return this;
+	}
+
+	public DialogBuilder setOnDismissListener(Callbacks.Callback1<DialogBuilder> listener) {
+		this.dismissListener = listener;
 		return this;
 	}
 
@@ -102,7 +109,7 @@ public class DialogBuilder {
 		//linear.addView(scroller);
 
 		var fieldsLinear = new LinearLayoutCompat(context);
-		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(16));
+		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(24));
 		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
 		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
 		fieldsWrapper = fieldsLinear;
@@ -151,6 +158,7 @@ public class DialogBuilder {
 
 		var builder = new MaterialAlertDialogBuilder(context);
 		builder.setView(scroller);
+
 		if(title != null) builder.setTitle(title);
 
 		if(okButtonLabel != null) builder.setPositiveButton(okButtonLabel,
@@ -161,6 +169,9 @@ public class DialogBuilder {
 
 		if(neutralButtonLabel != null) builder.setNeutralButton(neutralButtonLabel,
 				(dialog, which) -> neutralListener.clicked(this));
+
+		if(dismissListener != null) builder.setOnDismissListener(
+				v -> dismissListener.run(this));
 
 		var alertDialog = builder.show();
 		dialog = alertDialog;

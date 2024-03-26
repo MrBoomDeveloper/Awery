@@ -1,35 +1,38 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import androidx.annotation.NonNull;
+
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 
 import org.mozilla.javascript.Context;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptableObject;
 
 public class JsProvider extends ExtensionProvider {
-	private final File file;
+	private static final Object[] EMPTY_ARGS = new Object[0];
+	private final ScriptableObject scope;
+	private final String name;
+	private final JsManager manager;
+	protected final String id, version;
 
-	public JsProvider(Context context, File file) throws IOException {
-		StringBuilder script = new StringBuilder();
-		this.file = file;
+	public JsProvider(JsManager manager, @NonNull Context context, @NonNull String script) {
+		this.manager = manager;
+		this.scope = context.initSafeStandardObjects();
 
-		try(var reader = new BufferedReader(new FileReader(file))) {
-			String line;
+		context.evaluateString(scope, script, null, 1,null);
 
-			while((line = reader.readLine()) != null) {
-				script.append(line).append("\n");
-			}
+		if(scope.get("aweryManifest") instanceof Function fun) {
+			var obj = (ScriptableObject) fun.call(context, scope, null, EMPTY_ARGS);
+			this.name = (String) obj.get("title");
+			this.id = (String) obj.get("id");
+			this.version = (String) obj.get("version");
+		} else {
+			throw new IllegalStateException("aweryManifest is not a function or isn't defined!");
 		}
-
-		var scope = context.initSafeStandardObjects();
-		context.evaluateString(scope, script.toString(), file.getName(), 1,null);
 	}
 
 	@Override
 	public String getName() {
-		return "JsExtensionProvider";
+		return name;
 	}
 }

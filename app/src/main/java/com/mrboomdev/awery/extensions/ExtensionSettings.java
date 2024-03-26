@@ -22,13 +22,12 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.FancyVersion;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.squareup.moshi.Json;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,44 +43,50 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
 	private final Activity activity;
+	private DialogBuilder currentDialog;
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
 		copyFrom(new Builder(SettingsItemType.SCREEN)
-				.setTitle("Aniyomi extensions")
+				.setTitle(manager.getName() + " extensions")
 				.setItems(stream(manager.getExtensions(0)).sorted()
-						.map(extension -> new ExtensionSetting(activity, extension, new Builder(SettingsItemType.SCREEN_BOOLEAN)
-								.setTitle(extension.getName())
-								.setDescription("v" + extension.getVersion())
-								.setKey(extension.getId())
-								.setItems(stream(extension.getProviders()).map(provider -> {
-									var response = new AtomicReference<SettingsItem>();
+						.map(extension -> {
+							var versionText = FancyVersion.isValid(extension.getVersion())
+									? ("v" + extension.getVersion()) : extension.getVersion();
 
-									provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
-										@Override
-										public void onSuccess(SettingsItem item) {
-											response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
+							return new ExtensionSetting(activity, extension, new Builder(SettingsItemType.SCREEN_BOOLEAN)
+									.setTitle(extension.getName())
+									.setDescription(versionText)
+									.setKey(extension.getId())
+									.setItems(stream(extension.getProviders()).map(provider -> {
+										var response = new AtomicReference<SettingsItem>();
+
+										provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
+											@Override
+											public void onSuccess(SettingsItem item) {
+												response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
+											}
+
+											@Override
+											public void onFailure(Throwable e) {
+												response.set(SettingsItem.INVALID_SETTING);
+											}
+										});
+
+										try {
+											AweryApp.wait(() -> response.get() == null);
+										} catch(InterruptedException e) {
+											throw new RuntimeException(e);
 										}
 
-										@Override
-										public void onFailure(Throwable e) {
-											response.set(SettingsItem.INVALID_SETTING);
-										}
-									});
-
-									try {
-										AweryApp.wait(() -> response.get() == null);
-									} catch(InterruptedException e) {
-										throw new RuntimeException(e);
-									}
-
-									return response.get() == SettingsItem.INVALID_SETTING ? null : response.get();
-								}).filter(Objects::nonNull).toList())
-								.setBooleanValue(AwerySettings.getInstance(activity).getBoolean(
-										getExtensionKey(extension), true))
-								.setIcon(extension.getIcon())
-								.setIconSize(1.2f)
-								.setTintIcon(false)
-								.build()))
+										return response.get() == SettingsItem.INVALID_SETTING ? null : response.get();
+									}).filter(Objects::nonNull).toList())
+									.setBooleanValue(AwerySettings.getInstance(activity).getBoolean(
+											getExtensionKey(extension) + "_enabled", true))
+									.setIcon(extension.getIcon())
+									.setIconSize(1.2f)
+									.setTintIcon(false)
+									.build());
+						})
 						.toList())
 				.build());
 
@@ -96,17 +101,19 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				return;
 			}
 
-			try(var stream = new BufferedReader(new InputStreamReader(activity.getContentResolver().openInputStream(uri)))) {
-				var builder = new StringBuilder();
+			try(var stream = activity.getContentResolver().openInputStream(uri)) {
+				manager.installExtension(activity, stream);
+				toast("Extension installed successfully!");
 
-				for(String line; (line = stream.readLine()) != null;) {
-					builder.append(line);
+				if(currentDialog != null) {
+					currentDialog.dismiss();
 				}
-
-				toast(builder.toString());
 			} catch(IOException e) {
-				Log.e(TAG, "Failed to read extension file from URI", e);
+				Log.e(TAG, "Failed to read extension file", e);
 				toast("Failed to load the file!");
+			} catch(IllegalArgumentException e) {
+				Log.e(TAG, "Extension script is invalid!", e);
+				toast("Extension script is invalid!");
 			}
 		});
 
@@ -120,9 +127,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			public void onClick(Context context) {
 				var inputField = new DialogBuilder.InputField(context, "Repository URL");
 
-				new DialogBuilder(context)
+				currentDialog = new DialogBuilder(context)
 						.setTitle("Add extension")
 						.addField(inputField)
+						.setOnDismissListener(dialog -> currentDialog = dialog)
 						.setCancelButton("Cancel", DialogBuilder::dismiss)
 						.setNeutralButton("Pick from Storage", dialog -> pickLauncher.launch(new String[]{"*/*"}))
 						.setPositiveButton("Ok", dialog -> {
@@ -137,7 +145,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								new URL(text).toString();
 								inputField.setError(null);
 
-								toast("This functionality isn't done yet!");
+								toast("Extension repositories aren't done yet!");
 							} catch(MalformedURLException e) {
 								Log.e(TAG, "Invalid URL", e);
 								inputField.setError("Invalid URL");
@@ -155,7 +163,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 	@NonNull
 	public static String getExtensionKey(@NonNull Extension extension) {
-		return "ext_" + extension.getManager().getId() + "_" + extension.getId() + "_enabled";
+		return "ext_" + extension.getManager().getId() + "_" + extension.getId();
 	}
 
 	@Override
