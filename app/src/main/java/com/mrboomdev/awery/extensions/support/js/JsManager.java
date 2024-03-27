@@ -98,7 +98,7 @@ public class JsManager extends ExtensionsManager {
 	private void processTask(@NonNull JsTask task) {
 		switch(task.getTaskType()) {
 			case JsTask.LOAD_EXTENSION -> {
-				var provider = new JsProvider(this, context, (String) task.getArgs()[0]);
+				var provider = new JsProvider(this, (Context) task.getArgs()[1], context, (String) task.getArgs()[0]);
 
 				var extension = new Extension(this, provider.id, provider.getName(), provider.version);
 				extension.addFlags(Extension.FLAG_WORKING);
@@ -139,7 +139,7 @@ public class JsManager extends ExtensionsManager {
 						}
 
 						var provider = new JsProvider(this,
-								this.context, builder.toString());
+								(Context) task.getArgs()[0], this.context, builder.toString());
 
 						var extension = new Extension(this,
 								provider.id, provider.getName(), provider.version);
@@ -220,7 +220,7 @@ public class JsManager extends ExtensionsManager {
 		}
 
 		var result = new AtomicReference<>();
-		addTask(new JsTask(JsTask.LOAD_EXTENSION, result::set, builder.toString(), file.getName()));
+		addTask(new JsTask(JsTask.LOAD_EXTENSION, result::set, builder.toString(), context));
 
 		// Wait for the task to finish
 		while(result.get() == null);
@@ -252,7 +252,7 @@ public class JsManager extends ExtensionsManager {
 		}
 
 		var script = builder.toString();
-		var response = waitForResult(JsTask.LOAD_EXTENSION, script, "Unknown");
+		var response = waitForResult(JsTask.LOAD_EXTENSION, script, context);
 
 		if(response instanceof Exception e) {
 			if(e instanceof EvaluatorException ex) {

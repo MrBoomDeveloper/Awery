@@ -62,6 +62,8 @@ public class HttpClient {
 		}
 
 		public Request setBody(String body, MimeTypes contentType) {
+			if(body == null) return this;
+
 			this.body = body;
 			this.contentType = contentType;
 			return this;
@@ -90,10 +92,15 @@ public class HttpClient {
 
 		private void checkFields() {
 			if(url == null) throw new NullPointerException("Url not set!");
-			if(method == null) throw new NullPointerException("Method not set!");
 
-			if(method == Method.POST && body == null) {
-				throw new NullPointerException("Method is POST but body was not set!");
+			if(method == null) {
+				method = (body == null) ? Method.GET : Method.POST;
+			}
+
+			if(body == null) {
+				if(method == Method.POST) throw new NullPointerException("Body not set for POST!");
+				else if(method == Method.PUT) throw new NullPointerException("Body not set for PUT!");
+				else if(method == Method.PATCH) throw new NullPointerException("Body not set for PATCH!");
 			}
 
 			if(cacheMode == CacheMode.CACHE_FIRST && cacheTime == null) {
@@ -145,6 +152,9 @@ public class HttpClient {
 
 		switch(request.method) {
 			case GET -> okRequest.get();
+			case DELETE -> okRequest.delete();
+			case PATCH -> okRequest.patch(RequestBody.create(request.body, request.contentType.toMediaType()));
+			case PUT -> okRequest.put(RequestBody.create(request.body, request.contentType.toMediaType()));
 			case POST -> okRequest.post(RequestBody.create(request.body, request.contentType.toMediaType()));
 		}
 
@@ -168,13 +178,14 @@ public class HttpClient {
 
 			var _response = new HttpResponse();
 			_response.text = response.body().string();
+			_response.statusCode = response.code();
 			callback.onResponse(_response);
 		} catch(IOException e) {
 			callback.onError(new HttpException(e));
 		}
 	}
 
-	public enum Method { GET, POST }
+	public enum Method { GET, POST, DELETE, PUT, PATCH }
 	public enum CacheMode { NETWORK_ONLY, CACHE_FIRST }
 
 	public interface SimpleHttpCallback extends HttpCallback {
@@ -207,9 +218,14 @@ public class HttpClient {
 
 	public static class HttpResponse {
 		protected String text;
+		protected int statusCode;
 
 		public String getText() {
 			return text;
+		}
+
+		public int getStatusCode() {
+			return statusCode;
 		}
 	}
 

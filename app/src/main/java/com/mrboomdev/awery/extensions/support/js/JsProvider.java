@@ -32,19 +32,21 @@ public class JsProvider extends ExtensionProvider {
 	private final JsManager manager;
 	protected final String id, version;
 
-	public JsProvider(JsManager manager, @NonNull org.mozilla.javascript.Context context, @NonNull String script) {
+	public JsProvider(
+			JsManager manager,
+			android.content.Context androidContext,
+			@NonNull Context rhinoContext,
+			@NonNull String script
+	) {
 		var features = new ArrayList<Integer>();
 		this.manager = manager;
-		this.context = context;
-		this.scope = context.initSafeStandardObjects();
+		this.context = rhinoContext;
+		this.scope = rhinoContext.initSafeStandardObjects();
 
-		var bridge = Context.javaToJS(new JsBridge(), scope);
-		ScriptableObject.putConstProperty(scope, "Awery", bridge);
-
-		context.evaluateString(scope, script, null, 1,null);
+		rhinoContext.evaluateString(scope, script, null, 1,null);
 
 		if(scope.get("aweryManifest") instanceof Function fun) {
-			var obj = (ScriptableObject) fun.call(context, scope, null, EMPTY_ARGS);
+			var obj = (ScriptableObject) fun.call(rhinoContext, scope, null, EMPTY_ARGS);
 			this.name = (String) obj.get("title");
 			this.id = (String) obj.get("id");
 			this.version = (String) obj.get("version");
@@ -74,6 +76,9 @@ public class JsProvider extends ExtensionProvider {
 		} else {
 			throw new IllegalStateException("aweryManifest is not a function or isn't defined!");
 		}
+
+		var bridge = Context.javaToJS(new JsBridge(manager, androidContext, id), scope);
+		ScriptableObject.putConstProperty(scope, "Awery", bridge);
 
 		this.FEATURES = Collections.unmodifiableList(features);
 	}
