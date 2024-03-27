@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -25,7 +26,6 @@ import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.squareup.moshi.Json;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -103,12 +103,9 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				if(currentDialog != null) {
 					currentDialog.dismiss();
 				}
-			} catch(IOException e) {
-				Log.e(TAG, "Failed to read extension file", e);
-				toast("Failed to load the file!");
-			} catch(IllegalArgumentException e) {
-				Log.e(TAG, "Extension script is invalid!", e);
-				toast("Extension script is invalid!");
+			} catch(Throwable e) {
+				Log.e(TAG, "Failed to load the extension!", e);
+				CrashHandler.showErrorDialog(activity, e, false, null);
 			}
 		});
 

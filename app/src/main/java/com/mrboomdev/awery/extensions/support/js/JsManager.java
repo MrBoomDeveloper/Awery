@@ -5,11 +5,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.util.exceptions.JsException;
 
+import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
@@ -21,8 +24,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
@@ -30,6 +35,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JsManager extends ExtensionsManager {
+	private final List<Throwable> caughtExceptions = new ArrayList<>();
 	private static final String TAG = "JsManager";
 	private final Map<String, Extension> extensions = new HashMap<>();
 	private final Queue<JsTask> tasks = new ConcurrentLinkedDeque<>();
@@ -48,13 +54,19 @@ public class JsManager extends ExtensionsManager {
 				}
 
 				@Override
+				@SuppressWarnings(Constants.SUPPRESS_IGNORED_THROWABLE)
 				public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
 					Log.e("JsManager", lineSource + "\n\"" + message + "\" at " + sourceName + ":" + line);
+					runtimeError(message, sourceName, line, lineSource, lineOffset);
 				}
 
+				@NonNull
+				@Contract("_, _, _, _, _ -> new")
 				@Override
 				public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
-					return new EvaluatorException(lineSource + "\n\"" + message + "\" at " + sourceName + ":" + line);
+					var e = new EvaluatorException(lineSource + "\n\"" + message + "\" at " + sourceName + ":" + line);
+					caughtExceptions.add(e);
+					return e;
 				}
 			});
 
@@ -86,8 +98,11 @@ public class JsManager extends ExtensionsManager {
 	private void processTask(@NonNull JsTask task) {
 		switch(task.getTaskType()) {
 			case JsTask.LOAD_EXTENSION -> {
-				var provider = new JsProvider(this, context, (String) task.getArgs()[0], (String) task.getArgs()[1]);
+				var provider = new JsProvider(this, context, (String) task.getArgs()[0]);
+
 				var extension = new Extension(this, provider.id, provider.getName(), provider.version);
+				extension.addFlags(Extension.FLAG_WORKING);
+
 				extensions.put(provider.id, extension);
 				task.getCallback().run(provider.id);
 			}
@@ -124,12 +139,14 @@ public class JsManager extends ExtensionsManager {
 						}
 
 						var provider = new JsProvider(this,
-								this.context, builder.toString(), file.getName());
+								this.context, builder.toString());
 
 						var extension = new Extension(this,
 								provider.id, provider.getName(), provider.version);
 
 						extension.addProvider(provider);
+						extension.addFlags(Extension.FLAG_WORKING);
+
 						extensions.put(provider.id, extension);
 					} catch(IOException e) {
 						var name = file.getName();
@@ -225,7 +242,7 @@ public class JsManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void installExtension(Context context, @NonNull InputStream is) throws IOException {
+	public void installExtension(Context context, @NonNull InputStream is) throws IOException, JsException {
 		var builder = new StringBuilder();
 
 		try(var stream = new BufferedReader(new InputStreamReader(is))) {
@@ -238,6 +255,13 @@ public class JsManager extends ExtensionsManager {
 		var response = waitForResult(JsTask.LOAD_EXTENSION, script, "Unknown");
 
 		if(response instanceof Exception e) {
+			if(e instanceof EvaluatorException ex) {
+				var line = "--------------------------------------";
+				Log.e(TAG, line);
+				Log.e(TAG, line);
+				throw JsException.create(ex, caughtExceptions);
+			}
+
 			throw new IllegalArgumentException("Failed to load extension!", e);
 		}
 

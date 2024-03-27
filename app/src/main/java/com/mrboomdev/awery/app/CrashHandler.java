@@ -77,10 +77,27 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
 		System.exit(0);
 	}
+	
+	public static void showErrorDialog(Context context, Throwable throwable, boolean finishOnClose, File file) {
+		var descriptor = new ExceptionDescriptor(throwable);
+		var title = descriptor.getTitle(context);
+		var description = descriptor.getMessage(context);
+		showErrorDialog(context, title, description, finishOnClose, file);
+	}
 
-	public static void showCrashMessage(@NonNull Context context, String message, boolean finishOnClose, File file) {
+	public static void showErrorDialog(@NonNull Context context, String message, boolean finishOnClose, File file) {
+		showErrorDialog(context, "An error has occurred!", message, finishOnClose, file);
+	}
+
+	public static void showErrorDialog(
+			@NonNull Context context,
+			String title,
+			String message,
+			boolean finishOnClose,
+			File file
+	) {
 		new MaterialAlertDialogBuilder(context)
-				.setTitle("Awery has crashed!")
+				.setTitle(title)
 				.setMessage("Please send the following details to developers:\n\n" + message)
 				.setCancelable(false)
 				.setOnDismissListener(dialog -> {
@@ -132,7 +149,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 				var details = adapter.fromJson(result.toString());
 				if(details == null) return;
 
-				showCrashMessage(context, details.toString(), false, crashFile);
+				showErrorDialog(context, details.toString(), false, crashFile);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

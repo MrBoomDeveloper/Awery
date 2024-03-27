@@ -57,11 +57,9 @@ public class ExceptionDescriptor {
 					return;
 				}
 			}
-
-			this.throwable = causes.get(causes.size() - 1);
-		} else {
-			this.throwable = t;
 		}
+
+		this.throwable = t;
 	}
 
 	public String getTitle(Context context) {
@@ -115,7 +113,6 @@ public class ExceptionDescriptor {
 				t instanceof HttpException ||
 				t instanceof UnsupportedOperationException ||
 				t instanceof JsonDecodingException ||
-				t instanceof NullPointerException ||
 				t instanceof UnknownHostException ||
 				t instanceof GraphQLException);
 	}
@@ -136,10 +133,6 @@ public class ExceptionDescriptor {
 	}
 
 	public String getMessage(Context context) {
-		if(throwable.getCause() != null) {
-			return new ExceptionDescriptor(throwable.getCause()).getMessage(context);
-		}
-
 		return getMessage(throwable, context);
 	}
 

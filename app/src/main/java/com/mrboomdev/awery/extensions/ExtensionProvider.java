@@ -29,6 +29,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_WATCH_MEDIA = 3;
 	public static final int FEATURE_READ_MEDIA = 4;
 	public static final int FEATURE_WRITE_MEDIA_COMMENTS = 5;
+	public static final int FEATURE_TRACK = 6;
+	public static final int FEATURE_COMMENTS_SORT = 7;
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {

@@ -13,6 +13,7 @@ import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
 
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
@@ -31,18 +32,16 @@ public class JsProvider extends ExtensionProvider {
 	private final JsManager manager;
 	protected final String id, version;
 
-	public JsProvider(
-			JsManager manager,
-			@NonNull org.mozilla.javascript.Context context,
-			@NonNull String script,
-			String fileName
-	) {
+	public JsProvider(JsManager manager, @NonNull org.mozilla.javascript.Context context, @NonNull String script) {
 		var features = new ArrayList<Integer>();
 		this.manager = manager;
 		this.context = context;
 		this.scope = context.initSafeStandardObjects();
 
-		context.evaluateString(scope, script, fileName, 1,null);
+		var bridge = Context.javaToJS(new JsBridge(), scope);
+		ScriptableObject.putConstProperty(scope, "Awery", bridge);
+
+		context.evaluateString(scope, script, null, 1,null);
 
 		if(scope.get("aweryManifest") instanceof Function fun) {
 			var obj = (ScriptableObject) fun.call(context, scope, null, EMPTY_ARGS);
@@ -56,11 +55,15 @@ public class JsProvider extends ExtensionProvider {
 
 			for(var feature : (NativeArray) obj.get("features")) {
 				features.add(switch((String) feature) {
-					case "read_media_comments" -> FEATURE_READ_MEDIA_COMMENTS;
-					case "write_media_comments" -> FEATURE_WRITE_MEDIA_COMMENTS;
-					case "watch_media" -> FEATURE_WATCH_MEDIA;
-					case "read_media" -> FEATURE_READ_MEDIA;
-					case "login" -> FEATURE_LOGIN;
+					case "media_comments_read" -> FEATURE_READ_MEDIA_COMMENTS;
+					case "media_comments_write" -> FEATURE_WRITE_MEDIA_COMMENTS;
+					case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
+
+					case "media_watch" -> FEATURE_WATCH_MEDIA;
+					case "media_read" -> FEATURE_READ_MEDIA;
+
+					case "account_login" -> FEATURE_LOGIN;
+					case "account_track" -> FEATURE_TRACK;
 
 					default -> {
 						toast("Unknown feature: " + feature);
