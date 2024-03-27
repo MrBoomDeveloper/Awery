@@ -27,12 +27,20 @@ public abstract class ExtensionsManager {
 				.toList();
 	}
 
+	/**
+	 * Find an extension by a unique id
+	 * @author MrBoomDev
+	 */
 	public abstract Extension getExtension(String id);
 
 	public abstract Collection<Extension> getAllExtensions();
 
 	public abstract String getName();
 
+	/**
+	 * @return A unique id of the extension
+	 * @author MrBoomDev
+	 */
 	public abstract String getId();
 
 	public MimeTypes[] getExtensionMimeTypes() {
@@ -43,11 +51,27 @@ public abstract class ExtensionsManager {
 		throw new UnimplementedException("This extension manager doesn't support installing extensions");
 	}
 
-	public void initAll(Context context) {}
+	public void loadAllExtensions(Context context) {
+		for(var extension : getAllExtensions()) {
+			loadExtension(context, extension.getId());
+		}
+	}
 
-	public void init(Context context, String id) {}
+	public void loadExtension(Context context, String id) {}
 
-	public void unload(Context context, String id) {}
+	/**
+	 * Called after a user has disabled the extension in settings or app is closing
+	 * @author MrBoomDev
+	 */
+	public void unloadExtension(Context context, String id) {}
 
-	public void unloadAll(Context context) {}
+	/**
+	 * Usually called once the app is closing
+	 * @author MrBoomDev
+	 */
+	public void unloadAllExtensions(Context context) {
+		for(var extension : getAllExtensions()) {
+			unloadExtension(context, extension.getId());
+		}
+	}
 }

@@ -104,9 +104,4 @@ public class AniyomiManager extends YomiManager {
 			return parent;
 		}
 	}
-
-	@Override
-	public int getFlags() {
-		return Extension.FLAG_VIDEO_EXTENSION;
-	}
 }

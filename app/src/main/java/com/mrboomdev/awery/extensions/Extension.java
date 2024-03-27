@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.app.AweryApp.stream;
+
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
@@ -7,16 +9,14 @@ import androidx.annotation.NonNull;
 import com.squareup.moshi.Json;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Extension implements Comparable<Extension> {
-	public static final int FLAG_VIDEO_EXTENSION = 1;
-	public static final int FLAG_BOOK_EXTENSION = 2;
-	public static final int FLAG_SUBTITLES_EXTENSION = 4;
-	public static final int FLAG_TRACKER_EXTENSION = 8;
-	public static final int FLAG_ERROR = 16;
-	public static final int FLAG_WORKING = 32;
-	public static final int FLAG_NSFW = 64;
+	public static final String DISABLED_ERROR = "Disabled";
+	public static final int FLAG_ERROR = 1;
+	public static final int FLAG_WORKING = 2;
+	public static final int FLAG_NSFW = 4;
 	private final String version, id;
 	private final String name;
 	private boolean isLoaded;
@@ -80,24 +80,14 @@ public class Extension implements Comparable<Extension> {
 		return error;
 	}
 
+	public Collection<ExtensionProvider> getProviders(int feature) {
+		return stream(getProviders())
+				.filter(provider -> provider.hasFeature(feature))
+				.toList();
+	}
+
 	public String getId() {
 		return id;
-	}
-
-	public boolean isVideoExtension() {
-		return (flags & FLAG_VIDEO_EXTENSION) == FLAG_VIDEO_EXTENSION;
-	}
-
-	public boolean isBookExtension() {
-		return (flags & FLAG_BOOK_EXTENSION) == FLAG_BOOK_EXTENSION;
-	}
-
-	public boolean isTrackerExtension() {
-		return (flags & FLAG_TRACKER_EXTENSION) == FLAG_TRACKER_EXTENSION;
-	}
-
-	public boolean isSubtitlesExtension() {
-		return (flags & FLAG_SUBTITLES_EXTENSION) == FLAG_SUBTITLES_EXTENSION;
 	}
 
 	public void setError(String error, Throwable e) {
@@ -112,6 +102,10 @@ public class Extension implements Comparable<Extension> {
 
 		this.error = error;
 		this.exception = e;
+
+		if(this.error == null) {
+			this.error = this.exception.getMessage();
+		}
 
 		addFlags(FLAG_ERROR);
 		removeFlags(FLAG_WORKING);

@@ -12,6 +12,7 @@ import com.squareup.moshi.ToJson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 public class CatalogMedia {
@@ -51,10 +52,14 @@ public class CatalogMedia {
 
 	/**
 	 * @param globalId The unique id of the media in the following format:
-	 * <p>{@code EXTENSION_TYPE;;;EXTENSION_ID;;;ITEM_ID}</p>
+	 * <p>{@code MANAGER_ID;;;EXTENSION_ID;;;ITEM_ID}</p>
 	 */
 	public CatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
+	}
+
+	public CatalogMedia(String managerId, String extensionId, String mediaId) {
+		this(managerId + ";;;" + extensionId + ";;;" + mediaId);
 	}
 
 	@NonNull
@@ -63,9 +68,14 @@ public class CatalogMedia {
 		return getJsonAdapter().toJson(this);
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setTitle(@NonNull String... titles) {
+		this.title = titles[0];
 		this.titles = List.of(title);
+	}
+
+	public void setTitles(Collection<String> titles) {
+		this.titles = List.copyOf(titles);
+		this.title = this.titles.get(0);
 	}
 
 	public String getBestBanner() {

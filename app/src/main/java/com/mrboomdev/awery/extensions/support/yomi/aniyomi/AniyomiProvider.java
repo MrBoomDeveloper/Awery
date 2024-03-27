@@ -28,6 +28,7 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import java9.util.stream.Collectors;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends ExtensionProvider {
+	private final List<Integer> FEATURES = List.of(FEATURE_WATCH_MEDIA);
 	private final AnimeCatalogueSource source;
 
 	public AniyomiProvider(AnimeCatalogueSource source) {
@@ -93,6 +95,11 @@ public class AniyomiProvider extends ExtensionProvider {
 						);
 					}).collect(Collectors.toCollection(ArrayList::new)));
 		})).start();
+	}
+
+	@Override
+	public Collection<Integer> getFeatures() {
+		return FEATURES;
 	}
 
 	@NonNull

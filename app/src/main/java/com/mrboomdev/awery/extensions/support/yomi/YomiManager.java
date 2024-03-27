@@ -56,10 +56,8 @@ public abstract class YomiManager extends ExtensionsManager {
 		return extensions.values();
 	}
 
-	public abstract int getFlags();
-
 	@Override
-	public void initAll(@NonNull Context context) {
+	public void loadAllExtensions(@NonNull Context context) {
 		var pm = context.getPackageManager();
 
 		var packages = stream(pm.getInstalledPackages(PM_FLAGS))
@@ -90,8 +88,6 @@ public abstract class YomiManager extends ExtensionsManager {
 				}
 			};
 
-			extension.addFlags(getFlags());
-
 			if(isNsfw) {
 				extension.addFlags(Extension.FLAG_NSFW);
 			}
@@ -105,13 +101,13 @@ public abstract class YomiManager extends ExtensionsManager {
 				continue;
 			}
 
-			init(context, pkg.packageName);
+			loadExtension(context, pkg.packageName);
 		}
 	}
 
 	@Override
-	public void init(Context context, String id) {
-		unload(context, id);
+	public void loadExtension(Context context, String id) {
+		unloadExtension(context, id);
 
 		List<?> mains;
 		var extension = extensions.get(id);
@@ -145,14 +141,7 @@ public abstract class YomiManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void unloadAll(Context context) {
-		for(var extension : extensions.values()) {
-			unload(context, extension.getId());
-		}
-	}
-
-	@Override
-	public void unload(Context context, String id) {
+	public void unloadExtension(Context context, String id) {
 		var extension = extensions.get(id);
 
 		if(extension == null) {

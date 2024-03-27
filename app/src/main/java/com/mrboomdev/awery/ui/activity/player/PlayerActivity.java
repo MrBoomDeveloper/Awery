@@ -73,7 +73,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected ArrayList<CatalogEpisode> episodes;
 	protected CatalogEpisode episode;
 	protected CatalogVideo video;
-	private CatalogSubtitle subtitle;
 	protected ExoPlayer player;
 	protected int doubleTapSeek, bigSeek;
 	protected GesturesMode gesturesMode;
@@ -329,7 +328,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		this.video = video;
 
 		selectSubtitles(null);
-		selectSubtitles(subtitle);
 		player.play();
 
 		if(video.getSubtitles().isEmpty()) {

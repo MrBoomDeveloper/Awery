@@ -36,7 +36,6 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.template.CatalogList;
-import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
@@ -224,10 +223,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				.findFirst().get().activity;
 	}
 
-	public static void wait(@NonNull Callbacks.Result<Boolean> callback) throws InterruptedException {
-		while(callback.run());
-	}
-
 	@Override
 	public void onCreate() {
 		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
@@ -236,20 +231,16 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		mainThread = Thread.currentThread();
 
 		var isDarkModeEnabled = AwerySettings.getInstance(this)
-				.getOptionalBoolean(AwerySettings.DARK_THEME);
+				.getBoolean(AwerySettings.DARK_THEME, true);
 
-		if(isDarkModeEnabled != null) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-				var uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
-
-				uiModeManager.setApplicationNightMode(isDarkModeEnabled
-						? UiModeManager.MODE_NIGHT_YES
-						: UiModeManager.MODE_NIGHT_NO);
-			} else {
-				AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
-						? AppCompatDelegate.MODE_NIGHT_YES
-						: AppCompatDelegate.MODE_NIGHT_NO);
-			}
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			((UiModeManager) getSystemService(UI_MODE_SERVICE))
+					.setApplicationNightMode(isDarkModeEnabled
+						? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
+		} else {
+			AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
+					? AppCompatDelegate.MODE_NIGHT_YES
+					: AppCompatDelegate.MODE_NIGHT_NO);
 		}
 
 		super.onCreate();

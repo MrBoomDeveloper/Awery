@@ -135,7 +135,7 @@ public class MediaActivity extends AppCompatActivity {
 			return switch(position) {
 				case 0 -> new MediaInfoFragment(media);
 				case 1 -> new MediaPlayFragment(media);
-				case 2 -> new MediaCommentsFragment();
+				case 2 -> new MediaCommentsFragment(media);
 				case 3 -> new MediaRelationsFragment();
 				default -> throw new IllegalArgumentException("Invalid position: " + position);
 			};

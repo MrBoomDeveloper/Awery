@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.stream;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -203,9 +205,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		var flags = Extension.FLAG_VIDEO_EXTENSION | Extension.FLAG_WORKING;
-		providers = new ArrayList<>(ExtensionsFactory.getProviders(flags));
-		Collections.sort(providers);
+		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_WATCH_MEDIA))
+				.flatMap(AweryApp::stream)
+				.sorted().toList();
 
 		var sourcesDropdownAdapter = new CustomArrayAdapter<>(providers, this::bindDropdownItem);
 

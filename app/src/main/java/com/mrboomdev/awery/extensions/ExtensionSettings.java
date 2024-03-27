@@ -16,13 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
-import com.mrboomdev.awery.util.FancyVersion;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.squareup.moshi.Json;
@@ -50,12 +48,12 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				.setTitle(manager.getName() + " extensions")
 				.setItems(stream(manager.getExtensions(0)).sorted()
 						.map(extension -> {
-							var versionText = FancyVersion.isValid(extension.getVersion())
-									? ("v" + extension.getVersion()) : extension.getVersion();
+							var description = extension.getVersion() != null
+									? ("v" + extension.getVersion()) : extension.getErrorTitle();
 
 							return new ExtensionSetting(activity, extension, new Builder(SettingsItemType.SCREEN_BOOLEAN)
 									.setTitle(extension.getName())
-									.setDescription(versionText)
+									.setDescription(description)
 									.setKey(extension.getId())
 									.setItems(stream(extension.getProviders()).map(provider -> {
 										var response = new AtomicReference<SettingsItem>();
@@ -72,11 +70,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 											}
 										});
 
-										try {
-											AweryApp.wait(() -> response.get() == null);
-										} catch(InterruptedException e) {
-											throw new RuntimeException(e);
-										}
+										// Wait for response
+										while(response.get() == null);
 
 										return response.get() == SettingsItem.INVALID_SETTING ? null : response.get();
 									}).filter(Objects::nonNull).toList())
@@ -188,8 +183,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		prefs.setBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", isEnabled);
 		prefs.saveAsync();
 
-		if(isEnabled) manager.init(activity, item.getKey());
-		else manager.unload(activity, item.getKey());
+		if(isEnabled) manager.loadExtension(activity, item.getKey());
+		else manager.unloadExtension(activity, item.getKey());
 	}
 
 	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler {

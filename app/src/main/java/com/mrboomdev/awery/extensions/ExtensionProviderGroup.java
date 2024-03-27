@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions;
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,6 +60,11 @@ public class ExtensionProviderGroup extends ExtensionProvider {
 	 */
 	public Collection<ExtensionProvider> getProviders() {
 		return providers;
+	}
+
+	@Override
+	public Collection<Integer> getFeatures() {
+		return Collections.emptyList();
 	}
 
 	/**

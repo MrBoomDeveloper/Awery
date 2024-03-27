@@ -29,7 +29,6 @@ public class AwerySettings {
 	public static final String APP_SETTINGS = "Awery";
 	private static SettingsItem settingsMapInstance;
 	private final SharedPreferences prefs;
-	private final Context context;
 	private SharedPreferences.Editor editor;
 
 	public static final String PLAYER_GESTURES = "settings_player_gestures";
@@ -46,8 +45,7 @@ public class AwerySettings {
 	public static final String THEME_USE_COLORS_FROM_MEDIA = "settings_theme_use_source_theme";
 	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
 
-	private AwerySettings(Context context, SharedPreferences prefs) {
-		this.context = context;
+	private AwerySettings(SharedPreferences prefs) {
 		this.prefs = prefs;
 	}
 
@@ -251,7 +249,7 @@ public class AwerySettings {
 	 */
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context, String name) {
-		return new AwerySettings(context, context.getSharedPreferences(name, 0));
+		return new AwerySettings(context.getSharedPreferences(name, 0));
 	}
 
 	/**

@@ -67,9 +67,4 @@ public class TachiyomiManager extends YomiManager {
 
 		return Collections.emptyList();
 	}
-
-	@Override
-	public int getFlags() {
-		return Extension.FLAG_BOOK_EXTENSION;
-	}
 }
