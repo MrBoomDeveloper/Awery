@@ -10,10 +10,15 @@ import androidx.room.PrimaryKey;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogTag;
 import com.mrboomdev.awery.util.StringUtil;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import java9.util.stream.Collectors;
 
@@ -32,10 +37,9 @@ public class DBCatalogMedia {
 	@NonNull
 	public String globalId;
 
-	public String titles, lists, trackers;
-	public String title, banner, description, color, url, country;
+	public String titles, lists, trackers, ids;
+	public String banner, description, url, country;
 	public String releaseDate, duration, type;
-	public int id;
 	@ColumnInfo(name = "episodes_count")
 	public String episodesCount;
 	@ColumnInfo(name = "average_score")
@@ -63,17 +67,18 @@ public class DBCatalogMedia {
 	@Contract(pure = true)
 	public static DBCatalogMedia fromCatalogMedia(@NonNull CatalogMedia media) {
 		var dbMedia = new DBCatalogMedia(media.globalId);
-		dbMedia.title = media.title;
 		dbMedia.banner = media.banner;
 		dbMedia.description = media.description;
-		dbMedia.color = media.color;
 		dbMedia.url = media.url;
-		dbMedia.id = media.id;
 		dbMedia.country = media.country;
 
 		dbMedia.lastEpisode = media.lastEpisode;
 		dbMedia.lastSource = media.lastSource;
 		dbMedia.lastEpisodeProgress = media.lastEpisodeProgress;
+
+		dbMedia.ids = stream(media.ids.entrySet())
+				.map(entry -> "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"")
+				.collect(Collectors.joining(",", "{", "}"));
 
 		if(media.averageScore != null) {
 			dbMedia.averageScore = Float.toString(media.averageScore);
@@ -128,17 +133,23 @@ public class DBCatalogMedia {
 
 	public CatalogMedia toCatalogMedia() {
 		var media = new CatalogMedia(globalId);
-		media.title = title;
 		media.banner = banner;
 		media.description = description;
-		media.id = id;
 		media.url = url;
-		media.color = color;
 		media.country = country;
 
 		media.lastSource = lastSource;
 		media.lastEpisode = lastEpisode;
 		media.lastEpisodeProgress = lastEpisodeProgress;
+
+		try {
+			var moshi = new Moshi.Builder().build();
+			var type = Types.newParameterizedType(Map.class, String.class, String.class);
+			JsonAdapter<Map<String, String>> adapter = moshi.adapter(type);
+			media.ids = adapter.fromJson(ids);
+		} catch(IOException e) {
+			throw new RuntimeException("Failed to parse ids: " + ids);
+		}
 
 		if(averageScore != null) {
 			media.averageScore = Float.parseFloat(averageScore);

@@ -69,7 +69,7 @@ public class MediaUtils {
 		var inflater = LayoutInflater.from(context);
 		var binding = PopupMediaActionsBinding.inflate(inflater);
 
-		binding.title.setText(media.title);
+		binding.title.setText(media.getTitle());
 
 		binding.play.setOnClickListener(v -> {
 			launchMediaActivity(context, media, ACTION_WATCH);
@@ -113,7 +113,7 @@ public class MediaUtils {
 	public static void shareMedia(Context context, @NonNull CatalogMedia media) {
 		new ShareCompat.IntentBuilder(context)
 				.setType("text/plain")
-				.setText("https://anilist.co/anime/" + media.id)
+				.setText("https://anilist.co/anime/" + media.getId("anilist"))
 				.startChooser();
 	}
 
@@ -213,7 +213,7 @@ public class MediaUtils {
 				}).show();
 	}
 
-	private interface OnListCreatedListener {
+	public interface OnListCreatedListener {
 		void onListCreated(CatalogList list);
 	}
 

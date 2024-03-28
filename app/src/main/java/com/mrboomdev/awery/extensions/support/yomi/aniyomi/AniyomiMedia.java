@@ -38,7 +38,7 @@ public class AniyomiMedia extends CatalogMedia {
 		}
 
 		var anime = new SAnimeImpl();
-		anime.setTitle(media.title);
+		anime.setTitle(media.getTitle());
 		anime.setUrl(media.url);
 		anime.setDescription(media.description);
 		anime.setThumbnail_url(media.poster.extraLarge);

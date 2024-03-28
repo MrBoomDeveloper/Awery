@@ -9,7 +9,6 @@ import com.squareup.moshi.Json;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 public class AnilistMedia {
 	public List<String> genres;
@@ -51,11 +50,9 @@ public class AnilistMedia {
 
 	public CatalogMedia toCatalogMedia() {
 		var media = new CatalogMedia(AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id);
-		media.title = Objects.requireNonNullElse(title.english, title.romaji);
 		media.description = description;
-		media.id = id;
+		media.setId("anilist", String.valueOf(id));
 		media.banner = bannerImage;
-		media.color = coverImage.color;
 		media.duration = duration;
 		media.episodesCount = episodes;
 		media.country = countryOfOrigin;

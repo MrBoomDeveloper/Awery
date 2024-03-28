@@ -62,19 +62,28 @@ public class JsBridge {
 			}
 		}
 
-		new HttpClient.Request()
+		var request = new HttpClient.Request()
 				.setHeaders(headers)
-				.setUrl((String) options.get("url"))
-				.setBody((String) options.get("body"), MimeTypes.ANY)
-				.setMethod(options.has("method", options) ? switch(((String) options.get("method")).toLowerCase(Locale.ROOT)) {
-					case "get" -> HttpClient.Method.GET;
-					case "post" -> HttpClient.Method.POST;
-					case "put" -> HttpClient.Method.PUT;
-					case "delete" -> HttpClient.Method.DELETE;
-					case "patch" -> HttpClient.Method.PATCH;
-					default -> throw new IllegalArgumentException("Unsupported method: " + options.get("method"));
-				} : null)
-				.callAsync(context, new HttpClient.HttpCallback() {
+				.setUrl(options.get("url").toString());
+
+		if(options.has("body", options)) {
+			request.setBody(options.get("body").toString(), MimeTypes.ANY);
+		}
+
+		if(options.has("method", options)) {
+			var method = options.get("method").toString().toLowerCase(Locale.ROOT);
+
+			request.setMethod(options.has("method", options) ? switch(method) {
+				case "get" -> HttpClient.Method.GET;
+				case "post" -> HttpClient.Method.POST;
+				case "put" -> HttpClient.Method.PUT;
+				case "delete" -> HttpClient.Method.DELETE;
+				case "patch" -> HttpClient.Method.PATCH;
+				default -> throw new IllegalArgumentException("Unsupported method: " + method);
+			} : null);
+		}
+
+		request.callAsync(context, new HttpClient.HttpCallback() {
 			@Override
 			public void onResponse(HttpClient.HttpResponse response) {
 				manager.postRunnable(() -> promise.resolve(Context.javaToJS(response, scriptScope)));
@@ -89,12 +98,12 @@ public class JsBridge {
 		return Context.javaToJS(promise, scriptScope);
 	}
 
-	public String getSavedValue(String key) {
-		return prefs.getString(key);
+	public Object getSaved(@NonNull Object key) {
+		return prefs.getString(key.toString());
 	}
 
-	public void saveValue(String key, String value) {
-		prefs.setString(key, value);
+	public void setSaved(@NonNull Object key, @NonNull Object value) {
+		prefs.setString(key.toString(), value.toString());
 		prefs.saveSync();
 	}
 }

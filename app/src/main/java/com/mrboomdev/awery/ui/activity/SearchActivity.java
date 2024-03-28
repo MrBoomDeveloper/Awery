@@ -263,7 +263,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		@Override
 		public long getItemId(int position) {
-			return items.get(position).id;
+			return Long.parseLong(items.get(position).getId("anilist"));
 		}
 
 		@NonNull
@@ -327,7 +327,7 @@ public class SearchActivity extends AppCompatActivity {
 		public void bind(@NonNull CatalogMedia item) {
 			this.item = item;
 
-			binding.title.setText(item.title);
+			binding.title.setText(item.getTitle());
 			binding.ongoing.setVisibility(item.status == CatalogMedia.MediaStatus.ONGOING ? View.VISIBLE : View.GONE);
 
 			if(item.averageScore != null) {

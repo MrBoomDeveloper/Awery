@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
+import com.google.common.collect.Lists;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
@@ -13,7 +14,9 @@ import com.squareup.moshi.ToJson;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CatalogMedia {
 	public static final Adapter adapter = new Adapter();
@@ -32,11 +35,11 @@ public class CatalogMedia {
 	public String globalId;
 
 	public List<String> titles = new ArrayList<>();
-	public String title, banner, description, color, url, country;
+	public Map<String, String> ids = new HashMap<>();
+	public String banner, description, url, country;
 	public MediaType type;
 	public ImageVersions poster = new ImageVersions();
 	public Calendar releaseDate;
-	public int id;
 	public Integer duration, episodesCount;
 	public Float averageScore;
 	public List<CatalogTag> tags;
@@ -69,18 +72,28 @@ public class CatalogMedia {
 	}
 
 	public void setTitle(@NonNull String... titles) {
-		this.title = titles[0];
-		this.titles = List.of(title);
+		this.titles = Lists.newArrayList(titles);
+	}
+
+	public String getTitle() {
+		return titles.get(0);
 	}
 
 	public void setTitles(Collection<String> titles) {
 		this.titles = List.copyOf(titles);
-		this.title = this.titles.get(0);
 	}
 
 	public String getBestBanner() {
 		if(banner != null) return banner;
 		return getBestPoster();
+	}
+
+	public void setId(String type, String id) {
+		ids.put(type, id);
+	}
+
+	public String getId(String type) {
+		return ids.get(type);
 	}
 
 	public void merge(@NonNull CatalogMedia media) {

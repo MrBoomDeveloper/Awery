@@ -33,7 +33,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	@Override
 	public long getItemId(int position) {
-		return items.get(position).id;
+		return Long.parseLong(items.get(position).getId("anilist"));
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -110,7 +110,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		public void bind(@NonNull CatalogMedia item) {
 			this.item = item;
 
-			binding.title.setText(item.title);
+			binding.title.setText(item.getTitle());
 			binding.ongoing.setVisibility(item.status == CatalogMedia.MediaStatus.ONGOING ? View.VISIBLE : View.GONE);
 
 			if(item.averageScore != null) {

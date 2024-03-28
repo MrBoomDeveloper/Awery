@@ -102,7 +102,13 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryReadMediaComments") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { media, episode, (Callback<ScriptableObject>) (o, e) -> {
+					var params = context.newObject(scope);
+					params.put("media", params, media);
+					params.put("page", params, 0);
+					//params.put("sort", params, "date");
+					params.put("episode", params, episode);
+
+					fun.call(context, scope, null, new Object[] { params, (Callback<ScriptableObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(e);
 							return;

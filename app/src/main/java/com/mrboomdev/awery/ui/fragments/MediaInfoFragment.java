@@ -78,7 +78,7 @@ public class MediaInfoFragment extends Fragment {
 		this.media = media;
 		if(binding == null) return;
 
-		binding.details.title.setText(media.title);
+		binding.details.title.setText(media.getTitle());
 		binding.details.generalMeta.setText(generateGeneralMetaString(media));
 
 		var banner = AweryApp.getOrientation() == Configuration.ORIENTATION_LANDSCAPE

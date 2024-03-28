@@ -154,7 +154,7 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 
 		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogMedia item) {
-			binding.title.setText(item.title);
+			binding.title.setText(item.getTitle());
 			binding.description.setText(Html.fromHtml(item.description).toString().trim());
 
 			if(item.averageScore != null) {

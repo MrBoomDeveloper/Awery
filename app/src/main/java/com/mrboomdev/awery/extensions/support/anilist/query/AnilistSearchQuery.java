@@ -149,7 +149,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 						startDate { year month day }
 						endDate { year month day }
 						coverImage { extraLarge large color medium }
-						tags { name id description }
+						tags { name id }
 						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
 					}
 				}

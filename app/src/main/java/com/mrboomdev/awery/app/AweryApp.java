@@ -55,7 +55,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import ani.awery.App;
-import ani.awery.connections.anilist.Anilist;
 import java9.util.stream.Stream;
 import java9.util.stream.StreamSupport;
 import okhttp3.OkHttpClient;
@@ -274,10 +273,11 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 		}
 
 		registerActivityLifecycleCallbacks(this);
-
 		ExtensionsFactory.init(this);
-		Anilist.INSTANCE.getSavedToken(this);
-		db = Room.databaseBuilder(this, AweryDB.class, "db").build();
+
+		db = Room.databaseBuilder(this, AweryDB.class, "db")
+				.addMigrations(AweryDB.MIGRATION_2_3)
+				.build();
 
 		var settings = AwerySettings.getInstance(this);
 		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
