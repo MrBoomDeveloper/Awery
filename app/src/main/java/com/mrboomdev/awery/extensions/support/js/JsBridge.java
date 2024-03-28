@@ -2,52 +2,68 @@ package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryApp.getAnyContext;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.io.HttpClient;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.annotations.JSFunction;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Do not ever init this class by yourself!
+ * @author MrBoomDev
+ */
 @SuppressWarnings("unused")
 public class JsBridge {
-	private final AwerySettings prefs;
+	protected AwerySettings prefs;
 	private final JsManager manager;
+	private final JsProvider provider;
+	private final Scriptable scriptScope;
+	private Scriptable prototype, parent;
 
-	public JsBridge(JsManager manager, Context context, String id) {
-		this.prefs = AwerySettings.getInstance(context, "JsBridge-" + id);
+	public JsBridge(JsManager manager, JsProvider provider, Scriptable scope) {
 		this.manager = manager;
+		this.provider = provider;
+		this.scriptScope = scope;
 	}
 
-	@JSFunction
+	/**
+	 * Must be called right after script was parsed!
+	 * @author MrBoomDev
+	 */
+	public void setManifest(ScriptableObject object) {
+		provider.finishInit(this, object);
+	}
+
 	public void toast(Object object) {
 		AweryApp.toast(object);
 	}
 
-	@JSFunction
-	public Promise<Response, RuntimeException> fetch(@NonNull ScriptableObject options) {
+	public Object fetch(@NonNull ScriptableObject options) {
 		var context = getAnyContext();
-		var promise = new Promise<Response, RuntimeException>();
+		var promise = new JsPromise<>(scriptScope);
 
-		var jsHeaders = options.get("headers");
 		Map<String, String> headers = null;
 
-		if(jsHeaders != null) {
+		if(options.get("headers") instanceof NativeObject o) {
 			headers = new HashMap<>();
-			//options.get
+
+			for(var entry : o.entrySet()) {
+				headers.put(entry.getKey().toString(), entry.getValue().toString());
+			}
 		}
 
 		new HttpClient.Request()
+				.setHeaders(headers)
 				.setUrl((String) options.get("url"))
 				.setBody((String) options.get("body"), MimeTypes.ANY)
 				.setMethod(options.has("method", options) ? switch(((String) options.get("method")).toLowerCase(Locale.ROOT)) {
@@ -61,83 +77,24 @@ public class JsBridge {
 				.callAsync(context, new HttpClient.HttpCallback() {
 			@Override
 			public void onResponse(HttpClient.HttpResponse response) {
-				manager.postRunnable(() -> {
-					var res = new Response();
-					res.body = response.getText();
-					res.statusCode = response.getStatusCode();
-					promise.resolve(res);
-				});
+				manager.postRunnable(() -> promise.resolve(Context.javaToJS(response, scriptScope)));
 			}
 
 			@Override
 			public void onError(HttpClient.HttpException exception) {
-				manager.postRunnable(() -> promise.reject(exception));
+				manager.postRunnable(() -> promise.reject(Context.javaToJS(exception, scriptScope)));
 			}
 		});
 
-		return promise;
+		return Context.javaToJS(promise, scriptScope);
 	}
 
-	@JSFunction
 	public String getSavedValue(String key) {
 		return prefs.getString(key);
 	}
 
-	@JSFunction
 	public void saveValue(String key, String value) {
 		prefs.setString(key, value);
 		prefs.saveSync();
-	}
-
-	public static class Response {
-		public String body;
-		public int statusCode;
-	}
-
-	public static class Promise<T, E> {
-		private Callbacks.Callback1<T> resolve;
-		private Callbacks.Callback1<E> reject;
-		private T result;
-		private E error;
-
-		@JSFunction
-		public void resolve(T object) {
-			this.result = object;
-
-			if(resolve != null) {
-				resolve.run(object);
-			}
-		}
-
-		@JSFunction
-		public void reject(E object) {
-			this.error = object;
-
-			if(reject != null) {
-				reject.run(object);
-			}
-		}
-
-		@JSFunction(value = "then")
-		public Promise<T, E> _then(Callbacks.Callback1<T> callback) {
-			this.resolve = callback;
-
-			if(result != null) {
-				this.resolve(result);
-			}
-
-			return this;
-		}
-
-		@JSFunction(value = "catch")
-		public Promise<T, E> _catch(Callbacks.Callback1<E> callback) {
-			this.reject = callback;
-
-			if(error != null) {
-				this.reject(error);
-			}
-
-			return this;
-		}
 	}
 }

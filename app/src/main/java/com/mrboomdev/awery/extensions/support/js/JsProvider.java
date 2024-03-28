@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.template.CatalogComment;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
@@ -12,6 +13,7 @@ import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
 import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
+import com.mrboomdev.awery.util.exceptions.JsException;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -24,13 +26,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class JsProvider extends ExtensionProvider {
-	private final List<Integer> FEATURES;
-	private static final Object[] EMPTY_ARGS = new Object[0];
+	protected String id, version;
+	private  List<Integer> FEATURES;
 	private final ScriptableObject scope;
 	private final org.mozilla.javascript.Context context;
-	private final String name;
+	private android.content.Context androidContext;
+	private String name;
 	private final JsManager manager;
-	protected final String id, version;
+	private boolean didInit;
 
 	public JsProvider(
 			JsManager manager,
@@ -38,49 +41,56 @@ public class JsProvider extends ExtensionProvider {
 			@NonNull Context rhinoContext,
 			@NonNull String script
 	) {
-		var features = new ArrayList<Integer>();
 		this.manager = manager;
 		this.context = rhinoContext;
-		this.scope = rhinoContext.initSafeStandardObjects();
+		this.androidContext = androidContext;
+		this.scope = rhinoContext.initStandardObjects();
+
+		var bridge = Context.javaToJS(new JsBridge(manager, this, scope), scope);
+		ScriptableObject.putConstProperty(scope, "Awery", bridge);
 
 		rhinoContext.evaluateString(scope, script, null, 1,null);
 
-		if(scope.get("aweryManifest") instanceof Function fun) {
-			var obj = (ScriptableObject) fun.call(rhinoContext, scope, null, EMPTY_ARGS);
-			this.name = (String) obj.get("title");
-			this.id = (String) obj.get("id");
-			this.version = (String) obj.get("version");
+		if(!didInit) {
+			throw new JsException("It looks like your forgot to call the \"setManifest\"!");
+		}
+	}
 
-			if(id == null) {
-				throw new NullPointerException("id is null!");
-			}
+	protected void finishInit(JsBridge bridge, @NonNull ScriptableObject obj) {
+		var features = new ArrayList<Integer>();
 
-			for(var feature : (NativeArray) obj.get("features")) {
-				features.add(switch((String) feature) {
-					case "media_comments_read" -> FEATURE_READ_MEDIA_COMMENTS;
-					case "media_comments_write" -> FEATURE_WRITE_MEDIA_COMMENTS;
-					case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
+		this.name = (String) obj.get("title");
+		this.id = (String) obj.get("id");
+		this.version = (String) obj.get("version");
 
-					case "media_watch" -> FEATURE_WATCH_MEDIA;
-					case "media_read" -> FEATURE_READ_MEDIA;
-
-					case "account_login" -> FEATURE_LOGIN;
-					case "account_track" -> FEATURE_TRACK;
-
-					default -> {
-						toast("Unknown feature: " + feature);
-						yield 0;
-					}
-				});
-			}
-		} else {
-			throw new IllegalStateException("aweryManifest is not a function or isn't defined!");
+		if(id == null) {
+			throw new NullPointerException("id is null!");
 		}
 
-		var bridge = Context.javaToJS(new JsBridge(manager, androidContext, id), scope);
-		ScriptableObject.putConstProperty(scope, "Awery", bridge);
+		for(var feature : (NativeArray) obj.get("features")) {
+			features.add(switch((String) feature) {
+				case "media_comments_read" -> FEATURE_READ_MEDIA_COMMENTS;
+				case "media_comments_write" -> FEATURE_WRITE_MEDIA_COMMENTS;
+				case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
+
+				case "media_watch" -> FEATURE_WATCH_MEDIA;
+				case "media_read" -> FEATURE_READ_MEDIA;
+
+				case "account_login" -> FEATURE_LOGIN;
+				case "account_track" -> FEATURE_TRACK;
+
+				default -> {
+					toast("Unknown feature: " + feature);
+					yield 0;
+				}
+			});
+		}
+
+		bridge.prefs = AwerySettings.getInstance(androidContext, "JsBridge-" + id);
+		androidContext = null;
 
 		this.FEATURES = Collections.unmodifiableList(features);
+		this.didInit = true;
 	}
 
 	@Override

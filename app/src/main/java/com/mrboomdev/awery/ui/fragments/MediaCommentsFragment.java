@@ -40,6 +40,11 @@ public class MediaCommentsFragment extends Fragment {
 		//if(binding == null) return;
 
 		if(providers != null) {
+			if(providers.isEmpty()) {
+				toast("Sorry, but you have no Comment Extensions installed!");
+				return;
+			}
+
 			providers.get(0).readMediaComments(media, null, new ExtensionProvider.ResponseCallback<>() {
 				@Override
 				public void onSuccess(CatalogComment parent) {

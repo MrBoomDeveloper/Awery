@@ -2,7 +2,7 @@ package javax.lang.model;
 
 /**
  * Ignore any warning that the package exists in another module.
- * Another doesn't have such classes so i did added them by myself.
+ * The real one doesn't have such classes so i did added them myself.
  */
 public enum SourceVersion {
 	RELEASE_0,
@@ -26,14 +26,12 @@ public enum SourceVersion {
 
 	private static final SourceVersion latestSupported = getLatestSupported();
 
-	private SourceVersion() {}
-
 	public static SourceVersion latest() {
-		return RELEASE_17;
+		return RELEASE_7;
 	}
 
 	private static SourceVersion getLatestSupported() {
-		return RELEASE_17;
+		return RELEASE_7;
 	}
 
 	public static SourceVersion latestSupported() {
@@ -42,7 +40,7 @@ public enum SourceVersion {
 
 	public static boolean isIdentifier(CharSequence name) {
 		String id = name.toString();
-		if (id.length() == 0) {
+		if(id.isEmpty()) {
 			return false;
 		} else {
 			int cp = id.codePointAt(0);

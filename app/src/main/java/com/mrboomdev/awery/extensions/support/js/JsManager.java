@@ -42,8 +42,6 @@ public class JsManager extends ExtensionsManager {
 	private org.mozilla.javascript.Context context;
 
 	public JsManager() {
-		// Disable optimization, because it doesn't work on Android
-		// Fuck you, DexClassLoaded!
 		Thread jsThread = new Thread(() -> {
 			this.context = org.mozilla.javascript.Context.enter();
 
@@ -81,16 +79,16 @@ public class JsManager extends ExtensionsManager {
 				try {
 					processTask(task);
 				} catch(Throwable t) {
-					task.getCallback().run(t);
+					try {
+						// Resolve the task with exception
+						task.resolve(t);
+					} catch(Throwable t1) {
+						Log.e(TAG, "Contract broken, stopping the thread! You shouldn't throw any exceptions in the callback!", t1);
+						throw t1;
+					}
 				}
 			}
 		}, "JsLooper");
-
-		jsThread.setUncaughtExceptionHandler((t, e) -> {
-			// Something very horrible happened
-			Log.e("JsManager", "JsLoop crashed!", e);
-			System.exit(-1);
-		});
 
 		jsThread.start();
 	}
@@ -101,10 +99,11 @@ public class JsManager extends ExtensionsManager {
 				var provider = new JsProvider(this, (Context) task.getArgs()[1], context, (String) task.getArgs()[0]);
 
 				var extension = new Extension(this, provider.id, provider.getName(), provider.version);
+				extension.addProvider(provider);
 				extension.addFlags(Extension.FLAG_WORKING);
 
 				extensions.put(provider.id, extension);
-				task.getCallback().run(provider.id);
+				task.resolve(provider.id);
 			}
 
 			case JsTask.LOAD_ALL_EXTENSIONS -> {
@@ -113,7 +112,7 @@ public class JsManager extends ExtensionsManager {
 				var files = dir.listFiles();
 
 				if(!dir.exists() || files == null) {
-					task.getCallback().run(true);
+					task.resolve(true);
 					return;
 				}
 
@@ -153,13 +152,18 @@ public class JsManager extends ExtensionsManager {
 						var extension = new Extension(this, name, name, "Failed to load!");
 						extension.setError(e);
 						extensions.put(name, extension);
+					} catch(Throwable t) {
+						var name = file.getName();
+						var extension = new Extension(this, name, name, null);
+						extension.setError("Failed to initialize extension", t);
+						extensions.put(name, extension);
 					}
 				}
 
-				task.getCallback().run(true);
+				task.resolve(true);
 			}
 
-			case JsTask.POST_RUNNABLE -> task.getCallback().run(true);
+			case JsTask.POST_RUNNABLE -> task.resolve(true);
 			default -> throw new IllegalArgumentException("Unsupported task type: " + task.getTaskType());
 		}
 	}
@@ -256,9 +260,7 @@ public class JsManager extends ExtensionsManager {
 
 		if(response instanceof Exception e) {
 			if(e instanceof EvaluatorException ex) {
-				var line = "--------------------------------------";
-				Log.e(TAG, line);
-				Log.e(TAG, line);
+				Log.e(TAG, Constants.LOGS_SEPARATOR);
 				throw JsException.create(ex, caughtExceptions);
 			}
 

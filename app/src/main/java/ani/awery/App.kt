@@ -28,10 +28,6 @@ import uy.kohesive.injekt.api.get
 
 @SuppressLint("StaticFieldLeak")
 open class App : Application() {
-    private lateinit var animeExtensionManager: AnimeExtensionManager
-    private lateinit var mangaExtensionManager: MangaExtensionManager
-    private lateinit var novelExtensionManager: NovelExtensionManager
-
     init {
         instance = this
     }
@@ -51,28 +47,6 @@ open class App : Application() {
 
             if(!LogcatLogger.isInstalled) {
                 LogcatLogger.install(AndroidLogcatLogger(LogPriority.VERBOSE))
-            }
-
-            animeExtensionManager = Injekt.get()
-            mangaExtensionManager = Injekt.get()
-            novelExtensionManager = Injekt.get()
-
-            val animeScope = CoroutineScope(Dispatchers.Default)
-            animeScope.launch {
-                animeExtensionManager.findAvailableExtensions()
-                AnimeSources.init(animeExtensionManager.installedExtensionsFlow)
-            }
-
-            val mangaScope = CoroutineScope(Dispatchers.Default)
-            mangaScope.launch {
-                mangaExtensionManager.findAvailableExtensions()
-                MangaSources.init(mangaExtensionManager.installedExtensionsFlow)
-            }
-
-            val novelScope = CoroutineScope(Dispatchers.Default)
-            novelScope.launch {
-                novelExtensionManager.findAvailableExtensions()
-                NovelSources.init(novelExtensionManager.installedExtensionsFlow)
             }
         }
     }

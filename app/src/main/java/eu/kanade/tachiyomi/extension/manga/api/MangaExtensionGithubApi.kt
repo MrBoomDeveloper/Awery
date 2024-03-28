@@ -45,7 +45,7 @@ internal class MangaExtensionGithubApi {
                         .newCall(GET("${REPO_URL_PREFIX}index.min.json"))
                         .awaitSuccess()
                 } catch (e: Throwable) {
-                    logcat(LogPriority.ERROR, e) { "Failed to get extensions from GitHub" }
+                    //logcat(LogPriority.ERROR, e) { "Failed to get extensions from GitHub" }
                     requiresFallbackSource = true
                     null
                 }

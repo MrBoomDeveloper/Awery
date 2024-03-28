@@ -122,7 +122,7 @@ class MangaExtensionManager(
         val extensions: List<MangaExtension.Available> = try {
             api.findExtensions()
         } catch (e: Exception) {
-            logcat(LogPriority.ERROR, e)
+            //logcat(LogPriority.ERROR, e)
             //withUIContext { snackString("Failed to get manga extensions") }
             emptyList()
         }

@@ -3,10 +3,12 @@ package com.mrboomdev.awery.extensions;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
@@ -19,6 +21,7 @@ import java9.util.Objects;
 import java9.util.stream.StreamSupport;
 
 public class ExtensionsFactory {
+	private static final String TAG = "ExtensionsFactory";
 	private static final List<ExtensionsManager> managers = List.of(
 			new AniyomiManager(), new TachiyomiManager(), new CloudstreamManager(), new JsManager()
 	);
@@ -35,7 +38,21 @@ public class ExtensionsFactory {
 				.toList();
 
 		if(!failedExtensions.isEmpty()) {
-			AweryApp.toast("Failed to load " + failedExtensions.size() + " extension(s)");
+			Log.e(TAG, "");
+			Log.e(TAG, Constants.LOGS_SEPARATOR);
+
+			for(var extension : failedExtensions) {
+				if(extension.getError() != null) Log.e(TAG, extension.getErrorTitle(), extension.getError());
+				else Log.e(TAG, extension.getErrorTitle());
+
+				Log.e(TAG, Constants.LOGS_SEPARATOR);
+			}
+
+			var text = "Failed to load " + failedExtensions.size() + " extension(s)";
+
+			Log.e(TAG, "");
+			Log.e(TAG, text);
+			AweryApp.toast(text);
 		}
 	}
 

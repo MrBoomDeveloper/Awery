@@ -47,10 +47,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 			return;
 		}
 
-		Log.e(TAG, "APP JUST CRASHED! [ Thread name: "
-				+ thread.getName() + ", Thread id: "
-				+ thread.getId() + " ]", throwable);
-
 		var crashFile = new File(getAnyContext().getExternalFilesDir(null), "crash.txt");
 		var details = new ExceptionDescriptor(throwable);
 		var activity = getAnyActivity();

@@ -19,6 +19,7 @@ import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
@@ -52,6 +53,11 @@ public class HttpClient {
 		public Request disableCache() {
 			this.cacheMode = CacheMode.NETWORK_ONLY;
 			this.cacheTime = 0;
+			return this;
+		}
+
+		public Request setHeaders(Map<String, String> headers) {
+			this.headers = headers;
 			return this;
 		}
 
@@ -176,10 +182,7 @@ public class HttpClient {
 				return;
 			}
 
-			var _response = new HttpResponse();
-			_response.text = response.body().string();
-			_response.statusCode = response.code();
-			callback.onResponse(_response);
+			callback.onResponse(new HttpResponseImpl(response));
 		} catch(IOException e) {
 			callback.onError(new HttpException(e));
 		}
@@ -216,16 +219,38 @@ public class HttpClient {
 		void onError(HttpException exception);
 	}
 
-	public static class HttpResponse {
-		protected String text;
-		protected int statusCode;
+	public interface HttpResponse {
+		String getText();
+		int getStatusCode();
+	}
 
+	private static class HttpResponseImpl implements HttpResponse {
+		private final String text;
+		private final int code;
+
+		public HttpResponseImpl(@NonNull Response response) throws IOException {
+			this.code = response.code();
+			this.text = response.body().string();
+		}
+
+		@NonNull
+		@Override
 		public String getText() {
 			return text;
 		}
 
+		@Override
 		public int getStatusCode() {
-			return statusCode;
+			return code;
+		}
+
+		@NonNull
+		public String jsGet_text() {
+			return getText();
+		}
+
+		public int jsGet_statusCode() {
+			return getStatusCode();
 		}
 	}
 

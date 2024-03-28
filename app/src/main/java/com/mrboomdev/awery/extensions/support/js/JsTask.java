@@ -1,8 +1,11 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import android.util.Log;
+
 import com.mrboomdev.awery.util.Callbacks;
 
 public class JsTask {
+	private static final String TAG = "JsTask";
 	protected static final int LOAD_ALL_EXTENSIONS = 1;
 	protected static final int LOAD_EXTENSION = 2;
 	protected static final int POST_RUNNABLE = 3;
@@ -19,11 +22,19 @@ public class JsTask {
 	protected JsTask(Runnable runnable) {
 		this.type = POST_RUNNABLE;
 		this.args = new Object[0];
-		this.callback = o -> runnable.run();
+
+		this.callback = o -> {
+			if(o instanceof Throwable t) {
+				Log.e(TAG, "Returned exception, ignoring the response.", t);
+				return;
+			}
+
+			runnable.run();
+		};
 	}
 
-	protected Callbacks.Callback1<Object> getCallback() {
-		return callback;
+	protected void resolve(Object o) {
+		callback.run(o);
 	}
 
 	protected Object[] getArgs() {
