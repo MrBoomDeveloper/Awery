@@ -208,8 +208,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		}
 
 		@Override
-		public void save(SettingsItem item, Object newValue) {
-
-		}
+		public void save(SettingsItem item, Object newValue) {}
 	}
 }

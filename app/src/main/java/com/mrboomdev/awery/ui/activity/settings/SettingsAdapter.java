@@ -129,7 +129,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			switch(setting.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
 				case SCREEN, SCREEN_BOOLEAN -> handler.onScreenLaunchRequest(setting);
-				case ACTION -> SettingsActions.run(setting.getFullKey());
+
+				case ACTION -> {
+					if(setting instanceof CustomSettingsItem) {
+						setting.onClick(parent.getContext());
+						return;
+					}
+
+					SettingsActions.run(setting.getFullKey());
+				}
 
 				case SELECT -> {
 					final var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();

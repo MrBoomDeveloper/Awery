@@ -19,7 +19,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import ani.awery.MainActivity
 import com.mrboomdev.awery.R
 import ani.awery.connections.discord.serializers.Presence
 import ani.awery.connections.discord.serializers.User
@@ -76,28 +75,7 @@ class DiscordService : Service() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel)
         }
-        val intent = Intent(this, MainActivity::class.java).apply {
-            action = Intent.ACTION_MAIN
-            addCategory(Intent.CATEGORY_LAUNCHER)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        val pendingIntent =
-            PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val builder = NotificationCompat.Builder(this, "discordPresence")
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Discord Presence")
-            .setContentText("Running in the background")
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-        startForeground(1, builder.build())
-        log("Foreground service started, notification shown")
-        client = OkHttpClient()
-        client.newWebSocket(
-            Request.Builder().url("wss://gateway.discord.gg/?v=10&encoding=json").build(),
-            DiscordWebSocketListener()
-        )
-        client.dispatcher.executorService.shutdown()
-        SERVICE_RUNNING = true
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -337,32 +315,7 @@ class DiscordService : Service() {
     }
 
     private fun errorNotification(title: String, text: String) {
-        val intent = Intent(this@DiscordService, MainActivity::class.java).apply {
-            action = Intent.ACTION_MAIN
-            addCategory(Intent.CATEGORY_LAUNCHER)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
 
-        val pendingIntent =
-            PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-        val builder = NotificationCompat.Builder(this@DiscordService, "discordPresence")
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-        val notificationManager = NotificationManagerCompat.from(applicationContext)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            //TODO: Request permission
-            return
-        }
-        notificationManager.notify(2, builder.build())
-        log("Error Notified")
     }
 
     fun saveSimpleTestPresence() {

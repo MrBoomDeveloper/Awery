@@ -17,6 +17,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,10 +40,14 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
 	private static final String TAG = "SettingsActivity";
+	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+	private ActivityResultLauncher<Intent> activityResultLauncher;
 	private AwerySettings settings;
 
 	@Override
@@ -56,6 +64,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		if(path != null) {
 			item = AwerySettings.getCached(path);
+
+			if(item != null && path.startsWith("ext_") && item.getItems().size() == 1) {
+				item = item.getItems().get(0);
+			}
 		}
 
 		if(item == null) {
@@ -82,6 +94,24 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		setContentView(frame);
 
 		AweryApp.setOnBackPressedListener(this, this::finish);
+
+		activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+			for(var callback : callbacks) {
+				callback.onActivityResult(result);
+			}
+		});
+	}
+
+	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
+		callbacks.add(callback);
+	}
+
+	public void removeActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
+		callbacks.remove(callback);
+	}
+
+	public ActivityResultLauncher<Intent> getActivityResultLauncher() {
+		return activityResultLauncher;
 	}
 
 	private void setupHeader(@NonNull LayoutHeaderSettingsBinding binding, @NonNull SettingsItem item, View parent) {

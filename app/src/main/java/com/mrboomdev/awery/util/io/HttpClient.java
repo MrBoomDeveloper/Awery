@@ -9,6 +9,8 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.MimeTypes;
 
+import org.mozilla.javascript.annotations.JSGetter;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -235,22 +237,15 @@ public class HttpClient {
 
 		@NonNull
 		@Override
+		@JSGetter("text")
 		public String getText() {
 			return text;
 		}
 
 		@Override
+		@JSGetter("statusCode")
 		public int getStatusCode() {
 			return code;
-		}
-
-		@NonNull
-		public String jsGet_text() {
-			return getText();
-		}
-
-		public int jsGet_statusCode() {
-			return getStatusCode();
 		}
 	}
 

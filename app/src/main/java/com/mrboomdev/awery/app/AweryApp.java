@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -30,6 +31,7 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
 
+import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
@@ -222,6 +224,27 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 				.findFirst().get().activity;
 	}
 
+	/**
+	 * Fuck you, Android. It's not my problem that some people do install A LOT of extensions,
+	 * so that app stops responding.
+	 */
+	private static void setupStrictMode() {
+		var threadPolicy = new StrictMode.ThreadPolicy.Builder()
+				.detectNetwork()
+				.detectCustomSlowCalls();
+
+		if(BuildConfig.DEBUG) threadPolicy.penaltyDialog();
+		else threadPolicy.penaltyLog();
+
+		StrictMode.setThreadPolicy(threadPolicy.build());
+
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+				.detectActivityLeaks()
+				.detectLeakedClosableObjects()
+				.penaltyLog()
+				.build());
+	}
+
 	@Override
 	public void onCreate() {
 		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
@@ -272,6 +295,7 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 			}
 		}
 
+		setupStrictMode();
 		registerActivityLifecycleCallbacks(this);
 		ExtensionsFactory.init(this);
 
@@ -326,14 +350,12 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	@Nullable
 	public static AppCompatActivity getActivity(Context context) {
-		Context ctx = context;
-
-		while(ctx instanceof ContextWrapper wrapper) {
-			if(ctx instanceof AppCompatActivity activity) {
+		while(context instanceof ContextWrapper wrapper) {
+			if(context instanceof AppCompatActivity activity) {
 				return activity;
 			}
 
-			ctx = wrapper.getBaseContext();
+			context = wrapper.getBaseContext();
 		}
 
 		return null;

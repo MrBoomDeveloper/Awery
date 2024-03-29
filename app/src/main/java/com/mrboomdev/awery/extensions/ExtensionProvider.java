@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
+import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.extensions.support.template.CatalogCategory;
 import com.mrboomdev.awery.extensions.support.template.CatalogComment;
 import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
@@ -25,12 +27,18 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
 	public static final int FEATURE_READ_MEDIA_COMMENTS = 1;
+	/**
+	 * Isn't used by the application itself, only for the {@link JsProvider}
+	 */
 	public static final int FEATURE_LOGIN = 2;
 	public static final int FEATURE_WATCH_MEDIA = 3;
 	public static final int FEATURE_READ_MEDIA = 4;
 	public static final int FEATURE_WRITE_MEDIA_COMMENTS = 5;
 	public static final int FEATURE_TRACK = 6;
 	public static final int FEATURE_COMMENTS_SORT = 7;
+	public static final int FEATURE_LIKE = 8;
+	public static final int FEATURE_DISLIKE = 9;
+	public static final int FEATURE_REPORT = 10;
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {
@@ -54,11 +62,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Settings not implemented!"));
 	}
 
-	public void readMediaComments(
-			CatalogMedia media,
-			CatalogEpisode episode,
-			@NonNull ResponseCallback<CatalogComment> callback
-	) {
+	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
 		callback.onFailure(new UnimplementedException("Comments aren't implemented!"));
 	}
 
@@ -89,7 +93,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 * @return A human-readable name of the extension
 	 * @author MrBoomDev
 	 */
-	public abstract String getName();
+	public String getName() {
+		return getId();
+	}
+
+	public abstract String getId();
 
 	/**
 	 * @apiNote The returned value can be an array of format: "en;ru;jp"

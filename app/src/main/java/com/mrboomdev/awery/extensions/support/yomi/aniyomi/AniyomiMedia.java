@@ -12,7 +12,7 @@ public class AniyomiMedia extends CatalogMedia {
 
 	public AniyomiMedia(@NonNull AniyomiProvider provider, @NonNull SAnime anime) {
 		super(AniyomiManager.TYPE_ID + ";;;"
-				+ provider.getName() + ";;;"
+				+ provider.getId() + ";;;"
 				+ anime.getUrl());
 
 		this.setTitle(anime.getTitle());

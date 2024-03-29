@@ -21,7 +21,7 @@ class ExtensionUpdateNotifier(private val context: Context) {
             setContentText(extNames)
             setStyle(NotificationCompat.BigTextStyle().bigText(extNames))
             setSmallIcon(R.drawable.ic_round_favorite_24)
-            setContentIntent(NotificationReceiver.openExtensionsPendingActivity(context))
+            setContentIntent(NotificationReceiver.openExtensionsPendingActivity())
             setAutoCancel(true)
         }
     }

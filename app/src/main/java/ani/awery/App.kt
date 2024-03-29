@@ -7,24 +7,11 @@ import android.content.Context
 import android.os.Bundle
 import ani.awery.aniyomi.anime.custom.AppModule
 import ani.awery.aniyomi.anime.custom.PreferenceModule
-import ani.awery.parsers.AnimeSources
-import ani.awery.parsers.MangaSources
-import ani.awery.parsers.NovelSources
-import ani.awery.parsers.novel.NovelExtensionManager
-import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.app.AweryApp
-import eu.kanade.tachiyomi.data.notification.Notifications
-import eu.kanade.tachiyomi.extension.anime.AnimeExtensionManager
-import eu.kanade.tachiyomi.extension.manga.MangaExtensionManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import logcat.LogcatLogger
-import tachiyomi.core.util.system.logcat
 import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
 
 @SuppressLint("StaticFieldLeak")
 open class App : Application() {
@@ -43,7 +30,7 @@ open class App : Application() {
             Injekt.importModule(AppModule(this))
             Injekt.importModule(PreferenceModule(this))
 
-            initializeNetwork(baseContext)
+            initializeNetwork()
 
             if(!LogcatLogger.isInstalled) {
                 LogcatLogger.install(AndroidLogcatLogger(LogPriority.VERBOSE))

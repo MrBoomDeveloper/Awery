@@ -336,6 +336,11 @@ public class AniyomiProvider extends ExtensionProvider {
 	}
 
 	@Override
+	public String getId() {
+		return String.valueOf(source.getId());
+	}
+
+	@Override
 	public String getLang() {
 		return source.getLang();
 	}

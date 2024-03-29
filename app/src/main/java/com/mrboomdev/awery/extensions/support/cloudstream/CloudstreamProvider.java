@@ -17,4 +17,9 @@ public class CloudstreamProvider extends ExtensionProvider {
 	public String getName() {
 		return "cloudstream";
 	}
+
+	@Override
+	public String getId() {
+		return null;
+	}
 }

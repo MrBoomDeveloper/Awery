@@ -78,6 +78,7 @@
 
         <activity
             android:name=".ui.activity.IntentHandlerActivity"
+            android:launchMode="singleInstance"
             android:exported="true">
 
             <intent-filter>
@@ -103,15 +104,24 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.activity.SearchActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:launchMode="singleInstance"
+            android:exported="false" />
+
         <activity
             android:name=".ui.activity.MediaActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.activity.ReaderActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.activity.settings.SettingsActivity"
             android:exported="false" />

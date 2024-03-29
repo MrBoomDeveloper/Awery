@@ -24,4 +24,9 @@ public class TachiyomiProvider extends ExtensionProvider {
 	public String getName() {
 		return source.getName();
 	}
+
+	@Override
+	public String getId() {
+		return String.valueOf(source.getId());
+	}
 }

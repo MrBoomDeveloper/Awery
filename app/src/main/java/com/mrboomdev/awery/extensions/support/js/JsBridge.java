@@ -50,7 +50,7 @@ public class JsBridge {
 
 	public Object fetch(@NonNull ScriptableObject options) {
 		var context = getAnyContext();
-		var promise = new JsPromise<>(scriptScope);
+		var promise = new JsPromise(scriptScope);
 
 		Map<String, String> headers = null;
 

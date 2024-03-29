@@ -23,10 +23,12 @@ public class IntentHandlerActivity extends AppCompatActivity {
 			return;
 		}
 
-		if(Objects.requireNonNull(uri.getPath()).startsWith("/awery/app-login")) {
-			toast(uri.toString());
+		if(Objects.requireNonNull(uri.getPath()).startsWith("/awery/app-login/")) {
+			LoginActivity.url = uri.toString();
+			finish();
 		} else {
-			toast(uri.toString());
+			toast("Unknown url!", 1);
+			finish();
 		}
 	}
 }

@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,10 @@ import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.template.CatalogComment;
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.util.exceptions.JsException;
 
 import java.util.List;
 
@@ -45,7 +48,10 @@ public class MediaCommentsFragment extends Fragment {
 				return;
 			}
 
-			providers.get(0).readMediaComments(media, null, new ExtensionProvider.ResponseCallback<>() {
+			var request = new ReadMediaCommentsRequest()
+					.setMedia(media);
+
+			providers.get(0).readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
 				@Override
 				public void onSuccess(CatalogComment parent) {
 					toast(parent.authorName + " - " + parent.text);
@@ -53,8 +59,23 @@ public class MediaCommentsFragment extends Fragment {
 
 				@Override
 				public void onFailure(Throwable e) {
+					if(e instanceof JsException jsException && jsException.isCustom()) {
+						switch(jsException.getErrorId()) {
+							case JsException.ERROR_ACCOUNT_REQUIRED -> toast("You cannot read comments without an account!");
+							case JsException.ERROR_HTTP -> toast("Failed to connect to the server!");
+							case JsException.ERROR_NOTHING_FOUND -> toast("Nothing was found!");
+
+							default -> {
+								Log.e("MediaCommentsFragment", "Failed to load comments!", e);
+								toast("Unknown error was thrown!");
+							}
+						}
+
+						return;
+					}
+
+					Log.e("MediaCommentsFragment", "Failed to load comments!", e);
 					toast("Failed to load comments!");
-					e.printStackTrace();
 				}
 			});
 		}
@@ -76,7 +97,7 @@ public class MediaCommentsFragment extends Fragment {
 		var binding = LayoutLoadingBinding.inflate(inflater, container, false);
 
 		binding.title.setText("Coming soon");
-		binding.message.setText("This feature will be available in future updates");
+		binding.message.setText("This feature will be available very soon!");
 
 		binding.info.setVisibility(View.VISIBLE);
 		binding.progressBar.setVisibility(View.GONE);

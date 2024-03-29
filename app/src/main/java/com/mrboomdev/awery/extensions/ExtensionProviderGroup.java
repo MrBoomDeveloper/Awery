@@ -75,4 +75,9 @@ public class ExtensionProviderGroup extends ExtensionProvider {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public String getId() {
+		return getName();
+	}
 }

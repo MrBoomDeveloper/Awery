@@ -8,44 +8,50 @@ import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.Scriptable;
 
 @SuppressWarnings("unused")
-public class JsPromise<T, E> {
+public class JsPromise {
+	private boolean didCallThen, didCallCatch;
 	private final Scriptable scope;
-	private Callbacks.Callback1<T> resolve;
-	private Callbacks.Callback1<E> reject;
-	private T result;
-	private E error;
+	private Callbacks.Result1<Object, Object> resolve;
+	private Callbacks.Result1<Object, Object> reject;
+	private Object thenResult, catchResult;
+	private Object result, error;
 
 	public JsPromise(Scriptable scope) {
 		this.scope = scope;
 	}
 
-	public void resolve(T object) {
+	public void resolve(Object object) {
 		this.result = object;
 
 		if(resolve != null) {
-			resolve.run(object);
+			thenResult = resolve.run(object);
 		}
 	}
 
-	public void reject(E object) {
+	public void reject(Object object) {
 		this.error = object;
 
 		if(reject != null) {
-			reject.run(object);
+			catchResult = reject.run(object);
 		}
 	}
 
-	public JsPromise<T, E> jsFunction_then(NativeFunction callback) {
-		this.resolve = t -> callback.call(Context.getCurrentContext(), scope, null, new Object[] { t });
-		return this;
+	public JsPromise jsFunction_then(NativeFunction callback) {
+		return then(t -> callback.call(Context.getCurrentContext(), scope, null, new Object[] { t }));
 	}
 
-	public JsPromise<T, E> jsFunction_catchException(Function callback) {
-		this.reject = e -> callback.call(Context.getCurrentContext(), scope, scope, new Object[] { e });
-		return this;
+	public JsPromise jsFunction_catchException(Function callback) {
+		return catchException(e -> callback.call(Context.getCurrentContext(), scope, scope, new Object[] { e }));
 	}
 
-	public JsPromise<T, E> then(Callbacks.Callback1<T> callback) {
+	public JsPromise then(Callbacks.Result1<Object, Object> callback) {
+		/*if(didCallThen) {
+			var promise = new JsPromise(scope);
+			promise.then(callback);
+			return promise;
+		}*/
+
+		this.didCallThen = true;
 		this.resolve = callback;
 
 		if(result != null) {
@@ -55,7 +61,14 @@ public class JsPromise<T, E> {
 		return this;
 	}
 
-	public JsPromise<T, E> catchException(Callbacks.Callback1<E> callback) {
+	public JsPromise catchException(Callbacks.Result1<Object, Object> callback) {
+		/*if(didCallCatch) {
+			var promise = new JsPromise(scope);
+			promise.catchException(callback);
+			return promise;
+		}*/
+
+		this.didCallCatch = true;
 		this.reject = callback;
 
 		if(error != null) {

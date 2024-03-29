@@ -15,6 +15,10 @@ public class Callbacks {
 	public interface Result<T> {
 		T run();
 	}
+
+	public interface Result1<T, A> {
+		T run(A a);
+	}
 	
 	public interface Errorable<T, E> {
 		void onResult(T t, E e);
