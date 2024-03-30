@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -36,6 +37,7 @@ import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +58,26 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void setData(@NonNull SettingsItem data, boolean notify) {
-		this.items = stream(data.getItems())
+		this.items = new ArrayList<>(stream(data.getItems())
 				.filter(SettingsItem::isVisible)
-				.toList();
+				.toList());
+
+		if(data instanceof ListenableSettingsItem listenable) {
+			listenable.setNewItemListener((setting, index) -> {
+				items.add(index, setting);
+				notifyItemInserted(index);
+			});
+
+			listenable.setRemovalItemListener((setting, index) -> {
+				items.remove((int) index);
+				notifyItemRemoved(index);
+			});
+
+			listenable.setChangeItemListener((setting, index) -> {
+				items.set(index, setting);
+				notifyItemChanged(index);
+			});
+		}
 
 		if(notify) {
 			notifyDataSetChanged();

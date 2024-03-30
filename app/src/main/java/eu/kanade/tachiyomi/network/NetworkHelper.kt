@@ -1,9 +1,6 @@
 package eu.kanade.tachiyomi.network
 
 import android.content.Context
-import android.os.Build
-import ani.awery.Mapper
-import com.lagradost.nicehttp.Requests
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.settings.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
@@ -20,7 +17,7 @@ class NetworkHelper(
     context: Context
 ) {
 
-    val cookieJar = AndroidCookieJar()
+    private val cookieJar = AndroidCookieJar()
 
     val client: OkHttpClient = run {
         val builder = OkHttpClient.Builder()
@@ -68,27 +65,12 @@ class NetworkHelper(
 
         builder.build()
     }
-
-    val downloadClient = client.newBuilder().callTimeout(20, TimeUnit.MINUTES).build()
-
     /**
      * @deprecated Since extension-lib 1.5
      */
     @Deprecated("The regular client handles Cloudflare by default")
     @Suppress("UNUSED")
     val cloudflareClient: OkHttpClient = client
-
-    val requestClient = Requests(
-        client,
-        mapOf(
-            "User-Agent" to
-                    defaultUserAgentProvider()
-                        .format(Build.VERSION.RELEASE, Build.MODEL)
-        ),
-        defaultCacheTime = 6,
-        defaultCacheTimeUnit = TimeUnit.HOURS,
-        responseParser = Mapper
-    )
 
     fun defaultUserAgentProvider() = /*PrefManager.getVal<String>(PrefName.DefaultUserAgent)*/ Constants.DEFAULT_UA
 }

@@ -102,8 +102,8 @@ public class JsBridge {
 		return prefs.getString(key.toString());
 	}
 
-	public void setSaved(@NonNull Object key, @NonNull Object value) {
-		prefs.setString(key.toString(), value.toString());
+	public void setSaved(@NonNull Object key, Object value) {
+		prefs.setString(key.toString(), value != null ?value.toString() : null);
 		prefs.saveSync();
 	}
 }

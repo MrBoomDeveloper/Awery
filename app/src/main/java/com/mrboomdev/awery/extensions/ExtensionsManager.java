@@ -35,6 +35,10 @@ public abstract class ExtensionsManager {
 
 	public abstract Collection<Extension> getAllExtensions();
 
+	public boolean hasExtension(String id) {
+		return getExtension(id) != null;
+	}
+
 	public abstract String getName();
 
 	/**
@@ -47,8 +51,12 @@ public abstract class ExtensionsManager {
 		return new MimeTypes[]{ MimeTypes.ANY };
 	}
 
-	public void installExtension(Context context, InputStream stream) throws IOException {
+	public Extension installExtension(Context context, InputStream stream) throws IOException {
 		throw new UnimplementedException("This extension manager doesn't support installing extensions");
+	}
+
+	public void addExtension(Context context, Extension extension) throws IOException {
+		throw new UnimplementedException("This extension manager doesn't support adding extensions");
 	}
 
 	public void loadAllExtensions(Context context) {
@@ -64,6 +72,10 @@ public abstract class ExtensionsManager {
 	 * @author MrBoomDev
 	 */
 	public void unloadExtension(Context context, String id) {}
+
+	public void uninstallExtension(Context context, String id) {
+		unloadExtension(context, id);
+	}
 
 	/**
 	 * Usually called once the app is closing

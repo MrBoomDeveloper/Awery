@@ -18,10 +18,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.squareup.moshi.Json;
@@ -34,54 +36,22 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
 
-public class ExtensionSettings extends SettingsItem implements SettingsDataHandler {
+public class ExtensionSettings extends SettingsItem implements SettingsDataHandler, ListenableSettingsItem {
 	private static final String TAG = "ExtensionSettings";
 	private final ActivityResultLauncher<String[]> pickLauncher;
 	private final List<SettingsItem> headerItems = new ArrayList<>();
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
 	private final Activity activity;
+	@Json(ignore = true)
+	private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 	private DialogBuilder currentDialog;
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
 		copyFrom(new Builder(SettingsItemType.SCREEN)
 				.setTitle(manager.getName() + " extensions")
 				.setItems(stream(manager.getExtensions(0)).sorted()
-						.map(extension -> {
-							var description = extension.getVersion() != null
-									? ("v" + extension.getVersion()) : extension.getErrorTitle();
-
-							return new ExtensionSetting(activity, extension, new Builder(SettingsItemType.SCREEN_BOOLEAN)
-									.setTitle(extension.getName())
-									.setDescription(description)
-									.setKey(extension.getId())
-									.setItems(stream(extension.getProviders()).map(provider -> {
-										var response = new AtomicReference<SettingsItem>();
-
-										provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
-											@Override
-											public void onSuccess(SettingsItem item) {
-												response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
-											}
-
-											@Override
-											public void onFailure(Throwable e) {
-												response.set(SettingsItem.INVALID_SETTING);
-											}
-										});
-
-										// Wait for response
-										while(response.get() == null);
-
-										return response.get() == SettingsItem.INVALID_SETTING ? null : response.get();
-									}).filter(Objects::nonNull).toList())
-									.setBooleanValue(AwerySettings.getInstance(activity).getBoolean(
-											getExtensionKey(extension) + "_enabled", true))
-									.setIcon(extension.getIcon())
-									.setIconSize(1.2f)
-									.setTintIcon(false)
-									.build());
-						})
+						.map(extension -> new ExtensionSetting(activity, extension))
 						.toList())
 				.build());
 
@@ -97,8 +67,27 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			}
 
 			try(var stream = activity.getContentResolver().openInputStream(uri)) {
-				manager.installExtension(activity, stream);
-				toast("Extension installed successfully!");
+				var extension = manager.installExtension(activity, stream);
+				var hasExisted = manager.hasExtension(extension.getId());
+
+				manager.addExtension(activity, extension);
+				var extensions = List.copyOf(manager.getAllExtensions());
+
+				var setting = new ExtensionSetting(activity, extension);
+
+				if(hasExisted) {
+					toast("Extension updated successfully!");
+
+					if(editItemListener != null) {
+						editItemListener.run(setting, extensions.indexOf(extension));
+					}
+				} else {
+					toast("Extension installed successfully!");
+
+					if(newItemListener != null) {
+						newItemListener.run(setting, extensions.indexOf(extension));
+					}
+				}
 
 				if(currentDialog != null) {
 					currentDialog.dismiss();
@@ -184,15 +173,91 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		else manager.unloadExtension(activity, item.getKey());
 	}
 
-	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler {
+	@Override
+	public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+		this.newItemListener = listener;
+	}
+
+	@Override
+	public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+		this.deleteItemListener = listener;
+	}
+
+	@Override
+	public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+		this.editItemListener = listener;
+	}
+
+	@Override
+	public void onNewItem(SettingsItem item, int position) {
+		if(newItemListener != null) {
+			newItemListener.run(item, position);
+		}
+	}
+
+	@Override
+	public void onRemoval(SettingsItem item, int position) {
+		if(deleteItemListener != null) {
+			deleteItemListener.run(item, position);
+		}
+	}
+
+	@Override
+	public void onChange(SettingsItem item, int position) {
+		if(editItemListener != null) {
+			editItemListener.run(item, position);
+		}
+	}
+
+	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler, ListenableSettingsItem {
+		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 		private final Extension extension;
 		@Json(ignore = true)
 		private final Activity activity;
 
-		public ExtensionSetting(Activity activity, Extension extension, SettingsItem item) {
-			super(item);
+		public ExtensionSetting(Activity activity, @NonNull Extension extension) {
 			this.extension = extension;
 			this.activity = activity;
+
+			var description = extension.getVersion() != null
+					? ("v" + extension.getVersion()) : extension.getErrorTitle();
+
+			copyFrom(new Builder(SettingsItemType.SCREEN_BOOLEAN)
+					.setTitle(extension.getName())
+					.setDescription(description)
+					.setKey(extension.getId())
+					.setParent(ExtensionSettings.this)
+					.setItems(stream(extension.getProviders()).map(provider -> {
+						var response = new AtomicReference<SettingsItem>();
+
+						provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
+							@Override
+							public void onSuccess(SettingsItem item) {
+								response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
+							}
+
+							@Override
+							public void onFailure(Throwable e) {
+								response.set(SettingsItem.INVALID_SETTING);
+							}
+						});
+
+						// Wait for response
+						while(response.get() == null);
+
+						if(response.get() == SettingsItem.INVALID_SETTING) {
+							return null;
+						}
+
+						response.get().setParent(this);
+						return response.get();
+					}).filter(Objects::nonNull).toList())
+					.setBooleanValue(AwerySettings.getInstance(activity).getBoolean(
+							getExtensionKey(extension) + "_enabled", true))
+					.setIcon(extension.getIcon())
+					.setIconSize(1.2f)
+					.setTintIcon(false)
+					.build());
 		}
 
 		@Override
@@ -209,5 +274,41 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		@Override
 		public void save(SettingsItem item, Object newValue) {}
+
+		@Override
+		public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.newItemListener = listener;
+		}
+
+		@Override
+		public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.deleteItemListener = listener;
+		}
+
+		@Override
+		public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.editItemListener = listener;
+		}
+
+		@Override
+		public void onNewItem(SettingsItem item, int position) {
+			if(newItemListener != null) {
+				newItemListener.run(item, position);
+			}
+		}
+
+		@Override
+		public void onRemoval(SettingsItem item, int position) {
+			if(deleteItemListener != null) {
+				deleteItemListener.run(item, position);
+			}
+		}
+
+		@Override
+		public void onChange(SettingsItem item, int position) {
+			if(editItemListener != null) {
+				editItemListener.run(item, position);
+			}
+		}
 	}
 }

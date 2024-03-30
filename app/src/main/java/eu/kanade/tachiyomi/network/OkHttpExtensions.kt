@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.network
 
+import com.mrboomdev.awery.util.MimeTypes
 import eu.kanade.tachiyomi.network.ProgressListener
 import eu.kanade.tachiyomi.network.ProgressResponseBody
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +23,7 @@ import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resumeWithException
 
-val jsonMime = "application/json; charset=utf-8".toMediaType()
+val jsonMime = MimeTypes.JSON.toMediaType()
 
 fun Call.asObservable(): Observable<Response> {
     return Observable.unsafeCreate { subscriber ->

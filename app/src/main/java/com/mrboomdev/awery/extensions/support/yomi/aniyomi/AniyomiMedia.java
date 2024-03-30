@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.app.AweryApp.stream;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
@@ -27,9 +29,15 @@ public class AniyomiMedia extends CatalogMedia {
 		};
 
 		this.url = anime.getUrl();
-		this.genres = anime.getGenres();
 		this.description = anime.getDescription();
 		this.anime = anime;
+
+		if(anime.getGenre() != null) {
+			this.genres = stream(anime.getGenre().split(", "))
+					.map(String::trim)
+					.filter(item -> !item.isBlank())
+					.toList();
+		}
 	}
 
 	protected static SAnime fromMedia(CatalogMedia media) {

@@ -1,15 +1,10 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.runDelayed;
+import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfExistsCrash;
-import static ani.awery.FunctionsKt.snackString;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.View;
-import android.view.animation.AnticipateInterpolator;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -21,8 +16,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -97,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void registerBackListener() {
-		final var doubleBackToExitPressedOnce = new AtomicBoolean(false);
+		var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 
 		AweryApp.setOnBackPressedListener(this, () -> {
 			if(doubleBackToExitPressedOnce.get()) {
@@ -105,39 +100,13 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			doubleBackToExitPressedOnce.set(true);
-			snackString(getString(R.string.back_to_exit), null, null);
-
-			new Handler(Looper.getMainLooper()).postDelayed(() ->
-					doubleBackToExitPressedOnce.set(false), 2000);
+			snackbar(this, getString(R.string.back_to_exit));
+			runDelayed(() -> doubleBackToExitPressedOnce.set(false), 2000);
 		});
-	}
-
-	private void slideFromSplash(View view, Runnable endCallback) {
-		var animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, -view.getHeight());
-		animator.setInterpolator(new AnticipateInterpolator());
-		animator.setDuration(200);
-
-		animator.addListener(new Animator.AnimatorListener() {
-			@Override
-			public void onAnimationStart(@NonNull Animator animation) {}
-
-			@Override
-			public void onAnimationEnd(@NonNull Animator animation) {
-				endCallback.run();
-			}
-
-			@Override
-			public void onAnimationCancel(@NonNull Animator animation) {}
-
-			@Override
-			public void onAnimationRepeat(@NonNull Animator animation) {}
-		});
-
-		animator.start();
 	}
 
 	enum Pages {
-		MAIN, LIBRARY, MANGA
+		MAIN, LIBRARY
 	}
 
 	private class MainFragmentAdapter extends FragmentStateAdapter {

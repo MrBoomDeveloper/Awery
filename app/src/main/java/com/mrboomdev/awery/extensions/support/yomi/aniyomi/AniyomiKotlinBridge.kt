@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import uy.kohesive.injekt.Injekt
 
 object AniyomiKotlinBridge {
 

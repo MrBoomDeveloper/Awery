@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.source
 
-import eu.kanade.tachiyomi.PreferenceScreen
+import androidx.preference.PreferenceScreen
 
 interface ConfigurableSource : MangaSource {
 

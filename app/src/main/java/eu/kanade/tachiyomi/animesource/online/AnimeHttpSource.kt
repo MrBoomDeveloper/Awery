@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.animesource.online
 
+import com.mrboomdev.awery.extensions.support.yomi.YomiHelper
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -9,27 +10,26 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.asObservableSuccess
-import eu.kanade.tachiyomi.network.newCachelessCallWithProgress
+import eu.kanade.tachiyomi.util.lang.awaitSingle
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import rx.Observable
-import uy.kohesive.injekt.injectLazy
 import java.net.URI
 import java.net.URISyntaxException
 import java.security.MessageDigest
-import java.util.concurrent.TimeUnit
 
 /**
  * A simple implementation for sources from a website.
  */
+@Suppress("unused")
 abstract class AnimeHttpSource : AnimeCatalogueSource {
 
     /**
      * Network service.
      */
-    protected val network: NetworkHelper by injectLazy()
+    protected val network: NetworkHelper = YomiHelper.networkHelper()
 
     /**
      * Base url of the website without the trailing slash, like: http://mysite.com
@@ -72,6 +72,12 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
         add("User-Agent", network.defaultUserAgentProvider())
     }
 
+    protected fun generateId(name: String, lang: String, versionId: Int): Long {
+        val key = "${name.lowercase()}/$lang/$versionId"
+        val bytes = MessageDigest.getInstance("MD5").digest(key.toByteArray())
+        return (0..7).map { bytes[it].toLong() and 0xff shl 8 * (7 - it) }.reduce(Long::or) and Long.MAX_VALUE
+    }
+
     /**
      * Visible name of the source.
      */
@@ -83,6 +89,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      *
      * @param page the page number to retrieve.
      */
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getPopularAnime"))
     override fun fetchPopularAnime(page: Int): Observable<AnimesPage> {
         return client.newCall(popularAnimeRequest(page))
             .asObservableSuccess()
@@ -113,6 +120,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      * @param query the search query.
      * @param filters the list of filters to apply.
      */
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getSearchAnime"))
     override fun fetchSearchAnime(
         page: Int,
         query: String,
@@ -157,6 +165,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      *
      * @param page the page number to retrieve.
      */
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getLatestUpdates"))
     override fun fetchLatestUpdates(page: Int): Observable<AnimesPage> {
         return client.newCall(latestUpdatesRequest(page))
             .asObservableSuccess()
@@ -179,12 +188,18 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      */
     protected abstract fun latestUpdatesParse(response: Response): AnimesPage
 
+    @Suppress("DEPRECATION")
+    override suspend fun getAnimeDetails(anime: SAnime): SAnime {
+        return fetchAnimeDetails(anime).awaitSingle()
+    }
+
     /**
      * Returns an observable with the updated details for a nanime. Normally it's not needed to
      * override this method.
      *
      * @param anime the anime to be updated.
      */
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getAnimeDetails"))
     override fun fetchAnimeDetails(anime: SAnime): Observable<SAnime> {
         return client.newCall(animeDetailsRequest(anime))
             .asObservableSuccess()
@@ -210,12 +225,22 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      */
     protected abstract fun animeDetailsParse(response: Response): SAnime
 
+    @Suppress("DEPRECATION")
+    override suspend fun getEpisodeList(anime: SAnime): List<SEpisode> {
+        if(anime.status == SAnime.LICENSED) {
+            throw LicensedEntryItemsException()
+        }
+
+        return fetchEpisodeList(anime).awaitSingle()
+    }
+
     /**
      * Returns an observable with the updated episode list for an anime. Normally it's not needed to
      * override this method.  If an anime is licensed an empty episode list observable is returned
      *
      * @param anime the anime to look for episodes.
      */
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getEpisodeList"))
     override fun fetchEpisodeList(anime: SAnime): Observable<List<SEpisode>> {
         return if (anime.status != SAnime.LICENSED) {
             client.newCall(episodeListRequest(anime))
@@ -224,7 +249,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
                     episodeListParse(response)
                 }
         } else {
-            Observable.error(Exception("Licensed - No episodes to show"))
+            Observable.error(LicensedEntryItemsException())
         }
     }
 
@@ -245,11 +270,16 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      */
     protected abstract fun episodeListParse(response: Response): List<SEpisode>
 
+    override suspend fun getVideoList(episode: SEpisode): List<Video> {
+        return fetchVideoList(episode).awaitSingle()
+    }
+
     /**
      * Returns an observable with the page list for a chapter.
      *
      * @param episode the episode whose video list has to be fetched.
      */
+    @Deprecated("Use the 1.x API instead", replaceWith = ReplaceWith("getVideoList"))
     override fun fetchVideoList(episode: SEpisode): Observable<List<Video>> {
         return client.newCall(videoListRequest(episode))
             .asObservableSuccess()
@@ -282,12 +312,18 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
         return this
     }
 
+    @Suppress("DEPRECATION")
+    open suspend fun getVideoUrl(video: Video): String {
+        return fetchVideoUrl(video).awaitSingle()
+    }
+
     /**
      * Returns an observable with the page containing the source url of the image. If there's any
      * error, it will return null instead of throwing an exception.
      *
      * @param video the video whose source image has to be fetched.
      */
+    @Deprecated("Use the non-RxJava API instead", replaceWith = ReplaceWith("getVideoUrl"))
     open fun fetchVideoUrl(video: Video): Observable<String> {
         return client.newCall(videoUrlRequest(video))
             .asObservableSuccess()
@@ -310,40 +346,6 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      * @param response the response from the site.
      */
     protected abstract fun videoUrlParse(response: Response): String
-
-    /**
-     * Returns an observable with the response of the source image.
-     *
-     * @param video the page whose source image has to be downloaded.
-     */
-    fun fetchVideo(video: Video): Observable<Response> {
-        val animeDownloadClient = client.newBuilder()
-            .callTimeout(30, TimeUnit.MINUTES)
-            .build()
-        return animeDownloadClient.newCachelessCallWithProgress(
-            videoRequest(
-                video,
-                video.totalBytesDownloaded
-            ), video
-        )
-            .asObservableSuccess()
-    }
-
-    /**
-     * Returns the request for getting the source image. Override only if it's needed to override
-     * the url, send different headers or request method like POST.
-     *
-     * @param video the video whose link has to be fetched
-     */
-    protected open fun videoRequest(video: Video, bytes: Long = 0L): Request {
-        val headers = video.headers ?: headers
-        val newHeaders = if (bytes > 0L) {
-            Headers.Builder().addAll(headers).add("Range", "bytes=$bytes-").build()
-        } else {
-            null
-        }
-        return GET(video.videoUrl!!, newHeaders ?: headers)
-    }
 
     /**
      * Assigns the url of the episode without the scheme and domain. It saves some redundancy from
@@ -405,7 +407,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      * @return url of the episode
      */
     open fun getChapterUrl(episode: SEpisode): String {
-        return episode.url.toString()
+        return episode.url
     }
 
     /**
@@ -421,4 +423,6 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      * Returns the list of filters for the source.
      */
     override fun getFilterList() = AnimeFilterList()
+
+    class LicensedEntryItemsException : RuntimeException()
 }

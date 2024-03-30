@@ -49,6 +49,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private ActivityResultLauncher<Intent> activityResultLauncher;
 	private AwerySettings settings;
+	private boolean isMain;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +60,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		var itemJson = getIntent().getStringExtra("item");
 		var path = getIntent().getStringExtra("path");
 
+		if(itemJson == null && path == null) {
+			isMain = true;
+		}
+
 		settings = AwerySettings.getInstance(this);
 		SettingsItem item = null;
 
@@ -67,6 +72,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			if(item != null && path.startsWith("ext_") && item.getItems().size() == 1) {
 				item = item.getItems().get(0);
+			}
+
+			if(item == null) {
+				toast(this, "Failed to get settings", 0);
+				finish();
+				return;
 			}
 		}
 
@@ -100,6 +111,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				callback.onActivityResult(result);
 			}
 		});
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if(isMain) {
+			AwerySettings.clearCache();
+		}
 	}
 
 	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {

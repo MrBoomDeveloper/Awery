@@ -1,7 +1,5 @@
 package eu.kanade.tachiyomi
 
-import tachiyomi.core.util.system.ImageUtil
-
 /**
  * Used by extensions.
  */
@@ -22,12 +20,4 @@ object AppInfo {
      * @since extension-lib 1.3
      */
     fun getVersionName(): String = com.mrboomdev.awery.BuildConfig.VERSION_NAME
-
-    /**
-     * A list of supported image MIME types by the reader.
-     * e.g. ["image/jpeg", "image/png", ...]
-     *
-     * @since extension-lib 1.5
-     */
-    fun getSupportedImageMimeTypes(): List<String> = ImageUtil.ImageType.values().map { it.mime }
 }

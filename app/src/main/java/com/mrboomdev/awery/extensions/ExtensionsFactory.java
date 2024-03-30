@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
-import android.content.Context;
+import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,6 +11,7 @@ import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 
@@ -26,7 +27,9 @@ public class ExtensionsFactory {
 			new AniyomiManager(), new TachiyomiManager(), new CloudstreamManager(), new JsManager()
 	);
 
-	public static void init(@NonNull Context context) {
+	public static void init(@NonNull Application context) {
+		YomiHelper.init(context);
+
 		for(var manager : managers) {
 			manager.loadAllExtensions(context);
 		}

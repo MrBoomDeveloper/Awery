@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryApp.getActivity;
+import static com.mrboomdev.awery.app.AweryApp.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -27,6 +29,7 @@ import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
+import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.exceptions.JsException;
 
 import org.jetbrains.annotations.Contract;
@@ -46,7 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JsProvider extends ExtensionProvider {
 	private static final String TAG = "JsProvider";
-	protected String id, version;
+	protected String id, version, script;
 	private  List<Integer> FEATURES;
 	private final ScriptableObject scope;
 	private final org.mozilla.javascript.Context context;
@@ -63,6 +66,7 @@ public class JsProvider extends ExtensionProvider {
 	) {
 		this.manager = manager;
 		this.context = rhinoContext;
+		this.script = script;
 		this.androidContext = androidContext;
 		this.scope = rhinoContext.initStandardObjects();
 
@@ -113,14 +117,76 @@ public class JsProvider extends ExtensionProvider {
 		this.didInit = true;
 	}
 
+	private class Settings extends SettingsItem implements ListenableSettingsItem {
+		private final List<SettingsItem> items = new ArrayList<>();
+		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
+
+		@NonNull
+		@Contract(pure = true)
+		@Override
+		public String getTitle(android.content.Context context) {
+			return getName();
+		}
+
+		@Override
+		public SettingsItemType getType() {
+			return SettingsItemType.SCREEN;
+		}
+
+		@Override
+		public List<SettingsItem> getItems() {
+			return items;
+		}
+
+		public void addItem(SettingsItem item) {
+			items.add(item);
+		}
+
+		@Override
+		public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.newItemListener = listener;
+		}
+
+		@Override
+		public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.deleteItemListener = listener;
+		}
+
+		@Override
+		public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
+			this.editItemListener = listener;
+		}
+
+		@Override
+		public void onNewItem(SettingsItem item, int position) {
+			if(newItemListener != null) {
+				newItemListener.run(item, position);
+			}
+		}
+
+		@Override
+		public void onRemoval(SettingsItem item, int position) {
+			if(deleteItemListener != null) {
+				deleteItemListener.run(item, position);
+			}
+		}
+
+		@Override
+		public void onChange(SettingsItem item, int position) {
+			if(editItemListener != null) {
+				editItemListener.run(item, position);
+			}
+		}
+	}
+
 	@Override
 	public void getSettings(android.content.Context context, @NonNull ResponseCallback<SettingsItem> callback) {
-		var items = new ArrayList<SettingsItem>();
+		var root = new Settings();
 
 		if(hasFeature(FEATURE_LOGIN)) {
 			var isLoggedIn = new AtomicReference<Boolean>();
 
-			isLoggedIn(new ResponseCallback<>() {
+			Runnable reload = () -> isLoggedIn(new ResponseCallback<>() {
 				@Override
 				public void onSuccess(Boolean aBoolean) {
 					isLoggedIn.set(aBoolean);
@@ -135,9 +201,10 @@ public class JsProvider extends ExtensionProvider {
 				}
 			});
 
+			reload.run();
 			while(isLoggedIn.get() == null);
 
-			items.add(new CustomSettingsItem() {
+			root.addItem(new CustomSettingsItem() {
 
 				@Override
 				public String getTitle(android.content.Context context) {
@@ -146,12 +213,16 @@ public class JsProvider extends ExtensionProvider {
 
 				@Override
 				public void onClick(android.content.Context context) {
+					var setting = this;
+
 					if(isLoggedIn.get()) {
 						logOut(new ResponseCallback<>() {
 
 							@Override
 							public void onSuccess(Boolean aBoolean) {
 								toast("Logged out successfully");
+								reload.run();
+								runOnUiThread(() -> root.onChange(setting, 0));
 							}
 
 							@Override
@@ -183,6 +254,8 @@ public class JsProvider extends ExtensionProvider {
 												@Override
 												public void onSuccess(Boolean aBoolean) {
 													toast("Logged in successfully");
+													reload.run();
+													runOnUiThread(() -> root.onChange(setting, 0));
 												}
 
 												@Override
@@ -224,25 +297,36 @@ public class JsProvider extends ExtensionProvider {
 			});
 		}
 
-		var root = new SettingsItem() {
-
-			@NonNull
-			@Contract(pure = true)
-			@Override
-			public String getTitle(android.content.Context context) {
-				return getName();
-			}
-
+		root.addItem(new CustomSettingsItem() {
 			@Override
 			public SettingsItemType getType() {
-				return SettingsItemType.SCREEN;
+				return SettingsItemType.ACTION;
 			}
 
 			@Override
-			public List<SettingsItem> getItems() {
-				return items;
+			public String getTitle(android.content.Context context) {
+				return "Uninstall extension";
 			}
-		};
+
+			@Override
+			public void onClick(android.content.Context context) {
+				var activity = getActivity(context);
+
+				var extensions = new ArrayList<>(manager.getAllExtensions());
+				var wasIndex = extensions.indexOf(manager.getExtension(id));
+
+				manager.uninstallExtension(context, id);
+				toast("Uninstalled successfully");
+
+				if(activity != null) {
+					activity.finish();
+
+					if(root.getParent().getParent() instanceof ListenableSettingsItem listenable) {
+						runOnUiThread(() -> listenable.onRemoval(root, wasIndex));
+					}
+				}
+			}
+		});
 
 		callback.onSuccess(root);
 	}
@@ -251,7 +335,13 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLogin") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ params, (Callback<Boolean>) (o, e) -> {
+					var obj = context.newObject(scope);
+
+					for(var entry : params.entrySet()) {
+						obj.put(entry.getKey(), obj, entry.getValue());
+					}
+
+					fun.call(context, scope, null, new Object[]{ obj, (Callback<Boolean>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;

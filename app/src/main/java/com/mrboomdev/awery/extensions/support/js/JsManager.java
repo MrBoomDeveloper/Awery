@@ -102,8 +102,7 @@ public class JsManager extends ExtensionsManager {
 				extension.addProvider(provider);
 				extension.addFlags(Extension.FLAG_WORKING);
 
-				extensions.put(provider.id, extension);
-				task.resolve(provider.id);
+				task.resolve(extension);
 			}
 
 			case JsTask.LOAD_ALL_EXTENSIONS -> {
@@ -246,7 +245,17 @@ public class JsManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void installExtension(Context context, @NonNull InputStream is) throws IOException, JsException {
+	public void uninstallExtension(Context context, String id) {
+		unloadExtension(context, id);
+
+		var file = new File(context.getFilesDir(), getId() + "/" + id);
+		file.delete();
+
+		extensions.remove(id);
+	}
+
+	@Override
+	public Extension installExtension(Context context, @NonNull InputStream is) throws IOException, JsException {
 		var builder = new StringBuilder();
 
 		try(var stream = new BufferedReader(new InputStreamReader(is))) {
@@ -267,13 +276,28 @@ public class JsManager extends ExtensionsManager {
 			throw new IllegalArgumentException("Failed to load extension!", e);
 		}
 
-		var file = new File(context.getFilesDir(), getId() + "/" + response);
+		return (Extension) response;
+	}
+
+	@Override
+	public void addExtension(@NonNull Context context, @NonNull Extension extension) throws IOException {
+		String script;
+
+		if(extension.getProviders().get(0) instanceof JsProvider jsProvider) {
+			script = jsProvider.script;
+		} else {
+			throw new IllegalArgumentException("Only Js Extensions are allowed!");
+		}
+
+		var file = new File(context.getFilesDir(), getId() + "/" + extension.getId());
 		Objects.requireNonNull(file.getParentFile()).mkdirs();
 		file.createNewFile();
 
 		try(var output = new BufferedOutputStream(new FileOutputStream(file))) {
 			output.write(script.getBytes());
 		}
+
+		extensions.put(extension.getId(), extension);
 	}
 
 	@Override

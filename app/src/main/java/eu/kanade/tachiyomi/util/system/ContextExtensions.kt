@@ -24,7 +24,7 @@ import androidx.core.net.toUri
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.util.lang.truncateCenter
 import logcat.LogPriority
-import tachiyomi.core.util.system.logcat
+import logcat.logcat
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -47,7 +47,6 @@ fun Context.copyToClipboard(label: String, content: String) {
             toast("Copied to clipboard: " + content.truncateCenter(50))
         }
     } catch (e: Throwable) {
-        logcat(LogPriority.ERROR, e)
         toast("Failed to copy to clipboard")
     }
 }

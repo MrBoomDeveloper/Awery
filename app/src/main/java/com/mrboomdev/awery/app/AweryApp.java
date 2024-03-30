@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.app;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -17,7 +19,9 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -31,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
@@ -39,6 +44,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.template.CatalogList;
 import com.mrboomdev.awery.util.Disposable;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import org.jetbrains.annotations.Contract;
 
@@ -56,13 +62,12 @@ import java.util.Objects;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import ani.awery.App;
 import java9.util.stream.Stream;
 import java9.util.stream.StreamSupport;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
-public class AweryApp extends App implements Application.ActivityLifecycleCallbacks, Disposable {
+public class AweryApp extends Application implements Application.ActivityLifecycleCallbacks, Disposable {
 	public static final String CATALOG_LIST_BLACKLIST = "7";
 	public static final String CATALOG_LIST_HISTORY = "9";
 	public static final List<String> HIDDEN_LISTS = List.of(CATALOG_LIST_BLACKLIST, CATALOG_LIST_HISTORY);
@@ -72,7 +77,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 	private static final Map<Class<? extends AppCompatActivity>, ActivityInfo> activities = new HashMap<>();
 	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static final List<Disposable> disposables = new ArrayList<>();
-	public static final boolean USE_KT_APP_INIT = true;
 	private static final String TAG = "AweryApp";
 	private static Thread mainThread;
 	private static AweryApp app;
@@ -240,7 +244,6 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 				.detectActivityLeaks()
-				.detectLeakedClosableObjects()
 				.penaltyLog()
 				.build());
 	}
@@ -426,6 +429,22 @@ public class AweryApp extends App implements Application.ActivityLifecycleCallba
 
 	public static void runDelayed(Runnable runnable, long delay) {
 		handler.postDelayed(runnable, delay);
+	}
+
+	public static void snackbar(@NonNull Activity activity, Object input) {
+		runOnUiThread(() -> {
+			var text = input == null ? "null" : input.toString();
+			var rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
+			var snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT);
+
+			ViewUtil.<FrameLayout.LayoutParams>useLayoutParams(snackbar.getView(), params -> {
+				params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+				params.width = WRAP_CONTENT;
+			});
+
+			snackbar.getView().setOnClickListener(v -> snackbar.dismiss());
+			snackbar.show();
+		});
 	}
 
 	@Override

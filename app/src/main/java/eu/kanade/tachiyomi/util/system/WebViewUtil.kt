@@ -7,7 +7,7 @@ import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebView
 import logcat.LogPriority
-import tachiyomi.core.util.system.logcat
+import logcat.logcat
 
 object WebViewUtil {
     const val SPOOF_PACKAGE_NAME = "org.chromium.chrome"
@@ -20,7 +20,6 @@ object WebViewUtil {
             // is not installed
             CookieManager.getInstance()
         } catch (e: Throwable) {
-            logcat(LogPriority.ERROR, e)
             return false
         }
 

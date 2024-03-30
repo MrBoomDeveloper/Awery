@@ -124,7 +124,10 @@ public class ViewUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(@NonNull View view, UseLayoutParamsCallback<T> callback) {
+	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
+			@NonNull View view,
+			UseLayoutParamsCallback<T> callback
+	) {
 		try {
 			var params = view.getLayoutParams();
 			if(params == null) return false;
