@@ -17,7 +17,7 @@
         app:tint="?attr/colorOnBackground"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:src="@drawable/ic_round_arrow_back_ios_new_24"
+        android:src="@drawable/ic_back"
         android:contentDescription="@string/back" />
 
     <EditText

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.widgets;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -65,8 +67,10 @@ public class GesturePreviewView extends FrameLayout {
 		iconView = new AppCompatImageView(context);
 		var primaryColor = AweryApp.resolveAttrColor(context, android.R.attr.colorPrimary);
 		iconView.setImageTintList(ColorStateList.valueOf(primaryColor));
-		linearView.addView(iconView);
-		ViewUtil.setVerticalMargin(iconView, ViewUtil.dpPx(8));
+		linearView.addView(iconView, dpPx(32), dpPx(32));
+
+		ViewUtil.setVerticalMargin(iconView, dpPx(8));
+		ViewUtil.setPadding(iconView, dpPx(4));
 	}
 
 	public GesturePreviewView(Context context, @Nullable AttributeSet attrs) {

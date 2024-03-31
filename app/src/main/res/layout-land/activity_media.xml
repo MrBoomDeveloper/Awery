@@ -227,7 +227,7 @@
                             android:layout_height="48dp"
                             android:layout_marginStart="-8dp"
                             android:padding="8dp"
-                            app:srcCompat="@drawable/ic_round_share_24"
+                            app:srcCompat="@drawable/ic_share_filled"
                             app:tint="@color/bg_opp"
                             app:tintMode="src_atop"
                             tools:ignore="ContentDescription,ImageContrastCheck" />

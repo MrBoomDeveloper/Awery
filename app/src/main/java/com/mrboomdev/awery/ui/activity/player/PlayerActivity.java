@@ -299,9 +299,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		if(subtitles == null) {
 			var isEmpty = video.getSubtitles().isEmpty();
-			binding.subtitles.setAlpha(isEmpty ? .35f : .6f);
+			binding.subtitles.setAlpha(isEmpty ? .4f : 1f);
+			binding.subtitles.setImageResource(R.drawable.ic_subtitles_outlined);
 		} else {
 			binding.subtitles.setAlpha(1f);
+			binding.subtitles.setImageResource(R.drawable.ic_subtitles_filled);
 
 			subtitleItem = new MediaItem.SubtitleConfiguration.Builder(Uri.parse(subtitles.getUrl()))
 					.setMimeType(MimeTypes.TEXT_VTT)

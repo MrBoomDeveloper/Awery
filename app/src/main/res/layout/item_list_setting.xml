@@ -25,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
         app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         app:tint="?attr/colorOnSecondaryContainer"
-        tools:src="@drawable/ic_round_settings_24"
+        tools:src="@drawable/ic_settings_outlined"
         tools:visibility="visible" />
 
     <TextView

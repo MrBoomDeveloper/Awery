@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         style="@style/Widget.Material3.Button.IconButton.Filled"
         android:layout_marginLeft="6dp"
-        app:icon="@drawable/ic_round_collections_bookmark_24"
+        app:icon="@drawable/ic_bookmark_filled"
         app:layout_constraintBottom_toBottomOf="@id/watch"
         app:layout_constraintLeft_toRightOf="@id/watch"
         android:importantForAccessibility="no" />

@@ -24,7 +24,7 @@
         android:scaleType="fitCenter"
         android:visibility="gone"
         tools:visibility="visible"
-        tools:src="@drawable/ic_round_settings_24"
+        tools:src="@drawable/ic_settings_outlined"
         app:tint="?attr/colorAccent"
         android:importantForAccessibility="no" />
 

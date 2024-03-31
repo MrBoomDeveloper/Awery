@@ -51,7 +51,7 @@
         app:layout_constraintRight_toLeftOf="@id/share"
         app:layout_constraintTop_toTopOf="@id/play"
         app:layout_constraintBottom_toBottomOf="@id/play"
-        app:icon="@drawable/ic_round_collections_bookmark_24"
+        app:icon="@drawable/ic_bookmark_filled"
         app:iconSize="26dp"
         android:layout_marginRight="2dp"
         android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/play"
         app:layout_constraintBottom_toBottomOf="@id/play"
-        app:icon="@drawable/ic_round_share_24"
+        app:icon="@drawable/ic_share_filled"
         app:iconSize="26dp"
         android:layout_width="wrap_content"
         android:layout_height="0dp" />

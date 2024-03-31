@@ -89,6 +89,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:scheme="awery" />
                 <data android:host="mrboomdev.ru" />
                 <data android:pathPrefix="/awery/app-login" />
             </intent-filter>
@@ -127,53 +129,8 @@
             android:name=".ui.activity.settings.SettingsActivity"
             android:exported="false" />
 
-        <receiver
-            android:name="ani.awery.subcriptions.AlarmReceiver"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="Aani.dantotsu.ACTION_ALARM" />
-            </intent-filter>
-        </receiver>
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-        <service
-            android:name="ani.awery.download.video.MyDownloadService"
-            android:exported="false">
-
-            <intent-filter>
-                <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="eu.kanade.tachiyomi.extension.manga.util.MangaExtensionInstallService"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
-
-        <service
-            android:name="eu.kanade.tachiyomi.extension.anime.util.AnimeExtensionInstallService"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
-
-        <service
-            android:name="ani.awery.download.manga.MangaDownloaderService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
-
-        <service
-            android:name="ani.awery.download.novel.NovelDownloaderService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
-
-        <service
-            android:name="ani.awery.connections.discord.DiscordService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
     </application>
 </manifest>

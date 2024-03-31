@@ -19,6 +19,8 @@ import java9.util.stream.Collectors;
 public class JsException extends RuntimeException {
 	public static final String ERROR_NOTHING_FOUND = "nothing_found";
 	public static final String ERROR_ACCOUNT_REQUIRED = "account_required";
+	public static final String ERROR_RATE_LIMITED = "rate_limited";
+	public static final String ERROR_BANNED = "banned";
 	public static final String ERROR_HTTP = "http_error";
 	private final String errorId;
 	private final Object errorExtra;

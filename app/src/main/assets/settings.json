@@ -59,12 +59,12 @@
 			"items": [
 				{
 					"key": "aweryjs", "type": "screen",
-					"title": "AweryJS", "icon": "ic_aweryjs", "tint_icon": false, "icon_size": 1.2,
+					"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
 					"description": "Watch Movies, TV with Tracking and Comments!",
 					"behaviour": "extensions_aweryjs"
 				}, {
 					"key": "aniyomi", "type": "screen",
-					"title": "Aniyomi", "icon": "ic_aniyomi", "tint_icon": false, "icon_size": 1.2,
+					"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
 					"description": "It seems there is only Anime here?",
 					"behaviour": "extensions_aniyomi"
 				}
@@ -143,7 +143,7 @@
 			]
 		}, {
 			"key": "advanced", "type": "screen",
-			"title": "Advanced", "icon": "ic_round_settings_24",
+			"title": "Advanced", "icon": "ic_settings_outlined",
 			"items": [
 				{
 					"key": "log_network", "type": "boolean", "restart": true,

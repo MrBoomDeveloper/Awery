@@ -179,7 +179,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginRight="12dp"
             android:importantForAccessibility="no"
-            app:icon="@drawable/ic_round_collections_bookmark_24" />
+            app:icon="@drawable/ic_bookmark_filled" />
 
     </LinearLayout>
 

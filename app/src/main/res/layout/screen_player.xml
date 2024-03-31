@@ -62,7 +62,7 @@
             android:id="@+id/brightness_gesture"
             android:layout_width="35dp"
             android:layout_height="match_parent"
-            app:icon="@drawable/ic_round_brightness_4_24"
+            app:icon="@drawable/ic_brightness_medium_outlined"
             app:maxProgress="25"
             tools:progress="10"
             app:isVisible="false"
@@ -77,7 +77,7 @@
             android:id="@+id/volume_gesture"
             android:layout_width="35dp"
             android:layout_height="match_parent"
-            app:icon="@drawable/ic_round_volume_up_24"
+            app:icon="@drawable/ic_volume_up_outlined"
             tools:maxProgress="10"
             tools:progress="9"
             app:isVisible="false"
@@ -142,25 +142,26 @@
                 android:id="@+id/exit"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:background="@drawable/ripple_circle_white"
+                android:clickable="true"
+                android:focusable="true"
                 android:padding="11dp"
                 android:scaleType="fitCenter"
-                android:focusable="true"
-                android:clickable="true"
-                android:background="@drawable/ripple_circle_white"
-                android:src="@drawable/ic_round_arrow_back_ios_new_24"/>
+                android:src="@drawable/ic_back"
+                app:tint="#ffffff" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_semi_bold"
                 android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins"
+                android:gravity="center_vertical"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:textSize="18sp"
                 android:textColor="#fff"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
+                android:textSize="18sp"
                 tools:text="@tools:sample/lorem/random" />
 
             <ImageView
@@ -171,8 +172,9 @@
                 android:scaleType="fitCenter"
                 android:focusable="true"
                 android:clickable="true"
+                app:tint="#fff"
                 android:background="@drawable/ripple_circle_white"
-                android:src="@drawable/ic_round_picture_in_picture_alt_24"
+                android:src="@drawable/ic_pip_outlined"
                 android:layout_marginLeft="6dp" />
 
             <ImageView
@@ -180,12 +182,12 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:padding="11dp"
-                android:alpha=".35"
+                android:alpha=".4"
                 android:scaleType="fitCenter"
                 android:focusable="true"
                 android:clickable="true"
                 android:background="@drawable/ripple_circle_white"
-                android:src="@drawable/ic_round_subtitles_24"
+                android:src="@drawable/ic_subtitles_outlined"
                 android:layout_marginLeft="6dp"
                 app:tint="#fff" />
 
@@ -195,7 +197,7 @@
                 android:layout_height="50dp"
                 android:padding="11dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_round_settings_24"
+                android:src="@drawable/ic_settings_outlined"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="16dp"
                 android:focusable="true"
@@ -271,7 +273,7 @@
                 tools:text="Skip 1:00"
                 app:backgroundTint="#fff"
                 android:textColor="#000"
-                app:icon="@drawable/outline_fast_forward_24"
+                app:icon="@drawable/ic_fast_forward_outlined"
                 app:iconTint="#222"
                 app:iconSize="24dp"
                 app:rippleColor="#55000000" />

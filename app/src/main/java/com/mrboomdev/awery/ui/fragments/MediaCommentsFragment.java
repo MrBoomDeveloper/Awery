@@ -64,6 +64,8 @@ public class MediaCommentsFragment extends Fragment {
 							case JsException.ERROR_ACCOUNT_REQUIRED -> toast("You cannot read comments without an account!");
 							case JsException.ERROR_HTTP -> toast("Failed to connect to the server!");
 							case JsException.ERROR_NOTHING_FOUND -> toast("Nothing was found!");
+							case JsException.ERROR_RATE_LIMITED -> toast("Rate limited!");
+							case JsException.ERROR_BANNED -> toast("You are banned!");
 
 							default -> {
 								Log.e("MediaCommentsFragment", "Failed to load comments!", e);

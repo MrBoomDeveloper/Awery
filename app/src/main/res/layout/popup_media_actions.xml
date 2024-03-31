@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/watch"
-        app:icon="@drawable/ic_round_play_arrow_24" />
+        app:icon="@drawable/ic_play_outlined" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/SheetAction"
@@ -49,7 +49,7 @@
         app:iconSize="24dp"
         app:iconPadding="25dp"
         android:paddingLeft="27dp"
-        app:icon="@drawable/ic_round_collections_bookmark_24" />
+        app:icon="@drawable/ic_collections_bookmark_outlined" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/SheetAction"
@@ -58,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/share"
-        app:icon="@drawable/ic_round_share_24" />
+        app:icon="@drawable/ic_share_outlined" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/SheetAction"
@@ -67,6 +67,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hide"
-        app:icon="@drawable/ic_round_block_24" />
+        app:icon="@drawable/ic_block_outlined" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

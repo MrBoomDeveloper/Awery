@@ -57,7 +57,7 @@
         android:layout_marginRight="12dp"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:src="@drawable/ic_round_search_24"
+        android:src="@drawable/ic_search_outlined"
         android:contentDescription="@string/search"
         android:padding="8dp"
         android:clickable="true"
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:src="@drawable/ic_round_settings_24"
+            android:src="@drawable/ic_settings_outlined"
             android:contentDescription="@string/settings" />
 
         <androidx.cardview.widget.CardView
