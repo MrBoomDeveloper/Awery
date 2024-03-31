@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.io.HttpClient;
 
 import org.mozilla.javascript.Context;
@@ -67,7 +68,22 @@ public class JsBridge {
 				.setUrl(options.get("url").toString());
 
 		if(options.has("body", options)) {
-			request.setBody(options.get("body").toString(), MimeTypes.ANY);
+			var contentTypeSpecified = options.has("contentType", options)
+					? options.get("contentType").toString() : null;
+
+			var contentType = contentTypeSpecified == null ? null
+					: StringUtil.parseEnum(contentTypeSpecified.toUpperCase(Locale.ROOT), MimeTypes.class);
+
+			if(contentType == null) request.setBody(options.get("body").toString(), contentTypeSpecified);
+			else request.setBody(options.get("body").toString(), contentType);
+		}
+
+		if(options.has("form", options)) {
+			var obj = (NativeObject) options.get("form");
+
+			for(var entry : obj.entrySet()) {
+				request.addFormField(entry.getKey().toString(), entry.getValue().toString());
+			}
 		}
 
 		if(options.has("method", options)) {

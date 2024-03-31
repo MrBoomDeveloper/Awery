@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -29,7 +31,8 @@ public class HttpClient {
 	private static OkHttpClient client;
 
 	public static class Request {
-		private MimeTypes contentType;
+		private FormBody.Builder form;
+		private MediaType mediaType;
 		private Map<String, String> headers;
 		private CacheMode cacheMode;
 		private Method method;
@@ -58,6 +61,27 @@ public class HttpClient {
 			return this;
 		}
 
+		public Request setForm(Map<String, String> map) {
+			if(map == null) {
+				this.form = null;
+				return this;
+			}
+
+			this.form = new FormBody.Builder();
+
+			for(var entry : map.entrySet()) {
+				form.add(entry.getKey(), entry.getValue());
+			}
+
+			return this;
+		}
+
+		public Request addFormField(String key, String value) {
+			if(form == null) form = new FormBody.Builder();
+			form.add(key, value);
+			return this;
+		}
+
 		public Request setHeaders(Map<String, String> headers) {
 			this.headers = headers;
 			return this;
@@ -73,7 +97,15 @@ public class HttpClient {
 			if(body == null) return this;
 
 			this.body = body;
-			this.contentType = contentType;
+			this.mediaType = contentType.toMediaType();
+			return this;
+		}
+
+		public Request setBody(String body, String contentType) {
+			if(body == null) return this;
+
+			this.body = body;
+			this.mediaType = MediaType.parse(contentType);
 			return this;
 		}
 
@@ -105,10 +137,14 @@ public class HttpClient {
 				method = (body == null) ? Method.GET : Method.POST;
 			}
 
-			if(body == null) {
-				if(method == Method.POST) throw new NullPointerException("Body not set for POST!");
-				else if(method == Method.PUT) throw new NullPointerException("Body not set for PUT!");
-				else if(method == Method.PATCH) throw new NullPointerException("Body not set for PATCH!");
+			if(form == null && body == null) {
+				if(method == Method.POST) throw new IllegalArgumentException("Body or form must be set for method POST!");
+				if(method == Method.PUT) throw new IllegalArgumentException("Body or form must be set for method PUT!");
+				if(method == Method.PATCH) throw new IllegalArgumentException("Body or form must be set for method PATCH!");
+			}
+
+			if(form != null && body != null) {
+				throw new IllegalArgumentException("Body and form cannot be set at the same time!");
 			}
 
 			if(cacheMode == CacheMode.CACHE_FIRST && cacheTime == null) {
@@ -160,10 +196,17 @@ public class HttpClient {
 
 		switch(request.method) {
 			case GET -> okRequest.get();
+			case HEAD -> okRequest.head();
 			case DELETE -> okRequest.delete();
-			case PATCH -> okRequest.patch(RequestBody.create(request.body, request.contentType.toMediaType()));
-			case PUT -> okRequest.put(RequestBody.create(request.body, request.contentType.toMediaType()));
-			case POST -> okRequest.post(RequestBody.create(request.body, request.contentType.toMediaType()));
+
+			case PATCH -> okRequest.patch(request.form != null ? request.form.build()
+					: RequestBody.create(request.body, request.mediaType));
+
+			case PUT -> okRequest.put(request.form != null ? request.form.build()
+					: RequestBody.create(request.body, request.mediaType));
+
+			case POST -> okRequest.post(request.form != null ? request.form.build()
+					: RequestBody.create(request.body, request.mediaType));
 		}
 
 		if(request.cacheTime != null) {
@@ -190,7 +233,7 @@ public class HttpClient {
 		}
 	}
 
-	public enum Method { GET, POST, DELETE, PUT, PATCH }
+	public enum Method { GET, POST, DELETE, PUT, PATCH, HEAD }
 	public enum CacheMode { NETWORK_ONLY, CACHE_FIRST }
 
 	public interface SimpleHttpCallback extends HttpCallback {
