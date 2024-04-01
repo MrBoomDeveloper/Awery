@@ -71,7 +71,20 @@
         app:layout_constraintBottom_toBottomOf="@id/likeIcon"
         app:layout_constraintLeft_toRightOf="@id/likeIcon"
         app:layout_constraintTop_toTopOf="@id/likeIcon"
+        tools:visibility="gone"
         tools:text="0" />
+
+    <View
+        android:id="@+id/likeButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon"
+        app:layout_constraintLeft_toLeftOf="@id/likeIcon"
+        app:layout_constraintRight_toRightOf="@id/likeIcon" />
 
     <ImageView
         android:id="@+id/dislikeIcon"
@@ -80,6 +93,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="18dp"
         android:scaleType="fitCenter"
+        app:layout_goneMarginLeft="12dp"
         android:src="@drawable/ic_dislike_outlined"
         app:layout_constraintTop_toBottomOf="@id/message"
         app:layout_constraintLeft_toRightOf="@id/likesCount"
@@ -96,6 +110,33 @@
         app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
         app:layout_constraintLeft_toRightOf="@id/dislikeIcon"
         app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        tools:visibility="gone"
+        tools:text="0" />
+
+    <View
+        android:id="@+id/dislikeButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
+        app:layout_constraintLeft_toLeftOf="@id/dislikeIcon"
+        app:layout_constraintRight_toRightOf="@id/dislikeIcon" />
+
+    <TextView
+        android:id="@+id/votesCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
+        app:layout_constraintLeft_toRightOf="@id/dislikeIcon"
+        app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        android:visibility="gone"
         tools:text="0" />
 
     <ImageView
@@ -109,7 +150,7 @@
         android:scaleY=".9"
         android:src="@drawable/ic_chat_outlined"
         app:layout_constraintTop_toBottomOf="@id/message"
-        app:layout_constraintLeft_toRightOf="@id/dislikesCount"
+        app:layout_constraintLeft_toRightOf="@id/votesCount"
         android:contentDescription="Comment" />
 
     <TextView

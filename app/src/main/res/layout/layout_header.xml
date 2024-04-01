@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:src="@tools:sample/avatars"
-                android:contentDescription="@string/accounts" />
+                android:contentDescription="@string/account" />
 
         </androidx.cardview.widget.CardView>
 

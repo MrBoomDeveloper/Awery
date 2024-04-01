@@ -20,6 +20,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -117,8 +118,12 @@ public class AweryApp extends Application implements Application.ActivityLifecyc
 	}
 
 	public static Context getAnyContext() {
-		var activity = getAnyActivity();
-		if(activity != null) return activity;
+		Activity activity = null;
+
+		try {
+			activity = getAnyActivity();
+			if(activity != null) return activity;
+		} catch(IndexOutOfBoundsException ignored) {}
 
 		if(app == null) {
 			return getContextUsingPrivateApi();
@@ -180,6 +185,10 @@ public class AweryApp extends Application implements Application.ActivityLifecyc
 
 	public static Context getContext(@NonNull View view) {
 		return view.getContext();
+	}
+
+	public static Context getContext(@NonNull LayoutInflater inflater) {
+		return inflater.getContext();
 	}
 
 	@NonNull

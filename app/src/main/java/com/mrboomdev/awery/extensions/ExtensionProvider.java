@@ -26,19 +26,18 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
-	public static final int FEATURE_READ_MEDIA_COMMENTS = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
 	 */
 	public static final int FEATURE_LOGIN = 2;
-	public static final int FEATURE_WATCH_MEDIA = 3;
-	public static final int FEATURE_READ_MEDIA = 4;
-	public static final int FEATURE_WRITE_MEDIA_COMMENTS = 5;
+	public static final int FEATURE_MEDIA_WATCH = 3;
+	public static final int FEATURE_MEDIA_READ = 4;
+	public static final int FEATURE_MEDIA_COMMENTS = 5;
 	public static final int FEATURE_TRACK = 6;
 	public static final int FEATURE_COMMENTS_SORT = 7;
-	public static final int FEATURE_LIKE = 8;
-	public static final int FEATURE_DISLIKE = 9;
-	public static final int FEATURE_REPORT = 10;
+	public static final int FEATURE_COMMENTS_REPORT = 8;
+	public static final int FEATURE_COMMENTS_VOTE = 9;
+	public static final int FEATURE_MEDIA_REPORT = 10;
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {

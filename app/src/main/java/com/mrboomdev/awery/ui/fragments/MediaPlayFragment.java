@@ -206,13 +206,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_WATCH_MEDIA))
+				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
 				.flatMap(AweryApp::stream)
 				.sorted().toList();
 
 		var sourcesDropdownAdapter = new CustomArrayAdapter<>(providers, this::bindDropdownItem);
 
-		variantsAdapter.getBinding((binding, didJustCreated) -> {
+		variantsAdapter.getBinding((binding) -> {
 			binding.sourceDropdown.setAdapter(sourcesDropdownAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
@@ -225,11 +225,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private void selectProvider(@NonNull ExtensionProvider provider) {
-		variantsAdapter.getBinding((binding, didJustCreated) ->
+		variantsAdapter.getBinding((binding) ->
 				binding.sourceDropdown.setText(provider.getName(), false));
 
 		if(provider instanceof ExtensionProviderGroup group) {
-			variantsAdapter.getBinding((binding, didJustCreated) -> {
+			variantsAdapter.getBinding((binding) -> {
 				var variants = new ArrayList<>(group.getProviders());
 				currentGroupProviders.set(group, variants);
 				Collections.sort(variants);
@@ -250,13 +250,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			});
 		} else {
 			selectVariant(provider, null);
-			variantsAdapter.getBinding((binding, didJustCreated) ->
+			variantsAdapter.getBinding((binding) ->
 					binding.variantWrapper.setVisibility(View.GONE));
 		}
 	}
 
 	private void selectVariant(ExtensionProvider provider, String variant) {
-		variantsAdapter.getBinding((binding, didJustCreated) -> {
+		variantsAdapter.getBinding((binding) -> {
 			binding.variantDropdown.setText(variant, false);
 			loadEpisodesFromSource(provider);
 		});
@@ -272,7 +272,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			selectedSourceGroup = null;
 		}
 
-		placeholderAdapter.getBinding((binding, didJustCreated) -> {
+		placeholderAdapter.getBinding((binding) -> {
 			binding.info.setVisibility(View.GONE);
 			binding.progressBar.setVisibility(View.VISIBLE);
 		});
@@ -292,7 +292,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.setPage(0)
 				.setQuery(media.titles.get(0));
 
-		variantsAdapter.getBinding((binding, didJustCreated) ->
+		variantsAdapter.getBinding((binding) ->
 				binding.searchDropdown.setText(searchParams.getQuery(), false));
 
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
@@ -341,7 +341,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						searchParams.setQuery(media.titles.get(newIndex));
 						source.search(searchParams.build(), callback);
 
-						variantsAdapter.getBinding((binding, didJustCreated) ->
+						variantsAdapter.getBinding((binding) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
 					} else {
 						handleExceptionMark(source, e);
@@ -444,7 +444,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			return;
 		}
 
-		placeholderAdapter.getBinding((binding, didJustCreated) -> AweryApp.runOnUiThread(() -> {
+		placeholderAdapter.getBinding((binding) -> AweryApp.runOnUiThread(() -> {
 			binding.title.setText(error.getTitle(context));
 			binding.message.setText(error.getMessage(context));
 

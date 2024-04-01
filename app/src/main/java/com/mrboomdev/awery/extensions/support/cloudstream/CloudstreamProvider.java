@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CloudstreamProvider extends ExtensionProvider {
-	private final List<Integer> FEATURES = List.of(FEATURE_WATCH_MEDIA);
+	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH);
 
 	@Override
 	public Collection<Integer> getFeatures() {

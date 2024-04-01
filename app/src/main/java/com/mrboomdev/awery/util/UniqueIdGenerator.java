@@ -1,17 +1,12 @@
 package com.mrboomdev.awery.util;
 
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
-
 /**
  * A helper-class which helps to generate random ids which doesn't collide with other ids.
  * @author MrBoomDev
  */
 public class UniqueIdGenerator {
-	private final Random random = new Random();
-	private Set<Long> usedLongs;
-	private Set<Integer> usedIntegers;
+	private long usedLongs;
+	private int usedIntegers;
 
 	/**
 	 * @return A new id of type Long
@@ -19,18 +14,7 @@ public class UniqueIdGenerator {
 	 * @author MrBoomDev
 	 */
 	public long getLong() {
-		if(usedLongs == null) {
-			usedLongs = new LinkedHashSet<>();
-		}
-
-		while(true) {
-			long id = random.nextLong();
-
-			if(!usedLongs.contains(id)) {
-				usedLongs.add(id);
-				return id;
-			}
-		}
+		return usedLongs++;
 	}
 
 	/**
@@ -39,18 +23,7 @@ public class UniqueIdGenerator {
 	 * @author MrBoomDev
 	 */
 	public int getInteger() {
-		if(usedIntegers == null) {
-			usedIntegers = new LinkedHashSet<>();
-		}
-
-		while(true) {
-			int id = random.nextInt();
-
-			if(!usedIntegers.contains(id)) {
-				usedIntegers.add(id);
-				return id;
-			}
-		}
+		return usedIntegers++;
 	}
 
 	/**
@@ -59,10 +32,7 @@ public class UniqueIdGenerator {
 	 * @author MrBoomDev
 	 */
 	public void clear() {
-		if(usedLongs != null) usedLongs.clear();
-		if(usedIntegers != null) usedIntegers.clear();
-
-		usedLongs = null;
-		usedIntegers = null;
+		usedLongs = 0;
+		usedIntegers = 0;
 	}
 }

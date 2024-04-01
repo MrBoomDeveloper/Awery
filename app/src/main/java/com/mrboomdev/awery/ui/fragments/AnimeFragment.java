@@ -36,7 +36,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		pagerAdapter.getView((_view, didJustCreated) -> {
+		pagerAdapter.getView((_view) -> {
 			var headerBinding = pagerAdapter.getHeader();
 			setupHeader(headerBinding);
 		});

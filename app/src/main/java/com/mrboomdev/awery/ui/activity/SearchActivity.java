@@ -165,7 +165,7 @@ public class SearchActivity extends AppCompatActivity {
 			idGenerator.clear();
 		}
 
-		loadingAdapter.getBinding((binding, didJustCreated) -> {
+		loadingAdapter.getBinding((binding) -> {
 			binding.progressBar.setVisibility(View.VISIBLE);
 			binding.info.setVisibility(View.GONE);
 		});
@@ -213,7 +213,7 @@ public class SearchActivity extends AppCompatActivity {
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
 
-						loadingAdapter.getBinding((binding, didJustCreated) -> {
+						loadingAdapter.getBinding((binding) -> {
 							if(wasSearchId != searchId) return;
 
 							if(page == 0) {

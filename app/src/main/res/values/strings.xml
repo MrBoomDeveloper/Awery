@@ -7,6 +7,8 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 
+    <string name="no_comment_extensions_message">You have no installed comment extensions. Download them to see something new here!</string>
+
     <string name="english">English</string>
     <string name="russian">Russian</string>
     <string name="japanese">Japanese</string>
@@ -64,52 +66,10 @@
     <string name="add_fav">Add to Favourites</string>
     <string name="notifications">Notifications</string>
 
-    <string-array name="keys">
-        <item>Reading</item>
-        <item>Watching</item>
-        <item>Completed</item>
-        <item>Paused</item>
-        <item>Dropped</item>
-        <item>Planning</item>
-        <item>Favourites</item>
-        <item>Rewatching</item>
-        <item>Rereading</item>
-        <item>All</item>
-    </string-array>
-
-    <string name="status">STATUS</string>
-
-    <string-array name="status" translatable="false">
-        <item>PLANNING</item>
-        <item>CURRENT</item>
-        <item>COMPLETED</item>
-        <item>REPEATING</item>
-        <item>PAUSED</item>
-        <item>DROPPED</item>
-    </string-array>
-
-    <string-array name="status_anime" translatable="false">
-        <item>PLANNING</item>
-        <item>WATCHING</item>
-        <item>COMPLETED</item>
-        <item>RE-WATCHING</item>
-        <item>PAUSED</item>
-        <item>DROPPED</item>
-    </string-array>
-
-    <string-array name="status_manga" translatable="false">
-        <item>PLANNING</item>
-        <item>READING</item>
-        <item>COMPLETED</item>
-        <item>RE-READING</item>
-        <item>PAUSED</item>
-        <item>DROPPED</item>
-    </string-array>
-
-    <string name="progress">PROGRESS</string>
-    <string name="score">SCORE</string>
-    <string name="started_at">STARTED AT</string>
-    <string name="completed_at">COMPLETED AT</string>
+    <string name="progress">Progress</string>
+    <string name="score">Score</string>
+    <string name="started_at">Started at</string>
+    <string name="completed_at">Completed at</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="remove">Remove</string>
@@ -143,12 +103,6 @@
     <string name="chap">Chapter</string>
     <string name="wrong"><u>Wrong Title?</u></string>
 
-    <string name="source_not_found">
-        Couldn\'t find anything X( \n
-        Try another source.
-    </string>
-
-    <string name="not_supported">%1$s is not supported!</string>
     <string name="server_selector">Select Server</string>
     <string name="auto_select_server">Auto Selecting Server</string>
     <string name="make_default">Make Default</string>
@@ -193,34 +147,7 @@
         \n\n - If the internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.
     </string>
 
-    <string name="version_current">Version %1$s</string>
-
-    <string-array name="tips">
-        <item>You can Long Click an episode/chapter to Mark it as Read.</item>
-        <item>Long Clicking Shows can directly open List Editor.</item>
-        <item>There are few more easter eggs hidden in the App.</item>
-        <item>Challenge: Go to the very bottom of the Popular Anime &amp; Manga</item>
-        <item>Try Long Clicking the Show\'s Title.</item>
-        <item>Damn, why are you wasting your Time?</item>
-        <item>You can Long Click to copy this Message.</item>
-        <item>OMG LOOK! YOU FOUND AN EASTER EGG!?</item>
-        <item>You know who else likes this Animation?</item>
-        <item>MAL support? bruh.</item>
-        <item>Novels? more like NO vels.</item>
-        <item>Long Click the logo to check for App Update</item>
-    </string-array>
-
-    <string-array name="themes">
-        <item>Default</item>
-        <item>Theme 1</item>
-        <item>Theme 2</item>
-        <item>Theme 3</item>
-        <item> Theme 4</item>
-    </string-array>
-
     <string name="video">Video</string>
-    <string name="video_info">Show Video Info</string>
-    <string name="source_info">Show Source Name</string>
     <string name="video_info_info">Shows what the Resolution of the current video playing, useful for <b>\"Multi Quality\"</b> servers.</string>
     <string name="default_quality">Auto Quality Selection</string>
     <string name="height">Height</string>
@@ -235,7 +162,6 @@
     <string name="sub_background_color_select">Subtitle Background Color</string>
     <string name="sub_window_color_select">Subtitle Window Color</string>
     <string name="sub_window_color_info">"The subtitle window is the part left and right from them. (where the background isn\'t)"</string>
-    <string name="sub_color_info"><b>Note:</b> Changing Subtitle formatting only works with Soft-Subbed Sources such as Zoro!</string>
     <string name="sub_font_select">Subtitle Font</string>
     <string name="subtitle_font_size">Subtitle Size</string>
 
@@ -246,10 +172,8 @@
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
 
     <string name="update_progress">Update Progress</string>
-    <string name="ask_update_progress_anime">Ask for each Anime \"Individually\"</string>
-    <string name="ask_update_progress_manga">Ask for each Manga \"Individually\"</string>
+    <string name="ask_update_progress_anime">Ask for each Media \"Individually\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
-    <string name="ask_update_progress_info_chap">Turning off will always automatically update progress when the chapter is read.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
     <string name="watch_complete_percentage_info">The percentage at which your Anilist progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
 
@@ -264,7 +188,6 @@
     <string name="amoled">Amoled Theme</string>
     <string name="seek_time_info">Amount of time in seconds for fast forward &amp; rewind.</string>
     <string name="skip_time">Skip Time</string>
-    <string name="skip_time_info">Setting to 0, hides the Skip Button.</string>
     <string name="show_cast_button">Show Cast Button</string>
     <string name="show_cast_button_info">Requires \"Web Video Caster\" app to cast.</string>
     <string name="picture_in_picture">Picture in Picture</string>
@@ -273,25 +196,12 @@
 
     <string name="immersive_mode">Hide Status Bar</string>
     <string name="immersive_mode_info">Requires App restart to fully apply.</string>
-    <string name="home_layout_show">Show/Hide Layouts on Home</string>
-
-    <string-array name="home_layouts">
-        <item>Continue Watching</item>
-        <item>Favourite Anime</item>
-        <item>Planned Anime</item>
-        <item>Continue Reading</item>
-        <item>Favourite Manga</item>
-        <item>Planned Manga</item>
-        <item>Recommended</item>
-    </string-array>
 
     <string name="startUpTab">Default Start Up Tab</string>
     <string name="animations">Animations</string>
     <string name="banner_animations">Banner Animations</string>
     <string name="layout_animations">Layout Animations</string>
     <string name="animation_speed">Overall Speed</string>
-    <string name="fav_anime">Favourite Anime</string>
-    <string name="fav_manga">Favourite Manga</string>
     <string name="restart_app">Restart the app?</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
@@ -336,52 +246,33 @@
     <string name="other">Other</string>
     <string name="auto_skip_op_ed">Auto Skip OP / ED</string>
     <string name="requires_time_stamps_to_be_enabled">Requires Time Stamps to be Enabled</string>
-    <string name="total_repeats">TOTAL REPEATS</string>
     <string name="custom_lists">Custom Lists</string>
     <string name="filter">Filter</string>
     <string name="year">Year</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
-    <string name="this_season">This Season</string>
-    <string name="next_season">Next Season</string>
     <string name="previous_season">Previous Season</string>
     <string name="include_media_in_list">Include List</string>
     <string name="release_calendar">Calendar</string>
-    <string name="planned_anime">Planned Anime</string>
-    <string name="planned_manga">Planned Manga</string>
     <string name="image_long_clicking">Open image by Long Clicking</string>
     <string name="always_continue_shows">Always continue Shows</string>
-    <string name="timestamp_proxy_desc">Useful if you are getting Handshake Fails</string>
-    <string name="timestamp_proxy">Use Proxy for Timestamps</string>
     <string name="check_app_updates">Always check for App Updates</string>
     <string name="author">Author</string>
-    <string name="forks">Versions</string>
-    <string name="accounts">Accounts</string>
-    <string name="account_help">How does this work\?</string>
-    <string name="notification_for_checking_subscriptions">Show notification for Checking Subscriptions</string>
-    <string name="checking_subscriptions">Notification for Checking Subscriptions</string>
-    <string name="subscriptions_checking_time_s">Subscriptions Update Frequency : %1$s</string>
-    <string name="subscriptions_checking_time">Subscriptions Update Frequency</string>
+    <string name="account">Account</string>
     <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
-    <string name="do_not_update">Don\'t Update</string>
-    <string name="loading_next_chap">Loading Next Chapter</string>
     <string name="grid">Grid</string>
     <string name="sort_by_release_date">Sort by Release Date</string>
     <string name="crop_borders">Crop Borders</string>
-    <string name="note">NOTE</string>
 
-    <string name="file_manager_not_found">Couldn\'t find any File Manager to open SD card</string>
     <string name="error_loading_data">Error loading data %1$s</string>
     <string name="long_click_to_check_update">You Long Click the button to check for App Update</string>
     <string name="saved_to_path">Saved to:\n%s</string>
     <string name="setting_progress">Setting progress to %1$d</string>
     <string name="login_anilist_account">Please Login into anilist account!</string>
-    <string name="congrats_vro">Congrats Vro</string>
     <string name="please_reload">Please Reload.</string>
     <string name="copied_text">Copied "%1$s"</string>
     <string name="back_to_exit">Please perform back again to Exit</string>
     <string name="no_internet_connection">No Internet Connection</string>
-    <string name="anilist_not_found">Seems like that wasn\'t found on Anilist.</string>
     <string name="disabled_auto_skip">Disabled Auto Skipping OP &amp; ED</string>
     <string name="auto_skip">Auto Skipping OP &amp; ED</string>
     <string name="copied_to_clipboard">Copied to Clipboard</string>
@@ -389,17 +280,11 @@
     <string name="reset_auto_update">You can long click List Editor button to Reset Auto Update</string>
     <string name="autoplay_cancelled">Autoplay cancelled, no Interaction for more than 1 Hour.</string>
     <string name="auto_select_server_error">Couldn\'t auto select the server, Please try again!</string>
-    <string name="getting_user_data">Getting User Data</string>
     <string name="no_next_episode">No next Episode Found!</string>
-    <string name="enable_banner_animations">Try Enabling Banner Animations from Settings</string>
-    <string name="please_login_anilist">Please Login with Anilist!</string>
     <string name="auto_update_reset">Auto Update Progress has now been Reset-ed</string>
-    <string name="cant_wait">Can\'t Wait, huh? fine X(</string>
     <string name="downloading">Downloading…</string>
     <string name="next_chapter_not_found">Next Chapter Not Found</string>
     <string name="first_chapter">This is the 1st Chapter!</string>
-    <string name="what_did_you_open">What did you even open?</string>
-    <string name="error_loading_anilist_user_data">Error loading Anilist User Data</string>
     <string name="episode_not_found">Couldn\'t find episode : %1$s</string>
     <string name="list_updated">List Updated</string>
     <string name="deleted_from_list">Deleted from List</string>
@@ -410,37 +295,18 @@
     <string name="downloading_update">Downloading Update %1$s</string>
     <string name="permission_required">Please give permission to access Files &amp; Folders from Settings, &amp; Try again.</string>
     <string name="started_downloading">Started Downloading\n%1$s</string>
-    <string name="install_1dm">Please install 1DM</string>
-    <string name="install_adm">Please install ADM</string>
-    <string name="error_getting_image_data">Error getting Image Data</string>
     <string name="loading_image_failed">Loading Image Failed</string>
-    <string name="copied_device_info">Copied device info</string>
-    <string name="anilist_down">Seems like Anilist is down, maybe try using a VPN or you can wait for it to come back.</string>
     <string name="failed_to_load_data">Failed to load saved data of %1$d</string>
     <string name="access_not_available">Wasn\'t able to get access</string>
-    <string name="mal_login_uri_not_found">Mal Login : Uri not Found</string>
-    <string name="mal_login_code_challenge_not_found">Mal Login : codeChallenge not found</string>
-    <string name="mal_login_code_not_present">Mal Login : Code not present in Redirected URI</string>
-    <string name="refresh_token_load_failed">Refresh Token : Failed to load Saved Token</string>
-    <string name="refreshing_token_failed">Refreshing Token Failed</string>
     <string name="episode_release_countdown">Episode %1$d will be released in</string>
     <string name="time_format">%1$d days %2$d hrs %3$d mins %4$d secs</string>
-
-    <string-array name="sort_by">
-        <item>Score</item>
-        <item>Popular</item>
-        <item>Trending</item>
-        <item>A-Z</item>
-        <item>Z-A</item>
-        <item>What?</item>
-    </string-array>
 
     <string name="main_role">Main</string>
     <string name="supporting_role">Supporting</string>
 
     <string name="status_finished">Finished</string>
     <string name="status_releasing">Releasing</string>
-    <string name="status_not_yet_released">NOT YET RELEASED</string>
+    <string name="status_not_yet_released">Not yet released</string>
     <string name="status_cancelled">Cancelled</string>
     <string name="status_hiatus">Delayed</string>
 
@@ -475,11 +341,20 @@
     <string name="incognito_will_not_update">Incognito mode will still ignore progress.</string>
     <string name="dont_ask_again">"Don\'t ask again for %1$s"</string>
     <string name="default_speed">Default Speed</string>
-    <string name="default_resize_mode">Default Resize Mode</string>
     <string name="primary_sub_color">Primary Sub Color</string>
     <string name="outline_sub_color">Outline Sub Color</string>
     <string name="outline_type">Outline Type</string>
     <string name="subtitle_font">Subtitle Font</string>
+
+    <string name="not_implemeted">Feature not implemented!</string>
+    <string name="timed_out">Connection timed out!</string>
+    <string name="failed_handshake">Failed to connect to the server!</string>
+    <string name="access_denied">Access denied!</string>
+    <string name="server_down">Server is down!</string>
+    <string name="too_much_requests">Too much requests!</string>
+    <string name="something_went_wrong">Something just went wrong!</string>
+
+    <string name="not_found_detailed">Error 404. The resource you requested does not exist!</string>
 
     <string name="content">Content</string>
     <string name="yes">Yes</string>
@@ -489,28 +364,12 @@
     <string name="content_18">Turn on 18+ Content from your Anilist Settings</string>
     <string name="available">Available</string>
     <string name="lets_go">Let\'s Go</string>
-    <string name="cope">Cope</string>
 
     <string name="watched_num">"Watched "</string>
     <string name="read_num">"Read "</string>
     <string name="episodes_out_of">" out of "</string>
-    <string name="chapters_out_of">" out of "</string>
     <string name="episodes_total_of">"Total of "</string>
-    <string name="chapters_total_of">"Total of "</string>
     <string name="no_description_available">"No Description Available"</string>
-
-    <string-array name="manga_directions">
-        <item>Top to Bottom</item>
-        <item>Right to Left</item>
-        <item>Bottom to Top</item>
-        <item>Left to Right</item>
-    </string-array>
-
-    <string-array name="manga_layouts">
-        <item>Paged</item>
-        <item>Continuous Paged</item>
-        <item>Continuous</item>
-    </string-array>
 
     <string name="selected">Selected</string>
     <string name="found">Found</string>

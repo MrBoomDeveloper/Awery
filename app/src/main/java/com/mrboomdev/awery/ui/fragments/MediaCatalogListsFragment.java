@@ -82,7 +82,7 @@ public class MediaCatalogListsFragment extends Fragment {
 	}
 
 	public void setEmptyData(boolean isLoading, String title, String message) {
-		getEmptyAdapter().getBinding((binding, didJustCreated) -> {
+		getEmptyAdapter().getBinding((binding) -> {
 			binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
 
 			if(title != null || message != null) {

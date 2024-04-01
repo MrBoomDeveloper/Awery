@@ -39,7 +39,7 @@ import java9.util.stream.Collectors;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends ExtensionProvider {
-	private final List<Integer> FEATURES = List.of(FEATURE_WATCH_MEDIA);
+	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH);
 	private final AnimeCatalogueSource source;
 
 	public AniyomiProvider(AnimeCatalogueSource source) {

@@ -52,7 +52,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	public interface PendingViewOperation<V> {
-		void onGotView(V view, boolean didJustCreated);
+		void onGotView(V view);
 	}
 
 	public static abstract class BindingSingleViewAdapter<T extends ViewBinding> extends SingleViewAdapter {
@@ -70,7 +70,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		}
 
 		public void getBinding(@NonNull PendingViewOperation<T> operation) {
-			if(binding != null) operation.onGotView(binding, false);
+			if(binding != null) operation.onGotView(binding);
 			else pendingViewOperations.add(operation);
 		}
 
@@ -82,7 +82,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 			var iterator = pendingViewOperations.iterator();
 			while(iterator.hasNext()) {
 				var next = iterator.next();
-				next.onGotView(binding, true);
+				next.onGotView(binding);
 				iterator.remove();
 			}
 
@@ -170,7 +170,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	public void getView(@NonNull PendingViewOperation<View> operation) {
-		if(view != null) operation.onGotView(view, false);
+		if(view != null) operation.onGotView(view);
 		else pendingViewOperations.add(operation);
 	}
 
@@ -228,7 +228,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		var iterator = pendingViewOperations.iterator();
 		while(iterator.hasNext()) {
 			var next = iterator.next();
-			next.onGotView(view, true);
+			next.onGotView(view);
 			iterator.remove();
 		}
 

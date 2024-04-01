@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class MiruProvider extends ExtensionProvider {
-	private final List<Integer> FEATURES = List.of(FEATURE_WATCH_MEDIA, FEATURE_READ_MEDIA);
+	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_READ);
 
 	@Override
 	public Collection<Integer> getFeatures() {

@@ -67,7 +67,7 @@ public abstract class AnilistQuery<T> {
 					public void onResponse(HttpClient.HttpResponse response) {
 						if(!response.getText().startsWith("{")) {
 							var context = AweryApp.getAnyContext();
-							throw new HttpException(context.getString(R.string.anilist_down));
+							throw new HttpException(context.getString(R.string.server_down));
 						}
 
 						callback.onResponse(response.getText());

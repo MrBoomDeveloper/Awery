@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.graphql.GraphQLException;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import javax.net.ssl.SSLHandshakeException;
 
 import eu.kanade.tachiyomi.network.HttpException;
+import java9.util.Objects;
 import kotlinx.serialization.json.internal.JsonDecodingException;
 
 public class ExceptionDescriptor {
@@ -64,38 +66,53 @@ public class ExceptionDescriptor {
 
 	public String getTitle(Context context) {
 		if(throwable instanceof ZeroResultsException) {
-			return "Nothing found!";
-		} else if(throwable instanceof UnimplementedException) {
-			return "Feature not implemented!";
+			return context.getString(R.string.nothing_found);
+		} else if(throwable instanceof UnimplementedException
+				|| throwable instanceof UnsupportedOperationException) {
+			return context.getString(R.string.not_implemeted);
 		} else if(throwable instanceof SocketTimeoutException) {
-			return "Connection timed out!";
+			return context.getString(R.string.timed_out);
 		} else if(throwable instanceof SocketException e) {
 			return e.getMessage();
 		} else if(throwable instanceof SSLHandshakeException) {
-			return "Failed to connect to the server!";
+			return context.getString(R.string.failed_handshake);
 		} else if(throwable instanceof HttpException e) {
 			return switch(e.getCode()) {
-				case 403 -> "Access denied!";
-				case 404 -> "Nothing found!";
-				case 429 -> "Too much requests!";
-				case 500, 503 -> "Server is down!";
-				case 504 -> "Connection timed out!";
+				case 403 -> context.getString(R.string.access_denied);
+				case 404 -> context.getString(R.string.nothing_found);
+				case 429 -> context.getString(R.string.too_much_requests);
+				case 500, 503 -> context.getString(R.string.server_down);
+				case 504 -> context.getString(R.string.timed_out);
 				default -> getGenericTitle(context);
 			};
-		} else if(throwable instanceof UnsupportedOperationException) {
-			return "Feature not implemented!";
-		} else if(throwable instanceof JsonDecodingException | throwable instanceof NullPointerException) {
+		} else if(throwable instanceof JsonDecodingException
+				| throwable instanceof GraphQLException
+				| throwable instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(throwable instanceof UnknownHostException) {
-			return "No internet connection!";
-		} else if(throwable instanceof GraphQLException) {
-			return "Failed to query the server!";
+			return context.getString(R.string.no_internet);
+		} else if(throwable instanceof JsException js) {
+			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
+				case JsException.ERROR_ACCOUNT_REQUIRED -> "Account required";
+				case JsException.ERROR_HTTP -> "Connection failed";
+				case JsException.ERROR_NOTHING_FOUND -> context.getString(R.string.nothing_found);
+				case JsException.ERROR_RATE_LIMITED -> context.getString(R.string.too_much_requests);
+				case JsException.ERROR_BANNED -> "You are banned!";
+				default -> js.getMessage();
+			};
 		}
 
 		return getGenericTitle(context);
 	}
 
 	public boolean isNetworkException() {
+		if(throwable instanceof JsException js) {
+			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
+				case JsException.ERROR_RATE_LIMITED, JsException.ERROR_HTTP -> true;
+				default -> false;
+			};
+		}
+
 		return throwable instanceof ZeroResultsException ||
 				throwable instanceof UnimplementedException ||
 				throwable instanceof SocketTimeoutException ||
@@ -109,6 +126,7 @@ public class ExceptionDescriptor {
 				t instanceof UnimplementedException ||
 				t instanceof SocketTimeoutException ||
 				t instanceof SocketException ||
+				t instanceof JsException ||
 				t instanceof SSLHandshakeException ||
 				t instanceof HttpException ||
 				t instanceof UnsupportedOperationException ||
@@ -119,17 +137,13 @@ public class ExceptionDescriptor {
 
 	@NonNull
 	@Contract(pure = true)
-	private String getGenericTitle(Context context) {
-		return "Something just went wrong!";
+	private String getGenericTitle(@NonNull Context context) {
+		return context.getString(R.string.something_went_wrong);
 	}
 
 	@NonNull
 	private static String getGenericMessage(Throwable throwable) {
 		return Log.getStackTraceString(throwable);
-	}
-
-	public String getShortDescription() {
-		return throwable.getMessage();
 	}
 
 	public String getMessage(Context context) {
@@ -150,7 +164,7 @@ public class ExceptionDescriptor {
 				case 400 -> "Error 400. The request was invalid, please try again later.";
 				case 401 -> "Error 401. You are not logged in, please log in and try again.";
 				case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
-				case 404 -> "Error 404. The resource you requested does not exist!";
+				case 404 -> context.getString(R.string.not_found_detailed);
 				case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
 				case 500 -> "Error 500. An internal server error has occurred, please try again later.";
 				case 503 -> "Error 503. The service is temporarily unavailable, please try again later.";
@@ -174,6 +188,15 @@ public class ExceptionDescriptor {
 			}
 
 			return builder.toString();
+		} else if(throwable instanceof JsException js) {
+			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
+				case JsException.ERROR_ACCOUNT_REQUIRED -> "You cannot do this action without an account! You can login through extension's settings!";
+				case JsException.ERROR_HTTP -> "Failed to connect to the server! Try again later.";
+				case JsException.ERROR_NOTHING_FOUND -> "Nothing was found! Try using other sources.";
+				case JsException.ERROR_RATE_LIMITED -> "Too much requests in a so short time period.";
+				case JsException.ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
+				default -> js.getMessage();
+			};
 		}
 
 		return getGenericMessage(throwable);

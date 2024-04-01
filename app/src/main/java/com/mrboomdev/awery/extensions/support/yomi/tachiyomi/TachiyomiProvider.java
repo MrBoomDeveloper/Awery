@@ -8,7 +8,7 @@ import java.util.List;
 import eu.kanade.tachiyomi.source.MangaSource;
 
 public class TachiyomiProvider extends ExtensionProvider {
-	private final Collection<Integer> FEATURES = List.of(FEATURE_READ_MEDIA);
+	private final Collection<Integer> FEATURES = List.of(FEATURE_MEDIA_READ);
 	private final MangaSource source;
 
 	public TachiyomiProvider(MangaSource source) {

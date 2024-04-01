@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 
 import java.util.ArrayList;
@@ -93,20 +94,17 @@ public class JsProvider extends ExtensionProvider {
 
 		for(var feature : (NativeArray) obj.get("features")) {
 			features.add(switch((String) feature) {
-				case "media_comments_read" -> FEATURE_READ_MEDIA_COMMENTS;
-				case "media_comments_write" -> FEATURE_WRITE_MEDIA_COMMENTS;
+				case "media_comments" -> FEATURE_MEDIA_COMMENTS;
 				case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
+				case "media_comments_vote" -> FEATURE_COMMENTS_VOTE;
 
-				case "media_watch" -> FEATURE_WATCH_MEDIA;
-				case "media_read" -> FEATURE_READ_MEDIA;
+				case "media_watch" -> FEATURE_MEDIA_WATCH;
+				case "media_read" -> FEATURE_MEDIA_READ;
 
 				case "account_login" -> FEATURE_LOGIN;
 				case "account_track" -> FEATURE_TRACK;
 
-				default -> {
-					toast("Unknown feature: " + feature);
-					yield 0;
-				}
+				default -> 0;
 			});
 		}
 
@@ -379,17 +377,28 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryReadMediaComments") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { request, (Callback<ScriptableObject>) (o, e) -> {
+					fun.call(context, scope, null, new Object[] { request, (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
 						}
 
-						var comment = new CatalogComment();
-						comment.authorName = o.has("authorName", o) ? o.get("authorName").toString() : null;
-						comment.authorAvatar = o.has("authorAvatar", o) ? o.get("authorAvatar").toString() : null;
-						comment.text = o.has("text", o) ? o.get("text").toString() : null;
-						callback.onSuccess(comment);
+						var root = new CatalogComment();
+
+						for(var arrayItem : (NativeArray) o.get("items", o)) {
+							var jsItem = (NativeObject) arrayItem;
+
+							var comment = new CatalogComment();
+							comment.authorName = jsItem.has("authorName", jsItem) ? jsItem.get("authorName").toString() : null;
+							comment.authorAvatar = jsItem.has("authorAvatar", jsItem) ? jsItem.get("authorAvatar").toString() : null;
+							comment.text = jsItem.has("text", jsItem) ? jsItem.get("text").toString() : null;
+							comment.likes = jsItem.has("likes", jsItem) ? ((Number) jsItem.get("likes")).intValue() : CatalogComment.DISABLED;
+							comment.dislikes = jsItem.has("dislikes", jsItem) ? ((Number) jsItem.get("dislikes")).intValue() : CatalogComment.DISABLED;
+							comment.votes = jsItem.has("votes", jsItem) ? ((Number) jsItem.get("votes")).intValue() : CatalogComment.DISABLED;
+							root.items.add(comment);
+						}
+
+						callback.onSuccess(root);
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
