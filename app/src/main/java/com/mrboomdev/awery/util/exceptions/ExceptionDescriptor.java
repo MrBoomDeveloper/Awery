@@ -85,8 +85,7 @@ public class ExceptionDescriptor {
 				case 504 -> context.getString(R.string.timed_out);
 				default -> getGenericTitle(context);
 			};
-		} else if(throwable instanceof JsonDecodingException
-				| throwable instanceof GraphQLException
+		} else if(throwable instanceof GraphQLException
 				| throwable instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(throwable instanceof UnknownHostException) {
@@ -98,8 +97,13 @@ public class ExceptionDescriptor {
 				case JsException.ERROR_NOTHING_FOUND -> context.getString(R.string.nothing_found);
 				case JsException.ERROR_RATE_LIMITED -> context.getString(R.string.too_much_requests);
 				case JsException.ERROR_BANNED -> "You are banned!";
-				default -> js.getMessage();
+
+				default -> js.getErrorId() == null ? "JsEngine has crashed" :
+					"JsEngine has crashed: " + js.getErrorId();
 			};
+		} else if(throwable instanceof InvalidSyntaxException
+				|| throwable instanceof JsonDecodingException) {
+			return "Parser has crashed!";
 		}
 
 		return getGenericTitle(context);
@@ -126,6 +130,7 @@ public class ExceptionDescriptor {
 				t instanceof UnimplementedException ||
 				t instanceof SocketTimeoutException ||
 				t instanceof SocketException ||
+				t instanceof InvalidSyntaxException ||
 				t instanceof JsException ||
 				t instanceof SSLHandshakeException ||
 				t instanceof HttpException ||
@@ -195,8 +200,36 @@ public class ExceptionDescriptor {
 				case JsException.ERROR_NOTHING_FOUND -> "Nothing was found! Try using other sources.";
 				case JsException.ERROR_RATE_LIMITED -> "Too much requests in a so short time period.";
 				case JsException.ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
-				default -> js.getMessage();
+
+				default -> {
+					if(js.getErrors() != null) {
+						var iterator = js.getErrors().iterator();
+						var builder = new StringBuilder();
+
+						while(iterator.hasNext()) {
+							var error = iterator.next();
+							var message = error.getMessage();
+
+							if(message == null) {
+								continue;
+							}
+
+							builder.append(message.trim());
+
+							if(iterator.hasNext()) {
+								builder.append("\n\n");
+							}
+						}
+
+						yield builder.toString();
+					}
+
+					yield getGenericMessage(throwable);
+				}
 			};
+		} else if(throwable instanceof JsonDecodingException
+				|| throwable instanceof InvalidSyntaxException) {
+			return "An error has occurred while parsing the response. " + throwable.getMessage();
 		}
 
 		return getGenericMessage(throwable);

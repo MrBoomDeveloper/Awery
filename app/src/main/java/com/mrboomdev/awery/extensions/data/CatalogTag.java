@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.extensions.support.template;
+package com.mrboomdev.awery.extensions.data;
 
 public class CatalogTag {
 	private String name, id, description;

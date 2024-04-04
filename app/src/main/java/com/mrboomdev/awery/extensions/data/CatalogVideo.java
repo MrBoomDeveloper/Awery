@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.extensions.support.template;
+package com.mrboomdev.awery.extensions.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

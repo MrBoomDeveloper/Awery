@@ -43,7 +43,7 @@ import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
-import com.mrboomdev.awery.extensions.support.template.CatalogList;
+import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.util.Disposable;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 

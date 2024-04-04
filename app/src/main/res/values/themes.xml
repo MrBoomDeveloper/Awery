@@ -37,10 +37,6 @@
     <style name="Theme.Awery.AppBarOverlay" parent="Theme.Awery" />
     <style name="Theme.Awery.PopupOverlay" parent="Theme.Awery" />
 
-    <style name="Theme.Awery.NeverCutout" parent="@style/Theme.Awery.NoActionBar">
-        <item name="android:navigationBarColor">@color/nav_bg</item>
-    </style>
-
     <style name="DialogTheme" parent="Theme.Awery">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

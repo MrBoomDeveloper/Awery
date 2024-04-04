@@ -7,8 +7,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogTag;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.util.StringUtil;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

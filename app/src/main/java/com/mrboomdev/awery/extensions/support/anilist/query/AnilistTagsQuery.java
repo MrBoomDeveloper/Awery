@@ -4,7 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogTag;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
 
 import org.jetbrains.annotations.Contract;

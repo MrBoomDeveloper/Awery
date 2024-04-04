@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.extensions.support.template;
+package com.mrboomdev.awery.extensions.data;
 
 import android.graphics.drawable.Drawable;
 
@@ -80,6 +80,11 @@ public class CatalogMedia {
 	}
 
 	public void setTitles(Collection<String> titles) {
+		if(titles == null) {
+			this.titles = new ArrayList<>();
+			return;
+		}
+
 		this.titles = List.copyOf(titles);
 	}
 

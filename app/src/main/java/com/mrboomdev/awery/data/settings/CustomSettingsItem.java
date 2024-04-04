@@ -4,6 +4,10 @@ import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 public abstract class CustomSettingsItem extends SettingsItem {
 
+	public CustomSettingsItem(SettingsItemType type) {
+		this.type = type;
+	}
+
 	public void saveValue(Object value) {}
 
 	public Object getSavedValue() {

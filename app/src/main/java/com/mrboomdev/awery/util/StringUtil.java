@@ -3,14 +3,19 @@ package com.mrboomdev.awery.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 public class StringUtil {
 
@@ -42,6 +47,17 @@ public class StringUtil {
 		}
 
 		return paramsString.toString();
+	}
+
+	@NonNull
+	public static Date parseDate(String string) {
+		try {
+			var formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+			return Objects.requireNonNull(formatter.parse(string));
+		} catch(Exception e) {
+			throw new InvalidSyntaxException("Failed to parse date: " + string, e);
+		}
 	}
 
 	/**

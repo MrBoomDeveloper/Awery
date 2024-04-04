@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;

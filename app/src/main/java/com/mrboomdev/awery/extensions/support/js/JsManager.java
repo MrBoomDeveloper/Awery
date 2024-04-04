@@ -270,7 +270,7 @@ public class JsManager extends ExtensionsManager {
 		if(response instanceof Exception e) {
 			if(e instanceof EvaluatorException ex) {
 				Log.e(TAG, Constants.LOGS_SEPARATOR);
-				throw JsException.create(ex, caughtExceptions);
+				throw new JsException(ex, caughtExceptions);
 			}
 
 			throw new IllegalArgumentException("Failed to load extension!", e);

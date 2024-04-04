@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.extensions.request;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogComment;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 
 import org.mozilla.javascript.annotations.JSGetter;
 

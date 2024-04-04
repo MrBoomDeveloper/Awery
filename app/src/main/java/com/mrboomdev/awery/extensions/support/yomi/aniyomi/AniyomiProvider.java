@@ -18,11 +18,11 @@ import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
-import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
-import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
@@ -147,7 +147,7 @@ public class AniyomiProvider extends ExtensionProvider {
 				var preference = screen.getPreference(i);
 
 				if(preference instanceof SwitchPreferenceCompat switchPref) {
-					items.add(new CustomSettingsItem() {
+					items.add(new CustomSettingsItem(SettingsItemType.BOOLEAN) {
 
 						@Override
 						public void saveValue(Object value) {
@@ -158,11 +158,6 @@ public class AniyomiProvider extends ExtensionProvider {
 						@Override
 						public String getTitle(Context context) {
 							return preference.getTitle() == null ? null : preference.getTitle().toString();
-						}
-
-						@Override
-						public SettingsItemType getType() {
-							return SettingsItemType.BOOLEAN;
 						}
 
 						@Override
@@ -196,7 +191,7 @@ public class AniyomiProvider extends ExtensionProvider {
 								.build());
 					}
 
-					items.add(new CustomSettingsItem() {
+					items.add(new CustomSettingsItem(SettingsItemType.SELECT) {
 
 						@Override
 						public void saveValue(Object value) {
@@ -212,11 +207,6 @@ public class AniyomiProvider extends ExtensionProvider {
 						@Override
 						public List<SettingsItem> getItems() {
 							return prefVariants;
-						}
-
-						@Override
-						public SettingsItemType getType() {
-							return SettingsItemType.SELECT;
 						}
 
 						@Override
@@ -250,7 +240,7 @@ public class AniyomiProvider extends ExtensionProvider {
 								.build());
 					}
 
-					items.add(new CustomSettingsItem() {
+					items.add(new CustomSettingsItem(SettingsItemType.MULTISELECT) {
 
 						@Override
 						@SuppressWarnings("unchecked")
@@ -267,11 +257,6 @@ public class AniyomiProvider extends ExtensionProvider {
 						@Override
 						public List<SettingsItem> getItems() {
 							return prefVariants;
-						}
-
-						@Override
-						public SettingsItemType getType() {
-							return SettingsItemType.MULTISELECT;
 						}
 
 						@Override

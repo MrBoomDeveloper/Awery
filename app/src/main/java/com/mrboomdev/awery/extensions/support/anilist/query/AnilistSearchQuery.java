@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;

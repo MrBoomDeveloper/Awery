@@ -133,9 +133,9 @@
         android:fontFamily="sans-serif-light"
         android:textColor="?attr/colorOnBackground"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
-        app:layout_constraintLeft_toRightOf="@id/dislikeIcon"
-        app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/dislikesCount"
+        app:layout_constraintLeft_toRightOf="@id/dislikesCount"
+        app:layout_constraintTop_toTopOf="@id/dislikesCount"
         android:visibility="gone"
         tools:text="0" />
 
@@ -144,7 +144,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="18dp"
+        android:layout_marginLeft="20dp"
         android:scaleType="fitCenter"
         android:scaleX=".9"
         android:scaleY=".9"
@@ -165,5 +165,17 @@
         app:layout_constraintLeft_toRightOf="@id/commentIcon"
         app:layout_constraintTop_toTopOf="@id/commentIcon"
         tools:text="0" />
+
+    <View
+        android:id="@+id/commentButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/commentIcon"
+        app:layout_constraintBottom_toBottomOf="@id/commentIcon"
+        app:layout_constraintLeft_toLeftOf="@id/commentIcon"
+        app:layout_constraintRight_toRightOf="@id/commentIcon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

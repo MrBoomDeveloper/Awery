@@ -19,7 +19,7 @@ import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
 import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;

@@ -7,12 +7,12 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
-import com.mrboomdev.awery.extensions.support.template.CatalogCategory;
-import com.mrboomdev.awery.extensions.support.template.CatalogComment;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
-import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogCategory;
+import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;

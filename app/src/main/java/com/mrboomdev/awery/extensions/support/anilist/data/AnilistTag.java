@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.anilist.data;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogTag;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 
 public class AnilistTag {
 	public String name, id;

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg">#000000</color>
-    <color name="fg">#A8EEEEEE</color>
     <color name="bg_opp">@color/bg_white</color>
     <color name="nav_bg">#1C1C1C</color>
     <color name="nav_bg_inv">#001C1C1C</color>

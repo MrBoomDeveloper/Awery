@@ -47,7 +47,6 @@
 
     <style name="ShapeAppearanceOverlay.Demo" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="cornerSize">20dp</item>
-        <item name="background">@id/bg</item>
         <item name="cornerFamily">rounded</item>
     </style>
 
@@ -59,7 +58,6 @@
     <style name="MySnackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:background">@drawable/round_corner</item>
     </style>
 
     <string name="MySnackBarText" parent="Widget.MaterialComponents.Snackbar.TextView" translatable="false">

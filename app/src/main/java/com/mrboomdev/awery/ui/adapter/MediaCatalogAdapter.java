@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.databinding.ItemGridMediaCatalogBinding;
+import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -52,7 +52,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
-		var binding = ItemGridMediaCatalogBinding.inflate(inflater, parent, false);
+		var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
 
 		if(!ViewUtil.setRightMargin(binding.getRoot(), ViewUtil.dpPx(12))) {
 			throw new IllegalStateException("Failed to set right margin!");
@@ -95,10 +95,10 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {
-		private final ItemGridMediaCatalogBinding binding;
+		private final GridMediaCatalogBinding binding;
 		private CatalogMedia item;
 
-		public ViewHolder(@NonNull ItemGridMediaCatalogBinding binding) {
+		public ViewHolder(@NonNull GridMediaCatalogBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}

@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.extensions.support.template;
+package com.mrboomdev.awery.extensions.data;
 
 import com.squareup.moshi.Json;
 
@@ -30,11 +30,14 @@ public class CatalogComment {
 	 */
 	@Json(name = "dislikes")
 	public int dislikes;
+	@Json(name = "comments")
+	public int comments;
 	/**
 	 * If this value equal to -1, then votes aren't shown
 	 */
 	@Json(name = "votes")
-	public int votes;
+	public Integer votes;
 	@Json(ignore = true)
 	public long visualId;
+	public String date;
 }

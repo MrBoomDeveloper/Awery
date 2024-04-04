@@ -24,9 +24,10 @@ public class SettingsItem {
 			.setTitle("Invalid!")
 			.setBooleanValue(false)
 			.build();
+
 	public static final String SEPARATOR = "_";
 	private String key, title, description, icon, behaviour;
-	private SettingsItemType type;
+	protected SettingsItemType type;
 	private String parentKey;
 	@Json(name = "tint_icon")
 	private Boolean tintIcon;

@@ -20,13 +20,13 @@ import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.extensions.support.template.CatalogComment;
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
-import com.mrboomdev.awery.extensions.support.template.CatalogFilter;
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.template.CatalogSubtitle;
-import com.mrboomdev.awery.extensions.support.template.CatalogVideo;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.Callbacks;
@@ -202,7 +202,7 @@ public class JsProvider extends ExtensionProvider {
 			reload.run();
 			while(isLoggedIn.get() == null);
 
-			root.addItem(new CustomSettingsItem() {
+			root.addItem(new CustomSettingsItem(SettingsItemType.ACTION) {
 
 				@Override
 				public String getTitle(android.content.Context context) {
@@ -287,19 +287,10 @@ public class JsProvider extends ExtensionProvider {
 						});
 					}
 				}
-
-				@Override
-				public SettingsItemType getType() {
-					return SettingsItemType.ACTION;
-				}
 			});
 		}
 
-		root.addItem(new CustomSettingsItem() {
-			@Override
-			public SettingsItemType getType() {
-				return SettingsItemType.ACTION;
-			}
+		root.addItem(new CustomSettingsItem(SettingsItemType.ACTION) {
 
 			@Override
 			public String getTitle(android.content.Context context) {
@@ -383,22 +374,7 @@ public class JsProvider extends ExtensionProvider {
 							return;
 						}
 
-						var root = new CatalogComment();
-
-						for(var arrayItem : (NativeArray) o.get("items", o)) {
-							var jsItem = (NativeObject) arrayItem;
-
-							var comment = new CatalogComment();
-							comment.authorName = jsItem.has("authorName", jsItem) ? jsItem.get("authorName").toString() : null;
-							comment.authorAvatar = jsItem.has("authorAvatar", jsItem) ? jsItem.get("authorAvatar").toString() : null;
-							comment.text = jsItem.has("text", jsItem) ? jsItem.get("text").toString() : null;
-							comment.likes = jsItem.has("likes", jsItem) ? ((Number) jsItem.get("likes")).intValue() : CatalogComment.DISABLED;
-							comment.dislikes = jsItem.has("dislikes", jsItem) ? ((Number) jsItem.get("dislikes")).intValue() : CatalogComment.DISABLED;
-							comment.votes = jsItem.has("votes", jsItem) ? ((Number) jsItem.get("votes")).intValue() : CatalogComment.DISABLED;
-							root.items.add(comment);
-						}
-
-						callback.onSuccess(root);
+						callback.onSuccess(new JsComment(o));
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
@@ -410,7 +386,6 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearch") instanceof Function fun) {
@@ -425,9 +400,13 @@ public class JsProvider extends ExtensionProvider {
 
 						for(var item : o) {
 							var result = new CatalogMedia(manager.getId(), id, (String) item.get("id"));
-							result.setTitles((Collection<String>) item.get("titles"));
-							result.banner = (String) item.get("banner");
-							result.description = (String) item.get("description");
+							result.banner = item.has("banner", item) ? item.get("banner").toString() : null;
+							result.country = item.has("country", item) ? item.get("country").toString() : null;
+							result.description = item.has("description", item) ? item.get("description").toString() : null;
+
+							result.setTitles(item.has("titles", item) ? stream(item.get("titles"))
+									.map(Object::toString)
+									.toList() : null);
 
 							results.add(result);
 						}
@@ -447,7 +426,7 @@ public class JsProvider extends ExtensionProvider {
 	@SuppressWarnings("unchecked")
 	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
 		manager.postRunnable(() -> {
-			if(scope.get("aweryGetVideos") instanceof Function fun) {
+			if(scope.get("aweryMediaVideos") instanceof Function fun) {
 				try {
 					fun.call(context, scope, null, new Object[] { episode, (Callback<List<ScriptableObject>>) (o, e) -> {
 						if(e != null) {
@@ -471,7 +450,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryGetVideos is not a function or isn't defined!"));
+				callback.onFailure(new NullPointerException("aweryMediaVideos is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -525,7 +504,7 @@ public class JsProvider extends ExtensionProvider {
 	@Override
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {
 		manager.postRunnable(() -> {
-			if(scope.get("aweryGetEpisodes") instanceof Function fun) {
+			if(scope.get("aweryMediaEpisodes") instanceof Function fun) {
 				try {
 					fun.call(context, scope, null, new Object[] { page, media, (Callback<List<ScriptableObject>>) (o, e) -> {
 						if(e != null) {
@@ -546,7 +525,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryGetEpisodes is not a function or isn't defined!"));
+				callback.onFailure(new NullPointerException("aweryMediaEpisodes is not a function or isn't defined!"));
 			}
 		});
 	}

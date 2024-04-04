@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 
 import eu.kanade.tachiyomi.animesource.model.SEpisode;
 import eu.kanade.tachiyomi.animesource.model.SEpisodeImpl;

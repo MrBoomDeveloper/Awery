@@ -22,6 +22,7 @@ public class JsException extends RuntimeException {
 	public static final String ERROR_RATE_LIMITED = "rate_limited";
 	public static final String ERROR_BANNED = "banned";
 	public static final String ERROR_HTTP = "http_error";
+	private final Collection<Throwable> errors;
 	private final String errorId;
 	private final Object errorExtra;
 
@@ -30,6 +31,7 @@ public class JsException extends RuntimeException {
 
 		this.errorId = null;
 		this.errorExtra = null;
+		this.errors = null;
 	}
 
 	public JsException(String message, Throwable cause) {
@@ -37,11 +39,13 @@ public class JsException extends RuntimeException {
 
 		this.errorId = null;
 		this.errorExtra = null;
+		this.errors = null;
 	}
 
 	public JsException(@NonNull ScriptableObject scope) {
 		this.errorId = scope.has("id", scope) ? scope.get("id", scope).toString() : null;
 		this.errorExtra = scope.has("extra", scope) ? scope.get("extra", scope) : null;
+		this.errors = null;
 	}
 
 	public String getErrorId() {
@@ -56,13 +60,18 @@ public class JsException extends RuntimeException {
 		return errorId != null;
 	}
 
-	@NonNull
-	public static JsException create(Throwable cause, @NonNull Collection<Throwable> errors) {
-		var message = stream(errors)
+	public Collection<Throwable> getErrors() {
+		return errors;
+	}
+
+	public JsException(Throwable cause, @NonNull Collection<Throwable> errors) {
+		super(stream(errors)
 				.map(Throwable::getMessage)
 				.filter(Objects::nonNull)
-				.collect(Collectors.joining("\n"));
+				.collect(Collectors.joining("\n")), cause);
 
-		return new JsException(message, cause);
+		this.errors = errors;
+		this.errorId = null;
+		this.errorExtra = null;
 	}
 }

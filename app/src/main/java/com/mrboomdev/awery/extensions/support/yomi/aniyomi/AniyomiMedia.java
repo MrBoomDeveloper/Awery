@@ -4,7 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.support.template.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;

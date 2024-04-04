@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,6 +39,13 @@ public class ViewUtil {
 	@Contract("_, _ -> new")
 	public static LinearLayout.LayoutParams createLinearParams(int width, int height) {
 		return new LinearLayout.LayoutParams(width, height);
+	}
+
+	@NonNull
+	public static LinearLayoutCompat.LayoutParams createLinearParams(int width, int height, int weight) {
+		var params = new LinearLayoutCompat.LayoutParams(width, height);
+		params.weight = weight;
+		return params;
 	}
 
 	@NonNull

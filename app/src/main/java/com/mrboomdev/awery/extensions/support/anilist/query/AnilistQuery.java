@@ -2,10 +2,10 @@ package com.mrboomdev.awery.extensions.support.anilist.query;
 
 import android.content.Context;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.MimeTypes;
-import com.mrboomdev.awery.util.exceptions.HttpException;
+import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;
@@ -67,7 +67,7 @@ public abstract class AnilistQuery<T> {
 					public void onResponse(HttpClient.HttpResponse response) {
 						if(!response.getText().startsWith("{")) {
 							var context = AweryApp.getAnyContext();
-							throw new HttpException(context.getString(R.string.server_down));
+							throw new InvalidSyntaxException(context.getString(R.string.server_down));
 						}
 
 						callback.onResponse(response.getText());

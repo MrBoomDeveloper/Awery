@@ -2,7 +2,6 @@
     <style name="Theme.Awery" parent="Theme.Base">
         <item name="colorOnPrimary">@color/bg_black</item>
         <item name="android:textColor">@color/bg_white</item>
-        <item name="colorSecondaryVariant">@color/violet_400</item>
     </style>
 
     <style name="Theme.Awery.Splash" parent="Theme.SplashScreen">
