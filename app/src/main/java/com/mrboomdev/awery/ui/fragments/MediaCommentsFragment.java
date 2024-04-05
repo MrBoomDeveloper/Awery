@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.runDelayed;
 import static com.mrboomdev.awery.app.AweryApp.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
@@ -7,7 +8,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
@@ -49,16 +49,25 @@ import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class MediaCommentsFragment extends Fragment {
 	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private final WeakHashMap<CatalogComment, Integer> scrollPositions = new WeakHashMap<>();
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
+	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
+	private final Runnable backPressCallback;
+	private LinearLayoutManager layoutManager;
+	private RecyclerView recycler;
+	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
 	private ConcatAdapter adapter;
 	private List<ExtensionProvider> providers;
 	private CatalogMedia media;
+	private CatalogComment comment;
 
 	public MediaCommentsFragment() {
 		this(null);
@@ -70,7 +79,41 @@ public class MediaCommentsFragment extends Fragment {
 			return LayoutLoadingBinding.inflate(inflater, parent, false);
 		});
 
+		backPressCallback = () -> {
+			if(!currentCommentsPath.isEmpty()) {
+				currentCommentsPath.remove(currentCommentsPath.size() - 1);
+			}
+
+			if(currentCommentsPath.isEmpty()) {
+				if(onCloseRequestListener != null) {
+					onCloseRequestListener.run();
+					return;
+				}
+
+				requireActivity().finish();
+				return;
+			}
+
+			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1));
+		};
+
 		setMedia(media);
+	}
+
+	public void setOnCloseRequestListener(Runnable listener) {
+		this.onCloseRequestListener = listener;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		AweryApp.addOnBackPressedListener(requireActivity(), backPressCallback);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		AweryApp.removeOnBackPressedListener(requireActivity(), onCloseRequestListener);
 	}
 
 	public void setMedia(CatalogMedia media) {
@@ -78,10 +121,37 @@ public class MediaCommentsFragment extends Fragment {
 		this.media = media;
 		if(adapter == null) return;
 
-		loadData();
+		loadData(null, false);
 	}
 
-	private void loadData() {
+	private void setComment(@Nullable CatalogComment comment) {
+		this.comment = comment;
+
+		if(comment != null && !currentCommentsPath.contains(comment)) {
+			currentCommentsPath.add(comment);
+		}
+
+		commentsAdapter.setData(comment);
+
+		//TODO: Load an avatar received from the extension
+		sendBinding.avatarWrapper.setVisibility(View.GONE);
+
+		sendBinding.getRoot().setVisibility(
+				comment != null && comment.canComment ?
+				View.VISIBLE : View.GONE);
+
+		var scrollPosition = scrollPositions.get(comment);
+
+		if(scrollPosition != null) {
+			//runDelayed(() -> layoutManager.scrollVerticallyBy(scrollPosition, recycler, State), 1);
+		}
+	}
+
+	private void loadData(CatalogComment parent, boolean isReload) {
+		if(this.comment != null) {
+			scrollPositions.put(this.comment, recycler.computeVerticalScrollOffset());
+		}
+
 		if(providers != null) {
 			if(providers.isEmpty()) {
 				loadingAdapter.getBinding(binding -> {
@@ -96,13 +166,23 @@ public class MediaCommentsFragment extends Fragment {
 				return;
 			}
 
+			if(!isReload) {
+				loadingAdapter.getBinding(binding -> {
+					binding.info.setVisibility(View.GONE);
+					binding.progressBar.setVisibility(View.VISIBLE);
+				});
+
+				loadingAdapter.setEnabled(true);
+				setComment(null);
+			}
+
 			if(providers.size() > 1) {
 				toast("Sorry, but you cannot currently use more than 1 comment extension :(");
 			}
 
 			var request = new ReadMediaCommentsRequest()
 					.setPage(0)
-					.setParentComment(null)
+					.setParentComment(parent)
 					.setMedia(media);
 
 			providers.get(0).readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
@@ -113,13 +193,8 @@ public class MediaCommentsFragment extends Fragment {
 
 						swipeRefresher.setRefreshing(false);
 						loadingAdapter.setEnabled(false);
-						commentsAdapter.setData(parent);
 
-						//TODO: Load an avatar received from the extension
-						sendBinding.avatarWrapper.setVisibility(View.GONE);
-
-						sendBinding.getRoot().setVisibility(parent.canComment ?
-								View.VISIBLE : View.GONE);
+						setComment(parent);
 					});
 				}
 
@@ -159,23 +234,24 @@ public class MediaCommentsFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		layoutManager = new LinearLayoutManager(inflater.getContext());
+
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
-		swipeRefresher.setOnRefreshListener(this::loadData);
+		swipeRefresher.setOnRefreshListener(() -> loadData(null, true));
 
 		var parentLayout = new LinearLayoutCompat(inflater.getContext());
 		parentLayout.setOrientation(LinearLayoutCompat.VERTICAL);
 		swipeRefresher.addView(parentLayout);
 
-		var recycler = new RecyclerView(inflater.getContext());
-		recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+		recycler = new RecyclerView(inflater.getContext());
+		recycler.setLayoutManager(layoutManager);
 		recycler.setClipToPadding(false);
 
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
 			var padding = dpPx(8);
 
 			setTopPadding(recycler, insets.top + padding);
-			setRightPadding(recycler, insets.right + padding);
-			setLeftPadding(recycler, padding);
+			setRightPadding(recycler, insets.right);
 			setBottomPadding(recycler, padding);
 		}, container);
 
@@ -195,7 +271,7 @@ public class MediaCommentsFragment extends Fragment {
 		return swipeRefresher;
 	}
 
-	private static class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
+	private class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 		private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 		private CatalogComment root;
 
@@ -204,12 +280,14 @@ public class MediaCommentsFragment extends Fragment {
 		}
 
 		@SuppressLint("NotifyDataSetChanged")
-		public void setData(@NonNull CatalogComment root) {
+		public void setData(@Nullable CatalogComment root) {
 			this.root = root;
 			idGenerator.clear();
 
-			for(var item : root.items) {
-				item.visualId = idGenerator.getLong();
+			if(root != null) {
+				for(var item : root.items) {
+					item.visualId = idGenerator.getLong();
+				}
 			}
 
 			notifyDataSetChanged();
@@ -219,7 +297,15 @@ public class MediaCommentsFragment extends Fragment {
 		@Override
 		public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
-			return new CommentViewHolder(WidgetCommentBinding.inflate(inflater, parent, false));
+			var binding = WidgetCommentBinding.inflate(inflater, parent, false);
+			var holder = new CommentViewHolder(binding);
+
+			binding.getRoot().setOnClickListener(v -> {
+				var comment = holder.getComment();
+				loadData(comment, false);
+			});
+
+			return holder;
 		}
 
 		@Override
@@ -243,14 +329,20 @@ public class MediaCommentsFragment extends Fragment {
 
 	private static class CommentViewHolder extends RecyclerView.ViewHolder {
 		private final WidgetCommentBinding binding;
+		private CatalogComment comment;
 
 		public CommentViewHolder(@NonNull WidgetCommentBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
+		public CatalogComment getComment() {
+			return comment;
+		}
+
 		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogComment comment) {
+			this.comment = comment;
 			String date = null;
 
 			if(comment.date != null) {

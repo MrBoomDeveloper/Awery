@@ -47,13 +47,11 @@ public class MediaActivity extends AppCompatActivity {
 		binding.pager.setUserInputEnabled(false);
 		binding.pager.setPageTransformer(new FadeTransformer());
 
-		var navigation = (NavigationBarView) binding.navigation;
-
-		ViewUtil.setOnApplyUiInsetsListener(navigation, insets -> {
-			if(navigation instanceof NavigationRailView) {
-				navigation.setPadding(insets.left, insets.top, 0, 0);
+		ViewUtil.setOnApplyUiInsetsListener(binding.navigation, insets -> {
+			if(binding.navigation instanceof NavigationRailView) {
+				binding.navigation.setPadding(insets.left, insets.top, 0, 0);
 			} else {
-				ViewUtil.setBottomPadding(navigation, insets.bottom, false);
+				ViewUtil.setBottomPadding(binding.navigation, insets.bottom, false);
 			}
 		});
 

@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.window.OnBackInvokedCallback;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
@@ -60,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -75,6 +77,7 @@ public class AweryApp extends Application implements Application.ActivityLifecyc
 	//TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
+	private static final WeakHashMap<Runnable, Object> backPressedCallbacks = new WeakHashMap<>();
 	private static final Map<Class<? extends AppCompatActivity>, ActivityInfo> activities = new HashMap<>();
 	private static final Handler handler = new Handler(Looper.getMainLooper());
 	private static final List<Disposable> disposables = new ArrayList<>();
@@ -118,7 +121,7 @@ public class AweryApp extends Application implements Application.ActivityLifecyc
 	}
 
 	public static Context getAnyContext() {
-		Activity activity = null;
+		Activity activity;
 
 		try {
 			activity = getAnyActivity();
@@ -162,9 +165,26 @@ public class AweryApp extends Application implements Application.ActivityLifecyc
 		return context;
 	}
 
-	public static void setOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
+	public static void removeOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
+		var onBackInvokedCallback = backPressedCallbacks.remove(callback);
+		if(onBackInvokedCallback == null) return;
+
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			activity.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(0, callback::run);
+			activity.getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(
+					(OnBackInvokedCallback) onBackInvokedCallback);
+		} else {
+			if(onBackInvokedCallback instanceof OnBackPressedCallback backPressedCallback) backPressedCallback.remove();
+			else throw new IllegalArgumentException("Callback must implement OnBackPressedCallback!");
+		}
+	}
+
+	public static void addOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			var onBackInvokedCallback = (OnBackInvokedCallback) callback::run;
+			backPressedCallbacks.put(callback, onBackInvokedCallback);
+
+			var dispatcher = activity.getOnBackInvokedDispatcher();
+			dispatcher.registerOnBackInvokedCallback(0, onBackInvokedCallback);
 		} else {
 			if(activity instanceof OnBackPressedDispatcherOwner owner) {
 				owner.getOnBackPressedDispatcher().addCallback(owner, new OnBackPressedCallback(true) {

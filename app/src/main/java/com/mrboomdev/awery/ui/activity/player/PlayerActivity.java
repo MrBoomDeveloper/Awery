@@ -489,7 +489,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.prepare();
 		player.play();
 
-		AweryApp.setOnBackPressedListener(this, this::finish);
+		AweryApp.addOnBackPressedListener(this, this::finish);
 	}
 
 	@Override

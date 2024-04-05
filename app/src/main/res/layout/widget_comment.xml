@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:background="@drawable/ripple_rect_you"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="16dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/iconWrapper"
@@ -93,7 +97,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="18dp"
         android:scaleType="fitCenter"
-        app:layout_goneMarginLeft="12dp"
+        app:layout_goneMarginLeft="15dp"
         android:src="@drawable/ic_dislike_outlined"
         app:layout_constraintTop_toBottomOf="@id/message"
         app:layout_constraintLeft_toRightOf="@id/likesCount"
@@ -144,7 +148,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="25dp"
         android:scaleType="fitCenter"
         android:scaleX=".9"
         android:scaleY=".9"

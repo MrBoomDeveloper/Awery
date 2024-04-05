@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		createView(item, viewPool, frame);
 		setContentView(frame);
 
-		AweryApp.setOnBackPressedListener(this, this::finish);
+		AweryApp.addOnBackPressedListener(this, this::finish);
 
 		activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 			for(var callback : callbacks) {

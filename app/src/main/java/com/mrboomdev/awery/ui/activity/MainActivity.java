@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 	private void registerBackListener() {
 		var doubleBackToExitPressedOnce = new AtomicBoolean(false);
 
-		AweryApp.setOnBackPressedListener(this, () -> {
+		AweryApp.addOnBackPressedListener(this, () -> {
 			if(doubleBackToExitPressedOnce.get()) {
 				finish();
 			}
