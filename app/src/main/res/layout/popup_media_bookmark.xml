@@ -21,7 +21,7 @@
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="Add to bookmarks" />
+            android:text="@string/add_to_bookmarks" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/create"

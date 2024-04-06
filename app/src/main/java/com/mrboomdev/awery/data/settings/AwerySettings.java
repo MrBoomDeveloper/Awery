@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.data.settings;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -280,7 +282,7 @@ public class AwerySettings {
 	 */
 	@NonNull
 	public static AwerySettings getInstance(String name) {
-		return getInstance(AweryApp.getAnyContext(), name);
+		return getInstance(getAnyContext(), name);
 	}
 
 	/**

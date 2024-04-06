@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -63,7 +65,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 		if(instance == null) return;
 
 		if(instance.isVisible()) {
-			AweryApp.runOnUiThread(() -> {
+			runOnUiThread(() -> {
 				if(instance == null) return;
 				instance.loadData();
 			});
@@ -110,7 +112,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 	private void loadCategories(List<MediaCategoriesAdapter.Category> categories, long loadId) {
 		if(loadId != this.loadId) return;
 
-		AweryApp.runOnUiThread(() -> {
+		runOnUiThread(() -> {
 			if(loadId != this.loadId) return;
 
 			if(categories.isEmpty()) {
@@ -126,7 +128,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 			categoriesAdapter.notifyDataSetChanged();
 
 			// We do this to prevent screen from being scrolling a little bit
-			AweryApp.runDelayed(() -> {
+			runDelayed(() -> {
 				if(loadId != this.loadId) return;
 				getBinding().catalogCategories.scrollToPosition(0);
 			}, 100);

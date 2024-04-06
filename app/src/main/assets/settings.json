@@ -8,7 +8,7 @@
 				{
 					"key": "use_material_you", "type": "boolean", "restart": true,
 					"title": "use_material_you", "icon": "ic_round_auto_awesome_24",
-					"description": "The app's colors will be generated based on your wallpaper",
+					"description": "material_you_description",
 					"show_if": "is_material_you_available"
 				}, {
 					"key": "dark_theme", "type": "boolean", "restart": true,
@@ -30,7 +30,7 @@
 			"items": [
 				{
 					"key": "default_tab", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
-					"description": "Will be opened when the app starts",
+					"description": "default_tab_description",
 					"title": "startUpTab", "icon": "ic_round_home_24",
 					"items": [
 						{ "key": "MAIN", "title": "Anime" },
@@ -49,7 +49,7 @@
 					"behaviour": "excluded_tags"
 				}, {
 					"key": "adult_content", "type": "boolean",
-					"title": "Show adult content", "icon": "ic_round_report",
+					"title": "adult_content_description", "icon": "ic_round_report",
 					"description": "Show adult content in the app"
 				}
 			]
@@ -143,7 +143,7 @@
 			]
 		}, {
 			"key": "advanced", "type": "screen",
-			"title": "Advanced", "icon": "ic_settings_outlined",
+			"title": "advanced", "icon": "ic_settings_outlined",
 			"items": [
 				{
 					"key": "log_network", "type": "boolean", "restart": true,

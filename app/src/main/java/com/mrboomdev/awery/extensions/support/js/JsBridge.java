@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import androidx.annotation.NonNull;
 
@@ -50,7 +50,6 @@ public class JsBridge {
 	}
 
 	public Object fetch(@NonNull ScriptableObject options) {
-		var context = getAnyContext();
 		var promise = new JsPromise(scriptScope);
 
 		Map<String, String> headers = null;
@@ -99,7 +98,7 @@ public class JsBridge {
 			} : null);
 		}
 
-		request.callAsync(context, new HttpClient.HttpCallback() {
+		request.callAsync(getAnyContext(), new HttpClient.HttpCallback() {
 			@Override
 			public void onResponse(HttpClient.HttpResponse response) {
 				manager.postRunnable(() -> promise.resolve(Context.javaToJS(response, scriptScope)));

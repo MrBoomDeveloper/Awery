@@ -1,9 +1,8 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.runDelayed;
-import static com.mrboomdev.awery.app.AweryApp.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -14,6 +13,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,15 +51,18 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MediaCommentsFragment extends Fragment {
+	private static final String TAG = "MediaCommentsFragment";
 	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
-	private final WeakHashMap<CatalogComment, Integer> scrollPositions = new WeakHashMap<>();
+	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
 	private final Runnable backPressCallback;
-	private LinearLayoutManager layoutManager;
+	private ExtensionProvider selectedProvider;
 	private RecyclerView recycler;
 	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
@@ -80,7 +83,7 @@ public class MediaCommentsFragment extends Fragment {
 		});
 
 		backPressCallback = () -> {
-			if(!currentCommentsPath.isEmpty()) {
+			if(!currentCommentsPath.isEmpty() && !loadingAdapter.isEnabled()) {
 				currentCommentsPath.remove(currentCommentsPath.size() - 1);
 			}
 
@@ -127,8 +130,13 @@ public class MediaCommentsFragment extends Fragment {
 	private void setComment(@Nullable CatalogComment comment) {
 		this.comment = comment;
 
-		if(comment != null && !currentCommentsPath.contains(comment)) {
-			currentCommentsPath.add(comment);
+		if(comment != null) {
+			swipeRefresher.setRefreshing(false);
+			loadingAdapter.setEnabled(false);
+
+			if(!currentCommentsPath.contains(comment)) {
+				currentCommentsPath.add(comment);
+			}
 		}
 
 		commentsAdapter.setData(comment);
@@ -143,20 +151,21 @@ public class MediaCommentsFragment extends Fragment {
 		var scrollPosition = scrollPositions.get(comment);
 
 		if(scrollPosition != null) {
-			//runDelayed(() -> layoutManager.scrollVerticallyBy(scrollPosition, recycler, State), 1);
+			var layoutManager = Objects.requireNonNull(recycler.getLayoutManager());
+			layoutManager.onRestoreInstanceState(scrollPosition);
 		}
 	}
 
 	private void loadData(CatalogComment parent, boolean isReload) {
 		if(this.comment != null) {
-			scrollPositions.put(this.comment, recycler.computeVerticalScrollOffset());
+			scrollPositions.put(this.comment, Objects.requireNonNull(recycler.getLayoutManager()).onSaveInstanceState());
 		}
 
 		if(providers != null) {
 			if(providers.isEmpty()) {
 				loadingAdapter.getBinding(binding -> {
 					binding.title.setText(R.string.nothing_found);
-					binding.message.setText(R.string.no_comment_extensions_message);
+					binding.message.setText(R.string.no_comment_extensions);
 
 					binding.info.setVisibility(View.VISIBLE);
 					binding.progressBar.setVisibility(View.GONE);
@@ -176,24 +185,16 @@ public class MediaCommentsFragment extends Fragment {
 				setComment(null);
 			}
 
-			if(providers.size() > 1) {
-				toast("Sorry, but you cannot currently use more than 1 comment extension :(");
-			}
-
 			var request = new ReadMediaCommentsRequest()
 					.setPage(0)
 					.setParentComment(parent)
 					.setMedia(media);
 
-			providers.get(0).readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
+			selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
 				@Override
 				public void onSuccess(CatalogComment parent) {
 					runOnUiThread(() -> {
 						if(getContext() == null) return;
-
-						swipeRefresher.setRefreshing(false);
-						loadingAdapter.setEnabled(false);
-
 						setComment(parent);
 					});
 				}
@@ -228,14 +229,20 @@ public class MediaCommentsFragment extends Fragment {
 				.flatMap(AweryApp::stream)
 				.sorted().toList();
 
+		if(providers.size() > 1) {
+			toast("Sorry, but you cannot currently use more than 1 comment extension :(");
+		}
+
+		if(!providers.isEmpty()) {
+			selectedProvider = providers.get(0);
+		}
+
 		setMedia(media);
 	}
 
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		layoutManager = new LinearLayoutManager(inflater.getContext());
-
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
 		swipeRefresher.setOnRefreshListener(() -> loadData(null, true));
 
@@ -244,7 +251,7 @@ public class MediaCommentsFragment extends Fragment {
 		swipeRefresher.addView(parentLayout);
 
 		recycler = new RecyclerView(inflater.getContext());
-		recycler.setLayoutManager(layoutManager);
+		recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
 		recycler.setClipToPadding(false);
 
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
@@ -262,8 +269,55 @@ public class MediaCommentsFragment extends Fragment {
 		recycler.setAdapter(adapter);
 		parentLayout.addView(recycler, createLinearParams(MATCH_PARENT, 0, 1));
 
+		var isSending = new AtomicBoolean();
 		sendBinding = WidgetCommentSendBinding.inflate(inflater, parentLayout, true);
 		sendBinding.getRoot().setVisibility(View.GONE);
+
+		sendBinding.sendButton.setOnClickListener(v -> {
+			if(isSending.getAndSet(true)) return;
+
+			var text = sendBinding.input.getText().toString();
+
+			if(text.isBlank()) {
+				isSending.set(false);
+				return;
+			}
+
+			var newComment = new CatalogComment();
+			newComment.text = text;
+
+			sendBinding.loadingIndicator.setVisibility(View.VISIBLE);
+			sendBinding.sendButton.setVisibility(View.INVISIBLE);
+
+			selectedProvider.postMediaComment(comment, newComment, new ExtensionProvider.ResponseCallback<>() {
+				@Override
+				public void onSuccess(CatalogComment comment) {
+					if(getContext() == null) return;
+
+					runOnUiThread(() -> {
+						setComment(comment);
+						sendBinding.loadingIndicator.setVisibility(View.GONE);
+						sendBinding.sendButton.setVisibility(View.VISIBLE);
+						sendBinding.input.setText(null);
+						isSending.set(false);
+					});
+				}
+
+				@Override
+				public void onFailure(Throwable e) {
+					if(getContext() == null) return;
+
+					toast("Failed to post a comment! :(");
+					Log.e(TAG, "Failed to post a comment", e);
+
+					runOnUiThread(() -> {
+						sendBinding.loadingIndicator.setVisibility(View.GONE);
+						sendBinding.sendButton.setVisibility(View.VISIBLE);
+						isSending.set(false);
+					});
+				}
+			});
+		});
 
 		ViewUtil.setOnApplyUiInsetsListener(sendBinding.getRoot(), insets ->
 				setRightMargin(sendBinding.getRoot(), insets.right), parentLayout);

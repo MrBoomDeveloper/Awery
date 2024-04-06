@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
@@ -183,7 +184,7 @@ public class SearchActivity extends AppCompatActivity {
 					if(wasSearchId != searchId) return;
 
 					final var filteredItems = MediaUtils.filterMedia(items);
-					if(filteredItems.isEmpty()) throw new ZeroResultsException();
+					if(filteredItems.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
 					for(var item : filteredItems) {
 						item.visualId = idGenerator.getLong();

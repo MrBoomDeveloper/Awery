@@ -65,8 +65,8 @@ public class ExceptionDescriptor {
 	}
 
 	public String getTitle(Context context) {
-		if(throwable instanceof ZeroResultsException) {
-			return context.getString(R.string.nothing_found);
+		if(throwable instanceof LocalizedException e) {
+			return e.getTitle(context);
 		} else if(throwable instanceof UnimplementedException
 				|| throwable instanceof UnsupportedOperationException) {
 			return context.getString(R.string.not_implemeted);
@@ -156,8 +156,8 @@ public class ExceptionDescriptor {
 	}
 
 	private static String getMessage(@NonNull Throwable throwable, Context context) {
-		if(throwable instanceof ZeroResultsException) {
-			return throwable.getMessage();
+		if(throwable instanceof LocalizedException e) {
+			return e.getDescription(context);
 		} else if(throwable instanceof UnimplementedException) {
 			return throwable.getMessage();
 		} else if(throwable instanceof SocketTimeoutException) {

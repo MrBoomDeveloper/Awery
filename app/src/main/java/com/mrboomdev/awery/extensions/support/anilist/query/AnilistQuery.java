@@ -1,9 +1,10 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+
 import android.content.Context;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -66,8 +67,7 @@ public abstract class AnilistQuery<T> {
 					@Override
 					public void onResponse(HttpClient.HttpResponse response) {
 						if(!response.getText().startsWith("{")) {
-							var context = AweryApp.getAnyContext();
-							throw new InvalidSyntaxException(context.getString(R.string.server_down));
+							throw new InvalidSyntaxException(getAnyContext().getString(R.string.server_down));
 						}
 
 						callback.onResponse(response.getText());
@@ -93,7 +93,7 @@ public abstract class AnilistQuery<T> {
 
 			if(processed instanceof Collection<?> collection) {
 				if(collection.isEmpty()) {
-					resolveException(new ZeroResultsException("Zero results were found!"));
+					resolveException(new ZeroResultsException("No media was found", R.string.no_media_found));
 					return;
 				}
 			}

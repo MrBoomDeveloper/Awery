@@ -101,32 +101,39 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:screenOrientation="userLandscape"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true"
             tools:ignore="DiscouragedApi" />
 
         <activity
             android:name=".ui.activity.MainActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
             android:name=".ui.activity.SearchActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
             android:name=".ui.activity.LoginActivity"
+            android:windowSoftInputMode="adjustPan"
             android:launchMode="singleInstance"
             android:exported="false" />
 
         <activity
             android:name=".ui.activity.MediaActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
             android:name=".ui.activity.ReaderActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
             android:name=".ui.activity.settings.SettingsActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <meta-data

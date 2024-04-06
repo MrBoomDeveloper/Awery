@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -94,7 +95,7 @@ public class MediaUtils {
 				var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
 				dao.insert(dbMedia);
 
-				AweryApp.runOnUiThread(updateCallback);
+				runOnUiThread(updateCallback);
 			}).start();
 
 			dialog.get().dismiss();
@@ -226,7 +227,7 @@ public class MediaUtils {
 			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
 			var mediaDao = AweryApp.getDatabase().getMediaDao();
 
-			AweryApp.runOnUiThread(() -> {
+			runOnUiThread(() -> {
 				final var dialog = new AtomicReference<Dialog>();
 				var binding = PopupMediaBookmarkBinding.inflate(LayoutInflater.from(context));
 				var checked = new HashMap<String, Boolean>();

@@ -1,8 +1,9 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.getContext;
-import static com.mrboomdev.awery.app.AweryApp.restartApp;
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
@@ -231,7 +232,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									.sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
 									.toList();
 
-							AweryApp.runOnUiThread(() -> {
+							runOnUiThread(() -> {
 								createRadioButtons(radioGroup, sorted, selectedItem);
 								contentView.addView(radioGroup);
 							});
@@ -309,7 +310,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 											a.getTitle().compareToIgnoreCase(b.getTitle()))
 									.toList();
 
-							AweryApp.runOnUiThread(() -> {
+							runOnUiThread(() -> {
 								for(var item : sorted) {
 									var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
 									var context = new ContextThemeWrapper(parent.getContext(), style);
@@ -347,7 +348,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 										a.getTitle().compareToIgnoreCase(b.getTitle()))
 								.toList();
 
-						AweryApp.runOnUiThread(() -> {
+						runOnUiThread(() -> {
 							for(var item : sorted) {
 								var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
 								var context = new ContextThemeWrapper(parent.getContext(), style);

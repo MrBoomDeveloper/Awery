@@ -4,13 +4,15 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.annotations.JSGetter;
 
 public class JsComment extends CatalogComment {
-	private final ScriptableObject originalData;
+	private final ScriptableObject customData;
 
 	protected JsComment(@NonNull ScriptableObject o) {
 		if(o.has("items", o)) {
@@ -33,11 +35,35 @@ public class JsComment extends CatalogComment {
 		canComment = o.has("canComment", o) && (Boolean) o.get("canComment", o);
 		hasNextPage = o.has("hasNextPage", o) && (Boolean) o.get("hasNextPage", o);
 
-		this.originalData = o;
+		this.customData = o;
+	}
+
+	public static Scriptable createJsComment(Context context, Scriptable scope, CatalogComment comment) {
+		if(comment == null) return null;
+
+		if(comment instanceof JsComment jsComment) {
+			return jsComment.customData;
+		}
+
+		var o = context.newObject(scope);
+
+		o.put("authorName", o, comment.authorName);
+		o.put("authorAvatar", o, comment.authorAvatar);
+		o.put("text", o, comment.text);
+		o.put("date", o, comment.date);
+
+		o.put("likes", o, comment.likes);
+		o.put("dislikes", o, comment.dislikes);
+		o.put("votes", o, comment.votes);
+
+		o.put("canComment", o, comment.canComment);
+		o.put("hasNextPage", o, comment.hasNextPage);
+
+		return o;
 	}
 
 	@JSGetter("customData")
-	protected ScriptableObject getCustomData() {
-		return originalData;
+	public ScriptableObject getCustomData() {
+		return customData;
 	}
 }

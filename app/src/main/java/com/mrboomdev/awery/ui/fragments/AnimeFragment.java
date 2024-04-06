@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
@@ -75,7 +78,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 					if(currentLoadId != loadId) return;
 
 					var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
-					if(filtered.isEmpty()) throw new ZeroResultsException();
+					if(filtered.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
 					requireActivity().runOnUiThread(() -> {
 						if(currentLoadId != loadId) return;
@@ -147,7 +150,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		} else {
 			if(doneSuccessfully++ == 0) {
 				// We do this to prevent screen from being scrolling a little bit
-				AweryApp.runDelayed(() -> {
+				runDelayed(() -> {
 					if(loadId != this.loadId) return;
 					getBinding().catalogCategories.scrollToPosition(0);
 				}, 100);
@@ -191,7 +194,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 			if(loadId != this.loadId) return;
 
 			var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
-			if(filtered.isEmpty()) throw new ZeroResultsException();
+			if(filtered.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
 			requireActivity().runOnUiThread(() -> {
 				if(loadId != this.loadId) return;

@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.getActivity;
-import static com.mrboomdev.awery.app.AweryApp.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -364,11 +364,49 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
+	public void postMediaComment(
+			CatalogComment parent,
+			CatalogComment comment,
+			@NonNull ResponseCallback<CatalogComment> callback
+	) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryPostMediaComment") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[] {
+							JsComment.createJsComment(context, scope, parent),
+							JsComment.createJsComment(context, scope, comment),
+							(Callback<NativeObject>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
+
+								callback.onSuccess(new JsComment(o));
+							}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new NullPointerException("aweryPostMediaComment is not a function or isn't defined!"));
+			}
+		});
+	}
+
+	@Override
 	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryReadMediaComments") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { request, (Callback<NativeObject>) (o, e) -> {
+					var jsRequest = context.newObject(scope);
+					jsRequest.put("page", jsRequest, request.getPage());
+					jsRequest.put("sortMode", jsRequest, request.getSortMode());
+					jsRequest.put("episode", jsRequest, request.getEpisode());
+					jsRequest.put("media", jsRequest, request.getMedia());
+
+					jsRequest.put("parentComment", jsRequest, JsComment.createJsComment(
+							context, scope, request.getParentComment()));
+
+					fun.call(context, scope, null, new Object[] { jsRequest, (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;

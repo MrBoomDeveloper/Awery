@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.app.Activity;
 import android.content.Context;
@@ -143,7 +144,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		if(providers.isEmpty()) {
-			handleExceptionUi(null, new ZeroResultsException());
+			handleExceptionUi(null, new ZeroResultsException("No extensions was found", R.string.no_episodes_found));
 			variantsAdapter.setEnabled(false);
 			return;
 		}
@@ -277,7 +278,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			binding.progressBar.setVisibility(View.VISIBLE);
 		});
 
-		AweryApp.runOnUiThread(() -> {
+		runOnUiThread(() -> {
 			try {
 				episodesAdapter.setItems(media, Collections.emptyList());
 			} catch(IllegalStateException e) {
@@ -335,7 +336,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				var callback = foundMediaCallback.get();
 				if(callback == null) return;
 
-				AweryApp.runOnUiThread(() -> {
+				runOnUiThread(() -> {
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						searchParams.setQuery(media.titles.get(newIndex));
@@ -444,7 +445,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			return;
 		}
 
-		placeholderAdapter.getBinding((binding) -> AweryApp.runOnUiThread(() -> {
+		placeholderAdapter.getBinding((binding) -> runOnUiThread(() -> {
 			binding.title.setText(error.getTitle(context));
 			binding.message.setText(error.getMessage(context));
 

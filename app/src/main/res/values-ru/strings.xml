@@ -3,7 +3,7 @@
     <string name="empty_library_title">Библиотека пуста</string>
     <string name="empty_library_message">Начните поиск и новые вещи появятся здесь!</string>
 
-    <string name="no_comment_extensions_message">Вы еще не скачали ни одного расширения для комментариев. Установите их чтобы увидеть здесь что-нибудь новое!</string>
+    <string name="no_comment_extensions">Вы еще не скачали ни одного расширения для комментариев. Установите их чтобы увидеть здесь что-нибудь новое!</string>
 
     <string name="login">Войти</string>
     <string name="back">Назад</string>
@@ -51,7 +51,15 @@
     <string name="get_recommendations">Начните смотреть что-либо, чтобы получить рекосендации</string>
     <string name="action_settings">Настройки</string>
     <string name="add">Добавить в Список</string>
+    <string name="no_media_found">Ни одного медиа не было найдено. Попробуйте изменить запрос или фильтр.</string>
+    <string name="no_episodes_found">Ни одного эпизода не было найдено. Попробуйте изменить запрос или фильтр.</string>
+    <string name="no_extensions_found">Ни одного расширения не было найдено. Попробуйте изменить запрос или фильтр.</string>
     <string name="list_editor">Редактор Списка</string>
+    <string name="add_to_bookmarks">Добавить в закладки</string>
+    <string name="advanced">Дополнительно</string>
+    <string name="material_you_description">Цвета приложения будут сгенерированы на основе вашего обоев</string>
+    <string name="default_tab_description">Будет открыта при входе в приложение</string>
+    <string name="adult_content_description">Не безопасно для детей.</string>
     <string name="add_fav">Добавить в Избранное</string>
     <string name="notifications">Уведомления</string>
     <string name="progress">Прогресс</string>

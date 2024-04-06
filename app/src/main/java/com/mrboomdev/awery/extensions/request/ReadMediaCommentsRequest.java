@@ -4,8 +4,6 @@ import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 
-import org.mozilla.javascript.annotations.JSGetter;
-
 public class ReadMediaCommentsRequest {
 	private CatalogMedia media;
 	private CatalogEpisode episode;
@@ -38,27 +36,22 @@ public class ReadMediaCommentsRequest {
 		return this;
 	}
 
-	@JSGetter("media")
 	public CatalogMedia getMedia() {
 		return media;
 	}
 
-	@JSGetter("episode")
 	public CatalogEpisode getEpisode() {
 		return episode;
 	}
 
-	@JSGetter("parentComment")
 	public CatalogComment getParentComment() {
 		return parentComment;
 	}
 
-	@JSGetter("sortMode")
 	public String getSortMode() {
 		return sortMode;
 	}
 
-	@JSGetter("page")
 	public int getPage() {
 		return page;
 	}

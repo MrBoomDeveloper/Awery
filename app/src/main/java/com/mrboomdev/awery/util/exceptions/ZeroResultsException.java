@@ -1,23 +1,31 @@
 package com.mrboomdev.awery.util.exceptions;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
+import com.mrboomdev.awery.R;
+
 /**
- * Throw it if after some fetch the result is empty
+ * Being thrown if no results was found.
+ * @author MrBoomDev
  */
-public class ZeroResultsException extends RuntimeException {
+public class ZeroResultsException extends RuntimeException implements LocalizedException {
+	private final int description;
 
-	public ZeroResultsException() {
-		super("Zero results were found!");
-	}
-
-	public ZeroResultsException(String message) {
+	public ZeroResultsException(String message, @StringRes int localizedDescription) {
 		super(message);
+		this.description = localizedDescription;
 	}
 
-	public ZeroResultsException(String message, Throwable cause) {
-		super(message, cause);
+	@Override
+	public String getDescription(@NonNull Context context) {
+		return context.getString(description);
 	}
 
-	public ZeroResultsException(Throwable cause) {
-		super(cause);
+	@Override
+	public String getTitle(@NonNull Context context) {
+		return context.getString(R.string.nothing_found);
 	}
 }

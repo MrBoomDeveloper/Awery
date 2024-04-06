@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
@@ -125,7 +128,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 			if(backwardFastClicks >= 2) {
 				if(showUiRunnableFromLeft != null) {
-					AweryApp.cancelDelayed(showUiRunnableFromLeft);
+					cancelDelayed(showUiRunnableFromLeft);
 					showUiRunnableFromLeft = null;
 				}
 
@@ -135,10 +138,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				controller.updateTimers();
 			} else {
 				showUiRunnableFromLeft = controller::toggleUiVisibility;
-				AweryApp.runDelayed(showUiRunnableFromLeft, SHOW_UI_AFTER_MILLIS);
+				runDelayed(showUiRunnableFromLeft, SHOW_UI_AFTER_MILLIS);
 			}
 
-			AweryApp.runDelayed(() -> {
+			runDelayed(() -> {
 				backwardFastClicks--;
 
 				if(backwardFastClicks == 0) {
@@ -157,7 +160,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 			if(forwardFastClicks >= 2) {
 				if(showUiRunnableFromRight != null) {
-					AweryApp.cancelDelayed(showUiRunnableFromRight);
+					cancelDelayed(showUiRunnableFromRight);
 					showUiRunnableFromRight = null;
 				}
 
@@ -166,10 +169,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				controller.updateTimers();
 			} else {
 				showUiRunnableFromRight = controller::toggleUiVisibility;
-				AweryApp.runDelayed(showUiRunnableFromRight, SHOW_UI_AFTER_MILLIS);
+				runDelayed(showUiRunnableFromRight, SHOW_UI_AFTER_MILLIS);
 			}
 
-			AweryApp.runDelayed(() -> {
+			runDelayed(() -> {
 				forwardFastClicks--;
 
 				if(forwardFastClicks == 0) {
@@ -221,11 +224,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			public void run() {
 				if(isDestroyed()) return;
 				controller.updateTimers();
-				AweryApp.runDelayed(this, 1_000);
+				runDelayed(this, 1_000);
 			}
 		};
 
-		AweryApp.runDelayed(updateProgress, 1_000);
+		runDelayed(updateProgress, 1_000);
 		binding.getRoot().performClick();
 
 		setupButton(binding.exit, this::finish);
@@ -358,7 +361,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				public void onSuccess(List<CatalogVideo> catalogVideos) {
 					if(isDestroyed()) return;
 
-					AweryApp.runOnUiThread(() -> {
+					runOnUiThread(() -> {
 						episode.setVideos(catalogVideos);
 						controller.openQualityDialog(true);
 					});

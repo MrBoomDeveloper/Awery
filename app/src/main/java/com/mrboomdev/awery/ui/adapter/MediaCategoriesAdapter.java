@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.registerDisposable;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -23,7 +25,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 	@SuppressLint("NotifyDataSetChanged")
 	public MediaCategoriesAdapter() {
-		AweryApp.registerDisposable(() -> itemsPool = null);
+		registerDisposable(() -> itemsPool = null);
 		setHasStableIds(true);
 	}
 

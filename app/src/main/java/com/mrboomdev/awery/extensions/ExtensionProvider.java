@@ -62,7 +62,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments aren't implemented!"));
+		callback.onFailure(new UnimplementedException("Comments reading aren't implemented!"));
+	}
+
+	public void postMediaComment(CatalogComment parent, CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+		callback.onFailure(new UnimplementedException("Comments posting aren't implemented!"));
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {

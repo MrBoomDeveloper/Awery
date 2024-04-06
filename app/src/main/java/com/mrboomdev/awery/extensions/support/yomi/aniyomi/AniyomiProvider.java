@@ -14,6 +14,7 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -59,7 +60,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(episodes == null || episodes.isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Aniyomi: No episodes found"));
+				callback.onFailure(new ZeroResultsException("Aniyomi: No episodes found", R.string.no_episodes_found));
 				return;
 			}
 
@@ -77,7 +78,7 @@ public class AniyomiProvider extends ExtensionProvider {
 			}
 
 			if(videos == null || videos.isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Aniyomi: No videos found"));
+				callback.onFailure(new ZeroResultsException("Aniyomi: No videos found", R.string.nothing_found));
 				return;
 			}
 
@@ -126,7 +127,7 @@ public class AniyomiProvider extends ExtensionProvider {
 		}
 
 		if(page.getAnimes().isEmpty()) {
-			callback.onFailure(new ZeroResultsException("Found nothing in the catalog. Try changing your query."));
+			callback.onFailure(new ZeroResultsException("No media was found", R.string.no_media_found));
 			return false;
 		}
 

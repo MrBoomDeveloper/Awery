@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.runDelayed;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfExistsCrash;
 
 import android.os.Bundle;

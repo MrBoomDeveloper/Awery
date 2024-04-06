@@ -7,8 +7,6 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
 
-    <string name="no_comment_extensions_message">You have no installed comment extensions. Download them to see something new here!</string>
-
     <string name="english">English</string>
     <string name="russian">Russian</string>
     <string name="japanese">Japanese</string>
@@ -33,6 +31,18 @@
     <string name="watch_now">Watch Now</string>
     <string name="read">Read</string>
     <string name="library">Library</string>
+    <string name="advanced">Advanced</string>
+
+    <string name="add_to_bookmarks">Add to bookmarks</string>
+
+    <string name="no_media_found">No media was found. Try changing your query and filters.</string>
+    <string name="no_episodes_found">No episodes were found. Try changing your query and filters.</string>
+    <string name="no_extensions_found">No extensions were found. Try changing your query and filters.</string>
+    <string name="no_comment_extensions">You have no installed comment extensions. Download them to see something new here!</string>
+
+    <string name="material_you_description">The app\'s colors will be generated based on your wallpaper</string>
+    <string name="default_tab_description">Will be opened when the app starts</string>
+    <string name="adult_content_description">Not safe for kids.</string>
 
     <string name="anime_list">Anime List</string>
     <string name="manga_list">Manga List</string>

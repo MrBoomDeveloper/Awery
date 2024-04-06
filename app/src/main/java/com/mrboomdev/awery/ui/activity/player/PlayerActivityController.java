@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -87,7 +90,7 @@ public class PlayerActivityController {
 		this.isUiFadeLocked = isLocked;
 
 		if(!isLocked) showUiTemporarily();
-		else AweryApp.cancelDelayed(hideUiRunnable);
+		else cancelDelayed(hideUiRunnable);
 	}
 
 	public void toggleUiVisibility() {
@@ -121,8 +124,8 @@ public class PlayerActivityController {
 			showUi();
 		}
 
-		AweryApp.cancelDelayed(hideUiRunnable);
-		AweryApp.runDelayed(hideUiRunnable, SHOW_UI_FOR_MILLIS);
+		cancelDelayed(hideUiRunnable);
+		runDelayed(hideUiRunnable, SHOW_UI_FOR_MILLIS);
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
