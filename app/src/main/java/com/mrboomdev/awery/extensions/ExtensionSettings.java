@@ -61,10 +61,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		this.pickLauncher = activity.registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
 			if(uri == null) return;
 
-			if(!MimeTypes.test(uri.getPath(), manager.getExtensionMimeTypes())) {
+			/*if(!MimeTypes.test(uri.getPath(), manager.getExtensionMimeTypes())) {
 				toast("Picked unsupported file type");
 				return;
-			}
+			}*/
 
 			try(var stream = activity.getContentResolver().openInputStream(uri)) {
 				var extension = manager.installExtension(activity, stream);
