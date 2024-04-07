@@ -44,6 +44,7 @@ public class JsManager extends ExtensionsManager {
 	public JsManager() {
 		Thread jsThread = new Thread(() -> {
 			this.context = org.mozilla.javascript.Context.enter();
+			this.context.setLanguageVersion(org.mozilla.javascript.Context.VERSION_ES6);
 
 			context.setErrorReporter(new ErrorReporter() {
 				@Override

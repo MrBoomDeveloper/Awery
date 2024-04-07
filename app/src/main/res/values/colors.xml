@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="main_element_background">#22111111</color>
+
     <color name="bg_black">#000000</color>
     <color name="bg_white">#EEEEEE</color>
     <color name="bg">@color/bg_white</color>

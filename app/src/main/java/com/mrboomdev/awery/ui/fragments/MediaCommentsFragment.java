@@ -46,14 +46,16 @@ import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import java9.util.Objects;
 
 public class MediaCommentsFragment extends Fragment {
 	private static final String TAG = "MediaCommentsFragment";
@@ -128,13 +130,17 @@ public class MediaCommentsFragment extends Fragment {
 	}
 
 	private void setComment(@Nullable CatalogComment comment) {
+		setComment(comment, false);
+	}
+
+	private void setComment(@Nullable CatalogComment comment, boolean afterReload) {
 		this.comment = comment;
 
 		if(comment != null) {
 			swipeRefresher.setRefreshing(false);
 			loadingAdapter.setEnabled(false);
 
-			if(!currentCommentsPath.contains(comment)) {
+			if(!afterReload && !currentCommentsPath.contains(comment)) {
 				currentCommentsPath.add(comment);
 			}
 		}
@@ -158,68 +164,75 @@ public class MediaCommentsFragment extends Fragment {
 
 	private void loadData(CatalogComment parent, boolean isReload) {
 		if(this.comment != null) {
-			scrollPositions.put(this.comment, Objects.requireNonNull(recycler.getLayoutManager()).onSaveInstanceState());
+			var layoutManager = Objects.requireNonNull(recycler.getLayoutManager());
+			scrollPositions.put(this.comment, layoutManager.onSaveInstanceState());
 		}
 
-		if(providers != null) {
-			if(providers.isEmpty()) {
-				loadingAdapter.getBinding(binding -> {
-					binding.title.setText(R.string.nothing_found);
-					binding.message.setText(R.string.no_comment_extensions);
+		if(providers == null || providers.isEmpty()) {
+			loadingAdapter.getBinding(binding -> {
+				binding.title.setText(R.string.nothing_found);
+				binding.message.setText(R.string.no_comment_extensions);
+
+				binding.info.setVisibility(View.VISIBLE);
+				binding.progressBar.setVisibility(View.GONE);
+			});
+
+			swipeRefresher.setRefreshing(false);
+			return;
+		}
+
+		if(!isReload) {
+			loadingAdapter.getBinding(binding -> {
+				binding.info.setVisibility(View.GONE);
+				binding.progressBar.setVisibility(View.VISIBLE);
+			});
+
+			loadingAdapter.setEnabled(true);
+			setComment(null);
+		}
+
+		var request = new ReadMediaCommentsRequest()
+				.setPage(0)
+				.setParentComment(parent)
+				.setMedia(media);
+
+		selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
+			@Override
+			public void onSuccess(CatalogComment parent) {
+				runOnUiThread(() -> {
+					if(getContext() == null) return;
+					setComment(parent, isReload);
+				});
+			}
+
+			@Override
+			public void onFailure(Throwable e) {
+				loadingAdapter.getBinding(binding -> runOnUiThread(() -> {
+					if(getContext() == null) return;
+					swipeRefresher.setRefreshing(false);
+
+					if(parent != null && (!isReload ||
+							(e instanceof JsException jsE && Objects.equals(jsE.getErrorId(), JsException.ERROR_NOTHING_FOUND)))) {
+						setComment(parent, isReload);
+						loadingAdapter.setEnabled(false);
+						return;
+					}
+
+					var descriptor = new ExceptionDescriptor(e);
+					binding.title.setText(descriptor.getTitle(getContext()));
+					binding.message.setText(descriptor.getMessage(getContext()));
 
 					binding.info.setVisibility(View.VISIBLE);
 					binding.progressBar.setVisibility(View.GONE);
-				});
 
-				swipeRefresher.setRefreshing(false);
-				return;
+					commentsAdapter.setData(null);
+					loadingAdapter.setEnabled(true);
+					sendBinding.getRoot().setVisibility(View.GONE);
+				}));
+
+				Log.e("MediaCommentsFragment", "Failed to load comments!", e);
 			}
-
-			if(!isReload) {
-				loadingAdapter.getBinding(binding -> {
-					binding.info.setVisibility(View.GONE);
-					binding.progressBar.setVisibility(View.VISIBLE);
-				});
-
-				loadingAdapter.setEnabled(true);
-				setComment(null);
-			}
-
-			var request = new ReadMediaCommentsRequest()
-					.setPage(0)
-					.setParentComment(parent)
-					.setMedia(media);
-
-			selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
-				@Override
-				public void onSuccess(CatalogComment parent) {
-					runOnUiThread(() -> {
-						if(getContext() == null) return;
-						setComment(parent);
-					});
-				}
-
-				@Override
-				public void onFailure(Throwable e) {
-					loadingAdapter.getBinding(binding -> runOnUiThread(() -> {
-						if(getContext() == null) return;
-						swipeRefresher.setRefreshing(false);
-
-						var descriptor = new ExceptionDescriptor(e);
-						binding.title.setText(descriptor.getTitle(getContext()));
-						binding.message.setText(descriptor.getMessage(getContext()));
-
-						binding.info.setVisibility(View.VISIBLE);
-						binding.progressBar.setVisibility(View.GONE);
-
-						loadingAdapter.setEnabled(true);
-						sendBinding.getRoot().setVisibility(View.GONE);
-					}));
-
-					Log.e("MediaCommentsFragment", "Failed to load comments!", e);
-				}
-			});
-		}
+		});
 	}
 
 	@Override
@@ -244,7 +257,7 @@ public class MediaCommentsFragment extends Fragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
-		swipeRefresher.setOnRefreshListener(() -> loadData(null, true));
+		swipeRefresher.setOnRefreshListener(() -> loadData(comment, true));
 
 		var parentLayout = new LinearLayoutCompat(inflater.getContext());
 		parentLayout.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -339,6 +352,8 @@ public class MediaCommentsFragment extends Fragment {
 			idGenerator.clear();
 
 			if(root != null) {
+				root.visualId = idGenerator.getLong();
+
 				for(var item : root.items) {
 					item.visualId = idGenerator.getLong();
 				}
@@ -356,6 +371,8 @@ public class MediaCommentsFragment extends Fragment {
 
 			binding.getRoot().setOnClickListener(v -> {
 				var comment = holder.getComment();
+				if(comment == MediaCommentsFragment.this.comment) return;
+
 				loadData(comment, false);
 			});
 
@@ -364,24 +381,45 @@ public class MediaCommentsFragment extends Fragment {
 
 		@Override
 		public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
-			var item = root.items.get(position);
+			CatalogComment item;
+
+			if(root.text != null) {
+				item = position == 0 ? root :
+						root.items.get(position - 1);
+			} else {
+				item = root.items.get(position);
+			}
+
 			holder.bind(item);
 		}
 
 		@Override
 		public long getItemId(int position) {
-			var item = root.items.get(position);
+			CatalogComment item;
+
+			if(root.text != null) {
+				item = position == 0 ? root :
+					root.items.get(position - 1);
+			} else {
+				item = root.items.get(position);
+			}
+
 			return item.visualId;
 		}
 
 		@Override
 		public int getItemCount() {
 			if(root == null) return 0;
+
+			if(root.text != null) {
+				return root.items.size() + 1;
+			}
+
 			return root.items.size();
 		}
 	}
 
-	private static class CommentViewHolder extends RecyclerView.ViewHolder {
+	private class CommentViewHolder extends RecyclerView.ViewHolder {
 		private final WidgetCommentBinding binding;
 		private CatalogComment comment;
 
@@ -398,6 +436,9 @@ public class MediaCommentsFragment extends Fragment {
 		public void bind(@NonNull CatalogComment comment) {
 			this.comment = comment;
 			String date = null;
+
+			var isRoot = comment == MediaCommentsFragment.this.comment;
+			binding.getRoot().setBackgroundResource(isRoot ? R.color.main_element_background : 0);
 
 			if(comment.date != null) {
 				try {

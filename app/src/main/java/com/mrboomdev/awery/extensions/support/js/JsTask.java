@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
+
 import android.util.Log;
 
 import com.mrboomdev.awery.util.Callbacks;
@@ -25,6 +27,7 @@ public class JsTask {
 
 		this.callback = o -> {
 			if(o instanceof Throwable t) {
+				toast("Something REALLY BAD has happened");
 				Log.e(TAG, "Returned exception, ignoring the response.", t);
 				return;
 			}

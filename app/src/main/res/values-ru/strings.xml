@@ -57,7 +57,7 @@
     <string name="list_editor">Редактор Списка</string>
     <string name="add_to_bookmarks">Добавить в закладки</string>
     <string name="advanced">Дополнительно</string>
-    <string name="material_you_description">Цвета приложения будут сгенерированы на основе вашего обоев</string>
+    <string name="material_you_description">Цвета приложения будут сгенерированы на основе ваших обоев</string>
     <string name="default_tab_description">Будет открыта при входе в приложение</string>
     <string name="adult_content_description">Не безопасно для детей.</string>
     <string name="add_fav">Добавить в Избранное</string>

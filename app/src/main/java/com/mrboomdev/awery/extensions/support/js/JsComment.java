@@ -22,18 +22,18 @@ public class JsComment extends CatalogComment {
 			}
 		}
 
-		authorName = o.has("authorName", o) ? o.get("authorName").toString() : null;
-		authorAvatar = o.has("authorAvatar", o) ? o.get("authorAvatar").toString() : null;
-		text = o.has("text", o) ? o.get("text").toString() : null;
-		date = o.has("date", o) ? o.get("date").toString() : null;
+		authorName = o.has("authorName", o) ? JsBridge.fromJs(o.get("authorName", o), String.class) : null;
+		authorAvatar = o.has("authorAvatar", o) ? JsBridge.fromJs(o.get("authorAvatar", o), String.class) : null;
+		text = o.has("text", o) ? JsBridge.fromJs(o.get("text", o), String.class) : null;
+		date = o.has("date", o) ? JsBridge.fromJs(o.get("date", o), String.class) : null;
 
-		likes = o.has("likes", o) ? ((Number) o.get("likes")).intValue() : CatalogComment.DISABLED;
-		dislikes = o.has("dislikes", o) ? ((Number) o.get("dislikes")).intValue() : CatalogComment.DISABLED;
-		comments = o.has("comments", o) ? ((Number) o.get("comments")).intValue() : CatalogComment.DISABLED;
-		votes = o.has("votes", o) ? ((Number) o.get("votes")).intValue() : null;
+		likes = o.has("likes", o) ? JsBridge.intFromJs(o.get("likes", o)) : CatalogComment.DISABLED;
+		dislikes = o.has("dislikes", o) ? JsBridge.intFromJs(o.get("dislikes", o)) : CatalogComment.DISABLED;
+		comments = o.has("comments", o) ? JsBridge.intFromJs(o.get("comments", o)) : CatalogComment.DISABLED;
+		votes = o.has("votes", o) ? JsBridge.fromJs(o.get("votes", o), Integer.class) : null;
 
-		canComment = o.has("canComment", o) && (Boolean) o.get("canComment", o);
-		hasNextPage = o.has("hasNextPage", o) && (Boolean) o.get("hasNextPage", o);
+		canComment = o.has("canComment", o) && JsBridge.booleanFromJs(o.get("canComment", o));
+		hasNextPage = o.has("hasNextPage", o) && JsBridge.booleanFromJs(o.get("hasNextPage", o));
 
 		this.customData = o;
 	}

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="main_element_background">#22eeeeee</color>
+
     <color name="bg">#000000</color>
     <color name="bg_opp">@color/bg_white</color>
     <color name="nav_bg">#1C1C1C</color>

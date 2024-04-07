@@ -2,7 +2,10 @@ package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
@@ -14,6 +17,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -25,6 +29,7 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public class JsBridge {
+	private static final String TAG = "JsBridge";
 	protected AwerySettings prefs;
 	private final JsManager manager;
 	private final JsProvider provider;
@@ -58,7 +63,13 @@ public class JsBridge {
 			headers = new HashMap<>();
 
 			for(var entry : o.entrySet()) {
-				headers.put(entry.getKey().toString(), entry.getValue().toString());
+				var value = entry.getValue();
+
+				if(value == null) {
+					continue;
+				}
+
+				headers.put(entry.getKey().toString(), value.toString());
 			}
 		}
 
@@ -81,7 +92,13 @@ public class JsBridge {
 			var obj = (NativeObject) options.get("form");
 
 			for(var entry : obj.entrySet()) {
-				request.addFormField(entry.getKey().toString(), entry.getValue().toString());
+				var value = entry.getValue();
+
+				if(value == null) {
+					continue;
+				}
+
+				request.addFormField(entry.getKey().toString(), value.toString());
 			}
 		}
 
@@ -111,6 +128,43 @@ public class JsBridge {
 		});
 
 		return Context.javaToJS(promise, scriptScope);
+	}
+
+	public static int intFromJs(Object object) {
+		var result = fromJs(object, Integer.class);
+		return result == null ? 0 : result;
+	}
+
+	public static boolean booleanFromJs(Object object) {
+		var result = fromJs(object, Boolean.class);
+		return result != null && result;
+	}
+
+	public static float floatFromJs(Object object) {
+		var result = fromJs(object, Float.class);
+		return result == null ? 0 : result;
+	}
+
+	public static long longFromJs(Object object) {
+		var result = fromJs(object, Long.class);
+		return result == null ? 0 : result;
+	}
+
+	@Nullable
+	public static <T> T fromJs(Object object, Class<T> clazz) {
+		if(object == null || Undefined.isUndefined(object)) return null;
+
+		if(clazz.isAssignableFrom(String.class)) return clazz.cast(object.toString());
+		if(clazz == Integer.TYPE) return clazz.cast(((Number) object).intValue());
+		if(clazz == Boolean.TYPE) return clazz.cast(((Boolean) object));
+		if(clazz == Float.TYPE) return clazz.cast(((Number) object).floatValue());
+		if(clazz == Long.TYPE) return clazz.cast(((Number) object).longValue());
+
+		return clazz.cast(object);
+	}
+
+	public void log(Object o) {
+		Log.i(TAG, "\"" + provider.getName() + "\" logged: " + o);
 	}
 
 	public Object getSaved(@NonNull Object key) {

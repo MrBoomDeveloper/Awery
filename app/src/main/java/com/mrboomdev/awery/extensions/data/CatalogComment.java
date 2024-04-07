@@ -37,7 +37,13 @@ public class CatalogComment {
 	 */
 	@Json(name = "votes")
 	public Integer votes;
+	public String date;
+
+	/**
+	 * Used only for the Frontend
+	 * Do not use in the Backend!
+	 * <p>Used to identify this comment among others</p>
+	 */
 	@Json(ignore = true)
 	public long visualId;
-	public String date;
 }

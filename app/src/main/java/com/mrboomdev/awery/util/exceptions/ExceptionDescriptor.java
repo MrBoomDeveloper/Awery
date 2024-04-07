@@ -12,6 +12,7 @@ import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.WrappedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +38,10 @@ public class ExceptionDescriptor {
 		if(!isUnknownException(t)) {
 			throwable = t;
 			return;
+		}
+
+		while(t instanceof WrappedException e) {
+			t = e.getWrappedException();
 		}
 
 		var firstCause = t.getCause();
@@ -202,6 +207,12 @@ public class ExceptionDescriptor {
 				case JsException.ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
 
 				default -> {
+					var extra = js.getErrorExtra();
+
+					if(extra != null) {
+						yield extra.toString();
+					}
+
 					if(js.getErrors() != null) {
 						var iterator = js.getErrors().iterator();
 						var builder = new StringBuilder();

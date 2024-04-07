@@ -34,15 +34,9 @@ public class JsException extends RuntimeException {
 		this.errors = null;
 	}
 
-	public JsException(String message, Throwable cause) {
-		super(message, cause);
-
-		this.errorId = null;
-		this.errorExtra = null;
-		this.errors = null;
-	}
-
 	public JsException(@NonNull ScriptableObject scope) {
+		super(scope.has("id", scope) ? scope.get("id", scope).toString() : null);
+
 		this.errorId = scope.has("id", scope) ? scope.get("id", scope).toString() : null;
 		this.errorExtra = scope.has("extra", scope) ? scope.get("extra", scope) : null;
 		this.errors = null;
