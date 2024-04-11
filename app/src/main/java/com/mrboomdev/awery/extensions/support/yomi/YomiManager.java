@@ -44,7 +44,7 @@ public abstract class YomiManager extends ExtensionsManager {
 
 	public abstract double getMaxVersion();
 
-	public abstract List<ExtensionProvider> createProviders(Extension extension, Object main);
+	public abstract List<? extends ExtensionProvider> createProviders(Extension extension, Object main);
 
 	@Override
 	public Extension getExtension(String id) {

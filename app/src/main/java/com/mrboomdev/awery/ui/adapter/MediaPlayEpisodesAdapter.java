@@ -9,10 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.db.DBCatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 
@@ -69,7 +67,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		binding.container.setOnClickListener(v -> {
 			var item = holder.getItem();
 
-			if(media.lastEpisode < item.getNumber()) {
+			/*if(media.lastEpisode < item.getNumber()) {
 				media.lastEpisode = item.getNumber();
 				notifyItemRangeChanged(0, items.size());
 
@@ -78,7 +76,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 					var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
 					db.insert(dbMedia);
 				}).start();
-			}
+			}*/
 			
 			if(onEpisodeSelectedListener == null) return;
 			onEpisodeSelectedListener.onEpisodeSelected(item, items);
@@ -115,7 +113,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			this.item = item;
 
 			binding.title.setText(item.getTitle());
-			binding.container.setAlpha((media.lastEpisode >= item.getNumber()) ? .5f : 1);
+			//binding.container.setAlpha((media.lastEpisode >= item.getNumber()) ? .5f : 1);
 
 			if(item.getReleaseDate() > 0) {
 				var calendar = Calendar.getInstance();

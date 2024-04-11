@@ -1,11 +1,10 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionProviderChild;
-import com.mrboomdev.awery.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
 import java.util.Collections;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
-import java9.util.stream.StreamSupport;
 
 public class AniyomiManager extends YomiManager {
 	protected static final String TYPE_ID = "ANIYOMI_KOTLIN";
@@ -59,49 +57,24 @@ public class AniyomiManager extends YomiManager {
 	}
 
 	@Override
-	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
-		return createProviders(extension, main, false);
-	}
-
-	private List<ExtensionProvider> createProviders(Extension extension, Object main, boolean forParent) {
+	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeCatalogueSource source) {
-			return List.of(forParent
-					? new ChildProvider(source)
-					: new AniyomiProvider(source));
+			return List.of(new AniyomiProvider(source));
+		} else if(main instanceof AnimeSourceFactory factory) {
+			return stream(factory.createSources())
+					.map(source -> source instanceof AnimeCatalogueSource catalogueSource
+							? new AniyomiProvider(catalogueSource, true) : null)
+					.filter(item -> {
+						if(item == null) {
+							toast("Failed to create Aniyomi provider");
+							return false;
+						}
+
+						return true;
+					}).toList();
 		}
 
-		if(main instanceof AnimeSourceFactory factory) {
-			var providers = stream(factory.createSources())
-					.map(source -> createProviders(extension, source, true))
-					.flatMap(StreamSupport::stream)
-					.toList();
-
-			var parent = new ExtensionProviderGroup(extension.getName(), providers);
-
-			for(var source : providers) {
-				((ChildProvider) source).setParent(parent);
-			}
-
-			return List.of(parent);
-		}
-
+		toast("Failed to create Aniyomi provider");
 		return Collections.emptyList();
-	}
-
-	private static class ChildProvider extends AniyomiProvider implements ExtensionProviderChild {
-		private ExtensionProviderGroup parent;
-
-		public ChildProvider(AnimeCatalogueSource source) {
-			super(source);
-		}
-
-		public void setParent(ExtensionProviderGroup parent) {
-			this.parent = parent;
-		}
-
-		@Override
-		public ExtensionProviderGroup getProviderParent() {
-			return parent;
-		}
 	}
 }

@@ -148,6 +148,17 @@ public class AweryApp extends Application {
 		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
 	}
 
+	@NonNull
+	@Contract("null -> fail; !null -> param1")
+	public static <T> T requireNonNull(T obj) {
+		if(obj == null) throw new NullPointerException();
+		return obj;
+	}
+
+	public static boolean nonNull(Object obj) {
+		return obj != null;
+	}
+
 	/**
 	 * Fuck you, Android. It's not my problem that some people do install A LOT of extensions,
 	 * so that app stops responding.
@@ -169,8 +180,40 @@ public class AweryApp extends Application {
 	}
 
 	@Override
+	protected void attachBaseContext(@NonNull Context base) {
+		/*var resourcesWrapper = new Resources(
+				base.getResources().getAssets(),
+				base.getResources().getDisplayMetrics(),
+				base.getResources().getConfiguration()) {
+
+			@NonNull
+			@Override
+			public ColorStateList getColorStateList(int id, @Nullable Theme theme) throws NotFoundException {
+				return ColorStateList.valueOf(Color.RED);
+			}
+
+			@Override
+			public int getColor(int id, @Nullable Theme theme) throws NotFoundException {
+				return Color.RED;
+			}
+		};
+
+		var contextWrapper = new ContextWrapper(base) {
+			@Override
+			public Resources getResources() {
+				return resourcesWrapper;
+			}
+		};
+
+		super.attachBaseContext(contextWrapper);*/
+
+		super.attachBaseContext(base);
+		CrashHandler.setup(this);
+	}
+
+	@Override
 	public void onCreate() {
-		AweryLifecycle.app = this;
+		AweryLifecycle.init(this);
 
 		var isDarkModeEnabled = AwerySettings.getInstance(this)
 				.getBoolean(AwerySettings.DARK_THEME, true);
@@ -216,11 +259,10 @@ public class AweryApp extends Application {
 		}
 
 		setupStrictMode();
-		registerActivityLifecycleCallbacks(new AweryLifecycle());
 		ExtensionsFactory.init(this);
 
 		db = Room.databaseBuilder(this, AweryDB.class, "db")
-				.addMigrations(AweryDB.MIGRATION_2_3)
+				.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
 				.build();
 
 		var settings = AwerySettings.getInstance(this);

@@ -190,7 +190,7 @@ abstract class ParsedAnimeHttpSource : AnimeHttpSource() {
     protected abstract fun videoFromElement(element: Element): Video
 
     /**
-     * Parse the response from the site and returns the absolute url to the source video.
+     * Parser the response from the site and returns the absolute url to the source video.
      *
      * @param response the response from the site.
      */

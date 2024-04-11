@@ -184,7 +184,7 @@ abstract class ParsedHttpSource : HttpSource() {
     protected abstract fun pageListParse(document: Document): List<Page>
 
     /**
-     * Parse the response from the site and returns the absolute url to the source image.
+     * Parser the response from the site and returns the absolute url to the source image.
      *
      * @param response the response from the site.
      */

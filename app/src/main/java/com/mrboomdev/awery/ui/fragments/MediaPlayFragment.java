@@ -24,23 +24,20 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionProviderChild;
-import com.mrboomdev.awery.extensions.ExtensionProviderGroup;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
-import com.mrboomdev.awery.util.CachedValue;
-import com.mrboomdev.awery.util.TranslationUtil;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -59,16 +56,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	private final String TAG = "MediaPlayFragment";
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
-	private final CachedValue<ExtensionProviderGroup, List<ExtensionProvider>> currentGroupProviders = new CachedValue<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private ExtensionProvider selectedSource;
-	private ExtensionProviderGroup selectedSourceGroup;
 	private CatalogMedia media;
 	private boolean autoChangeSource = true;
-	private int currentSourceIndex = 0, currentGroupSourceIndex = 0;
+	private int currentSourceIndex = 0;
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -81,19 +76,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		super.onCreate(savedInstanceState);
 
 		if(savedInstanceState != null) {
-			var adapter = CatalogMedia.getJsonAdapter();
-
 			try {
 				var mediaJson = savedInstanceState.getString("media");
 				if(mediaJson == null) return;
 
-				var media = adapter.fromJson(mediaJson);
-
-				if(media != null) {
-					setMedia(media);
-				} else {
-					throw new IOException("Failed to restore media!");
-				}
+				setMedia(Parser.fromString(CatalogMedia.class, mediaJson));
 			} catch(IOException e) {
 				Log.e(TAG, "Failed to restore media!", e);
 				AweryApp.toast("Failed to restore media!", 1);
@@ -152,14 +139,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		selectProvider(providers.get(0));
 	}
 
-	private String getProviderName(ExtensionProvider provider) {
-		if(provider instanceof ExtensionProviderChild child && child.getProviderParent().areAllWithSameName()) {
-			return TranslationUtil.getTranslatedLangName(requireContext(), provider.getLang());
-		}
-
-		return provider.getName();
-	}
-
 	@NonNull
 	private View bindDropdownItem(ExtensionProvider item, View recycled, ViewGroup parent) {
 		if(recycled == null) {
@@ -170,7 +149,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(recycled instanceof ViewGroup viewGroup) {
 			var title = (TextView) viewGroup.getChildAt(0);
-			title.setText(getProviderName(item));
+			title.setText(item.getName());
 
 			var icon = (ImageView) viewGroup.getChildAt(1);
 			var status = sourceStatuses.get(item);
@@ -229,31 +208,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		variantsAdapter.getBinding((binding) ->
 				binding.sourceDropdown.setText(provider.getName(), false));
 
-		if(provider instanceof ExtensionProviderGroup group) {
-			variantsAdapter.getBinding((binding) -> {
-				var variants = new ArrayList<>(group.getProviders());
-				currentGroupProviders.set(group, variants);
-				Collections.sort(variants);
-
-				var variantsDropdownAdapter = new CustomArrayAdapter<>(variants, this::bindDropdownItem);
-
-				binding.variantDropdown.setOnItemClickListener((parent, _view, position, id) -> {
-					var variant = variants.get(position);
-					if(variant == null) return;
-
-					autoChangeSource = false;
-					selectVariant(variant, getProviderName(variant));
-				});
-
-				binding.variantDropdown.setAdapter(variantsDropdownAdapter);
-				binding.variantWrapper.setVisibility(View.VISIBLE);
-				selectVariant(variants.get(0), getProviderName(variants.get(0)));
-			});
-		} else {
-			selectVariant(provider, null);
-			variantsAdapter.getBinding((binding) ->
-					binding.variantWrapper.setVisibility(View.GONE));
-		}
+		selectVariant(provider, null);
+		variantsAdapter.getBinding((binding) -> binding.variantWrapper.setVisibility(View.GONE));
 	}
 
 	private void selectVariant(ExtensionProvider provider, String variant) {
@@ -266,12 +222,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
 		placeholderAdapter.setEnabled(true);
 		this.selectedSource = source;
-
-		if(source instanceof ExtensionProviderChild child) {
-			selectedSourceGroup = child.getProviderParent();
-		} else {
-			selectedSourceGroup = null;
-		}
 
 		placeholderAdapter.getBinding((binding) -> {
 			binding.info.setVisibility(View.GONE);
@@ -359,24 +309,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private boolean autoSelectNextSource() {
 		if(!autoChangeSource) return false;
 
-		if(selectedSourceGroup != null) {
-			var groupItems = currentGroupProviders.get(selectedSourceGroup);
-			currentGroupSourceIndex++;
-
-			if(groupItems == null) {
-				throw new IllegalStateException("Group's " + selectedSourceGroup + " cache doesn't exist.");
-			}
-
-			if(currentGroupSourceIndex >= groupItems.size()) {
-				currentGroupSourceIndex = 0;
-				selectedSourceGroup = null;
-				return autoSelectNextSource();
-			}
-
-			selectProvider(groupItems.get(currentGroupSourceIndex));
-			return true;
-		}
-
 		currentSourceIndex++;
 
 		if(currentSourceIndex >= providers.size()) {
@@ -397,39 +329,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			sourceStatuses.put(source, ExtensionStatus.NOT_FOUND);
 		} else {
 			sourceStatuses.put(source, ExtensionStatus.OFFLINE);
-		}
-
-		if(source instanceof ExtensionProviderChild child) {
-			var parent = child.getProviderParent();
-			enum AllAre { OK, BAD, UNKNOWN }
-			var status = AllAre.UNKNOWN;
-
-			for(var provider : parent.getProviders()) {
-				var providerStatus = sourceStatuses.get(provider);
-
-				if(providerStatus == null || providerStatus.isUnknown()) {
-					status = AllAre.UNKNOWN;
-					break;
-				}
-
-				if(providerStatus.isGood() && status == AllAre.BAD) {
-					status = AllAre.UNKNOWN;
-					break;
-				}
-
-				if(providerStatus.isBad() && status == AllAre.OK) {
-					status = AllAre.UNKNOWN;
-					break;
-				}
-
-				status = providerStatus.isGood() ? AllAre.OK : AllAre.BAD;
-			}
-
-			if(status == AllAre.OK) {
-				sourceStatuses.put(parent, ExtensionStatus.OK);
-			} else if(status == AllAre.BAD) {
-				sourceStatuses.put(parent, ExtensionStatus.BROKEN_PARSER);
-			}
 		}
 	}
 

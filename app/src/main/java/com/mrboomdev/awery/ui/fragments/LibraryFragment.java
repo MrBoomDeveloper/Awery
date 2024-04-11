@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 
@@ -92,7 +93,12 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 			for(var list : lists) {
 				if(list.getId().equals(AweryApp.CATALOG_LIST_BLACKLIST)) continue;
 
-				var dbMediaList = db.getMediaDao().getAllFromList(list.getId());
+				var mediasProgresses = db.getMediaProgressDao().getAllFromList(list.getId());
+				if(mediasProgresses.isEmpty()) continue;
+
+				var dbMediaList = db.getMediaDao().getAllByIds(stream(mediasProgresses)
+						.map(CatalogMediaProgress::getGlobalId).toArray(String[]::new));
+
 				if(dbMediaList.isEmpty()) continue;
 
 				var mediaList = stream(dbMediaList)

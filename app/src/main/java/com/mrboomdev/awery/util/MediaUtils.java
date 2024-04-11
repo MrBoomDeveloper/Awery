@@ -59,7 +59,7 @@ public class MediaUtils {
 	public static boolean isMediaFiltered(@NonNull CatalogMedia media) {
 		var badTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
 
-		if(media.lists != null && media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
+		//if(media.lists != null && media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
 		if(media.tags != null && stream(media.tags).map(CatalogTag::getName).anyMatch(badTags::contains)) return true;
 
 		return false;
@@ -89,7 +89,7 @@ public class MediaUtils {
 
 		binding.hide.setOnClickListener(v -> {
 			new Thread(() -> {
-				media.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
+				//media.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
 
 				var dao = AweryApp.getDatabase().getMediaDao();
 				var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
@@ -242,10 +242,10 @@ public class MediaUtils {
 					checkbox.setText(item.getTitle());
 					binding.lists.addView(checkbox);
 
-					if(current != null && current.lists != null && current.lists.contains(item.getId())) {
+					/*if(current != null && current.lists != null && current.lists.contains(item.getId())) {
 						checked.put(item.getId(), true);
 						checkbox.setChecked(true);
-					}
+					}*/
 
 					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
 							checked.put(item.getId(), isChecked));
@@ -271,12 +271,12 @@ public class MediaUtils {
 
 					new Thread(() -> {
 						try {
-							media.clearBookmarks();
+							/*media.clearBookmarks();
 
 							for(var entry : checked.entrySet()) {
 								if(!entry.getValue()) continue;
 								media.addToList(entry.getKey());
-							}
+							}*/
 
 							var dbItem = DBCatalogMedia.fromCatalogMedia(media);
 							mediaDao.insert(dbItem);

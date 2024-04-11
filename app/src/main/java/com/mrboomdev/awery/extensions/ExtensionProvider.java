@@ -21,7 +21,6 @@ import java.util.Map;
 
 /**
  * Base class for all extension providers.
- * Please note that this class can be a ExtensionProviderGroup, which doesn't implement media source methods.
  * @author MrBoomDev
  */
 @SuppressWarnings("unused")

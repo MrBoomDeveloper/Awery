@@ -22,6 +22,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -52,19 +53,11 @@ public class MediaInfoFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		if(savedInstanceState != null) {
-			var adapter = CatalogMedia.getJsonAdapter();
-
 			try {
 				var mediaJson = savedInstanceState.getString("media");
 				if(mediaJson == null) return;
 
-				var media = adapter.fromJson(mediaJson);
-
-				if(media != null) {
-					setMedia(media);
-				} else {
-					throw new IOException("Failed to restore media!");
-				}
+				setMedia(Parser.fromString(CatalogMedia.class, mediaJson));
 			} catch(IOException e) {
 				Log.e(TAG, "Failed to restore media!", e);
 				AweryApp.toast("Failed to restore media!", 1);

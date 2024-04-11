@@ -25,6 +25,7 @@ import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
 import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -64,19 +65,12 @@ public class MediaActivity extends AppCompatActivity {
 		}
 
 		try {
-			var adapter = CatalogMedia.getJsonAdapter();
 			var json = getIntent().getStringExtra("media");
-
-			var media = adapter.fromJson(Objects.requireNonNull(json));
-			if(media == null) throw new NullPointerException("Media is null!");
+			var media = Parser.fromString(CatalogMedia.class, json);
 
 			new Thread(() -> {
 				var db = AweryApp.getDatabase().getMediaDao();
 				var dbMedia = db.get(media.globalId);
-
-				if(dbMedia != null) {
-					media.merge(dbMedia.toCatalogMedia());
-				}
 
 				runOnUiThread(() -> setMedia(media));
 			}).start();

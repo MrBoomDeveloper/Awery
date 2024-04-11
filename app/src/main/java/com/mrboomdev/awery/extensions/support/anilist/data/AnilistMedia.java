@@ -59,6 +59,7 @@ public class AnilistMedia {
 		media.globalId = AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id;
 		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
+		media.ageRating = isAdult ? "R" : null;
 
 		if(startDate != null && startDate.year != null) {
 			media.releaseDate = Calendar.getInstance();

@@ -148,6 +148,15 @@
 				{
 					"key": "log_network", "type": "boolean", "restart": true,
 					"title": "Verbose network logging"
+				}, {
+					"key": "try_crash_native", "type": "action",
+					"title": "Try Native Crash"
+				}, {
+					"key": "try_crash_java", "type": "action",
+					"title": "Try Java Crash"
+				}, {
+					"key": "try_crash_anr", "type": "action",
+					"title": "Try ANR Crash"
 				}
 			]
 		}

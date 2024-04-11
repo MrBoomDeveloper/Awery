@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.requireNonNull;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -157,14 +158,14 @@ public class MediaCommentsFragment extends Fragment {
 		var scrollPosition = scrollPositions.get(comment);
 
 		if(scrollPosition != null) {
-			var layoutManager = Objects.requireNonNull(recycler.getLayoutManager());
+			var layoutManager = requireNonNull(recycler.getLayoutManager());
 			layoutManager.onRestoreInstanceState(scrollPosition);
 		}
 	}
 
 	private void loadData(CatalogComment parent, boolean isReload) {
 		if(this.comment != null) {
-			var layoutManager = Objects.requireNonNull(recycler.getLayoutManager());
+			var layoutManager = requireNonNull(recycler.getLayoutManager());
 			scrollPositions.put(this.comment, layoutManager.onSaveInstanceState());
 		}
 
@@ -202,7 +203,7 @@ public class MediaCommentsFragment extends Fragment {
 				runOnUiThread(() -> {
 					if(getContext() == null) return;
 					setComment(parent, isReload);
-				});
+				}, recycler);
 			}
 
 			@Override
@@ -228,7 +229,7 @@ public class MediaCommentsFragment extends Fragment {
 					commentsAdapter.setData(null);
 					loadingAdapter.setEnabled(true);
 					sendBinding.getRoot().setVisibility(View.GONE);
-				}));
+				}, recycler));
 
 				Log.e("MediaCommentsFragment", "Failed to load comments!", e);
 			}
@@ -313,7 +314,7 @@ public class MediaCommentsFragment extends Fragment {
 						sendBinding.sendButton.setVisibility(View.VISIBLE);
 						sendBinding.input.setText(null);
 						isSending.set(false);
-					});
+					}, recycler);
 				}
 
 				@Override
@@ -327,7 +328,7 @@ public class MediaCommentsFragment extends Fragment {
 						sendBinding.loadingIndicator.setVisibility(View.GONE);
 						sendBinding.sendButton.setVisibility(View.VISIBLE);
 						isSending.set(false);
-					});
+					}, recycler);
 				}
 			});
 		});

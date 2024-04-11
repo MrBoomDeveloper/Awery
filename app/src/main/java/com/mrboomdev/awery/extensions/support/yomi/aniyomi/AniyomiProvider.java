@@ -42,9 +42,20 @@ import okhttp3.Headers;
 public class AniyomiProvider extends ExtensionProvider {
 	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH);
 	private final AnimeCatalogueSource source;
+	private final boolean isFromSource;
 
 	public AniyomiProvider(AnimeCatalogueSource source) {
 		this.source = source;
+		this.isFromSource = false;
+	}
+
+	public AniyomiProvider(AnimeCatalogueSource source, boolean isFromSource) {
+		this.source = source;
+		this.isFromSource = isFromSource;
+	}
+
+	public boolean isFromSourceFactory() {
+		return isFromSource;
 	}
 
 	@Override
@@ -333,6 +344,10 @@ public class AniyomiProvider extends ExtensionProvider {
 
 	@Override
 	public String getName() {
+		if(isFromSource) {
+			return source.getName() + " [" + source.getLang() + "]";
+		}
+
 		return source.getName();
 	}
 }

@@ -29,6 +29,6 @@ public class Constants {
 	 * but this method will let you keep the code uncommented!
 	 */
 	public static void alwaysThrowException() {
-		throw new RuntimeException();
+		if(alwaysTrue()) throw new RuntimeException();
 	}
 }

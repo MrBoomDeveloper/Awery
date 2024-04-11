@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.registerDisposable;
-
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -9,9 +7,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -20,12 +17,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> implements ObservableList.AddObserver<MediaCategoriesAdapter.Category> {
-	private static RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
+	private static final RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
 	private List<Category> categories = new ArrayList<>();
 
 	@SuppressLint("NotifyDataSetChanged")
 	public MediaCategoriesAdapter() {
-		registerDisposable(() -> itemsPool = null);
 		setHasStableIds(true);
 	}
 

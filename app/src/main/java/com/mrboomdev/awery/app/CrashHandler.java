@@ -3,7 +3,9 @@ package com.mrboomdev.awery.app;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.squareup.moshi.Moshi;
 
@@ -22,34 +25,92 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Objects;
 
-public class CrashHandler implements Thread.UncaughtExceptionHandler {
+import xcrash.Errno;
+import xcrash.XCrash;
+
+public class CrashHandler {
 	private static final String TAG = "CrashHandler";
 
-	@Override
-	public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
-		if(thread != Looper.getMainLooper().getThread()) {
-			Log.e(TAG, "THREAD WAS KILLED! [ Thread name: "
-					+ thread.getName() + ", Thread id: "
-					+ thread.getId() + " ]", throwable);
+	public static void setup(Context context) {
+		var xCrashParams = new XCrash.InitParameters()
+				.enableNativeCrashHandler()
+				.enableAnrCrashHandler()
+				.enableJavaCrashHandler()
+				.setJavaCallback((s, s1) -> handleError(CrashType.JAVA, s))
+				.setNativeCallback((s, s1) -> handleError(CrashType.NATIVE, s))
+				.setAnrCallback((s, s1) -> handleError(CrashType.ANR, s))
+				.setAnrFastCallback((s, s1) -> handleError(CrashType.ANR, s))
+				.setAppVersion(BuildConfig.VERSION_NAME);
 
-			var activity = getAnyActivity();
+		var result = switch(XCrash.init(context, xCrashParams)) {
+			case Errno.INIT_LIBRARY_FAILED -> "Failed to initialize XCrash library!";
+			case Errno.LOAD_LIBRARY_FAILED -> "Failed to load XCrash library!";
+			case Errno.CONTEXT_IS_NULL -> "XCrash context is null!";
+			default -> null;
+		};
 
-			if(activity != null) {
-				if(thread.getName().startsWith("Studio:")) {
-					toast(activity, "Failed to send message to Android Studio!", Toast.LENGTH_LONG);
-					return;
+		if(result != null) {
+			toast(context, result, Toast.LENGTH_LONG);
+			Log.e(TAG, result);
+		}
+	}
+
+	private enum CrashType {
+		ANR, JAVA, NATIVE
+	}
+
+	private static void handleError(@NonNull CrashType type, String message) {
+		var text = switch(type) {
+			case ANR -> "Awery isn't responding ._.";
+			case JAVA -> "Awery has crashed :(";
+			case NATIVE -> "Something REALLY TERRIBLE has happened O_O";
+		};
+
+		toast(text, Toast.LENGTH_LONG);
+
+		if(type != CrashType.ANR) {
+			var crashFile = new File(getAnyContext().getExternalFilesDir(null), "crash.txt");
+
+			try {
+				if(!crashFile.exists()) crashFile.createNewFile();
+
+				try(var writer = new FileWriter(crashFile)) {
+					writer.write(message);
+					Log.i(TAG, "Crash file saved successfully: " + crashFile.getAbsolutePath());
 				}
-
-				toast(activity, "Unexpected error has happened!", Toast.LENGTH_LONG);
+			} catch(Throwable e) {
+				Log.e(TAG, "Failed to write crash file!", e);
 			}
 
+			try {
+				var activity = Objects.requireNonNull(getAnyActivity(Activity.class));
+				showErrorDialog(activity, text, message, false, crashFile);
+			} catch(Exception ignored) {}
+		}
+	}
+
+	private static void handleUncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
+		if(thread != Looper.getMainLooper().getThread()) {
+			if(thread.getName().startsWith("Studio:")) {
+				toast("Failed to send message to Android Studio!", Toast.LENGTH_LONG);
+				return;
+			}
+
+			try {
+				showErrorDialog(getAnyActivity(Activity.class), throwable, false, null);
+			} catch(Exception ignored) {}
+
+			toast("Unexpected error has happened!", Toast.LENGTH_LONG);
 			return;
 		}
 
 		var crashFile = new File(getAnyContext().getExternalFilesDir(null), "crash.txt");
 		var details = new ExceptionDescriptor(throwable);
-		var activity = getAnyActivity();
+
+		var activity = getAnyActivity(Activity.class);
+		toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
 
 		try {
 			if(!crashFile.exists()) crashFile.createNewFile();
@@ -66,7 +127,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 		}
 
 		if(activity != null) {
-			toast(activity, "App just crashed :(", Toast.LENGTH_LONG);
 			activity.finishAffinity();
 			return;
 		}
@@ -92,15 +152,15 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 			boolean finishOnClose,
 			File file
 	) {
-		new MaterialAlertDialogBuilder(context)
-				.setTitle(title)
-				.setMessage("Please send the following details to developers:\n\n" + message)
+		runOnUiThread(() -> new MaterialAlertDialogBuilder(context)
+				.setTitle(title.trim())
+				.setMessage("Please send the following details to developers:\n\n" + message.trim())
 				.setCancelable(false)
 				.setOnDismissListener(dialog -> {
 					if(file != null) file.delete();
 
 					if(finishOnClose) {
-						var activity = getAnyActivity();
+						var activity = getAnyActivity(Activity.class);
 
 						if(activity != null) {
 							activity.finishAffinity();
@@ -123,7 +183,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 					context.startActivity(Intent.createChooser(intent, "Share crash report..."));
 				})
 				.setPositiveButton("OK", (dialog, btn) -> dialog.dismiss())
-				.show();
+				.show());
 	}
 
 	public static void reportIfExistsCrash(@NonNull Context context) {
@@ -134,18 +194,37 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
 			try(var reader = new BufferedReader(new FileReader(crashFile))) {
 				StringBuilder result = new StringBuilder();
-				String nextLine;
+				String nextLine, message;
 
 				while((nextLine = reader.readLine()) != null) {
-					result.append(nextLine);
+					result.append(nextLine).append("\n");
 				}
 
-				var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
-				var adapter = moshi.adapter(ExceptionDescriptor.class);
-				var details = adapter.fromJson(result.toString());
-				if(details == null) return;
+				try {
+					var moshi = new Moshi.Builder().add(ExceptionDescriptor.ADAPTER).build();
+					var adapter = moshi.adapter(ExceptionDescriptor.class);
+					message = Objects.requireNonNull(adapter.fromJson(result.toString())).toString();
+				} catch(Exception e) {
+					try {
+						var file = new File(result.toString().trim());
 
-				showErrorDialog(context, details.toString(), false, crashFile);
+						try(var reader1 = new BufferedReader(new FileReader(file))) {
+							StringBuilder result1 = new StringBuilder();
+							String nextLine1;
+
+							while((nextLine1 = reader1.readLine()) != null) {
+								if(nextLine1.contains("ClassLoaderContext parent mismatch.")) continue;
+								result1.append(nextLine1).append("\n");
+							}
+
+							message = result1.toString();
+						}
+					} catch(Exception ex) {
+						message = result.toString();
+					}
+				}
+
+				showErrorDialog(context, message, false, crashFile);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -8,7 +9,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,35 +17,25 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
-
-import com.mrboomdev.awery.util.Disposable;
 
 import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
+public class AweryLifecycle {
 	private static final String TAG = "AweryLifecycle";
-	protected static final Map<Class<? extends AppCompatActivity>, ActivityInfo> activities = new HashMap<>();
-	protected static final List<Disposable> disposables = new ArrayList<>();
-	protected static AweryApp app;
+	private static AweryApp app;
 	private static final Thread mainThread = Looper.getMainLooper().getThread();
 	private static final Handler handler = new Handler(Looper.getMainLooper());
 
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public static <A extends AppCompatActivity> A getActivity(Class<A> clazz) {
-		var found = activities.get(clazz);
-		if(found != null) return (A) found.activity;
-
-		return null;
+	protected static void init(AweryApp app) {
+		AweryLifecycle.app = app;
 	}
 
 	public static void restartApp() {
@@ -59,13 +49,22 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 		mainIntent.setPackage(context.getPackageName());
 		context.startActivity(mainIntent);
 
+		app = null;
 		Runtime.getRuntime().exit(0);
 	}
 
+	public static void exitApp() {
+		var activity = getAnyActivity(Activity.class);
+		app = null;
+
+		if(activity != null) activity.finishAffinity();
+		else Runtime.getRuntime().exit(0);
+	}
+
 	@Nullable
-	public static AppCompatActivity getActivity(Context context) {
+	public static Activity getActivity(Context context) {
 		while(context instanceof ContextWrapper wrapper) {
-			if(context instanceof AppCompatActivity activity) {
+			if(context instanceof Activity activity) {
 				return activity;
 			}
 
@@ -77,18 +76,116 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 
 	@Nullable
 	@Contract(pure = true)
-	public static AppCompatActivity getAnyActivity() {
-		if(activities.isEmpty()) return null;
-		if(activities.size() == 1) return activities.values().toArray(new ActivityInfo[0])[0].activity;
+	public static <A extends Activity> A getAnyActivity(Class<A> requiredSuper) {
+		try {
+			var activities = getAllActivitiesRecursively(requiredSuper);
+			if(activities.size() == 1) return activities.get(0).activity;
 
-		return stream(activities.values())
-				.sorted(ActivityInfo::compareTo)
-				.findFirst().get().activity;
+			// App should handle this behaviour properly or else crashes will occur
+			if(activities.isEmpty()) return null;
+
+			return stream(activities)
+					.sorted(ActivityInfo::compareTo)
+					.findFirst().get().activity;
+		} catch(Exception e) {
+			Log.e(TAG, "Failed to get any activity!", e);
+			toast(getAppContext(), "So your device is not supported :(", 1);
+			System.exit(0);
+			return null;
+		}
 	}
 
-	public static void runOnUiThread(Runnable runnable) {
+	@NonNull
+	@SuppressWarnings({"PrivateApi", "unchecked"})
+	private static <A extends Activity> List<ActivityInfo<A>> getAllActivitiesRecursively(Class<A> requiredSuper) throws NoSuchFieldException, IllegalAccessException {
+		var list = new ArrayList<ActivityInfo<A>>();
+
+		var activityThread = getActivityThread();
+		if(activityThread == null) return list;
+
+		var activitiesField = activityThread.getClass().getDeclaredField("mActivities");
+		activitiesField.setAccessible(true);
+		var activities = activitiesField.get(activityThread);
+
+		if(activities instanceof Map<?, ?> map) {
+			for(var record : map.values()) {
+				var recordClass = record.getClass();
+				var activityField = recordClass.getDeclaredField("activity");
+				activityField.setAccessible(true);
+
+				var activity = (Activity) activityField.get(record);
+
+				if(activity == null || !requiredSuper.isInstance(activity)) {
+					continue;
+				}
+
+				var info = new ActivityInfo<A>();
+				info.activity = (A) activity;
+				list.add(info);
+
+				var pausedField = recordClass.getDeclaredField("paused");
+				pausedField.setAccessible(true);
+				info.isResumed = !Objects.requireNonNullElse((Boolean) pausedField.get(record), false);
+
+				list.add(info);
+			}
+		}
+
+		return list;
+	}
+
+	@Nullable
+	@SuppressLint({"DiscouragedPrivateApi", "PrivateApi"})
+	private static Object getActivityThread() {
+		try {
+			var clazz = Class.forName("android.app.ActivityThread");
+			var field = clazz.getDeclaredField("sCurrentActivityThread");
+			field.setAccessible(true);
+			var value = field.get(null);
+			if(value != null) return value;
+		} catch(Exception ignored) {}
+
+		try {
+			var clazz = Class.forName("android.app.AppGlobals");
+			var field = clazz.getDeclaredField("sCurrentActivityThread");
+			field.setAccessible(true);
+			var value = field.get(null);
+			if(value != null) return value;
+		} catch(Exception ignored) {}
+
+		try {
+			var clazz = Class.forName("android.app.ActivityThread");
+			var method = clazz.getDeclaredMethod("currentActivityThread");
+			method.setAccessible(true);
+			return method.invoke(null);
+		} catch(Exception ignored) {
+			return null;
+		}
+	}
+
+	public static Runnable runOnUiThread(Runnable runnable) {
 		if(Thread.currentThread() != mainThread) handler.post(runnable);
 		else runnable.run();
+
+		return runnable;
+	}
+
+	/**
+	 * Runs the callback on the main thread and checks whatever RecyclerView is computing layout or not to avoid exceptions.
+	 * @param callback Will be ran on the main thread if RecyclerView isn't computing layout
+	 * @param recycler Target RecyclerView
+	 * @return May be a different callback depending on the state of the RecyclerView, so that you can cancel it.
+	 */
+	@NonNull
+	public static Runnable runOnUiThread(Runnable callback, RecyclerView recycler) {
+		if(Thread.currentThread() != mainThread || recycler.isComputingLayout()) {
+			Runnable runnable = () -> runOnUiThread(callback, recycler);
+			handler.post(runnable);
+			return runnable;
+		}
+
+		callback.run();
+		return callback;
 	}
 
 	public static Context getContext(@NonNull ViewBinding binding) {
@@ -107,7 +204,7 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 		Activity activity;
 
 		try {
-			activity = getAnyActivity();
+			activity = getAnyActivity(Activity.class);
 			if(activity != null) return activity;
 		} catch(IndexOutOfBoundsException ignored) {}
 
@@ -152,65 +249,6 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 		return app;
 	}
 
-	public static void registerDisposable(Disposable disposable) {
-		disposables.add(disposable);
-	}
-
-	public static void dispose() {
-		activities.clear();
-		app = null;
-
-		for(var disposable : disposables) {
-			disposable.dispose();
-		}
-
-		disposables.clear();
-	}
-
-	@Override
-	public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-		if(activity instanceof AppCompatActivity appCompatActivity) {
-			var clazz = activity.getClass();
-			var info = activities.get(clazz);
-
-			if(info == null) {
-				info = new ActivityInfo();
-			}
-
-			info.isStopped = false;
-			info.activity = appCompatActivity;
-			activities.put(appCompatActivity.getClass(), info);
-		} else {
-			Log.e(TAG, "Activity is not an AppCompatActivity!");
-		}
-	}
-
-	@Override
-	public void onActivityStarted(@NonNull Activity activity) {
-		var info = activities.get(activity.getClass());
-		if(info == null) return;
-
-		info.isStopped = false;
-	}
-
-	@Override
-	public void onActivityResumed(@NonNull Activity activity) {
-
-	}
-
-	@Override
-	public void onActivityPaused(@NonNull Activity activity) {
-
-	}
-
-	@Override
-	public void onActivityStopped(@NonNull Activity activity) {
-		var info = activities.get(activity.getClass());
-		if(info == null) return;
-
-		info.isStopped = true;
-	}
-
 	public static void cancelDelayed(Runnable runnable) {
 		handler.removeCallbacks(runnable);
 	}
@@ -219,35 +257,23 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 		handler.postDelayed(runnable, delay);
 	}
 
-	@Override
-	public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
-
-	@Override
-	public void onActivityDestroyed(@NonNull Activity activity) {
-		var info = activities.get(activity.getClass());
-		if(info == null) return;
-
-		info.isStopped = true;
-		activities.remove(activity.getClass());
-
-		if(activities.isEmpty()) {
-			runDelayed(() -> {
-				if(!activities.isEmpty()) return;
-				AweryLifecycle.dispose();
-			}, 1000);
-		}
-	}
-
-	private static class ActivityInfo implements Comparable<ActivityInfo> {
-		public AppCompatActivity activity;
-		public boolean isStopped;
+	private static class ActivityInfo<A extends Activity> implements Comparable<ActivityInfo<A>> {
+		public A activity;
+		public boolean isResumed;
 
 		@Override
 		public int compareTo(ActivityInfo o) {
 			if(activity.isDestroyed() && !o.activity.isDestroyed()) return 1;
 			if(!activity.isDestroyed() && o.activity.isDestroyed()) return -1;
-			if(this.isStopped && !o.isStopped) return 1;
-			if(!this.isStopped && o.isStopped) return -1;
+
+			if(activity.isFinishing() && !o.activity.isFinishing()) return 1;
+			if(!activity.isFinishing() && o.activity.isFinishing()) return -1;
+
+			if(activity.isChangingConfigurations() && !o.activity.isChangingConfigurations()) return 1;
+			if(!activity.isChangingConfigurations() && o.activity.isChangingConfigurations()) return -1;
+
+			if(this.isResumed && !o.isResumed) return 1;
+			if(!this.isResumed && o.isResumed) return -1;
 
 			return 0;
 		}

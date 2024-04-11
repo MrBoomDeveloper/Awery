@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.StringUtil;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -17,7 +18,6 @@ import com.squareup.moshi.Types;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import java9.util.stream.Collectors;
@@ -37,9 +37,11 @@ public class DBCatalogMedia {
 	@NonNull
 	public String globalId;
 
-	public String titles, lists, trackers, ids;
-	public String banner, description, url, country;
-	public String releaseDate, duration, type;
+	public String titles, ids;
+	public String banner, description, extra, country, authors;
+	public String duration, type;
+	@ColumnInfo(name = "release_date")
+	public String releaseDate;
 	@ColumnInfo(name = "episodes_count")
 	public String episodesCount;
 	@ColumnInfo(name = "average_score")
@@ -52,12 +54,10 @@ public class DBCatalogMedia {
 	public String largePoster;
 	@ColumnInfo(name = "poster_medium")
 	public String mediumPoster;
-	@ColumnInfo(name = "last_source")
-	public String lastSource;
-	@ColumnInfo(name = "last_episode", defaultValue = "-1")
-	public float lastEpisode;
-	@ColumnInfo(name = "last_episode_progress", defaultValue = "-1")
-	public float lastEpisodeProgress;
+	@ColumnInfo(name = "latest_episode")
+	public String latestEpisode;
+	@ColumnInfo(name = "age_rating")
+	public String ageRating;
 
 	public DBCatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
@@ -69,12 +69,9 @@ public class DBCatalogMedia {
 		var dbMedia = new DBCatalogMedia(media.globalId);
 		dbMedia.banner = media.banner;
 		dbMedia.description = media.description;
-		dbMedia.url = media.url;
+		dbMedia.extra = media.extra;
 		dbMedia.country = media.country;
-
-		dbMedia.lastEpisode = media.lastEpisode;
-		dbMedia.lastSource = media.lastSource;
-		dbMedia.lastEpisodeProgress = media.lastEpisodeProgress;
+		dbMedia.ageRating = media.ageRating;
 
 		dbMedia.ids = stream(media.ids.entrySet())
 				.map(entry -> "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"")
@@ -88,13 +85,20 @@ public class DBCatalogMedia {
 			dbMedia.episodesCount = Integer.toString(media.episodesCount);
 		}
 
+		if(media.authors != null) {
+			dbMedia.authors = ParserAdapter.mapToString(media.authors);
+		}
+
 		if(media.releaseDate != null) {
-			var stringDate = CatalogMedia.adapter.toJson(media.releaseDate);
-			dbMedia.releaseDate = Long.toString(stringDate);
+			dbMedia.releaseDate = String.valueOf(ParserAdapter.calendarToLong(media.releaseDate));
 		}
 
 		if(media.duration != null) {
 			dbMedia.duration = Integer.toString(media.duration);
+		}
+
+		if(media.latestEpisode != null) {
+			dbMedia.latestEpisode = Integer.toString(media.latestEpisode);
 		}
 
 		if(media.type != null) {
@@ -103,14 +107,6 @@ public class DBCatalogMedia {
 
 		if(media.status != null) {
 			dbMedia.status = media.status.name();
-		}
-
-		if(media.trackers != null) {
-			dbMedia.trackers = StringUtil.listToUniqueString(media.trackers);
-		}
-
-		if(media.lists != null) {
-			dbMedia.lists = StringUtil.listToUniqueString(media.lists);
 		}
 
 		dbMedia.extraLargePoster = media.getBestPoster();
@@ -135,12 +131,9 @@ public class DBCatalogMedia {
 		var media = new CatalogMedia(globalId);
 		media.banner = banner;
 		media.description = description;
-		media.url = url;
+		media.extra = extra;
 		media.country = country;
-
-		media.lastSource = lastSource;
-		media.lastEpisode = lastEpisode;
-		media.lastEpisodeProgress = lastEpisodeProgress;
+		media.ageRating = ageRating;
 
 		try {
 			var moshi = new Moshi.Builder().build();
@@ -157,7 +150,7 @@ public class DBCatalogMedia {
 
 		if(releaseDate != null) {
 			var dateLong = Long.parseLong(releaseDate);
-			media.releaseDate = CatalogMedia.adapter.fromJson(dateLong);
+			media.releaseDate = ParserAdapter.calendarFromLong(dateLong);
 		}
 
 		if(duration != null) {
@@ -168,6 +161,14 @@ public class DBCatalogMedia {
 			media.episodesCount = Integer.parseInt(episodesCount);
 		}
 
+		if(authors != null) {
+			media.authors = ParserAdapter.mapFromString(authors);
+		}
+
+		if(latestEpisode != null) {
+			media.latestEpisode = Integer.parseInt(latestEpisode);
+		}
+
 		media.type = StringUtil.parseEnum(type, CatalogMedia.MediaType.class);
 		media.status = StringUtil.parseEnum(status, CatalogMedia.MediaStatus.class);
 
@@ -175,8 +176,6 @@ public class DBCatalogMedia {
 		media.poster.large = largePoster;
 		media.poster.medium = mediumPoster;
 
-		if(trackers != null) media.trackers = StringUtil.uniqueStringToList(trackers);
-		if(lists != null) media.lists = new ArrayList<>(StringUtil.uniqueStringToList(lists));
 		if(genres != null) media.genres = StringUtil.uniqueStringToList(genres);
 		if(titles != null) media.titles = StringUtil.uniqueStringToList(titles);
 

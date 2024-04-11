@@ -5,14 +5,13 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -126,11 +125,12 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 		return stream(data).map(item -> {
 					var catalogMedia = item.toCatalogMedia();
 
-					var dbMedia = AweryApp.getDatabase().getMediaDao().get(catalogMedia.globalId);
+					var dbMedia = AweryApp.getDatabase()
+							.getMediaDao().get(catalogMedia.globalId);
 
-					if(dbMedia != null && dbMedia.lists != null) {
+					/*if(dbMedia != null && dbMedia.lists != null) {
 						catalogMedia.lists = new ArrayList<>(StringUtil.uniqueStringToList(dbMedia.lists));
-					}
+					}*/
 
 					return catalogMedia;
 				}).toList();
@@ -149,7 +149,7 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 						startDate { year month day }
 						endDate { year month day }
 						coverImage { extraLarge large color medium }
-						tags { name id }
+						tags { name }
 						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
 					}
 				}

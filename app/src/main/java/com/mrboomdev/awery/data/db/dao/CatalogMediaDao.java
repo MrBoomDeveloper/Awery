@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.RawQuery;
 import androidx.room.Update;
-import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
@@ -16,9 +15,6 @@ import java.util.List;
 
 @Dao
 public interface CatalogMediaDao {
-
-	@Query("SELECT * FROM media")
-	List<DBCatalogMedia> getAll();
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	void insert(DBCatalogMedia... catalogMedia);
@@ -32,15 +28,8 @@ public interface CatalogMediaDao {
 	@Query("SELECT * FROM media WHERE global_id = :id")
 	DBCatalogMedia get(String id);
 
-	default List<DBCatalogMedia> getAllMinFromList(String listId) {
-		var query = "SELECT global_id FROM media WHERE lists LIKE '%;;;" + listId + ";;;%'";
-		return getAllByQuery(new SimpleSQLiteQuery(query));
-	}
-
-	default List<DBCatalogMedia> getAllFromList(String listId) {
-		var query = "SELECT * FROM media WHERE lists LIKE '%;;;" + listId + ";;;%'";
-		return getAllByQuery(new SimpleSQLiteQuery(query));
-	}
+	@Query("SELECT * FROM media WHERE global_id IN (:ids)")
+	List<DBCatalogMedia> getAllByIds(String... ids);
 
 	@RawQuery
 	List<DBCatalogMedia> getAllByQuery(SupportSQLiteQuery query);
