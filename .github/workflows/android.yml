@@ -18,18 +18,28 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
+        cache: 'gradle'
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Release APK
-      run: ./gradlew assembleRelease
+    - name: Build Beta APK
+      run: ./gradlew assembleBetaModernRelease
 
-    - name: Sign Release APK
+    - name: Build Production APK
+      run: ./gradlew assembleProdModernRelease
+
+    - name: Build Legacy Beta APK
+      run: ./gradlew assembleProdLegacyRelease
+
+    - name: Build Legacy Production APK
+      run: ./gradlew assembleProdLegacyRelease
+
+    - name: Sign Beta APK
       uses: r0adkll/sign-android-release@v1
-      id: sign_app
+      id: sign_beta
       with:
-        releaseDirectory: "app/build/outputs/apk/release"
+        releaseDirectory: "app/build/outputs/apk/betaModern/release"
         signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
         alias: ${{ secrets.ANDROID_KEY_ALIAS }}
         keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -37,9 +47,66 @@ jobs:
       env:
         BUILD_TOOLS_VERSION: "34.0.0"
 
-    - name: Upload Release APK
+    - name: Sign Production APK
+      uses: r0adkll/sign-android-release@v1
+      id: sign_prod
+      with:
+        releaseDirectory: "app/build/outputs/apk/prodModern/release"
+        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+        alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Sign Legacy Beta APK
+      uses: r0adkll/sign-android-release@v1
+      id: sign_beta_legacy
+      with:
+        releaseDirectory: "app/build/outputs/apk/betaLegacy/release"
+        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+        alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Sign Legacy Production APK
+      uses: r0adkll/sign-android-release@v1
+      id: sign_prod_legacy
+      with:
+        releaseDirectory: "app/build/outputs/apk/prodLegacy/release"
+        signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+        alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Upload Beta APK
       uses: actions/upload-artifact@v4
       with:
-        name: "Release APK"
+        name: "Beta APK"
         retention-days: 90
-        path: "app/build/outputs/apk/release/app-release-signed.apk"
+        path: ${{steps.sign_beta.signedReleaseFile}}
+
+    - name: Upload Production APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Production APK"
+        retention-days: 90
+        path: ${{steps.sign_prod.signedReleaseFile}}
+
+    - name: Upload Legacy Beta APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Legacy Beta APK"
+        retention-days: 90
+        path: ${{steps.sign_beta_legacy.signedReleaseFile}}
+
+    - name: Upload Legacy Production APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Legacy Production APK"
+        retention-days: 90
+        path: ${{steps.sign_prod_legacy.signedReleaseFile}}
