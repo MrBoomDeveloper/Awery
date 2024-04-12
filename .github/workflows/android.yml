@@ -30,7 +30,7 @@ jobs:
       run: ./gradlew assembleProdModernRelease
 
     - name: Build Legacy Beta APK
-      run: ./gradlew assembleProdLegacyRelease
+      run: ./gradlew assembleBetaLegacyRelease
 
     - name: Build Legacy Production APK
       run: ./gradlew assembleProdLegacyRelease
