@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		var savedDefaultTab = prefs.getString(AwerySettings.DEFAULT_HOME_TAB, Pages.MAIN.name());
+		var savedDefaultTab = prefs.getString(AwerySettings.ui.DEFAULT_HOME_TAB);
 		var currentPage = StringUtil.parseEnum(savedDefaultTab, Pages.MAIN);
 		int currentPageIndex = currentPage.ordinal();
 

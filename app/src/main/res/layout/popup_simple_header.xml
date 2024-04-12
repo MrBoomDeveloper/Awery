@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,8 +13,8 @@
         android:fontFamily="@font/poppins_semi_bold"
         android:paddingHorizontal="32dp"
         android:paddingVertical="18dp"
-        android:text="@string/server_selector"
         android:textSize="16sp"
+        android:text="@string/select_quality"
         android:textColor="?attr/colorOnBackground" />
 
     <com.google.android.material.divider.MaterialDivider

@@ -3,6 +3,7 @@ package com.mrboomdev.awery.app;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.app.Activity;
@@ -41,7 +42,7 @@ public class CrashHandler {
 				.setJavaCallback((s, s1) -> handleError(CrashType.JAVA, s))
 				.setNativeCallback((s, s1) -> handleError(CrashType.NATIVE, s))
 				.setAnrCallback((s, s1) -> handleError(CrashType.ANR, s))
-				.setAnrFastCallback((s, s1) -> handleError(CrashType.ANR, s))
+				.setAnrFastCallback((s, s1) -> handleError(CrashType.ANR_FAST, s))
 				.setAppVersion(BuildConfig.VERSION_NAME);
 
 		var result = switch(XCrash.init(context, xCrashParams)) {
@@ -58,19 +59,26 @@ public class CrashHandler {
 	}
 
 	private enum CrashType {
-		ANR, JAVA, NATIVE
+		ANR, JAVA, NATIVE, ANR_FAST
 	}
 
 	private static void handleError(@NonNull CrashType type, String message) {
 		var text = switch(type) {
-			case ANR -> "Awery isn't responding ._.";
+			case ANR -> "Awery isn't responding for a long time ._.";
+
+			case ANR_FAST -> {
+				toast("Awery isn't responding. Trying to restart ._.", 1);
+				restartApp();
+				yield null;
+			}
+
 			case JAVA -> "Awery has crashed :(";
 			case NATIVE -> "Something REALLY TERRIBLE has happened O_O";
 		};
 
-		toast(text, Toast.LENGTH_LONG);
+		toast(text, 1);
 
-		if(type != CrashType.ANR) {
+		if(type != CrashType.ANR && type != CrashType.ANR_FAST) {
 			var crashFile = new File(getAnyContext().getExternalFilesDir(null), "crash.txt");
 
 			try {

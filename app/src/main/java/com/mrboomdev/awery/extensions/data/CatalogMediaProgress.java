@@ -28,8 +28,26 @@ public class CatalogMediaProgress {
 	public Map<String, String> trackers = new HashMap<>();
 	public Map<Float, Long> progresses = new HashMap<>();
 
+	@NonNull
 	public String getGlobalId() {
 		return globalId;
+	}
+
+	public void clearLists() {
+		if(lists != null) lists.clear();
+	}
+
+	public boolean isInList(String id) {
+		return lists != null && lists.contains(id);
+	}
+
+	public int getListsCount() {
+		return lists == null ? 0 : lists.size();
+	}
+
+	public void addToList(String id) {
+		if(lists == null) lists = new ArrayList<>();
+		lists.add(id);
 	}
 
 	public CatalogMediaProgress(@NonNull String globalId) {

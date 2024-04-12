@@ -11,7 +11,7 @@
 					"description": "material_you_description",
 					"show_if": "is_material_you_available"
 				}, {
-					"key": "dark_theme", "type": "boolean", "restart": true,
+					"key": "dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
 					"title": "Dark Theme", "icon": "ic_sharp_dark_mode",
 					"description": "I'm batman!"
 				}, {
@@ -22,6 +22,19 @@
 					"key": "use_source_theme", "type": "boolean",
 					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
 					"show_if": "never"
+				}, {
+					"key": "pallet", "type": "select", "restart": true, "string_value": "PINK",
+					"title": "Color Palette", "icon": "ic_round_palette_24", "description": "${VALUE_TITLE}",
+					"items": [
+						{ "key": "PINK", "title": "Pink" },
+						{ "key": "PURPLE", "title": "Purple" },
+						{ "key": "BLUE", "title": "Blue" },
+						{ "key": "GREEN", "title": "Green" },
+						{ "key": "RED", "title": "Red" },
+						{ "key": "LAVENDER", "title": "Lavender" },
+						{ "key": "MONOCHROME", "title": "Monochrome" },
+						{ "key": "SAIKOU", "title": "Saikou" }
+					]
 				}
 			]
 		}, {
@@ -29,7 +42,7 @@
 			"title": "ui", "icon": "ic_round_amp_stories_24",
 			"items": [
 				{
-					"key": "default_tab", "type": "select", "string_value": "TODO: MAKE THIS VALUE AS DEFAULT",
+					"key": "default_tab", "type": "select", "string_value": "MAIN",
 					"description": "default_tab_description",
 					"title": "startUpTab", "icon": "ic_round_home_24",
 					"items": [
@@ -43,6 +56,10 @@
 			"title": "content", "icon": "ic_round_grid_view_24",
 			"items": [
 				{
+					"key": "hide_library_entries", "type": "boolean",
+					"title": "hide_library_entries", "icon": "ic_collections_bookmark_filled",
+					"description": "hide_library_entries_description"
+				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
 					"title": "global_excluded_tags", "icon": "ic_round_block_24",
 					"description": "You won't see any media with these tags",
@@ -74,7 +91,7 @@
 			"title": "player", "icon": "ic_round_video_settings_24",
 			"items": [
 				{
-					"key": "double_tap_seek", "type": "select", "string_value": "10",
+					"key": "double_tap_seek_length", "type": "select_int", "int_value": "10",
 					"title": "Double-tap to seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -88,7 +105,7 @@
 						{ "key": "120", "title": "120s" }
 					]
 				}, {
-					"key": "big_seek", "type": "select", "string_value": "45",
+					"key": "big_seek_length", "type": "select_int", "int_value": "60",
 					"title": "Quick Rewind ", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -123,10 +140,15 @@
 						{ "key": "2160", "title": "2160p" }
 					]
 				}, {
-					"key": "subtitles", "type": "screen", "title": "subtitles", "show_if": "never",
+					"key": "subtitles", "type": "screen", "show_if": "never",
+					"title": "subtitles", "icon": "ic_subtitles_filled",
 					"items": [
 						{
-							"key": "size", "type": "int", "title": "subtitles_size", "show_if": "never"
+							"key": "size", "type": "int", "title": "subtitles_size",
+							"from": 2, "to": 100, "int_value": 14
+						}, {
+							"key": "back_opacity", "type": "int", "title": "subtitles_back_opacity",
+							"from": 0, "to": 100, "int_value": 85
 						}
 					]
 				}

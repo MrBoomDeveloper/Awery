@@ -16,6 +16,7 @@ import com.squareup.moshi.Types;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +31,8 @@ public class ParserAdapter {
 	@NonNull
 	@TypeConverter
 	@FromJson
-	public static @Unmodifiable List<String> listFromString(String value) {
-		return StringUtil.uniqueStringToList(value);
+	public static List<String> listFromString(String value) {
+		return new ArrayList<>(StringUtil.uniqueStringToList(value));
 	}
 
 	@NonNull

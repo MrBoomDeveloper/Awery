@@ -15,6 +15,7 @@ public abstract class CustomSettingsItem extends SettingsItem {
 			case BOOLEAN -> getBooleanValue();
 			case STRING, SELECT -> getStringValue();
 			case MULTISELECT -> getStringSetValue();
+			case INT, SELECT_INT -> getIntValue();
 			default -> throw new UnimplementedException("Unsupported type: " + getType());
 		};
 	}

@@ -156,9 +156,9 @@ public class JsBridge {
 
 		if(clazz.isAssignableFrom(String.class)) return clazz.cast(object.toString());
 		if(clazz == Integer.TYPE) return clazz.cast(((Number) object).intValue());
-		if(clazz == Boolean.TYPE) return clazz.cast(((Boolean) object));
 		if(clazz == Float.TYPE) return clazz.cast(((Number) object).floatValue());
 		if(clazz == Long.TYPE) return clazz.cast(((Number) object).longValue());
+		if(clazz == Boolean.TYPE) return clazz.cast(object);
 
 		return clazz.cast(object);
 	}
@@ -172,7 +172,7 @@ public class JsBridge {
 	}
 
 	public void setSaved(@NonNull Object key, Object value) {
-		prefs.setString(key.toString(), value != null ?value.toString() : null);
+		prefs.setString(key.toString(), value != null ? value.toString() : null);
 		prefs.saveSync();
 	}
 }

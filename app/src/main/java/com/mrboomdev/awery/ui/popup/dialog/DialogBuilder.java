@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util.ui.dialog;
+package com.mrboomdev.awery.ui.popup.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,25 +8,24 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ScrollView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogCustomField;
+import com.mrboomdev.awery.util.ui.dialog.DialogField;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class DialogBuilder {
-	private final List<Field> fields = new LinkedList<>();
+	private final List<DialogField> fields = new LinkedList<>();
 	private Callbacks.Callback1<DialogBuilder> dismissListener;
 	private OnButtonClickListener okListener, cancelListener, neutralListener;
 	private final Context context;
 	private ViewGroup fieldsWrapper;
-	private String title, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
+	private String title, message, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
 	private Dialog dialog;
 
 	public DialogBuilder(Context context) {
@@ -35,6 +34,11 @@ public class DialogBuilder {
 
 	public DialogBuilder setTitle(String title) {
 		this.title = title;
+		return this;
+	}
+
+	public DialogBuilder setMessage(String message) {
+		this.message = message;
 		return this;
 	}
 
@@ -50,6 +54,24 @@ public class DialogBuilder {
 		return this;
 	}
 
+	public void performOkClick() {
+		if(okListener != null) {
+			okListener.clicked(this);
+		}
+	}
+
+	public void performNegativeClick() {
+		if(neutralListener != null) {
+			neutralListener.clicked(this);
+		}
+	}
+
+	public void performCancelClick() {
+		if(cancelListener != null) {
+			cancelListener.clicked(this);
+		}
+	}
+
 	public DialogBuilder setCancelButton(String cancel, OnButtonClickListener listener) {
 		this.cancelListener = listener;
 		this.cancelButtonLabel = cancel;
@@ -62,7 +84,7 @@ public class DialogBuilder {
 	}
 
 	public DialogBuilder addView(View view, int index) {
-		addField(new ViewField(view), index);
+		addField(new DialogCustomField(view), index);
 		return this;
 	}
 
@@ -71,7 +93,7 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public DialogBuilder addField(Field field, int index) {
+	public DialogBuilder addField(DialogField field, int index) {
 		fields.add(index, field);
 
 		if(fieldsWrapper != null) {
@@ -81,7 +103,7 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public DialogBuilder addField(Field field) {
+	public DialogBuilder addField(DialogField field) {
 		addField(field, fields.size());
 		return this;
 	}
@@ -160,6 +182,7 @@ public class DialogBuilder {
 		builder.setView(scroller);
 
 		if(title != null) builder.setTitle(title);
+		if(message != null) builder.setMessage(message);
 
 		if(okButtonLabel != null) builder.setPositiveButton(okButtonLabel,
 				(dialog, which) -> okListener.clicked(this));
@@ -229,83 +252,6 @@ public class DialogBuilder {
 		}
 
 		return null;
-	}
-
-	public static class InputField implements Field {
-		private final Context context;
-		private String hint, error;
-		private TextInputLayout view;
-		private TextInputEditText editText;
-
-		public InputField(Context context, String hint) {
-			this.hint = hint;
-			this.context = context;
-		}
-
-		public void setError(@Nullable String error) {
-			this.error = error;
-
-			if(view != null) {
-				view.setError(error);
-			}
-		}
-
-		public String getText() {
-			if(editText != null) {
-				var text = editText.getText();
-
-				if(text != null) {
-					return text.toString();
-				}
-			}
-			return "";
-		}
-
-		@Override
-		public View getView() {
-			if(view != null) {
-				return view;
-			}
-
-			view = new TextInputLayout(context);
-
-			editText = new TextInputEditText(context);
-			editText.setHint(hint);
-			view.addView(editText);
-
-			setError(error);
-
-			return view;
-		}
-
-		@Override
-		public void deAttach() {
-			view = null;
-			editText = null;
-		}
-	}
-
-	public static class ViewField implements Field {
-		private View view;
-
-		public ViewField(View view) {
-			this.view = view;
-		}
-
-		@Override
-		public View getView() {
-			return view;
-		}
-
-		@Override
-		public void deAttach() {
-			this.view = null;
-		}
-	}
-
-	public interface Field {
-		View getView();
-		void deAttach();
 	}
 
 	public interface OnButtonClickListener {

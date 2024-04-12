@@ -11,9 +11,6 @@
         <item name="android:ambientShadowAlpha">0.08</item>
         <item name="android:spotShadowAlpha">0.08</item>
 
-        <item name="snackbarStyle">@style/MySnackbar</item>
-        <item name="snackbarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Snackbar</item>
-        <item name="snackbarTextViewStyle">@string/MySnackBarText</item>
         <item name="popupMenuStyle">@style/MyPopup</item>
         <item name="bottomSheetDialogTheme">@style/Sheet</item>
 
@@ -24,6 +21,8 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
+    <style name="AmoledThemeOverlay" parent="ThemeOverlay.Material3.DynamicColors.Light" />
+
     <style name="Theme.Awery.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         <item name="postSplashScreenTheme">@style/Theme.Awery</item>
@@ -33,9 +32,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="Theme.Awery.AppBarOverlay" parent="Theme.Awery" />
-    <style name="Theme.Awery.PopupOverlay" parent="Theme.Awery" />
 
     <style name="DialogTheme" parent="Theme.Awery">
         <item name="android:layout_width">wrap_content</item>

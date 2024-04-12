@@ -15,6 +15,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
@@ -36,7 +37,8 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -157,9 +159,65 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					}
 
 					SettingsActions.run(setting.getFullKey());
+
+					if(setting.isRestartRequired()) {
+						suggestToRestart(parent);
+					}
 				}
 
-				case SELECT -> {
+				case INT -> {
+					var inputField = new DialogEditTextField(parent.getContext());
+					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
+					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
+					inputField.setText(setting.getIntValue());
+					inputField.setLinesCount(1);
+
+					var dialog = new DialogBuilder(parent.getContext())
+							.setTitle(setting.getTitle(parent.getContext()))
+							.setMessage(setting.getDescription(parent.getContext()))
+							.addField(inputField)
+							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setPositiveButton("Ok", _dialog -> {
+								if(inputField.getText().isBlank()) {
+									inputField.setError("Text cannot be empty!");
+									return;
+								}
+
+								try {
+									var number = Integer.parseInt(inputField.getText());
+
+									if(setting.isFromToAvailable()) {
+										if(number > setting.getTo()) {
+											inputField.setError("Value is too high. Max is: " + Math.round(setting.getTo()));
+											return;
+										}
+
+										if(number < setting.getFrom()) {
+											inputField.setError("Value is too low. Min is: " + Math.round(setting.getFrom()));
+											return;
+										}
+									}
+
+									var prefs = AwerySettings.getInstance();
+									prefs.setInt(setting.getFullKey(), number);
+									prefs.saveAsync();
+								} catch(NumberFormatException e) {
+									inputField.setError("This is not a number!");
+									return;
+								}
+
+								_dialog.dismiss();
+
+								if(setting.isRestartRequired()) {
+									suggestToRestart(parent);
+								}
+							})
+							.show();
+
+					inputField.setCompletionCallback(dialog::performOkClick);
+				}
+
+				case SELECT, SELECT_INT -> {
 					final var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
 					final var selectedItem = new AtomicReference<SettingsData.SelectionItem>();
 
@@ -192,6 +250,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									customSetting.saveValue(id);
 
 									_dialog.dismiss();
+
+									if(setting.isRestartRequired()) {
+										suggestToRestart(parent);
+									}
+
 									return;
 								}
 
@@ -209,11 +272,24 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									holder.updateDescription(id);
 
 									var prefs = AwerySettings.getInstance();
-									prefs.setString(setting.getFullKey(), id);
+
+									if(setting.getType() == SettingsItemType.SELECT_INT) {
+										var integer = Integer.parseInt(id);
+										setting.setIntValue(integer);
+										prefs.setInt(setting.getFullKey(), integer);
+									} else {
+										setting.setStringValue(id);
+										prefs.setString(setting.getFullKey(), id);
+									}
+
 									prefs.saveAsync();
 								}
 
 								_dialog.dismiss();
+
+								if(setting.isRestartRequired()) {
+									suggestToRestart(parent);
+								}
 							})
 							.show();
 
@@ -238,9 +314,17 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							});
 						});
 					} else if(setting.getItems() != null && !setting.getItems().isEmpty()) {
-						var selected = setting instanceof CustomSettingsItem customSetting
-								? (String) customSetting.getSavedValue()
-								: AwerySettings.getInstance().getString(setting.getFullKey());
+						String selected;
+
+						if(setting.getType() == SettingsItemType.SELECT_INT) {
+							selected = String.valueOf(setting instanceof CustomSettingsItem customSetting
+									? customSetting.getSavedValue()
+									: setting.getIntValue());
+						} else {
+							selected = setting instanceof CustomSettingsItem customSetting
+									? (String) customSetting.getSavedValue()
+									: setting.getStringValue();
+						}
 
 						var options = new HashSet<SettingsData.SelectionItem>();
 						selectionItems.set(options);
@@ -287,11 +371,20 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 											.collect(Collectors.toSet()));
 
 									_dialog.dismiss();
+
+									if(setting.isRestartRequired()) {
+										suggestToRestart(parent);
+									}
+
 									return;
 								}
 
 								SettingsData.saveSelectionList(setting.getBehaviour(), items);
 								_dialog.dismiss();
+
+								if(setting.isRestartRequired()) {
+									suggestToRestart(parent);
+								}
 							})
 							.show();
 
@@ -382,12 +475,16 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			holder.updateDescription(String.valueOf(isChecked));
 
 			if(item.isRestartRequired()) {
-				Snackbar.make(parent, "Restart is required to apply changes", 2250)
-						.setAction("Restart", _view -> restartApp()).show();
+				suggestToRestart(parent);
 			}
 		});
 
 		return holder;
+	}
+
+	private void suggestToRestart(View parent) {
+		Snackbar.make(parent, "Restart is required to apply changes", 2250)
+				.setAction("Restart", _view -> restartApp()).show();
 	}
 
 	@Override
@@ -456,6 +553,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					case SELECT -> {
 						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
 								? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
+
+						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
+						yield found.isPresent() ? found.get().getTitle(context) : "";
+					}
+
+					case SELECT_INT -> {
+						var selected = payload != null ? payload : String.valueOf(item instanceof CustomSettingsItem customSetting
+								? customSetting.getSavedValue() : prefs.getInt(item.getFullKey()));
 
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";

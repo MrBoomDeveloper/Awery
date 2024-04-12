@@ -100,10 +100,12 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 				var index = items.indexOf(media);
 
 				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
-					if(MediaUtils.isMediaFiltered(media)) {
+					MediaUtils.isMediaFiltered(media, isFiltered -> {
+						if(!isFiltered) return;
+
 						items.remove(index);
 						notifyItemRemoved(index);
-					}
+					});
 				});
 				return true;
 			});

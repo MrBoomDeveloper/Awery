@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.data;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
 import com.google.common.collect.Lists;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class CatalogMedia {
 	public static final CatalogMedia INVALID_MEDIA;
 	@NonNull
+	@ColumnInfo(name = "global_id")
 	public String globalId;
 	public List<String> titles = new ArrayList<>();
 	public Map<String, String> ids = new HashMap<>();

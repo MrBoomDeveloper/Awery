@@ -252,9 +252,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Override
 	public void save(@NonNull SettingsItem item, Object newValue) {
-		switch(item.getType()) {
-			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue).saveAsync();
-			case SELECT -> settings.setString(item.getFullKey(), (String) newValue).saveAsync();
-		}
+		(switch(item.getType()) {
+			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue);
+			case SELECT -> settings.setString(item.getFullKey(), (String) newValue);
+			case SELECT_INT -> settings.setInt(item.getFullKey(), (int) newValue);
+			default -> throw new IllegalArgumentException("Unsupported type!");
+		}).saveAsync();
 	}
 }

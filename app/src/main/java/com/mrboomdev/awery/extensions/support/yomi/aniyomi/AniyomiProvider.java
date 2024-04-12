@@ -173,7 +173,7 @@ public class AniyomiProvider extends ExtensionProvider {
 						}
 
 						@Override
-						public boolean getBooleanValue() {
+						public Boolean getBooleanValue() {
 							return switchPref.isChecked();
 						}
 

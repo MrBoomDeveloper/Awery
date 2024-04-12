@@ -17,6 +17,8 @@ public enum SettingsItemType {
 	SCREEN,
 	@Json(name = "select")
 	SELECT,
+	@Json(name = "select_int")
+	SELECT_INT,
 	@Json(name = "multiselect")
 	MULTISELECT,
 	@Json(name = "action")

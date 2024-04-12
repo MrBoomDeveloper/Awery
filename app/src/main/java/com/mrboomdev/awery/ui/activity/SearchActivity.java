@@ -23,6 +23,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
@@ -175,7 +176,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		AnilistSearchQuery.builder()
 				.setSearchQuery(searchQuery)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
 				.setPage(page)
@@ -183,27 +184,28 @@ public class SearchActivity extends AppCompatActivity {
 				.executeQuery(this, items -> {
 					if(wasSearchId != searchId) return;
 
-					final var filteredItems = MediaUtils.filterMedia(items);
-					if(filteredItems.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
+					MediaUtils.filterMedia(items, filteredItems -> {
+						if(filteredItems.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
-					for(var item : filteredItems) {
-						item.visualId = idGenerator.getLong();
-					}
-
-					runOnUiThread(() -> {
-						if(wasSearchId != searchId) return;
-						this.isLoading = false;
-						this.currentPage = page;
-
-						if(page == 0) {
-							this.items.addAll(filteredItems);
-							adapter.setItems(this.items);
-							return;
+						for(var item : filteredItems) {
+							item.visualId = idGenerator.getLong();
 						}
 
-						var wasSize = this.items.size();
-						this.items.addAll(filteredItems, false);
-						adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
+						runOnUiThread(() -> {
+							if(wasSearchId != searchId) return;
+							this.isLoading = false;
+							this.currentPage = page;
+
+							if(page == 0) {
+								this.items.addAll(filteredItems);
+								adapter.setItems(this.items);
+								return;
+							}
+
+							var wasSize = this.items.size();
+							this.items.addAll(filteredItems, false);
+							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
+						});
 					});
 				}).catchExceptions(e -> {
 					if(wasSearchId != searchId) return;
@@ -289,12 +291,14 @@ public class SearchActivity extends AppCompatActivity {
 				var media = viewHolder.getItem();
 				var index = items.indexOf(media);
 
-				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
-					if(MediaUtils.isMediaFiltered(media)) {
+				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
+					if(!isFiltered) return;
+
+					AweryLifecycle.runOnUiThread(() -> {
 						items.remove(media);
 						notifyItemRemoved(index);
-					}
-				});
+					});
+				}));
 				return true;
 			});
 

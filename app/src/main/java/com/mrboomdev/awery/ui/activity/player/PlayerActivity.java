@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 
@@ -269,16 +270,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	private void loadSettings() {
 		var prefs = AwerySettings.getInstance(this);
 
-		doubleTapSeek = StringUtil.parseInteger(
-				prefs.getString(AwerySettings.DOUBLE_TAP_SEEK,
-				"10"), 10);
-
-		bigSeek = StringUtil.parseInteger(
-				prefs.getString(AwerySettings.PLAYER_BIG_SEEK,
-						"60"), 60);
+		doubleTapSeek = prefs.getInt(AwerySettings.player.DOUBLE_TAP_SEEK_LENGTH);
+		bigSeek = prefs.getInt(AwerySettings.player.BIG_SEEK_LENGTH);
 
 		gesturesMode = StringUtil.parseEnum(
-				prefs.getString(AwerySettings.PLAYER_GESTURES),
+				prefs.getString(AwerySettings.player.GESTURES_MODE),
 				GesturesMode.VOLUME_BRIGHTNESS);
 	}
 
@@ -322,7 +318,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 			player.setMediaItem(item, false);
 		} else {
-			player.setMediaItem(videoItem, false);
+			// Don't know why, but the video doesn't start if we don't reset the position
+			// And this is happening only at the first playback
+			player.setMediaItem(videoItem, !didSelectedVideo);
 		}
 
 		player.play();
@@ -333,7 +331,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		this.video = video;
 
 		selectSubtitles(null);
-		player.play();
 
 		if(video.getSubtitles().isEmpty()) {
 			binding.subtitles.setAlpha(.35f);
@@ -374,12 +371,12 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 					var error = new ExceptionDescriptor(throwable);
 					Log.e(TAG, "Failed to load videos list!", throwable);
 
-					AweryApp.toast(error.getTitle(PlayerActivity.this), 1);
+					toast(error.getTitle(PlayerActivity.this), 1);
 					finish();
 				}
 			});
 		} else {
-			AweryApp.toast("External videos are not supported yet");
+			toast("External videos are not supported yet");
 			finish();
 		}
 	}
@@ -471,7 +468,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	public void onPlayerError(@NonNull PlaybackException e) {
 		Log.e(TAG, "Player error has occurred", e);
 
-		AweryApp.toast(switch(e.errorCode) {
+		toast(switch(e.errorCode) {
 			case PlaybackException.ERROR_CODE_TIMEOUT -> "Connection timeout has occurred, please try again later";
 			case PlaybackException.ERROR_CODE_DECODING_FAILED -> "Video decoding failed, please try again later";
 			case PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> "Video not found, please try again later";

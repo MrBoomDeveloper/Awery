@@ -24,8 +24,8 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Callbacks;
-import com.mrboomdev.awery.util.MimeTypes;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.squareup.moshi.Json;
 
 import java.net.MalformedURLException;
@@ -38,7 +38,7 @@ import java9.util.Objects;
 
 public class ExtensionSettings extends SettingsItem implements SettingsDataHandler, ListenableSettingsItem {
 	private static final String TAG = "ExtensionSettings";
-	private final ActivityResultLauncher<String[]> pickLauncher;
+	private final ActivityResultLauncher<String> pickLauncher;
 	private final List<SettingsItem> headerItems = new ArrayList<>();
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
@@ -58,7 +58,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		this.activity = activity;
 		this.manager = manager;
 
-		this.pickLauncher = activity.registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+		this.pickLauncher = activity.registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
 			if(uri == null) return;
 
 			/*if(!MimeTypes.test(uri.getPath(), manager.getExtensionMimeTypes())) {
@@ -106,14 +106,14 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 			@Override
 			public void onClick(Context context) {
-				var inputField = new DialogBuilder.InputField(context, "Repository URL");
+				var inputField = new DialogEditTextField(context, "Repository URL");
 
 				currentDialog = new DialogBuilder(context)
 						.setTitle("Add extension")
 						.addField(inputField)
 						.setOnDismissListener(dialog -> currentDialog = dialog)
 						.setCancelButton("Cancel", DialogBuilder::dismiss)
-						.setNeutralButton("Pick from Storage", dialog -> pickLauncher.launch(new String[]{"*/*"}))
+						.setNeutralButton("Pick from Storage", dialog -> pickLauncher.launch("*/*"))
 						.setPositiveButton("Ok", dialog -> {
 							var text = inputField.getText().trim();
 

@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 
 import androidx.annotation.StyleRes;
@@ -14,31 +15,26 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 public class ThemeManager {
 	private static final Theme DEFAULT_THEME = Theme.PINK;
 
-	public static boolean isAmoled(Context context) {
-		var prefs = AwerySettings.getInstance(context);
-		return prefs.getBoolean(AwerySettings.THEME_USE_OLDED);
-	}
-
 	public static boolean isMaterialYou(Context context) {
 		var prefs = AwerySettings.getInstance(context);
 
-		if(!prefs.contains(AwerySettings.THEME_USE_MATERIAL_YOU)) {
+		if(!prefs.contains(AwerySettings.theme.USE_MATERIAL_YOU)) {
 			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
 
-			prefs.setBoolean(AwerySettings.THEME_USE_MATERIAL_YOU, isMaterialYouSupported);
+			prefs.setBoolean(AwerySettings.theme.USE_MATERIAL_YOU, isMaterialYouSupported);
 			prefs.saveAsync();
 
 			return isMaterialYouSupported;
 		}
 
-		return prefs.getBoolean(AwerySettings.THEME_USE_MATERIAL_YOU);
+		return prefs.getBoolean(AwerySettings.theme.USE_MATERIAL_YOU);
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
 		var prefs = AwerySettings.getInstance(activity);
 
-		boolean useOLED = prefs.getBoolean(AwerySettings.THEME_USE_OLDED);
-		boolean useColorsFromPoster = prefs.getBoolean(AwerySettings.THEME_USE_COLORS_FROM_MEDIA);
+		boolean useOLED = prefs.getBoolean(AwerySettings.theme.USE_OLED);
+		boolean useColorsFromPoster = prefs.getBoolean(AwerySettings.theme.EXTRACT_COVER_COLORS);
 		boolean useMaterialYou = isMaterialYou(activity);
 
 		if(useMaterialYou || (useColorsFromPoster && bitmap != null)) {
@@ -46,14 +42,21 @@ public class ThemeManager {
 			return;
 		}
 
-		var savedTheme = prefs.getString(AwerySettings.THEME_PALLET, DEFAULT_THEME.name());
+		var savedTheme = prefs.getString(AwerySettings.theme.THEME_PALLET);
 		Theme enumTheme;
 
 		try {
 			enumTheme = Theme.valueOf(savedTheme);
 		} catch(IllegalArgumentException e) {
 			enumTheme = DEFAULT_THEME;
-			prefs.setString(AwerySettings.THEME_PALLET, enumTheme.name());
+			prefs.setString(AwerySettings.theme.THEME_PALLET, enumTheme.name());
+		}
+
+		// In light mode there is no amoled theme so we need to check the current night mode
+		if(useOLED && (activity.getResources().getConfiguration().uiMode
+				& Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
+			activity.setTheme(enumTheme.getRes());
+			return;
 		}
 
 		activity.setTheme(useOLED ?
@@ -68,8 +71,13 @@ public class ThemeManager {
 	private static void applyMaterialYou(Activity activity, Bitmap bitmap, boolean useOLED) {
 		var options = new DynamicColorsOptions.Builder();
 
-		if(bitmap != null) options.setContentBasedSource(bitmap);
-		if(useOLED) options.setThemeOverlay(R.style.AmoledThemeOverlay);
+		if(bitmap != null) {
+			options.setContentBasedSource(bitmap);
+		}
+
+		if(useOLED) {
+			options.setThemeOverlay(R.style.AmoledThemeOverlay);
+		}
 
 		DynamicColors.applyToActivityIfAvailable(activity, options.build());
 	}

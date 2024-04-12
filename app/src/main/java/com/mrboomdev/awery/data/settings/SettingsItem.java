@@ -17,6 +17,7 @@ import com.squareup.moshi.ToJson;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class SettingsItem {
@@ -47,6 +48,7 @@ public class SettingsItem {
 	private Integer intValue;
 	@Json(name = "string_set_value")
 	private Set<String> stringSetValue;
+	private Float from, to;
 	@Json(name = "string_value")
 	private String stringValue;
 	@Json(ignore = true)
@@ -61,13 +63,16 @@ public class SettingsItem {
 	protected void copyFrom(@NonNull SettingsItem item) {
 		this.key = item.key;
 		this.type = item.type;
+		this.items = item.items;
+
 		this.booleanValue = item.booleanValue;
-		this.intValue = item.intValue;
 		this.stringValue = item.stringValue;
 
-		this.items = item.items;
-		this.behaviour = item.behaviour;
+		this.intValue = item.intValue;
+		this.from = item.from;
+		this.to = item.to;
 
+		this.behaviour = item.behaviour;
 		this.restart = item.restart;
 		this.showIf = item.showIf;
 
@@ -90,6 +95,18 @@ public class SettingsItem {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public boolean isFromToAvailable() {
+		return from != null && to != null;
+	}
+
+	public Float getFrom() {
+		return from;
+	}
+
+	public Float getTo() {
+		return to;
 	}
 
 	public float getIconSize() {
@@ -145,9 +162,13 @@ public class SettingsItem {
 		if(type == null) return;
 
 		switch(type) {
-			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey());
-			case INT -> intValue = settings.getInt(getFullKey());
-			case SELECT, STRING -> stringValue = settings.getString(getFullKey());
+			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey(),
+					Objects.requireNonNullElse(booleanValue, false));
+
+			case INT, SELECT_INT -> intValue = settings.getInt(getFullKey(),
+					Objects.requireNonNullElse(intValue, 0));
+
+			case SELECT, STRING -> stringValue = settings.getString(getFullKey(), stringValue);
 
 			case SCREEN -> {
 				if(items == null) return;
@@ -197,7 +218,7 @@ public class SettingsItem {
 		}
 	}
 
-	public boolean getBooleanValue() {
+	public Boolean getBooleanValue() {
 		return booleanValue != null && booleanValue;
 	}
 
@@ -205,7 +226,7 @@ public class SettingsItem {
 		return headerItems;
 	}
 
-	public int getIntValue() {
+	public Integer getIntValue() {
 		return intValue;
 	}
 
@@ -275,21 +296,31 @@ public class SettingsItem {
 	}
 
 	public SettingsItem find(@NonNull String query) {
-		var parts = query.split("\\.");
+		return switch(type) {
+			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INT, MULTISELECT -> query.equals(getFullKey()) ? this : null;
 
-		if(parts.length == 1) {
-			return findDirect(parts[0]);
-		}
+			case SCREEN, SCREEN_BOOLEAN -> {
+				if(query.equals(getFullKey())) {
+					yield this;
+				}
 
-		if(parts.length > 1) {
-			return stream(items)
-					.filter(item -> item.getKey().equals(parts[0]))
-					.map(item -> item.find(String.join(".", parts).substring(parts[0].length())))
-					.findFirst()
-					.orElse(null);
-		}
+				if(items == null) {
+					yield null;
+				}
 
-		return null;
+				for(var item : items) {
+					var found = item.find(query);
+
+					if(found != null) {
+						yield found;
+					}
+				}
+
+				yield null;
+			}
+
+			case ACTION -> null;
+		};
 	}
 
 	public static class Builder {

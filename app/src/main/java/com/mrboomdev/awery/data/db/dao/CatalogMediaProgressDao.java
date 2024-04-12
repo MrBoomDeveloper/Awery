@@ -2,6 +2,7 @@ package com.mrboomdev.awery.data.db.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
@@ -11,7 +12,7 @@ import java.util.List;
 @Dao
 public interface CatalogMediaProgressDao {
 
-	@Insert
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	void insert(CatalogMediaProgress progress);
 
 	@Query("SELECT * FROM media_progress WHERE global_id = :globalId")

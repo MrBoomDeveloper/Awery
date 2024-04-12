@@ -31,7 +31,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/title"
             app:layout_constraintBottom_toBottomOf="@id/title"
-            android:text="New List"
+            android:text="@string/new_list"
             android:paddingHorizontal="32dp"
             app:icon="@drawable/ic_add" />
 

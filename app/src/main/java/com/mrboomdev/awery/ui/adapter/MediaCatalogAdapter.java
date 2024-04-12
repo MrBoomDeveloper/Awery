@@ -69,10 +69,12 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 			MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
 
-				if(MediaUtils.isMediaFiltered(media)) {
+				MediaUtils.isMediaFiltered(media, isFiltered -> {
+					if(!isFiltered) return;
+
 					items.remove(media);
 					notifyItemRemoved(index);
-				}
+				});
 			});
 			return true;
 		});

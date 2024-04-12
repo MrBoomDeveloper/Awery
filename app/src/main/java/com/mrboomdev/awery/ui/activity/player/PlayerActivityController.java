@@ -18,12 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
+import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -205,7 +204,7 @@ public class PlayerActivityController {
 
 		var items = new LinkedHashMap<PopupItem, Action>() {{
 			put(new PopupItem().setTitle("Video quality").setIcon(R.drawable.ic_round_high_quality_24), Action.QUALITY);
-			put(new PopupItem().setTitle("Aspect ratio").setIcon(R.drawable.ic_round_fullscreen_24), Action.ASPECT);
+			put(new PopupItem().setTitle("Aspect ratio").setIcon(R.drawable.ic_fullscreen), Action.ASPECT);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {

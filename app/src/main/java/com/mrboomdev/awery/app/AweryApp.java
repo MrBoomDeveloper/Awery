@@ -216,7 +216,7 @@ public class AweryApp extends Application {
 		AweryLifecycle.init(this);
 
 		var isDarkModeEnabled = AwerySettings.getInstance(this)
-				.getBoolean(AwerySettings.DARK_THEME, true);
+				.getBoolean(AwerySettings.theme.DARK_THEME);
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 			((UiModeManager) getSystemService(UI_MODE_SERVICE))

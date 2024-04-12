@@ -11,14 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
+import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
@@ -71,13 +70,13 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		totalTasks++;
 		AnilistSearchQuery.builder()
 				.setCurrentSeason()
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
 				.build().executeQuery(requireContext(), items -> {
 					if(currentLoadId != loadId) return;
 
-					var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
+					var filtered = new ArrayList<>(MediaUtils.filterMediaSync(items));
 					if(filtered.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
 					requireActivity().runOnUiThread(() -> {
@@ -100,7 +99,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		loadCategory("Trending", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
@@ -118,26 +117,26 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		loadCategory("Popular", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Movies", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
 				.setFormat(AnilistMedia.MediaFormat.MOVIE)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Most Favorited", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.FAVOURITES_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 
 		loadCategory("Top Rated", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SCORE_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT) ? null : false)
+				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
 				.build(), cats);
 	}
 
@@ -193,7 +192,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		query.executeQuery(requireContext(), items -> {
 			if(loadId != this.loadId) return;
 
-			var filtered = new ArrayList<>(MediaUtils.filterMedia(items));
+			var filtered = new ArrayList<>(MediaUtils.filterMediaSync(items));
 			if(filtered.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
 
 			requireActivity().runOnUiThread(() -> {

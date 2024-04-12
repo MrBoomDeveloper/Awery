@@ -5,9 +5,6 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.util.Parser;
-
-import java.io.IOException;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
@@ -32,15 +29,17 @@ public class AniyomiMedia extends CatalogMedia {
 			default -> CatalogMedia.MediaStatus.UNKNOWN;
 		};
 
-		this.extra = Parser.toString(SAnime.class, anime);
+		this.extra = anime.getUrl();
 		this.description = anime.getDescription();
 		this.anime = anime;
 
 		this.authors.put("author", anime.getAuthor());
 		this.authors.put("artist", anime.getArtist());
 
-		if(anime.getGenre() != null) {
-			this.genres = stream(anime.getGenre().split(", "))
+		var genre = anime.getGenre();
+
+		if(genre != null) {
+			this.genres = stream(genre.split(", "))
 					.map(String::trim)
 					.filter(item -> !item.isBlank())
 					.toList();
@@ -52,20 +51,21 @@ public class AniyomiMedia extends CatalogMedia {
 			return animeMedia.getAnime();
 		}
 
-		// Try to restore the SAnime instance from the serialized extra
-		if(media.extra != null && media.getManagerId().equals(AniyomiManager.TYPE_ID)) {
-			try {
-				return Parser.fromString(SAnime.class, media.extra);
-			} catch(IOException ignored) {}
-		}
-
-		// Well, this media is not an AniyomiMedia, we can try generating one from the media
 		var anime = new SAnimeImpl();
 		anime.setTitle(media.getTitle());
 		anime.setDescription(media.description);
 		anime.setThumbnail_url(media.poster.extraLarge);
+		anime.setUrl(media.extra);
 		anime.setAuthor(media.authors.get("author"));
 		anime.setArtist(media.authors.get("artist"));
+
+		anime.setStatus(switch(media.status) {
+			case ONGOING -> SAnime.ONGOING;
+			case COMPLETED -> SAnime.COMPLETED;
+			case PAUSED -> SAnime.ON_HIATUS;
+			case CANCELLED -> SAnime.CANCELLED;
+			case UNKNOWN, COMING_SOON -> 0;
+		});
 
 		anime.setGenre(media.genres == null ? null : stream(media.genres)
 				.map(String::trim)

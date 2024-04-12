@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.squareup.moshi.Moshi;
 
@@ -32,24 +31,39 @@ public class AwerySettings {
 	public static final String APP_SETTINGS = "Awery";
 	private static SettingsItem settingsMapInstance;
 	private final SharedPreferences prefs;
+	private final Context context;
 	private SharedPreferences.Editor editor;
 
-	public static final String PLAYER_GESTURES = "settings_player_gestures";
-	public static final String PLAYER_BIG_SEEK = "settings_player_big_seek";
-	public static final String DOUBLE_TAP_SEEK = "settings_player_double_tab_seek";
-	public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
-	public static final String ADULT_CONTENT = "settings_content_adult_content";
-	public static final String DARK_THEME = "settings_theme_dark_theme";
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
-	public static final String THEME_USE_MATERIAL_YOU = "settings_theme_use_material_you";
 	public static final String LAST_OPENED_VERSION = "last_opened_version";
-	public static final String THEME_PALLET = "settings_theme_pallet";
-	public static final String THEME_USE_OLDED = "settings_theme_amoled";
-	public static final String THEME_USE_COLORS_FROM_MEDIA = "settings_theme_use_source_theme";
-	public static final String CONTENT_GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
 
-	private AwerySettings(SharedPreferences prefs) {
-		this.prefs = prefs;
+	public static final class theme {
+		public static final String USE_MATERIAL_YOU = "settings_theme_use_material_you";
+		public static final String DARK_THEME = "settings_theme_dark_theme";
+		public static final String EXTRACT_COVER_COLORS = "settings_theme_use_source_theme";
+		public static final String THEME_PALLET = "settings_theme_pallet";
+		public static final String USE_OLED = "settings_theme_amoled";
+	}
+
+	public static final class ui {
+		public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
+	}
+
+	public static final class content {
+		public static final String HIDE_LIBRARY_ENTRIES = "settings_content_hide_library_entries";
+		public static final String GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
+		public static final String ADULT_CONTENT = "settings_content_adult_content";
+	}
+
+	public static final class player {
+		public static final String GESTURES_MODE = "settings_player_gestures";
+		public static final String BIG_SEEK_LENGTH = "settings_player_big_seek_length";
+		public static final String DOUBLE_TAP_SEEK_LENGTH = "settings_player_double_tap_seek_length";
+	}
+
+	private AwerySettings(@NonNull Context context, String name) {
+		this.prefs = context.getSharedPreferences(name, 0);
+		this.context = context;
 	}
 
 	public static void cachePath(String path, SettingsItem item) {
@@ -96,16 +110,6 @@ public class AwerySettings {
 		}
 	}
 
-	public static String getDefaultString(Context context, String key) {
-		var settings = getSettingsMap(context);
-		return settings.find(key).getStringValue();
-	}
-
-	public static boolean getDefaultBoolean(Context context, String key) {
-		var settings = getSettingsMap(context);
-		return settings.find(key).getBooleanValue();
-	}
-
 	/**
 	 * @see #getBoolean(String)
 	 * @return the value of the specified key, or the default value if the key does not exist
@@ -135,12 +139,14 @@ public class AwerySettings {
 	 * @author MrBoomDev
 	 */
 	public boolean getBoolean(String key) {
-		return getBoolean(key, false);
-	}
+		var found = getSettingsMap(context).find(key);
 
-	public Boolean getOptionalBoolean(String key) {
-		if(!prefs.contains(key)) return null;
-		return getBoolean(key);
+		if(found != null) {
+			var value = found.getBooleanValue();
+			if(value != null) return value;
+		}
+
+		return getBoolean(key, false);
 	}
 
 	public AwerySettings setBoolean(String key, boolean value) {
@@ -158,7 +164,14 @@ public class AwerySettings {
 		return prefs.getInt(key, defaultValue);
 	}
 
-	public int getInt(String key) {
+	public Integer getInt(String key) {
+		var found = getSettingsMap(context).find(key);
+
+		if(found != null) {
+			var value = found.getIntValue();
+			if(value != null) return value;
+		}
+
 		return getInt(key, 0);
 	}
 
@@ -178,6 +191,13 @@ public class AwerySettings {
 	}
 
 	public String getString(String key) {
+		var found = getSettingsMap(context).find(key);
+
+		if(found != null) {
+			var value = found.getStringValue();
+			if(value != null) return value;
+		}
+
 		return getString(key, null);
 	}
 
@@ -186,18 +206,12 @@ public class AwerySettings {
 		return this;
 	}
 
-	public Set<String> getStringSet(String key, Set<String> defaultValue) {
-		if(!prefs.contains(key)) {
-			checkEditorExistence().putStringSet(key, defaultValue);
-			saveSync();
-			return defaultValue;
+	public Set<String> getStringSet(String name) {
+		if(contains(name)) {
+			return prefs.getStringSet(name, null);
 		}
 
-		return new HashSet<>(prefs.getStringSet(key, defaultValue));
-	}
-
-	public Set<String> getStringSet(String name) {
-		return getStringSet(name, new HashSet<>());
+		return prefs.getStringSet(name, new HashSet<>());
 	}
 
 	public AwerySettings setStringSet(String key, Set<String> value) {
@@ -256,7 +270,7 @@ public class AwerySettings {
 	 */
 	@NonNull
 	public static AwerySettings getInstance(@NonNull Context context, String name) {
-		return new AwerySettings(context.getSharedPreferences(name, 0));
+		return new AwerySettings(context, name);
 	}
 
 	/**

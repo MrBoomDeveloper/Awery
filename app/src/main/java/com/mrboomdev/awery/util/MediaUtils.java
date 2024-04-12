@@ -1,21 +1,26 @@
 package com.mrboomdev.awery.util;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
+import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ShareCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.checkbox.MaterialCheckBox;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
@@ -23,9 +28,11 @@ import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
+import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import org.jetbrains.annotations.Contract;
@@ -51,18 +58,41 @@ public class MediaUtils {
 		launchMediaActivity(context, media, ACTION_INFO);
 	}
 
-	public static Collection<CatalogMedia> filterMedia(@NonNull Collection<CatalogMedia> items) {
-		return stream(items).filter(item -> !isMediaFiltered(item)).toList();
+	@NonNull
+	public static Collection<CatalogMedia> filterMediaSync(@NonNull Collection<CatalogMedia> items) {
+		return stream(items)
+				.filter(item -> !isMediaFilteredSync(item))
+				.toList();
+	}
+
+	public static void filterMedia(@NonNull Collection<CatalogMedia> items, Callbacks.Callback1<Collection<CatalogMedia>> callback) {
+		new Thread(() -> callback.run(filterMediaSync(items))).start();
+	}
+
+	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
+		var prefs = AwerySettings.getInstance();
+		var badTags = prefs.getStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS);
+		var excludeMediaEntries = prefs.getBoolean(AwerySettings.content.HIDE_LIBRARY_ENTRIES);
+		var saved = AweryApp.getDatabase().getMediaProgressDao().get(media.globalId);
+
+		if(saved != null) {
+			if(excludeMediaEntries && saved.getListsCount() > 0) {
+				return true;
+			}
+
+			if(saved.isInList(AweryApp.CATALOG_LIST_BLACKLIST)) {
+				return true;
+			}
+		}
+
+		return media.tags != null && stream(media.tags)
+				.map(CatalogTag::getName)
+				.anyMatch(badTags::contains);
 	}
 
 	@Contract(pure = true)
-	public static boolean isMediaFiltered(@NonNull CatalogMedia media) {
-		var badTags = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
-
-		//if(media.lists != null && media.lists.contains(AweryApp.CATALOG_LIST_BLACKLIST)) return true;
-		if(media.tags != null && stream(media.tags).map(CatalogTag::getName).anyMatch(badTags::contains)) return true;
-
-		return false;
+	public static void isMediaFiltered(@NonNull CatalogMedia media, Callbacks.Callback1<Boolean> callback) {
+		new Thread(() -> callback.run(isMediaFilteredSync(media))).start();
 	}
 
 	public static void openMediaActionsMenu(Context context, @NonNull CatalogMedia media, Runnable updateCallback) {
@@ -187,31 +217,19 @@ public class MediaUtils {
 				.show();*/
 	}
 
-	public static void requestDeleteList(Context context, CatalogList list) {
-		new MaterialAlertDialogBuilder(context)
+	public static void requestDeleteList(Context context, Runnable callback) {
+		new DialogBuilder(context)
 				.setTitle("Delete list")
 				.setMessage("Are you sure you want to delete this list?")
-				.setPositiveButton("Delete", (dialog1, which) -> {
-					dialog1.dismiss();
-
-					// TODO
+				.setPositiveButton("Delete", dialog -> {
+					callback.run();
+					dialog.dismiss();
 				})
-				.setNegativeButton("Cancel", (dialog1, which) -> {
-					dialog1.dismiss();
-				}).show();
+				.setCancelButton("Cancel", DialogBuilder::dismiss).show();
 	}
 
 	public static void requestEditList(Context context, CatalogList list) {
-		new MaterialAlertDialogBuilder(context)
-				.setTitle("Edit list")
-				.setPositiveButton("Edit", (dialog1, which) -> {
-					dialog1.dismiss();
-
-					// TODO
-				})
-				.setNegativeButton("Cancel", (dialog1, which) -> {
-					dialog1.dismiss();
-				}).show();
+		new DialogBuilder(context);
 	}
 
 	public interface OnListCreatedListener {
@@ -224,31 +242,41 @@ public class MediaUtils {
 					.filter(item -> !AweryApp.HIDDEN_LISTS.contains(item.getId()))
 					.toList();
 
-			var current = AweryApp.getDatabase().getMediaDao().get(media.globalId);
-			var mediaDao = AweryApp.getDatabase().getMediaDao();
+			var progressDao = AweryApp.getDatabase().getMediaProgressDao();
+			var __progress = progressDao.get(media.globalId);
+			if(__progress == null) __progress = new CatalogMediaProgress(media.globalId);
+			var progress = __progress;
 
 			runOnUiThread(() -> {
 				final var dialog = new AtomicReference<Dialog>();
 				var binding = PopupMediaBookmarkBinding.inflate(LayoutInflater.from(context));
 				var checked = new HashMap<String, Boolean>();
 
-				//TODO: Show this button after the list creation dialog will be finished
-				binding.create.setVisibility(View.GONE);
-
 				for(var list : lists) {
 					var item = list.toCatalogList();
 
+					var linear = new LinearLayoutCompat(context);
+					linear.setOrientation(LinearLayoutCompat.HORIZONTAL);
+
 					var checkbox = new MaterialCheckBox(context);
 					checkbox.setText(item.getTitle());
-					binding.lists.addView(checkbox);
+					linear.addView(checkbox, MATCH_PARENT, WRAP_CONTENT);
 
-					/*if(current != null && current.lists != null && current.lists.contains(item.getId())) {
+					var removeButton = new ImageView(context);
+					removeButton.setImageResource(R.drawable.ic_round_dots_vertical_24);
+					var color = resolveAttrColor(context, com.google.android.material.R.attr.colorOnSurface);
+					removeButton.setImageTintList(ColorStateList.valueOf(color));
+					linear.addView(removeButton);
+
+					if(progress.isInList(item.getId())) {
 						checked.put(item.getId(), true);
 						checkbox.setChecked(true);
-					}*/
+					}
 
 					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
 							checked.put(item.getId(), isChecked));
+
+					binding.lists.addView(linear);
 				}
 
 				binding.create.setOnClickListener(v -> requestCreateNewList(context, list -> {
@@ -271,16 +299,14 @@ public class MediaUtils {
 
 					new Thread(() -> {
 						try {
-							/*media.clearBookmarks();
+							progress.clearLists();
 
 							for(var entry : checked.entrySet()) {
 								if(!entry.getValue()) continue;
-								media.addToList(entry.getKey());
-							}*/
+								progress.addToList(entry.getKey());
+							}
 
-							var dbItem = DBCatalogMedia.fromCatalogMedia(media);
-							mediaDao.insert(dbItem);
-
+							progressDao.insert(progress);
 							LibraryFragment.notifyDataChanged();
 						} catch(Exception e) {
 							AweryApp.toast("Failed to save!");

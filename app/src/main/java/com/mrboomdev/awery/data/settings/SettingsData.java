@@ -65,12 +65,12 @@ public class SettingsData {
 	) {
 		switch(behaviourId) {
 			case "excluded_tags" -> {
-				var flags = AwerySettings.getInstance().getBoolean(AwerySettings.ADULT_CONTENT)
+				var flags = AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT)
 						? AnilistTagsQuery.ALL
 						: AnilistTagsQuery.SAFE;
 
 				AnilistTagsQuery.getTags(flags).executeQuery(context, tags -> {
-					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS);
+					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS);
 
 					callback.onResult(stream(tags).map(tag ->
 							new SelectionItem(tag.getName(), excluded.contains(tag.getName())))
@@ -118,7 +118,7 @@ public class SettingsData {
 			case "excluded_tags" -> {
 				var prefs = AwerySettings.getInstance();
 
-				prefs.setStringSet(AwerySettings.CONTENT_GLOBAL_EXCLUDED_TAGS, stream(list)
+				prefs.setStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS, stream(list)
 						.filter(SelectionItem::isSelected)
 						.map(SelectionItem::getTitle)
 						.collect(Collectors.toSet()));
