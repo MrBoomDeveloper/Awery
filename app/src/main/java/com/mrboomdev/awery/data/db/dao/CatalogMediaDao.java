@@ -29,7 +29,7 @@ public interface CatalogMediaDao {
 	DBCatalogMedia get(String id);
 
 	@Query("SELECT * FROM media WHERE global_id IN (:ids)")
-	List<DBCatalogMedia> getAllByIds(String... ids);
+	List<DBCatalogMedia> getAllByIds(List<String> ids);
 
 	@RawQuery
 	List<DBCatalogMedia> getAllByQuery(SupportSQLiteQuery query);

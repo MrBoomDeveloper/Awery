@@ -13,7 +13,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 
 public class ThemeManager {
-	private static final Theme DEFAULT_THEME = Theme.PINK;
+	private static final Theme DEFAULT_THEME = Theme.RED;
 
 	public static boolean isMaterialYou(Context context) {
 		var prefs = AwerySettings.getInstance(context);
@@ -88,9 +88,9 @@ public class ThemeManager {
 		GREEN(R.style.Theme_Awery_Green, R.style.Theme_Awery_GreenOLED),
 		PINK(R.style.Theme_Awery_Pink, R.style.Theme_Awery_PinkOLED),
 		RED(R.style.Theme_Awery_Red, R.style.Theme_Awery_RedOLED),
+		CATPPUCCIN(R.style.Theme_Awery_Catppuccin, R.style.Theme_Awery_CatppuccinOLED),
 		LAVENDER(R.style.Theme_Awery_Lavender, R.style.Theme_Awery_LavenderOLED),
-		MONOCHROME(R.style.Theme_Awery_Monochrome, R.style.Theme_Awery_MonochromeOLED),
-		SAIKOU(R.style.Theme_Awery_Saikou, R.style.Theme_Awery_SaikouOLED);
+		MONOCHROME(R.style.Theme_Awery_Monochrome, R.style.Theme_Awery_MonochromeOLED);
 
 		private final int res, oledRes;
 

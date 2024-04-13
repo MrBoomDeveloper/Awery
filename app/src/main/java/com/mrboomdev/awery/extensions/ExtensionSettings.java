@@ -131,8 +131,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								Log.e(TAG, "Invalid URL", e);
 								inputField.setError("Invalid URL");
 							}
-						})
-						.show();
+						}).show();
 			}
 		});
 	}

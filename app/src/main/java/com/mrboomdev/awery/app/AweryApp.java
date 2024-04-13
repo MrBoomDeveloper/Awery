@@ -140,6 +140,13 @@ public class AweryApp extends Application {
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		var typed = new TypedValue();
 		context.getTheme().resolveAttribute(res, typed, true);
+
+		if(typed.resourceId == 0) {
+			Log.e(TAG, "Failed to resolve a color!", new IllegalStateException("Failed to resolve a color!"));
+			toast("Failed to resolve a color!");
+			return 0xff000000;
+		}
+
 		return ContextCompat.getColor(context, typed.resourceId);
 	}
 

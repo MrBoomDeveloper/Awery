@@ -54,13 +54,13 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public void performOkClick() {
+	public void performPositiveClick() {
 		if(okListener != null) {
 			okListener.clicked(this);
 		}
 	}
 
-	public void performNegativeClick() {
+	public void performNeutralClick() {
 		if(neutralListener != null) {
 			neutralListener.clicked(this);
 		}
@@ -179,7 +179,10 @@ public class DialogBuilder {
 		}*/
 
 		var builder = new MaterialAlertDialogBuilder(context);
-		builder.setView(scroller);
+
+		if(fieldsLinear.getChildCount() > 0) {
+			builder.setView(scroller);
+		}
 
 		if(title != null) builder.setTitle(title);
 		if(message != null) builder.setMessage(message);

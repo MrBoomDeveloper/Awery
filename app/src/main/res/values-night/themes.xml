@@ -140,11 +140,11 @@
         <item name="colorSecondary">@color/bg_white</item>
         <item name="colorOnSecondary">@color/bg_black</item>
         <item name="colorSecondaryContainer">@color/bg_white</item>
-        <item name="colorOnSecondaryContainer">@color/bg_black</item>
+        <item name="colorOnSecondaryContainer">#FFFFFF</item>
         <item name="colorTertiary">@color/bg_white</item>
         <item name="colorOnTertiary">@color/bg_black</item>
         <item name="colorTertiaryContainer">@color/bg_white</item>
-        <item name="colorOnTertiaryContainer">@color/bg_black</item>
+        <item name="colorOnTertiaryContainer">#FFFFFF</item>
         <item name="colorError">@color/bg_white</item>
         <item name="colorErrorContainer">@color/bg_white</item>
         <item name="colorOnError">@color/bg_black</item>
@@ -159,6 +159,15 @@
         <item name="colorOnSurfaceInverse">@color/bg_white</item>
         <item name="colorSurfaceInverse">@color/bg_black</item>
         <item name="colorPrimaryInverse">@color/bg_black</item>
+    </style>
+
+    <style name="Theme.Awery.Catppuccin" parent="Theme.Base">
+        <item name="colorPrimary">#f5c2e7</item>
+        <item name="colorOnPrimary">#181825</item>
+        <item name="colorOnSecondaryContainer">#fab387</item>
+        <item name="colorError">#f38ba8</item>
+        <item name="android:colorBackground">#1e1e2e</item>
+        <item name="colorOnBackground">#cdd6f4</item>
     </style>
 
     <style name="Theme.Awery.Red" parent="Theme.Base">
@@ -219,33 +228,9 @@
         <item name="colorPrimaryInverse">@color/md_1_theme_dark_inversePrimary</item>
     </style>
 
-    <style name="Theme.Awery.Saikou" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_theme_dark_5_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_5_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_dark_5_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_dark_5_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_dark_5_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_dark_5_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_dark_5_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_dark_5_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/md_theme_dark_5_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_dark_5_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_dark_5_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_dark_5_onTertiaryContainer</item>
-        <item name="colorError">@color/md_theme_dark_5_error</item>
-        <item name="colorErrorContainer">@color/md_theme_dark_5_errorContainer</item>
-        <item name="colorOnError">@color/md_theme_dark_5_onError</item>
-        <item name="colorOnErrorContainer">@color/md_theme_dark_5_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_1_theme_dark_background</item>
-        <item name="colorOnBackground">@color/md_theme_dark_5_onBackground</item>
-        <item name="colorSurface">@color/md_theme_dark_5_surface</item>
-        <item name="colorOnSurface">@color/md_theme_dark_5_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_dark_5_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_dark_5_onSurfaceVariant</item>
-        <item name="colorOutline">@color/md_theme_dark_5_outline</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_dark_5_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_dark_5_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_dark_5_inversePrimary</item>
+    <style name="Theme.Awery.CatppuccinOLED" parent="Theme.Base">
+        <item name="android:colorBackground">@color/darkest_Black</item>
+        <item name="colorSurface">@color/darkest_Black</item>
     </style>
 
     <style name="Theme.Awery.BlueOLED" parent="Theme.Awery.Blue">
@@ -279,11 +264,6 @@
     </style>
 
     <style name="Theme.Awery.LavenderOLED" parent="Theme.Awery.Lavender">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
-    </style>
-
-    <style name="Theme.Awery.SaikouOLED" parent="Theme.Awery.Saikou">
         <item name="android:colorBackground">@color/darkest_Black</item>
         <item name="colorSurface">@color/darkest_Black</item>
     </style>

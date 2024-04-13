@@ -11,7 +11,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class DialogEditTextField implements DialogField {
 	private int imeFlags = EditorInfo.IME_FLAG_NO_FULLSCREEN;
-	private int type = EditorInfo.TYPE_NULL;
+	private int type = EditorInfo.TYPE_CLASS_TEXT;
 	private Runnable completionCallback;
 	private Context context;
 	private String hint, error, text;

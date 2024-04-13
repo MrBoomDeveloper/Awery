@@ -108,8 +108,8 @@ public class PlayerActivityController {
 		this.isUiVisible = true;
 
 		activity.setButtonsClickability(true);
-		ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 0, 1).start();
-		ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", 0, .6f).start();
+		ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 0, 1).setDuration(222).start();
+		ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", 0, .6f).setDuration(222).start();
 	}
 
 	public void hideUi() {

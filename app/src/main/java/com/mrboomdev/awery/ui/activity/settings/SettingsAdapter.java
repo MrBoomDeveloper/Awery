@@ -36,8 +36,8 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 
 import java.util.ArrayList;
@@ -214,7 +214,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							})
 							.show();
 
-					inputField.setCompletionCallback(dialog::performOkClick);
+					inputField.setCompletionCallback(dialog::performPositiveClick);
 				}
 
 				case SELECT, SELECT_INT -> {

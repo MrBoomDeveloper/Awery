@@ -1,16 +1,20 @@
 package com.mrboomdev.awery.util;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
+import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 
@@ -22,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
@@ -33,6 +38,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
 
 import org.jetbrains.annotations.Contract;
@@ -149,83 +155,52 @@ public class MediaUtils {
 	}
 
 	public static void requestCreateNewList(Context context, OnListCreatedListener callback) {
-		/*new DialogBuilder(context)
+		var input = new DialogEditTextField(context, "List name");
+		input.setLinesCount(1);
+
+		var dialog = new DialogBuilder(context)
 				.setTitle("Create new list")
-				//.addInputField("1", "List name")
-				.setPositiveButton("Create", dialog -> {
-					*//*var input = dialog.getField("1", DialogBuilder.InputField.class);
-					var text = input.getText();
+				.addField(input)
+				.setCancelButton("Cancel", DialogBuilder::dismiss)
+				.setPositiveButton("Create", _dialog -> {
+					var text = input.getText().trim();
 
 					if(text.isBlank()) {
-						input.setError("List name cannot be empty");
+						input.setError("List name cannot be empty!");
 						return;
 					}
 
 					new Thread(() -> {
-						try {
-							var listsDao = AweryApp.getDatabase().getListDao();
-							var list = new CatalogList(text);
-							listsDao.insert(DBCatalogList.fromCatalogList(list));
+						var list = new CatalogList(text);
+						var dbList = DBCatalogList.fromCatalogList(list);
+						getDatabase().getListDao().insert(dbList);
 
-							AweryApp.runOnUiThread(() -> callback.onListCreated(list));
-						} catch(Exception e) {
-							AweryApp.toast("Failed to create list");
-							e.printStackTrace();
-						}
+						runOnUiThread(() -> callback.onListCreated(list));
 					}).start();
 
-					dialog.dismiss();*//*
-				})
-				.setCancelButton("Cancel", DialogBuilder::dismiss)
-				.show();*/
+					_dialog.dismiss();
+				}).show();
 
-
-		/*var dialog = new AlertDialog.Builder(context);
-		var hint = "List name";
-
-		var inputLayout = new TextInputLayout(dialog.getContext());
-		inputLayout.setHint(hint);
-		var input = new TextInputEditText(dialog.getContext());
-		inputLayout.addView(input);
-
-		dialog.setTitle("Create new list")
-				.setView(inputLayout)
-				.setPositiveButton("Create", (dialog1, which) -> {
-					var text = input.getText();
-
-					if(text == null || text.toString().isBlank()) {
-						inputLayout.setError("List name cannot be empty");
-						return;
-					}
-
-					new Thread(() -> {
-						try {
-							var listsDao = AweryApp.getDatabase().getListDao();
-							var list = new CatalogList(text.toString());
-							listsDao.insert(DBCatalogList.fromCatalogList(list));
-
-							AweryApp.runOnUiThread(() -> callback.onListCreated(list));
-						} catch(Exception e) {
-							AweryApp.toast("Failed to create list");
-							e.printStackTrace();
-						}
-					}).start();
-
-					dialog1.dismiss();
-				})
-				.setNegativeButton("Cancel", (dialog1, which) -> dialog1.dismiss())
-				.show();*/
+		input.setCompletionCallback(dialog::performPositiveClick);
 	}
 
-	public static void requestDeleteList(Context context, Runnable callback) {
+	public static void requestDeleteList(Context context, @NonNull CatalogList list, Runnable callback) {
 		new DialogBuilder(context)
-				.setTitle("Delete list")
+				.setTitle("Delete \"" + list.getTitle() + "\"?")
 				.setMessage("Are you sure you want to delete this list?")
+				.setCancelButton("Cancel", DialogBuilder::dismiss)
 				.setPositiveButton("Delete", dialog -> {
+					new Thread(() -> {
+						var dbList = DBCatalogList.fromCatalogList(list);
+						getDatabase().getListDao().delete(dbList);
+
+						runOnUiThread(callback);
+					}).start();
+
 					callback.run();
 					dialog.dismiss();
 				})
-				.setCancelButton("Cancel", DialogBuilder::dismiss).show();
+				.show();
 	}
 
 	public static void requestEditList(Context context, CatalogList list) {
@@ -252,21 +227,25 @@ public class MediaUtils {
 				var binding = PopupMediaBookmarkBinding.inflate(LayoutInflater.from(context));
 				var checked = new HashMap<String, Boolean>();
 
-				for(var list : lists) {
-					var item = list.toCatalogList();
-
+				var createListView = (Callbacks.Callback1<CatalogList>) item -> {
 					var linear = new LinearLayoutCompat(context);
+					linear.setGravity(Gravity.CENTER_VERTICAL);
 					linear.setOrientation(LinearLayoutCompat.HORIZONTAL);
 
 					var checkbox = new MaterialCheckBox(context);
 					checkbox.setText(item.getTitle());
-					linear.addView(checkbox, MATCH_PARENT, WRAP_CONTENT);
+					linear.addView(checkbox, createLinearParams(0, WRAP_CONTENT, 1));
 
 					var removeButton = new ImageView(context);
 					removeButton.setImageResource(R.drawable.ic_round_dots_vertical_24);
 					var color = resolveAttrColor(context, com.google.android.material.R.attr.colorOnSurface);
 					removeButton.setImageTintList(ColorStateList.valueOf(color));
-					linear.addView(removeButton);
+					removeButton.setBackgroundResource(R.drawable.ripple_circle_white);
+					linear.addView(removeButton, dpPx(38), dpPx(38));
+					setPadding(removeButton, dpPx(8));
+
+					removeButton.setOnClickListener(v -> requestDeleteList(context, item,
+							() -> binding.lists.removeView(linear)));
 
 					if(progress.isInList(item.getId())) {
 						checked.put(item.getId(), true);
@@ -277,16 +256,13 @@ public class MediaUtils {
 							checked.put(item.getId(), isChecked));
 
 					binding.lists.addView(linear);
+				};
+
+				for(var list : lists) {
+					createListView.run(list.toCatalogList());
 				}
 
-				binding.create.setOnClickListener(v -> requestCreateNewList(context, list -> {
-					var checkbox = new MaterialCheckBox(context);
-					checkbox.setText(list.getTitle());
-					binding.lists.addView(checkbox);
-
-					checkbox.setOnCheckedChangeListener((buttonView, isChecked) ->
-							checked.put(list.getId(), isChecked));
-				}));
+				binding.create.setOnClickListener(v -> requestCreateNewList(context, createListView::run));
 
 				var sheet = new BottomSheetDialog(context);
 				dialog.set(sheet);
@@ -305,6 +281,9 @@ public class MediaUtils {
 								if(!entry.getValue()) continue;
 								progress.addToList(entry.getKey());
 							}
+
+							// Update poster, tags and so on...
+							getDatabase().getMediaDao().insert(DBCatalogMedia.fromCatalogMedia(media));
 
 							progressDao.insert(progress);
 							LibraryFragment.notifyDataChanged();

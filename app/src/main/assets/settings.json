@@ -23,17 +23,15 @@
 					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
 					"show_if": "never"
 				}, {
-					"key": "pallet", "type": "select", "restart": true, "string_value": "PINK",
+					"key": "pallet", "type": "select", "restart": true, "string_value": "RED",
 					"title": "Color Palette", "icon": "ic_round_palette_24", "description": "${VALUE_TITLE}",
 					"items": [
+						{ "key": "RED", "title": "Red" },
 						{ "key": "PINK", "title": "Pink" },
 						{ "key": "PURPLE", "title": "Purple" },
 						{ "key": "BLUE", "title": "Blue" },
 						{ "key": "GREEN", "title": "Green" },
-						{ "key": "RED", "title": "Red" },
-						{ "key": "LAVENDER", "title": "Lavender" },
-						{ "key": "MONOCHROME", "title": "Monochrome" },
-						{ "key": "SAIKOU", "title": "Saikou" }
+						{ "key": "MONOCHROME", "title": "Monochrome" }
 					]
 				}
 			]

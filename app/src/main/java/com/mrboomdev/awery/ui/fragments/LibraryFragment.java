@@ -97,7 +97,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 				if(mediasProgresses.isEmpty()) continue;
 
 				var dbMediaList = db.getMediaDao().getAllByIds(stream(mediasProgresses)
-						.map(CatalogMediaProgress::getGlobalId).toArray(String[]::new));
+						.map(CatalogMediaProgress::getGlobalId).toList());
 
 				if(dbMediaList.isEmpty()) continue;
 
