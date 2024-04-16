@@ -7,7 +7,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="navbarColor">?attr/colorOnPrimaryContainer</item>
+        <item name="navbarColor">@color/grey_nav</item>
         <item name="android:fontFamily">@font/poppins</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearanceOverlay.Demo</item>
         <item name="android:ambientShadowAlpha">0.08</item>

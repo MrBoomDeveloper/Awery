@@ -71,7 +71,8 @@ import com.mrboomdev.awery.util.ParserAdapter;
 
 			db.execSQL("""
 				CREATE TABLE media_progress (global_id TEXT NOT NULL PRIMARY KEY,
-				last_source TEXT, last_season REAL, last_variant TEXT, last_episode REAL,
+				last_season REAL, last_variant TEXT, last_episode REAL,
+				last_watch_source TEXT, last_comments_source TEXT, last_relations_source TEXT,
 				lists TEXT, trackers TEXT, progresses TEXT)
 			""");
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "fbe1a17cabe344f302aa5b6a0b7cd010",
+    "identityHash": "a59531b91a59d0fe35d18e3384395bef",
     "entities": [
       {
         "tableName": "media",
@@ -172,7 +172,7 @@
       },
       {
         "tableName": "media_progress",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `last_source` TEXT, `last_season` REAL, `last_variant` TEXT, `last_episode` REAL, `lists` TEXT, `trackers` TEXT, `progresses` TEXT, PRIMARY KEY(`global_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `last_watch_source` TEXT, `last_season` REAL, `last_variant` TEXT, `last_episode` REAL, `last_comments_source` TEXT, `last_relations_source` TEXT, `lists` TEXT, `trackers` TEXT, `progresses` TEXT, PRIMARY KEY(`global_id`))",
         "fields": [
           {
             "fieldPath": "globalId",
@@ -181,8 +181,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "lastSource",
-            "columnName": "last_source",
+            "fieldPath": "lastWatchSource",
+            "columnName": "last_watch_source",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -202,6 +202,18 @@
             "fieldPath": "lastEpisode",
             "columnName": "last_episode",
             "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastCommentsSource",
+            "columnName": "last_comments_source",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastRelationsSource",
+            "columnName": "last_relations_source",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -236,7 +248,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fbe1a17cabe344f302aa5b6a0b7cd010')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a59531b91a59d0fe35d18e3384395bef')"
     ]
   }
 }

@@ -16,14 +16,18 @@ public class CatalogMediaProgress {
 	@PrimaryKey
 	@NonNull
 	public String globalId;
-	@ColumnInfo(name = "last_source")
-	public String lastSource;
+	@ColumnInfo(name = "last_watch_source")
+	public String lastWatchSource;
 	@ColumnInfo(name = "last_season")
 	public Float lastSeason;
 	@ColumnInfo(name = "last_variant")
 	public String lastVariant;
 	@ColumnInfo(name = "last_episode")
 	public Float lastEpisode;
+	@ColumnInfo(name = "last_comments_source")
+	public String lastCommentsSource;
+	@ColumnInfo(name = "last_relations_source")
+	public String lastRelationsSource;
 	public List<String> lists = new ArrayList<>();
 	public Map<String, String> trackers = new HashMap<>();
 	public Map<Float, Long> progresses = new HashMap<>();
