@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.StrictMode;
 import android.util.Log;
@@ -28,6 +29,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.data.db.AweryDB;
@@ -138,16 +140,7 @@ public class AweryApp extends Application {
 	}
 
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
-		var typed = new TypedValue();
-		context.getTheme().resolveAttribute(res, typed, true);
-
-		if(typed.resourceId == 0) {
-			Log.e(TAG, "Failed to resolve a color!", new IllegalStateException("Failed to resolve a color!"));
-			toast("Failed to resolve a color!");
-			return 0xff000000;
-		}
-
-		return ContextCompat.getColor(context, typed.resourceId);
+		return MaterialColors.getColor(context, res, Color.BLACK);
 	}
 
 	public static boolean isTv() {

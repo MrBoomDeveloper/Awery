@@ -229,42 +229,42 @@
     </style>
 
     <style name="Theme.Awery.CatppuccinOLED" parent="Theme.Base">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.BlueOLED" parent="Theme.Awery.Blue">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.GreenOLED" parent="Theme.Awery.Green">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.PurpleOLED" parent="Theme.Awery.Purple">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.PinkOLED" parent="Theme.Awery.Pink">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.MonochromeOLED" parent="Theme.Awery.Monochrome">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.RedOLED" parent="Theme.Awery.Red">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 
     <style name="Theme.Awery.LavenderOLED" parent="Theme.Awery.Lavender">
-        <item name="android:colorBackground">@color/darkest_Black</item>
-        <item name="colorSurface">@color/darkest_Black</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="colorSurface">#000000</item>
     </style>
 </resources>
