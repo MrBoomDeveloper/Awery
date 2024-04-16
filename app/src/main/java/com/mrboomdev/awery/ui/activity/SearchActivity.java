@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.compose.runtime.AtomicInt;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +41,8 @@ import com.mrboomdev.awery.util.observable.ObservableEmptyList;
 import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
@@ -118,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build(), adapter, loadingAdapter);
 
-		var columnsCount = new AtomicInt(3);
+		var columnsCount = new AtomicInteger(3);
 		var layoutManager = new GridLayoutManager(this, columnsCount.get());
 
 		recycler = new RecyclerView(this);

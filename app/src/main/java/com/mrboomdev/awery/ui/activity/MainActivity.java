@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
 		binding.navbar.selectTabAt(currentPageIndex, false);
 		binding.pages.setCurrentItem(currentPageIndex, false);
-		binding.navbar.setBackground(ContextCompat.getDrawable(this, R.drawable.bottom_nav_gray));
 
 		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
 

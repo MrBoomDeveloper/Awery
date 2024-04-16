@@ -30,6 +30,10 @@ public class ThemeManager {
 		return prefs.getBoolean(AwerySettings.theme.USE_MATERIAL_YOU);
 	}
 
+	public static boolean isAmoled(Context context) {
+		return AwerySettings.getInstance().getBoolean(AwerySettings.theme.USE_OLED);
+	}
+
 	public static void apply(Activity activity, Bitmap bitmap) {
 		var prefs = AwerySettings.getInstance(activity);
 

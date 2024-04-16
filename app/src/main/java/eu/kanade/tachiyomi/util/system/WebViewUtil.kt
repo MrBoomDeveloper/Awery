@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebView
-import logcat.LogPriority
-import logcat.logcat
 
 object WebViewUtil {
     const val SPOOF_PACKAGE_NAME = "org.chromium.chrome"

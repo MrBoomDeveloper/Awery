@@ -23,8 +23,6 @@ import androidx.core.graphics.red
 import androidx.core.net.toUri
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.util.lang.truncateCenter
-import logcat.LogPriority
-import logcat.logcat
 import java.io.File
 import kotlin.math.roundToInt
 

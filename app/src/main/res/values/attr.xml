@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="expandableTextView" format="reference" />
+    <attr name="navbarColor" format="color" />
+
     <declare-styleable name="OutlineTextView">
         <attr name="outlineColor" format="color" />
         <attr name="outlineWidth" format="float" />
     </declare-styleable>
-
-    <attr name="expandableTextView" format="reference" />
 
     <declare-styleable name="GesturePreviewView">
         <attr name="icon" format="reference" />

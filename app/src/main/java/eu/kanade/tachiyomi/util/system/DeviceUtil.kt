@@ -2,8 +2,6 @@ package eu.kanade.tachiyomi.util.system
 
 import android.annotation.SuppressLint
 import android.os.Build
-import logcat.LogPriority
-import logcat.logcat
 
 object DeviceUtil {
 
