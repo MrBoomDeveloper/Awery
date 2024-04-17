@@ -11,15 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-import java9.util.stream.StreamSupport;
-
 public abstract class ExtensionsManager {
-
-	public Collection<ExtensionProvider> getProviders(int flags) {
-		return stream(getExtensions(flags))
-				.map(Extension::getProviders)
-				.flatMap(StreamSupport::stream).toList();
-	}
 
 	public Collection<Extension> getExtensions(int flags) {
 		return stream(getAllExtensions())

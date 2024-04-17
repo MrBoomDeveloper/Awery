@@ -290,7 +290,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						searchParams.setQuery(media.titles.get(newIndex));
-						source.search(searchParams.build(), callback);
+						source.searchMedia(searchParams.build(), callback);
 
 						variantsAdapter.getBinding((binding) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
@@ -303,7 +303,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			}
 		});
 
-		source.search(searchParams.build(), foundMediaCallback.get());
+		source.searchMedia(searchParams.build(), foundMediaCallback.get());
 	}
 
 	private boolean autoSelectNextSource() {

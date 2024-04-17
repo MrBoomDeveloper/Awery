@@ -39,6 +39,15 @@ public class CrashHandler {
 				.enableNativeCrashHandler()
 				.enableAnrCrashHandler()
 				.enableJavaCrashHandler()
+				.setJavaDumpNetworkInfo(false)
+				.setJavaDumpAllThreads(false)
+				.setNativeDumpNetwork(false)
+				.setNativeDumpAllThreads(false)
+				.setJavaDumpFds(false)
+				.setNativeDumpElfHash(false)
+				.setAnrDumpFds(false)
+				.setNativeDumpFds(false)
+				.setNativeDumpMap(false)
 				.setJavaCallback((s, s1) -> handleError(CrashType.JAVA, s))
 				.setNativeCallback((s, s1) -> handleError(CrashType.NATIVE, s))
 				.setAnrCallback((s, s1) -> handleError(CrashType.ANR, s))
@@ -140,6 +149,10 @@ public class CrashHandler {
 		}
 
 		System.exit(0);
+	}
+
+	public static void showErrorDialog(Context context, Throwable throwable, boolean finishOnClose) {
+		showErrorDialog(context, throwable, finishOnClose, null);
 	}
 	
 	public static void showErrorDialog(Context context, Throwable throwable, boolean finishOnClose, File file) {

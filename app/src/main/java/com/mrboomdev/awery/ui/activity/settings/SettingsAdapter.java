@@ -28,6 +28,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
@@ -135,7 +136,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	@Override
 	@SuppressWarnings("unchecked")
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		var inflater = LayoutInflater.from(parent.getContext());
+		var context = parent.getContext();
+		var inflater = LayoutInflater.from(context);
+
 		var binding = ItemListSettingBinding.inflate(inflater, parent, false);
 		var holder = new ViewHolder(binding);
 
@@ -165,18 +168,50 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					}
 				}
 
+				case STRING -> {
+					var inputField = new DialogEditTextField(context);
+					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
+					inputField.setText(setting.getStringValue());
+					inputField.setLinesCount(1);
+
+					var dialog = new DialogBuilder(context)
+							.setTitle(setting.getTitle(context).trim())
+							.setMessage(setting.getDescription(context).trim())
+							.addField(inputField)
+							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setPositiveButton("Ok", _dialog -> {
+								if(setting instanceof CustomSettingsItem custom) {
+									custom.saveValue(inputField.getText());
+								} else {
+									var prefs = AwerySettings.getInstance(context);
+									prefs.setString(setting.getFullKey(), inputField.getText());
+									prefs.saveAsync();
+								}
+
+								_dialog.dismiss();
+								setting.setStringValue(inputField.getText());
+
+								if(setting.isRestartRequired()) {
+									suggestToRestart(parent);
+								}
+							})
+							.show();
+
+					inputField.setCompletionCallback(dialog::performPositiveClick);
+				}
+
 				case INT -> {
-					var inputField = new DialogEditTextField(parent.getContext());
+					var inputField = new DialogEditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
 					inputField.setText(setting.getIntValue());
 					inputField.setLinesCount(1);
 
-					var dialog = new DialogBuilder(parent.getContext())
-							.setTitle(setting.getTitle(parent.getContext()))
-							.setMessage(setting.getDescription(parent.getContext()))
+					var dialog = new DialogBuilder(context)
+							.setTitle(setting.getTitle(context).trim())
+							.setMessage(setting.getDescription(context).trim())
 							.addField(inputField)
-							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton("Ok", _dialog -> {
 								if(inputField.getText().isBlank()) {
 									inputField.setError("Text cannot be empty!");
@@ -201,6 +236,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									var prefs = AwerySettings.getInstance();
 									prefs.setInt(setting.getFullKey(), number);
 									prefs.saveAsync();
+
+									setting.setIntValue(number);
 								} catch(NumberFormatException e) {
 									inputField.setError("This is not a number!");
 									return;
@@ -230,7 +267,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var dialog = new DialogBuilder(parent.getContext())
 							.setTitle(setting.getTitle(parent.getContext()))
 							.addView(contentView)
-							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton("Save", _dialog -> {
 								if(radioGroup.getParent() == null) return;
 
@@ -357,7 +394,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var dialog = new DialogBuilder(parent.getContext())
 							.setTitle(setting.getTitle(parent.getContext()))
 							.addView(contentView)
-							.setCancelButton("Cancel", DialogBuilder::dismiss)
+							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton("Save", _dialog -> {
 								if(chips.getParent() == null) return;
 
@@ -406,9 +443,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							runOnUiThread(() -> {
 								for(var item : sorted) {
 									var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
-									var context = new ContextThemeWrapper(parent.getContext(), style);
+									var contextWrapper = new ContextThemeWrapper(context, style);
 
-									var chip = new Chip(context);
+									var chip = new Chip(contextWrapper);
 									chip.setCheckable(true);
 									chip.setText(item.getTitle());
 									chip.setChecked(item.isSelected());
@@ -444,9 +481,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						runOnUiThread(() -> {
 							for(var item : sorted) {
 								var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
-								var context = new ContextThemeWrapper(parent.getContext(), style);
+								var contextWrapper = new ContextThemeWrapper(context, style);
 
-								var chip = new Chip(context);
+								var chip = new Chip(contextWrapper);
 								chip.setCheckable(true);
 								chip.setText(item.getTitle());
 								chip.setChecked(item.isSelected());
@@ -463,6 +500,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						throw new IllegalArgumentException("Failed to load items list");
 					}
 				}
+
+				default -> throw new IllegalArgumentException("Unsupported setting type! " + setting.getType());
 			}
 		});
 

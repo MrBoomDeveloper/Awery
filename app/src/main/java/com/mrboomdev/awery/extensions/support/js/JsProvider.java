@@ -100,6 +100,10 @@ public class JsProvider extends ExtensionProvider {
 
 				case "media_watch" -> FEATURE_MEDIA_WATCH;
 				case "media_read" -> FEATURE_MEDIA_READ;
+				case "media_report" -> FEATURE_MEDIA_REPORT;
+
+				case "search_tags" -> FEATURE_TAGS_SEARCH;
+				case "search_media" -> FEATURE_MEDIA_SEARCH;
 
 				case "account_login" -> FEATURE_LOGIN;
 				case "account_track" -> FEATURE_TRACK;
@@ -424,7 +428,7 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
+	public void searchMedia(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearch") instanceof Function fun) {
 				try {

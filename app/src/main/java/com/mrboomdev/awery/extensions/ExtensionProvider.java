@@ -3,16 +3,19 @@ package com.mrboomdev.awery.extensions;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.extensions.data.CatalogCategory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
+import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;
@@ -25,6 +28,7 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
+	public static final int FEATURE_TAGS_SEARCH = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
 	 */
@@ -37,6 +41,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_COMMENTS_REPORT = 8;
 	public static final int FEATURE_COMMENTS_VOTE = 9;
 	public static final int FEATURE_MEDIA_REPORT = 10;
+	public static final int FEATURE_MEDIA_SEARCH = 11;
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {
@@ -47,7 +52,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
-	public void search(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
+	public void searchMedia(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));
 	}
 
@@ -66,6 +71,22 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void postMediaComment(CatalogComment parent, CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
 		callback.onFailure(new UnimplementedException("Comments posting aren't implemented!"));
+	}
+
+	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
+		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
+	}
+
+	public void trackMedia(
+			CatalogMedia media,
+			@Nullable CatalogTrackingOptions options,
+			@NonNull ResponseCallback<CatalogTrackingOptions> callback
+	) {
+		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
+	}
+
+	public void searchTags(@NonNull ResponseCallback<List<CatalogTag>> callback) {
+		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {

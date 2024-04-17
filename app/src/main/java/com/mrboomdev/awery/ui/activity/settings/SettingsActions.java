@@ -31,8 +31,8 @@ public class SettingsActions {
 				}
 			}
 
-			case "settings_advanced_try_crash_native" -> XCrash.testNativeCrash(true);
-			case "settings_advanced_try_crash_java" -> XCrash.testJavaCrash(true);
+			case "settings_advanced_try_crash_native" -> XCrash.testNativeCrash(false);
+			case "settings_advanced_try_crash_java" -> XCrash.testJavaCrash(false);
 
 			default -> AweryApp.toast("Unknown action: " + actionName);
 		}

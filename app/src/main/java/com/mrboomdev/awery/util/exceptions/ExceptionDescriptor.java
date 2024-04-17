@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.util.exceptions;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.strictmode.InstanceCountViolation;
+import android.os.strictmode.Violation;
 import android.util.Base64;
 import android.util.Log;
 
@@ -109,6 +112,8 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof InvalidSyntaxException
 				|| throwable instanceof JsonDecodingException) {
 			return "Parser has crashed!";
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+			return "Bad thing has happened...";
 		}
 
 		return getGenericTitle(context);
@@ -241,6 +246,12 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof JsonDecodingException
 				|| throwable instanceof InvalidSyntaxException) {
 			return "An error has occurred while parsing the response. " + throwable.getMessage();
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+			if(throwable instanceof InstanceCountViolation) {
+				return "Too much instances of the object was created. " + throwable.getMessage();
+			}
+
+			return "Bad thing has happened...";
 		}
 
 		return getGenericMessage(throwable);

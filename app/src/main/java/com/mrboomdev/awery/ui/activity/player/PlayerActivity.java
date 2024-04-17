@@ -6,6 +6,11 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -45,6 +50,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -327,7 +333,35 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	public void playVideo(@NonNull CatalogVideo video) {
-		this.videoItem = MediaItem.fromUri(video.getUrl());
+		var url = video.getUrl();
+
+		// Handle torrents
+		if(url.startsWith("magnet")) {
+			var uri = Uri.parse(url);
+
+			try {
+				var intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(uri);
+				startActivity(intent);
+				finish();
+			} catch(ActivityNotFoundException e) {
+				new DialogBuilder(this)
+						.setTitle("Can't play torrents")
+						.setMessage("Sorry, but Awery doesn't support torrents playback at this time. You can try installing a third-party torrent player to play this type of file.")
+						.setPositiveButton("Ok", dialog -> {
+							dialog.dismiss();
+							finish();
+						})
+						.setNeutralButton("Copy link", dialog -> {
+							var clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+							var clipData = ClipData.newRawUri(url, uri);
+							clipboard.setPrimaryClip(clipData);
+						})
+						.show();
+			}
+		}
+
+		this.videoItem = MediaItem.fromUri(url);
 		this.video = video;
 
 		selectSubtitles(null);

@@ -8,6 +8,8 @@ import java.util.List;
 public class CatalogComment {
 	public static final int HIDDEN = -1;
 	public static final int DISABLED = -2;
+	public static final int VOTE_STATE_LIKED = -3;
+	public static final int VOTE_STATE_DISLIKED = -4;
 	@Json(name = "author_name")
 	public String authorName;
 	@Json(name = "author_avatar")
@@ -46,4 +48,6 @@ public class CatalogComment {
 	 */
 	@Json(ignore = true)
 	public long visualId;
+	@Json(ignore = true)
+	public int voteState;
 }

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.app;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
@@ -15,7 +16,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.StrictMode;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -25,8 +25,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.color.MaterialColors;
@@ -165,18 +165,33 @@ public class AweryApp extends Application {
 	 */
 	private static void setupStrictMode() {
 		var threadPolicy = new StrictMode.ThreadPolicy.Builder()
-				.detectNetwork()
-				.detectCustomSlowCalls();
+				.detectNetwork();
+
+		var vmPolicy = new StrictMode.VmPolicy.Builder()
+				.detectActivityLeaks()
+				.penaltyLog();
 
 		if(BuildConfig.DEBUG) threadPolicy.penaltyDialog();
 		else threadPolicy.penaltyLog();
 
-		StrictMode.setThreadPolicy(threadPolicy.build());
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			vmPolicy.penaltyListener(Runnable::run, v -> {
+				if(BuildConfig.DEBUG) {
+					var activity = getAnyActivity(AppCompatActivity.class);
+					CrashHandler.showErrorDialog(activity, v, false);
+				}
+			});
 
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-				.detectActivityLeaks()
-				.penaltyLog()
-				.build());
+			threadPolicy.penaltyListener(Runnable::run, v -> {
+				if(BuildConfig.DEBUG) {
+					var activity = getAnyActivity(AppCompatActivity.class);
+					CrashHandler.showErrorDialog(activity, v, false);
+				}
+			});
+		}
+
+		StrictMode.setThreadPolicy(threadPolicy.build());
+		StrictMode.setVmPolicy(vmPolicy.build());
 	}
 
 	@Override

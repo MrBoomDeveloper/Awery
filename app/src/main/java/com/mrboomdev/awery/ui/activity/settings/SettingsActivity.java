@@ -46,7 +46,7 @@ import java.util.List;
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
 	private static final String TAG = "SettingsActivity";
 	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
-	public RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+	private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private ActivityResultLauncher<Intent> activityResultLauncher;
 	private AwerySettings settings;
 	private boolean isMain;
@@ -104,8 +104,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		createView(item, viewPool, frame);
 		setContentView(frame);
 
-		AweryApp.addOnBackPressedListener(this, this::finish);
-
 		activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 			for(var callback : callbacks) {
 				callback.onActivityResult(result);
@@ -120,6 +118,13 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		if(isMain) {
 			AwerySettings.clearCache();
 		}
+
+		viewPool.clear();
+		callbacks.clear();
+
+		viewPool = null;
+		settings = null;
+		activityResultLauncher = null;
 	}
 
 	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
