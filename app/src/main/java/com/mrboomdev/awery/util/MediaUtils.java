@@ -124,16 +124,7 @@ public class MediaUtils {
 		});
 
 		binding.hide.setOnClickListener(v -> {
-			new Thread(() -> {
-				//media.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
-
-				var dao = AweryApp.getDatabase().getMediaDao();
-				var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
-				dao.insert(dbMedia);
-
-				runOnUiThread(updateCallback);
-			}).start();
-
+			blacklistMedia(media, updateCallback);
 			dialog.get().dismiss();
 		});
 
@@ -145,6 +136,22 @@ public class MediaUtils {
 		sheet.show();
 
 		DialogUtil.limitDialogSize(sheet);
+	}
+
+	public static void blacklistMedia(CatalogMedia media, Runnable callback) {
+		new Thread(() -> {
+			var listsDao = getDatabase().getMediaProgressDao();
+			var mediaDao = getDatabase().getMediaDao();
+
+			var lists = listsDao.get(media.globalId);
+			if(lists == null) lists = new CatalogMediaProgress(media.globalId);
+			lists.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
+
+			mediaDao.insert(DBCatalogMedia.fromCatalogMedia(media));
+			listsDao.insert(lists);
+
+			runOnUiThread(callback);
+		}).start();
 	}
 
 	public static void shareMedia(Context context, @NonNull CatalogMedia media) {

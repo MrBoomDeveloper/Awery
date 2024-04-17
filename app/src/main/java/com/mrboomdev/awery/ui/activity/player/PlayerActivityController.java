@@ -132,6 +132,7 @@ public class PlayerActivityController {
 		final var dialog = new AtomicReference<Dialog>();
 
 		var recycler = new RecyclerView(activity);
+		recycler.setVerticalScrollBarEnabled(false);
 		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
 
 		var sheet = new BottomSheetDialog(activity);
@@ -187,6 +188,7 @@ public class PlayerActivityController {
 		final var dialog = new AtomicReference<Dialog>();
 
 		var recycler = new RecyclerView(activity);
+		recycler.setVerticalScrollBarEnabled(false);
 		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
 
 		var sheet = new BottomSheetDialog(activity);
@@ -254,6 +256,7 @@ public class PlayerActivityController {
 		final var didSelectedVideo = new AtomicBoolean();
 
 		var recycler = new RecyclerView(activity);
+		recycler.setVerticalScrollBarEnabled(false);
 		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
 
 		var sheet = new BottomSheetDialog(activity);
@@ -304,6 +307,7 @@ public class PlayerActivityController {
 		final var didSelectedVideo = new AtomicBoolean();
 
 		var recycler = new RecyclerView(activity);
+		recycler.setVerticalScrollBarEnabled(false);
 		recycler.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
 
 		var sheet = new BottomSheetDialog(activity);

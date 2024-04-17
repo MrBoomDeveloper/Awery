@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="portrait_featured_height">550dp</dimen>
+    <dimen name="portrait_featured_height">600dp</dimen>
     <dimen name="landscape_featured_height">325dp</dimen>
     <dimen name="large_margin">32dp</dimen>
     <dimen name="normal_margin">16dp</dimen>

@@ -1,5 +1,12 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
+
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -16,15 +23,14 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.chip.Chip;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -92,11 +98,10 @@ public class MediaInfoFragment extends Fragment {
 			else throw new IllegalStateException("Activity is not an instance of MediaActivity!");
 		});
 
-		binding.details.share.setOnClickListener(v -> MediaUtils.shareMedia(requireContext(), media));
 		binding.details.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
 		if(media.description != null) {
-			var html = Html.fromHtml(media.description).toString();
+			var html = Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString();
 			binding.details.description.setText(html.trim());
 		} else {
 			binding.details.description.setVisibility(View.GONE);
@@ -158,16 +163,27 @@ public class MediaInfoFragment extends Fragment {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
 
 		if(AweryApp.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
-			ViewUtil.setOnApplyUiInsetsListener(binding.posterWrapper, insets ->
-					ViewUtil.setTopMargin(binding.posterWrapper, insets.top + ViewUtil.dpPx(8)));
+			setOnApplyUiInsetsListener(binding.posterWrapper, insets ->
+					setTopMargin(binding.posterWrapper, insets.top + dpPx(16)));
 		}
 
-		if(binding.detailsScroller != null) ViewUtil.setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
-			var margin = ViewUtil.dpPx(8);
+		if(binding.back != null) {
+			binding.back.setOnClickListener(v -> requireActivity().finish());
+			setOnApplyUiInsetsListener(binding.back, insets -> setTopMargin(binding.back, insets.top + dpPx(16)));
+		}
 
-			ViewUtil.setTopPadding(binding.detailsScroller, insets.top + margin);
-			ViewUtil.setBottomPadding(binding.detailsScroller, insets.bottom + margin);
-			ViewUtil.setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
+		var options = binding.options != null ? binding.options : binding.details.options;
+		if(options == null) throw new NullPointerException("Options cannot be null!");
+
+		options.setOnClickListener(v -> MediaActivity.handleOptionsClick(v, media));
+		setOnApplyUiInsetsListener(options, insets -> setTopMargin(options, insets.top + dpPx(16)));
+
+		if(binding.detailsScroller != null) setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
+			var margin = dpPx(8);
+
+			setTopPadding(binding.detailsScroller, insets.top + margin);
+			setBottomPadding(binding.detailsScroller, insets.bottom + margin);
+			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
 		});
 
 		setMedia(media);

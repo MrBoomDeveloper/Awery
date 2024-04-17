@@ -127,7 +127,12 @@ public class DialogBuilder {
 		}
 
 		var scroller = new ScrollView(context);
-		ViewUtil.setTopPadding(scroller, ViewUtil.dpPx(8));
+		scroller.setVerticalScrollBarEnabled(false);
+
+		if(message == null) {
+			ViewUtil.setTopPadding(scroller, ViewUtil.dpPx(8));
+		}
+
 		//linear.addView(scroller);
 
 		var fieldsLinear = new LinearLayoutCompat(context);

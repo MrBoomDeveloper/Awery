@@ -1,8 +1,14 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -13,10 +19,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -25,6 +31,7 @@ import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
 import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
+import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -52,7 +59,8 @@ public class MediaActivity extends AppCompatActivity {
 			if(binding.navigation instanceof NavigationRailView) {
 				binding.navigation.setPadding(insets.left, insets.top, 0, 0);
 			} else {
-				ViewUtil.setBottomPadding(binding.navigation, insets.bottom, false);
+				setBottomPadding(binding.navigation, insets.bottom, false);
+				getWindow().setNavigationBarColor(SurfaceColors.SURFACE_4.getColor(this));
 			}
 		});
 
@@ -66,19 +74,28 @@ public class MediaActivity extends AppCompatActivity {
 
 		try {
 			var json = getIntent().getStringExtra("media");
-			var media = Parser.fromString(CatalogMedia.class, json);
-
-			new Thread(() -> {
-				var db = AweryApp.getDatabase().getMediaDao();
-				var dbMedia = db.get(media.globalId);
-
-				runOnUiThread(() -> setMedia(media));
-			}).start();
+			setMedia(Parser.fromString(CatalogMedia.class, json));
 		} catch(IOException e) {
-			AweryApp.toast(this, "Failed to load media!", 1);
+			toast(this, "Failed to load media!", 1);
 			Log.e(TAG, "Failed to load media!", e);
 			finish();
 		}
+	}
+
+	public static void handleOptionsClick(@NonNull View anchor, CatalogMedia media) {
+		var context = new ContextThemeWrapper(anchor.getContext(), anchor.getContext().getTheme());
+
+		var popup = new PopupMenu(context, anchor);
+		popup.getMenu().add(0, 0, 0, "Share");
+		popup.getMenu().add(0, 1, 0, "Blacklist");
+
+		popup.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
+			case 0: MediaUtils.shareMedia(context, media); yield true;
+			case 1: MediaUtils.blacklistMedia(media, () -> toast("Blacklisted successfully")); yield true;
+			default: yield false;
+		});
+
+		popup.show();
 	}
 
 	@SuppressLint("NonConstantResourceId")

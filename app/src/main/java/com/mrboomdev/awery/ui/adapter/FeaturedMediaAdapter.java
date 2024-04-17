@@ -4,6 +4,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 import static com.mrboomdev.awery.app.AweryApp.getConfiguration;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
@@ -103,8 +104,10 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 					MediaUtils.isMediaFiltered(media, isFiltered -> {
 						if(!isFiltered) return;
 
-						items.remove(index);
-						notifyItemRemoved(index);
+						runOnUiThread(() -> {
+							items.remove(index);
+							notifyItemRemoved(index);
+						});
 					});
 				});
 				return true;
@@ -157,7 +160,14 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogMedia item) {
 			binding.title.setText(item.getTitle());
-			binding.description.setText(Html.fromHtml(item.description).toString().trim());
+
+			var description = Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT).toString().trim();
+
+			while(description.contains("\n\n")) {
+				description = description.replaceAll("\n\n", "\n");
+			}
+
+			binding.description.setText(description);
 
 			if(item.averageScore != null) {
 				binding.metaSeparator.setVisibility(View.VISIBLE);

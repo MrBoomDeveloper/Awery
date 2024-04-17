@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.GradientDrawable.*
 import android.graphics.drawable.GradientDrawable.Orientation.*
 import android.text.Spannable
 import android.text.SpannableString
@@ -22,21 +21,6 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * Expand the text within layout
- */
-const val EXPAND_TYPE_LAYOUT = 0
-
-/**
- * Expand the text as a popup
- */
-const val EXPAND_TYPE_POPUP = 1
-
-/**
- * Default expand type which will layout
- */
-const val EXPAND_TYPE_DEFAULT = EXPAND_TYPE_LAYOUT
-
-/**
  * This value define how much space should be consumed by ellipsize text to represent itself.
  */
 const val ELLIPSIZE_TEXT_LENGTH_MULTIPLIER = 2.0
@@ -48,8 +32,8 @@ class ExpandableTextView @JvmOverloads constructor(
 ) {
     private var mOriginalText: CharSequence? = ""
     private var mCollapsedLines = 0
-    private var mReadMoreText: CharSequence = "Read more"
-    private var mReadLessText: CharSequence = "Read less"
+    private var mReadMoreText: CharSequence = "   Read more"
+    private var mReadLessText: CharSequence = "   Read less"
     var isExpanded: Boolean = false
         private set
     private var mAnimationDuration: Int? = 0
@@ -57,9 +41,6 @@ class ExpandableTextView @JvmOverloads constructor(
     private var initialText = ""
     private var isUnderlined: Boolean? = false
     private var mEllipsizeTextColor: Int? = 0
-    var expandType = EXPAND_TYPE_DEFAULT
-        private set
-
     private lateinit var collapsedVisibleText: String
 
     @SuppressLint("ClickableViewAccessibility")
@@ -77,12 +58,9 @@ class ExpandableTextView @JvmOverloads constructor(
             initialText = text.toString()
             collapsedVisibleText = collapsedVisibleText()
             //Override expand property in specific scenarios
-            isExpanded = if (collapsedVisibleText.isAllTextVisible()) {
-                true
-            } else when (expandType) {
-                EXPAND_TYPE_POPUP -> false
-                else -> isExpanded
-            }
+
+            isExpanded = if(collapsedVisibleText.isAllTextVisible()) true else isExpanded
+
             setEllipsizedText(isExpanded)
             setForeground(isExpanded)
         }
@@ -94,60 +72,40 @@ class ExpandableTextView @JvmOverloads constructor(
             return
         }
 
-        when (expandType) {
-            EXPAND_TYPE_LAYOUT -> {
+        isExpanded = !isExpanded
+        configureMaxLines()
 
-                isExpanded = !isExpanded
-                configureMaxLines()
+        val startHeight = measuredHeight
 
-                val startHeight = measuredHeight
+        measure(
+            MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+        )
 
-                measure(
-                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-                )
-                val endHeight = measuredHeight
+        val endHeight = measuredHeight
 
-                animationSet(startHeight, endHeight).apply {
-                    duration = mAnimationDuration?.toLong()!!
-                    start()
+        animationSet(startHeight, endHeight).apply {
+            duration = mAnimationDuration?.toLong()!!
+            start()
 
-                    addListener(object : Animator.AnimatorListener {
-                        override fun onAnimationEnd(animation: Animator) {
-                            if (!isExpanded)
-                                setEllipsizedText(isExpanded)
-                        }
-
-                        override fun onAnimationRepeat(animation: Animator) {}
-                        override fun onAnimationCancel(animation: Animator) {}
-                        override fun onAnimationStart(animation: Animator) {}
-                    })
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationEnd(animation: Animator) {
+                    if(!isExpanded)
+                        setEllipsizedText(isExpanded)
                 }
 
-                setEllipsizedText(isExpanded)
-            }
-
-            EXPAND_TYPE_POPUP -> {
-                AlertDialog.Builder(context)
-                    .setTitle("")
-                    .setMessage(initialText)
-                    .setNegativeButton(android.R.string.ok, null)
-                    .show()
-            }
-
-            else -> throw UnsupportedOperationException("No toggle operation provided for expand type[$expandType]")
+                override fun onAnimationRepeat(animation: Animator) {}
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationStart(animation: Animator) {}
+            })
         }
 
-
+        setEllipsizedText(isExpanded)
     }
 
     private fun configureMaxLines() {
         if (mCollapsedLines < COLLAPSED_MAX_LINES) {
-            maxLines = when (expandType) {
-                EXPAND_TYPE_LAYOUT -> if (isExpanded) COLLAPSED_MAX_LINES else mCollapsedLines
-                EXPAND_TYPE_POPUP -> mCollapsedLines
-                else -> maxLines
-            }
+            maxLines = if (isExpanded) COLLAPSED_MAX_LINES else mCollapsedLines
         }
     }
 
@@ -196,11 +154,6 @@ class ExpandableTextView @JvmOverloads constructor(
         return this
     }
 
-    fun setExpandType(expandType: Int): ExpandableTextView {
-        this.expandType = expandType
-        return this
-    }
-
     fun toggle() {
         toggleExpandableTextView()
     }
@@ -217,7 +170,6 @@ class ExpandableTextView @JvmOverloads constructor(
                 isUnderlined = getBoolean(R.styleable.ExpandableTextView_isUnderlined, false)
                 isExpanded = getBoolean(R.styleable.ExpandableTextView_textIsExpanded, false)
                 mEllipsizeTextColor = getColor(R.styleable.ExpandableTextView_ellipsizeTextColor, Color.BLUE)
-                expandType = getInt(R.styleable.ExpandableTextView_expandType, EXPAND_TYPE_DEFAULT)
             } finally {
                 this.recycle()
             }
@@ -233,11 +185,7 @@ class ExpandableTextView @JvmOverloads constructor(
         text = if(collapsedVisibleText.isAllTextVisible()) {
             initialText
         } else {
-            when (expandType) {
-                EXPAND_TYPE_POPUP -> getCollapseText()
-                EXPAND_TYPE_LAYOUT -> if (isExpanded) getExpandText() else getCollapseText()
-                else -> throw UnsupportedOperationException("No supported expand mechanism provided for expand type[$expandType]")
-            }
+             if(isExpanded) getExpandText() else getCollapseText()
         }
     }
 
@@ -337,7 +285,7 @@ class ExpandableTextView @JvmOverloads constructor(
         const val DEFAULT_ANIM_DURATION = 450
         const val DEFAULT_ELLIPSIZED_TEXT = "..."
         const val EMPTY_SPACE = " "
-        const val READ_MORE = "Read more"
-        const val READ_LESS = "Read less"
+        const val READ_MORE = "   Read more"
+        const val READ_LESS = "   Read less"
     }
 }
