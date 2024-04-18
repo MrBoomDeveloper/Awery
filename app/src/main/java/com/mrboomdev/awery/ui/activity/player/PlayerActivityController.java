@@ -26,7 +26,7 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.util.StringUtil;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -181,7 +181,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtil.limitDialogSize(dialog.get());
+		DialogUtils.fixDialog(dialog.get());
 	}
 
 	public void openSettingsDialog() {
@@ -238,7 +238,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtil.limitDialogSize(dialog.get());
+		DialogUtils.fixDialog(dialog.get());
 	}
 
 	public void openSubtitlesDialog() {
@@ -290,7 +290,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtil.limitDialogSize(dialog.get());
+		DialogUtils.fixDialog(dialog.get());
 	}
 
 	public void openQualityDialog(boolean isRequired) {
@@ -349,7 +349,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtil.limitDialogSize(dialog.get());
+		DialogUtils.fixDialog(dialog.get());
 	}
 
 	public static class PopupItem {

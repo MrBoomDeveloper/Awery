@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.DynamicColors;
+import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
@@ -122,13 +123,14 @@ public class SettingsItem {
 			var requirements = showIf.split(",");
 
 			for(var requirement : requirements) {
-				if(requirement.equals("is_material_you_available")) {
-					return DynamicColors.isDynamicColorAvailable();
-				}
-
-				if(requirement.equals("never")) {
-					return false;
-				}
+				if(!switch(requirement) {
+					case "material_you" -> DynamicColors.isDynamicColorAvailable();
+					case "beta" -> BuildConfig.IS_BETA;
+					case "legacy" -> BuildConfig.IS_LEGACY;
+					case "debug" -> BuildConfig.DEBUG;
+					case "never" -> false;
+					default -> true;
+				}) return false;
 			}
 		}
 

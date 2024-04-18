@@ -41,8 +41,7 @@
         app:abb_tabs="@menu/bottom_navbar_menu"
         app:abb_textAppearance="@style/NavBarText" />
 
-    <View
-        android:id="@+id/bottom_side_barrier"
+    <View android:id="@+id/bottom_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"

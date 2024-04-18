@@ -5,12 +5,17 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
-public class DialogUtil {
+public class DialogUtils {
 
-	public static void limitDialogSize(@NonNull Dialog dialog) {
+	public static void fixDialog(@NonNull Dialog dialog) {
+		if(dialog instanceof BottomSheetDialog sheet) {
+			sheet.getBehavior().setPeekHeight(1000);
+		}
+
 		var window = dialog.getWindow();
 		if(window == null) return;
 

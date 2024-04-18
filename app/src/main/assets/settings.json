@@ -9,7 +9,7 @@
 					"key": "use_material_you", "type": "boolean", "restart": true,
 					"title": "use_material_you", "icon": "ic_round_auto_awesome_24",
 					"description": "material_you_description",
-					"show_if": "is_material_you_available"
+					"show_if": "material_you"
 				}, {
 					"key": "dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
 					"title": "Dark Theme", "icon": "ic_sharp_dark_mode",
@@ -40,6 +40,10 @@
 			"title": "ui", "icon": "ic_round_amp_stories_24",
 			"items": [
 				{
+					"key": "language", "type": "select",
+					"title": "App Language (Experimental)", "icon": "ic_language",
+					"behaviour": "languages", "show_if": "debug"
+				}, {
 					"key": "default_tab", "type": "select", "string_value": "MAIN",
 					"description": "default_tab_description",
 					"title": "startUpTab", "icon": "ic_round_home_24",

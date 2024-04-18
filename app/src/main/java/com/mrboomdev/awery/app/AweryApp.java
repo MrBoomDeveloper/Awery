@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.StrictMode;
+import android.os.strictmode.InstanceCountViolation;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.FrameLayout;
@@ -177,6 +178,8 @@ public class AweryApp extends Application {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			vmPolicy.penaltyListener(Runnable::run, v -> {
 				if(BuildConfig.DEBUG) {
+					if(v instanceof InstanceCountViolation) return;
+
 					var activity = getAnyActivity(AppCompatActivity.class);
 					CrashHandler.showErrorDialog(activity, v, false);
 				}

@@ -593,6 +593,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
 								? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
 
+						if(item.getItems() == null) {
+							yield "";
+						}
+
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";
 					}

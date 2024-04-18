@@ -56,7 +56,6 @@
         android:banner="@mipmap/ic_banner"
         android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true"
-        android:localeConfig="@xml/locales_config"
         android:supportsRtl="false"
         android:theme="@style/Theme.Awery"
         android:usesCleartextTraffic="true"
@@ -139,5 +138,16 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+
+        </service>
     </application>
 </manifest>

@@ -7,10 +7,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 
+import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
-import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
@@ -18,6 +20,7 @@ import com.mrboomdev.awery.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import java9.util.stream.Collectors;
@@ -64,6 +67,20 @@ public class SettingsData {
 			Callbacks.Errorable<Set<SelectionItem>, Throwable> callback
 	) {
 		switch(behaviourId) {
+			case "languages" -> {
+				var locales = LocaleListCompat.getAdjustedDefault();
+				var options = new HashSet<SelectionItem>();
+
+				for(int i = 0; i < locales.size(); i++) {
+					var locale = locales.get(i);
+					if(locale == null) continue;
+
+					options.add(new SelectionItem(locale.toLanguageTag(), locale.getDisplayLanguage(), i == 0));
+				}
+
+				callback.onResult(options, null);
+			}
+
 			case "excluded_tags" -> {
 				var flags = AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT)
 						? AnilistTagsQuery.ALL
@@ -115,6 +132,14 @@ public class SettingsData {
 
 	public static void saveSelectionList(@NonNull String behaviourId, Set<SelectionItem> list) {
 		switch(behaviourId) {
+			case "languages" -> {
+				var found = stream(list).filter(SelectionItem::isSelected).findFirst();
+				if(found.isEmpty()) return;
+
+				var locale = LocaleListCompat.forLanguageTags(found.get().getId());
+				AppCompatDelegate.setApplicationLocales(locale);
+			}
+
 			case "excluded_tags" -> {
 				var prefs = AwerySettings.getInstance();
 

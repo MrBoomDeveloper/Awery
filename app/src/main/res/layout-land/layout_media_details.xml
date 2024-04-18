@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="?attr/floatingActionButtonSmallSecondaryStyle"
+    <ImageView
+        style="@style/AweryButtonPopupCircle"
         android:id="@+id/options"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:src="@drawable/ic_round_dots_vertical_24"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:contentDescription="Options"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

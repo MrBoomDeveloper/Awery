@@ -164,7 +164,7 @@ public class MediaInfoFragment extends Fragment {
 
 		if(AweryApp.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
 			setOnApplyUiInsetsListener(binding.posterWrapper, insets ->
-					setTopMargin(binding.posterWrapper, insets.top + dpPx(16)));
+					setTopMargin(binding.posterWrapper, insets.top + dpPx(24)));
 		}
 
 		if(binding.back != null) {

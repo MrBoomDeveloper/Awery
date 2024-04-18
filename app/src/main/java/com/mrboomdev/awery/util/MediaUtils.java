@@ -39,7 +39,7 @@ import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import org.jetbrains.annotations.Contract;
 
@@ -130,12 +130,10 @@ public class MediaUtils {
 
 		var sheet = new BottomSheetDialog(context);
 		dialog.set(sheet);
-
-		sheet.getBehavior().setPeekHeight(1000);
 		sheet.setContentView(binding.getRoot());
 		sheet.show();
 
-		DialogUtil.limitDialogSize(sheet);
+		DialogUtils.fixDialog(sheet);
 	}
 
 	public static void blacklistMedia(CatalogMedia media, Runnable callback) {
@@ -301,11 +299,10 @@ public class MediaUtils {
 					}).start();
 				});
 
-				sheet.getBehavior().setPeekHeight(1000);
 				sheet.setContentView(binding.getRoot());
 				sheet.show();
 
-				DialogUtil.limitDialogSize(sheet);
+				DialogUtils.fixDialog(sheet);
 			});
 		}).start();
 	}
