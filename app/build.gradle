@@ -24,7 +24,7 @@ android {
         var newVersionCodeTimeout = 60 * 60 * 1000
         versionCode (((calendarCurrent.timeInMillis - calendarBegin.timeInMillis) / newVersionCodeTimeout) as int)
 
-        resourceConfigurations.addAll(["en", "ru", "hn"])
+        resourceConfigurations.addAll(["en", "ru", "hi"])
 
         javaCompileOptions {
             annotationProcessorOptions {
