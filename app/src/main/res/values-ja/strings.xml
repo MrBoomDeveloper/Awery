@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ja">
-
     <string name="empty_library_title">ライブラリは空です</string>
     <string name="empty_library_message">カタログを閲覧し始めると、新しいものがここに表示されます！</string>
-
     <string name="login">ログイン</string>
     <string name="logout">ログアウト</string>
-
     <string name="english">英語</string>
     <string name="russian">ロシア語</string>
     <string name="japanese">日本語</string>
     <string name="chinese">中国語</string>
     <string name="korean">韓国語</string>
-
     <string name="us">アメリカ</string>
     <string name="russia">ロシア</string>
     <string name="japan">日本</string>
     <string name="china">中国</string>
     <string name="korea">韓国</string>
-
     <string name="global_excluded_tags">グローバルにタグを除外</string>
-
     <string name="back">戻る</string>
-
     <string name="home">ホーム</string>
     <string name="anime">アニメ</string>
     <string name="manga">マンガ</string>
@@ -32,40 +25,31 @@
     <string name="read">読む</string>
     <string name="library">ライブラリ</string>
     <string name="advanced">高度な設定</string>
-
     <string name="add_to_bookmarks">ブックマークに追加</string>
     <string name="new_list">新しいリスト</string>
-
     <string name="no_media_found">メディアが見つかりませんでした。クエリとフィルターを変更してみてください。</string>
     <string name="no_episodes_found">エピソードが見つかりませんでした。クエリとフィルターを変更してみてください。</string>
     <string name="no_extensions_found">拡張機能が見つかりませんでした。クエリとフィルターを変更してみてください。</string>
     <string name="no_comment_extensions">インストールされたコメント拡張機能がありません。新しいものをダウンロードしてここに表示しましょう！</string>
-
     <string name="material_you_description">アプリの色が壁紙に基づいて生成されます</string>
     <string name="default_tab_description">アプリの起動時に開かれます</string>
     <string name="adult_content_description">子供向けではありません。</string>
-
     <string name="no_internet">インターネットに接続されていません</string>
     <string name="refresh">更新</string>
-
     <string name="search">検索</string>
     <string name="sort_by">並べ替え</string>
     <string name="genre">ジャンル</string>
     <string name="top_score">トップスコア</string>
     <string name="recently_updated">最近更新された</string>
-
     <string name="username">ユーザー名</string>
     <string name="continue_reading">読み続ける</string>
     <string name="continue_watching">視聴を続ける</string>
     <string name="recommended">おすすめ</string>
-
     <string name="get_recommendations">おすすめを得るには、アニメまたはマンガをいくつか視聴/読書してください</string>
     <string name="hide_library_entries">ライブラリエントリを非表示にする</string>
     <string name="hide_library_entries_description">ライブラリ外でこれらのエントリを表示しない</string>
-
     <string name="list_editor">リストエディタ</string>
     <string name="notifications">通知</string>
-
     <string name="progress">進行状況</string>
     <string name="score">スコア</string>
     <string name="started_at">開始日</string>
@@ -73,7 +57,6 @@
     <string name="save">保存</string>
     <string name="delete">削除</string>
     <string name="remove">削除</string>
-
     <string name="name">名前</string>
     <string name="format">形式</string>
     <string name="status_title">ステータス</string>
@@ -89,16 +72,13 @@
     <string name="description">説明</string>
     <string name="characters">キャラクター</string>
     <string name="relations">関係</string>
-
     <string name="roles">役割</string>
     <string name="details">詳細</string>
-
     <string name="play_yt">YouTubeで再生</string>
     <string name="eps">エピソード</string>
     <string name="ep">エピソード</string>
     <string name="chaps">チャプター</string>
     <string name="chap">チャプター</string>
-
     <string name="filler">フィラー</string>
     <string name="adult">アダルト</string>
     <string name="tag">タグ</string>
@@ -109,7 +89,6 @@
     <string name="ending">エンディング</string>
     <string name="prequel">前日譚</string>
     <string name="sequel">続編</string>
-
     <string name="downloads">ダウンロード</string>
     <string name="settings">設定</string>
     <string name="extensions">拡張機能</string>
@@ -125,16 +104,17 @@
     <string name="about">について</string>
     <string name="devs">開発者</string>
     <string name="disclaimer">免責事項</string>
-
-    <string name="full_disclaimer">
-         - Awery自体はアニメとマンガのトラッカーのみを提供し、アニメやマンガのストリーミングやダウンロードの機能は提供しません。
-        \n\n - Aweryまたはその開発者/スタッフは、Awery内で見つかったコンテンツのいずれもホストしません。アプリ内で見つかるすべての画像とアニメ/マンガ情報は、さまざまな公共のAPI（AniList、MyAnimeList、Kitsu）から取得されます。
-        \n\n - さらに、Aweryで見つかるすべてのアニメ/マンガリンクは、さまざまな第三者プラグインから取得されており、Aweryまたはそのスタッフとは関係ありません。
-        \n\n - Aweryまたはその所有者は、アプリ内または外で見つかるコンテンツのいかなる誤用に対しても責任を負わず、アプリ内で見つかるコンテンツの配布についても責任を負いません。
-        \n\n - Aweryを使用することにより、アプリの開発者がアプリ内で見つかったコンテンツのいずれについても責任を負わないことに同意します。また、Aweryを使用して著作権で保護されたコンテンツをダウンロードまたはストリーミングすることはできないことに同意します。
-        \n\n - インターネットの侵害問題が関係している場合は、ソースのウェブサイトにお問い合わせください。開発者はいかなる法的責任も負いません。
-    </string>
-
+    <string name="full_disclaimer">- Awery自体はアニメとマンガのトラッカーのみを提供し、アニメやマンガのストリーミングやダウンロードの機能は提供しません。
+\n
+\n - Aweryまたはその開発者/スタッフは、Awery内で見つかったコンテンツのいずれもホストしません。アプリ内で見つかるすべての画像とアニメ/マンガ情報は、さまざまな公共のAPI（AniList、MyAnimeList、Kitsu）から取得されます。
+\n
+\n - さらに、Aweryで見つかるすべてのアニメ/マンガリンクは、さまざまな第三者プラグインから取得されており、Aweryまたはそのスタッフとは関係ありません。
+\n
+\n - Aweryまたはその所有者は、アプリ内または外で見つかるコンテンツのいかなる誤用に対しても責任を負わず、アプリ内で見つかるコンテンツの配布についても責任を負いません。
+\n
+\n - Aweryを使用することにより、アプリの開発者がアプリ内で見つかったコンテンツのいずれについても責任を負わないことに同意します。また、Aweryを使用して著作権で保護されたコンテンツをダウンロードまたはストリーミングすることはできないことに同意します。
+\n
+\n - インターネットの侵害問題が関係している場合は、ソースのウェブサイトにお問い合わせください。開発者はいかなる法的責任も負いません。</string>
     <string name="video">ビデオ</string>
     <string name="video_info_info">現在再生中のビデオの解像度を示します。 <b>「マルチクオリティ」</b>サーバーに便利です。</string>
     <string name="default_quality">自動クオリティ選択</string>
@@ -152,19 +132,17 @@
     <string name="sub_window_color_info">「字幕ウィンドウ」は、左右の部分を指します。（背景がない部分）</string>
     <string name="sub_font_select">字幕フォント</string>
     <string name="subtitle_font_size">字幕サイズ</string>
-
     <string name="auto">自動</string>
     <string name="auto_play_next_episode">次のエピソードを自動再生</string>
     <string name="auto_play_next_episode_info">プレーヤーとの対話が1時間経過すると自動的に無効になります。</string>
     <string name="auto_skip_fillers">フィラーを自動スキップ</string>
     <string name="auto_skip_fillers_info">次のエピソードに移動する際にフィラーエピソードをスキップします。</string>
-
     <string name="update_progress">進捗状況を更新</string>
     <string name="ask_update_progress_anime">各メディアについて「個別に」尋ねる</string>
     <string name="ask_update_progress_info_ep">オフにすると、エピソードを視聴するときに進行状況が自動的に常に更新されます。</string>
     <string name="watch_complete_percentage">視聴完了の割合</string>
-    <string name="watch_complete_percentage_info">エピソードを視聴した後にAnilistの進捗を更新する割合です。\nこれは、次のエピソードのリンクをプリロードする際の％も設定します。</string>
-
+    <string name="watch_complete_percentage_info">エピソードを視聴した後にAnilistの進捗を更新する割合です。
+\nこれは、次のエピソードのリンクをプリロードする際の％も設定します。</string>
     <string name="behaviour">動作</string>
     <string name="always_continue">常に中断した場所から続行</string>
     <string name="pause_video_focus">フォーカスが外れたときに一時停止</string>
@@ -180,11 +158,10 @@
     <string name="show_cast_button_info">キャストするには「Web Video Caster」アプリが必要です。</string>
     <string name="picture_in_picture">ピクチャーインピクチャー</string>
     <string name="always_minimize">常に最小化</string>
-    <string name="always_minimize_info">PiPが有効になっている必要があり、プレーヤーがYouTubeプレーヤーのように動作しますが、より優れています。\nまた、PiPボタンを非表示にします。</string>
-
+    <string name="always_minimize_info">PiPが有効になっている必要があり、プレーヤーがYouTubeプレーヤーのように動作しますが、より優れています。
+\nまた、PiPボタンを非表示にします。</string>
     <string name="immersive_mode">ステータスバーを非表示</string>
     <string name="immersive_mode_info">完全に適用するにはアプリの再起動が必要です。</string>
-
     <string name="startUpTab">デフォルトのスタートアップタブ</string>
     <string name="animations">アニメーション</string>
     <string name="restart_app">アプリを再起動しますか？</string>
@@ -201,7 +178,6 @@
     <string name="layout">レイアウト</string>
     <string name="spaced_pages">スペースのあるページ</string>
     <string name="direction">方向</string>
-
     <string name="general">一般</string>
     <string name="show_system_bars">ステータスバーとナビゲーションバーを表示</string>
     <string name="auto_detect_webtoon">Webtoonを自動検出</string>
@@ -243,13 +219,14 @@
     <string name="check_app_updates">常にアプリの更新を確認</string>
     <string name="author">著者</string>
     <string name="account">アカウント</string>
-    <string name="subscriptions_info">Aweryが新しいエピソード/チャプターを定期的に確認する時間の量\n（短い時間は電力消費量が増加します）</string>
+    <string name="subscriptions_info">Aweryが新しいエピソード/チャプターを定期的に確認する時間の量
+\n（短い時間は電力消費量が増加します）</string>
     <string name="grid">グリッド</string>
     <string name="sort_by_release_date">リリース日で並べ替え</string>
     <string name="crop_borders">ボーダーを切り抜く</string>
-    
     <string name="error_loading_data">データの読み込みエラー %1$s</string>
-    <string name="saved_to_path">保存先:\n%s</string>
+    <string name="saved_to_path">保存先:
+\n%s</string>
     <string name="setting_progress">%1$d に進捗を設定中</string>
     <string name="back_to_exit">終了するにはもう一度バックを押してください</string>
     <string name="no_internet_connection">インターネットに接続されていません</string>
@@ -269,22 +246,20 @@
     <string name="no_update_found">更新が見つかりません</string>
     <string name="downloading_update">%1$s の更新をダウンロード中</string>
     <string name="permission_required">ファイルとフォルダへのアクセス許可を設定から許可し、再試行してください。</string>
-    <string name="started_downloading">ダウンロードを開始しました\n%1$s</string>
+    <string name="started_downloading">ダウンロードを開始しました
+\n%1$s</string>
     <string name="loading_image_failed">画像の読み込みに失敗しました</string>
     <string name="failed_to_load_data">%1$d の保存データの読み込みに失敗しました</string>
     <string name="access_not_available">アクセスできませんでした</string>
     <string name="episode_release_countdown">%1$d エピソードのリリースまで</string>
     <string name="time_format">%1$d日 %2$d時間 %3$d分 %4$d秒</string>
-    
     <string name="main_role">メイン</string>
     <string name="supporting_role">サポート</string>
-    
     <string name="status_finished">完結</string>
     <string name="status_releasing">配信中</string>
     <string name="status_not_yet_released">未公開</string>
     <string name="status_cancelled">中止</string>
     <string name="status_hiatus">休止</string>
-    
     <string name="type_adaptation">アダプテーション</string>
     <string name="type_parent">親</string>
     <string name="type_character">キャラクター</string>
@@ -293,19 +268,15 @@
     <string name="type_other">その他</string>
     <string name="type_source">ソース</string>
     <string name="type_contains">含む</string>
-    
     <string name="read_on_dantotsu">Aweryで読む</string>
     <string name="watch_on_dantotsu">Aweryで見る</string>
     <string name="continue_episode">"続き：エピソード "</string>
     <string name="continue_chapter">"続き： "</string>
-    
     <string name="episode">エピソード</string>
     <string name="episodes">エピソード</string>
     <string name="duration">長さ</string>
-
     <string name="just_released">- ついさっき公開されました！</string>
     <string name="checking_subscriptions_title">サブスクリプションをチェック中</string>
-    
     <string name="speed">速度</string>
     <string name="auto_update">%1$s の自動更新進行状況？</string>
     <string name="continue_from">%1$s から続行しますか？</string>
@@ -317,7 +288,6 @@
     <string name="outline_sub_color">アウトラインサブカラー</string>
     <string name="outline_type">アウトラインタイプ</string>
     <string name="subtitle_font">字幕フォント</string>
-    
     <string name="not_implemented">機能は実装されていません！</string>
     <string name="timed_out">接続がタイムアウトしました！</string>
     <string name="failed_handshake">サーバーへの接続に失敗しました！</string>
@@ -325,9 +295,7 @@
     <string name="server_down">サーバーがダウンしています！</string>
     <string name="too_much_requests">リクエストが多すぎます！</string>
     <string name="something_went_wrong">何かがうまくいきませんでした！</string>
-    
     <string name="not_found_detailed">エラー404。リクエストされたリソースが存在しません！</string>
-    
     <string name="content">コンテンツ</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
@@ -335,52 +303,40 @@
     <string name="no_chapter">チャプターなし</string>
     <string name="available">利用可能</string>
     <string name="lets_go">さあ始めましょう</string>
-    
     <string name="watched_num">"見た "</string>
     <string name="read_num">"読んだ "</string>
     <string name="episodes_out_of">" / "</string>
     <string name="episodes_total_of">"合計 "</string>
-    <string name="no_description_available">"説明はありません"</string>
-    
+    <string name="no_description_available">説明はありません</string>
     <string name="selected">選択済み</string>
     <string name="found">見つかりました</string>
-    
     <string name="age">年齢</string>
     <string name="birthday">誕生日</string>
     <string name="gender">性別</string>
-    
     <string name="male">男性</string>
     <string name="female">女性</string>
-    
     <string name="subscribed_notification">購読しました！新しいエピソードが %1$s でリリースされると通知が届きます。</string>
-    
     <string name="unsubscribed_notification">購読を解除しました、通知は届きません。</string>
     <string name="episode_plural">エピソード</string>
     <string name="episode_singular">エピソード</string>
     <string name="chapter_singular">チャプター</string>
     <string name="chapter_plural">チャプター</string>
-
     <string name="search_by_image">画像で検索</string>
     <string name="similarity_text">類似度：%1$s %%</string>
     <string name="time_range">%1$s から %2$s まで</string>
     <string name="invalid_url">無効なURL</string>
     <string name="extension_specific_dns">拡張機能固有のDNS</string>
-    
     <string name="color_picker">カラーピッカー</string>
     <string name="android12_requires">Android 12+が必要です</string>
     <string name="comments">コメント</string>
     <string name="variant">バリアント</string>
-    
     <string name="select_quality">品質を選択</string>
-    
     <string name="use_material_you">Material You</string>
     <string name="oled_theme_variant">OLEDテーマのバリアント</string>
     <string name="custom_theme">カスタムテーマ</string>
     <string name="use_unique_theme_for_each_item">メディアポスターと同じ色</string>
-    
     <string name="default_video_quality">デフォルトのビデオ品質</string>
     <string name="user_agent">ユーザーエージェント</string>
-    
     <string name="nothing_found">見つかりませんでした</string>
     <string name="tried_all_titles">すべてのメディアタイトルを試しました、何も見つかりませんでした！</string>
 </resources>
