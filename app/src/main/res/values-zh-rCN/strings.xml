@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="zh-rCN">
-
     <string name="empty_library_title">库存为空</string>
     <string name="empty_library_message">开始浏览目录，新内容将会出现在这里！</string>
-
     <string name="login">登录</string>
     <string name="logout">登出</string>
-
     <string name="english">英语</string>
     <string name="russian">俄语</string>
     <string name="japanese">日语</string>
     <string name="chinese">中文</string>
     <string name="korean">韩语</string>
-
     <string name="us">美国</string>
     <string name="russia">俄罗斯</string>
     <string name="japan">日本</string>
     <string name="china">中国</string>
     <string name="korea">韩国</string>
-
     <string name="global_excluded_tags">全局排除标签</string>
-
     <string name="back">返回</string>
-
     <string name="home">主页</string>
     <string name="anime">动漫</string>
     <string name="manga">漫画</string>
@@ -32,40 +25,31 @@
     <string name="read">阅读</string>
     <string name="library">库</string>
     <string name="advanced">高级</string>
-
     <string name="add_to_bookmarks">添加到书签</string>
     <string name="new_list">新列表</string>
-
     <string name="no_media_found">未找到媒体。尝试更改您的查询和过滤器。</string>
     <string name="no_episodes_found">未找到剧集。尝试更改您的查询和过滤器。</string>
     <string name="no_extensions_found">未找到扩展。尝试更改您的查询和过滤器。</string>
     <string name="no_comment_extensions">您尚未安装任何评论扩展。下载它们以查看新内容！</string>
-
     <string name="material_you_description">应用的颜色将根据您的壁纸生成</string>
     <string name="default_tab_description">应用启动时将打开</string>
     <string name="adult_content_description">不适合儿童。</string>
-
     <string name="no_internet">没有互联网连接</string>
     <string name="refresh">刷新</string>
-
     <string name="search">搜索</string>
     <string name="sort_by">排序方式</string>
     <string name="genre">流派</string>
     <string name="top_score">最高分</string>
     <string name="recently_updated">最近更新</string>
-
     <string name="username">用户名</string>
     <string name="continue_reading">继续阅读</string>
     <string name="continue_watching">继续观看</string>
     <string name="recommended">推荐</string>
-
     <string name="get_recommendations">观看/阅读一些动漫或漫画以获得推荐</string>
     <string name="hide_library_entries">隐藏库条目</string>
     <string name="hide_library_entries_description">在库之外不显示这些条目</string>
-
     <string name="list_editor">列表编辑器</string>
     <string name="notifications">通知</string>
-
     <string name="progress">进度</string>
     <string name="score">得分</string>
     <string name="started_at">开始于</string>
@@ -73,7 +57,6 @@
     <string name="save">保存</string>
     <string name="delete">删除</string>
     <string name="remove">移除</string>
-
     <string name="name">名称</string>
     <string name="format">格式</string>
     <string name="status_title">状态</string>
@@ -89,16 +72,13 @@
     <string name="description">描述</string>
     <string name="characters">角色</string>
     <string name="relations">关系</string>
-
     <string name="roles">角色</string>
     <string name="details">详情</string>
-
     <string name="play_yt">在YouTube上播放</string>
     <string name="eps">剧集</string>
     <string name="ep">剧集</string>
     <string name="chaps">章节</string>
     <string name="chap">章节</string>
-
     <string name="filler">填充</string>
     <string name="adult">成人</string>
     <string name="tag">标签</string>
@@ -109,7 +89,6 @@
     <string name="ending">片尾曲</string>
     <string name="prequel">前传</string>
     <string name="sequel">续集</string>
-
     <string name="downloads">下载</string>
     <string name="settings">设置</string>
     <string name="extensions">扩展</string>
@@ -125,16 +104,17 @@
     <string name="about">关于</string>
     <string name="devs">开发者</string>
     <string name="disclaimer">免责声明</string>
-
-    <string name="full_disclaimer">
-         - Awery本身仅提供动漫和漫画追踪，不提供任何动漫或漫画的流媒体或下载功能。
-        \n\n - Awery或其任何开发者/工作人员不托管Awery中发现的任何内容。应用程序中发现的所有图像和动漫/漫画信息都来自各种公共API（AniList，MyAnimeList，Kitsu）。
-        \n\n - 此外，Awery中发现的所有动漫/漫画链接都来自各种第三方插件，与Awery或其工作人员无关。
-        \n\n - Awery或其所有者不对任何内容的错误使用承担责任，并且不对应用程序内发现的任何内容的分发负责。
-        \n\n - 使用Awery，您同意开发者不对应用程序中的任何内容负责。您还同意您不得使用Awery下载或流式传输任何受版权保护的内容。
-        \n\n - 如果涉及到互联网侵权问题，请联系源网站。开发者不承担任何法律责任。
-    </string>
-
+    <string name="full_disclaimer">- Awery本身仅提供动漫和漫画追踪，不提供任何动漫或漫画的流媒体或下载功能。
+\n
+\n - Awery或其任何开发者/工作人员不托管Awery中发现的任何内容。应用程序中发现的所有图像和动漫/漫画信息都来自各种公共API（AniList，MyAnimeList，Kitsu）。
+\n
+\n - 此外，Awery中发现的所有动漫/漫画链接都来自各种第三方插件，与Awery或其工作人员无关。
+\n
+\n - Awery或其所有者不对任何内容的错误使用承担责任，并且不对应用程序内发现的任何内容的分发负责。
+\n
+\n - 使用Awery，您同意开发者不对应用程序中的任何内容负责。您还同意您不得使用Awery下载或流式传输任何受版权保护的内容。
+\n
+\n - 如果涉及到互联网侵权问题，请联系源网站。开发者不承担任何法律责任。</string>
     <string name="video">视频</string>
     <string name="video_info_info">显示当前视频播放的分辨率，对于<b>“多画质”</b>服务器非常有用。</string>
     <string name="default_quality">自动选择画质</string>
@@ -152,19 +132,17 @@
     <string name="sub_window_color_info">“字幕窗口是左右两侧的部分。（背景不存在的地方）”</string>
     <string name="sub_font_select">字幕字体</string>
     <string name="subtitle_font_size">字幕大小</string>
-  
     <string name="auto">自动</string>
     <string name="auto_play_next_episode">自动播放下一集</string>
     <string name="auto_play_next_episode_info">如果与播放器没有交互，则自动在1小时后禁用。</string>
     <string name="auto_skip_fillers">自动跳过填充</string>
     <string name="auto_skip_fillers_info">在转到下一集时跳过填充剧集。</string>
-  
     <string name="update_progress">更新进度</string>
     <string name="ask_update_progress_anime">每个媒体“单独”询问</string>
     <string name="ask_update_progress_info_ep">关闭将始终在观看完集后自动更新进度。</string>
     <string name="watch_complete_percentage">观看更新百分比</string>
-    <string name="watch_complete_percentage_info">观看一集后应更新您的 Anilist 进度的百分比。 \n这也设置了在观看下一集时预加载链接的百分比。</string>
-  
+    <string name="watch_complete_percentage_info">观看一集后应更新您的 Anilist 进度的百分比。
+\n这也设置了在观看下一集时预加载链接的百分比。</string>
     <string name="behaviour">行为</string>
     <string name="always_continue">始终从上次离开的地方继续</string>
     <string name="pause_video_focus">失去焦点时暂停</string>
@@ -180,11 +158,10 @@
     <string name="show_cast_button_info">需要“Web Video Caster”应用来投射。</string>
     <string name="picture_in_picture">画中画</string>
     <string name="always_minimize">始终最小化</string>
-    <string name="always_minimize_info">需要启用 PiP，使播放器的行为类似于 Youtube 播放器但更好。\n还隐藏了 PiP 按钮。</string>
-  
+    <string name="always_minimize_info">需要启用 PiP，使播放器的行为类似于 Youtube 播放器但更好。
+\n还隐藏了 PiP 按钮。</string>
     <string name="immersive_mode">隐藏状态栏</string>
     <string name="immersive_mode_info">需要重新启动应用程序才能完全应用。</string>
-  
     <string name="startUpTab">默认启动选项卡</string>
     <string name="animations">动画</string>
     <string name="restart_app">重新启动应用程序？</string>
@@ -201,7 +178,6 @@
     <string name="layout">布局</string>
     <string name="spaced_pages">分隔页面</string>
     <string name="direction">方向</string>
-  
     <string name="general">一般</string>
     <string name="show_system_bars">显示状态栏和导航栏</string>
     <string name="auto_detect_webtoon">自动检测 Webtoon</string>
@@ -243,13 +219,14 @@
     <string name="check_app_updates">始终检查应用程序更新</string>
     <string name="author">作者</string>
     <string name="account">账户</string>
-    <string name="subscriptions_info">Awery 定期检查新剧集/章节的时间\n（更短的时间将导致更多的电池消耗）</string>
+    <string name="subscriptions_info">Awery 定期检查新剧集/章节的时间
+\n（更短的时间将导致更多的电池消耗）</string>
     <string name="grid">网格</string>
     <string name="sort_by_release_date">按发布日期排序</string>
     <string name="crop_borders">裁剪边框</string>
-  
     <string name="error_loading_data">加载数据时出错 %1$s</string>
-    <string name="saved_to_path">已保存到：\n%s</string>
+    <string name="saved_to_path">已保存到：
+\n%s</string>
     <string name="setting_progress">设置进度为 %1$d</string>
     <string name="back_to_exit">请再次返回退出</string>
     <string name="no_internet_connection">无互联网连接</string>
@@ -269,22 +246,20 @@
     <string name="no_update_found">未找到更新</string>
     <string name="downloading_update">正在下载更新 %1$s</string>
     <string name="permission_required">请在设置中授予访问文件和文件夹的权限，然后重试。</string>
-    <string name="started_downloading">开始下载\n%1$s</string>
+    <string name="started_downloading">开始下载
+\n%1$s</string>
     <string name="loading_image_failed">加载图像失败</string>
     <string name="failed_to_load_data">无法加载 %1$d 的保存数据</string>
     <string name="access_not_available">无法获取访问权限</string>
     <string name="episode_release_countdown">第 %1$d 集将发布于</string>
     <string name="time_format">%1$d 天 %2$d 小时 %3$d 分钟 %4$d 秒</string>
-  
     <string name="main_role">主要</string>
     <string name="supporting_role">支持</string>
-  
     <string name="status_finished">已完成</string>
     <string name="status_releasing">正在发布</string>
     <string name="status_not_yet_released">尚未发布</string>
     <string name="status_cancelled">已取消</string>
     <string name="status_hiatus">已延迟</string>
-  
     <string name="type_adaptation">改编</string>
     <string name="type_parent">父级</string>
     <string name="type_character">角色</string>
@@ -293,19 +268,15 @@
     <string name="type_other">其他</string>
     <string name="type_source">来源</string>
     <string name="type_contains">包含</string>
-  
     <string name="read_on_dantotsu">在 Awery 中阅读</string>
     <string name="watch_on_dantotsu">在 Awery 中观看</string>
     <string name="continue_episode">“继续：剧集”</string>
     <string name="continue_chapter">“继续：”</string>
-  
     <string name="episode">剧集</string>
     <string name="episodes">剧集</string>
     <string name="duration">持续时间</string>
-  
     <string name="just_released">- 刚刚发布！</string>
     <string name="checking_subscriptions_title">检查订阅</string>
-  
     <string name="speed">速度</string>
     <string name="auto_update">自动更新 %1$s 的进度？</string>
     <string name="continue_from">从 %1$s 继续？</string>
@@ -317,7 +288,6 @@
     <string name="outline_sub_color">轮廓字幕颜色</string>
     <string name="outline_type">轮廓类型</string>
     <string name="subtitle_font">字幕字体</string>
-  
     <string name="not_implemented">功能尚未实现！</string>
     <string name="timed_out">连接超时！</string>
     <string name="failed_handshake">无法连接到服务器！</string>
@@ -325,9 +295,7 @@
     <string name="server_down">服务器已关闭！</string>
     <string name="too_much_requests">请求过多！</string>
     <string name="something_went_wrong">出了些问题！</string>
-  
     <string name="not_found_detailed">错误 404。您请求的资源不存在！</string>
-  
     <string name="content">内容</string>
     <string name="yes">是</string>
     <string name="no">否</string>
@@ -335,52 +303,45 @@
     <string name="no_chapter">没有章节</string>
     <string name="available">可用</string>
     <string name="lets_go">让我们开始</string>
-  
     <string name="watched_num">“观看了”</string>
     <string name="read_num">“阅读了”</string>
     <string name="episodes_out_of">“其中的”</string>
     <string name="episodes_total_of">“总共”</string>
     <string name="no_description_available">“无可用描述”</string>
-  
     <string name="selected">已选择</string>
     <string name="found">已找到</string>
-  
     <string name="age">年龄</string>
     <string name="birthday">生日</string>
     <string name="gender">性别</string>
-  
     <string name="male">男性</string>
     <string name="female">女性</string>
-  
     <string name="subscribed_notification">已订阅！当新剧集在 %1$s 上发布时，将收到通知。</string>
-  
     <string name="unsubscribed_notification">已取消订阅，您将不会收到任何通知。</string>
     <string name="episode_plural">剧集</string>
     <string name="episode_singular">剧集</string>
     <string name="chapter_singular">章节</string>
     <string name="chapter_plural">章节</string>
-  
     <string name="search_by_image">通过图像搜索</string>
     <string name="similarity_text">相似度：%1$s %%</string>
     <string name="time_range">从 %1$s 到 %2$s</string>
     <string name="invalid_url">无效的 URL</string>
     <string name="extension_specific_dns">特定于扩展的 DNS</string>
-  
     <string name="color_picker">颜色选择器</string>
     <string name="android12_requires">需要 Android 12+</string>
     <string name="comments">评论</string>
     <string name="variant">变体</string>
-  
     <string name="select_quality">选择质量</string>
-  
     <string name="use_material_you">Material You</string>
     <string name="oled_theme_variant">OLED 主题变体</string>
     <string name="custom_theme">自定义主题</string>
     <string name="use_unique_theme_for_each_item">颜色与媒体海报相同</string>
-  
     <string name="default_video_quality">默认视频质量</string>
     <string name="user_agent">用户代理</string>
-  
     <string name="nothing_found">未找到任何内容</string>
     <string name="tried_all_titles">已尝试所有媒体标题，未找到！</string>
+    <string name="no_tracker_extensions"></string>
+    <string name="no_relations_extensions"></string>
+    <string name="app_name" translatable="false"></string>
+    <string name="confirm"></string>
+    <string name="no_subtitles_extensions"></string>
 </resources>
