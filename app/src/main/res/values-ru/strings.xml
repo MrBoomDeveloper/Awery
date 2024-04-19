@@ -2,12 +2,10 @@
 <resources>
     <string name="empty_library_title">Библиотека пуста</string>
     <string name="empty_library_message">Начните поиск и новые вещи появятся здесь!</string>
-
     <string name="no_comment_extensions">Вы еще не скачали ни одного расширения для комментариев. Установите их чтобы увидеть здесь что-нибудь новое!</string>
     <string name="no_tracker_extensions">Вы еще не скачали ни одного расширения для трекинга. Установите их чтобы увидеть здесь что-нибудь новое!</string>
     <string name="no_relations_extensions">Вы еще не скачали ни одного расширения для показа связанных релизов. Установите их чтобы увидеть здесь что-нибудь новое!</string>
     <string name="no_subtitles_extensions">Вы еще не скачали ни одного расширения для поиска субтитров. Установите их чтобы увидеть здесь что-нибудь новое!</string>
-
     <string name="select_quality">Выберите Качество</string>
     <string name="login">Войти</string>
     <string name="back">Назад</string>
@@ -109,14 +107,17 @@
     <string name="about">Об Приложении</string>
     <string name="devs">Разработчики</string>
     <string name="disclaimer">Дисклеймер</string>
-    <string name="full_disclaimer" translatable="false">
-         - Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.
-        \n\n - Awery or any of its developer/staff don\'t host any of the content found inside Awery. Any and all images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).
-        \n\n - Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff.
-        \n\n - Awery or it\'s owners aren\'t liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.
-        \n\n - By using Awery, you comply to the fact that the developer of the app is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.
-        \n\n - If the internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.
-    </string>
+    <string name="full_disclaimer" translatable="false">- Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.
+\n
+\n - Awery or any of its developer/staff don\'t host any of the content found inside Awery. Any and all images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).
+\n
+\n - Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff.
+\n
+\n - Awery or it\'s owners aren\'t liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.
+\n
+\n - By using Awery, you comply to the fact that the developer of the app is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.
+\n
+\n - If the internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.</string>
     <string name="comments">Комментарии</string>
     <string name="video">Видео</string>
     <string name="video_info_info">Shows what the Resolution of the current video playing, useful for <b>\"Multi Quality\"</b> servers.</string>
@@ -132,7 +133,7 @@
     <string name="secondary_sub_outline_type_select">Тип обводки Субтитров</string>
     <string name="sub_background_color_select">Цвет фона Субтитров</string>
     <string name="sub_window_color_select">Subtitle Window Color</string>
-    <string name="sub_window_color_info">"The subtitle window is the part left and right from them. (where the background isn\'t)"</string>
+    <string name="sub_window_color_info">The subtitle window is the part left and right from them. (where the background isn\'t)</string>
     <string name="sub_font_select">Шрифт Субтитров</string>
     <string name="subtitle_font_size">Размер Субтитров</string>
     <string name="auto">Автоматически</string>
@@ -144,7 +145,8 @@
     <string name="ask_update_progress_anime">Ask for each Anime \"Individually\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">The percentage at which your Anilist progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
+    <string name="watch_complete_percentage_info">"The percentage at which your Anilist progress should be updated after watching an episode.
+\nThis also sets the  for when to preload links for the next episode."</string>
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с момента где остановились</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
@@ -159,7 +161,8 @@
     <string name="show_cast_button_info">Requires \"Web Video Caster\" app to cast.</string>
     <string name="picture_in_picture">Картинка в Картинке</string>
     <string name="always_minimize">Always Minimize</string>
-    <string name="always_minimize_info">Requires PiP to be enabled, makes the player behave like Youtube Player but better.\nAlso hides the PiP button.</string>
+    <string name="always_minimize_info">Requires PiP to be enabled, makes the player behave like Youtube Player but better.
+\nAlso hides the PiP button.</string>
     <string name="immersive_mode">Hide Status Bar</string>
     <string name="immersive_mode_info">Требуется перезапуск приложения.</string>
     <string name="startUpTab">Домашняя страница</string>
@@ -219,12 +222,14 @@
     <string name="check_app_updates">Всегда Проверять Обновления</string>
     <string name="author">Автор</string>
     <string name="account">Аккаунт</string>
-    <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
+    <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters
+\n(Less time will cause more battery consumption)</string>
     <string name="grid">Сетка</string>
     <string name="sort_by_release_date">Сортировать по Дате Релиза</string>
     <string name="crop_borders">Crop Borders</string>
     <string name="error_loading_data">Error loading data %1$s</string>
-    <string name="saved_to_path">Сохранено в:\n%s</string>
+    <string name="saved_to_path">Сохранено в:
+\n%s</string>
     <string name="setting_progress">Setting progress to %1$d</string>
     <string name="back_to_exit">Нажмте Назад еще раз чтобы Выйти</string>
     <string name="no_internet_connection">Отсутствует подключение к Интернету</string>
@@ -244,7 +249,8 @@
     <string name="no_update_found">Обновления не найдены</string>
     <string name="downloading_update">Скачиваем Обновление %1$s</string>
     <string name="permission_required">Пожалуйста, разрешите доступ к хранилищу в настройках устройства.</string>
-    <string name="started_downloading">Начинаем скачивание\n%1$s</string>
+    <string name="started_downloading">Начинаем скачивание
+\n%1$s</string>
     <string name="loading_image_failed">Не удалось загрузить изображение</string>
     <string name="failed_to_load_data">Failed to load saved data of %1$d</string>
     <string name="access_not_available">Wasn\'t able to get access</string>
@@ -279,7 +285,7 @@
     <string name="continue_from">Продолжить с %1$s?</string>
     <string name="title_update_progress">Обновить прогресс на Anilist?</string>
     <string name="incognito_will_not_update">Incognito mode will still ignore progress.</string>
-    <string name="dont_ask_again">"Больше не спрашивать для %1$s"</string>
+    <string name="dont_ask_again">Больше не спрашивать для %1$s</string>
     <string name="default_speed">Скорость по умолчанию</string>
     <string name="primary_sub_color">Цвет Субтитров</string>
     <string name="outline_sub_color">Цвет Контура Субтитров</string>
@@ -296,13 +302,12 @@
     <string name="read_num">"Прочитанно "</string>
     <string name="episodes_out_of">" из "</string>
     <string name="episodes_total_of">"Всего "</string>
-    <string name="no_description_available">"Описание не доступно"</string>
+    <string name="no_description_available">Описание не доступно</string>
     <string name="selected">Выбранно</string>
     <string name="found">Найдено</string>
     <string name="age">Возраст</string>
     <string name="birthday">День Рождения</string>
     <string name="gender">Гендер</string>
-
     <string name="not_implemented">Фича не доступна!</string>
     <string name="timed_out">Сервер не отвечает!</string>
     <string name="failed_handshake">Не удалось подклчиться к серверу!</string>
@@ -310,9 +315,7 @@
     <string name="server_down">Сервер упал!</string>
     <string name="too_much_requests">Слишком много запросов!</string>
     <string name="something_went_wrong">Что-то пошло не так!</string>
-
     <string name="not_found_detailed">Ошибка 404. Запрошеный ресурс не найден!</string>
-
     <string name="male">Мужчина</string>
     <string name="female">Женщина</string>
     <string name="subscribed_notification">Subscribed! Receiving notifications, when new episodes are released on %1$s.</string>
@@ -340,4 +343,5 @@
     <string name="default_video_quality">Качество видео по умолчанию</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="tried_all_titles">По данным названиям ничего не удалось найти</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
