@@ -339,4 +339,8 @@
     <string name="user_agent">Agent utilisateur</string>
     <string name="nothing_found">Rien trouvé</string>
     <string name="tried_all_titles">Tous les titres de médias ont été essayés, rien trouvé !</string>
+    <string name="no_tracker_extensions">Vous n\'avez aucune extension de suivi installée. Téléchargez-les pour voir quelque chose de nouveau ici !</string>
+    <string name="confirm">Confirmer</string>
+    <string name="no_relations_extensions">Vous n\'avez aucune extension de relations installée. Téléchargez-les pour voir quelque chose de nouveau ici !</string>
+    <string name="no_subtitles_extensions">Vous n\'avez aucune extension de sous-titres installée. Téléchargez-les pour voir quelque chose de nouveau ici !</string>
 </resources>
