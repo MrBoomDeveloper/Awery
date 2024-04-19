@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="de">
-
     <string name="empty_library_title">Bibliothek ist leer</string>
     <string name="empty_library_message">Beginnen Sie mit dem Durchsuchen des Katalogs, und neue Dinge werden hier erscheinen!</string>
-
     <string name="login">Anmelden</string>
     <string name="logout">Abmelden</string>
-
     <string name="english">Englisch</string>
     <string name="russian">Russisch</string>
     <string name="japanese">Japanisch</string>
     <string name="chinese">Chinesisch</string>
     <string name="korean">Koreanisch</string>
-
     <string name="us">USA</string>
     <string name="russia">Russland</string>
     <string name="japan">Japan</string>
     <string name="china">China</string>
     <string name="korea">Korea</string>
-
     <string name="global_excluded_tags">Global Tags ausschließen</string>
-
     <string name="back">Zurück</string>
-
     <string name="home">Startseite</string>
     <string name="anime">Anime</string>
     <string name="manga">Manga</string>
@@ -32,40 +25,31 @@
     <string name="read">Lesen</string>
     <string name="library">Bibliothek</string>
     <string name="advanced">Erweitert</string>
-
     <string name="add_to_bookmarks">Zu Lesezeichen hinzufügen</string>
     <string name="new_list">Neue Liste</string>
-
     <string name="no_media_found">Es wurden keine Medien gefunden. Versuchen Sie, Ihre Abfrage und Filter zu ändern.</string>
     <string name="no_episodes_found">Es wurden keine Episoden gefunden. Versuchen Sie, Ihre Abfrage und Filter zu ändern.</string>
     <string name="no_extensions_found">Es wurden keine Erweiterungen gefunden. Versuchen Sie, Ihre Abfrage und Filter zu ändern.</string>
     <string name="no_comment_extensions">Sie haben keine installierten Kommentarerweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
-
     <string name="material_you_description">Die Farben der App werden basierend auf Ihrem Hintergrund generiert.</string>
     <string name="default_tab_description">Wird geöffnet, wenn die App startet.</string>
     <string name="adult_content_description">Nicht sicher für Kinder.</string>
-
     <string name="no_internet">Keine Internetverbindung</string>
     <string name="refresh">Aktualisieren</string>
-
     <string name="search">Suche</string>
     <string name="sort_by">Sortieren nach</string>
     <string name="genre">Genre</string>
     <string name="top_score">Top-Bewertung</string>
     <string name="recently_updated">Kürzlich aktualisiert</string>
-
     <string name="username">Benutzername</string>
     <string name="continue_reading">Lesen fortsetzen</string>
     <string name="continue_watching">Ansehen fortsetzen</string>
     <string name="recommended">Empfohlen</string>
-
     <string name="get_recommendations">Sehen/Lesen Sie sich einige Anime- oder Manga-Inhalte an, um Empfehlungen zu erhalten.</string>
     <string name="hide_library_entries">Bibliothekseinträge ausblenden</string>
     <string name="hide_library_entries_description">Diese Einträge außerhalb der Bibliothek nicht anzeigen.</string>
-
     <string name="list_editor">Listen-Editor</string>
     <string name="notifications">Benachrichtigungen</string>
-
     <string name="progress">Fortschritt</string>
     <string name="score">Bewertung</string>
     <string name="started_at">Gestartet am</string>
@@ -73,7 +57,6 @@
     <string name="save">Speichern</string>
     <string name="delete">Löschen</string>
     <string name="remove">Entfernen</string>
-
     <string name="name">Name</string>
     <string name="format">Format</string>
     <string name="status_title">Status</string>
@@ -89,16 +72,13 @@
     <string name="description">Beschreibung</string>
     <string name="characters">Charaktere</string>
     <string name="relations">Beziehungen</string>
-
     <string name="roles">Rollen</string>
     <string name="details">Details</string>
-
     <string name="play_yt">Auf YouTube abspielen</string>
     <string name="eps">Episoden</string>
     <string name="ep">Episode</string>
     <string name="chaps">Kapitel</string>
     <string name="chap">Kapitel</string>
-
     <string name="filler">Füllmaterial</string>
     <string name="adult">Erwachsen</string>
     <string name="tag">Tag</string>
@@ -109,7 +89,6 @@
     <string name="ending">Ende</string>
     <string name="prequel">Prequel</string>
     <string name="sequel">Sequel</string>
-
     <string name="downloads">Downloads</string>
     <string name="settings">Einstellungen</string>
     <string name="extensions">Erweiterungen</string>
@@ -125,22 +104,23 @@
     <string name="about">Über</string>
     <string name="devs">Entwickler</string>
     <string name="disclaimer">Haftungsausschluss</string>
-
-    <string name="full_disclaimer">
-         - Awery bietet nur einen Anime- und Manga-Tracker und bietet keine Anime- oder Manga-Streaming- oder Download-Funktionen.
-        \n\n - Awery oder seine Entwickler/Mitarbeiter hosten keine der Inhalte, die in Awery gefunden werden. Alle Bilder und Anime-/Manga-Informationen in der App stammen von verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).
-        \n\n - Darüber hinaus stammen alle Anime-/Manga-Links in Awery von verschiedenen Plugins von Drittanbietern und haben keine Verbindung zu Awery oder seinen Mitarbeitern.
-        \n\n - Awery oder seine Besitzer haften nicht für den Missbrauch von Inhalten innerhalb oder außerhalb der App und können nicht für die Verbreitung von Inhalten in der App verantwortlich gemacht werden.
-        \n\n - Durch die Verwendung von Awery erklären Sie sich damit einverstanden, dass der Entwickler der App nicht für die Inhalte in der App verantwortlich ist. Sie stimmen auch zu, dass Sie Awery nicht verwenden dürfen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.
-        \n\n - Bei Internetrechtsverletzungen wenden Sie sich bitte an die Quellwebsite. Der Entwickler übernimmt keine rechtliche Verantwortung.
-    </string>
-
+    <string name="full_disclaimer">- Awery bietet nur einen Anime- und Manga-Tracker und bietet keine Anime- oder Manga-Streaming- oder Download-Funktionen.
+\n
+\n - Awery oder seine Entwickler/Mitarbeiter hosten keine der Inhalte, die in Awery gefunden werden. Alle Bilder und Anime-/Manga-Informationen in der App stammen von verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).
+\n
+\n - Darüber hinaus stammen alle Anime-/Manga-Links in Awery von verschiedenen Plugins von Drittanbietern und haben keine Verbindung zu Awery oder seinen Mitarbeitern.
+\n
+\n - Awery oder seine Besitzer haften nicht für den Missbrauch von Inhalten innerhalb oder außerhalb der App und können nicht für die Verbreitung von Inhalten in der App verantwortlich gemacht werden.
+\n
+\n - Durch die Verwendung von Awery erklären Sie sich damit einverstanden, dass der Entwickler der App nicht für die Inhalte in der App verantwortlich ist. Sie stimmen auch zu, dass Sie Awery nicht verwenden dürfen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.
+\n
+\n - Bei Internetrechtsverletzungen wenden Sie sich bitte an die Quellwebsite. Der Entwickler übernimmt keine rechtliche Verantwortung.</string>
     <string name="video">Video</string>
-    <string name="video_info_info">Zeigt die Auflösung des aktuellen Videos an, nützlich für <b>"Multi-Qualität"</b>-Server.</string>
+    <string name="video_info_info">Zeigt die Auflösung des aktuellen Videos an, nützlich für <b>Multi-Qualität</b>-Server.</string>
     <string name="default_quality">Automatische Qualitätswahl</string>
     <string name="height">Höhe</string>
     <string name="width">Breite</string>
-    <string name="default_quality_info">Verwendet automatisch die nächstgelegene Qualität als Standard, gilt NUR für "Multi-Qualität"-Server. Ändert sich automatisch beim Abspielen eines Videos.</string>
+    <string name="default_quality_info">Verwendet automatisch die nächstgelegene Qualität als Standard, gilt NUR für Multi-Qualität-Server. Ändert sich automatisch beim Abspielen eines Videos.</string>
     <string name="default_playback_speed">Standardwiedergabegeschwindigkeit: %1$s</string>
     <string name="resize_mode_button">Standard-Größenänderungsmodus</string>
     <string name="subtitles">Untertitel</string>
@@ -149,22 +129,20 @@
     <string name="secondary_sub_outline_type_select">Typ der Untertitelumrandung</string>
     <string name="sub_background_color_select">Hintergrundfarbe der Untertitel</string>
     <string name="sub_window_color_select">Fensterfarbe der Untertitel</string>
-    <string name="sub_window_color_info">"Das Untertitelfenster ist der Bereich links und rechts von ihnen. (wo der Hintergrund nicht ist)"</string>
+    <string name="sub_window_color_info">Das Untertitelfenster ist der Bereich links und rechts von ihnen. (wo der Hintergrund nicht ist)</string>
     <string name="sub_font_select">Schriftart der Untertitel</string>
     <string name="subtitle_font_size">Untertitelgröße</string>
-
     <string name="auto">Automatisch</string>
     <string name="auto_play_next_episode">Automatisch nächste Episode abspielen</string>
     <string name="auto_play_next_episode_info">Deaktiviert automatisch, wenn nach 1 Stunde keine Interaktion mit dem Player erfolgt.</string>
     <string name="auto_skip_fillers">Füllmaterial automatisch überspringen</string>
     <string name="auto_skip_fillers_info">Überspringt Füllmaterial-Episoden beim Wechsel zur nächsten Episode.</string>
-
     <string name="update_progress">Fortschritt aktualisieren</string>
     <string name="ask_update_progress_anime">Für jedes Medium einzeln nachfragen</string>
     <string name="ask_update_progress_info_ep">Wenn diese Option deaktiviert ist, wird der Fortschritt immer automatisch aktualisiert, wenn die Episode angesehen wird.</string>
     <string name="watch_complete_percentage">Aktualisierungsprozentsatz beim Ansehen</string>
-    <string name="watch_complete_percentage_info">Prozentsatz, bei dem Ihr Anilist-Fortschritt nach dem Ansehen einer Episode aktualisiert werden soll. \nDies legt auch das \% für das Vorladen von Links für die nächste Episode fest.</string>
-
+    <string name="watch_complete_percentage_info">"Prozentsatz, bei dem Ihr Anilist-Fortschritt nach dem Ansehen einer Episode aktualisiert werden soll.
+\nDies legt auch das  für das Vorladen von Links für die nächste Episode fest."</string>
     <string name="behaviour">Verhalten</string>
     <string name="always_continue">Immer dort fortsetzen, wo Sie aufgehört haben</string>
     <string name="pause_video_focus">Pause bei fehlendem Fokus</string>
@@ -177,14 +155,13 @@
     <string name="seek_time_info">Zeitdauer in Sekunden für das Vorspulen und Rückspulen.</string>
     <string name="skip_time">Übersprungene Zeit</string>
     <string name="show_cast_button">Wiedergabebutton anzeigen</string>
-    <string name="show_cast_button_info">Benötigt die App "Web Video Caster", um zu übertragen.</string>
+    <string name="show_cast_button_info">Benötigt die App Web Video Caster, um zu übertragen.</string>
     <string name="picture_in_picture">Bild-in-Bild</string>
     <string name="always_minimize">Immer minimieren</string>
-    <string name="always_minimize_info">Erfordert die Aktivierung von PiP und bewirkt, dass sich der Player wie der Youtube-Player verhält, jedoch besser.\nVerbirgt auch die PiP-Schaltfläche.</string>
-
+    <string name="always_minimize_info">Erfordert die Aktivierung von PiP und bewirkt, dass sich der Player wie der Youtube-Player verhält, jedoch besser.
+\nVerbirgt auch die PiP-Schaltfläche.</string>
     <string name="immersive_mode">Statusleiste ausblenden</string>
     <string name="immersive_mode_info">Erfordert einen Neustart der App, um vollständig angewendet zu werden.</string>
-
     <string name="startUpTab">Standard-Starttab</string>
     <string name="animations">Animationen</string>
     <string name="restart_app">App neu starten?</string>
@@ -201,7 +178,6 @@
     <string name="layout">Layout</string>
     <string name="spaced_pages">Abstände zwischen Seiten</string>
     <string name="direction">Richtung</string>
-
     <string name="general">Allgemein</string>
     <string name="show_system_bars">Status- und Navigationsleisten anzeigen</string>
     <string name="auto_detect_webtoon">Webtoon automatisch erkennen</string>
@@ -225,7 +201,7 @@
     <string name="reload">Neu laden</string>
     <string name="share">Teilen</string>
     <string name="skip">Überspringen</string>
-    <string name="show_skip_time_stamp_button">Schaltfläche "Zeitstempel überspringen" anzeigen</string>
+    <string name="show_skip_time_stamp_button">Schaltfläche Zeitstempel überspringen anzeigen</string>
     <string name="always_load_time_stamps">Immer Zeitstempel laden</string>
     <string name="timestamps">Zeitstempel</string>
     <string name="other">Andere</string>
@@ -243,15 +219,16 @@
     <string name="check_app_updates">Immer nach App-Updates suchen</string>
     <string name="author">Autor</string>
     <string name="account">Konto</string>
-    <string name="subscriptions_info">Zeitdauer für Awery, um periodisch nach neuen Episoden/Kapiteln zu suchen\n(Weniger Zeit führt zu mehr Batterieverbrauch)</string>
+    <string name="subscriptions_info">Zeitdauer für Awery, um periodisch nach neuen Episoden/Kapiteln zu suchen
+\n(Weniger Zeit führt zu mehr Batterieverbrauch)</string>
     <string name="grid">Raster</string>
     <string name="sort_by_release_date">Nach Veröffentlichungsdatum sortieren</string>
     <string name="crop_borders">Ränder zuschneiden</string>
-
     <string name="error_loading_data">Fehler beim Laden der Daten %1$s</string>
-    <string name="saved_to_path">Gespeichert in:\n%s</string>
+    <string name="saved_to_path">Gespeichert in:
+\n%s</string>
     <string name="setting_progress">Fortschritt auf %1$d setzen</string>
-    <string name="back_to_exit">Bitte führen Sie erneut "Zurück" aus, um zu beenden</string>
+    <string name="back_to_exit">Bitte führen Sie erneut Zurück aus, um zu beenden</string>
     <string name="no_internet_connection">Keine Internetverbindung</string>
     <string name="disabled_auto_skip">Automatisches Überspringen von OP &amp; ED deaktiviert</string>
     <string name="auto_skip">Automatisches Überspringen von OP &amp; ED</string>
@@ -269,22 +246,20 @@
     <string name="no_update_found">Kein Update gefunden</string>
     <string name="downloading_update">Update %1$s wird heruntergeladen</string>
     <string name="permission_required">Bitte geben Sie die Berechtigung zum Zugriff auf Dateien und Ordner über die Einstellungen und versuchen Sie es erneut.</string>
-    <string name="started_downloading">Herunterladen gestartet\n%1$s</string>
+    <string name="started_downloading">Herunterladen gestartet
+\n%1$s</string>
     <string name="loading_image_failed">Bild konnte nicht geladen werden</string>
     <string name="failed_to_load_data">Fehler beim Laden der gespeicherten Daten von %1$d</string>
     <string name="access_not_available">Zugriff konnte nicht erfolgen</string>
     <string name="episode_release_countdown">Episode %1$d wird veröffentlicht in</string>
     <string name="time_format">%1$d Tage %2$d Std. %3$d Min. %4$d Sek.</string>
-    
     <string name="main_role">Hauptrolle</string>
     <string name="supporting_role">Nebenrolle</string>
-    
     <string name="status_finished">Beendet</string>
     <string name="status_releasing">Wird veröffentlicht</string>
     <string name="status_not_yet_released">Noch nicht veröffentlicht</string>
     <string name="status_cancelled">Abgebrochen</string>
     <string name="status_hiatus">Unterbrochen</string>
-    
     <string name="type_adaptation">Adaption</string>
     <string name="type_parent">Eltern</string>
     <string name="type_character">Charakter</string>
@@ -293,31 +268,26 @@
     <string name="type_other">Andere</string>
     <string name="type_source">Quelle</string>
     <string name="type_contains">Enthält</string>
-    
     <string name="read_on_dantotsu">Lesen in Awery</string>
     <string name="watch_on_dantotsu">Ansehen in Awery</string>
     <string name="continue_episode">"Fortsetzen: Episode "</string>
     <string name="continue_chapter">"Fortsetzen: "</string>
-    
     <string name="episode">Episode</string>
     <string name="episodes">Episoden</string>
     <string name="duration">Dauer</string>
-
     <string name="just_released">- gerade veröffentlicht!</string>
     <string name="checking_subscriptions_title">Abonnements werden überprüft</string>
-    
     <string name="speed">Geschwindigkeit</string>
     <string name="auto_update">Auto-Update-Fortschritt für %1$s?</string>
     <string name="continue_from">Fortfahren ab %1$s?</string>
     <string name="title_update_progress">Fortschritt auf Anilist aktualisieren?</string>
     <string name="incognito_will_not_update">Inkognito-Modus ignoriert den Fortschritt weiterhin.</string>
-    <string name="dont_ask_again">"Für %1$s nicht erneut fragen"</string>
+    <string name="dont_ask_again">Für %1$s nicht erneut fragen</string>
     <string name="default_speed">Standardgeschwindigkeit</string>
     <string name="primary_sub_color">Primäre Untertitelfarbe</string>
     <string name="outline_sub_color">Umrandungsfarbe der Untertitel</string>
     <string name="outline_type">Umrandungstyp</string>
     <string name="subtitle_font">Untertitelschriftart</string>
-    
     <string name="not_implemented">Funktion nicht implementiert!</string>
     <string name="timed_out">Verbindungstimeout!</string>
     <string name="failed_handshake">Verbindung zum Server fehlgeschlagen!</string>
@@ -325,9 +295,7 @@
     <string name="server_down">Server ist nicht erreichbar!</string>
     <string name="too_much_requests">Zu viele Anfragen!</string>
     <string name="something_went_wrong">Etwas ist schief gelaufen!</string>
-    
     <string name="not_found_detailed">Fehler 404. Die angeforderte Ressource existiert nicht!</string>
-    
     <string name="content">Inhalt</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
@@ -335,52 +303,45 @@
     <string name="no_chapter">Kein Kapitel</string>
     <string name="available">Verfügbar</string>
     <string name="lets_go">Los geht\'s</string>
-    
     <string name="watched_num">"Angesehen "</string>
     <string name="read_num">"Gelesen "</string>
     <string name="episodes_out_of">" von "</string>
     <string name="episodes_total_of">"Insgesamt "</string>
-    <string name="no_description_available">"Keine Beschreibung verfügbar"</string>
-    
+    <string name="no_description_available">Keine Beschreibung verfügbar</string>
     <string name="selected">Ausgewählt</string>
     <string name="found">Gefunden</string>
-    
     <string name="age">Alter</string>
     <string name="birthday">Geburtstag</string>
     <string name="gender">Geschlecht</string>
-    
     <string name="male">Männlich</string>
     <string name="female">Weiblich</string>
-    
     <string name="subscribed_notification">Abonniert! Benachrichtigungen werden empfangen, wenn neue Episoden auf %1$s veröffentlicht werden.</string>
-    
     <string name="unsubscribed_notification">Abonnement gekündigt, Sie erhalten keine Benachrichtigungen mehr.</string>
     <string name="episode_plural">Episoden</string>
     <string name="episode_singular">Episode</string>
     <string name="chapter_singular">Kapitel</string>
     <string name="chapter_plural">Kapitel</string>
-
     <string name="search_by_image">Nach Bild suchen</string>
     <string name="similarity_text">Ähnlichkeit: %1$s %%</string>
     <string name="time_range">Von %1$s bis %2$s</string>
     <string name="invalid_url">Ungültige URL</string>
     <string name="extension_specific_dns">Erweiterungsspezifische DNS</string>
-    
     <string name="color_picker">Farbauswahl</string>
     <string name="android12_requires">Erfordert Android 12+</string>
     <string name="comments">Kommentare</string>
     <string name="variant">Variante</string>
-    
     <string name="select_quality">Qualität auswählen</string>
-    
     <string name="use_material_you">Material You</string>
     <string name="oled_theme_variant">OLED-Designvariante</string>
     <string name="custom_theme">Benutzerdefiniertes Thema</string>
     <string name="use_unique_theme_for_each_item">Farbe wie das Poster des Mediums</string>
-    
     <string name="default_video_quality">Standardvideoqualität</string>
     <string name="user_agent">Benutzeragent</string>
-    
     <string name="nothing_found">Nichts gefunden</string>
     <string name="tried_all_titles">Alle Medientitel ausprobiert, nichts gefunden!</string>
+    <string name="no_tracker_extensions"></string>
+    <string name="confirm"></string>
+    <string name="no_subtitles_extensions"></string>
+    <string name="app_name" translatable="false"></string>
+    <string name="no_relations_extensions"></string>
 </resources>
