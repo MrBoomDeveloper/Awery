@@ -339,9 +339,4 @@
     <string name="user_agent">ユーザーエージェント</string>
     <string name="nothing_found">見つかりませんでした</string>
     <string name="tried_all_titles">すべてのメディアタイトルを試しました、何も見つかりませんでした！</string>
-    <string name="no_subtitles_extensions"></string>
-    <string name="app_name" translatable="false"></string>
-    <string name="confirm"></string>
-    <string name="no_relations_extensions"></string>
-    <string name="no_tracker_extensions"></string>
 </resources>

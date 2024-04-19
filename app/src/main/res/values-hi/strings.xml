@@ -340,8 +340,4 @@
     <string name="user_agent">उपयोगकर्ता एजेंट</string>
     <string name="nothing_found">कुछ नहीं मिला</string>
     <string name="tried_all_titles">सभी मीडिया शीर्षकों की कोशिश की, कुछ नहीं मिला!</string>
-    <string name="no_tracker_extensions"></string>
-    <string name="no_relations_extensions"></string>
-    <string name="no_subtitles_extensions"></string>
-    <string name="confirm"></string>
 </resources>

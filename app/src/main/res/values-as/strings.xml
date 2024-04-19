@@ -339,9 +339,4 @@
     <string name="user_agent">ব্যৱহাৰকাৰী এজেণ্ট</string>
     <string name="nothing_found">কিবা পোৱা নাই</string>
     <string name="tried_all_titles">সকলো মিডিয়া শিৰোনাম প্ৰয়াস কৰা হ’ল, কিবা পোৱা নাই!</string>
-    <string name="app_name" translatable="false"></string>
-    <string name="no_tracker_extensions"></string>
-    <string name="confirm"></string>
-    <string name="no_subtitles_extensions"></string>
-    <string name="no_relations_extensions"></string>
 </resources>

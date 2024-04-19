@@ -343,5 +343,4 @@
     <string name="default_video_quality">Качество видео по умолчанию</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="tried_all_titles">По данным названиям ничего не удалось найти</string>
-    <string name="app_name" translatable="false"></string>
 </resources>
