@@ -339,4 +339,8 @@
     <string name="user_agent">Benutzeragent</string>
     <string name="nothing_found">Nichts gefunden</string>
     <string name="tried_all_titles">Alle Medientitel ausprobiert, nichts gefunden!</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="no_tracker_extensions">Sie haben keine installierten Tracker-Erweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
+    <string name="no_relations_extensions">Sie haben keine installierten Beziehungserweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
+    <string name="no_subtitles_extensions">Sie haben keine installierten Untertitelerweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
 </resources>
