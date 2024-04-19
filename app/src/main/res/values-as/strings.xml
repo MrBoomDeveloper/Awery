@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="as">
-
     <string name="empty_library_title">লাইব্রেৰি খালী</string>
     <string name="empty_library_message">ক্যাটালগ ব্ৰাউজ কৰক আৰু নতুন বস্তুসমূহ এইখনতে দেখা দিব!</string>
-
     <string name="login">লগ ইন কৰক</string>
     <string name="logout">লগ আউট</string>
-
     <string name="english">ইংৰাজী</string>
     <string name="russian">ৰাছিয়ান</string>
     <string name="japanese">জাপানী</string>
     <string name="chinese">চীনা</string>
     <string name="korean">কোৰিয়ান</string>
-
     <string name="us">আমেৰিকা</string>
     <string name="russia">ৰাছিয়া</string>
     <string name="japan">জাপান</string>
     <string name="china">চীন</string>
     <string name="korea">কোৰিয়া</string>
-
     <string name="global_excluded_tags">গ্লোবাললি বাহিৰ কৰা টেগসমূহ</string>
-
     <string name="back">পিছলৈ যাওক</string>
-
     <string name="home">হোম</string>
     <string name="anime">অনিমে</string>
     <string name="manga">মাঙ্গা</string>
@@ -32,40 +25,31 @@
     <string name="read">পঢ়া</string>
     <string name="library">লাইব্রেৰি</string>
     <string name="advanced">উন্নত</string>
-
     <string name="add_to_bookmarks">বুকমাৰ্কছমূহত যোগ কৰক</string>
     <string name="new_list">নতুন তালিকা</string>
-
     <string name="no_media_found">কোনো মিডিয়া পোৱা নাই। আপুনি আপোনাৰ অনুসন্ধান আৰু ফিল্টাৰসমূহ পৰিবৰ্তন কৰিবলৈ প্ৰয়াস কৰক।</string>
     <string name="no_episodes_found">কোনো প্ৰকাৰৰ এপিসোড পোৱা নাই। আপুনি আপোনাৰ অনুসন্ধান আৰু ফিল্টাৰসমূহ পৰিবৰ্তন কৰিবলৈ প্ৰয়াস কৰক।</string>
     <string name="no_extensions_found">কোনো এক্সটেনচন পোৱা নাই। আপুনি আপোনাৰ অনুসন্ধান আৰু ফিল্টাৰসমূহ পৰিবৰ্তন কৰিবলৈ প্ৰয়াস কৰক।</string>
     <string name="no_comment_extensions">আপুনি কোনো ইন্সটল কৰা কমেন্ট এক্সটেনচন নাই। এইখন নতুন কিবা দেখিবলৈ তাক ডাউনল’ড কৰক!</string>
-
     <string name="material_you_description">এপ্লিকেচনৰ ৰং আপোনাৰ ওয়ালপেপাৰৰ ভিতৰত উত্পাদিত হ’ব</string>
     <string name="default_tab_description">এপ্লিকেচন আৰম্ভ কৰিবলৈ খোলা হ’ব</string>
     <string name="adult_content_description">বাচালৈ নিরাপত নহয়।</string>
-
     <string name="no_internet">ইন্টাৰনেট সংযোগ নাই</string>
     <string name="refresh">পুনঃলেখা</string>
-
     <string name="search">অনুসন্ধান</string>
     <string name="sort_by">ক্ৰমানুসারে বাছুন</string>
     <string name="genre">জনৰে</string>
     <string name="top_score">শীৰ্ষ নম্বৰ</string>
     <string name="recently_updated">সামৰিক আপডেট কৰা</string>
-
     <string name="username">ব্যৱহাৰকাৰীৰ নাম</string>
     <string name="continue_reading">পঢ়া থালাব</string>
     <string name="continue_watching">দেখিব থালাব</string>
     <string name="recommended">অনুমোদিত</string>
-
     <string name="get_recommendations">পৰামৰ্শৰ বাবে কিবা পঢ়া অথবা দেখিব যোৱা অনিমে বা মাঙ্গা দিখক৷</string>
     <string name="hide_library_entries">লাইব্রেৰি এন্ট্ৰিসমূহ লুকাওক</string>
     <string name="hide_library_entries_description">লাইব্রেৰিৰ বাহিৰে এই এন্ট্ৰিসমূহ দেখোৱা নহয়</string>
-
     <string name="list_editor">তালিকা সম্পাদক</string>
     <string name="notifications">বিজ্ঞপ্তি</string>
-
     <string name="progress">অগ্ৰগতি</string>
     <string name="score">স্কোৰ</string>
     <string name="started_at">অৰম্ভ হৈছিল</string>
@@ -73,7 +57,6 @@
     <string name="save">সংৰক্ষণ কৰক</string>
     <string name="delete">মচি যাওক</string>
     <string name="remove">আঁতৰাওক</string>
-
     <string name="name">নাম</string>
     <string name="format">বিন্যাস</string>
     <string name="status_title">অবস্থা</string>
@@ -89,16 +72,13 @@
     <string name="description">বিৱৰণ</string>
     <string name="characters">চেৰেক্টাৰসমূহ</string>
     <string name="relations">সম্পৰ্ক</string>
-
     <string name="roles">ভূমিকা</string>
     <string name="details">বিবৰণ</string>
-
     <string name="play_yt">YouTubeত প্লে কৰক</string>
     <string name="eps">এপিসোডসমূহ</string>
     <string name="ep">এপিসোড</string>
     <string name="chaps">অধ্যায়সমূহ</string>
     <string name="chap">অধ্যায়</string>
-
     <string name="filler">ফিলাৰ</string>
     <string name="adult">প্ৰাপ্তবয়স্ক</string>
     <string name="tag">টেগ</string>
@@ -109,7 +89,6 @@
     <string name="ending">এন্ডিং</string>
     <string name="prequel">প্ৰিকুয়েল</string>
     <string name="sequel">সিকুয়েল</string>
-
     <string name="downloads">ডাউনল’ডসমূহ</string>
     <string name="settings">ছেটিংছসমূহ</string>
     <string name="extensions">এক্সটেনচনসমূহ</string>
@@ -125,16 +104,17 @@
     <string name="about">সম্পর্কে</string>
     <string name="devs">ডেভেলপাৰ</string>
     <string name="disclaimer">অস্বীকৃতি</string>
-    
-    <string name="full_disclaimer">
-        - Awery মাত্ৰ এটা অনুযায়ী অনুসৰণ কৰে এটা অনামে আৰু মাংসামূহ পথাৰতকৈ প্ৰদান কৰে না বা ডাউনল\'ড কৰাৰ সুযোগ প্ৰদান কৰে না।
-        \n\n - Awery বা এৰ বিকাশকাৰী/কাৰ্মিকৰ কোনো বিষয়ৰ সংগঠন কৰা নাই। Aweryত উল্লিখিত সমস্ত ছবি আৰু আনিমে/মাংসাৰ তথ্য বিভিন্ন জনগণীয় এপিআই (এনিলিস্ট, মাইআনিমেলিষ্ট, কিট্সু) পৰা লাভ কৰা হৈছে।
-        \n\n - অধিকবাৰ ৩ৰ্দ পাৰ্টি প্লাগিনৰ পৰা উল্লিখিত সকলো আনিমে/মাংসাৰ লিংকসমূহ Aweryৰ সাথে কোনো সংলগ্নতা নাই।
-        \n\n - Awery বা তেওঁৰ মালিকানী অভ্যন্তৰীণ অথবা বাহ্যিক এপিত উল্লিখিত যেকোনো সমলৰ অপব্যবহাৰৰ বাবে দায়ী নহয় আৰু এৰি অধ্যাদেশৰ বিতৰণৰ বাবে দায়ী থাকে নহয়।
-        \n\n - Awery ব্যৱহাৰ কৰিবলৈ আপোনাৰ স্বীকৃতি দিয়াৰ অৰ্থত এপিলিকেশ্বনটোৰ ডেভেলপাৰৰ দ্বাৰা নাহয় উল্লিখিত সকলো বিষয় পৰা সম্বন্ধিত ব্যৱহাৰকাৰীক সংবলিত কৰিব লাগে। আপুনি সম্বহন কৰাৰ অধিকাৰৰ অৱধিত থাকিবালে এৱাৰী ব্যৱহাৰ কৰিবলৈ আপুনি সম্বহন কৰাৰ অধিকাৰ নাই যেনে।
-        \n\n - যদি ইন্টাৰনেট অধিঘতন সমস্যাৰ অধিকাৰ নিবদ্ধ থাকে, অনুগ্ৰহ কৰি উৎসৰ ওপৰত যোগাযোগ কৰক। ডেভেলপাৰ কোনো আইনি দায়িত্ব গ্ৰহণ কৰে নহয়।
-    </string>
-    
+    <string name="full_disclaimer">- Awery মাত্ৰ এটা অনুযায়ী অনুসৰণ কৰে এটা অনামে আৰু মাংসামূহ পথাৰতকৈ প্ৰদান কৰে না বা ডাউনল\'ড কৰাৰ সুযোগ প্ৰদান কৰে না।
+\n
+\n - Awery বা এৰ বিকাশকাৰী/কাৰ্মিকৰ কোনো বিষয়ৰ সংগঠন কৰা নাই। Aweryত উল্লিখিত সমস্ত ছবি আৰু আনিমে/মাংসাৰ তথ্য বিভিন্ন জনগণীয় এপিআই (এনিলিস্ট, মাইআনিমেলিষ্ট, কিট্সু) পৰা লাভ কৰা হৈছে।
+\n
+\n - অধিকবাৰ ৩ৰ্দ পাৰ্টি প্লাগিনৰ পৰা উল্লিখিত সকলো আনিমে/মাংসাৰ লিংকসমূহ Aweryৰ সাথে কোনো সংলগ্নতা নাই।
+\n
+\n - Awery বা তেওঁৰ মালিকানী অভ্যন্তৰীণ অথবা বাহ্যিক এপিত উল্লিখিত যেকোনো সমলৰ অপব্যবহাৰৰ বাবে দায়ী নহয় আৰু এৰি অধ্যাদেশৰ বিতৰণৰ বাবে দায়ী থাকে নহয়।
+\n
+\n - Awery ব্যৱহাৰ কৰিবলৈ আপোনাৰ স্বীকৃতি দিয়াৰ অৰ্থত এপিলিকেশ্বনটোৰ ডেভেলপাৰৰ দ্বাৰা নাহয় উল্লিখিত সকলো বিষয় পৰা সম্বন্ধিত ব্যৱহাৰকাৰীক সংবলিত কৰিব লাগে। আপুনি সম্বহন কৰাৰ অধিকাৰৰ অৱধিত থাকিবালে এৱাৰী ব্যৱহাৰ কৰিবলৈ আপুনি সম্বহন কৰাৰ অধিকাৰ নাই যেনে।
+\n
+\n - যদি ইন্টাৰনেট অধিঘতন সমস্যাৰ অধিকাৰ নিবদ্ধ থাকে, অনুগ্ৰহ কৰি উৎসৰ ওপৰত যোগাযোগ কৰক। ডেভেলপাৰ কোনো আইনি দায়িত্ব গ্ৰহণ কৰে নহয়।</string>
     <string name="video">ভিডিঅ\'</string>
     <string name="video_info_info">বৰ্তমান ভিডিঅ\' প্ৰকাশক মানৰ সোধাওৰ বাবে যুক্তিযুক্ত হ\'ল, <b>\"মাল্টি গুণতা\"</b> সাৰ্ভাৰসমূহৰ বাবে কামিদ্বা হ\'ল।</string>
     <string name="default_quality">অট\' গুণতা নিৰ্ধাৰণ</string>
@@ -149,22 +129,20 @@
     <string name="secondary_sub_outline_type_select">সাবটাইটেলৰ আউটলাইনৰ ধৰণ</string>
     <string name="sub_background_color_select">সাবটাইটেলৰ পৃষ্ঠভূমিৰ ৰং</string>
     <string name="sub_window_color_select">সাবটাইটেলৰ উইন্ড’ৰ ৰং</string>
-    <string name="sub_window_color_info">"সাবটাইটেলৰ উইন্ড’ৰ হৈছে এটা ভাৱান্তৰ অংশ, যেখন পৃষ্ঠভূমি নাই (যেখন ব্যাকগ্ৰাউণ্ড নোহোৱা)"</string>
+    <string name="sub_window_color_info">সাবটাইটেলৰ উইন্ড’ৰ হৈছে এটা ভাৱান্তৰ অংশ, যেখন পৃষ্ঠভূমি নাই (যেখন ব্যাকগ্ৰাউণ্ড নোহোৱা)</string>
     <string name="sub_font_select">সাবটাইটেলৰ ফন্ট</string>
     <string name="subtitle_font_size">সাবটাইটেলৰ আকাৰ</string>
-    
     <string name="auto">অট\'মেটিক</string>
     <string name="auto_play_next_episode">পৰৱৰ্তী এপিস\'ড অট\'মেটিক প্ৰচাৰ কৰক</string>
     <string name="auto_play_next_episode_info">যদি প্ৰচাৰকাৰীলৈ এক ঘণ্টাৰ পাছত কোনো আপাতত সম্পৰ্ক নহয় তেওঁলোৱা নিষ্ক্ৰিয় কৰা হ\'ব।</string>
     <string name="auto_skip_fillers">অট\'মেটিক ফিলাৰসমূহ অগ্ৰসৰণ কৰক</string>
     <string name="auto_skip_fillers_info">পৰবন্ধৰ উল্লেখকাৰীলৈ প্ৰচাৰ কৰিবলৈ অট\'মেটিকভাৱে ফিলাৰ এপিস\'ডসমূহ অগ্ৰসৰণ কৰে।</string>
-    
     <string name="update_progress">প্ৰগ্ৰেছ আপডেট কৰক</string>
-    <string name="ask_update_progress_anime">প্ৰত্যেক মিডিয়া "ব্যক্তিগতভাৱে" প্ৰোগ্ৰেছ আপডেট কৰিব?</string>
+    <string name="ask_update_progress_anime">প্ৰত্যেক মিডিয়া ব্যক্তিগতভাৱে প্ৰোগ্ৰেছ আপডেট কৰিব?</string>
     <string name="ask_update_progress_info_ep">বন্ধ কৰা হৈছে সম্পূৰ্ণ প্ৰচাৰ কৰা এপিস\'ড চাইনলৈ প্ৰত্যেক মিডিয়া স্বীকৃতি অট\'মেটিকভাৱে আপডেট কৰে।</string>
     <string name="watch_complete_percentage">প্ৰতিযোগী অদ্যাবৃত্তি প্ৰতিশত : %</string>
-    <string name="watch_complete_percentage_info">এটা প্ৰতিযোগী প্ৰতিস্থাপন কৰিবলৈ আপোনাৰ Anilist প্ৰগ্ৰেছটো প্ৰতিস্থাপন কৰা উচিত প্ৰতিশত। \nএইটো এটা নিকটতম প্ৰতিশত নিৰ্ধাৰণ কৰে য\'ত প্ৰচাৰকাৰী পৰবন্ধসমূহৰ প্ৰোগ্ৰেছ পৰৱৰ্তীত অগ্ৰসৰণ কৰা হ\'ব।</string>
-    
+    <string name="watch_complete_percentage_info">এটা প্ৰতিযোগী প্ৰতিস্থাপন কৰিবলৈ আপোনাৰ Anilist প্ৰগ্ৰেছটো প্ৰতিস্থাপন কৰা উচিত প্ৰতিশত।
+\nএইটো এটা নিকটতম প্ৰতিশত নিৰ্ধাৰণ কৰে য\'ত প্ৰচাৰকাৰী পৰবন্ধসমূহৰ প্ৰোগ্ৰেছ পৰৱৰ্তীত অগ্ৰসৰণ কৰা হ\'ব।</string>
     <string name="behaviour">প্ৰবৰ্তন</string>
     <string name="always_continue">যেখনই অবস্থান থকাৰ পৰা চালু থকাৰ বাবে প্ৰতিনিধি</string>
     <string name="pause_video_focus">আপাতত ব্যবহাৰকাৰীৰ উপস্থিতি নাইতে বন্ধ কৰক</string>
@@ -180,11 +158,10 @@
     <string name="show_cast_button_info">কাষ্ট কৰিবলৈ \"ওৱেব ভিডিঅ\' কাষ্টাৰ\" এপ্লিকেশ্বন প্ৰযোজ্য।</string>
     <string name="picture_in_picture">ছবি ভিতৰত ছবি</string>
     <string name="always_minimize">সদাই সৰহা কৰা</string>
-    <string name="always_minimize_info">পি.আই.পি সক্ৰিয় কৰিবলৈ আৱশ্যক, খন্ Youtube প্ৰদাৰ সম্পৰ্কত প্লেয়াৰক পোহৰ সমৰ্থন কৰে বা বেটা।\nপি.আই.পি বুটাম প্ৰদৰ্শন কৰা হৈছে।</string>
-    
+    <string name="always_minimize_info">পি.আই.পি সক্ৰিয় কৰিবলৈ আৱশ্যক, খন্ Youtube প্ৰদাৰ সম্পৰ্কত প্লেয়াৰক পোহৰ সমৰ্থন কৰে বা বেটা।
+\nপি.আই.পি বুটাম প্ৰদৰ্শন কৰা হৈছে।</string>
     <string name="immersive_mode">স্থিৰ অৱস্থাৰ বাৰ লুকুৱা কৰক</string>
     <string name="immersive_mode_info">প্ৰযোজ্য কৰিবলৈ এপ্লিকেশ্বন পূনঃআৰম্ভ কৰা আৱশ্যক হয়।</string>
-    
     <string name="startUpTab">ডিফ\'ল্ট আৰম্ভ সংযোগ</string>
     <string name="animations">অ্যানিমেশ্বনসমূহ</string>
     <string name="restart_app">এপ্লিকেশ্বন পূনঃআৰম্ভ কৰা হ\'ব?</string>
@@ -201,7 +178,6 @@
     <string name="layout">ঠাইপানি</string>
     <string name="spaced_pages">স্থান সম্পূৰ্ণকাৰী পৃষ্ঠাসমূহ</string>
     <string name="direction">দিশ</string>
-    
     <string name="general">সাধাৰণ</string>
     <string name="show_system_bars">স্থিতি &amp; নেভিগেচন বেৰ প্ৰদৰ্শন কৰক</string>
     <string name="auto_detect_webtoon">অট\'মেটিকভাৱে ওৱেবটোন চাওক</string>
@@ -243,13 +219,14 @@
     <string name="check_app_updates">সদাই এপ্লিকেশ্বন আপডেট পৰীক্ষা কৰা হ\'ব</string>
     <string name="author">লেখক</string>
     <string name="account">একাউণ্ট</string>
-    <string name="subscriptions_info">Aweryৰ সদাইসমূহ নতুন এপিস\'/অধ্যায়সমূহ প্ৰতিদিন চেক কৰিবলৈ সময়দৈ মাত্ৰিক। \n(কম সময়ত বেটাৰিৰ ব্যৱহাৰ অধিক কৰিব পাৰে)</string>
+    <string name="subscriptions_info">Aweryৰ সদাইসমূহ নতুন এপিস\'/অধ্যায়সমূহ প্ৰতিদিন চেক কৰিবলৈ সময়দৈ মাত্ৰিক।
+\n(কম সময়ত বেটাৰিৰ ব্যৱহাৰ অধিক কৰিব পাৰে)</string>
     <string name="grid">গ্ৰীড</string>
     <string name="sort_by_release_date">মুক্তিৰ তাৰিখ দ্বাৰা বাঁচিব</string>
     <string name="crop_borders">দৈৰ্ঘ্যত কটকাই</string>
-
     <string name="error_loading_data">%1$s ডাটা লোড কৰাৰ সময়ত ত্ৰুটি</string>
-    <string name="saved_to_path">পথলৈ সংরক্ষিত:\n%s</string>
+    <string name="saved_to_path">পথলৈ সংরক্ষিত:
+\n%s</string>
     <string name="setting_progress">%1$d প্ৰগ্ৰেছ ছেট কৰা হ\'ব</string>
     <string name="back_to_exit">বিচাৰিবলৈ পুনঃলোড কৰক</string>
     <string name="no_internet_connection">কোনো ইন্টাৰনেট সংযোগ নাই</string>
@@ -269,22 +246,20 @@
     <string name="no_update_found">কোনো আপডেট পোৱা নাই</string>
     <string name="downloading_update">%1$s আপডেট ডাউনল\'ড কৰি আছে</string>
     <string name="permission_required">অনুমতি দিবলৈ অনুমতি প্ৰয়োজন হ\'ল, ফাইলস &amp; ফোল্ডাৰসৈতে প্ৰৱেশ কৰিবলৈ সেটিংছত যাওক, আৰু আবাৰ চেষ্টা কৰক।</string>
-    <string name="started_downloading">ডাউনল\'ড আৰম্ভ হৈছে\n%1$s</string>
+    <string name="started_downloading">ডাউনল\'ড আৰম্ভ হৈছে
+\n%1$s</string>
     <string name="loading_image_failed">চিত্ৰ লোড কৰিবলৈ অসমর্থ</string>
     <string name="failed_to_load_data">%1$d ডাটা লোড কৰিবলৈ বিফল হ\'ল</string>
     <string name="access_not_available">প্ৰবেশ উপলব্ধ নহ\'</string>
     <string name="episode_release_countdown">%1$d পৰ্ব মুক্তি প্ৰদান হৈছে</string>
     <string name="time_format">%1$d দিন %2$d ঘণ্টা %3$d মিনিট %4$d সেকেন্ড</string>
-  
     <string name="main_role">মূখ্য</string>
     <string name="supporting_role">সহায়ক</string>
-  
     <string name="status_finished">সম্পন্ন</string>
     <string name="status_releasing">মুক্তি প্ৰদান হৈছে</string>
     <string name="status_not_yet_released">এতিয়া মুক্তি প্ৰদান হোৱা নাই</string>
     <string name="status_cancelled">বাতিল হৈছে</string>
     <string name="status_hiatus">অলস</string>
-  
     <string name="type_adaptation">আদিবাসীকৰণ</string>
     <string name="type_parent">মূল</string>
     <string name="type_character">চরিত্র</string>
@@ -293,30 +268,26 @@
     <string name="type_other">অন্যান্য</string>
     <string name="type_source">উৎস</string>
     <string name="type_contains">অন্তৰ্ভুক্ত আছে</string>
-  
     <string name="read_on_dantotsu">Aweryত পঢ়ক</string>
     <string name="watch_on_dantotsu">Aweryত চাওক</string>
     <string name="continue_episode">"পৰ্ব চালিব : পৰ্ব "</string>
     <string name="continue_chapter">"চালিব : "</string>
-  
     <string name="episode">পৰ্ব</string>
     <string name="episodes">পৰ্ব</string>
     <string name="duration">অবধি</string>
     <string name="just_released">- সময়ামতো মুক্তি প্ৰদান হৈছে!</string>
     <string name="checking_subscriptions_title">সাবস্ক্ৰাইব পৰীক্ষা কৰা হ\'চিছে</string>
-  
     <string name="speed">গতি</string>
     <string name="auto_update">%1$sৰ প্ৰগ্ৰেছ স্বয়ংক্ৰিয় আপডেট কৰিব?</string>
     <string name="continue_from">%1$sৰ পৰা চালাব?</string>
     <string name="title_update_progress">Anilistত প্ৰগ্ৰেছ আপডেট কৰিব?</string>
     <string name="incognito_will_not_update">অবিশ্বস্ত মোড প্ৰগ্ৰেছত অধিক কৰা হোৱা হ\'ল।</string>
-    <string name="dont_ask_again">"%1$sৰ বাবে আরু প্ৰশ্ন কৰিব ন\'হোৱা"</string>
+    <string name="dont_ask_again">%1$sৰ বাবে আরু প্ৰশ্ন কৰিব ন\'হোৱা</string>
     <string name="default_speed">ডিফ\'ল্ট গতি</string>
     <string name="primary_sub_color">প্ৰাথমিক সাব রঙ</string>
     <string name="outline_sub_color">আউটলাইন সাব রঙ</string>
     <string name="outline_type">আউটলাইন প্ৰকাৰ</string>
     <string name="subtitle_font">সাবটাইটেল ফন্ট</string>
-  
     <string name="not_implemented">বৈশিষ্ট্য প্ৰযোজ্য নহয়!</string>
     <string name="timed_out">সংযোগ সময়বিত সমাপ্ত হ\'ল!</string>
     <string name="failed_handshake">সাৰ্ভাৰলৈ সংযোগ কৰিবলৈ ব্যৰ্থ হ\'ল!</string>
@@ -324,9 +295,7 @@
     <string name="server_down">সাৰ্ভাৰ নিমন্ত্ৰণ হ\'ল!</string>
     <string name="too_much_requests">অধিক অনুৰোধ!</string>
     <string name="something_went_wrong">এটা অনুভূতি হৈছিল!</string>
-  
     <string name="not_found_detailed">ত্ৰুটি 404। আপুনি অনুৰোধ কৰা সমলটো নাই!</string>
-  
     <string name="content">বিষয়</string>
     <string name="yes">হয়</string>
     <string name="no">ন\'হয়</string>
@@ -334,23 +303,18 @@
     <string name="no_chapter">কোনো অধ্যায় নাই</string>
     <string name="available">উপলব্ধ</string>
     <string name="lets_go">চলো যাই</string>
-  
     <string name="watched_num">"চাওক "</string>
     <string name="read_num">"পড়া "</string>
     <string name="episodes_out_of">" মুক্তি প্ৰদান কৰা পৰ্বেৰ পৰা "</string>
     <string name="episodes_total_of">"মুক্তি প্ৰদান কৰা মুঠ পৰ্বেৰ পৰা "</string>
-    <string name="no_description_available">"বিৱৰণ উপলব্ধ নাই"</string>
-  
+    <string name="no_description_available">বিৱৰণ উপলব্ধ নাই</string>
     <string name="selected">বাছনি কৰা হ\'ল</string>
     <string name="found">পোৱা হ\'ল</string>
-  
     <string name="age">বয়স</string>
     <string name="birthday">জন্মদিন</string>
     <string name="gender">লিংগ</string>
-  
     <string name="male">নৰ</string>
     <string name="female">নাৰী</string>
-  
     <string name="subscribed_notification">সাবস্ক্ৰাইব কৰা! আপুনি %1$s ত নতুন পৰ্ব মুক্তি প্ৰদান হ’লে অবিলম্বে নতুন নোটিফিকেশন পাব।</string>
     <string name="unsubscribed_notification">সাবস্ক্ৰাইব কাৰ্যত অসুবিধা হোৱা নাই, আপুনি নতুন নোটিফিকেশন পাব নোৱাৰিব।</string>
     <string name="episode_plural">পৰ্বসমূহ</string>
@@ -375,4 +339,9 @@
     <string name="user_agent">ব্যৱহাৰকাৰী এজেণ্ট</string>
     <string name="nothing_found">কিবা পোৱা নাই</string>
     <string name="tried_all_titles">সকলো মিডিয়া শিৰোনাম প্ৰয়াস কৰা হ’ল, কিবা পোৱা নাই!</string>
+    <string name="app_name" translatable="false"></string>
+    <string name="no_tracker_extensions"></string>
+    <string name="confirm"></string>
+    <string name="no_subtitles_extensions"></string>
+    <string name="no_relations_extensions"></string>
 </resources>
