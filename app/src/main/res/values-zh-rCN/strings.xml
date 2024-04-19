@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="zh-rCN">
-    <string name="app_name" translatable="false">Awery</string>
 
     <string name="empty_library_title">库存为空</string>
     <string name="empty_library_message">开始浏览目录，新内容将会出现在这里！</string>
@@ -123,7 +122,6 @@
     <string name="ui">用户界面</string>
     <string name="common">通用</string>
     <string name="theme">主题</string>
-    <string name="ui_settings">用户界面设置</string>
     <string name="about">关于</string>
     <string name="devs">开发者</string>
     <string name="disclaimer">免责声明</string>
@@ -189,9 +187,6 @@
   
     <string name="startUpTab">默认启动选项卡</string>
     <string name="animations">动画</string>
-    <string name="banner_animations">横幅动画</string>
-    <string name="layout_animations">布局动画</string>
-    <string name="animation_speed">整体速度</string>
     <string name="restart_app">重新启动应用程序？</string>
     <string name="next">下一个</string>
     <string name="previous">上一个</string>
@@ -244,7 +239,6 @@
     <string name="previous_season">上一季</string>
     <string name="include_media_in_list">包括列表</string>
     <string name="release_calendar">日历</string>
-    <string name="image_long_clicking">通过长按打开图像</string>
     <string name="always_continue_shows">始终继续显示</string>
     <string name="check_app_updates">始终检查应用程序更新</string>
     <string name="author">作者</string>
@@ -255,30 +249,21 @@
     <string name="crop_borders">裁剪边框</string>
   
     <string name="error_loading_data">加载数据时出错 %1$s</string>
-    <string name="long_click_to_check_update">长按按钮以检查应用更新</string>
     <string name="saved_to_path">已保存到：\n%s</string>
     <string name="setting_progress">设置进度为 %1$d</string>
-    <string name="login_anilist_account">请登录到 Anilist 账户！</string>
-    <string name="please_reload">请重新加载。</string>
-    <string name="copied_text">已复制“%1$s”</string>
     <string name="back_to_exit">请再次返回退出</string>
     <string name="no_internet_connection">无互联网连接</string>
     <string name="disabled_auto_skip">已禁用自动跳过 OP 和 ED</string>
     <string name="auto_skip">自动跳过 OP 和 ED</string>
     <string name="copied_to_clipboard">已复制到剪贴板</string>
     <string name="first_episode">这是第一集！</string>
-    <string name="reset_auto_update">您可以长按列表编辑器按钮以重置自动更新</string>
-    <string name="autoplay_cancelled">自动播放已取消，超过 1 小时没有交互。</string>
     <string name="auto_select_server_error">无法自动选择服务器，请重试！</string>
     <string name="no_next_episode">找不到下一集！</string>
-    <string name="auto_update_reset">自动更新进度现已重置</string>
     <string name="downloading">下载中…</string>
     <string name="next_chapter_not_found">找不到下一章</string>
-    <string name="first_chapter">这是第一章！</string>
     <string name="episode_not_found">找不到剧集：%1$s</string>
     <string name="list_updated">列表已更新</string>
     <string name="deleted_from_list">已从列表中删除</string>
-    <string name="no_list_id">未找到列表 ID，正在重新加载…</string>
     <string name="checking_for_update">正在检查更新</string>
     <string name="dont_show_again">“不要再显示版本 %1$s 的消息”</string>
     <string name="no_update_found">未找到更新</string>
@@ -318,9 +303,6 @@
     <string name="episodes">剧集</string>
     <string name="duration">持续时间</string>
   
-    <string name="episode_num">“剧集 %1$s”</string>
-    <string name="chapter">“章节”</string>
-    <string name="chapter_num">“第 %1$s 章”</string>
     <string name="just_released">- 刚刚发布！</string>
     <string name="checking_subscriptions_title">检查订阅</string>
   
@@ -336,7 +318,7 @@
     <string name="outline_type">轮廓类型</string>
     <string name="subtitle_font">字幕字体</string>
   
-    <string name="not_implemeted">功能尚未实现！</string>
+    <string name="not_implemented">功能尚未实现！</string>
     <string name="timed_out">连接超时！</string>
     <string name="failed_handshake">无法连接到服务器！</string>
     <string name="access_denied">访问被拒绝！</string>
@@ -351,7 +333,6 @@
     <string name="no">否</string>
     <string name="close">关闭</string>
     <string name="no_chapter">没有章节</string>
-    <string name="content_18">从您的 Anilist 设置中打开 18+ 内容</string>
     <string name="available">可用</string>
     <string name="lets_go">让我们开始</string>
   
@@ -364,9 +345,9 @@
     <string name="selected">已选择</string>
     <string name="found">已找到</string>
   
-    <string name="age">“__年龄：__”</string>
-    <string name="birthday">\n“__生日：__”</string>
-    <string name="gender">\n“__性别：__”</string>
+    <string name="age">年龄</string>
+    <string name="birthday">生日</string>
+    <string name="gender">性别</string>
   
     <string name="male">男性</string>
     <string name="female">女性</string>
@@ -379,9 +360,6 @@
     <string name="chapter_singular">章节</string>
     <string name="chapter_plural">章节</string>
   
-    <string name="filter_format">“格式： %1$s”</string>
-    <string name="filter_sort">“排序： %1$s”</string>
-    <string name="filter_exclude">“不是 %1$s”</string>
     <string name="search_by_image">通过图像搜索</string>
     <string name="similarity_text">相似度：%1$s %%</string>
     <string name="time_range">从 %1$s 到 %2$s</string>

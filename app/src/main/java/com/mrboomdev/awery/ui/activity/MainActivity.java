@@ -19,7 +19,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.databinding.LayoutActivityMainBinding;
+import com.mrboomdev.awery.databinding.ScreenMainBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
-	public LayoutActivityMainBinding binding;
+	public ScreenMainBinding binding;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
-		binding = LayoutActivityMainBinding.inflate(getLayoutInflater());
+		binding = ScreenMainBinding.inflate(getLayoutInflater());
 		binding.getRoot().setMotionEventSplittingEnabled(false);
 		setContentView(binding.getRoot());
 

@@ -11,6 +11,10 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 public class DialogUtils {
 
+	/**
+	 * Apply max width of 400dp to the dialog and fully expand it
+	 * @author MrBoomDev
+	 */
 	public static void fixDialog(@NonNull Dialog dialog) {
 		if(dialog instanceof BottomSheetDialog sheet) {
 			sheet.getBehavior().setPeekHeight(1000);

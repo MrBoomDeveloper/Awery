@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="as">
-    <string name="app_name" translatable="false">Awery</string>
 
     <string name="empty_library_title">লাইব্রেৰি খালী</string>
     <string name="empty_library_message">ক্যাটালগ ব্ৰাউজ কৰক আৰু নতুন বস্তুসমূহ এইখনতে দেখা দিব!</string>
@@ -123,7 +122,6 @@
     <string name="ui">ব্যবহাৰকাৰী ইণ্টাৰফেচ</string>
     <string name="common">সাধাৰণ</string>
     <string name="theme">থীম</string>
-    <string name="ui_settings">ব্যবহাৰকাৰী ইণ্টাৰফেচ ছেটিংসমূহ</string>
     <string name="about">সম্পর্কে</string>
     <string name="devs">ডেভেলপাৰ</string>
     <string name="disclaimer">অস্বীকৃতি</string>
@@ -189,9 +187,6 @@
     
     <string name="startUpTab">ডিফ\'ল্ট আৰম্ভ সংযোগ</string>
     <string name="animations">অ্যানিমেশ্বনসমূহ</string>
-    <string name="banner_animations">বেনাৰ অ্যানিমেশ্বনসমূহ</string>
-    <string name="layout_animations">লেআ\'উট অ্যানিমেশ্বনসমূহ</string>
-    <string name="animation_speed">মুহূৰ্তসমূহৰ গতি</string>
     <string name="restart_app">এপ্লিকেশ্বন পূনঃআৰম্ভ কৰা হ\'ব?</string>
     <string name="next">পৰৱৰ্তী</string>
     <string name="previous">পূৰ্বৱৰ্তী</string>
@@ -244,7 +239,6 @@
     <string name="previous_season">পূৰ্বৱৰ্তী ঋতু</string>
     <string name="include_media_in_list">তালিকাত সম্প্রদায়সমূহ অন্তৰ্ভুক্ত কৰক</string>
     <string name="release_calendar">কেলেণ্ডাৰ</string>
-    <string name="image_long_clicking">ছবি লম্ব ক্লিক কৰি খোলক</string>
     <string name="always_continue_shows">সদাই প্ৰদর্শন কৰা শোসমূহ</string>
     <string name="check_app_updates">সদাই এপ্লিকেশ্বন আপডেট পৰীক্ষা কৰা হ\'ব</string>
     <string name="author">লেখক</string>
@@ -255,30 +249,21 @@
     <string name="crop_borders">দৈৰ্ঘ্যত কটকাই</string>
 
     <string name="error_loading_data">%1$s ডাটা লোড কৰাৰ সময়ত ত্ৰুটি</string>
-    <string name="long_click_to_check_update">আপডেট চেক কৰিবলৈ আপুনি দীৰ্ঘ ক্লিক কৰক</string>
     <string name="saved_to_path">পথলৈ সংরক্ষিত:\n%s</string>
     <string name="setting_progress">%1$d প্ৰগ্ৰেছ ছেট কৰা হ\'ব</string>
-    <string name="login_anilist_account">অনুগ্ৰহ কৰি Anilist একাউণ্টত লগইন কৰক!</string>
-    <string name="please_reload">অনুগ্ৰহ কৰি পুনঃলোড কৰক।</string>
-    <string name="copied_text">"%1$s" কপি কৰা হ\'ল</string>
     <string name="back_to_exit">বিচাৰিবলৈ পুনঃলোড কৰক</string>
     <string name="no_internet_connection">কোনো ইন্টাৰনেট সংযোগ নাই</string>
     <string name="disabled_auto_skip">স্বয়ংক্রিয় অপ / ইডি বাদ কৰা হ\'ল</string>
     <string name="auto_skip">অট\'মেটিক অপ / ইডি স্কিপ হ\'ব</string>
     <string name="copied_to_clipboard">ক্লিপব\'ৰ্ডলৈ কপি কৰা হ\'ল</string>
     <string name="first_episode">এইটো প্ৰথম পৰ্ব!</string>
-    <string name="reset_auto_update">আপডেট প্ৰগ্ৰেছ পুনঃস্থাপন কৰিবলৈ আপুনি দীৰ্ঘ ক্লিক কৰক</string>
-    <string name="autoplay_cancelled">অট\'মেটিক প্ৰচালনা বাতিল কৰা হ\'ল, ১ ঘণ্টাত বেলাই পাওঁলৈ কোনো প্ৰতিক্ৰিয়া নাই।</string>
     <string name="auto_select_server_error">সাৰ্ভাৰ স্বয়ংক্রিয় নিৰ্বাচন কৰিব পৰা নাই, অনুগ্ৰহ কৰি পুনঃ চেষ্টা কৰক!</string>
     <string name="no_next_episode">পৰবৰ্তী পৰ্ব পোৱা নাই!</string>
-    <string name="auto_update_reset">স্বয়ংক্রিয় অপডেট প্ৰগ্ৰেছ এতিয়া পুনঃস্থাপন কৰা হ\'ল</string>
     <string name="downloading">ডাউনল\'ড কৰি আছে…</string>
     <string name="next_chapter_not_found">পৰবৰ্তী অধ্যায় পোৱা নাই</string>
-    <string name="first_chapter">এইটো প্ৰথম অধ্যায়!</string>
     <string name="episode_not_found">%1$s পৰ্ব বিচাৰ কৰিব নাপৰিল</string>
     <string name="list_updated">তালিকা আপডেট কৰা হ\'ল</string>
     <string name="deleted_from_list">তালিকাৰ পৰা মচি যাইছে</string>
-    <string name="no_list_id">কোনো তালিকা আইডি পোৱা নাই, পুনঃল\'ড কৰা হ\'চিছে…</string>
     <string name="checking_for_update">আপডেট পৰীক্ষা কৰি আছে</string>
     <string name="dont_show_again">%1$s সংস্কৰণৰ বাবে পুনঃপ্ৰদৰ্শন ন\'হ\'ব</string>
     <string name="no_update_found">কোনো আপডেট পোৱা নাই</string>
@@ -317,9 +302,6 @@
     <string name="episode">পৰ্ব</string>
     <string name="episodes">পৰ্ব</string>
     <string name="duration">অবধি</string>
-    <string name="episode_num">"পৰ্ব %1$s"</string>
-    <string name="chapter">"অধ্যায় "</string>
-    <string name="chapter_num">"অধ্যায় %1$s"</string>
     <string name="just_released">- সময়ামতো মুক্তি প্ৰদান হৈছে!</string>
     <string name="checking_subscriptions_title">সাবস্ক্ৰাইব পৰীক্ষা কৰা হ\'চিছে</string>
   
@@ -335,7 +317,7 @@
     <string name="outline_type">আউটলাইন প্ৰকাৰ</string>
     <string name="subtitle_font">সাবটাইটেল ফন্ট</string>
   
-    <string name="not_implemeted">বৈশিষ্ট্য প্ৰযোজ্য নহয়!</string>
+    <string name="not_implemented">বৈশিষ্ট্য প্ৰযোজ্য নহয়!</string>
     <string name="timed_out">সংযোগ সময়বিত সমাপ্ত হ\'ল!</string>
     <string name="failed_handshake">সাৰ্ভাৰলৈ সংযোগ কৰিবলৈ ব্যৰ্থ হ\'ল!</string>
     <string name="access_denied">প্ৰবেশ নাহয়!</string>
@@ -350,7 +332,6 @@
     <string name="no">ন\'হয়</string>
     <string name="close">বন্ধ</string>
     <string name="no_chapter">কোনো অধ্যায় নাই</string>
-    <string name="content_18">আপোনাৰ Anilist ছেটিংছত 18+ বিষয় চালু কৰক</string>
     <string name="available">উপলব্ধ</string>
     <string name="lets_go">চলো যাই</string>
   
@@ -363,9 +344,9 @@
     <string name="selected">বাছনি কৰা হ\'ল</string>
     <string name="found">পোৱা হ\'ল</string>
   
-    <string name="age">"__বয়স:__ "</string>
-    <string name="birthday">\n"__জন্মদিন:__ "</string>
-    <string name="gender">\n"__লিংগ:__ "</string>"
+    <string name="age">বয়স</string>
+    <string name="birthday">জন্মদিন</string>
+    <string name="gender">লিংগ</string>
   
     <string name="male">নৰ</string>
     <string name="female">নাৰী</string>
@@ -376,9 +357,6 @@
     <string name="episode_singular">পৰ্ব</string>
     <string name="chapter_singular">অধ্যায়</string>
     <string name="chapter_plural">অধ্যায়</string>
-    <string name="filter_format">"ফৰ্মেট : %1$s"</string>
-    <string name="filter_sort">"আৰঙ্গ কৰক : %1$s"</string>
-    <string name="filter_exclude">"%1$s নহ\'য়াই"</string>
     <string name="search_by_image">ছবি দিয়ে অনুসন্ধান কৰক</string>
     <string name="similarity_text">সমানতা: %1$s %%</string>
     <string name="time_range">%1$sৰ পৰা %2$s পৰ্যন্ত</string>

@@ -77,7 +77,7 @@ public class ExceptionDescriptor {
 			return e.getTitle(context);
 		} else if(throwable instanceof UnimplementedException
 				|| throwable instanceof UnsupportedOperationException) {
-			return context.getString(R.string.not_implemeted);
+			return context.getString(R.string.not_implemented);
 		} else if(throwable instanceof SocketTimeoutException) {
 			return context.getString(R.string.timed_out);
 		} else if(throwable instanceof SocketException e) {

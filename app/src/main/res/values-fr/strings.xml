@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
-    <string name="app_name" translatable="false">Awery</string>
 
     <string name="empty_library_title">La bibliothèque est vide</string>
     <string name="empty_library_message">Commencez à parcourir le catalogue et de nouvelles choses apparaîtront ici !</string>
@@ -40,10 +39,10 @@
     <string name="no_media_found">Aucun média trouvé. Essayez de changer votre requête et vos filtres.</string>
     <string name="no_episodes_found">Aucun épisode trouvé. Essayez de changer votre requête et vos filtres.</string>
     <string name="no_extensions_found">Aucune extension trouvée. Essayez de changer votre requête et vos filtres.</string>
-    <string name="no_comment_extensions">Vous n'avez aucune extension de commentaire installée. Téléchargez-en pour voir quelque chose de nouveau ici !</string>
+    <string name="no_comment_extensions">Vous n\'avez aucune extension de commentaire installée. Téléchargez-en pour voir quelque chose de nouveau ici !</string>
 
-    <string name="material_you_description">Les couleurs de l'application seront générées en fonction de votre papier peint.</string>
-    <string name="default_tab_description">Sera ouvert lorsque l'application démarre.</string>
+    <string name="material_you_description">Les couleurs de l\'application seront générées en fonction de votre papier peint.</string>
+    <string name="default_tab_description">Sera ouvert lorsque l\'application démarre.</string>
     <string name="adult_content_description">Pas sûr pour les enfants.</string>
 
     <string name="no_internet">Pas de connexion Internet</string>
@@ -55,7 +54,7 @@
     <string name="top_score">Meilleur score</string>
     <string name="recently_updated">Mis à jour récemment</string>
 
-    <string name="username">Nom d'utilisateur</string>
+    <string name="username">Nom d\'utilisateur</string>
     <string name="continue_reading">Continuer la lecture</string>
     <string name="continue_watching">Continuer à regarder</string>
     <string name="recommended">Recommandé</string>
@@ -123,18 +122,17 @@
     <string name="ui">Interface utilisateur</string>
     <string name="common">Commun</string>
     <string name="theme">Thème</string>
-    <string name="ui_settings">Paramètres de l'interface utilisateur</string>
     <string name="about">À propos</string>
     <string name="devs">Développeurs</string>
     <string name="disclaimer">Clause de non-responsabilité</string>
 
     <string name="full_disclaimer">
-         - Awery en lui-même ne fournit qu'un suivi d'anime et de manga et ne fournit pas de capacités de diffusion ou de téléchargement d'anime ou de manga.
-        \n\n - Awery ou l'un de ses développeurs/employés n'héberge aucun des contenus trouvés dans Awery. Toutes les images et informations sur les anime/manga trouvées dans l'application sont extraites de diverses API publiques (AniList, MyAnimeList, Kitsu).
+         - Awery en lui-même ne fournit qu\'un suivi d\'anime et de manga et ne fournit pas de capacités de diffusion ou de téléchargement d\'anime ou de manga.
+        \n\n - Awery ou l\'un de ses développeurs/employés n\'héberge aucun des contenus trouvés dans Awery. Toutes les images et informations sur les anime/manga trouvées dans l\'application sont extraites de diverses API publiques (AniList, MyAnimeList, Kitsu).
         \n\n - De plus, tous les liens vers des anime/manga trouvés dans Awery sont extraits de divers plugins tiers et ne sont affiliés ni à Awery ni à son personnel.
-        \n\n - Awery ou ses propriétaires ne sont pas responsables de tout mauvais usage de l'un des contenus trouvés à l'intérieur ou à l'extérieur de l'application et ne peuvent être tenus responsables de la distribution de tout contenu trouvé à l'intérieur de l'application.
-        \n\n - En utilisant Awery, vous acceptez le fait que le développeur de l'application n'est pas responsable de tout le contenu trouvé dans l'application. Vous acceptez également le fait que vous ne pouvez pas utiliser Awery pour télécharger ou diffuser du contenu protégé par des droits d'auteur.
-        \n\n - En cas de problèmes de violation d'Internet, veuillez contacter le site Web source. Le développeur n'assume aucune responsabilité légale.
+        \n\n - Awery ou ses propriétaires ne sont pas responsables de tout mauvais usage de l\'un des contenus trouvés à l\'intérieur ou à l\'extérieur de l\'application et ne peuvent être tenus responsables de la distribution de tout contenu trouvé à l\'intérieur de l\'application.
+        \n\n - En utilisant Awery, vous acceptez le fait que le développeur de l\'application n\'est pas responsable de tout le contenu trouvé dans l\'application. Vous acceptez également le fait que vous ne pouvez pas utiliser Awery pour télécharger ou diffuser du contenu protégé par des droits d\'auteur.
+        \n\n - En cas de problèmes de violation d\'Internet, veuillez contacter le site Web source. Le développeur n\'assume aucune responsabilité légale.
     </string>
 
     <string name="video">Vidéo</string>
@@ -142,7 +140,7 @@
     <string name="default_quality">Sélection automatique de la qualité</string>
     <string name="height">Hauteur</string>
     <string name="width">Largeur</string>
-    <string name="default_quality_info">Utilise automatiquement la qualité la plus proche par défaut, s'applique UNIQUEMENT aux serveurs de "qualité multiple". Changements automatiques lors de la lecture d'une vidéo.</string>
+    <string name="default_quality_info">Utilise automatiquement la qualité la plus proche par défaut, s\'applique UNIQUEMENT aux serveurs de "qualité multiple". Changements automatiques lors de la lecture d\'une vidéo.</string>
     <string name="default_playback_speed">Vitesse de lecture par défaut : %1$s</string>
     <string name="resize_mode_button">Mode de redimensionnement par défaut</string>
     <string name="subtitles">Sous-titres</string>
@@ -156,43 +154,40 @@
     <string name="subtitle_font_size">Taille des sous-titres</string>
 
     <string name="auto">Automatique</string>
-    <string name="auto_play_next_episode">Lire automatiquement l'épisode suivant</string>
-    <string name="auto_play_next_episode_info">Se désactive automatiquement s'il n'y a aucune interaction avec le lecteur après 1 heure.</string>
+    <string name="auto_play_next_episode">Lire automatiquement l\'épisode suivant</string>
+    <string name="auto_play_next_episode_info">Se désactive automatiquement s\'il n\'y a aucune interaction avec le lecteur après 1 heure.</string>
     <string name="auto_skip_fillers">Sauter automatiquement les fillers</string>
-    <string name="auto_skip_fillers_info">Sauter les épisodes de remplissage en passant à l'épisode suivant.</string>
+    <string name="auto_skip_fillers_info">Sauter les épisodes de remplissage en passant à l\'épisode suivant.</string>
 
     <string name="update_progress">Mettre à jour le progrès</string>
     <string name="ask_update_progress_anime">Demander pour chaque média "Individuellement"</string>
-    <string name="ask_update_progress_info_ep">Désactivera toujours la mise à jour automatique du progrès lorsque l'épisode est regardé.</string>
+    <string name="ask_update_progress_info_ep">Désactivera toujours la mise à jour automatique du progrès lorsque l\'épisode est regardé.</string>
     <string name="watch_complete_percentage">Pourcentage de mise à jour du visionnage</string>
-    <string name="watch_complete_percentage_info">Le pourcentage à partir duquel votre progrès Anilist devrait être mis à jour après avoir regardé un épisode. \nCela définit également le \% pour le préchargement des liens vers l'épisode suivant.</string>
+    <string name="watch_complete_percentage_info">Le pourcentage à partir duquel votre progrès Anilist devrait être mis à jour après avoir regardé un épisode. \nCela définit également le \% pour le préchargement des liens vers l\'épisode suivant.</string>
 
     <string name="behaviour">Comportement</string>
     <string name="always_continue">Continuer toujours là où vous vous êtes arrêté</string>
-    <string name="pause_video_focus">Mettre en pause lorsque ce n'est pas en focus</string>
+    <string name="pause_video_focus">Mettre en pause lorsque ce n\'est pas en focus</string>
     <string name="gestures">Gestes de volume et de luminosité</string>
     <string name="double_tap">Double-tap pour rechercher</string>
     <string name="fast_forward">Avance rapide</string>
-    <string name="double_tap_info">La désactivation affichera les boutons d'avance rapide et de retour rapide</string>
+    <string name="double_tap_info">La désactivation affichera les boutons d\'avance rapide et de retour rapide</string>
     <string name="seek_time">Temps de recherche</string>
     <string name="amoled">Thème Amoled</string>
-    <string name="seek_time_info">Quantité de temps en secondes pour l'avance rapide et le retour rapide.</string>
+    <string name="seek_time_info">Quantité de temps en secondes pour l\'avance rapide et le retour rapide.</string>
     <string name="skip_time">Temps de saut</string>
     <string name="show_cast_button">Afficher le bouton Cast</string>
-    <string name="show_cast_button_info">Nécessite l'application "Web Video Caster" pour caster.</string>
-    <string name="picture_in_picture">Image dans l'image</string>
+    <string name="show_cast_button_info">Nécessite l\'application "Web Video Caster" pour caster.</string>
+    <string name="picture_in_picture">Image dans l\'image</string>
     <string name="always_minimize">Minimiser toujours</string>
     <string name="always_minimize_info">Nécessite que PiP soit activé, fait fonctionner le lecteur comme le lecteur Youtube mais mieux. \nMasque également le bouton PiP.</string>
 
-    <string name="immersive_mode">Masquer la barre d'état</string>
-    <string name="immersive_mode_info">Nécessite un redémarrage de l'application pour être pleinement appliqué.</string>
+    <string name="immersive_mode">Masquer la barre d\'état</string>
+    <string name="immersive_mode_info">Nécessite un redémarrage de l\'application pour être pleinement appliqué.</string>
 
     <string name="startUpTab">Onglet de démarrage par défaut</string>
     <string name="animations">Animations</string>
-    <string name="banner_animations">Animations de bannière</string>
-    <string name="layout_animations">Animations de mise en page</string>
-    <string name="animation_speed">Vitesse globale</string>
-    <string name="restart_app">Redémarrer l'application ?</string>
+    <string name="restart_app">Redémarrer l\'application ?</string>
     <string name="next">Suivant</string>
     <string name="previous">Précédent</string>
     <string name="current_page">Page actuelle</string>
@@ -202,22 +197,22 @@
     <string name="none">Aucun</string>
     <string name="selected_dns">DNS sélectionné</string>
     <string name="dns_info">Changez si votre FAI bloque une source</string>
-    <string name="keep_screen_on">Maintenir l'écran allumé</string>
+    <string name="keep_screen_on">Maintenir l\'écran allumé</string>
     <string name="layout">Disposition</string>
     <string name="spaced_pages">Pages espacées</string>
     <string name="direction">Direction</string>
 
     <string name="general">Général</string>
-    <string name="show_system_bars">Afficher les barres d'état et de navigation</string>
+    <string name="show_system_bars">Afficher les barres d\'état et de navigation</string>
     <string name="auto_detect_webtoon">Détection automatique des webtoons</string>
-    <string name="auto_detect_webtoon_info">Si le manga n'est pas japonais, le lecteur utilisera les paramètres de lecteur de webtoon par défaut.</string>
+    <string name="auto_detect_webtoon_info">Si le manga n\'est pas japonais, le lecteur utilisera les paramètres de lecteur de webtoon par défaut.</string>
     <string name="default_settings">Paramètres par défaut</string>
     <string name="horizontal_scroll_bar">Barre de défilement horizontale</string>
     <string name="dual_page">Page double</string>
-    <string name="dual_page_info">Affiche 2 images sur 1 page, aura l'air bizarre si les images ne sont pas de la même taille</string>
+    <string name="dual_page_info">Affiche 2 images sur 1 page, aura l\'air bizarre si les images ne sont pas de la même taille</string>
     <string name="true_colors">Vraies couleurs</string>
     <string name="true_colors_info">(Mode couleur 32 bits) Réduit le banding sur les images, peut affecter les performances.</string>
-    <string name="image_rotation">Rotation d'image</string>
+    <string name="image_rotation">Rotation d\'image</string>
     <string name="hide_page_numbers">Masquer les numéros de page</string>
     <string name="sort_by_title">Trier par titre</string>
     <string name="sort_by_last_updated">Trier par dernière mise à jour</string>
@@ -226,7 +221,7 @@
     <string name="volume_buttons">Changer de page avec les boutons de volume</string>
     <string name="list_private">Privé</string>
     <string name="wrap_images">Envelopper les images</string>
-    <string name="wrap_images_info">Principallement utile pour les appareils plus grands, supprime l'espace entre les images, s'il existe.</string>
+    <string name="wrap_images_info">Principallement utile pour les appareils plus grands, supprime l\'espace entre les images, s\'il existe.</string>
     <string name="reload">Recharger</string>
     <string name="share">Partager</string>
     <string name="skip">Passer</string>
@@ -244,9 +239,8 @@
     <string name="previous_season">Saison précédente</string>
     <string name="include_media_in_list">Inclure la liste</string>
     <string name="release_calendar">Calendrier</string>
-    <string name="image_long_clicking">Ouvrir l'image en cliquant longuement</string>
     <string name="always_continue_shows">Continuer toujours les séries</string>
-    <string name="check_app_updates">Toujours vérifier les mises à jour de l'application</string>
+    <string name="check_app_updates">Toujours vérifier les mises à jour de l\'application</string>
     <string name="author">Auteur</string>
     <string name="account">Compte</string>
     <string name="subscriptions_info">Durée pendant laquelle Awery vérifie périodiquement les nouveaux épisodes/chapitres\n(Moins de temps entraînera une plus grande consommation de batterie)</string>
@@ -255,40 +249,31 @@
     <string name="crop_borders">Recadrer les bordures</string>
 
     <string name="error_loading_data">Erreur lors du chargement des données %1$s</string>
-    <string name="long_click_to_check_update">Appuyez longuement sur le bouton pour vérifier les mises à jour de l'application</string>
     <string name="saved_to_path">Sauvegardé à :\n%s</string>
     <string name="setting_progress">Réglage de la progression à %1$d</string>
-    <string name="login_anilist_account">Veuillez vous connecter à votre compte Anilist !</string>
-    <string name="please_reload">Veuillez recharger.</string>
-    <string name="copied_text">Copié "%1$s"</string>
     <string name="back_to_exit">Veuillez appuyer de nouveau sur Retour pour quitter</string>
     <string name="no_internet_connection">Pas de connexion Internet</string>
-    <string name="disabled_auto_skip">Désactivé le saut automatique de l'OP et de l'ED</string>
-    <string name="auto_skip">Saut automatique de l'OP et de l'ED</string>
+    <string name="disabled_auto_skip">Désactivé le saut automatique de l\'OP et de l\'ED</string>
+    <string name="auto_skip">Saut automatique de l\'OP et de l\'ED</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
-    <string name="first_episode">C'est le 1er épisode !</string>
-    <string name="reset_auto_update">Vous pouvez appuyer longuement sur le bouton Éditeur de liste pour réinitialiser la mise à jour automatique</string>
-    <string name="autoplay_cancelled">Lecture automatique annulée, aucune interaction depuis plus d'une heure.</string>
+    <string name="first_episode">C\'est le 1er épisode !</string>
     <string name="auto_select_server_error">Impossible de sélectionner automatiquement le serveur, veuillez réessayer !</string>
     <string name="no_next_episode">Aucun épisode suivant trouvé !</string>
-    <string name="auto_update_reset">La progression de la mise à jour automatique a été réinitialisée</string>
-    <string name="downloading">Téléchargement en cours...</string>
+    <string name="downloading">Téléchargement en cours…</string>
     <string name="next_chapter_not_found">Chapitre suivant non trouvé</string>
-    <string name="first_chapter">C'est le 1er chapitre !</string>
-    <string name="episode_not_found">Impossible de trouver l'épisode : %1$s</string>
+    <string name="episode_not_found">Impossible de trouver l\'épisode : %1$s</string>
     <string name="list_updated">Liste mise à jour</string>
     <string name="deleted_from_list">Supprimé de la liste</string>
-    <string name="no_list_id">Aucun ID de liste trouvé, rechargement en cours…</string>
     <string name="checking_for_update">Vérification des mises à jour</string>
     <string name="dont_show_again">Ne pas afficher à nouveau pour la version %1$s</string>
     <string name="no_update_found">Aucune mise à jour trouvée</string>
     <string name="downloading_update">Téléchargement de la mise à jour %1$s</string>
-    <string name="permission_required">Veuillez accorder la permission d'accéder aux fichiers et dossiers depuis les paramètres, et réessayez.</string>
+    <string name="permission_required">Veuillez accorder la permission d\'accéder aux fichiers et dossiers depuis les paramètres, et réessayez.</string>
     <string name="started_downloading">Démarrage du téléchargement\n%1$s</string>
-    <string name="loading_image_failed">Échec du chargement de l'image</string>
+    <string name="loading_image_failed">Échec du chargement de l\'image</string>
     <string name="failed_to_load_data">Échec du chargement des données sauvegardées de %1$d</string>
-    <string name="access_not_available">Impossible d'obtenir l'accès</string>
-    <string name="episode_release_countdown">L'épisode %1$d sera diffusé dans</string>
+    <string name="access_not_available">Impossible d\'obtenir l\'accès</string>
+    <string name="episode_release_countdown">L\'épisode %1$d sera diffusé dans</string>
     <string name="time_format">%1$d jours %2$d h %3$d min %4$d s</string>
     
     <string name="main_role">Principal</string>
@@ -317,10 +302,7 @@
     <string name="episode">Épisode</string>
     <string name="episodes">Épisodes</string>
     <string name="duration">Durée</string>
-    
-    <string name="episode_num">"Épisode %1$s"</string>
-    <string name="chapter">"Chapitre "</string>
-    <string name="chapter_num">"Chapitre %1$s"</string>
+
     <string name="just_released">- vient de sortir !</string>
     <string name="checking_subscriptions_title">Vérification des abonnements</string>
     
@@ -328,7 +310,7 @@
     <string name="auto_update">Mettre à jour automatiquement la progression pour %1$s ?</string>
     <string name="continue_from">Continuer à partir de %1$s ?</string>
     <string name="title_update_progress">Mettre à jour la progression sur Anilist ?</string>
-    <string name="incognito_will_not_update">Le mode Incognito continuera d'ignorer la progression.</string>
+    <string name="incognito_will_not_update">Le mode Incognito continuera d\'ignorer la progression.</string>
     <string name="dont_ask_again">"Ne pas demander à nouveau pour %1$s"</string>
     <string name="default_speed">Vitesse par défaut</string>
     <string name="primary_sub_color">Couleur principale des sous-titres</string>
@@ -336,22 +318,21 @@
     <string name="outline_type">Type de contour</string>
     <string name="subtitle_font">Police des sous-titres</string>
     
-    <string name="not_implemeted">Fonction non implémentée !</string>
+    <string name="not_implemented">Fonction non implémentée !</string>
     <string name="timed_out">Connexion expirée !</string>
     <string name="failed_handshake">Échec de la connexion au serveur !</string>
     <string name="access_denied">Accès refusé !</string>
     <string name="server_down">Serveur indisponible !</string>
     <string name="too_much_requests">Trop de demandes !</string>
-    <string name="something_went_wrong">Quelque chose s'est mal passé !</string>
+    <string name="something_went_wrong">Quelque chose s\'est mal passé !</string>
     
-    <string name="not_found_detailed">Erreur 404. La ressource demandée n'existe pas !</string>
+    <string name="not_found_detailed">Erreur 404. La ressource demandée n\'existe pas !</string>
     
     <string name="content">Contenu</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="close">Fermer</string>
     <string name="no_chapter">Pas de chapitre</string>
-    <string name="content_18">Activer le contenu 18+ depuis les paramètres de votre Anilist</string>
     <string name="available">Disponible</string>
     <string name="lets_go">Allons-y</string>
     
@@ -364,9 +345,9 @@
     <string name="selected">Sélectionné</string>
     <string name="found">Trouvé</string>
     
-    <string name="age">"__Âge :__ "</string>
-    <string name="birthday">\n"__Anniversaire :__ "</string>
-    <string name="gender">\n"__Genre :__ "</string>"
+    <string name="age">Âge</string>
+    <string name="birthday">Anniversaire</string>
+    <string name="gender">Genre</string>
     
     <string name="male">Homme</string>
     <string name="female">Femme</string>
@@ -378,15 +359,12 @@
     <string name="episode_singular">Épisode</string>
     <string name="chapter_singular">Chapitre</string>
     <string name="chapter_plural">Chapitres</string>
-    
-    <string name="filter_format">"Format : %1$s"</string>
-    <string name="filter_sort">"Tri : %1$s"</string>
-    <string name="filter_exclude">"Pas %1$s"</string>
+
     <string name="search_by_image">Recherche par image</string>
     <string name="similarity_text">Similarité : %1$s %%</string>
     <string name="time_range">De %1$s à %2$s</string>
     <string name="invalid_url">URL invalide</string>
-    <string name="extension_specific_dns">DNS spécifique à l'extension</string>
+    <string name="extension_specific_dns">DNS spécifique à l\'extension</string>
     
     <string name="color_picker">Sélecteur de couleur</string>
     <string name="android12_requires">Nécessite Android 12+</string>

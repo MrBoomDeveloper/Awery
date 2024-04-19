@@ -8,7 +8,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:clipToPadding="false"
-        android:paddingBottom="25dp"
+        android:paddingBottom="50dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

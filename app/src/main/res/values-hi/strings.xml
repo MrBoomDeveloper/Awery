@@ -123,7 +123,6 @@
     <string name="ui">उपयोगकर्ता इंटरफेस</string>
     <string name="common">सामान्य</string>
     <string name="theme">थीम</string>
-    <string name="ui_settings">यूआई सेटिंग्स</string>
     <string name="about">बारे में</string>
     <string name="devs">डेवलपर्स</string>
     <string name="disclaimer">अस्वीकृति</string>
@@ -189,9 +188,6 @@
     
     <string name="startUpTab">डिफ़ॉल्ट प्रारंभ टैब</string>
     <string name="animations">एनिमेशन</string>
-    <string name="banner_animations">बैनर एनिमेशन</string>
-    <string name="layout_animations">लेआउट एनिमेशन</string>
-    <string name="animation_speed">समग्र गति</string>
     <string name="restart_app">ऐप फिर से शुरू करें?</string>
     <string name="next">अगला</string>
     <string name="previous">पिछला</string>
@@ -244,7 +240,6 @@
     <string name="previous_season">पिछला मौसम</string>
     <string name="include_media_in_list">सूची में शामिल करें</string>
     <string name="release_calendar">कैलेंडर</string>
-    <string name="image_long_clicking">छवि को लंबा क्लिक करके खोलें</string>
     <string name="always_continue_shows">हमेशा शो जारी रखें</string>
     <string name="check_app_updates">हमेशा ऐप अपडेट की जाँच करें</string>
     <string name="author">लेखक</string>
@@ -255,30 +250,21 @@
     <string name="crop_borders">किनारे काटें</string>
     
     <string name="error_loading_data">डेटा लोड करने में त्रुटि %1$s</string>
-    <string name="long_click_to_check_update">ऐप अपडेट के लिए बटन पर लंबा क्लिक करें</string>
     <string name="saved_to_path">सहेजा गया:\n%s</string>
     <string name="setting_progress">%1$d पर प्रगति सेट करना</string>
-    <string name="login_anilist_account">कृपया अनिलिस्ट खाते में लॉगिन करें!</string>
-    <string name="please_reload">कृपया पुनः लोड करें।</string>
-    <string name="copied_text">कॉपी किया गया "%1$s"</string>
     <string name="back_to_exit">कृपया बाहर निकलने के लिए पुनः वापस जाएं</string>
     <string name="no_internet_connection">कोई इंटरनेट कनेक्शन नहीं है</string>
     <string name="disabled_auto_skip">ऑटो स्किपिंग ओपी और ईडी निष्क्रिय है</string>
     <string name="auto_skip">ऑटो स्किप ओपी और ईडी</string>
     <string name="copied_to_clipboard">क्लिपबोर्ड पर कॉपी किया गया</string>
     <string name="first_episode">यह पहला एपिसोड है!</string>
-    <string name="reset_auto_update">ऑटो अपडेट रीसेट करने के लिए आप लिस्ट संपादक बटन पर लंबा क्लिक कर सकते हैं</string>
-    <string name="autoplay_cancelled">ऑटोप्ले रद्द किया गया, 1 घंटे से अधिक कोई प्रक्रिया नहीं हुई।</string>
     <string name="auto_select_server_error">सर्वर का चयन करने में असमर्थ, कृपया पुनः प्रयास करें!</string>
     <string name="no_next_episode">कोई अगला एपिसोड नहीं मिला!</string>
-    <string name="auto_update_reset">ऑटो अपडेट प्रगति अब रीसेट हो गई है</string>
-    <string name="downloading">डाउनलोड हो रहा है...</string>
+    <string name="downloading">डाउनलोड हो रहा है…</string>
     <string name="next_chapter_not_found">अगला अध्याय नहीं मिला</string>
-    <string name="first_chapter">यह पहला अध्याय है!</string>
     <string name="episode_not_found">एपिसोड नहीं मिला: %1$s</string>
     <string name="list_updated">सूची अपडेट की गई</string>
     <string name="deleted_from_list">सूची से हटा दिया गया</string>
-    <string name="no_list_id">कोई सूची आईडी नहीं मिली, पुनः लोड हो रहा है...</string>
     <string name="checking_for_update">अपडेट की जाँच की जा रही है</string>
     <string name="dont_show_again">"इस संस्करण के लिए फिर से दिखाना नहीं %1$s"</string>
     <string name="no_update_found">कोई अपडेट नहीं मिला</string>
@@ -317,10 +303,7 @@
     <string name="episode">एपिसोड</string>
     <string name="episodes">एपिसोड</string>
     <string name="duration">अवधि</string>
-    
-    <string name="episode_num">"एपिसोड %1$s"</string>
-    <string name="chapter">"अध्याय "</string>
-    <string name="chapter_num">"अध्याय %1$s"</string>
+
     <string name="just_released">- अभी जारी हुआ है!</string>
     <string name="checking_subscriptions_title">सदस्यता की जाँच हो रही है</string>
     
@@ -336,7 +319,7 @@
     <string name="outline_type">आउटलाइन प्रकार</string>
     <string name="subtitle_font">उपशीर्षक फ़ॉन्ट</string>
     
-    <string name="not_implemeted">सुविधा कार्यान्वित नहीं है!</string>
+    <string name="not_implemented">सुविधा कार्यान्वित नहीं है!</string>
     <string name="timed_out">कनेक्शन का समय समाप्त हो गया!</string>
     <string name="failed_handshake">सर्वर से कनेक्ट करने में विफल रहा!</string>
     <string name="access_denied">पहुँच निष्क्रिय की गई!</string>
@@ -351,7 +334,6 @@
     <string name="no">नहीं</string>
     <string name="close">बंद करें</string>
     <string name="no_chapter">कोई अध्याय नहीं</string>
-    <string name="content_18">अपने अनिलिस्ट सेटिंग्स से 18+ सामग्री को सक्षम करें</string>
     <string name="available">उपलब्ध</string>
     <string name="lets_go">चलो चलें</string>
     
@@ -364,9 +346,9 @@
     <string name="selected">चयनित</string>
     <string name="found">पाया गया</string>
     
-    <string name="age">"__आयु:__ "</string>
-    <string name="birthday">\n"__जन्मदिन:__ "</string>
-    <string name="gender">\n"__लिंग:__ "</string>
+    <string name="age">आयु</string>
+    <string name="birthday">जन्मदिन</string>
+    <string name="gender">लिंग</string>
 
     <string name="male">पुरुष</string>
     <string name="female">महिला</string>
@@ -378,10 +360,7 @@
     <string name="episode_singular">एपिसोड</string>
     <string name="chapter_singular">अध्याय</string>
     <string name="chapter_plural">अध्यायों</string>
-    
-    <string name="filter_format">"प्रारूप: %1$s"</string>
-    <string name="filter_sort">"क्रमबद्ध: %1$s"</string>
-    <string name="filter_exclude">"नहीं %1$s"</string>
+
     <string name="search_by_image">छवि द्वारा खोजें</string>
     <string name="similarity_text">समानता: %1$s %%</string>
     <string name="time_range">%1$s से %2$s तक</string>

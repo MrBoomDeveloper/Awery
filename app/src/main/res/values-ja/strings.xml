@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ja">
-    <string name="app_name" translatable="false">Awery</string>
 
     <string name="empty_library_title">ライブラリは空です</string>
     <string name="empty_library_message">カタログを閲覧し始めると、新しいものがここに表示されます！</string>
@@ -123,7 +122,6 @@
     <string name="ui">ユーザーインターフェース</string>
     <string name="common">共通</string>
     <string name="theme">テーマ</string>
-    <string name="ui_settings">UI設定</string>
     <string name="about">について</string>
     <string name="devs">開発者</string>
     <string name="disclaimer">免責事項</string>
@@ -189,9 +187,6 @@
 
     <string name="startUpTab">デフォルトのスタートアップタブ</string>
     <string name="animations">アニメーション</string>
-    <string name="banner_animations">バナーアニメーション</string>
-    <string name="layout_animations">レイアウトアニメーション</string>
-    <string name="animation_speed">全体の速度</string>
     <string name="restart_app">アプリを再起動しますか？</string>
     <string name="next">次へ</string>
     <string name="previous">前へ</string>
@@ -244,7 +239,6 @@
     <string name="previous_season">前のシーズン</string>
     <string name="include_media_in_list">リストに含める</string>
     <string name="release_calendar">カレンダー</string>
-    <string name="image_long_clicking">画像をロングクリックして開く</string>
     <string name="always_continue_shows">常に番組を継続</string>
     <string name="check_app_updates">常にアプリの更新を確認</string>
     <string name="author">著者</string>
@@ -255,30 +249,21 @@
     <string name="crop_borders">ボーダーを切り抜く</string>
     
     <string name="error_loading_data">データの読み込みエラー %1$s</string>
-    <string name="long_click_to_check_update">アプリの更新をチェックするにはボタンを長押ししてください</string>
     <string name="saved_to_path">保存先:\n%s</string>
     <string name="setting_progress">%1$d に進捗を設定中</string>
-    <string name="login_anilist_account">Anilistアカウントにログインしてください！</string>
-    <string name="please_reload">再読み込みしてください。</string>
-    <string name="copied_text">"%1$s" をコピーしました</string>
     <string name="back_to_exit">終了するにはもう一度バックを押してください</string>
     <string name="no_internet_connection">インターネットに接続されていません</string>
     <string name="disabled_auto_skip">OP＆EDの自動スキップが無効になっています</string>
     <string name="auto_skip">OP＆EDの自動スキップ</string>
     <string name="copied_to_clipboard">クリップボードにコピーしました</string>
     <string name="first_episode">これが最初のエピソードです！</string>
-    <string name="reset_auto_update">自動更新をリセットするにはリストエディターボタンを長押ししてください</string>
-    <string name="autoplay_cancelled">オートプレイがキャンセルされました、1時間以上操作がないため。</string>
     <string name="auto_select_server_error">サーバーを自動選択できませんでした。もう一度お試しください！</string>
     <string name="no_next_episode">次のエピソードが見つかりません！</string>
-    <string name="auto_update_reset">自動更新の進行状況がリセットされました</string>
     <string name="downloading">ダウンロード中…</string>
     <string name="next_chapter_not_found">次のチャプターが見つかりません</string>
-    <string name="first_chapter">これが最初のチャプターです！</string>
     <string name="episode_not_found">%1$s のエピソードが見つかりませんでした</string>
     <string name="list_updated">リストが更新されました</string>
     <string name="deleted_from_list">リストから削除されました</string>
-    <string name="no_list_id">リストIDが見つかりません、再読み込み中…</string>
     <string name="checking_for_update">更新をチェック中</string>
     <string name="dont_show_again">%1$s のバージョンでは再度表示しない</string>
     <string name="no_update_found">更新が見つかりません</string>
@@ -317,10 +302,7 @@
     <string name="episode">エピソード</string>
     <string name="episodes">エピソード</string>
     <string name="duration">長さ</string>
-    
-    <string name="episode_num">"エピソード %1$s"</string>
-    <string name="chapter">"チャプター "</string>
-    <string name="chapter_num">"チャプター %1$s"</string>
+
     <string name="just_released">- ついさっき公開されました！</string>
     <string name="checking_subscriptions_title">サブスクリプションをチェック中</string>
     
@@ -336,7 +318,7 @@
     <string name="outline_type">アウトラインタイプ</string>
     <string name="subtitle_font">字幕フォント</string>
     
-    <string name="not_implemeted">機能は実装されていません！</string>
+    <string name="not_implemented">機能は実装されていません！</string>
     <string name="timed_out">接続がタイムアウトしました！</string>
     <string name="failed_handshake">サーバーへの接続に失敗しました！</string>
     <string name="access_denied">アクセスが拒否されました！</string>
@@ -351,7 +333,6 @@
     <string name="no">いいえ</string>
     <string name="close">閉じる</string>
     <string name="no_chapter">チャプターなし</string>
-    <string name="content_18">Anilistの設定から18+コンテンツをオンにします</string>
     <string name="available">利用可能</string>
     <string name="lets_go">さあ始めましょう</string>
     
@@ -364,9 +345,9 @@
     <string name="selected">選択済み</string>
     <string name="found">見つかりました</string>
     
-    <string name="age">"__年齢:__ "</string>
-    <string name="birthday">\n"__誕生日:__ "</string>
-    <string name="gender">\n"__性別:__ "</string>"
+    <string name="age">年齢</string>
+    <string name="birthday">誕生日</string>
+    <string name="gender">性別</string>
     
     <string name="male">男性</string>
     <string name="female">女性</string>
@@ -378,10 +359,7 @@
     <string name="episode_singular">エピソード</string>
     <string name="chapter_singular">チャプター</string>
     <string name="chapter_plural">チャプター</string>
-    
-    <string name="filter_format">"フォーマット：%1$s"</string>
-    <string name="filter_sort">"ソート：%1$s"</string>
-    <string name="filter_exclude">"除外：%1$s"</string>
+
     <string name="search_by_image">画像で検索</string>
     <string name="similarity_text">類似度：%1$s %%</string>
     <string name="time_range">%1$s から %2$s まで</string>

@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -22,15 +24,24 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -186,7 +197,91 @@ public class MediaInfoFragment extends Fragment {
 			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
 		});
 
+		binding.details.tracking.setOnClickListener(v -> openTrackingDialog());
+
 		setMedia(media);
 		return binding.getRoot();
+	}
+
+	private void openTrackingDialog() {
+		var inflater = LayoutInflater.from(requireContext());
+
+		var binding = LayoutTrackingOptionsBinding.inflate(inflater, null, false);
+		binding.source.input.setText("Select a source", false);
+		binding.title.input.setText("Select a title", false);
+
+		updateTrackingDialogState(binding, null, null);
+
+		var sheet = new BottomSheetDialog(requireContext());
+		sheet.setContentView(binding.getRoot());
+		sheet.show();
+		DialogUtils.fixDialog(sheet);
+
+		new Thread(() -> {
+			var progressDao = getDatabase().getMediaProgressDao();
+			var progress = progressDao.get(media.globalId);
+
+			var availableSources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+					.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_TRACK))
+					.flatMap(AweryApp::stream)
+					.toList();
+
+			if(availableSources.isEmpty()) {
+				updateTrackingDialogState(binding, null,
+						new ZeroResultsException("No trackable sources available", R.string.no_tracker_extensions));
+			}
+		}).start();
+	}
+
+	private void updateTrackingDialogState(
+			LayoutTrackingOptionsBinding binding,
+			CatalogTrackingOptions trackingOptions,
+			Throwable throwable
+	) {
+		if(getContext() == null) return;
+
+		if(trackingOptions == null) {
+			binding.loadingState.getRoot().setVisibility(View.VISIBLE);
+
+			if(throwable != null) {
+				var description = new ExceptionDescriptor(throwable);
+
+				binding.loadingState.title.setText(description.getTitle(requireContext()));
+				binding.loadingState.message.setText(description.getMessage(requireContext()));
+
+				binding.loadingState.progressBar.setVisibility(View.GONE);
+				binding.loadingState.info.setVisibility(View.VISIBLE);
+			} else {
+				binding.loadingState.info.setVisibility(View.GONE);
+				binding.loadingState.progressBar.setVisibility(View.VISIBLE);
+			}
+		} else {
+			binding.loadingState.getRoot().setVisibility(View.GONE);
+		}
+
+		binding.progressIncrement.setOnClickListener(v -> {
+			if(trackingOptions == null) return;
+
+			trackingOptions.progress++;
+			binding.progress.setText(String.valueOf(trackingOptions.progress));
+		});
+
+		binding.progress.setText(String.valueOf(trackingOptions != null ? trackingOptions.progress : 0));
+
+		binding.progressWrapper.setVisibility(trackingOptions != null &&
+				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PROGRESS) ? View.VISIBLE : View.GONE);
+
+		binding.statusWrapper.setVisibility(trackingOptions != null &&
+				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_LISTS) ? View.VISIBLE : View.GONE);
+
+		binding.isPrivateWrapper.setVisibility(trackingOptions != null &&
+				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PRIVATE) ? View.VISIBLE : View.GONE);
+
+		binding.scoreWrapper.setVisibility(trackingOptions != null &&
+				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_SCORE) ? View.VISIBLE : View.GONE);
+
+		binding.dateWrapper.setVisibility(trackingOptions != null &&
+				(trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_DATE_START)
+						|| trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_DATE_END)) ? View.VISIBLE : View.GONE);
 	}
 }

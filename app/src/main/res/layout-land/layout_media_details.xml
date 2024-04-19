@@ -47,7 +47,6 @@
         app:layout_constraintTop_toBottomOf="@id/general_meta"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_width="wrap_content"
-        android:minWidth="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/watch_now"
@@ -57,9 +56,22 @@
         app:iconSize="26dp" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/tracking"
+        app:layout_constraintTop_toBottomOf="@id/general_meta"
+        app:layout_constraintLeft_toRightOf="@id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Tracking"
+        android:paddingRight="32dp"
+        android:layout_marginLeft="8dp"
+        app:icon="@drawable/ic_sync"
+        app:iconSize="26dp" />
+
+    <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.IconButton.Filled"
         android:id="@+id/bookmark"
-        app:layout_constraintLeft_toRightOf="@id/play"
+        app:layout_constraintLeft_toRightOf="@id/tracking"
         app:layout_constraintTop_toTopOf="@id/play"
         app:layout_constraintBottom_toBottomOf="@id/play"
         app:icon="@drawable/ic_bookmark_filled"

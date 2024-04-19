@@ -138,6 +138,7 @@ inline fun <reified T> Response.parseAs(): T {
 }
 
 context(Json)
+@OptIn(ExperimentalSerializationApi::class)
 fun <T> decodeFromJsonResponse(
     deserializer: DeserializationStrategy<T>,
     response: Response,

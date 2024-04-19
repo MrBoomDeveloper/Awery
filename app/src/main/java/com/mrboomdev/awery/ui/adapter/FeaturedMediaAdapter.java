@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
+import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -41,10 +41,10 @@ import java9.util.stream.Collectors;
 
 public class FeaturedMediaAdapter extends SingleViewAdapter {
 	private final List<CatalogMedia> items = new ArrayList<>();
-	private LayoutHeaderBinding header;
+	private LayoutHeaderMainBinding header;
 	private final PagerAdapter adapter = new PagerAdapter();
 
-	public LayoutHeaderBinding getHeader() {
+	public LayoutHeaderMainBinding getHeader() {
 		return header;
 	}
 

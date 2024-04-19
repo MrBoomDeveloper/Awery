@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <include android:id="@+id/header"
-            layout="@layout/layout_header" />
+            layout="@layout/layout_header_main" />
 
     </LinearLayout>
 

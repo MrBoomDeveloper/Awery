@@ -123,7 +123,6 @@
     <string name="ui">사용자 인터페이스</string>
     <string name="common">공통</string>
     <string name="theme">테마</string>
-    <string name="ui_settings">UI 설정</string>
     <string name="about">정보</string>
     <string name="devs">개발자</string>
     <string name="disclaimer">면책 조항</string>
@@ -189,9 +188,6 @@
 
     <string name="startUpTab">기본 시작 탭</string>
     <string name="animations">애니메이션</string>
-    <string name="banner_animations">배너 애니메이션</string>
-    <string name="layout_animations">레이아웃 애니메이션</string>
-    <string name="animation_speed">전체 속도</string>
     <string name="restart_app">앱을 다시 시작하시겠습니까?</string>
     <string name="next">다음</string>
     <string name="previous">이전</string>
@@ -244,7 +240,6 @@
     <string name="previous_season">이전 시즌</string>
     <string name="include_media_in_list">목록에 미디어 포함</string>
     <string name="release_calendar">릴리스 달력</string>
-    <string name="image_long_clicking">이미지를 롱 클릭하여 열기</string>
     <string name="always_continue_shows">항상 쇼 계속하기</string>
     <string name="check_app_updates">앱 업데이트 항상 확인</string>
     <string name="author">저자</string>
@@ -255,30 +250,21 @@
     <string name="crop_borders">테두리 자르기</string>
     
     <string name="error_loading_data">데이터 로드 오류 %1$s</string>
-    <string name="long_click_to_check_update">앱 업데이트를 확인하려면 버튼을 길게 누르세요</string>
     <string name="saved_to_path">저장 위치:\n%s</string>
     <string name="setting_progress">진행률을 %1$d(으)로 설정</string>
-    <string name="login_anilist_account">Anilist 계정에 로그인하세요!</string>
-    <string name="please_reload">다시 로드하세요.</string>
-    <string name="copied_text">복사됨 "%1$s"</string>
     <string name="back_to_exit">종료하려면 다시 뒤로 누르세요</string>
     <string name="no_internet_connection">인터넷에 연결되지 않음</string>
     <string name="disabled_auto_skip">자동으로 OP 및 ED 스킵 비활성화됨</string>
     <string name="auto_skip">자동으로 OP 및 ED 스킵</string>
     <string name="copied_to_clipboard">클립보드에 복사됨</string>
     <string name="first_episode">이것은 첫 번째 에피소드입니다!</string>
-    <string name="reset_auto_update">자동 업데이트를 재설정하려면 목록 편집기 버튼을 길게 누르세요</string>
-    <string name="autoplay_cancelled">자동 재생이 취소되었습니다. 1시간 이상 상호 작용 없음.</string>
     <string name="auto_select_server_error">서버 자동 선택 실패, 다시 시도하세요!</string>
     <string name="no_next_episode">다음 에피소드를 찾을 수 없습니다!</string>
-    <string name="auto_update_reset">자동 업데이트 진행률이 재설정되었습니다</string>
     <string name="downloading">다운로드 중…</string>
     <string name="next_chapter_not_found">다음 챕터를 찾을 수 없음</string>
-    <string name="first_chapter">이것은 첫 번째 챕터입니다!</string>
     <string name="episode_not_found">에피소드를 찾을 수 없음: %1$s</string>
     <string name="list_updated">목록이 업데이트되었습니다</string>
     <string name="deleted_from_list">목록에서 삭제됨</string>
-    <string name="no_list_id">목록 ID를 찾을 수 없음, 다시 로드 중…</string>
     <string name="checking_for_update">업데이트 확인 중</string>
     <string name="dont_show_again">%1$s 버전에 대해 다시 표시하지 마세요</string>
     <string name="no_update_found">업데이트 없음</string>
@@ -317,10 +303,7 @@
     <string name="episode">에피소드</string>
     <string name="episodes">에피소드</string>
     <string name="duration">기간</string>
-    
-    <string name="episode_num">"에피소드 %1$s"</string>
-    <string name="chapter">"챕터 "</string>
-    <string name="chapter_num">"챕터 %1$s"</string>
+
     <string name="just_released">- 방금 출시됨!</string>
     <string name="checking_subscriptions_title">구독 확인 중</string>
     
@@ -336,7 +319,7 @@
     <string name="outline_type">외곽선 유형</string>
     <string name="subtitle_font">자막 글꼴</string>
     
-    <string name="not_implemeted">기능이 구현되지 않았습니다!</string>
+    <string name="not_implemented">기능이 구현되지 않았습니다!</string>
     <string name="timed_out">연결 시간 초과!</string>
     <string name="failed_handshake">서버에 연결하지 못했습니다!</string>
     <string name="access_denied">액세스 거부됨!</string>
@@ -351,7 +334,6 @@
     <string name="no">아니오</string>
     <string name="close">닫기</string>
     <string name="no_chapter">챕터 없음</string>
-    <string name="content_18">Anilist 설정에서 18+ 콘텐츠를 켜세요</string>
     <string name="available">사용 가능</string>
     <string name="lets_go">출발하기</string>
     
@@ -364,9 +346,9 @@
     <string name="selected">선택됨</string>
     <string name="found">발견됨</string>
     
-    <string name="age">"__나이:__ "</string>
-    <string name="birthday">\n"__생년월일:__ "</string>
-    <string name="gender">\n"__성별:__ "</string>"
+    <string name="age">나이</string>
+    <string name="birthday">생년월일</string>
+    <string name="gender">성별</string>
     
     <string name="male">남성</string>
     <string name="female">여성</string>
@@ -378,10 +360,7 @@
     <string name="episode_singular">에피소드</string>
     <string name="chapter_singular">챕터</string>
     <string name="chapter_plural">챕터</string>
-    
-    <string name="filter_format">"형식 : %1$s"</string>
-    <string name="filter_sort">"정렬 : %1$s"</string>
-    <string name="filter_exclude">"%1$s 제외"</string>
+
     <string name="search_by_image">이미지로 검색</string>
     <string name="similarity_text">유사도: %1$s %%</string>
     <string name="time_range">%1$s에서 %2$s까지</string>

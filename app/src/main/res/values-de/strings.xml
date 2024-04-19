@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="de">
-    <string name="app_name" translatable="false">Awery</string>
 
     <string name="empty_library_title">Bibliothek ist leer</string>
     <string name="empty_library_message">Beginnen Sie mit dem Durchsuchen des Katalogs, und neue Dinge werden hier erscheinen!</string>
@@ -123,7 +122,6 @@
     <string name="ui">Benutzeroberfläche</string>
     <string name="common">Allgemein</string>
     <string name="theme">Thema</string>
-    <string name="ui_settings">UI-Einstellungen</string>
     <string name="about">Über</string>
     <string name="devs">Entwickler</string>
     <string name="disclaimer">Haftungsausschluss</string>
@@ -189,9 +187,6 @@
 
     <string name="startUpTab">Standard-Starttab</string>
     <string name="animations">Animationen</string>
-    <string name="banner_animations">Banner-Animationen</string>
-    <string name="layout_animations">Layout-Animationen</string>
-    <string name="animation_speed">Gesamtgeschwindigkeit</string>
     <string name="restart_app">App neu starten?</string>
     <string name="next">Weiter</string>
     <string name="previous">Zurück</string>
@@ -244,7 +239,6 @@
     <string name="previous_season">Vorherige Staffel</string>
     <string name="include_media_in_list">Medium einschließen</string>
     <string name="release_calendar">Kalender</string>
-    <string name="image_long_clicking">Öffnen Sie das Bild durch längeres Drücken</string>
     <string name="always_continue_shows">Immer Shows fortsetzen</string>
     <string name="check_app_updates">Immer nach App-Updates suchen</string>
     <string name="author">Autor</string>
@@ -255,30 +249,21 @@
     <string name="crop_borders">Ränder zuschneiden</string>
 
     <string name="error_loading_data">Fehler beim Laden der Daten %1$s</string>
-    <string name="long_click_to_check_update">Lange Klicken Sie auf die Schaltfläche, um nach App-Updates zu suchen</string>
     <string name="saved_to_path">Gespeichert in:\n%s</string>
     <string name="setting_progress">Fortschritt auf %1$d setzen</string>
-    <string name="login_anilist_account">Bitte melden Sie sich bei Ihrem Anilist-Konto an!</string>
-    <string name="please_reload">Bitte neu laden.</string>
-    <string name="copied_text">"%1$s" kopiert</string>
     <string name="back_to_exit">Bitte führen Sie erneut "Zurück" aus, um zu beenden</string>
     <string name="no_internet_connection">Keine Internetverbindung</string>
     <string name="disabled_auto_skip">Automatisches Überspringen von OP &amp; ED deaktiviert</string>
     <string name="auto_skip">Automatisches Überspringen von OP &amp; ED</string>
     <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
     <string name="first_episode">Dies ist die 1. Episode!</string>
-    <string name="reset_auto_update">Sie können lange auf die Schaltfläche "Listeneditor" klicken, um den Auto-Update zurückzusetzen</string>
-    <string name="autoplay_cancelled">Autoplay abgebrochen, keine Interaktion für mehr als 1 Stunde.</string>
     <string name="auto_select_server_error">Server konnte nicht automatisch ausgewählt werden. Bitte versuchen Sie es erneut!</string>
     <string name="no_next_episode">Keine nächste Episode gefunden!</string>
-    <string name="auto_update_reset">Der Auto-Update-Fortschritt wurde zurückgesetzt</string>
     <string name="downloading">Herunterladen…</string>
     <string name="next_chapter_not_found">Nächstes Kapitel nicht gefunden</string>
-    <string name="first_chapter">Dies ist das 1. Kapitel!</string>
     <string name="episode_not_found">Episode konnte nicht gefunden werden: %1$s</string>
     <string name="list_updated">Liste aktualisiert</string>
     <string name="deleted_from_list">Aus Liste entfernt</string>
-    <string name="no_list_id">Keine Listen-ID gefunden, wird neu geladen…</string>
     <string name="checking_for_update">Nach Update wird gesucht</string>
     <string name="dont_show_again">Für Version %1$s nicht erneut anzeigen</string>
     <string name="no_update_found">Kein Update gefunden</string>
@@ -317,10 +302,7 @@
     <string name="episode">Episode</string>
     <string name="episodes">Episoden</string>
     <string name="duration">Dauer</string>
-    
-    <string name="episode_num">"Episode %1$s"</string>
-    <string name="chapter">"Kapitel "</string>
-    <string name="chapter_num">"Kapitel %1$s"</string>
+
     <string name="just_released">- gerade veröffentlicht!</string>
     <string name="checking_subscriptions_title">Abonnements werden überprüft</string>
     
@@ -336,7 +318,7 @@
     <string name="outline_type">Umrandungstyp</string>
     <string name="subtitle_font">Untertitelschriftart</string>
     
-    <string name="not_implemeted">Funktion nicht implementiert!</string>
+    <string name="not_implemented">Funktion nicht implementiert!</string>
     <string name="timed_out">Verbindungstimeout!</string>
     <string name="failed_handshake">Verbindung zum Server fehlgeschlagen!</string>
     <string name="access_denied">Zugriff verweigert!</string>
@@ -351,9 +333,8 @@
     <string name="no">Nein</string>
     <string name="close">Schließen</string>
     <string name="no_chapter">Kein Kapitel</string>
-    <string name="content_18">Aktivieren Sie Inhalte ab 18 Jahren in Ihren Anilist-Einstellungen</string>
     <string name="available">Verfügbar</string>
-    <string name="lets_go">Los geht's</string>
+    <string name="lets_go">Los geht\'s</string>
     
     <string name="watched_num">"Angesehen "</string>
     <string name="read_num">"Gelesen "</string>
@@ -364,9 +345,9 @@
     <string name="selected">Ausgewählt</string>
     <string name="found">Gefunden</string>
     
-    <string name="age">"__Alter:__ "</string>
-    <string name="birthday">\n"__Geburtstag:__ "</string>
-    <string name="gender">\n"__Geschlecht:__ "</string>"
+    <string name="age">Alter</string>
+    <string name="birthday">Geburtstag</string>
+    <string name="gender">Geschlecht</string>
     
     <string name="male">Männlich</string>
     <string name="female">Weiblich</string>
@@ -378,10 +359,7 @@
     <string name="episode_singular">Episode</string>
     <string name="chapter_singular">Kapitel</string>
     <string name="chapter_plural">Kapitel</string>
-    
-    <string name="filter_format">"Format: %1$s"</string>
-    <string name="filter_sort">"Sortieren nach: %1$s"</string>
-    <string name="filter_exclude">"Nicht %1$s"</string>
+
     <string name="search_by_image">Nach Bild suchen</string>
     <string name="similarity_text">Ähnlichkeit: %1$s %%</string>
     <string name="time_range">Von %1$s bis %2$s</string>

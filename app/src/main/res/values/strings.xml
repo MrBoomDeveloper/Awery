@@ -40,6 +40,9 @@
     <string name="no_episodes_found">No episodes were found. Try changing your query and filters.</string>
     <string name="no_extensions_found">No extensions were found. Try changing your query and filters.</string>
     <string name="no_comment_extensions">You have no installed comment extensions. Download them to see something new here!</string>
+    <string name="no_tracker_extensions">You have no installed tracker extensions. Download them to see something new here!</string>
+    <string name="no_relations_extensions">You have no installed relations extensions. Download them to see something new here!</string>
+    <string name="no_subtitles_extensions">You have no installed subtitle extensions. Download them to see something new here!</string>
 
     <string name="material_you_description">The app\'s colors will be generated based on your wallpaper</string>
     <string name="default_tab_description">Will be opened when the app starts</string>
@@ -122,7 +125,6 @@
     <string name="ui">User Interface</string>
     <string name="common">Common</string>
     <string name="theme">Theme</string>
-    <string name="ui_settings">UI Settings</string>
     <string name="about">About</string>
     <string name="devs">Developers</string>
     <string name="disclaimer">Disclaimer</string>
@@ -164,7 +166,7 @@
     <string name="ask_update_progress_anime">Ask for each Media \"Individually\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">The percentage at which your Anilist progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
+    <string name="watch_complete_percentage_info">The percentage at which your progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
 
     <string name="behaviour">Behaviour</string>
     <string name="always_continue">Always Continue from where you left off</string>
@@ -188,9 +190,6 @@
 
     <string name="startUpTab">Default Start Up Tab</string>
     <string name="animations">Animations</string>
-    <string name="banner_animations">Banner Animations</string>
-    <string name="layout_animations">Layout Animations</string>
-    <string name="animation_speed">Overall Speed</string>
     <string name="restart_app">Restart the app?</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
@@ -243,9 +242,8 @@
     <string name="previous_season">Previous Season</string>
     <string name="include_media_in_list">Include List</string>
     <string name="release_calendar">Calendar</string>
-    <string name="image_long_clicking">Open image by Long Clicking</string>
     <string name="always_continue_shows">Always continue Shows</string>
-    <string name="check_app_updates">Always check for App Updates</string>
+    <string name="check_app_updates">Auto check for App Updates</string>
     <string name="author">Author</string>
     <string name="account">Account</string>
     <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
@@ -254,30 +252,21 @@
     <string name="crop_borders">Crop Borders</string>
 
     <string name="error_loading_data">Error loading data %1$s</string>
-    <string name="long_click_to_check_update">You Long Click the button to check for App Update</string>
     <string name="saved_to_path">Saved to:\n%s</string>
     <string name="setting_progress">Setting progress to %1$d</string>
-    <string name="login_anilist_account">Please Login into anilist account!</string>
-    <string name="please_reload">Please Reload.</string>
-    <string name="copied_text">Copied "%1$s"</string>
     <string name="back_to_exit">Please perform back again to Exit</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="disabled_auto_skip">Disabled Auto Skipping OP &amp; ED</string>
     <string name="auto_skip">Auto Skipping OP &amp; ED</string>
     <string name="copied_to_clipboard">Copied to Clipboard</string>
     <string name="first_episode">This is the 1st Episode!</string>
-    <string name="reset_auto_update">You can long click List Editor button to Reset Auto Update</string>
-    <string name="autoplay_cancelled">Autoplay cancelled, no Interaction for more than 1 Hour.</string>
     <string name="auto_select_server_error">Couldn\'t auto select the server, Please try again!</string>
     <string name="no_next_episode">No next Episode Found!</string>
-    <string name="auto_update_reset">Auto Update Progress has now been Reset-ed</string>
     <string name="downloading">Downloading…</string>
     <string name="next_chapter_not_found">Next Chapter Not Found</string>
-    <string name="first_chapter">This is the 1st Chapter!</string>
     <string name="episode_not_found">Couldn\'t find episode : %1$s</string>
     <string name="list_updated">List Updated</string>
     <string name="deleted_from_list">Deleted from List</string>
-    <string name="no_list_id">No List ID found, reloading…</string>
     <string name="checking_for_update">Checking for Update</string>
     <string name="dont_show_again">Don\'t show again for version %1$s</string>
     <string name="no_update_found">No Update Found</string>
@@ -317,9 +306,6 @@
     <string name="episodes">Episodes</string>
     <string name="duration">Duration</string>
 
-    <string name="episode_num">"Episode %1$s"</string>
-    <string name="chapter">"Chapter "</string>
-    <string name="chapter_num">"Chapter %1$s"</string>
     <string name="just_released">- just got released!</string>
     <string name="checking_subscriptions_title">Checking Subscriptions</string>
 
@@ -335,7 +321,7 @@
     <string name="outline_type">Outline Type</string>
     <string name="subtitle_font">Subtitle Font</string>
 
-    <string name="not_implemeted">Feature not implemented!</string>
+    <string name="not_implemented">Feature not implemented!</string>
     <string name="timed_out">Connection timed out!</string>
     <string name="failed_handshake">Failed to connect to the server!</string>
     <string name="access_denied">Access denied!</string>
@@ -348,9 +334,9 @@
     <string name="content">Content</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="confirm">Confirm</string>
     <string name="close">Close</string>
     <string name="no_chapter">No Chapter</string>
-    <string name="content_18">Turn on 18+ Content from your Anilist Settings</string>
     <string name="available">Available</string>
     <string name="lets_go">Let\'s Go</string>
 
@@ -363,24 +349,21 @@
     <string name="selected">Selected</string>
     <string name="found">Found</string>
 
-    <string name="age">"__Age:__ "</string>
-    <string name="birthday">\n"__Birthday:__ "</string>
-    <string name="gender">\n"__Gender:__ "</string>"
+    <string name="age">Age</string>
+    <string name="birthday">Birthday</string>
+    <string name="gender">Gender</string>
 
     <string name="male">Male</string>
     <string name="female">Female</string>
 
     <string name="subscribed_notification">Subscribed! Receiving notifications, when new episodes are released on %1$s.</string>
-
     <string name="unsubscribed_notification">Unsubscribed, you will not receive any notifications.</string>
+
     <string name="episode_plural">Episodes</string>
     <string name="episode_singular">Episode</string>
     <string name="chapter_singular">Chapter</string>
     <string name="chapter_plural">Chapters</string>
 
-    <string name="filter_format">"Format : %1$s"</string>
-    <string name="filter_sort">"Sort : %1$s"</string>
-    <string name="filter_exclude">"Not %1$s"</string>
     <string name="search_by_image">Search by Image</string>
     <string name="similarity_text">Similarity: %1$s %%</string>
     <string name="time_range">From %1$s to %2$s</string>

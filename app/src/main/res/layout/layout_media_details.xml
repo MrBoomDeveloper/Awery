@@ -35,7 +35,7 @@
         android:id="@+id/play"
         app:layout_constraintTop_toBottomOf="@id/general_meta"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/bookmark"
+        app:layout_constraintRight_toLeftOf="@id/tracking"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -46,13 +46,28 @@
         app:iconSize="26dp" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/tracking"
+        app:layout_constraintTop_toBottomOf="@id/general_meta"
+        app:layout_constraintRight_toLeftOf="@id/bookmark"
+        app:layout_constraintLeft_toRightOf="@id/play"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Tracking"
+        android:paddingRight="32dp"
+        android:layout_marginLeft="2dp"
+        app:icon="@drawable/ic_sync"
+        app:iconSize="26dp" />
+
+    <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.IconButton.Filled"
         android:id="@+id/bookmark"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/play"
-        app:layout_constraintBottom_toBottomOf="@id/play"
+        app:layout_constraintBottom_toBottomOf="@id/tracking"
         app:icon="@drawable/ic_bookmark_filled"
         app:iconSize="26dp"
+        android:layout_marginLeft="8dp"
         android:layout_width="wrap_content"
         android:layout_height="0dp" />
 

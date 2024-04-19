@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 
-import com.mrboomdev.awery.databinding.LayoutHeaderBinding;
+import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
 import com.mrboomdev.awery.ui.activity.MainActivity;
@@ -22,7 +22,7 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 public class MediaCatalogListsFragment extends Fragment {
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> emptyAdapter;
-	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> headerAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderMainBinding> headerAdapter;
 	private final ConcatAdapter concatAdapter;
 	private MediaCatalogFragmentBinding binding;
 	private MainActivity mainActivity;
@@ -43,7 +43,7 @@ public class MediaCatalogListsFragment extends Fragment {
 		return this;
 	}
 
-	public void setupHeader(@NonNull LayoutHeaderBinding header) {
+	public void setupHeader(@NonNull LayoutHeaderMainBinding header) {
 		if(header.tabsBar != null) {
 			header.tabsBar.selectTab(index, false);
 
@@ -77,7 +77,7 @@ public class MediaCatalogListsFragment extends Fragment {
 		return emptyAdapter;
 	}
 
-	public SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderBinding> getHeaderAdapter() {
+	public SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderMainBinding> getHeaderAdapter() {
 		return headerAdapter;
 	}
 
@@ -115,7 +115,7 @@ public class MediaCatalogListsFragment extends Fragment {
 		binding.catalogCategories.setHasFixedSize(true);
 		binding.catalogCategories.setAdapter(concatAdapter);
 
-		var headerBinding = LayoutHeaderBinding.inflate(inflater, container, false);
+		var headerBinding = LayoutHeaderMainBinding.inflate(inflater, container, false);
 		setupHeader(headerBinding);
 
 		ViewUtil.setPadding(headerBinding.getRoot(), ViewUtil.dpPx(16));
