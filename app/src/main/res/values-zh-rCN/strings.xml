@@ -339,4 +339,8 @@
     <string name="user_agent">用户代理</string>
     <string name="nothing_found">未找到任何内容</string>
     <string name="tried_all_titles">已尝试所有媒体标题，未找到！</string>
+    <string name="no_subtitles_extensions">你还没有安装字幕扩展。下载它们以在这里看到新内容！</string>
+    <string name="no_tracker_extensions">你没有安装跟踪扩展。下载它们以查看此处的新内容！</string>
+    <string name="no_relations_extensions">你没有安装关系扩展。下载它们以查看此处的新内容！</string>
+    <string name="confirm">确认</string>
 </resources>
