@@ -142,11 +142,11 @@
     <string name="auto_skip_fillers">Автоматически пропускать Филлеры</string>
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
     <string name="update_progress">Обновить Прогресс</string>
-    <string name="ask_update_progress_anime">Ask for each Anime \"Individually\"</string>
+    <string name="ask_update_progress_anime">Спрашивать для каждого Медиа \"Индивидуально\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">"The percentage at which your Anilist progress should be updated after watching an episode.
-\nThis also sets the  for when to preload links for the next episode."</string>
+    <string name="watch_complete_percentage_info">Процент, с которым должен обновляться ваш прогресс после просмотра эпизода.
+\nЭто также устанавливает время предварительной загрузки ссылок для следующего эпизода.</string>
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с момента где остановились</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
@@ -219,7 +219,7 @@
     <string name="include_media_in_list">Включить Список</string>
     <string name="release_calendar">Календарь</string>
     <string name="always_continue_shows">Всегда продолжать Шоу</string>
-    <string name="check_app_updates">Всегда Проверять Обновления</string>
+    <string name="check_app_updates">Автоматически Проверять Обновления</string>
     <string name="author">Автор</string>
     <string name="account">Аккаунт</string>
     <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters
@@ -260,7 +260,7 @@
     <string name="supporting_role">Поддержка</string>
     <string name="status_finished">Завершено</string>
     <string name="status_releasing">Выходит</string>
-    <string name="status_not_yet_released">ЕЩЕ НЕ ВЫШЛО</string>
+    <string name="status_not_yet_released">Еще не вышло</string>
     <string name="status_cancelled">Отменено</string>
     <string name="status_hiatus">Отложено</string>
     <string name="type_adaptation">Адаптация</string>
