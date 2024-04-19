@@ -337,4 +337,8 @@
     <string name="user_agent">Agente de usuario</string>
     <string name="nothing_found">Nada encontrado</string>
     <string name="tried_all_titles">Probaste todos los títulos de medios, ¡no se encontró nada!</string>
+    <string name="no_relations_extensions">No tienes extensiones de relaciones instaladas. ¡Descárgalas para ver algo nuevo aquí!</string>
+    <string name="no_tracker_extensions">No tienes extensiones de seguimiento instaladas. ¡Descárgalas para ver algo nuevo aquí!</string>
+    <string name="no_subtitles_extensions">No tienes extensiones de subtítulos instaladas. ¡Descárgalas para ver algo nuevo aquí!</string>
+    <string name="confirm">Confirmar</string>
 </resources>
