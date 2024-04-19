@@ -29,7 +29,7 @@ public class CatalogMediaProgress {
 	@ColumnInfo(name = "last_relations_source")
 	public String lastRelationsSource;
 	public List<String> lists = new ArrayList<>();
-	public Map<String, String> trackers = new HashMap<>();
+	public List<String> trackers = new ArrayList<>();
 	public Map<Float, Long> progresses = new HashMap<>();
 
 	@NonNull

@@ -13,6 +13,7 @@ import android.util.Log;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
@@ -25,12 +26,14 @@ import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.exceptions.JsException;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
@@ -81,12 +84,13 @@ public class JsProvider extends ExtensionProvider {
 		}
 	}
 
-	protected void finishInit(JsBridge bridge, @NonNull ScriptableObject obj) {
+	protected void finishInit(JsBridge bridge, @NonNull NativeObject obj) {
 		var features = new ArrayList<Integer>();
 
-		this.name = (String) obj.get("title");
-		this.id = (String) obj.get("id");
-		this.version = (String) obj.get("version");
+		this.id = obj.get("id").toString();
+		this.name = obj.has("title", obj) ? obj.get("title").toString() : id;
+
+		this.version = obj.get("version").toString();
 
 		if(id == null) {
 			throw new NullPointerException("id is null!");
@@ -324,6 +328,32 @@ public class JsProvider extends ExtensionProvider {
 		callback.onSuccess(root);
 	}
 
+	@Override
+	public void trackMedia(
+			CatalogMedia media,
+			@Nullable CatalogTrackingOptions options,
+			@NonNull ResponseCallback<CatalogTrackingOptions> callback
+	) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryTrackMedia") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[]{ media, options, (Callback<NativeObject>) (o, e) -> {
+						if(e != null) {
+							callback.onFailure(new JsException(e));
+							return;
+						}
+
+						callback.onFailure(new UnimplementedException("TODO"));
+					}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new NullPointerException("aweryTrackMedia is not a function or isn't defined!"));
+			}
+		});
+	}
+
 	private void login(Map<String, String> params, @NonNull ResponseCallback<Boolean> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLogin") instanceof Function fun) {
@@ -430,7 +460,7 @@ public class JsProvider extends ExtensionProvider {
 	@Override
 	public void searchMedia(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
 		manager.postRunnable(() -> {
-			if(scope.get("awerySearch") instanceof Function fun) {
+			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
 					fun.call(context, scope, null, new Object[] { filter, (Callback<List<ScriptableObject>>) (o, e) -> {
 						if(e != null) {
@@ -459,7 +489,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("awerySearch is not a function or isn't defined!"));
+				callback.onFailure(new NullPointerException("awerySearchMedia is not a function or isn't defined!"));
 			}
 		});
 	}

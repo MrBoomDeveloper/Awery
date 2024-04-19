@@ -13,18 +13,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomArrayAdapter<T> extends BaseAdapter implements Filterable {
+public class ArrayListAdapter<T> extends BaseAdapter implements Filterable {
 	private final OnCreateView<T> onCreate;
 	private final Object lock = new Object();
 	private CustomFilter filter;
 	private List<T> items, filteredItems;
 
-	public CustomArrayAdapter(Collection<T> items, OnCreateView<T> onCreate) {
+	public ArrayListAdapter(Collection<T> items, OnCreateView<T> onCreate) {
 		this.onCreate = onCreate;
 		this.items = new ArrayList<>(items);
 	}
 
-	public CustomArrayAdapter(OnCreateView<T> onCreate) {
+	public ArrayListAdapter(OnCreateView<T> onCreate) {
 		this(new ArrayList<>(), onCreate);
 	}
 

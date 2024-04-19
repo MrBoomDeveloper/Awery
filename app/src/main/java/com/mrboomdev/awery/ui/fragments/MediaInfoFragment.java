@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -17,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,12 +31,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -41,10 +46,13 @@ import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MediaInfoFragment extends Fragment {
 	private static final String TAG = "MediaInfoFragment";
@@ -204,12 +212,48 @@ public class MediaInfoFragment extends Fragment {
 	}
 
 	private void openTrackingDialog() {
+		var mappedIds = new HashMap<String, ExtensionProvider>();
+
+		var progress = new AtomicReference<CatalogMediaProgress>();
 		var inflater = LayoutInflater.from(requireContext());
 
 		var binding = LayoutTrackingOptionsBinding.inflate(inflater, null, false);
-		binding.source.input.setText("Select a source", false);
+		binding.source.input.setText("Select a tracker", false);
 		binding.title.input.setText("Select a title", false);
 
+		var adapter = new ArrayListAdapter<String>((id, recycled, parent) -> {
+			var item = mappedIds.get(id);
+
+			if(item == null) {
+				throw new IllegalStateException("Invalid provider id: " + id);
+			}
+
+			if(recycled == null) {
+				var itemBinding = ItemListDropdownBinding.inflate(inflater, parent, false);
+				recycled = itemBinding.getRoot();
+			}
+
+			TextView title = recycled.findViewById(R.id.title);
+			ImageView icon = recycled.findViewById(R.id.icon);
+
+			title.setText(item.getName());
+
+			return recycled;
+		});
+
+		binding.source.input.setOnItemClickListener((parent, view, position, id) -> {
+			var itemId = adapter.getItem(position);
+			var item = mappedIds.get(itemId);
+
+			if(item == null) {
+				throw new IllegalStateException("Invalid provider id: " + itemId);
+			}
+
+			binding.source.input.setText(item.getName(), false);
+			updateTrackingDialogState(binding, null, null);
+		});
+
+		binding.source.input.setAdapter(adapter);
 		updateTrackingDialogState(binding, null, null);
 
 		var sheet = new BottomSheetDialog(requireContext());
@@ -219,17 +263,40 @@ public class MediaInfoFragment extends Fragment {
 
 		new Thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
-			var progress = progressDao.get(media.globalId);
+			progress.set(progressDao.get(media.globalId));
+
+			if(progress.get() == null) {
+				progress.set(new CatalogMediaProgress(media.globalId));
+				progressDao.insert(progress.get());
+			}
 
 			var availableSources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 					.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_TRACK))
 					.flatMap(AweryApp::stream)
 					.toList();
 
-			if(availableSources.isEmpty()) {
-				updateTrackingDialogState(binding, null,
-						new ZeroResultsException("No trackable sources available", R.string.no_tracker_extensions));
+			for(var provider : availableSources) {
+				mappedIds.put(provider.getId(), provider);
 			}
+
+			runOnUiThread(() -> {
+				if(availableSources.isEmpty()) {
+					updateTrackingDialogState(binding, null,
+							new ZeroResultsException("No trackable sources available", R.string.no_tracker_extensions));
+				} else {
+					var foundTracked = stream(availableSources)
+							.filter(provider -> progress.get().trackers.contains(provider.getId()))
+							.findFirst();
+
+					var defaultTracked = foundTracked.isPresent()
+							? foundTracked.get() : availableSources.get(0);
+
+					binding.source.input.setText(defaultTracked.getName(), false);
+					//TODO: Load animes list for titles
+				}
+
+				adapter.setItems(mappedIds.keySet());
+			});
 		}).start();
 	}
 

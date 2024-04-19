@@ -173,7 +173,7 @@ public class StringUtil {
 	 */
 	@NonNull
 	public static @Unmodifiable List<String> uniqueStringToList(@NonNull String uniqueString) {
-		if(uniqueString.equals(";;;")) return Collections.emptyList();
+		if(uniqueString.length() <= 3) return Collections.emptyList();
 		return List.of(uniqueString.substring(3, uniqueString.length() - 3).split(";;;"));
 	}
 

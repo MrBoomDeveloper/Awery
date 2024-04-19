@@ -46,7 +46,7 @@ public class JsBridge {
 	 * Must be called right after script was parsed!
 	 * @author MrBoomDev
 	 */
-	public void setManifest(ScriptableObject object) {
+	public void setManifest(NativeObject object) {
 		provider.finishInit(this, object);
 	}
 

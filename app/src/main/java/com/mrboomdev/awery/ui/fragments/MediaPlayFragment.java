@@ -41,7 +41,7 @@ import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.adapter.CustomArrayAdapter;
+import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.io.IOException;
@@ -190,7 +190,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.flatMap(AweryApp::stream)
 				.sorted().toList();
 
-		var sourcesDropdownAdapter = new CustomArrayAdapter<>(providers, this::bindDropdownItem);
+		var sourcesDropdownAdapter = new ArrayListAdapter<>(providers, this::bindDropdownItem);
 
 		variantsAdapter.getBinding((binding) -> {
 			binding.sourceDropdown.setAdapter(sourcesDropdownAdapter);
