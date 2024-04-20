@@ -360,4 +360,18 @@
     <string name="add_extension">Add Extension</string>
     <string name="pick_from_storage">Pick from storage</string>
     <string name="repository_url">Repository URL</string>
+    <string name="sure_delete_list_description">Are you sure you want to delete this list?</string>
+    <string name="you_reached_end">You\'ve reached the end</string>
+    <string name="you_reached_end_description">No more results was found. If you didn\'t found what wanted, then try changing the query and filters.</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="tracking">Tracking</string>
+    <string name="read_more">Read more</string>
+    <string name="read_less">Read less</string>
+    <string name="enter_text">Enter text</string>
+    <string name="enter_number">Enter a number</string>
+    <string name="video_quality">Video Quality</string>
+    <string name="aspect_ratio">Aspect Ratio</string>
+    <string name="fit">Fit</string>
+    <string name="fill">Fill</string>
+    <string name="zoom">Zoom</string>
 </resources>
