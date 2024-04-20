@@ -381,4 +381,6 @@
     <string name="add_extension">Добавить Расширение</string>
     <string name="pick_from_storage">Выбрать из хранилища</string>
     <string name="repository_url">Ссылка на репозиторий</string>
+    <string name="ok">Ок</string>
+    <string name="nsfw_content">Контент для Взрослиых</string>
 </resources>
