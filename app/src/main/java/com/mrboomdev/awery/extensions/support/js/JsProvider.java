@@ -25,17 +25,21 @@ import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
@@ -201,9 +205,7 @@ public class JsProvider extends ExtensionProvider {
 				@Override
 				public void onFailure(Throwable e) {
 					isLoggedIn.set(false);
-
 					Log.e(TAG, "Failed to check if user is logged in", e);
-					toast("Failed to check if user is logged in");
 				}
 			});
 
@@ -458,11 +460,16 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void searchMedia(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
+	@SuppressWarnings("unchecked")
+	public void searchMedia(
+			android.content.Context context,
+			CatalogFilter filter,
+			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
+	) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { filter, (Callback<List<ScriptableObject>>) (o, e) -> {
+					fun.call(this.context, scope, null, new Object[] { filter, (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -470,20 +477,106 @@ public class JsProvider extends ExtensionProvider {
 
 						var results = new ArrayList<CatalogMedia>();
 
-						for(var item : o) {
-							var result = new CatalogMedia(manager.getId(), id, (String) item.get("id"));
+						for(var arrayItem : (NativeArray) o.get("items", o)) {
+							var item = (NativeObject) arrayItem;
+
+							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
 							result.banner = item.has("banner", item) ? item.get("banner").toString() : null;
 							result.country = item.has("country", item) ? item.get("country").toString() : null;
-							result.description = item.has("description", item) ? item.get("description").toString() : null;
+							result.ageRating = item.has("ageRating", item) ? item.get("ageRating").toString() : null;
+							result.extra = item.has("extra", item) ? item.get("extra").toString() : null;
 
-							result.setTitles(item.has("titles", item) ? stream(item.get("titles"))
-									.map(Object::toString)
-									.toList() : null);
+							result.description = item.has("description", item) ?
+									item.get("description").toString() : null;
+
+							result.averageScore = item.has("averageScore", item) ?
+									JsBridge.fromJs(item.get("averageScore"), Float.TYPE) : null;
+
+							result.duration = item.has("duration", item) ?
+									JsBridge.fromJs(item.get("duration"), Integer.TYPE) : null;
+
+							result.episodesCount = item.has("episodesCount", item) ?
+									JsBridge.fromJs(item.get("episodesCount"), Integer.TYPE) : null;
+
+							result.latestEpisode = item.has("latestEpisode", item) ?
+									JsBridge.fromJs(item.get("latestEpisode"), Integer.TYPE) : null;
+
+							result.releaseDate = item.has("releaseDate", item) ?
+									ParserAdapter.calendarFromLong(JsBridge.longFromJs(item.get("releaseDate"))) : null;
+
+							if(item.has("poster", item)) {
+								var poster = item.get("poster");
+
+								if(poster instanceof ConsString posterString) {
+									result.setPoster(posterString.toString());
+								} else if(poster instanceof NativeObject posterObject) {
+									result.poster = new CatalogMedia.ImageVersions();
+									if(posterObject.has("extraLarge", posterObject)) result.poster.extraLarge = posterObject.get("extraLarge").toString();
+									if(posterObject.has("large", posterObject)) result.poster.large = posterObject.get("large").toString();
+									if(posterObject.has("medium", posterObject)) result.poster.medium = posterObject.get("medium").toString();
+								}
+							}
+
+							if(item.get("tags", item) instanceof NativeArray array) {
+								result.tags = stream(array)
+										.map(obj -> {
+											var jsTag = (NativeObject) obj;
+
+											var tag = new CatalogTag();
+											tag.setName(jsTag.get("name").toString());
+											return tag;
+										})
+										.toList();
+							}
+
+							if(item.get("genres", item) instanceof NativeArray array) {
+								result.genres = stream(array)
+										.map(Object::toString)
+										.toList();
+							}
+
+							if(item.get("status") instanceof ConsString status) {
+								result.status = switch(status.toString()) {
+									case "cancelled" -> CatalogMedia.MediaStatus.CANCELLED;
+									case "coming_soon" -> CatalogMedia.MediaStatus.COMING_SOON;
+									case "ongoing" -> CatalogMedia.MediaStatus.ONGOING;
+									case "paused" -> CatalogMedia.MediaStatus.PAUSED;
+									case "completed" -> CatalogMedia.MediaStatus.COMPLETED;
+									default -> CatalogMedia.MediaStatus.UNKNOWN;
+								};
+							}
+
+							if(item.get("type") instanceof ConsString type) {
+								result.type = switch(type.toString()) {
+									case "movie" -> CatalogMedia.MediaType.MOVIE;
+									case "book" -> CatalogMedia.MediaType.BOOK;
+									case "tv" -> CatalogMedia.MediaType.TV;
+									case "post" -> CatalogMedia.MediaType.POST;
+									default -> null;
+								};
+							}
+
+							if(item.has("title", item)) {
+								result.setTitle(item.get("title").toString());
+							}
+
+							if(item.get("ids") instanceof NativeObject ids) {
+								for(var entry : ids.entrySet()) {
+									result.setId(entry.getKey().toString(), entry.getValue().toString());
+								}
+							}
+
+							if(item.get("titles") instanceof NativeArray titles) {
+								result.setTitles(stream(titles)
+										.map(Object::toString)
+										.toList());
+							}
 
 							results.add(result);
 						}
 
-						callback.onSuccess(results);
+						callback.onSuccess(CatalogSearchResults.of(
+								results, JsBridge.booleanFromJs(o.get("hasNextPage"))));
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);

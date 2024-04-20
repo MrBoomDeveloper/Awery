@@ -27,6 +27,8 @@
                 android:id="@+id/source_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lines="1"
+                android:ellipsize="end"
                 android:textSize="14sp"
                 android:inputType="none" />
 
@@ -50,6 +52,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
+                android:lines="1"
+                android:ellipsize="end"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -72,6 +76,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
+                android:lines="1"
+                android:ellipsize="end"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -92,6 +98,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
+                android:lines="1"
+                android:ellipsize="end"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>

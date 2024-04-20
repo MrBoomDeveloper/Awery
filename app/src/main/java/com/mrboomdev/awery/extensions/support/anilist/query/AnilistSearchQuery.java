@@ -4,20 +4,19 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
+import com.mrboomdev.awery.extensions.support.anilist.data.AnilistPage;
 import com.mrboomdev.awery.util.StringUtil;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
-public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
+public class AnilistSearchQuery extends AnilistQuery<CatalogSearchResults<CatalogMedia>> {
 	private AnilistMedia.MediaType type;
 	private MediaSort sort;
 	private AnilistMedia.MediaFormat format;
@@ -119,21 +118,12 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 	}
 
 	@Override
-	protected Collection<CatalogMedia> processJson(String json) throws IOException {
-		List<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
+	protected CatalogSearchResults<CatalogMedia> processJson(String json) throws IOException {
+		AnilistPage<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
 
-		return stream(data).map(item -> {
-					var catalogMedia = item.toCatalogMedia();
-
-					var dbMedia = AweryApp.getDatabase()
-							.getMediaDao().get(catalogMedia.globalId);
-
-					/*if(dbMedia != null && dbMedia.lists != null) {
-						catalogMedia.lists = new ArrayList<>(StringUtil.uniqueStringToList(dbMedia.lists));
-					}*/
-
-					return catalogMedia;
-				}).toList();
+		return CatalogSearchResults.of(
+				stream(data.media).map(AnilistMedia::toCatalogMedia).toList(),
+				data.pageInfo.hasNextPage);
 	}
 
 	@Override
@@ -151,6 +141,10 @@ public class AnilistSearchQuery extends AnilistQuery<Collection<CatalogMedia>> {
 						coverImage { extraLarge large color medium }
 						tags { name }
 						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
+					}
+					
+					pageInfo {
+						hasNextPage
 					}
 				}
 			}

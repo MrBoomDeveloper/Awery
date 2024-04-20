@@ -11,6 +11,7 @@ import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
@@ -24,8 +25,9 @@ import java9.util.stream.StreamSupport;
 public class ExtensionsFactory {
 	private static final String TAG = "ExtensionsFactory";
 	private static final List<ExtensionsManager> managers = List.of(
-			new AniyomiManager(), new TachiyomiManager(), new CloudstreamManager(), new JsManager()
-	);
+			new AniyomiManager(), new TachiyomiManager(),
+			new CloudstreamManager(), new MiruManager(),
+			new JsManager());
 
 	public static void init(@NonNull Application context) {
 		YomiHelper.init(context);

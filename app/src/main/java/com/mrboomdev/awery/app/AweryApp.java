@@ -42,6 +42,7 @@ import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.NativeArray;
 
 import java.io.File;
 import java.io.FileWriter;

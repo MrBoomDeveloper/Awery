@@ -2,6 +2,7 @@ package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.app.AweryApp.stream;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
@@ -115,7 +117,11 @@ public class AniyomiProvider extends YomiProvider {
 	}
 
 	@Contract("null, _, _ -> false")
-	private boolean checkSearchResults(AnimesPage page, Throwable t, ResponseCallback<List<? extends CatalogMedia>> callback) {
+	private boolean checkSearchResults(
+			AnimesPage page,
+			Throwable t,
+			ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
+	) {
 		if(t != null) {
 			callback.onFailure(t);
 			return false;
@@ -135,15 +141,19 @@ public class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void searchMedia(CatalogFilter params, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
+	public void searchMedia(
+			Context context,
+			CatalogFilter params,
+			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
+	) {
 		var filter = source.getFilterList();
 
 		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.getPage(), params.getQuery(), filter, (page, t) -> {
 			if(!checkSearchResults(page, t, callback)) return;
 
-			callback.onSuccess(stream(page.getAnimes())
+			callback.onSuccess(CatalogSearchResults.of(stream(page.getAnimes())
 					.map(item -> new AniyomiMedia(this, item))
-					.toList());
+					.toList(), page.getHasNextPage()));
 		})).start();
 	}
 

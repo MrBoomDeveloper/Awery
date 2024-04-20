@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
@@ -31,6 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
@@ -39,8 +41,10 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
@@ -50,8 +54,10 @@ import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MediaInfoFragment extends Fragment {
@@ -127,7 +133,7 @@ public class MediaInfoFragment extends Fragment {
 			binding.details.descriptionTitle.setVisibility(View.GONE);
 		}
 
-		if(media.tags.isEmpty()) {
+		if(media.tags == null || media.tags.isEmpty()) {
 			binding.details.tagsTitle.setVisibility(View.GONE);
 			binding.details.tags.setVisibility(View.GONE);
 		} else {
@@ -213,15 +219,17 @@ public class MediaInfoFragment extends Fragment {
 
 	private void openTrackingDialog() {
 		var mappedIds = new HashMap<String, ExtensionProvider>();
+		var inflater = LayoutInflater.from(requireContext());
 
 		var progress = new AtomicReference<CatalogMediaProgress>();
-		var inflater = LayoutInflater.from(requireContext());
+		var selectedTitle = new AtomicReference<String>();
+		var autoSelectNext = new AtomicBoolean(true);
 
 		var binding = LayoutTrackingOptionsBinding.inflate(inflater, null, false);
 		binding.source.input.setText("Select a tracker", false);
 		binding.title.input.setText("Select a title", false);
 
-		var adapter = new ArrayListAdapter<String>((id, recycled, parent) -> {
+		var sourcesAdapter = new ArrayListAdapter<String>((id, recycled, parent) -> {
 			var item = mappedIds.get(id);
 
 			if(item == null) {
@@ -242,7 +250,9 @@ public class MediaInfoFragment extends Fragment {
 		});
 
 		binding.source.input.setOnItemClickListener((parent, view, position, id) -> {
-			var itemId = adapter.getItem(position);
+			autoSelectNext.set(true);
+
+			var itemId = sourcesAdapter.getItem(position);
 			var item = mappedIds.get(itemId);
 
 			if(item == null) {
@@ -253,13 +263,60 @@ public class MediaInfoFragment extends Fragment {
 			updateTrackingDialogState(binding, null, null);
 		});
 
-		binding.source.input.setAdapter(adapter);
+		var titles = new ArrayList<>(media.titles);
+		var more = "Search manually";
+		titles.add(more);
+
+		var titlesAdapter = new ArrayListAdapter<>(titles, (item, recycled, parent) -> {
+			if(recycled == null) {
+				var itemBinding = ItemListDropdownBinding.inflate(inflater, parent, false);
+				recycled = itemBinding.getRoot();
+			}
+
+			TextView title = recycled.findViewById(R.id.title);
+			title.setText(item);
+
+			return recycled;
+		});
+
+		binding.title.input.setOnItemClickListener((parent, view, position, id) -> {
+			autoSelectNext.set(true);
+
+			var item = titles.get(position);
+			if(item == null) return;
+
+			if(item.equals(more)) {
+				binding.title.input.setText(selectedTitle.get(), false);
+				toast("Currently manual search isn't available :(");
+				//TODO: Launch a SearchActivity
+			} else {
+				selectedTitle.set(item);
+			}
+		});
+
+		binding.source.input.setAdapter(sourcesAdapter);
+		binding.title.input.setAdapter(titlesAdapter);
 		updateTrackingDialogState(binding, null, null);
 
 		var sheet = new BottomSheetDialog(requireContext());
 		sheet.setContentView(binding.getRoot());
 		sheet.show();
 		DialogUtils.fixDialog(sheet);
+
+		var load = (Callbacks.Callback2<ExtensionProvider, String>) (source, title) ->
+				source.searchMedia(requireContext(), null, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
+						toast("loaded");
+						MediaUtils.launchMediaActivity(requireContext(), results.get(0));
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						toast("failed to load items for a tracker");
+						CrashHandler.showErrorDialog(requireContext(), e, false);
+					}
+				});
 
 		new Thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
@@ -292,10 +349,17 @@ public class MediaInfoFragment extends Fragment {
 							? foundTracked.get() : availableSources.get(0);
 
 					binding.source.input.setText(defaultTracked.getName(), false);
-					//TODO: Load animes list for titles
+
+					if(foundTracked.isPresent()) {
+						//TODO: Wait for the data to load
+					} else {
+						var title = titles.get(0);
+						binding.title.input.setText(title, false);
+						load.run(defaultTracked, title);
+					}
 				}
 
-				adapter.setItems(mappedIds.keySet());
+				sourcesAdapter.setItems(mappedIds.keySet());
 			});
 		}).start();
 	}

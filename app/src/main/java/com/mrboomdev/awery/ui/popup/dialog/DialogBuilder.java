@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ScrollView;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -42,16 +43,28 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public DialogBuilder setPositiveButton(String ok, OnButtonClickListener listener) {
+	public DialogBuilder setMessage(@StringRes int res) {
+		return setMessage(context.getString(res));
+	}
+
+	public DialogBuilder setPositiveButton(String label, OnButtonClickListener listener) {
 		this.okListener = listener;
-		this.okButtonLabel = ok;
+		this.okButtonLabel = label;
 		return this;
 	}
 
-	public DialogBuilder setNeutralButton(String neutral, OnButtonClickListener listener) {
+	public DialogBuilder setPositiveButton(@StringRes int label, OnButtonClickListener listener) {
+		return setPositiveButton(context.getString(label), listener);
+	}
+
+	public DialogBuilder setNeutralButton(String label, OnButtonClickListener listener) {
 		this.neutralListener = listener;
-		this.neutralButtonLabel = neutral;
+		this.neutralButtonLabel = label;
 		return this;
+	}
+
+	public DialogBuilder setNeutralButton(@StringRes int label, OnButtonClickListener listener) {
+		return setNeutralButton(context.getString(label), listener);
 	}
 
 	public void performPositiveClick() {
@@ -72,10 +85,14 @@ public class DialogBuilder {
 		}
 	}
 
-	public DialogBuilder setCancelButton(String cancel, OnButtonClickListener listener) {
+	public DialogBuilder setCancelButton(String label, OnButtonClickListener listener) {
 		this.cancelListener = listener;
-		this.cancelButtonLabel = cancel;
+		this.cancelButtonLabel = label;
 		return this;
+	}
+
+	public DialogBuilder setCancelButton(@StringRes int label, OnButtonClickListener listener) {
+		return setCancelButton(context.getString(label), listener);
 	}
 
 	public DialogBuilder setOnDismissListener(Callbacks.Callback1<DialogBuilder> listener) {

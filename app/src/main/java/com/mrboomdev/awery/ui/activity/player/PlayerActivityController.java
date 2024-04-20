@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.annotation.StringRes;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.recyclerview.widget.ConcatAdapter;
@@ -148,9 +149,9 @@ public class PlayerActivityController {
 		enum Mode { FIT, FILL, ZOOM }
 
 		var items = new LinkedHashMap<PopupItem, Mode>() {{
-			put(new PopupItem().setTitle("Fit"), Mode.FIT);
-			put(new PopupItem().setTitle("Fill"), Mode.FILL);
-			put(new PopupItem().setTitle("Zoom"), Mode.ZOOM);
+			put(new PopupItem(R.string.fit), Mode.FIT);
+			put(new PopupItem(R.string.fill), Mode.FILL);
+			put(new PopupItem(R.string.zoom), Mode.ZOOM);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -205,8 +206,8 @@ public class PlayerActivityController {
 		enum Action { QUALITY, ASPECT }
 
 		var items = new LinkedHashMap<PopupItem, Action>() {{
-			put(new PopupItem().setTitle("Video quality").setIcon(R.drawable.ic_round_high_quality_24), Action.QUALITY);
-			put(new PopupItem().setTitle("Aspect ratio").setIcon(R.drawable.ic_fullscreen), Action.ASPECT);
+			put(new PopupItem(R.string.video_quality, R.drawable.ic_round_high_quality_24), Action.QUALITY);
+			put(new PopupItem(R.string.aspect_ratio, R.drawable.ic_fullscreen), Action.ASPECT);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -246,7 +247,7 @@ public class PlayerActivityController {
 		if(subtitles == null) return;
 
 		var items = new LinkedHashMap<PopupItem, CatalogSubtitle>();
-		items.put(new PopupItem().setTitle("None"), null);
+		items.put(new PopupItem(R.string.none), null);
 
 		for(var subtitle : subtitles) {
 			items.put(new PopupItem().setTitle(subtitle.getTitle()), subtitle);
@@ -352,9 +353,20 @@ public class PlayerActivityController {
 		DialogUtils.fixDialog(dialog.get());
 	}
 
-	public static class PopupItem {
+	public class PopupItem {
 		private String title;
 		private int id, icon;
+
+		public PopupItem(@StringRes int title, @DrawableRes int icon) {
+			this.title = activity.getString(title);
+			this.icon = icon;
+		}
+
+		public PopupItem(@StringRes int title) {
+			this.title = activity.getString(title);
+		}
+
+		public PopupItem() {}
 
 		public PopupItem setTitle(String title) {
 			this.title = title;

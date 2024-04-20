@@ -12,26 +12,26 @@
 					"show_if": "material_you"
 				}, {
 					"key": "dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
-					"title": "Dark Theme", "icon": "ic_sharp_dark_mode",
-					"description": "I'm batman!"
+					"title": "dark_theme", "icon": "ic_sharp_dark_mode",
+					"description": "dark_theme_description"
 				}, {
 					"key": "amoled", "type": "boolean", "restart": true,
 					"title": "amoled", "icon": "ic_round_brightness_medium_24",
-					"description": "I'm darker than the night itself!"
+					"description": "amoled_theme_description"
 				}, {
 					"key": "use_source_theme", "type": "boolean",
 					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
 					"show_if": "never"
 				}, {
 					"key": "pallet", "type": "select", "restart": true, "string_value": "RED",
-					"title": "Color Palette", "icon": "ic_round_palette_24", "description": "${VALUE_TITLE}",
+					"title": "color_palette", "icon": "ic_round_palette_24", "description": "${VALUE_TITLE}",
 					"items": [
-						{ "key": "RED", "title": "Red" },
-						{ "key": "PINK", "title": "Pink" },
-						{ "key": "PURPLE", "title": "Purple" },
-						{ "key": "BLUE", "title": "Blue" },
-						{ "key": "GREEN", "title": "Green" },
-						{ "key": "MONOCHROME", "title": "Monochrome" }
+						{ "key": "RED", "title": "red" },
+						{ "key": "PINK", "title": "pink" },
+						{ "key": "PURPLE", "title": "purple" },
+						{ "key": "BLUE", "title": "blue" },
+						{ "key": "GREEN", "title": "green" },
+						{ "key": "MONOCHROME", "title": "monochrome" }
 					]
 				}
 			]
@@ -41,7 +41,7 @@
 			"items": [
 				{
 					"key": "language", "type": "select",
-					"title": "App Language (Experimental)", "icon": "ic_language",
+					"title": "app_language", "icon": "ic_language",
 					"behaviour": "languages", "show_if": "debug"
 				}, {
 					"key": "default_tab", "type": "select", "string_value": "MAIN",
@@ -64,12 +64,12 @@
 				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
 					"title": "global_excluded_tags", "icon": "ic_round_block_24",
-					"description": "You won't see any media with these tags",
+					"description": "global_tags_exclusion_description",
 					"behaviour": "excluded_tags"
 				}, {
 					"key": "adult_content", "type": "boolean",
-					"title": "adult_content_description", "icon": "ic_round_report",
-					"description": "Show adult content in the app"
+					"title": "Adult Content", "icon": "ic_round_report",
+					"description": "adult_content_description"
 				}
 			]
 		}, {
@@ -94,10 +94,10 @@
 			"items": [
 				{
 					"key": "double_tap_seek_length", "type": "select_int", "int_value": "10",
-					"title": "Double-tap to seek", "icon": "ic_round_touch_app_24",
+					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
-						{ "key": "0", "title": "Disabled" },
+						{ "key": "0", "title": "disabled" },
 						{ "key": "3", "title": "3s" },
 						{ "key": "5", "title": "5s" },
 						{ "key": "10", "title": "10s" },
@@ -108,10 +108,10 @@
 					]
 				}, {
 					"key": "big_seek_length", "type": "select_int", "int_value": "60",
-					"title": "Quick Rewind ", "icon": "outline_fast_forward_24",
+					"title": "quick_rewind", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
-						{ "key": "0", "title": "Disabled" },
+						{ "key": "0", "title": "disabled" },
 						{ "key": "30", "title": "30s" },
 						{ "key": "45", "title": "45s" },
 						{ "key": "60", "title": "1m" },
@@ -121,11 +121,11 @@
 					]
 				}, {
 					"key": "gestures", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
-					"title": "Gestures mode", "icon": "ic_round_swipe_vertical_24",
+					"title": "gesture_mode", "icon": "ic_round_swipe_vertical_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
-						{ "key": "VOLUME_BRIGHTNESS", "title": "Volume and Brightness" },
-						{ "key": "DISABLED", "title": "Disabled" }
+						{ "key": "VOLUME_BRIGHTNESS", "title": "volume_and_brightness" },
+						{ "key": "DISABLED", "title": "disabled" }
 					]
 				}, {
 					"key": "default_video_quality", "type": "select",  "int_value": 5,

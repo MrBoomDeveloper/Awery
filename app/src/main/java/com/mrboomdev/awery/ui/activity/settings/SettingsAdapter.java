@@ -268,7 +268,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(parent.getContext()))
 							.addView(contentView)
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton("Save", _dialog -> {
+							.setPositiveButton(R.string.confirm, _dialog -> {
 								if(radioGroup.getParent() == null) return;
 
 								var items = selectionItems.get();
@@ -395,7 +395,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(parent.getContext()))
 							.addView(contentView)
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton("Save", _dialog -> {
+							.setPositiveButton(R.string.confirm, _dialog -> {
 								if(chips.getParent() == null) return;
 
 								var items = selectionItems.get();

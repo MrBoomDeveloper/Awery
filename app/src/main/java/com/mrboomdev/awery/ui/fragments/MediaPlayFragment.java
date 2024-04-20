@@ -35,6 +35,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.Parser;
@@ -237,7 +238,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 
 		var lastUsedTitleIndex = new AtomicInteger(0);
-		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<List<? extends CatalogMedia>>>();
+		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>>();
 
 		var searchParams = new CatalogFilter.Builder()
 				.setPage(0)
@@ -249,7 +250,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
 			@Override
-			public void onSuccess(@NonNull List<? extends CatalogMedia> mediaList) {
+			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> mediaList) {
 				if(source != selectedSource) return;
 
 				source.getEpisodes(0, mediaList.get(0), new ExtensionProvider.ResponseCallback<>() {
@@ -290,7 +291,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						searchParams.setQuery(media.titles.get(newIndex));
-						source.searchMedia(searchParams.build(), callback);
+						source.searchMedia(requireContext(), searchParams.build(), callback);
 
 						variantsAdapter.getBinding((binding) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
@@ -303,7 +304,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			}
 		});
 
-		source.searchMedia(searchParams.build(), foundMediaCallback.get());
+		source.searchMedia(requireContext(), searchParams.build(), foundMediaCallback.get());
 	}
 
 	private boolean autoSelectNextSource() {

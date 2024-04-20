@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
+import com.mrboomdev.awery.ui.fragments.MediaInfoFragment
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage

@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Tracking"
+        android:text="@string/tracking"
         android:paddingRight="32dp"
         android:layout_marginLeft="8dp"
         app:icon="@drawable/ic_sync"

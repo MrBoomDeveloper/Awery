@@ -166,7 +166,7 @@ public class MediaUtils {
 		var dialog = new DialogBuilder(context)
 				.setTitle("Create new list")
 				.addField(input)
-				.setCancelButton("Cancel", DialogBuilder::dismiss)
+				.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
 				.setPositiveButton("Create", _dialog -> {
 					var text = input.getText().trim();
 
@@ -192,9 +192,9 @@ public class MediaUtils {
 	public static void requestDeleteList(Context context, @NonNull CatalogList list, Runnable callback) {
 		new DialogBuilder(context)
 				.setTitle("Delete \"" + list.getTitle() + "\"?")
-				.setMessage("Are you sure you want to delete this list?")
-				.setCancelButton("Cancel", DialogBuilder::dismiss)
-				.setPositiveButton("Delete", dialog -> {
+				.setMessage(R.string.sure_delete_list_description)
+				.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+				.setPositiveButton(R.string.delete, dialog -> {
 					new Thread(() -> {
 						var dbList = DBCatalogList.fromCatalogList(list);
 						getDatabase().getListDao().delete(dbList);

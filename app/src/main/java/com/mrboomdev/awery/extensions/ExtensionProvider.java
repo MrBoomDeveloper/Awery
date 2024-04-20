@@ -11,6 +11,7 @@ import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
@@ -52,7 +53,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
-	public void searchMedia(CatalogFilter filter, @NonNull ResponseCallback<List<? extends CatalogMedia>> callback) {
+	public void searchMedia(
+			Context context,
+			@Nullable CatalogFilter filter,
+			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
+	) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));
 	}
 

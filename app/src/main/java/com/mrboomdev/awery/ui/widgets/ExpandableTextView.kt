@@ -32,8 +32,8 @@ class ExpandableTextView @JvmOverloads constructor(
 ) {
     private var mOriginalText: CharSequence? = ""
     private var mCollapsedLines = 0
-    private var mReadMoreText: CharSequence = "   Read more"
-    private var mReadLessText: CharSequence = "   Read less"
+    private var mReadMoreText: CharSequence
+    private var mReadLessText: CharSequence
     var isExpanded: Boolean = false
         private set
     private var mAnimationDuration: Int? = 0
@@ -164,8 +164,8 @@ class ExpandableTextView @JvmOverloads constructor(
             try {
                 mCollapsedLines = getInt(R.styleable.ExpandableTextView_collapsedLines, COLLAPSED_MAX_LINES)
                 mAnimationDuration = getInt(R.styleable.ExpandableTextView_animDuration, DEFAULT_ANIM_DURATION)
-                mReadMoreText = getString(R.styleable.ExpandableTextView_readMoreText) ?: READ_MORE
-                mReadLessText = getString(R.styleable.ExpandableTextView_readLessText) ?: READ_LESS
+                mReadMoreText = getString(R.styleable.ExpandableTextView_readMoreText) ?: "   ${context.getString(R.string.read_more)}"
+                mReadLessText = getString(R.styleable.ExpandableTextView_readLessText) ?: "   ${context.getString(R.string.read_less)}"
                 foregroundColor = getColor(R.styleable.ExpandableTextView_foregroundColor, Color.TRANSPARENT)
                 isUnderlined = getBoolean(R.styleable.ExpandableTextView_isUnderlined, false)
                 isExpanded = getBoolean(R.styleable.ExpandableTextView_textIsExpanded, false)
@@ -285,7 +285,5 @@ class ExpandableTextView @JvmOverloads constructor(
         const val DEFAULT_ANIM_DURATION = 450
         const val DEFAULT_ELLIPSIZED_TEXT = "..."
         const val EMPTY_SPACE = " "
-        const val READ_MORE = "   Read more"
-        const val READ_LESS = "   Read less"
     }
 }

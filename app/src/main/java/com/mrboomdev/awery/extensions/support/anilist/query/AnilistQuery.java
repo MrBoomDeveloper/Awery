@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import android.content.Context;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.extensions.support.anilist.data.AnilistPage;
 import com.mrboomdev.awery.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -19,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class AnilistQuery<T> {
@@ -114,14 +114,9 @@ public abstract class AnilistQuery<T> {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <E> List<E> parsePageList(Type childType, String json) throws IOException {
-		var listType = GraphQLParser.getTypeWithGenerics(List.class, childType);
-		var pageType = GraphQLParser.getTypeWithGenerics(Map.class, String.class, listType);
-		var wrapper = new GraphQLAdapter<Map<String, List<E>>>(pageType).parseFirst(json);
-		var data = wrapper.values().toArray()[0];
-
-		return (List<E>) data;
+	protected <E> AnilistPage<E> parsePageList(Type childType, String json) throws IOException {
+		var pageType = GraphQLParser.getTypeWithGenerics(AnilistPage.class, childType);
+		return new GraphQLAdapter<AnilistPage<E>>(pageType).parseFirst(json);
 	}
 
 	public AnilistQuery<T> catchExceptions(ResponseCallback<Throwable> callback) {
