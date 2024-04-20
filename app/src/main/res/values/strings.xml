@@ -336,7 +336,6 @@
     <string name="user_agent">User Agent</string>
     <string name="nothing_found">Nothing found</string>
     <string name="tried_all_titles">Tried all media titles, nothing found!</string>
-    <string name="sure_delete_list">Are you sure you want to delete this list?</string>
     <string name="bookmark">Bookmark</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="hide">Hide</string>
