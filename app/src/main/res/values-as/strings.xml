@@ -138,7 +138,7 @@
     <string name="auto_skip_fillers">অট\'মেটিক ফিলাৰসমূহ অগ্ৰসৰণ কৰক</string>
     <string name="auto_skip_fillers_info">পৰবন্ধৰ উল্লেখকাৰীলৈ প্ৰচাৰ কৰিবলৈ অট\'মেটিকভাৱে ফিলাৰ এপিস\'ডসমূহ অগ্ৰসৰণ কৰে।</string>
     <string name="update_progress">প্ৰগ্ৰেছ আপডেট কৰক</string>
-    <string name="ask_update_progress_anime">প্ৰত্যেক মিডিয়া ব্যক্তিগতভাৱে প্ৰোগ্ৰেছ আপডেট কৰিব?</string>
+    <string name="ask_update_progress_anime">প্ৰতিটো মিডিয়াৰ বাবে \"প্ৰতিটো মিডিয়া বিচাৰি\"।</string>
     <string name="ask_update_progress_info_ep">বন্ধ কৰা হৈছে সম্পূৰ্ণ প্ৰচাৰ কৰা এপিস\'ড চাইনলৈ প্ৰত্যেক মিডিয়া স্বীকৃতি অট\'মেটিকভাৱে আপডেট কৰে।</string>
     <string name="watch_complete_percentage">প্ৰতিযোগী অদ্যাবৃত্তি প্ৰতিশত : %</string>
     <string name="watch_complete_percentage_info">এটা প্ৰতিযোগী প্ৰতিস্থাপন কৰিবলৈ আপোনাৰ Anilist প্ৰগ্ৰেছটো প্ৰতিস্থাপন কৰা উচিত প্ৰতিশত।
@@ -339,4 +339,8 @@
     <string name="user_agent">ব্যৱহাৰকাৰী এজেণ্ট</string>
     <string name="nothing_found">কিবা পোৱা নাই</string>
     <string name="tried_all_titles">সকলো মিডিয়া শিৰোনাম প্ৰয়াস কৰা হ’ল, কিবা পোৱা নাই!</string>
+    <string name="no_subtitles_extensions">আপোনাৰ কোনো ইনষ্টল কৰা সাবটাইটেল এক্সটেনশন নাই। নতুন কিবা চাব বিচাৰিবলৈ এক্সটেনশন ডাউনল\'ড কৰক!</string>
+    <string name="no_tracker_extensions">আপুনি কোনো ইনষ্টল কৰা ট্ৰেকাৰ এক্সটেনশন নাই। নতুন কিবা চাব বিচাৰিবলৈ এক্সটেনশন ডাউনল\'ড কৰক!</string>
+    <string name="no_relations_extensions">আপোনাৰ কোনো ইনষ্টল কৰা সম্পর্ক এক্সটেনশন নাই। নতুন কিবা চাব বিচাৰিবলৈ এক্সটেনশন ডাউনল\'ড কৰক!</string>
+    <string name="confirm">নিশ্চিত কৰক</string>
 </resources>

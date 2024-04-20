@@ -340,4 +340,8 @@
     <string name="user_agent">사용자 에이전트</string>
     <string name="nothing_found">아무것도 찾을 수 없음</string>
     <string name="tried_all_titles">모든 미디어 제목을 시도했지만 아무것도 찾을 수 없음!</string>
+    <string name="no_tracker_extensions">트래커 확장 프로그램이 설치되지 않았습니다. 여기서 새로운 것을 보려면 다운로드하십시오!</string>
+    <string name="no_relations_extensions">관련 확장 프로그램이 설치되지 않았습니다. 여기서 새로운 것을 보려면 다운로드하십시오!</string>
+    <string name="no_subtitles_extensions">자막 확장 프로그램이 설치되지 않았습니다. 여기서 새로운 것을 보려면 다운로드하십시오!</string>
+    <string name="confirm">확인</string>
 </resources>

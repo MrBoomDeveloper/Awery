@@ -339,4 +339,8 @@
     <string name="user_agent">ユーザーエージェント</string>
     <string name="nothing_found">見つかりませんでした</string>
     <string name="tried_all_titles">すべてのメディアタイトルを試しました、何も見つかりませんでした！</string>
+    <string name="confirm">確認する</string>
+    <string name="no_tracker_extensions">トラッカー拡張機能がインストールされていません。ここで新しいものを見るには、それらをダウンロードしてください！</string>
+    <string name="no_relations_extensions">リレーション拡張機能がインストールされていません。ここで新しいものを見るには、それらをダウンロードしてください！</string>
+    <string name="no_subtitles_extensions">サブタイトル拡張機能がインストールされていません。ここで新しいものを見るには、それらをダウンロードしてください！</string>
 </resources>

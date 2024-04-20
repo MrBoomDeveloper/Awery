@@ -340,4 +340,8 @@
     <string name="user_agent">उपयोगकर्ता एजेंट</string>
     <string name="nothing_found">कुछ नहीं मिला</string>
     <string name="tried_all_titles">सभी मीडिया शीर्षकों की कोशिश की, कुछ नहीं मिला!</string>
+    <string name="no_relations_extensions">आपके पास कोई स्थापित संबंध एक्सटेंशन नहीं है। यहाँ कुछ नया देखने के लिए उन्हें डाउनलोड करें!</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="no_tracker_extensions">आपके पास कोई स्थापित ट्रैकर एक्सटेंशन नहीं है। यहाँ कुछ नया देखने के लिए उन्हें डाउनलोड करें!</string>
+    <string name="no_subtitles_extensions">आपके पास कोई स्थापित उपशीर्षक एक्सटेंशन नहीं है। यहाँ कुछ नया देखने के लिए उन्हें डाउनलोड करें!</string>
 </resources>

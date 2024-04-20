@@ -142,11 +142,11 @@
     <string name="auto_skip_fillers">Автоматически пропускать Филлеры</string>
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
     <string name="update_progress">Обновить Прогресс</string>
-    <string name="ask_update_progress_anime">Ask for each Anime \"Individually\"</string>
+    <string name="ask_update_progress_anime">Спрашивать для каждого Медиа \"Индивидуально\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">"The percentage at which your Anilist progress should be updated after watching an episode.
-\nThis also sets the  for when to preload links for the next episode."</string>
+    <string name="watch_complete_percentage_info">Процент, с которым должен обновляться ваш прогресс после просмотра эпизода.
+\nЭто также устанавливает время предварительной загрузки ссылок для следующего эпизода.</string>
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с момента где остановились</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
@@ -219,7 +219,7 @@
     <string name="include_media_in_list">Включить Список</string>
     <string name="release_calendar">Календарь</string>
     <string name="always_continue_shows">Всегда продолжать Шоу</string>
-    <string name="check_app_updates">Всегда Проверять Обновления</string>
+    <string name="check_app_updates">Автоматически Проверять Обновления</string>
     <string name="author">Автор</string>
     <string name="account">Аккаунт</string>
     <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters
@@ -260,7 +260,7 @@
     <string name="supporting_role">Поддержка</string>
     <string name="status_finished">Завершено</string>
     <string name="status_releasing">Выходит</string>
-    <string name="status_not_yet_released">ЕЩЕ НЕ ВЫШЛО</string>
+    <string name="status_not_yet_released">Еще не вышло</string>
     <string name="status_cancelled">Отменено</string>
     <string name="status_hiatus">Отложено</string>
     <string name="type_adaptation">Адаптация</string>
@@ -343,4 +343,42 @@
     <string name="default_video_quality">Качество видео по умолчанию</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="tried_all_titles">По данным названиям ничего не удалось найти</string>
+    <string name="you_reached_end">Вы достигли конца</string>
+    <string name="tracking">Отслеживание</string>
+    <string name="enter_text">Введите текст</string>
+    <string name="video_quality">Качество Видео</string>
+    <string name="fit">Вмещать</string>
+    <string name="zoom">Приближать</string>
+    <string name="dark_theme">Темная Тема</string>
+    <string name="hide">Спрятать</string>
+    <string name="green">Зеленый</string>
+    <string name="quick_rewind">Быстрая Промотка</string>
+    <string name="sure_delete_list_description">Вы точно хотите удалить данный список?</string>
+    <string name="you_reached_end_description">Ничего больше не найдено. Если вы не нашли то что искали, то попробуйте изменить запрос и фильтры.</string>
+    <string name="read_more">Читать больше</string>
+    <string name="fill">Растягивать</string>
+    <string name="blacklist">Добавить в Черный Список</string>
+    <string name="read_less">Читать меньше</string>
+    <string name="enter_number">Введите число</string>
+    <string name="aspect_ratio">Соотношение сторон</string>
+    <string name="bookmark">Закладка</string>
+    <string name="color_palette">Цветовая Палитра</string>
+    <string name="red">Красный</string>
+    <string name="pink">Розовый</string>
+    <string name="purple">Фиолетовый</string>
+    <string name="blue">Синий</string>
+    <string name="monochrome">Чёрно-белая</string>
+    <string name="dark_theme_description">Я бетмен!</string>
+    <string name="amoled_theme_description">Я темней самой ночи!</string>
+    <string name="app_language">Язык Приложения</string>
+    <string name="global_tags_exclusion_description">Вы не увидите никакого медиа с данными тегами!</string>
+    <string name="nsfw_setting_description">Показывать контент для взрослых в приложении</string>
+    <string name="gesture_mode">Режим Жестов</string>
+    <string name="volume_and_brightness">Звук и Яркость</string>
+    <string name="disabled">Отключено</string>
+    <string name="double_tap_seek">Двойное нажатие для промотки</string>
+    <string name="uninstall_extension">Удалить Расширение</string>
+    <string name="add_extension">Добавить Расширение</string>
+    <string name="pick_from_storage">Выбрать из хранилища</string>
+    <string name="repository_url">Ссылка на репозиторий</string>
 </resources>
