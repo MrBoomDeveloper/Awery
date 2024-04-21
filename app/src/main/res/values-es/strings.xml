@@ -381,4 +381,27 @@
     <string name="you_reached_end_description">No se encontraron más resultados. Si no encontró lo que buscaba, intente cambiar la consulta y los filtros.</string>
     <string name="read_more">Leer más</string>
     <string name="read_less">Leer menos</string>
+    <string name="hour_short">hr.</string>
+    <string name="minute_short">min</string>
+    <string name="list_name">Lista de nombres</string>
+    <string name="no_title">Sin título</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Los más valorados</string>
+    <string name="movies">Películas</string>
+    <string name="second_short">sg.</string>
+    <string name="most_favourited">Preferidos</string>
+    <string name="dalayed">Retrasado</string>
+    <string name="dropped">Abandonado</string>
+    <string name="cancelled">Cancelado</string>
+    <string name="completed">Completado</string>
+    <string name="create">Crear</string>
+    <string name="planning_watch">Planeado para mirar</string>
+    <string name="create_list">Crear una nueva lista</string>
+    <string name="planning_read">Planeado para leer</string>
+    <string name="trending">Tendencias</string>
+    <string name="favorite">Favorito</string>
+    <string name="please_report_bug_app">¡Por favor, envíe el siguiente texto a los desarrolladores de la aplicación!</string>
+    <string name="currently_watching">Actualmente mirando</string>
+    <string name="please_report_bug_extension">¡Por favor, envíe el siguiente texto a los desarrolladores de la extensión!</string>
+    <string name="manual_search">Búsqueda manual</string>
 </resources>
