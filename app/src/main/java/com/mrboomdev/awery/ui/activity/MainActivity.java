@@ -10,7 +10,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -24,7 +23,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setPageTransformer(new FadeTransformer());
 
 		var savedDefaultTab = prefs.getString(AwerySettings.ui.DEFAULT_HOME_TAB);
-		var currentPage = StringUtil.parseEnum(savedDefaultTab, Pages.MAIN);
+		var currentPage = StringUtils.parseEnum(savedDefaultTab, Pages.MAIN);
 		int currentPageIndex = currentPage.ordinal();
 
 		binding.navbar.selectTabAt(currentPageIndex, false);

@@ -8,7 +8,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistPage;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 
 import org.jetbrains.annotations.Contract;
 
@@ -148,7 +148,7 @@ public class AnilistSearchQuery extends AnilistQuery<CatalogSearchResults<Catalo
 					}
 				}
 			}
-		""".replace("__PARAMS__", StringUtil.mapToJson(new HashMap<>() {{
+		""".replace("__PARAMS__", StringUtils.mapToJson(new HashMap<>() {{
 			if(type != null) put("type", type);
 			if(sort != null) put("sort", sort);
 			if(format != null) put("format", format);

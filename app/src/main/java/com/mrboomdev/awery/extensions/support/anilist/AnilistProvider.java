@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;

@@ -9,7 +9,7 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.JsException;
 
 import org.jetbrains.annotations.Contract;

@@ -23,7 +23,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.squareup.moshi.Json;
@@ -106,14 +106,14 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 			@Override
 			public void onClick(Context context) {
-				var inputField = new DialogEditTextField(context, "Repository URL");
+				var inputField = new DialogEditTextField(context, R.string.repository_url);
 
 				currentDialog = new DialogBuilder(context)
-						.setTitle("Add extension")
+						.setTitle(R.string.add_extension)
 						.addField(inputField)
 						.setOnDismissListener(dialog -> currentDialog = dialog)
-						.setCancelButton("Cancel", DialogBuilder::dismiss)
-						.setNeutralButton("Pick from Storage", dialog -> pickLauncher.launch("*/*"))
+						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
 						.setPositiveButton("Ok", dialog -> {
 							var text = inputField.getText().trim();
 

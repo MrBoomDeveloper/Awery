@@ -16,7 +16,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

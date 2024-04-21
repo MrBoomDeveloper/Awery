@@ -16,7 +16,7 @@ import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 

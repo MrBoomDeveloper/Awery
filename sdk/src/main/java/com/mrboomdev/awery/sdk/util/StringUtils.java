@@ -1,11 +1,8 @@
-package com.mrboomdev.awery.util;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+package com.mrboomdev.awery.sdk.util;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.text.SimpleDateFormat;
@@ -17,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-public class StringUtil {
+public class StringUtils {
 
 	/**
 	 * Converts map to json string. If map is null, returns "null".
@@ -25,8 +22,8 @@ public class StringUtil {
 	 * @see #mapToJson(Map)
 	 * @param keysInBrackets if true, keys in brackets
 	 */
-	@NonNull
-	public static String mapToJson(@NonNull Map<?, ?> map, boolean keysInBrackets) {
+	@NotNull
+	public static String mapToJson(@NotNull Map<?, ?> map, boolean keysInBrackets) {
 		StringBuilder paramsString = new StringBuilder();
 
 		for(var entry : map.entrySet()) {
@@ -49,7 +46,7 @@ public class StringUtil {
 		return paramsString.toString();
 	}
 
-	@NonNull
+	@NotNull
 	public static Date parseDate(String string) {
 		try {
 			var formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
@@ -63,7 +60,7 @@ public class StringUtil {
 	/**
 	 * Converts long to string in format: 24:00.
 	 */
-	@NonNull
+	@NotNull
 	public static String formatClock(long value) {
 		if(value < 0) {
 			return "00:00";
@@ -88,7 +85,7 @@ public class StringUtil {
 				(int) value / 60, (int) value % 60);
 	}
 
-	@NonNull
+	@NotNull
 	public static String formatTimer(long value) {
 		if(value <= 0) {
 			return "0s";
@@ -136,8 +133,8 @@ public class StringUtil {
 		}
 	}
 
-	@NonNull
-	public static <T extends Enum<T>> T parseEnum(String string, @NonNull T defaultValue) {
+	@NotNull
+	public static <T extends Enum<T>> T parseEnum(String string, @NotNull T defaultValue) {
 		var result = parseEnum(string, defaultValue.getDeclaringClass());
 		return Objects.requireNonNullElse(result, defaultValue);
 	}
@@ -155,8 +152,8 @@ public class StringUtil {
 	 * Used format: ";;;value1;;;value2;;;value3;;;"
 	 * @see #uniqueStringToList(String)
 	 */
-	@NonNull
-	public static String listToUniqueString(@NonNull Iterable<String> iterable) {
+	@NotNull
+	public static String listToUniqueString(@NotNull Iterable<String> iterable) {
 		var builder = new StringBuilder(";;;");
 
 		for(var string : iterable) {
@@ -171,8 +168,8 @@ public class StringUtil {
 	 * @see #listToUniqueString(Iterable)
 	 * @param uniqueString - String of format ";;;value1;;;value2;;;value3;;;";;;
 	 */
-	@NonNull
-	public static @Unmodifiable List<String> uniqueStringToList(@NonNull String uniqueString) {
+	@NotNull
+	public static @Unmodifiable List<String> uniqueStringToList(@NotNull String uniqueString) {
 		if(uniqueString.length() <= 3) return Collections.emptyList();
 		return List.of(uniqueString.substring(3, uniqueString.length() - 3).split(";;;"));
 	}
@@ -182,7 +179,7 @@ public class StringUtil {
 	 * @see #mapToJson(Map, boolean)
 	 * @return String of format "key1": "value1", "key2": "value2"
 	 */
-	@NonNull
+	@NotNull
 	public static String mapToJson(Map<?, ?> map) {
 		return mapToJson(map, false);
 	}
@@ -191,7 +188,7 @@ public class StringUtil {
 	 * Converts object to json string. If object is null, returns "null".
 	 * @return String of format "string", 1, true, 1.0
 	 */
-	@NonNull
+	@NotNull
 	public static String objectToJsonItem(Object object) {
 		if(object == null) {
 			return "null";

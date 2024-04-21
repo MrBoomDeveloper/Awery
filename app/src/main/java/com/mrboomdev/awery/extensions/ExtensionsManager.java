@@ -4,7 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.stream;
 
 import android.content.Context;
 
-import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.io.IOException;

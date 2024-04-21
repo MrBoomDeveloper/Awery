@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
 import com.mrboomdev.awery.util.graphql.GraphQLException;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
@@ -98,22 +99,13 @@ public class ExceptionDescriptor {
 			return "Parser is broken!";
 		} else if(throwable instanceof UnknownHostException) {
 			return context.getString(R.string.no_internet);
-		} else if(throwable instanceof JsException js) {
-			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-				case JsException.ERROR_ACCOUNT_REQUIRED -> "Account required";
-				case JsException.ERROR_HTTP -> "Connection failed";
-				case JsException.ERROR_NOTHING_FOUND -> context.getString(R.string.nothing_found);
-				case JsException.ERROR_RATE_LIMITED -> context.getString(R.string.too_much_requests);
-				case JsException.ERROR_BANNED -> "You are banned!";
-
-				default -> js.getErrorId() == null ? "JsEngine has crashed" :
-					"JsEngine has crashed: " + js.getErrorId();
-			};
-		} else if(throwable instanceof InvalidSyntaxException
-				|| throwable instanceof JsonDecodingException) {
-			return "Parser has crashed!";
-		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
-			return "Bad thing has happened...";
+		} else {
+			if(throwable instanceof InvalidSyntaxException
+					|| throwable instanceof JsonDecodingException) {
+				return "Parser has crashed!";
+			} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+				return "Bad thing has happened...";
+			}
 		}
 
 		return getGenericTitle(context);
@@ -203,55 +195,17 @@ public class ExceptionDescriptor {
 			}
 
 			return builder.toString();
-		} else if(throwable instanceof JsException js) {
-			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-				case JsException.ERROR_ACCOUNT_REQUIRED -> "You cannot do this action without an account! You can login through extension's settings!";
-				case JsException.ERROR_HTTP -> "Failed to connect to the server! Try again later.";
-				case JsException.ERROR_NOTHING_FOUND -> "Nothing was found! Try using other sources.";
-				case JsException.ERROR_RATE_LIMITED -> "Too much requests in a so short time period.";
-				case JsException.ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
-
-				default -> {
-					var extra = js.getErrorExtra();
-
-					if(extra != null) {
-						yield extra.toString();
-					}
-
-					if(js.getErrors() != null) {
-						var iterator = js.getErrors().iterator();
-						var builder = new StringBuilder();
-
-						while(iterator.hasNext()) {
-							var error = iterator.next();
-							var message = error.getMessage();
-
-							if(message == null) {
-								continue;
-							}
-
-							builder.append(message.trim());
-
-							if(iterator.hasNext()) {
-								builder.append("\n\n");
-							}
-						}
-
-						yield builder.toString();
-					}
-
-					yield getGenericMessage(throwable);
+		} else {
+			if(throwable instanceof JsonDecodingException
+					|| throwable instanceof InvalidSyntaxException) {
+				return "An error has occurred while parsing the response. " + throwable.getMessage();
+			} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+				if(throwable instanceof InstanceCountViolation) {
+					return "Too much instances of the object was created. " + throwable.getMessage();
 				}
-			};
-		} else if(throwable instanceof JsonDecodingException
-				|| throwable instanceof InvalidSyntaxException) {
-			return "An error has occurred while parsing the response. " + throwable.getMessage();
-		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
-			if(throwable instanceof InstanceCountViolation) {
-				return "Too much instances of the object was created. " + throwable.getMessage();
-			}
 
-			return "Bad thing has happened...";
+				return "Bad thing has happened...";
+			}
 		}
 
 		return getGenericMessage(throwable);

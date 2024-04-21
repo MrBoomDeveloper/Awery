@@ -23,7 +23,6 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -31,9 +30,10 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
-import com.mrboomdev.awery.util.Callbacks;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -478,28 +478,20 @@ public class JsProvider extends ExtensionProvider {
 						var results = new ArrayList<CatalogMedia>();
 
 						for(var arrayItem : (NativeArray) o.get("items", o)) {
+							if(JsBridge.isNull(arrayItem)) continue;
 							var item = (NativeObject) arrayItem;
 
 							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
-							result.banner = item.has("banner", item) ? item.get("banner").toString() : null;
-							result.country = item.has("country", item) ? item.get("country").toString() : null;
-							result.ageRating = item.has("ageRating", item) ? item.get("ageRating").toString() : null;
-							result.extra = item.has("extra", item) ? item.get("extra").toString() : null;
+							result.banner = JsBridge.stringFromJs(item.get("banner"));
+							result.country = JsBridge.stringFromJs(item.get("country"));
+							result.ageRating = JsBridge.stringFromJs(item.get("ageRating"));
+							result.extra = JsBridge.stringFromJs(("extra"));
+							result.description = JsBridge.stringFromJs(item.get("description"));
 
-							result.description = item.has("description", item) ?
-									item.get("description").toString() : null;
-
-							result.averageScore = item.has("averageScore", item) ?
-									JsBridge.fromJs(item.get("averageScore"), Float.TYPE) : null;
-
-							result.duration = item.has("duration", item) ?
-									JsBridge.fromJs(item.get("duration"), Integer.TYPE) : null;
-
-							result.episodesCount = item.has("episodesCount", item) ?
-									JsBridge.fromJs(item.get("episodesCount"), Integer.TYPE) : null;
-
-							result.latestEpisode = item.has("latestEpisode", item) ?
-									JsBridge.fromJs(item.get("latestEpisode"), Integer.TYPE) : null;
+							result.averageScore = JsBridge.fromJs(item.get("averageScore"), Float.TYPE);
+							result.duration = JsBridge.fromJs(item.get("duration"), Integer.TYPE);
+							result.episodesCount = JsBridge.fromJs(item.get("episodesCount"), Integer.TYPE);
+							result.latestEpisode = JsBridge.fromJs(item.get("latestEpisode"), Integer.TYPE);
 
 							result.releaseDate = item.has("releaseDate", item) ?
 									ParserAdapter.calendarFromLong(JsBridge.longFromJs(item.get("releaseDate"))) : null;
@@ -508,21 +500,22 @@ public class JsProvider extends ExtensionProvider {
 								var poster = item.get("poster");
 
 								if(poster instanceof ConsString posterString) {
-									result.setPoster(posterString.toString());
+									result.setPoster(JsBridge.stringFromJs(posterString));
 								} else if(poster instanceof NativeObject posterObject) {
 									result.poster = new CatalogMedia.ImageVersions();
-									if(posterObject.has("extraLarge", posterObject)) result.poster.extraLarge = posterObject.get("extraLarge").toString();
-									if(posterObject.has("large", posterObject)) result.poster.large = posterObject.get("large").toString();
-									if(posterObject.has("medium", posterObject)) result.poster.medium = posterObject.get("medium").toString();
+									result.poster.extraLarge = JsBridge.stringFromJs(posterObject.get("extraLarge"));
+									result.poster.large = JsBridge.stringFromJs(posterObject.get("large"));
+									result.poster.medium = JsBridge.stringFromJs(posterObject.get("medium"));
 								}
 							}
 
 							if(item.get("tags", item) instanceof NativeArray array) {
 								result.tags = stream(array)
+										.filter(jsTag -> !JsBridge.isNull(jsTag))
 										.map(obj -> {
 											var jsTag = (NativeObject) obj;
-
 											var tag = new CatalogTag();
+
 											tag.setName(jsTag.get("name").toString());
 											return tag;
 										})
@@ -531,6 +524,7 @@ public class JsProvider extends ExtensionProvider {
 
 							if(item.get("genres", item) instanceof NativeArray array) {
 								result.genres = stream(array)
+										.filter(jsTag -> !JsBridge.isNull(jsTag))
 										.map(Object::toString)
 										.toList();
 							}
@@ -557,17 +551,25 @@ public class JsProvider extends ExtensionProvider {
 							}
 
 							if(item.has("title", item)) {
-								result.setTitle(item.get("title").toString());
+								var title = item.get("title");
+
+								if(!JsBridge.isNull(title)) {
+									result.setTitle(title.toString());
+								}
 							}
 
 							if(item.get("ids") instanceof NativeObject ids) {
 								for(var entry : ids.entrySet()) {
+									if(JsBridge.isNull(entry.getKey())) continue;
+									if(JsBridge.isNull(entry.getValue())) continue;
+
 									result.setId(entry.getKey().toString(), entry.getValue().toString());
 								}
 							}
 
 							if(item.get("titles") instanceof NativeArray titles) {
 								result.setTitles(stream(titles)
+										.filter(jsTag -> !JsBridge.isNull(jsTag))
 										.map(Object::toString)
 										.toList());
 							}

@@ -14,7 +14,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;

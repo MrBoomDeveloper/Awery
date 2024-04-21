@@ -1,8 +1,6 @@
 package eu.kanade.tachiyomi.network
 
-import com.mrboomdev.awery.util.MimeTypes
-import eu.kanade.tachiyomi.network.ProgressListener
-import eu.kanade.tachiyomi.network.ProgressResponseBody
+import com.mrboomdev.awery.sdk.util.MimeTypes
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.DeserializationStrategy
@@ -12,7 +10,8 @@ import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import kotlinx.serialization.serializer
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -23,7 +22,7 @@ import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resumeWithException
 
-val jsonMime = MimeTypes.JSON.toMediaType()
+val jsonMime = MimeTypes.JSON.toString().toMediaTypeOrNull()
 
 fun Call.asObservable(): Observable<Response> {
     return Observable.unsafeCreate { subscriber ->

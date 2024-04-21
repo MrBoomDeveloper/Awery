@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.sdk.util;
 
 /**
  * A helper-class which helps to generate random ids which doesn't collide with other ids.

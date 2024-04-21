@@ -44,7 +44,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
@@ -59,6 +59,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import java9.util.Objects;
 
 public class MediaInfoFragment extends Fragment {
 	private static final String TAG = "MediaInfoFragment";
@@ -102,8 +104,15 @@ public class MediaInfoFragment extends Fragment {
 		this.media = media;
 		if(binding == null) return;
 
-		binding.details.title.setText(media.getTitle());
-		binding.details.generalMeta.setText(generateGeneralMetaString(media));
+		var title = Objects.requireNonNullElse(media.getTitle(), "No title");
+		var meta = generateGeneralMetaString(media);
+
+		if(meta.isBlank()) {
+			binding.details.generalMeta.setVisibility(View.GONE);
+		}
+
+		binding.details.title.setText(title);
+		binding.details.generalMeta.setText(meta);
 
 		var banner = AweryApp.getOrientation() == Configuration.ORIENTATION_LANDSCAPE
 				? media.getBestBanner() : media.getBestPoster();

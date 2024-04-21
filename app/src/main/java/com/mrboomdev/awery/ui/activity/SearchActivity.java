@@ -33,7 +33,7 @@ import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.observable.ObservableArrayList;

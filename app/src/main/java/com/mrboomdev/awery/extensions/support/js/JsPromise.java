@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;

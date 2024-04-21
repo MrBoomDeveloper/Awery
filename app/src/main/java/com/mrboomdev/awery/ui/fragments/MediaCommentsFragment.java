@@ -43,10 +43,10 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.util.StringUtil;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.StringUtils;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -443,7 +443,7 @@ public class MediaCommentsFragment extends Fragment {
 
 			if(comment.date != null) {
 				try {
-					var time = StringUtil.parseDate(comment.date).getTime();
+					var time = StringUtils.parseDate(comment.date).getTime();
 					var now = System.currentTimeMillis();
 
 					date = DateUtils.getRelativeTimeSpanString(

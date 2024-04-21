@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;

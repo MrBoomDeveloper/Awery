@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogCustomField;
 import com.mrboomdev.awery.util.ui.dialog.DialogField;
@@ -36,6 +36,10 @@ public class DialogBuilder {
 	public DialogBuilder setTitle(String title) {
 		this.title = title;
 		return this;
+	}
+
+	public DialogBuilder setTitle(@StringRes int res) {
+		return setTitle(context.getString(res));
 	}
 
 	public DialogBuilder setMessage(String message) {

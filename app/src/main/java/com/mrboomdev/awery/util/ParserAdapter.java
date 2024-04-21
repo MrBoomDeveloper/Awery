@@ -7,13 +7,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.TypeConverter;
 
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
 import com.squareup.moshi.Types;
 
-import org.jetbrains.annotations.Unmodifiable;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,14 +34,68 @@ public class ParserAdapter {
 	@TypeConverter
 	@FromJson
 	public static List<String> listFromString(String value) {
-		return new ArrayList<>(StringUtil.uniqueStringToList(value));
+		return new ArrayList<>(StringUtils.uniqueStringToList(value));
 	}
 
 	@NonNull
 	@TypeConverter
 	@ToJson
 	public static String listToString(@NonNull List<String> value) {
-		return StringUtil.listToUniqueString(value);
+		return StringUtils.listToUniqueString(value);
+	}
+
+	public static String arrayToString(NativeArray array) {
+		if(array == null) return null;
+
+		var builder = new StringBuilder();
+		var iterator = array.iterator();
+
+		while(iterator.hasNext()) {
+			var item = iterator.next();
+
+			if(item instanceof NativeArray arr) {
+				builder.append(arrayToString(arr));
+			} else if(item instanceof NativeObject obj) {
+				builder.append(objectToString(obj));
+			} else {
+				builder.append(item.toString());
+			}
+
+			if(iterator.hasNext()) {
+				builder.append(", ");
+			}
+		}
+
+		return "[ " + builder + " ]";
+	}
+
+	public static String objectToString(NativeObject object) {
+		if(object == null) return null;
+
+		var builder = new StringBuilder();
+		var iterator = object.entrySet().iterator();
+
+		while(iterator.hasNext()) {
+			var entry = iterator.next();
+
+			builder.append("\"")
+					.append(entry.getKey())
+					.append("\":");
+
+			if(entry.getValue() instanceof NativeArray arr) {
+				builder.append(arrayToString(arr));
+			} else if(entry.getValue() instanceof NativeObject obj) {
+				builder.append(objectToString(obj));
+			} else {
+				builder.append(entry.getValue().toString());
+			}
+
+			if(iterator.hasNext()) {
+				builder.append(", ");
+			}
+		}
+
+		return "{" + builder + "}";
 	}
 
 	@TypeConverter

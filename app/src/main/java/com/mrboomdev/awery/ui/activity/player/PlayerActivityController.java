@@ -24,7 +24,7 @@ import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
@@ -65,8 +65,8 @@ public class PlayerActivityController {
 		activity.binding.slider.setPosition(position);
 
 		activity.binding.timer.setText(
-				StringUtil.formatClock(position) + "/" +
-				StringUtil.formatClock(duration));
+				StringUtils.formatClock(position) + "/" +
+				StringUtils.formatClock(duration));
 	}
 
 	public void addLockedUiReason(String reason) {

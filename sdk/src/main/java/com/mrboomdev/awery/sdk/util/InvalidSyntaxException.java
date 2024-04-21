@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util.exceptions;
+package com.mrboomdev.awery.sdk.util;
 
 public class InvalidSyntaxException extends RuntimeException {
 

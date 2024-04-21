@@ -1,20 +1,19 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.sdk.util;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 
-import androidx.annotation.NonNull;
+import static com.mrboomdev.awery.sdk.PlatformApi.stream;
 
-import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+import org.jetbrains.annotations.NotNull;
 
 public class FancyVersion implements Comparable<FancyVersion> {
 	private Integer[] args;
 	private String version;
 
-	public FancyVersion(@NonNull String version) throws InvalidSyntaxException {
+	public FancyVersion(@NotNull String version) throws InvalidSyntaxException {
 		set(version);
 	}
 
-	public void set(@NonNull String version) throws InvalidSyntaxException {
+	public void set(@NotNull String version) throws InvalidSyntaxException {
 		this.version = version;
 
 		try {
@@ -27,7 +26,7 @@ public class FancyVersion implements Comparable<FancyVersion> {
 	}
 
 	@Override
-	public int compareTo(@NonNull FancyVersion o) {
+	public int compareTo(@NotNull FancyVersion o) {
 		for(int i = 0; i < Math.max(args.length, o.args.length); i++) {
 			if(i >= args.length) return -1;
 			if(i >= o.args.length) return 1;
@@ -36,7 +35,7 @@ public class FancyVersion implements Comparable<FancyVersion> {
 		return 0;
 	}
 
-	public static boolean isValid(@NonNull String version) {
+	public static boolean isValid(@NotNull String version) {
 		try {
 			new FancyVersion(version);
 			return true;

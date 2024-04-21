@@ -33,7 +33,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
@@ -240,7 +240,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var lastUsedTitleIndex = new AtomicInteger(0);
 		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>>();
 
-		var searchParams = new CatalogFilter.Builder()
+		var searchParams = new CatalogFilter()
 				.setPage(0)
 				.setQuery(media.titles.get(0));
 
@@ -291,7 +291,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						searchParams.setQuery(media.titles.get(newIndex));
-						source.searchMedia(requireContext(), searchParams.build(), callback);
+						source.searchMedia(requireContext(), searchParams, callback);
 
 						variantsAdapter.getBinding((binding) ->
 								binding.searchDropdown.setText(searchParams.getQuery(), false));
@@ -304,7 +304,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			}
 		});
 
-		source.searchMedia(requireContext(), searchParams.build(), foundMediaCallback.get());
+		var context = getContext();
+		if(context == null) return;
+
+		source.searchMedia(context, searchParams, foundMediaCallback.get());
 	}
 
 	private boolean autoSelectNextSource() {

@@ -9,7 +9,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.data.CatalogCategory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTag;

@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.BuildConfig;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.squareup.moshi.Moshi;
 
@@ -162,6 +163,12 @@ public class CrashHandler {
 		showErrorDialog(context, title, description, finishOnClose, file);
 	}
 
+	public static void showErrorDialog(Context context, String title, Throwable throwable, boolean finishOnClose, File file) {
+		var descriptor = new ExceptionDescriptor(throwable);
+		var description = descriptor.getMessage(context);
+		showErrorDialog(context, title, description, finishOnClose, file);
+	}
+
 	public static void showErrorDialog(@NonNull Context context, String message, boolean finishOnClose, File file) {
 		showErrorDialog(context, "An error has occurred!", message, finishOnClose, file);
 	}
@@ -193,13 +200,13 @@ public class CrashHandler {
 				})
 				.setNeutralButton("Copy", (dialog, btn) -> {
 					var clipboard = context.getSystemService(ClipboardManager.class);
-					var clip = ClipData.newPlainText("crash report", message);
+					var clip = ClipData.newPlainText("Crash report", message);
 					clipboard.setPrimaryClip(clip);
 				})
-				.setNegativeButton("Share", (dialog, btn) -> {
+				.setNegativeButton(R.string.share, (dialog, btn) -> {
 					var intent = new Intent(Intent.ACTION_SEND);
 					intent.setType("text/plain");
-					intent.putExtra(Intent.EXTRA_SUBJECT, "Awery crash report");
+					intent.putExtra(Intent.EXTRA_SUBJECT, "Crash report");
 					intent.putExtra(Intent.EXTRA_TEXT, message);
 					context.startActivity(Intent.createChooser(intent, "Share crash report..."));
 				})

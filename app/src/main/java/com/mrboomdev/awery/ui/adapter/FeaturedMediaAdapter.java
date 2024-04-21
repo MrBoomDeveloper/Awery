@@ -224,15 +224,11 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 						@Override
 						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
 							if(item != PagerViewHolder.this.item) return;
-
-							item.cachedBanner = resource;
 							binding.banner.setImageDrawable(resource);
 						}
 
 						@Override
-						public void onLoadCleared(@Nullable Drawable placeholder) {
-								item.cachedBanner = null;
-							}
+						public void onLoadCleared(@Nullable Drawable placeholder) {}
 					});
 
 			this.item = item;

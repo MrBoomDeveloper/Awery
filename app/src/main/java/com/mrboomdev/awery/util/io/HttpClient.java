@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
 
 import org.mozilla.javascript.annotations.JSGetter;
 
@@ -97,7 +97,7 @@ public class HttpClient {
 			if(body == null) return this;
 
 			this.body = body;
-			this.mediaType = contentType.toMediaType();
+			this.mediaType = MediaType.parse(contentType.toString());
 			return this;
 		}
 
@@ -107,6 +107,38 @@ public class HttpClient {
 			this.body = body;
 			this.mediaType = MediaType.parse(contentType);
 			return this;
+		}
+
+		public String getBody() {
+			return body;
+		}
+
+		public Method getMethod() {
+			return method;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+
+		public CacheMode getCacheMode() {
+			return cacheMode;
+		}
+
+		public Integer getCacheTime() {
+			return cacheTime;
+		}
+
+		public Map<String, String> getHeaders() {
+			return headers;
+		}
+
+		public MediaType getMediaType() {
+			return mediaType;
+		}
+
+		public FormBody.Builder getForm() {
+			return form;
 		}
 
 		public void call(Context context, HttpCallback callback) {

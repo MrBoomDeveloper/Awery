@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.sdk.util;
 
 public class Callbacks {
 

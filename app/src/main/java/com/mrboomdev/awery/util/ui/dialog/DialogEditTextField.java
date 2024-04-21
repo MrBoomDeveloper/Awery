@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -18,6 +20,11 @@ public class DialogEditTextField implements DialogField {
 	private int lines;
 	private TextInputLayout view;
 	private TextInputEditText editText;
+
+	public DialogEditTextField(@NonNull Context context, @StringRes int hint) {
+		this.hint = context.getString(hint);
+		this.context = context;
+	}
 
 	public DialogEditTextField(Context context, String hint) {
 		this.hint = hint;

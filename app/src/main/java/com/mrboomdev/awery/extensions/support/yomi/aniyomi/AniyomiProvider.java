@@ -10,7 +10,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;

@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
 import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;

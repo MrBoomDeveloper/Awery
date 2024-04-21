@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
-import com.mrboomdev.awery.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 
 public interface ListenableSettingsItem {
 

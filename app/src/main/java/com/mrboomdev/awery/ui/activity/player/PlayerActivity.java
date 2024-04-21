@@ -51,7 +51,7 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -242,7 +242,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupButton(binding.settings, controller::openSettingsDialog);
 
 		if(bigSeek > 0) {
-			var time = StringUtil.formatTimer(bigSeek * 1000L);
+			var time = StringUtils.formatTimer(bigSeek * 1000L);
 			binding.quickSkip.setText("Skip " + time);
 
 			setupButton(binding.quickSkip, () -> {
@@ -279,7 +279,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		doubleTapSeek = prefs.getInt(AwerySettings.player.DOUBLE_TAP_SEEK_LENGTH);
 		bigSeek = prefs.getInt(AwerySettings.player.BIG_SEEK_LENGTH);
 
-		gesturesMode = StringUtil.parseEnum(
+		gesturesMode = StringUtils.parseEnum(
 				prefs.getString(AwerySettings.player.GESTURES_MODE),
 				GesturesMode.VOLUME_BRIGHTNESS);
 	}

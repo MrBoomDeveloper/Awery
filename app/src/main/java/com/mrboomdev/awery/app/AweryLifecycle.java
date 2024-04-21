@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -85,7 +86,7 @@ public class AweryLifecycle {
 			if(activities.isEmpty()) return null;
 
 			return stream(activities)
-					.sorted(ActivityInfo::compareTo)
+					.sorted(Collections.reverseOrder())
 					.findFirst().get().activity;
 		} catch(Exception e) {
 			Log.e(TAG, "Failed to get any activity!", e);
@@ -125,7 +126,7 @@ public class AweryLifecycle {
 
 				var pausedField = recordClass.getDeclaredField("paused");
 				pausedField.setAccessible(true);
-				info.isResumed = !Objects.requireNonNullElse((Boolean) pausedField.get(record), false);
+				info.isPaused = Objects.requireNonNullElse((Boolean) pausedField.get(record), false);
 
 				list.add(info);
 			}
@@ -259,23 +260,17 @@ public class AweryLifecycle {
 
 	private static class ActivityInfo<A extends Activity> implements Comparable<ActivityInfo<A>> {
 		public A activity;
-		public boolean isResumed;
+		public boolean isPaused;
 
 		@Override
 		public int compareTo(ActivityInfo o) {
-			if(activity.isDestroyed() && !o.activity.isDestroyed()) return 1;
-			if(!activity.isDestroyed() && o.activity.isDestroyed()) return -1;
+			if(activity.hasWindowFocus() && !o.activity.hasWindowFocus()) return 1;
+			if(!activity.hasWindowFocus() && o.activity.hasWindowFocus()) return -1;
 
-			if(activity.isFinishing() && !o.activity.isFinishing()) return 1;
-			if(!activity.isFinishing() && o.activity.isFinishing()) return -1;
+			if(isPaused && !o.isPaused) return -1;
+			if(!isPaused && o.isPaused) return 1;
 
-			if(activity.isChangingConfigurations() && !o.activity.isChangingConfigurations()) return 1;
-			if(!activity.isChangingConfigurations() && o.activity.isChangingConfigurations()) return -1;
-
-			if(this.isResumed && !o.isResumed) return 1;
-			if(!this.isResumed && o.isResumed) return -1;
-
-			return 0;
+			return Integer.compare(activity.getTaskId(), o.activity.getTaskId());
 		}
 	}
 }

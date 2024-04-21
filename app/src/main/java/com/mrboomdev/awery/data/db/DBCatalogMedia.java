@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.util.ParserAdapter;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -114,7 +114,7 @@ public class DBCatalogMedia {
 		dbMedia.mediumPoster = media.poster.medium;
 
 		if(media.genres != null) {
-			dbMedia.genres = StringUtil.listToUniqueString(media.genres);
+			dbMedia.genres = StringUtils.listToUniqueString(media.genres);
 		}
 
 		if(media.tags != null) {
@@ -123,7 +123,7 @@ public class DBCatalogMedia {
 					.collect(Collectors.joining(";;;")) + ";;;";
 		}
 
-		dbMedia.titles = StringUtil.listToUniqueString(media.titles);
+		dbMedia.titles = StringUtils.listToUniqueString(media.titles);
 		return dbMedia;
 	}
 
@@ -169,18 +169,18 @@ public class DBCatalogMedia {
 			media.latestEpisode = Integer.parseInt(latestEpisode);
 		}
 
-		media.type = StringUtil.parseEnum(type, CatalogMedia.MediaType.class);
-		media.status = StringUtil.parseEnum(status, CatalogMedia.MediaStatus.class);
+		media.type = StringUtils.parseEnum(type, CatalogMedia.MediaType.class);
+		media.status = StringUtils.parseEnum(status, CatalogMedia.MediaStatus.class);
 
 		media.poster.extraLarge = extraLargePoster;
 		media.poster.large = largePoster;
 		media.poster.medium = mediumPoster;
 
-		if(genres != null) media.genres = StringUtil.uniqueStringToList(genres);
-		if(titles != null) media.titles = StringUtil.uniqueStringToList(titles);
+		if(genres != null) media.genres = StringUtils.uniqueStringToList(genres);
+		if(titles != null) media.titles = StringUtils.uniqueStringToList(titles);
 
 		if(tags != null) {
-			media.tags = stream(StringUtil.uniqueStringToList(tags))
+			media.tags = stream(StringUtils.uniqueStringToList(tags))
 					.map(CatalogTag::new).toList();
 		}
 

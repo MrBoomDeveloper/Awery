@@ -18,7 +18,7 @@ import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 

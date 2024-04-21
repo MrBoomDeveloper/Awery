@@ -1,6 +1,6 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.sdk.util;
 
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class CachedValue<K, V> {
 	private K key;

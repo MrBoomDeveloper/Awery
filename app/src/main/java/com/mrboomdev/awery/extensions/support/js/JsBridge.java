@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.util.MimeTypes;
-import com.mrboomdev.awery.util.StringUtil;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.io.HttpClient;
 
 import org.mozilla.javascript.Context;
@@ -18,10 +18,10 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.UniqueTag;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Do not ever init this class by yourself!
@@ -57,10 +57,11 @@ public class JsBridge {
 	public Object fetch(@NonNull ScriptableObject options) {
 		var promise = new JsPromise(scriptScope);
 
-		Map<String, String> headers = null;
+		var request = new HttpClient.Request()
+				.setUrl(options.get("url").toString());
 
 		if(options.get("headers") instanceof NativeObject o) {
-			headers = new HashMap<>();
+			var headers = new HashMap<String, String>();
 
 			for(var entry : o.entrySet()) {
 				var value = entry.getValue();
@@ -71,21 +72,23 @@ public class JsBridge {
 
 				headers.put(entry.getKey().toString(), value.toString());
 			}
-		}
 
-		var request = new HttpClient.Request()
-				.setHeaders(headers)
-				.setUrl(options.get("url").toString());
+			request.setHeaders(headers);
+		}
 
 		if(options.has("body", options)) {
 			var contentTypeSpecified = options.has("contentType", options)
 					? options.get("contentType").toString() : null;
 
 			var contentType = contentTypeSpecified == null ? null
-					: StringUtil.parseEnum(contentTypeSpecified.toUpperCase(Locale.ROOT), MimeTypes.class);
+					: StringUtils.parseEnum(contentTypeSpecified.toUpperCase(Locale.ROOT), MimeTypes.class);
 
 			if(contentType == null) request.setBody(options.get("body").toString(), contentTypeSpecified);
 			else request.setBody(options.get("body").toString(), contentType);
+
+			if(!options.has("method", options)) {
+				request.setMethod(HttpClient.Method.POST);
+			}
 		}
 
 		if(options.has("form", options)) {
@@ -99,6 +102,10 @@ public class JsBridge {
 				}
 
 				request.addFormField(entry.getKey().toString(), value.toString());
+			}
+
+			if(!options.has("method", options)) {
+				request.setMethod(HttpClient.Method.POST);
 			}
 		}
 
@@ -151,16 +158,25 @@ public class JsBridge {
 	}
 
 	@Nullable
+	public static String stringFromJs(Object object) {
+		if(isNull(object)) return null;
+		return object.toString();
+	}
+
+	@Nullable
 	public static <T> T fromJs(Object object, Class<T> clazz) {
-		if(object == null || Undefined.isUndefined(object)) return null;
+		if(isNull(object)) return null;
 
 		if(clazz.isAssignableFrom(String.class)) return clazz.cast(object.toString());
 		if(clazz == Integer.TYPE) return clazz.cast(((Number) object).intValue());
 		if(clazz == Float.TYPE) return clazz.cast(((Number) object).floatValue());
 		if(clazz == Long.TYPE) return clazz.cast(((Number) object).longValue());
-		if(clazz == Boolean.TYPE) return clazz.cast(object);
 
 		return clazz.cast(object);
+	}
+
+	public static boolean isNull(Object o) {
+		return o == null || Undefined.isUndefined(o) || o == UniqueTag.NOT_FOUND || o == UniqueTag.NULL_VALUE;
 	}
 
 	public void log(Object o) {

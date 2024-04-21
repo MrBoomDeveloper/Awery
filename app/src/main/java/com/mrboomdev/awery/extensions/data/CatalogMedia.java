@@ -1,16 +1,10 @@
 package com.mrboomdev.awery.extensions.data;
 
-import android.graphics.drawable.Drawable;
-
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
 
 import com.google.common.collect.Lists;
 import com.mrboomdev.awery.util.Parser;
-import com.squareup.moshi.FromJson;
 import com.squareup.moshi.Json;
-import com.squareup.moshi.ToJson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,11 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Entity(tableName = "media")
 public class CatalogMedia {
-	public static final CatalogMedia INVALID_MEDIA;
 	@NonNull
-	@ColumnInfo(name = "global_id")
 	public String globalId;
 	public List<String> titles = new ArrayList<>();
 	public Map<String, String> ids = new HashMap<>();
@@ -37,8 +28,6 @@ public class CatalogMedia {
 	public List<CatalogTag> tags;
 	public List<String> genres;
 	public MediaStatus status;
-	@Json(ignore = true)
-	public Drawable cachedBanner;
 	@Json(ignore = true)
 	public long visualId;
 
@@ -77,6 +66,7 @@ public class CatalogMedia {
 	}
 
 	public String getTitle() {
+		if(titles.isEmpty()) return null;
 		return titles.get(0);
 	}
 
@@ -125,27 +115,5 @@ public class CatalogMedia {
 
 	public static class ImageVersions {
 		public String extraLarge, large, medium;
-	}
-
-	@SuppressWarnings("unused")
-	public static class Adapter {
-
-		@ToJson
-		public long toJson(@NonNull Calendar calendar) {
-			return calendar.getTimeInMillis();
-		}
-
-		@FromJson
-		public Calendar fromJson(long millis) {
-			var calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(millis);
-			return calendar;
-		}
-	}
-
-	static {
-		INVALID_MEDIA = new CatalogMedia("INTERNAL;;;com.mrboomdev.awery;;;0");
-		INVALID_MEDIA.setTitle("Invalid!");
-		INVALID_MEDIA.description = "Invalid media item!";
 	}
 }

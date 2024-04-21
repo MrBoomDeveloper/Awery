@@ -1,10 +1,13 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 
 import android.util.Log;
 
-import com.mrboomdev.awery.util.Callbacks;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 
 public class JsTask {
 	private static final String TAG = "JsTask";
@@ -27,7 +30,10 @@ public class JsTask {
 
 		this.callback = o -> {
 			if(o instanceof Throwable t) {
-				toast("Something REALLY BAD has happened");
+				CrashHandler.showErrorDialog(
+						getAnyActivity(AppCompatActivity.class),
+						t, false, null);
+
 				Log.e(TAG, "Returned exception, ignoring the response.", t);
 				return;
 			}
