@@ -100,7 +100,7 @@ public class MediaCommentsFragment extends Fragment {
 				return;
 			}
 
-			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1));
+			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1), null);
 		};
 
 		setMedia(media);
@@ -127,22 +127,25 @@ public class MediaCommentsFragment extends Fragment {
 		this.media = media;
 		if(adapter == null) return;
 
-		loadData(null, false);
+		loadData(null, null);
 	}
 
-	private void setComment(@Nullable CatalogComment comment) {
-		setComment(comment, false);
-	}
-
-	private void setComment(@Nullable CatalogComment comment, boolean afterReload) {
+	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
+		this.recycler.scrollToPosition(0);
 		this.comment = comment;
 
 		if(comment != null) {
 			swipeRefresher.setRefreshing(false);
 			loadingAdapter.setEnabled(false);
 
-			if(!afterReload && !currentCommentsPath.contains(comment)) {
-				currentCommentsPath.add(comment);
+			if(reloadThis == null) {
+				if(!currentCommentsPath.contains(comment)) {
+					currentCommentsPath.add(comment);
+				}
+			} else {
+				var wasIndex = currentCommentsPath.indexOf(reloadThis);
+				currentCommentsPath.remove(wasIndex);
+				currentCommentsPath.add(wasIndex, comment);
 			}
 		}
 
@@ -163,7 +166,7 @@ public class MediaCommentsFragment extends Fragment {
 		}
 	}
 
-	private void loadData(CatalogComment parent, boolean isReload) {
+	private void loadData(CatalogComment parent, CatalogComment reloadThis) {
 		if(this.comment != null) {
 			var layoutManager = requireNonNull(recycler.getLayoutManager());
 			scrollPositions.put(this.comment, layoutManager.onSaveInstanceState());
@@ -182,14 +185,14 @@ public class MediaCommentsFragment extends Fragment {
 			return;
 		}
 
-		if(!isReload) {
+		if(reloadThis == null) {
 			loadingAdapter.getBinding(binding -> {
 				binding.info.setVisibility(View.GONE);
 				binding.progressBar.setVisibility(View.VISIBLE);
 			});
 
 			loadingAdapter.setEnabled(true);
-			setComment(null);
+			setComment(null, null);
 		}
 
 		var request = new ReadMediaCommentsRequest()
@@ -202,7 +205,7 @@ public class MediaCommentsFragment extends Fragment {
 			public void onSuccess(CatalogComment parent) {
 				runOnUiThread(() -> {
 					if(getContext() == null) return;
-					setComment(parent, isReload);
+					setComment(parent, reloadThis);
 				}, recycler);
 			}
 
@@ -212,9 +215,9 @@ public class MediaCommentsFragment extends Fragment {
 					if(getContext() == null) return;
 					swipeRefresher.setRefreshing(false);
 
-					if(parent != null && (!isReload ||
+					if(parent != null && (reloadThis == null ||
 							(e instanceof JsException jsE && Objects.equals(jsE.getErrorId(), JsException.ERROR_NOTHING_FOUND)))) {
-						setComment(parent, isReload);
+						setComment(parent, reloadThis);
 						loadingAdapter.setEnabled(false);
 						return;
 					}
@@ -258,7 +261,7 @@ public class MediaCommentsFragment extends Fragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
-		swipeRefresher.setOnRefreshListener(() -> loadData(comment, true));
+		swipeRefresher.setOnRefreshListener(() -> loadData(comment, comment));
 
 		var parentLayout = new LinearLayoutCompat(inflater.getContext());
 		parentLayout.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -311,7 +314,8 @@ public class MediaCommentsFragment extends Fragment {
 					runOnUiThread(() -> {
 						/* So apparently people wanna to see all comments even after you did post a new one.
 						   Weird... */
-						loadData(MediaCommentsFragment.this.comment, true);
+						loadData(MediaCommentsFragment.this.comment,
+								MediaCommentsFragment.this.comment);
 
 						sendBinding.loadingIndicator.setVisibility(View.GONE);
 						sendBinding.sendButton.setVisibility(View.VISIBLE);
@@ -377,7 +381,7 @@ public class MediaCommentsFragment extends Fragment {
 				var comment = holder.getComment();
 				if(comment == MediaCommentsFragment.this.comment) return;
 
-				loadData(comment, false);
+				loadData(comment, null);
 			});
 
 			return holder;
