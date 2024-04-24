@@ -161,9 +161,10 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 		public void bind(@NonNull CatalogMedia item) {
 			binding.title.setText(item.getTitle());
 
-			var description = Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT).toString().trim();
+			var description = item.description == null ? null :
+					Html.fromHtml(item.description, Html.FROM_HTML_MODE_COMPACT).toString().trim();
 
-			while(description.contains("\n\n")) {
+			while(description != null && description.contains("\n\n")) {
 				description = description.replaceAll("\n\n", "\n");
 			}
 

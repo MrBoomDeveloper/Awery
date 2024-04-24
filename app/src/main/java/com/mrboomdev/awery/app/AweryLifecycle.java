@@ -32,11 +32,14 @@ import java.util.Objects;
 public class AweryLifecycle {
 	private static final String TAG = "AweryLifecycle";
 	private static AweryApp app;
-	private static final Thread mainThread = Looper.getMainLooper().getThread();
-	private static final Handler handler = new Handler(Looper.getMainLooper());
+	private static Thread mainThread;
+	private static Handler handler;
 
 	protected static void init(AweryApp app) {
 		AweryLifecycle.app = app;
+
+		mainThread = Looper.getMainLooper().getThread();
+		handler = new Handler(Looper.getMainLooper());
 	}
 
 	public static void restartApp() {

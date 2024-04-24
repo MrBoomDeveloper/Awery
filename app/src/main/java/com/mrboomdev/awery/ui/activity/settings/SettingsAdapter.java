@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
@@ -44,6 +45,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -105,8 +107,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		var isChecking = new AtomicBoolean();
 
 		for(var item : items) {
+			var title = Objects.requireNonNullElse(
+					getString(parent.getContext(), item.getTitle()), item.getTitle());
+
 			var radio = new MaterialRadioButton(parent.getContext());
-			radio.setText(item.getTitle());
+			radio.setText(title);
 			radio.setChecked(item.isSelected());
 
 			radio.setOnCheckedChangeListener((v, isChecked) -> {
@@ -179,7 +184,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setMessage(setting.getDescription(context).trim())
 							.addField(inputField)
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton("Ok", _dialog -> {
+							.setPositiveButton(R.string.ok, _dialog -> {
 								if(setting instanceof CustomSettingsItem custom) {
 									custom.saveValue(inputField.getText());
 								} else {
@@ -212,7 +217,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setMessage(setting.getDescription(context).trim())
 							.addField(inputField)
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton("Ok", _dialog -> {
+							.setPositiveButton(R.string.ok, _dialog -> {
 								if(inputField.getText().isBlank()) {
 									inputField.setError("Text cannot be empty!");
 									return;

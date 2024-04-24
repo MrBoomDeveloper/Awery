@@ -26,6 +26,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -34,6 +35,7 @@ import androidx.room.Room;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
@@ -148,6 +150,19 @@ public class AweryApp extends Application {
 
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		return MaterialColors.getColor(context, res, Color.BLACK);
+	}
+
+	@Nullable
+	public static String getString(@NonNull Context context, String name) {
+		if(name == null) return null;
+
+		try {
+			var clazz = R.string.class;
+			var field = clazz.getField(name);
+			return context.getString(field.getInt(null));
+		} catch(NoSuchFieldException | IllegalAccessException e) {
+			return null;
+		}
 	}
 
 	public static boolean isTv() {

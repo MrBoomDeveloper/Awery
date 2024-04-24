@@ -67,9 +67,13 @@
 					"description": "global_tags_exclusion_description",
 					"behaviour": "excluded_tags"
 				}, {
-					"key": "adult_content", "type": "boolean",
-					"title": "Adult Content", "icon": "ic_round_report",
-					"description": "adult_content_description"
+					"key": "adult_content_mode", "type": "select", "string_value": "DISABLED",
+					"title": "adult_content", "description": "${VALUE_TITLE}", "icon": "ic_round_report",
+					"items": [
+						{ "key": "DISABLED", "title": "disabled" },
+						{ "key": "ENABLED", "title": "enabled" },
+						{ "key": "ONLY", "title": "show_only_it" }
+					]
 				}
 			]
 		}, {

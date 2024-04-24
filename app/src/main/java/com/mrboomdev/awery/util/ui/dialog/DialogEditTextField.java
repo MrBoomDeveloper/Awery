@@ -35,6 +35,10 @@ public class DialogEditTextField implements DialogField {
 		this.context = context;
 	}
 
+	public void setError(@StringRes int res) {
+		setError(context.getString(res));
+	}
+
 	public void setError(@Nullable String error) {
 		this.error = error;
 

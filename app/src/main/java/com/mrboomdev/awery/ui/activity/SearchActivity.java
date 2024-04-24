@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -131,10 +132,7 @@ public class SearchActivity extends AppCompatActivity {
 		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-				if(newState == RecyclerView.SCROLL_STATE_IDLE && !isLoading && !didReachedEnd
-				&& layoutManager.findLastVisibleItemPosition() >= (items.size() - 1)) {
-					search(currentPage + 1);
-				}
+				tryLoadMore();
 			}
 		});
 
@@ -158,6 +156,17 @@ public class SearchActivity extends AppCompatActivity {
 		});
 	}
 
+	private void tryLoadMore() {
+		if(!isLoading && !didReachedEnd) {
+			var lastIndex = items.size() - 1;
+
+			if(recycler.getLayoutManager() instanceof LinearLayoutManager manager
+					&& manager.findLastVisibleItemPosition() >= lastIndex) {
+				search(currentPage + 1);
+			}
+		}
+	}
+
 	private void search(int page) {
 		if(searchQuery == null || searchQuery.isBlank()) return;
 		var wasSearchId = ++searchId;
@@ -175,9 +184,16 @@ public class SearchActivity extends AppCompatActivity {
 
 		loadingAdapter.setEnabled(true);
 
+		var adultMode = AwerySettings.getInstance().getEnum(
+				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
+
 		AnilistSearchQuery.builder()
 				.setSearchQuery(searchQuery)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(switch(adultMode) {
+					case ENABLED -> null;
+					case DISABLED -> false;
+					case ONLY -> true;
+				})
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
 				.setPage(page)
@@ -186,7 +202,9 @@ public class SearchActivity extends AppCompatActivity {
 					if(wasSearchId != searchId) return;
 
 					MediaUtils.filterMedia(items, filteredItems -> {
-						if(filteredItems.isEmpty()) throw new ZeroResultsException("No media was found", R.string.no_media_found);
+						if(filteredItems.isEmpty()) {
+							throw new ZeroResultsException("No media was found", R.string.no_media_found);
+						}
 
 						for(var item : filteredItems) {
 							item.visualId = idGenerator.getLong();
@@ -200,12 +218,14 @@ public class SearchActivity extends AppCompatActivity {
 							if(page == 0) {
 								this.items.addAll(filteredItems);
 								adapter.setItems(this.items);
-								return;
+							} else {
+								var wasSize = this.items.size();
+								this.items.addAll(filteredItems, false);
+								adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
 							}
 
-							var wasSize = this.items.size();
-							this.items.addAll(filteredItems, false);
-							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
+							AweryLifecycle.runDelayed(() ->
+									AweryLifecycle.runOnUiThread(this::tryLoadMore, recycler), 100);
 						});
 					});
 				}).catchExceptions(e -> {
@@ -227,8 +247,8 @@ public class SearchActivity extends AppCompatActivity {
 
 							if(e instanceof ZeroResultsException && page != 0) {
 								this.didReachedEnd = true;
-								binding.title.setText("You've reached the end.");
-								binding.message.setText("No more results was found. If you didn't found what wanted, then try to change your query.");
+								binding.title.setText(R.string.you_reached_end);
+								binding.message.setText(R.string.you_reached_end_description);
 							} else {
 								binding.title.setText(error.getTitle(this));
 								binding.message.setText(error.getMessage(this));
@@ -286,13 +306,15 @@ public class SearchActivity extends AppCompatActivity {
 
 			binding.getRoot().setLayoutParams(params);
 
-			binding.getRoot().setOnClickListener(view -> MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
+			binding.getRoot().setOnClickListener(view ->
+					MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 			binding.getRoot().setOnLongClickListener(view -> {
 				var media = viewHolder.getItem();
 				var index = items.indexOf(media);
 
-				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
+				MediaUtils.openMediaActionsMenu(parent.getContext(), media,
+						() -> MediaUtils.isMediaFiltered(media, isFiltered -> {
 					if(!isFiltered) return;
 
 					AweryLifecycle.runOnUiThread(() -> {

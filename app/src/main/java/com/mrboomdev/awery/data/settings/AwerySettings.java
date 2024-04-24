@@ -29,6 +29,7 @@ public class AwerySettings {
 	private static final Map<String, SettingsItem> cachedPaths = new HashMap<>();
 	private static final String TAG = "AwerySettings";
 	public static final String APP_SETTINGS = "Awery";
+	private static boolean shouldReloadMapValues;
 	private static SettingsItem settingsMapInstance;
 	private final SharedPreferences prefs;
 	private final Context context;
@@ -36,6 +37,10 @@ public class AwerySettings {
 
 	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
 	public static final String LAST_OPENED_VERSION = "last_opened_version";
+
+	public enum AdultContentMode {
+		ENABLED, DISABLED, ONLY
+	}
 
 	public static final class theme {
 		public static final String USE_MATERIAL_YOU = "settings_theme_use_material_you";
@@ -52,7 +57,7 @@ public class AwerySettings {
 	public static final class content {
 		public static final String HIDE_LIBRARY_ENTRIES = "settings_content_hide_library_entries";
 		public static final String GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
-		public static final String ADULT_CONTENT = "settings_content_adult_content";
+		public static final String ADULT_CONTENT = "settings_content_adult_content_mode";
 	}
 
 	public static final class player {
@@ -78,8 +83,19 @@ public class AwerySettings {
 		cachedPaths.clear();
 	}
 
+	private static void reloadSettingsMapValues(Context context) {
+		settingsMapInstance.restoreValues(AwerySettings.getInstance(context));
+		shouldReloadMapValues = false;
+	}
+
 	public static SettingsItem getSettingsMap(Context context) {
-		if(settingsMapInstance != null) return settingsMapInstance;
+		if(settingsMapInstance != null) {
+			if(shouldReloadMapValues) {
+				reloadSettingsMapValues(context);
+			}
+
+			return settingsMapInstance;
+		}
 
 		try(var reader = new BufferedReader(new InputStreamReader(context.getAssets().open("settings.json"), StandardCharsets.UTF_8))) {
 			var builder = new StringBuilder();
@@ -99,8 +115,7 @@ public class AwerySettings {
 				}
 
 				settingsMapInstance.setAsParentForChildren();
-				settingsMapInstance.restoreValues(AwerySettings.getInstance(context));
-
+				reloadSettingsMapValues(context);
 				return settingsMapInstance;
 			} catch(IOException e) {
 				throw new InvalidSyntaxException("Failed to parse settings", e);
@@ -201,6 +216,47 @@ public class AwerySettings {
 		return getString(key, null);
 	}
 
+	public <T extends Enum<T>> T getEnum(String key, T defaultValue, Class<T> enumClass) {
+		if(defaultValue != null && !prefs.contains(key)) {
+			checkEditorExistence().putString(key, defaultValue.name());
+			saveSync();
+			return defaultValue;
+		}
+
+		var result = prefs.getString(key, defaultValue == null ? null : defaultValue.name());
+		if(result == null) return null;
+
+		try {
+			return Enum.valueOf(enumClass, result);
+		} catch(IllegalArgumentException e) {
+			// Enum types were changed, but the saved value links to an enum that no longer exists
+
+			if(defaultValue != null) {
+				checkEditorExistence().putString(key, defaultValue.name());
+				saveSync();
+			}
+
+			return defaultValue;
+		}
+	}
+
+	public <T extends Enum<T>> T getEnum(String key, Class<T> enumClass) {
+		var found = getSettingsMap(context).find(key);
+
+		if(found != null) {
+			var value = found.getStringValue();
+			if(value != null) return Enum.valueOf(enumClass, value);
+		}
+
+		var saved = getEnum(key, null, enumClass);
+
+		if(saved == null && found != null) {
+			return Enum.valueOf(enumClass, found.getStringValue());
+		}
+
+		return saved;
+	}
+
 	public AwerySettings setString(String key, String value) {
 		checkEditorExistence().putString(key, value);
 		return this;
@@ -240,6 +296,7 @@ public class AwerySettings {
 
 		editor.apply();
 		editor = null;
+		shouldReloadMapValues = true;
 		return this;
 	}
 
@@ -256,6 +313,7 @@ public class AwerySettings {
 
 		editor.commit();
 		editor = null;
+		shouldReloadMapValues = true;
 		return this;
 	}
 

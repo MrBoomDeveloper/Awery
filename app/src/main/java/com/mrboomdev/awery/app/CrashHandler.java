@@ -257,7 +257,7 @@ public class CrashHandler {
 					}
 				}
 
-				showErrorDialog(context, message, false, crashFile);
+				showErrorDialog(context, context.getString(R.string.please_report_bug_app) + "\n\n" + message.trim(), false, crashFile);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

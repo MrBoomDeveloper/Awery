@@ -15,14 +15,13 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,10 +64,19 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		getEmptyAdapter().setEnabled(true);
 		setEmptyData(true);
 
+		var adultMode = AwerySettings.getInstance().getEnum(
+				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
+
+		var anilistAdultMode = switch(adultMode) {
+			case ENABLED -> null;
+			case DISABLED -> false;
+			case ONLY -> true;
+		};
+
 		totalTasks++;
 		AnilistSearchQuery.builder()
 				.setCurrentSeason()
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
 				.build().executeQuery(requireContext(), items -> {
@@ -97,44 +105,32 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		loadCategory("Trending", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.build(), cats);
-
-		{ //TODO: REMOVE THIS SHIT BEFORE RELEASE
-			var file = new File(requireContext().getExternalFilesDir(null), "hentai.txt");
-
-			if(file.exists()) {
-				loadCategory("Hentai", currentLoadId, AnilistSearchQuery.builder()
-						.setType(AnilistMedia.MediaType.ANIME)
-						.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
-						.setIsAdult(true)
-						.build(), cats);
-			}
-		}
 
 		loadCategory("Popular", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.build(), cats);
 
-		loadCategory("Movies", currentLoadId, AnilistSearchQuery.builder()
+		loadCategory("Trending Movies", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.TRENDING_DESC)
 				.setFormat(AnilistMedia.MediaFormat.MOVIE)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.build(), cats);
 
 		loadCategory("Most Favorited", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.FAVOURITES_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.build(), cats);
 
 		loadCategory("Top Rated", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.SCORE_DESC)
-				.setIsAdult(AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT) ? null : false)
+				.setIsAdult(anilistAdultMode)
 				.build(), cats);
 	}
 
