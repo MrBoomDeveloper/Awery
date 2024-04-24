@@ -26,6 +26,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.room.Room;
@@ -39,10 +40,10 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.NativeArray;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -86,6 +87,10 @@ public class AweryApp extends Application {
 
 	public static void toast(Object text) {
 		toast(text, 0);
+	}
+
+	public static void toast(@StringRes int res) {
+		toast(getAnyContext().getString(res));
 	}
 
 	public static void removeOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
@@ -200,38 +205,13 @@ public class AweryApp extends Application {
 
 	@Override
 	protected void attachBaseContext(@NonNull Context base) {
-		/*var resourcesWrapper = new Resources(
-				base.getResources().getAssets(),
-				base.getResources().getDisplayMetrics(),
-				base.getResources().getConfiguration()) {
-
-			@NonNull
-			@Override
-			public ColorStateList getColorStateList(int id, @Nullable Theme theme) throws NotFoundException {
-				return ColorStateList.valueOf(Color.RED);
-			}
-
-			@Override
-			public int getColor(int id, @Nullable Theme theme) throws NotFoundException {
-				return Color.RED;
-			}
-		};
-
-		var contextWrapper = new ContextWrapper(base) {
-			@Override
-			public Resources getResources() {
-				return resourcesWrapper;
-			}
-		};
-
-		super.attachBaseContext(contextWrapper);*/
-
 		super.attachBaseContext(base);
 		CrashHandler.setup(this);
 	}
 
 	@Override
 	public void onCreate() {
+		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
 
 		var isDarkModeEnabled = AwerySettings.getInstance(this)

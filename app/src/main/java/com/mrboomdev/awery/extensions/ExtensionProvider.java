@@ -55,7 +55,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void searchMedia(
 			Context context,
-			@Nullable CatalogFilter filter,
+			List<CatalogFilter> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		callback.onFailure(new UnimplementedException("Search not implemented!"));

@@ -10,7 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
+import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.graphql.GraphQLException;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;

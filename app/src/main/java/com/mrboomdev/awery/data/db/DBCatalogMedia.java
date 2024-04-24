@@ -150,7 +150,7 @@ public class DBCatalogMedia {
 
 		if(releaseDate != null) {
 			var dateLong = Long.parseLong(releaseDate);
-			media.releaseDate = ParserAdapter.calendarFromLong(dateLong);
+			media.releaseDate = ParserAdapter.calendarFromNumber(dateLong);
 		}
 
 		if(duration != null) {

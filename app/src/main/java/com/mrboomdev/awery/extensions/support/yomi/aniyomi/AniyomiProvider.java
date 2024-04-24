@@ -143,17 +143,26 @@ public class AniyomiProvider extends YomiProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			CatalogFilter params,
+			List<CatalogFilter> params,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
+		if(params == null) {
+			throw new NullPointerException("params cannot be null!");
+		}
+
+		var query = stream(params).filter(item -> item.getName().equals("query")).findFirst().orElseThrow();
+		var page = stream(params).filter(item -> item.getName().equals("page")).findFirst().orElse(null);
+
 		var filter = source.getFilterList();
 
-		new Thread(() -> AniyomiKotlinBridge.searchAnime(source, params.getPage(), params.getQuery(), filter, (page, t) -> {
-			if(!checkSearchResults(page, t, callback)) return;
+		new Thread(() -> AniyomiKotlinBridge.searchAnime(source,
+				page != null ? page.getNumberValue() : 0,
+				query.getStringValue(), filter, (animePage, t) -> {
+			if(!checkSearchResults(animePage, t, callback)) return;
 
-			callback.onSuccess(CatalogSearchResults.of(stream(page.getAnimes())
+			callback.onSuccess(CatalogSearchResults.of(stream(animePage.getAnimes())
 					.map(item -> new AniyomiMedia(this, item))
-					.toList(), page.getHasNextPage()));
+					.toList(), animePage.getHasNextPage()));
 		})).start();
 	}
 

@@ -106,7 +106,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":sdk"))
+    // AwerySdk
+    implementation "com.github.MrBoomDeveloper:AwerySdk:4dcca61e7b"
 
     // Compatibility for new methods in old Api
     implementation "androidx.core:core-ktx:1.13.0"

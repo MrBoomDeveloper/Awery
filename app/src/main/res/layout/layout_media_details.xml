@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/tracking"
-        android:layout_marginRight="1dp" />
+        android:layout_marginRight="2dp" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.IconButton.Filled"

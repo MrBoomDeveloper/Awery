@@ -240,12 +240,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var lastUsedTitleIndex = new AtomicInteger(0);
 		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>>();
 
-		var searchParams = new CatalogFilter()
-				.setPage(0)
-				.setQuery(media.titles.get(0));
+		var searchParams = List.of(new CatalogFilter(CatalogFilter.Type.STRING, "query"));
+		searchParams.get(0).setValue(media.titles.get(0));
 
 		variantsAdapter.getBinding((binding) ->
-				binding.searchDropdown.setText(searchParams.getQuery(), false));
+				binding.searchDropdown.setText(searchParams.get(0).getStringValue(), false));
 
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
@@ -288,13 +287,16 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(callback == null) return;
 
 				runOnUiThread(() -> {
+					var context = getContext();
+					if(context == null) return;
+
 					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
-						searchParams.setQuery(media.titles.get(newIndex));
-						source.searchMedia(requireContext(), searchParams, callback);
+						searchParams.get(0).setValue(media.titles.get(newIndex));
+						source.searchMedia(context, searchParams, callback);
 
-						variantsAdapter.getBinding((binding) ->
-								binding.searchDropdown.setText(searchParams.getQuery(), false));
+						variantsAdapter.getBinding((binding) -> binding.searchDropdown.setText(
+								searchParams.get(0).getStringValue(), false));
 					} else {
 						handleExceptionMark(source, e);
 						if(autoSelectNextSource()) return;

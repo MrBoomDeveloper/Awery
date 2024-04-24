@@ -7,7 +7,7 @@ import android.content.Context;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistPage;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
-import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
+import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.graphql.GraphQLAdapter;
 import com.mrboomdev.awery.util.graphql.GraphQLParser;

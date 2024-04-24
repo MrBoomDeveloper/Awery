@@ -8,4 +8,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "awery"
 include(":app")
-include(":sdk")

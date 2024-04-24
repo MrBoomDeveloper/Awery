@@ -49,7 +49,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
 		copyFrom(new Builder(SettingsItemType.SCREEN)
-				.setTitle(manager.getName() + " extensions")
+				.setTitle(manager.getName() + " " + activity.getString(R.string.extensions))
 				.setItems(stream(manager.getExtensions(0)).sorted()
 						.map(extension -> new ExtensionSetting(activity, extension))
 						.toList())
@@ -114,7 +114,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						.setOnDismissListener(dialog -> currentDialog = dialog)
 						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
 						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
-						.setPositiveButton("Ok", dialog -> {
+						.setPositiveButton(R.string.ok, dialog -> {
 							var text = inputField.getText().trim();
 
 							if(text.isBlank()) {

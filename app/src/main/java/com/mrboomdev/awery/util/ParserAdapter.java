@@ -159,6 +159,20 @@ public class ParserAdapter {
 	}
 
 	@NonNull
+	public static Calendar calendarFromString(String date) {
+		var calendar = Calendar.getInstance();
+		calendar.setTime(StringUtils.parseDate(date));
+		return calendar;
+	}
+
+	@NonNull
+	public static Calendar calendarFromNumber(@NonNull Number millis) {
+		var calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(millis.longValue());
+		return calendar;
+	}
+
+	@NonNull
 	@FromJson
 	@TypeConverter
 	public static Calendar calendarFromLong(long millis) {

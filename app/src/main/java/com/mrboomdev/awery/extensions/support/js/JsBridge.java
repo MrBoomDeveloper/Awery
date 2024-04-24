@@ -168,9 +168,9 @@ public class JsBridge {
 		if(isNull(object)) return null;
 
 		if(clazz.isAssignableFrom(String.class)) return clazz.cast(object.toString());
-		if(clazz == Integer.TYPE) return clazz.cast(((Number) object).intValue());
-		if(clazz == Float.TYPE) return clazz.cast(((Number) object).floatValue());
-		if(clazz == Long.TYPE) return clazz.cast(((Number) object).longValue());
+		if(clazz == Integer.class) return clazz.cast(((Number) object).intValue());
+		if(clazz == Float.class) return clazz.cast(((Number) object).floatValue());
+		if(clazz == Long.class) return clazz.cast(((Number) object).longValue());
 
 		return clazz.cast(object);
 	}

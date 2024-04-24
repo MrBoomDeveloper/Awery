@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
@@ -39,7 +40,6 @@ import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -216,7 +217,7 @@ public class JsProvider extends ExtensionProvider {
 
 				@Override
 				public String getTitle(android.content.Context context) {
-					return isLoggedIn.get() ? "Logout" : "Login";
+					return context.getString(isLoggedIn.get() ? R.string.logout : R.string.login);
 				}
 
 				@Override
@@ -304,7 +305,7 @@ public class JsProvider extends ExtensionProvider {
 
 			@Override
 			public String getTitle(android.content.Context context) {
-				return "Uninstall extension";
+				return context.getString(R.string.uninstall_extension);
 			}
 
 			@Override
@@ -463,13 +464,35 @@ public class JsProvider extends ExtensionProvider {
 	@SuppressWarnings("unchecked")
 	public void searchMedia(
 			android.content.Context context,
-			CatalogFilter filter,
+			List<CatalogFilter> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
-					fun.call(this.context, scope, null, new Object[] { filter, (Callback<NativeObject>) (o, e) -> {
+					var jsFilters = this.context.newArray(scope, stream(filters)
+							.map(filter -> {
+								var obj = this.context.newObject(scope);
+								obj.put("name", obj, filter.getName());
+
+								obj.put("value", obj, switch(filter.getType()) {
+									case STRING -> filter.getStringValue();
+									case NUMBER -> filter.getNumberValue();
+									case TOGGLE -> filter.getToggleValue();
+									case DATE -> filter.getDateValue().getTimeInMillis();
+
+									case DISABLEABLE -> switch(filter.getDisablableValue()) {
+										case CHECKED -> "checked";
+										case UNCHECKED -> "unchecked";
+										case DISABLED -> "disabled";
+									};
+								});
+
+								return obj;
+							})
+							.toArray());
+
+					fun.call(this.context, scope, null, new Object[] { jsFilters, (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -488,24 +511,31 @@ public class JsProvider extends ExtensionProvider {
 							result.extra = JsBridge.stringFromJs(("extra"));
 							result.description = JsBridge.stringFromJs(item.get("description"));
 
-							result.averageScore = JsBridge.fromJs(item.get("averageScore"), Float.TYPE);
-							result.duration = JsBridge.fromJs(item.get("duration"), Integer.TYPE);
-							result.episodesCount = JsBridge.fromJs(item.get("episodesCount"), Integer.TYPE);
-							result.latestEpisode = JsBridge.fromJs(item.get("latestEpisode"), Integer.TYPE);
+							result.averageScore = JsBridge.fromJs(item.get("averageScore"), Float.class);
+							result.duration = JsBridge.fromJs(item.get("duration"), Integer.class);
+							result.episodesCount = JsBridge.fromJs(item.get("episodesCount"), Integer.class);
+							result.latestEpisode = JsBridge.fromJs(item.get("latestEpisode"), Integer.class);
 
-							result.releaseDate = item.has("releaseDate", item) ?
-									ParserAdapter.calendarFromLong(JsBridge.longFromJs(item.get("releaseDate"))) : null;
+							if(item.has("releaseDate", item)) {
+								var releaseDate = item.get("releaseDate");
+
+								if(releaseDate instanceof Number releaseDateNumber) {
+									result.releaseDate = ParserAdapter.calendarFromNumber(releaseDateNumber);
+								} else {
+									result.releaseDate = ParserAdapter.calendarFromString(releaseDate.toString());
+								}
+							}
 
 							if(item.has("poster", item)) {
 								var poster = item.get("poster");
 
-								if(poster instanceof ConsString posterString) {
-									result.setPoster(JsBridge.stringFromJs(posterString));
-								} else if(poster instanceof NativeObject posterObject) {
+								if(poster instanceof NativeObject posterObject) {
 									result.poster = new CatalogMedia.ImageVersions();
 									result.poster.extraLarge = JsBridge.stringFromJs(posterObject.get("extraLarge"));
 									result.poster.large = JsBridge.stringFromJs(posterObject.get("large"));
 									result.poster.medium = JsBridge.stringFromJs(posterObject.get("medium"));
+								} else {
+									result.setPoster(JsBridge.stringFromJs(poster));
 								}
 							}
 
@@ -529,8 +559,8 @@ public class JsProvider extends ExtensionProvider {
 										.toList();
 							}
 
-							if(item.get("status") instanceof ConsString status) {
-								result.status = switch(status.toString()) {
+							if(!JsBridge.isNull(item.get("status"))) {
+								result.status = switch(item.get("status").toString().toLowerCase(Locale.ROOT)) {
 									case "cancelled" -> CatalogMedia.MediaStatus.CANCELLED;
 									case "coming_soon" -> CatalogMedia.MediaStatus.COMING_SOON;
 									case "ongoing" -> CatalogMedia.MediaStatus.ONGOING;
@@ -540,8 +570,8 @@ public class JsProvider extends ExtensionProvider {
 								};
 							}
 
-							if(item.get("type") instanceof ConsString type) {
-								result.type = switch(type.toString()) {
+							if(!JsBridge.isNull(item.get("type"))) {
+								result.type = switch(item.get("type").toString().toLowerCase(Locale.ROOT)) {
 									case "movie" -> CatalogMedia.MediaType.MOVIE;
 									case "book" -> CatalogMedia.MediaType.BOOK;
 									case "tv" -> CatalogMedia.MediaType.TV;

@@ -29,7 +29,7 @@ public class AnilistProvider extends ExtensionProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			@Nullable CatalogFilter filter,
+			@Nullable List<CatalogFilter> filter,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		new AnilistSearchQuery.Builder().build()

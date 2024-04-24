@@ -76,7 +76,7 @@
         app:layout_constraintBottom_toBottomOf="@id/play"
         app:icon="@drawable/ic_bookmark_filled"
         app:iconSize="26dp"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="4dp"
         android:layout_width="wrap_content"
         android:layout_height="0dp" />
 

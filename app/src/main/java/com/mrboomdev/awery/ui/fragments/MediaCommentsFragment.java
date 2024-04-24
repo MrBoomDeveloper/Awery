@@ -45,8 +45,8 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.sdk.util.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -309,7 +309,10 @@ public class MediaCommentsFragment extends Fragment {
 					if(getContext() == null) return;
 
 					runOnUiThread(() -> {
-						setComment(comment);
+						/* So apparently people wanna to see all comments even after you did post a new one.
+						   Weird... */
+						loadData(MediaCommentsFragment.this.comment, true);
+
 						sendBinding.loadingIndicator.setVisibility(View.GONE);
 						sendBinding.sendButton.setVisibility(View.VISIBLE);
 						sendBinding.input.setText(null);

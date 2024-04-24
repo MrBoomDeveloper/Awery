@@ -43,6 +43,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -234,6 +236,10 @@ public class MediaInfoFragment extends Fragment {
 		var selectedTitle = new AtomicReference<String>();
 		var autoSelectNext = new AtomicBoolean(true);
 
+		var queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
+		var pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
+		var filters = List.of(queryFilter, pageFilter);
+
 		var binding = LayoutTrackingOptionsBinding.inflate(inflater, null, false);
 		binding.source.input.setText("Select a tracker", false);
 		binding.title.input.setText("Select a title", false);
@@ -273,7 +279,7 @@ public class MediaInfoFragment extends Fragment {
 		});
 
 		var titles = new ArrayList<>(media.titles);
-		var more = "Search manually";
+		var more = requireContext().getString(R.string.manual_search);
 		titles.add(more);
 
 		var titlesAdapter = new ArrayListAdapter<>(titles, (item, recycled, parent) -> {
@@ -300,6 +306,7 @@ public class MediaInfoFragment extends Fragment {
 				//TODO: Launch a SearchActivity
 			} else {
 				selectedTitle.set(item);
+				queryFilter.setValue(item);
 			}
 		});
 
@@ -313,7 +320,7 @@ public class MediaInfoFragment extends Fragment {
 		DialogUtils.fixDialog(sheet);
 
 		var load = (Callbacks.Callback2<ExtensionProvider, String>) (source, title) ->
-				source.searchMedia(requireContext(), null, new ExtensionProvider.ResponseCallback<>() {
+				source.searchMedia(requireContext(), filters, new ExtensionProvider.ResponseCallback<>() {
 					@Override
 					public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
 						toast("loaded");
@@ -322,6 +329,7 @@ public class MediaInfoFragment extends Fragment {
 
 					@Override
 					public void onFailure(Throwable e) {
+						Log.e(TAG, "Failed to load items for a tracker", e);
 						toast("failed to load items for a tracker");
 						CrashHandler.showErrorDialog(requireContext(), e, false);
 					}
@@ -364,6 +372,7 @@ public class MediaInfoFragment extends Fragment {
 					} else {
 						var title = titles.get(0);
 						binding.title.input.setText(title, false);
+						queryFilter.setValue(title);
 						load.run(defaultTracked, title);
 					}
 				}

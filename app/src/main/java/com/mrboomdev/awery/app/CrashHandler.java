@@ -159,8 +159,13 @@ public class CrashHandler {
 	public static void showErrorDialog(Context context, Throwable throwable, boolean finishOnClose, File file) {
 		var descriptor = new ExceptionDescriptor(throwable);
 		var title = descriptor.getTitle(context);
+		showErrorDialog(context, title, context.getString(R.string.please_report_bug_app), throwable, finishOnClose, file);
+	}
+
+	public static void showErrorDialog(Context context, String title, String messagePrefix, Throwable throwable, boolean finishOnClose, File file) {
+		var descriptor = new ExceptionDescriptor(throwable);
 		var description = descriptor.getMessage(context);
-		showErrorDialog(context, title, description, finishOnClose, file);
+		showErrorDialog(context, title, messagePrefix + "\n\n" + description, finishOnClose, file);
 	}
 
 	public static void showErrorDialog(Context context, String title, Throwable throwable, boolean finishOnClose, File file) {
@@ -182,7 +187,7 @@ public class CrashHandler {
 	) {
 		runOnUiThread(() -> new MaterialAlertDialogBuilder(context)
 				.setTitle(title.trim())
-				.setMessage("Please send the following details to developers:\n\n" + message.trim())
+				.setMessage(message.trim())
 				.setCancelable(false)
 				.setOnDismissListener(dialog -> {
 					if(file != null) file.delete();

@@ -157,6 +157,7 @@
         android:id="@+id/bookmark"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintDimensionRatio="1"
         style="@style/Widget.Material3.Button.IconButton.Filled"
         android:layout_marginLeft="6dp"
         app:icon="@drawable/ic_bookmark_filled"
