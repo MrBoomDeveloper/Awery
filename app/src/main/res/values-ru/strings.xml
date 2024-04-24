@@ -407,4 +407,5 @@
     <string name="manual_search">Найти самому</string>
     <string name="enabled">Включено</string>
     <string name="show_only_it">Показывать лишь это</string>
+    <string name="adult_content">Для Взрослых</string>
 </resources>
