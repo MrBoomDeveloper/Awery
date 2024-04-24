@@ -84,7 +84,6 @@
     <string name="chaps">Chapters</string>
     <string name="chap">Chapter</string>
     <string name="filler">Filler</string>
-    <string name="adult">Adult</string>
     <string name="tag">Tag</string>
     <string name="tags">Tags</string>
     <string name="synonyms">Synonyms</string>
@@ -399,4 +398,7 @@
     <string name="please_report_bug_app">Please send the following text to the app developers!</string>
     <string name="please_report_bug_extension">Please send the following text to the extension developers!</string>
     <string name="manual_search">Manual search</string>
+    <string name="enabled">Enabled</string>
+    <string name="show_only_it">Show only it</string>
+    <string name="adult_content">Adult Content</string>
 </resources>
