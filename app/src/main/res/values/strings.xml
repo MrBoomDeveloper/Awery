@@ -399,4 +399,6 @@
     <string name="please_report_bug_app">Please send the following text to the app developers!</string>
     <string name="please_report_bug_extension">Please send the following text to the extension developers!</string>
     <string name="manual_search">Manual search</string>
+    <string name="enabled">Enabled</string>
+    <string name="show_only_it">Show only it</string>
 </resources>
