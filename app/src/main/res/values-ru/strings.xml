@@ -406,4 +406,6 @@
     <string name="trending">В Тренде</string>
     <string name="currently_watching">Смотрю</string>
     <string name="manual_search">Найти самому</string>
+    <string name="enabled">Включено</string>
+    <string name="show_only_it">Показывать лишь это</string>
 </resources>
