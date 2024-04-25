@@ -403,4 +403,7 @@
     <string name="currently_watching">Actualmente mirando</string>
     <string name="please_report_bug_extension">¡Por favor, envíe el siguiente texto a los desarrolladores de la extensión!</string>
     <string name="manual_search">Búsqueda manual</string>
+    <string name="enabled">Activado</string>
+    <string name="show_only_it">Mostrar solo</string>
+    <string name="adult_content">Contenido para adultos</string>
 </resources>
