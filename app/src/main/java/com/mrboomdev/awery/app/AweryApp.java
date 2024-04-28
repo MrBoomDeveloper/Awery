@@ -202,14 +202,14 @@ public class AweryApp extends Application {
 					if(v instanceof InstanceCountViolation) return;
 
 					var activity = getAnyActivity(AppCompatActivity.class);
-					CrashHandler.showErrorDialog(activity, v, false);
+					CrashHandler.showErrorDialog(activity, v);
 				}
 			});
 
 			threadPolicy.penaltyListener(Runnable::run, v -> {
 				if(BuildConfig.DEBUG) {
 					var activity = getAnyActivity(AppCompatActivity.class);
-					CrashHandler.showErrorDialog(activity, v, false);
+					CrashHandler.showErrorDialog(activity, v);
 				}
 			});
 		}

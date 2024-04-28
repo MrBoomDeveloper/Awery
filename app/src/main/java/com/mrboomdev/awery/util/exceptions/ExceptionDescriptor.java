@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.strictmode.InstanceCountViolation;
 import android.os.strictmode.Violation;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,17 +11,10 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.graphql.GraphQLException;
-import com.squareup.moshi.FromJson;
-import com.squareup.moshi.ToJson;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.WrappedException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -35,7 +27,6 @@ import java9.util.Objects;
 import kotlinx.serialization.json.internal.JsonDecodingException;
 
 public class ExceptionDescriptor {
-	public static final Adapter ADAPTER = new Adapter();
 	private final Throwable throwable;
 
 	public ExceptionDescriptor(@NonNull Throwable t) {
@@ -215,25 +206,5 @@ public class ExceptionDescriptor {
 	@Override
 	public String toString() {
 		return Log.getStackTraceString(throwable);
-	}
-
-	public static class Adapter {
-
-		@ToJson
-		public String toJson(Throwable serializable) throws IOException {
-			try(var arrayStream = new ByteArrayOutputStream(); var outputStream = new ObjectOutputStream(arrayStream)) {
-				outputStream.writeObject(serializable);
-				return Base64.encodeToString(arrayStream.toByteArray(), Base64.DEFAULT);
-			}
-		}
-
-		@FromJson
-		public Throwable fromJson(@NonNull String string) throws IOException, ClassNotFoundException {
-			var data = Base64.decode(string, Base64.DEFAULT);
-
-			try(var stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
-				return (Throwable) stream.readObject();
-			}
-		}
 	}
 }

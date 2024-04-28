@@ -43,6 +43,21 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_COMMENTS_VOTE = 9;
 	public static final int FEATURE_MEDIA_REPORT = 10;
 	public static final int FEATURE_MEDIA_SEARCH = 11;
+	private final ExtensionsManager manager;
+	private final Extension extension;
+
+	public ExtensionProvider(ExtensionsManager manager, Extension extension) {
+		this.manager = manager;
+		this.extension = extension;
+	}
+
+	public Extension getExtension() {
+		return extension;
+	}
+
+	public ExtensionsManager getManager() {
+		return manager;
+	}
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {
@@ -126,6 +141,14 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public abstract String getId();
+
+	/**
+	 * @return The globally unique identifier of the extension provider
+	 */
+	@NonNull
+	public final String getGlobalId() {
+		return getManager().getId() + ";;;" + getExtension().getId() + ";;;" + getId();
+	}
 
 	/**
 	 * @apiNote The returned value can be an array of format: "en;ru;jp"

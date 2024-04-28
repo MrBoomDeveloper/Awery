@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.popup.dialog;
+package com.mrboomdev.awery.util.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,14 +14,12 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.dialog.DialogCustomField;
-import com.mrboomdev.awery.util.ui.dialog.DialogField;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class DialogBuilder {
-	private final List<DialogField> fields = new LinkedList<>();
+	private final List<View> fields = new LinkedList<>();
 	private Callbacks.Callback1<DialogBuilder> dismissListener;
 	private OnButtonClickListener okListener, cancelListener, neutralListener;
 	private final Context context;
@@ -104,28 +102,18 @@ public class DialogBuilder {
 		return this;
 	}
 
-	public DialogBuilder addView(View view, int index) {
-		addField(new DialogCustomField(view), index);
-		return this;
-	}
-
-	public DialogBuilder addView(View view) {
-		addView(view, fields.size());
-		return this;
-	}
-
-	public DialogBuilder addField(DialogField field, int index) {
+	public DialogBuilder addView(View field, int index) {
 		fields.add(index, field);
 
 		if(fieldsWrapper != null) {
-			fieldsWrapper.addView(field.getView(), index);
+			fieldsWrapper.addView(field, index);
 		}
 
 		return this;
 	}
 
-	public DialogBuilder addField(DialogField field) {
-		addField(field, fields.size());
+	public DialogBuilder addView(View view) {
+		addView(view, fields.size());
 		return this;
 	}
 
@@ -163,7 +151,7 @@ public class DialogBuilder {
 		fieldsWrapper = fieldsLinear;
 
 		for(var field : fields) {
-			fieldsLinear.addView(field.getView());
+			fieldsLinear.addView(field);
 		}
 
 		/*var actionsLinear = new LinearLayoutCompat(context);
@@ -260,11 +248,6 @@ public class DialogBuilder {
 	public DialogBuilder dismiss() {
 		if(dialog != null) {
 			dialog.dismiss();
-
-			for(var field : fields) {
-				field.deAttach();
-			}
-
 			dialog = null;
 		}
 

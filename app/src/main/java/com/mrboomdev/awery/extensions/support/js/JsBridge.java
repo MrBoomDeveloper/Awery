@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import android.util.Log;
@@ -13,7 +14,9 @@ import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.io.HttpClient;
 
+import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -21,6 +24,7 @@ import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.UniqueTag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -161,6 +165,17 @@ public class JsBridge {
 	public static String stringFromJs(Object object) {
 		if(isNull(object)) return null;
 		return object.toString();
+	}
+
+	@Nullable
+	@Contract(pure = true)
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> listFromJs(Object object, Class<T> clazz) {
+		if(isNull(object)) return null;
+
+		return stream((NativeArray) object)
+				.map(item -> fromJs(item, clazz))
+				.toList();
 	}
 
 	@Nullable

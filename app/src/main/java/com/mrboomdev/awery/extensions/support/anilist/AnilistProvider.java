@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -20,6 +22,10 @@ import java.util.List;
  */
 public class AnilistProvider extends ExtensionProvider {
 	private static final List<Integer> FEATURES = List.of(FEATURE_MEDIA_SEARCH);
+
+	public AnilistProvider(ExtensionsManager manager, Extension extension) {
+		super(manager, extension);
+	}
 
 	@Override
 	public Collection<Integer> getFeatures() {

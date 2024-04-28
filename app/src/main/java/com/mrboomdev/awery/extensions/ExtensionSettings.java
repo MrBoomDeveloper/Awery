@@ -24,7 +24,7 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.sdk.util.Callbacks;
-import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.squareup.moshi.Json;
 
@@ -94,7 +94,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				}
 			} catch(Throwable e) {
 				Log.e(TAG, "Failed to load the extension!", e);
-				CrashHandler.showErrorDialog(activity, e, false, null);
+				CrashHandler.showErrorDialog(activity, e);
 			}
 		});
 
@@ -110,7 +110,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 				currentDialog = new DialogBuilder(context)
 						.setTitle(R.string.add_extension)
-						.addField(inputField)
+						.addView(inputField.getView())
 						.setOnDismissListener(dialog -> currentDialog = dialog)
 						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
 						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))

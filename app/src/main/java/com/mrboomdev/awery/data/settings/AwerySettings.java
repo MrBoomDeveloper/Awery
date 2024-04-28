@@ -61,9 +61,20 @@ public class AwerySettings {
 	}
 
 	public static final class player {
+		public static final String DIM_SCREEN = "settings_player_dim_screen";
 		public static final String GESTURES_MODE = "settings_player_gestures";
 		public static final String BIG_SEEK_LENGTH = "settings_player_big_seek_length";
 		public static final String DOUBLE_TAP_SEEK_LENGTH = "settings_player_double_tap_seek_length";
+	}
+
+	public static final class subtitles {
+		public static final String TEXT_FONT = "settings_player_subtitles_text_font";
+		public static final String TEXT_COLOR = "settings_player_subtitles_text_color";
+		public static final String TEXT_SIZE = "settings_player_subtitles_text_size";
+		public static final String TEXT_OPACITY = "settings_player_subtitles_text_opacity";
+		public static final String TEXT_OUTLINE_SIZE = "settings_player_subtitles_text_outline_size";
+		public static final String BACKGROUND_OPACITY = "settings_player_subtitles_background_opacity";
+		public static final String BACKGROUND_COLOR = "settings_player_subtitles_background_color";
 	}
 
 	private AwerySettings(@NonNull Context context, String name) {

@@ -30,10 +30,7 @@ public class JsTask {
 
 		this.callback = o -> {
 			if(o instanceof Throwable t) {
-				CrashHandler.showErrorDialog(
-						getAnyActivity(AppCompatActivity.class),
-						t, false, null);
-
+				CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), t);
 				Log.e(TAG, "Returned exception, ignoring the response.", t);
 				return;
 			}

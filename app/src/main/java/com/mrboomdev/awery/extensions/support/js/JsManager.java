@@ -102,6 +102,7 @@ public class JsManager extends ExtensionsManager {
 				var extension = new Extension(this, provider.id, provider.getName(), provider.version);
 				extension.addProvider(provider);
 				extension.addFlags(Extension.FLAG_WORKING);
+				provider.extension = extension;
 
 				task.resolve(extension);
 			}
@@ -145,6 +146,7 @@ public class JsManager extends ExtensionsManager {
 
 						extension.addProvider(provider);
 						extension.addFlags(Extension.FLAG_WORKING);
+						provider.extension = extension;
 
 						extensions.put(provider.id, extension);
 					} catch(IOException e) {

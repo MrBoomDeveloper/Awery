@@ -2,6 +2,8 @@ package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
 import androidx.preference.PreferenceScreen;
 
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
 import java.util.Collection;
@@ -14,7 +16,8 @@ public class TachiyomiProvider extends YomiProvider {
 	private final Collection<Integer> FEATURES = List.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
 	private final MangaSource source;
 
-	public TachiyomiProvider(MangaSource source) {
+	public TachiyomiProvider(ExtensionsManager manager, Extension extension, MangaSource source) {
+		super(manager, extension);
 		this.source = source;
 	}
 

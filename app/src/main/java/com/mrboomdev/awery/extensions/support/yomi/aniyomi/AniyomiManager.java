@@ -59,11 +59,11 @@ public class AniyomiManager extends YomiManager {
 	@Override
 	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeCatalogueSource source) {
-			return List.of(new AniyomiProvider(source));
+			return List.of(new AniyomiProvider(this, extension, source));
 		} else if(main instanceof AnimeSourceFactory factory) {
 			return stream(factory.createSources())
 					.map(source -> source instanceof AnimeCatalogueSource catalogueSource
-							? new AniyomiProvider(catalogueSource, true) : null)
+							? new AniyomiProvider(this, extension, catalogueSource, true) : null)
 					.filter(item -> {
 						if(item == null) {
 							toast("Failed to create Aniyomi provider");

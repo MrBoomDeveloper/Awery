@@ -17,69 +17,36 @@ import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.util.Selection;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 import java9.util.stream.Collectors;
 
 public class SettingsData {
 	private static final String TAG = "SettingsData";
 
-	public static class SelectionItem {
-		private final String title, id;
-		private boolean selected;
-
-		public SelectionItem(String id, String title, boolean selected) {
-			this.id = id;
-			this.title = title;
-			this.selected = selected;
-		}
-
-		public SelectionItem(String title, boolean selected) {
-			this.title = title;
-			this.selected = selected;
-			this.id = null;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public boolean isSelected() {
-			return selected;
-		}
-
-		public void setSelected(boolean selected) {
-			this.selected = selected;
-		}
-	}
-
 	public static void getSelectionList(
 			Context context,
-			@NonNull String behaviourId,
-			Callbacks.Errorable<Set<SelectionItem>, Throwable> callback
+			@NonNull String listId,
+			Callbacks.Errorable<Selection<Selection.Selectable<String>>, Throwable> callback
 	) {
-		switch(behaviourId) {
-			case "languages" -> {
+		switch(listId) {
+			case "languages" -> callback.onResult(new Selection<>(new ArrayList<>() {{
 				var locales = LocaleListCompat.getAdjustedDefault();
-				var options = new HashSet<SelectionItem>();
 
 				for(int i = 0; i < locales.size(); i++) {
 					var locale = locales.get(i);
 					if(locale == null) continue;
 
-					options.add(new SelectionItem(locale.toLanguageTag(), locale.getDisplayLanguage(), i == 0));
+					add(new Selection.Selectable<>(
+							locale.toLanguageTag(),
+							locale.getDisplayLanguage(),
+							i == 0 ? Selection.State.SELECTED : Selection.State.UNSELECTED));
 				}
-
-				callback.onResult(options, null);
-			}
+			}}), null);
 
 			case "excluded_tags" -> {
 				var flags = AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT)
@@ -89,13 +56,41 @@ public class SettingsData {
 				AnilistTagsQuery.getTags(flags).executeQuery(context, tags -> {
 					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS);
 
-					callback.onResult(stream(tags).map(tag ->
-							new SelectionItem(tag.getName(), excluded.contains(tag.getName())))
-					.collect(Collectors.toSet()), null);
+					callback.onResult(stream(tags).map(tag -> {
+						var state = excluded.contains(tag.getName()) ?
+								Selection.State.SELECTED :
+								Selection.State.UNSELECTED;
+
+						return new Selection.Selectable<>(tag.getName(), tag.getName(), state);
+					}).collect(Selection.collect()), null);
 				}).catchExceptions(e -> callback.onResult(null, e));
 			}
 
 			default -> callback.onResult(null, new IllegalArgumentException("Failed to load tags list"));
+		}
+	}
+
+	public static void saveSelectionList(@NonNull String listId, Selection<Selection.Selectable<String>> list) {
+		switch(listId) {
+			case "languages" -> {
+				var found = list.get(Selection.State.SELECTED);
+				if(found == null) return;
+
+				var locale = LocaleListCompat.forLanguageTags(found.getId());
+				AppCompatDelegate.setApplicationLocales(locale);
+			}
+
+			case "excluded_tags" -> {
+				var items = stream(list.getAll(Selection.State.SELECTED))
+						.map(Selection.Selectable::getItem)
+						.collect(Collectors.toSet());
+
+				AwerySettings.getInstance()
+						.setStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS, items)
+						.saveAsync();
+			}
+
+			default -> Log.e(TAG, "Failed to save tags list");
 		}
 	}
 
@@ -127,31 +122,6 @@ public class SettingsData {
 			}
 		} else {
 			callback.onResult(null, new IllegalArgumentException("Unknown screen: " + behaviourId));
-		}
-	}
-
-	public static void saveSelectionList(@NonNull String behaviourId, Set<SelectionItem> list) {
-		switch(behaviourId) {
-			case "languages" -> {
-				var found = stream(list).filter(SelectionItem::isSelected).findFirst();
-				if(found.isEmpty()) return;
-
-				var locale = LocaleListCompat.forLanguageTags(found.get().getId());
-				AppCompatDelegate.setApplicationLocales(locale);
-			}
-
-			case "excluded_tags" -> {
-				var prefs = AwerySettings.getInstance();
-
-				prefs.setStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS, stream(list)
-						.filter(SelectionItem::isSelected)
-						.map(SelectionItem::getTitle)
-						.collect(Collectors.toSet()));
-
-				prefs.saveAsync();
-			}
-
-			default -> Log.e(TAG, "Failed to save tags list");
 		}
 	}
 }

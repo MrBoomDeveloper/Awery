@@ -21,9 +21,11 @@ import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -37,13 +39,13 @@ import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import java.util.ArrayList;
@@ -59,6 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class JsProvider extends ExtensionProvider {
 	private static final String TAG = "JsProvider";
 	protected String id, version, script;
+	protected Extension extension;
 	private  List<Integer> FEATURES;
 	private final ScriptableObject scope;
 	private final org.mozilla.javascript.Context context;
@@ -73,6 +76,8 @@ public class JsProvider extends ExtensionProvider {
 			@NonNull Context rhinoContext,
 			@NonNull String script
 	) {
+		super(manager, null);
+
 		this.manager = manager;
 		this.context = rhinoContext;
 		this.script = script;
@@ -87,6 +92,11 @@ public class JsProvider extends ExtensionProvider {
 		if(!didInit) {
 			throw new JsException("It looks like your forgot to call the \"setManifest\"!");
 		}
+	}
+
+	@Override
+	public Extension getExtension() {
+		return extension;
 	}
 
 	protected void finishInit(JsBridge bridge, @NonNull NativeObject obj) {
@@ -340,13 +350,109 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryTrackMedia") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ media, options, (Callback<NativeObject>) (o, e) -> {
+					Scriptable input = null;
+
+					if(options != null) {
+						input = context.newObject(scope);
+						input.put("isPrivate", input, options.isPrivate);
+						input.put("progress", input, options.progress);
+						input.put("score", input, options.score);
+						input.put("id", input, options.id);
+
+						if(options.lists != null) {
+							var lists = new NativeArray(options.lists.size());
+
+							for(var list : options.lists) {
+								var listObj = context.newObject(scope);
+								listObj.put("id", listObj, list.getId());
+								listObj.put("title", listObj, list.getTitle());
+								lists.add(listObj);
+							}
+
+							input.put("lists", input, lists);
+						}
+
+						if(options.currentList != null) {
+							var listObj = context.newObject(scope);
+							listObj.put("id", listObj, options.currentList.getId());
+							listObj.put("title", listObj, options.currentList.getTitle());
+							input.put("currentList", input, listObj);
+						}
+
+						if(options.startDate != null) {
+							input.put("fromDate", input, options.startDate.getTimeInMillis());
+						}
+
+						if(options.endDate != null) {
+							input.put("endDate", input, options.endDate.getTimeInMillis());
+						}
+					}
+
+					fun.call(context, scope, null, new Object[]{ media, input, (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
 						}
 
-						callback.onFailure(new UnimplementedException("TODO"));
+						int features = 0;
+
+						for(var feature : (NativeArray) o.get("features", o)) {
+							if(JsBridge.isNull(feature)) continue;
+
+							features = features | switch(feature.toString()) {
+								case "startDate" -> CatalogTrackingOptions.FEATURE_DATE_START;
+								case "endDate" -> CatalogTrackingOptions.FEATURE_DATE_END;
+								case "progress" -> CatalogTrackingOptions.FEATURE_PROGRESS;
+								case "score" -> CatalogTrackingOptions.FEATURE_SCORE;
+								case "lists" -> CatalogTrackingOptions.FEATURE_LISTS;
+								case "isPrivate" -> CatalogTrackingOptions.FEATURE_PRIVATE;
+								case "createList" -> CatalogTrackingOptions.FEATURE_LIST_CREATE;
+								case "deleteList" -> CatalogTrackingOptions.FEATURE_LIST_DELETE;
+								case "editList" -> CatalogTrackingOptions.FEATURE_LIST_EDIT;
+								default -> 0;
+							};
+						}
+
+						var result = new CatalogTrackingOptions(features);
+						result.score = JsBridge.floatFromJs(o.get("score", o));
+						result.progress = JsBridge.floatFromJs(o.get("progress", o));
+						result.isPrivate = JsBridge.booleanFromJs(o.get("isPrivate", o));
+						result.id = JsBridge.stringFromJs(o.get("id", o));
+
+						if(o.has("currentList", o)) {
+							var listObj = (NativeObject) o.get("currentList", o);
+							result.currentList = new CatalogList(listObj.get("title").toString(), listObj.get("id").toString());
+						}
+
+						if(o.has("lists", o)) {
+							result.lists = stream(JsBridge.listFromJs(o.get("lists", o), NativeObject.class))
+									.map(itemObj -> new CatalogList(
+											itemObj.get("title").toString(),
+											itemObj.get("id").toString()))
+									.toList();
+						}
+
+						if(o.has("startDate", o)) {
+							var releaseDate = o.get("startDate");
+
+							if(releaseDate instanceof Number dateNumber) {
+								result.startDate = ParserAdapter.calendarFromNumber(dateNumber);
+							} else {
+								result.startDate = ParserAdapter.calendarFromString(releaseDate.toString());
+							}
+						}
+
+						if(o.has("endDate", o)) {
+							var releaseDate = o.get("endDate");
+
+							if(releaseDate instanceof Number dateNumber) {
+								result.endDate = ParserAdapter.calendarFromNumber(dateNumber);
+							} else {
+								result.endDate = ParserAdapter.calendarFromString(releaseDate.toString());
+							}
+						}
+
+						callback.onSuccess(result);
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
@@ -516,8 +622,8 @@ public class JsProvider extends ExtensionProvider {
 							result.episodesCount = JsBridge.fromJs(item.get("episodesCount"), Integer.class);
 							result.latestEpisode = JsBridge.fromJs(item.get("latestEpisode"), Integer.class);
 
-							if(item.has("releaseDate", item)) {
-								var releaseDate = item.get("releaseDate");
+							if(item.has("endDate", item)) {
+								var releaseDate = item.get("endDate");
 
 								if(releaseDate instanceof Number releaseDateNumber) {
 									result.releaseDate = ParserAdapter.calendarFromNumber(releaseDateNumber);

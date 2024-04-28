@@ -2,7 +2,7 @@ package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
-import static com.mrboomdev.awery.app.CrashHandler.reportIfExistsCrash;
+import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
 
 import android.os.Bundle;
 
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 
 		binding.navbar.removeTabAt(2);
-		reportIfExistsCrash(this);
+		reportIfCrashHappened(this);
 	}
 
 	@Override

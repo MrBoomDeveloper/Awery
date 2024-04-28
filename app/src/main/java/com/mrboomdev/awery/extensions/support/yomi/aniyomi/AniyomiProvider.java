@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -35,12 +37,16 @@ public class AniyomiProvider extends YomiProvider {
 	private final AnimeCatalogueSource source;
 	private final boolean isFromSource;
 
-	public AniyomiProvider(AnimeCatalogueSource source) {
+	public AniyomiProvider(ExtensionsManager manager, Extension extension, AnimeCatalogueSource source) {
+		super(manager, extension);
+
 		this.source = source;
 		this.isFromSource = false;
 	}
 
-	public AniyomiProvider(AnimeCatalogueSource source, boolean isFromSource) {
+	public AniyomiProvider(ExtensionsManager manager, Extension extension, AnimeCatalogueSource source, boolean isFromSource) {
+		super(manager, extension);
+
 		this.source = source;
 		this.isFromSource = isFromSource;
 	}

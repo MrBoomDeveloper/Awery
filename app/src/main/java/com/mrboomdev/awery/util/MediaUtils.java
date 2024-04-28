@@ -38,7 +38,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
-import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
@@ -166,7 +166,7 @@ public class MediaUtils {
 
 		var dialog = new DialogBuilder(context)
 				.setTitle("Create new list")
-				.addField(input)
+				.addView(input.getView())
 				.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
 				.setPositiveButton("Create", _dialog -> {
 					var text = input.getText().trim();

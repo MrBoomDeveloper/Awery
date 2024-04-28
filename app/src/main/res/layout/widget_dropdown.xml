@@ -8,13 +8,13 @@
     <AutoCompleteTextView
         android:id="@+id/input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="14dp"
+        android:layout_height="match_parent"
         android:paddingLeft="14dp"
         android:paddingRight="40dp"
         android:textSize="14sp"
+        android:lines="1"
         android:inputType="none"
-        tools:hint="@tools:sample/lorem/random"
-        android:ellipsize="end" />
+        android:paddingVertical="0dp"
+        tools:hint="@tools:sample/lorem/random" />
 
 </com.google.android.material.textfield.TextInputLayout>

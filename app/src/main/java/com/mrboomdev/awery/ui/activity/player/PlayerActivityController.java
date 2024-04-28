@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -43,15 +44,27 @@ public class PlayerActivityController {
 	private final PlayerActivity activity;
 	private final Runnable hideUiRunnable;
 	private boolean isUiFadeLocked, isUiVisible;
+	private boolean dim;
 
 	public PlayerActivityController(PlayerActivity activity) {
+		this.dim = AwerySettings.getInstance().getBoolean(AwerySettings.player.DIM_SCREEN);
 		this.activity = activity;
+
 		this.hideUiRunnable = () -> {
 			if(!isUiVisible) return;
 
 			activity.setButtonsClickability(false);
-			ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 1, 0).start();
-			ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", .6f, 0).start();
+
+			ObjectAnimator.ofFloat(
+					activity.binding.uiOverlay,
+					"alpha",
+					1, 0).start();
+
+			ObjectAnimator.ofFloat(
+					activity.binding.darkOverlay,
+					"alpha",
+					dim ? .6f : 0, 0).start();
+
 			isUiVisible = false;
 		};
 	}
@@ -109,8 +122,17 @@ public class PlayerActivityController {
 		this.isUiVisible = true;
 
 		activity.setButtonsClickability(true);
-		ObjectAnimator.ofFloat(activity.binding.uiOverlay, "alpha", 0, 1).setDuration(222).start();
-		ObjectAnimator.ofFloat(activity.binding.darkOverlay, "alpha", 0, .6f).setDuration(222).start();
+
+		ObjectAnimator.ofFloat(
+				activity.binding.uiOverlay,
+				"alpha",
+				0, 1).setDuration(222).start();
+
+		if(dim) {
+			ObjectAnimator.ofFloat(
+					activity.binding.darkOverlay,
+					"alpha", 0, .6f).setDuration(222).start();
+		}
 	}
 
 	public void hideUi() {

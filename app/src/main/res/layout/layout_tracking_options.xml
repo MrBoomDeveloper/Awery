@@ -1,22 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp">
+        android:paddingTop="24dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="32dp"
+        android:clipToPadding="false">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nothing selected"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"
+            android:textColor="?attr/colorOnBackground"
+            android:id="@+id/searchStatus"
+            android:padding="8dp"
+            android:layout_marginLeft="-8dp"
+            android:layout_marginRight="-8dp"
+            android:layout_marginTop="-8dp"
+            android:background="@drawable/ripple_rect_you" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="12dp"
-            android:layout_marginHorizontal="16dp"
             android:orientation="horizontal">
 
             <include android:id="@+id/source"
@@ -26,7 +42,7 @@
                 layout="@layout/widget_dropdown" />
 
             <Space
-                android:layout_width="6dp"
+                android:layout_width="8dp"
                 android:layout_height="0dp" />
 
             <include android:id="@+id/title"
@@ -43,8 +59,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -73,8 +88,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -87,15 +101,16 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_marginRight="6dp">
+                android:layout_marginRight="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/progress"
-                    android:layout_width="102dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
                     android:imeOptions="flagNoFullscreen|actionNext"
-                    android:hint="0"
-                    android:textSize="14sp" />
+                    android:inputType="number|numberSigned"
+                    android:textSize="14sp"
+                    android:paddingVertical="0dp"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -108,6 +123,7 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="-2dp"
                 android:layout_marginBottom="-4dp"
+                android:paddingVertical="0dp"
                 app:cornerRadius="5dp" />
 
         </LinearLayout>
@@ -118,8 +134,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -136,10 +151,11 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/score"
                     android:layout_width="150dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:imeOptions="flagNoFullscreen|actionNext"
-                    android:hint="None"
-                    android:textSize="14sp" />
+                    android:inputType="number|numberDecimal"
+                    android:textSize="14sp"
+                    android:paddingVertical="0dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -151,45 +167,74 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_marginBottom="5dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="?attr/colorOnBackground"
-                android:text="Date"
-                android:textSize="16sp" />
+                android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginRight="6dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/startDate"
-                    android:layout_width="125dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:imeOptions="flagNoFullscreen|actionNext"
-                    android:hint="Start"
-                    android:textSize="14sp" />
+                    android:textColor="?attr/colorOnBackground"
+                    android:text="Start date"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="6dp"/>
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="wrap_content"
-                android:layout_height="50dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/startDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:imeOptions="flagNoFullscreen|actionNext"
+                        android:inputType="none"
+                        android:paddingVertical="0dp"
+                        android:textSize="14sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/endDate"
-                    android:layout_width="125dp"
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="0dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginVertical="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:imeOptions="flagNoFullscreen|actionNext"
-                    android:hint="End"
-                    android:textSize="14sp" />
+                    android:textColor="?attr/colorOnBackground"
+                    android:text="End date"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="6dp"/>
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/endDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:imeOptions="flagNoFullscreen|actionNext"
+                        android:textSize="14sp"
+                        android:paddingVertical="0dp"
+                        android:inputType="none" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -199,8 +244,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="5dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_marginBottom="5dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -219,7 +263,7 @@
 
         <include android:id="@+id/loadingState"
             layout="@layout/layout_loading"
-            android:layout_marginHorizontal="32dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginVertical="64dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -228,29 +272,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="5dp"
-            android:paddingHorizontal="16dp">
+            android:layout_marginTop="5dp">
 
             <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.ElevatedButton"
                 android:id="@+id/delete"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/delete" />
+                android:text="@string/delete"
+                android:enabled="false" />
 
             <Space
-                android:layout_width="6dp"
+                android:layout_width="8dp"
                 android:layout_height="0dp" />
 
             <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button"
                 android:id="@+id/confirm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/confirm" />
+                android:text="@string/save"
+                android:enabled="false" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

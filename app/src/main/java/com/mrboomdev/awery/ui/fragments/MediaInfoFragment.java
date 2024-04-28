@@ -1,9 +1,5 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.stream;
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -19,8 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,39 +22,19 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
-import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
-import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.ui.popup.sheet.TrackingSheet;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
-import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
 
@@ -171,10 +145,10 @@ public class MediaInfoFragment extends Fragment {
 			if(builder.length() > 0) builder.append(" • ");
 
 			if(media.duration < 60) {
-				builder.append(media.duration).append("m ");
+				builder.append(media.duration).append(getString(R.string.minute_short)).append(" ");
 			} else {
-				builder.append((media.duration / 60)).append("h ")
-						.append((media.duration % 60)).append("m ");
+				builder.append((media.duration / 60)).append(getString(R.string.hour_short)).append(" ")
+						.append((media.duration % 60)).append(getString(R.string.minute_short)).append(" ");
 			}
 
 			builder.append(getString(R.string.duration));
@@ -222,215 +196,12 @@ public class MediaInfoFragment extends Fragment {
 			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
 		});
 
-		binding.details.tracking.setOnClickListener(v -> openTrackingDialog());
+		binding.details.tracking.setOnClickListener(v -> {
+			var dialog = new TrackingSheet(media);
+			dialog.show(getParentFragmentManager(), TrackingSheet.TAG);
+		});
 
 		setMedia(media);
 		return binding.getRoot();
-	}
-
-	private void openTrackingDialog() {
-		var mappedIds = new HashMap<String, ExtensionProvider>();
-		var inflater = LayoutInflater.from(requireContext());
-
-		var progress = new AtomicReference<CatalogMediaProgress>();
-		var selectedTitle = new AtomicReference<String>();
-		var autoSelectNext = new AtomicBoolean(true);
-
-		var queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-		var pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
-		var filters = List.of(queryFilter, pageFilter);
-
-		var binding = LayoutTrackingOptionsBinding.inflate(inflater, null, false);
-		binding.source.input.setText("Select a tracker", false);
-		binding.title.input.setText("Select a title", false);
-
-		var sourcesAdapter = new ArrayListAdapter<String>((id, recycled, parent) -> {
-			var item = mappedIds.get(id);
-
-			if(item == null) {
-				throw new IllegalStateException("Invalid provider id: " + id);
-			}
-
-			if(recycled == null) {
-				var itemBinding = ItemListDropdownBinding.inflate(inflater, parent, false);
-				recycled = itemBinding.getRoot();
-			}
-
-			TextView title = recycled.findViewById(R.id.title);
-			ImageView icon = recycled.findViewById(R.id.icon);
-
-			title.setText(item.getName());
-
-			return recycled;
-		});
-
-		binding.source.input.setOnItemClickListener((parent, view, position, id) -> {
-			autoSelectNext.set(true);
-
-			var itemId = sourcesAdapter.getItem(position);
-			var item = mappedIds.get(itemId);
-
-			if(item == null) {
-				throw new IllegalStateException("Invalid provider id: " + itemId);
-			}
-
-			binding.source.input.setText(item.getName(), false);
-			updateTrackingDialogState(binding, null, null);
-		});
-
-		var titles = new ArrayList<>(media.titles);
-		var more = requireContext().getString(R.string.manual_search);
-		titles.add(more);
-
-		var titlesAdapter = new ArrayListAdapter<>(titles, (item, recycled, parent) -> {
-			if(recycled == null) {
-				var itemBinding = ItemListDropdownBinding.inflate(inflater, parent, false);
-				recycled = itemBinding.getRoot();
-			}
-
-			TextView title = recycled.findViewById(R.id.title);
-			title.setText(item);
-
-			return recycled;
-		});
-
-		binding.title.input.setOnItemClickListener((parent, view, position, id) -> {
-			autoSelectNext.set(true);
-
-			var item = titles.get(position);
-			if(item == null) return;
-
-			if(item.equals(more)) {
-				binding.title.input.setText(selectedTitle.get(), false);
-				toast("Currently manual search isn't available :(");
-				//TODO: Launch a SearchActivity
-			} else {
-				selectedTitle.set(item);
-				queryFilter.setValue(item);
-			}
-		});
-
-		binding.source.input.setAdapter(sourcesAdapter);
-		binding.title.input.setAdapter(titlesAdapter);
-		updateTrackingDialogState(binding, null, null);
-
-		var sheet = new BottomSheetDialog(requireContext());
-		sheet.setContentView(binding.getRoot());
-		sheet.show();
-		DialogUtils.fixDialog(sheet);
-
-		var load = (Callbacks.Callback2<ExtensionProvider, String>) (source, title) ->
-				source.searchMedia(requireContext(), filters, new ExtensionProvider.ResponseCallback<>() {
-					@Override
-					public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
-						toast("loaded");
-						MediaUtils.launchMediaActivity(requireContext(), results.get(0));
-					}
-
-					@Override
-					public void onFailure(Throwable e) {
-						Log.e(TAG, "Failed to load items for a tracker", e);
-						toast("failed to load items for a tracker");
-						CrashHandler.showErrorDialog(requireContext(), e, false);
-					}
-				});
-
-		new Thread(() -> {
-			var progressDao = getDatabase().getMediaProgressDao();
-			progress.set(progressDao.get(media.globalId));
-
-			if(progress.get() == null) {
-				progress.set(new CatalogMediaProgress(media.globalId));
-				progressDao.insert(progress.get());
-			}
-
-			var availableSources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-					.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_TRACK))
-					.flatMap(AweryApp::stream)
-					.toList();
-
-			for(var provider : availableSources) {
-				mappedIds.put(provider.getId(), provider);
-			}
-
-			runOnUiThread(() -> {
-				if(availableSources.isEmpty()) {
-					updateTrackingDialogState(binding, null,
-							new ZeroResultsException("No trackable sources available", R.string.no_tracker_extensions));
-				} else {
-					var foundTracked = stream(availableSources)
-							.filter(provider -> progress.get().trackers.contains(provider.getId()))
-							.findFirst();
-
-					var defaultTracked = foundTracked.isPresent()
-							? foundTracked.get() : availableSources.get(0);
-
-					binding.source.input.setText(defaultTracked.getName(), false);
-
-					if(foundTracked.isPresent()) {
-						//TODO: Wait for the data to load
-					} else {
-						var title = titles.get(0);
-						binding.title.input.setText(title, false);
-						queryFilter.setValue(title);
-						load.run(defaultTracked, title);
-					}
-				}
-
-				sourcesAdapter.setItems(mappedIds.keySet());
-			});
-		}).start();
-	}
-
-	private void updateTrackingDialogState(
-			LayoutTrackingOptionsBinding binding,
-			CatalogTrackingOptions trackingOptions,
-			Throwable throwable
-	) {
-		if(getContext() == null) return;
-
-		if(trackingOptions == null) {
-			binding.loadingState.getRoot().setVisibility(View.VISIBLE);
-
-			if(throwable != null) {
-				var description = new ExceptionDescriptor(throwable);
-
-				binding.loadingState.title.setText(description.getTitle(requireContext()));
-				binding.loadingState.message.setText(description.getMessage(requireContext()));
-
-				binding.loadingState.progressBar.setVisibility(View.GONE);
-				binding.loadingState.info.setVisibility(View.VISIBLE);
-			} else {
-				binding.loadingState.info.setVisibility(View.GONE);
-				binding.loadingState.progressBar.setVisibility(View.VISIBLE);
-			}
-		} else {
-			binding.loadingState.getRoot().setVisibility(View.GONE);
-		}
-
-		binding.progressIncrement.setOnClickListener(v -> {
-			if(trackingOptions == null) return;
-
-			trackingOptions.progress++;
-			binding.progress.setText(String.valueOf(trackingOptions.progress));
-		});
-
-		binding.progress.setText(String.valueOf(trackingOptions != null ? trackingOptions.progress : 0));
-
-		binding.progressWrapper.setVisibility(trackingOptions != null &&
-				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PROGRESS) ? View.VISIBLE : View.GONE);
-
-		binding.statusWrapper.setVisibility(trackingOptions != null &&
-				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_LISTS) ? View.VISIBLE : View.GONE);
-
-		binding.isPrivateWrapper.setVisibility(trackingOptions != null &&
-				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PRIVATE) ? View.VISIBLE : View.GONE);
-
-		binding.scoreWrapper.setVisibility(trackingOptions != null &&
-				trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_SCORE) ? View.VISIBLE : View.GONE);
-
-		binding.dateWrapper.setVisibility(trackingOptions != null &&
-				(trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_DATE_START)
-						|| trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_DATE_END)) ? View.VISIBLE : View.GONE);
 	}
 }

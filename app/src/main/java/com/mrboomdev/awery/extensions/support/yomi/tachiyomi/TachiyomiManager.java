@@ -58,7 +58,7 @@ public class TachiyomiManager extends YomiManager {
 	@Override
 	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof CatalogueSource source) {
-			return List.of(new TachiyomiProvider(source));
+			return List.of(new TachiyomiProvider(this, extension, source));
 		} else if(main instanceof SourceFactory factory) {
 			return stream(factory.createSources())
 					.map(source -> createProviders(extension, source))

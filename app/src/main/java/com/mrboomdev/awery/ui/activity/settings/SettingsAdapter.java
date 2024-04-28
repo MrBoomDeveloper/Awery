@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
@@ -12,22 +11,15 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
@@ -38,17 +30,15 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-import com.mrboomdev.awery.ui.popup.dialog.DialogBuilder;
+import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
+import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.stream.Collectors;
 
@@ -99,44 +89,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		setData(data, true);
 	}
 
-	private void createRadioButtons(
-			ViewGroup parent,
-			@NonNull List<SettingsData.SelectionItem> items,
-			AtomicReference<SettingsData.SelectionItem> selectedItem
-	) {
-		var isChecking = new AtomicBoolean();
-
-		for(var item : items) {
-			var title = Objects.requireNonNullElse(
-					getString(parent.getContext(), item.getTitle()), item.getTitle());
-
-			var radio = new MaterialRadioButton(parent.getContext());
-			radio.setText(title);
-			radio.setChecked(item.isSelected());
-
-			radio.setOnCheckedChangeListener((v, isChecked) -> {
-				if(isChecking.getAndSet(true)) return;
-				selectedItem.set(item);
-
-				for(int i = 0; i < parent.getChildCount(); i++) {
-					var child = parent.getChildAt(i);
-					if(child == radio) continue;
-
-					if(child instanceof MaterialRadioButton materialRadio) {
-						materialRadio.setChecked(false);
-					} else {
-						throw new IllegalStateException("Unexpected child type: " + child);
-					}
-				}
-
-				item.setSelected(isChecked);
-				isChecking.set(false);
-			});
-
-			parent.addView(radio, ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
-		}
-	}
-
 	@NonNull
 	@Override
 	@SuppressWarnings("unchecked")
@@ -182,7 +134,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var dialog = new DialogBuilder(context)
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
-							.addField(inputField)
+							.addView(inputField.getView())
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
 								if(setting instanceof CustomSettingsItem custom) {
@@ -215,7 +167,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var dialog = new DialogBuilder(context)
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
-							.addField(inputField)
+							.addView(inputField.getView())
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
 								if(inputField.getText().isBlank()) {
@@ -260,27 +212,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 
 				case SELECT, SELECT_INT -> {
-					final var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
-					final var selectedItem = new AtomicReference<SettingsData.SelectionItem>();
-
-					var contentView = new LinearLayoutCompat(parent.getContext());
-					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
-
-					var radioGroup = new RadioGroup(parent.getContext());
-					radioGroup.setOrientation(LinearLayout.VERTICAL);
-
-					var dialog = new DialogBuilder(parent.getContext())
-							.setTitle(setting.getTitle(parent.getContext()))
-							.addView(contentView)
+					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
+							.setTitle(setting.getTitle(context))
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton(R.string.confirm, _dialog -> {
-								if(radioGroup.getParent() == null) return;
-
-								var items = selectionItems.get();
-								if(items == null) return;
-
+							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
 								if(setting instanceof CustomSettingsItem customSetting) {
-									var item = selectedItem.get();
+									var item = selection.get(Selection.State.SELECTED);
 
 									if(item == null) {
 										_dialog.dismiss();
@@ -301,9 +238,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								}
 
 								if(setting.getBehaviour() != null) {
-									SettingsData.saveSelectionList(setting.getBehaviour(), items);
+									SettingsData.saveSelectionList(setting.getBehaviour(), selection);
 								} else {
-									var item = selectedItem.get();
+									var item = selection.get(Selection.State.SELECTED);
 
 									if(item == null) {
 										_dialog.dismiss();
@@ -336,8 +273,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.show();
 
 					if(setting.getBehaviour() != null) {
-						SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
-							selectionItems.set(items);
+						SettingsData.getSelectionList(context, setting.getBehaviour(), (items, e) -> {
 							if(!dialog.isShown()) return;
 
 							if(e != null) {
@@ -346,14 +282,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								return;
 							}
 
-							var sorted = stream(items)
-									.sorted((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()))
-									.toList();
-
-							runOnUiThread(() -> {
-								createRadioButtons(radioGroup, sorted, selectedItem);
-								contentView.addView(radioGroup);
-							});
+							runOnUiThread(() -> dialog.setItems(items));
 						});
 					} else if(setting.getItems() != null && !setting.getItems().isEmpty()) {
 						String selected;
@@ -368,48 +297,28 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									: setting.getStringValue();
 						}
 
-						var options = new HashSet<SettingsData.SelectionItem>();
-						selectionItems.set(options);
-
-						createRadioButtons(radioGroup, stream(setting.getItems())
-								.map(settingItem -> new SettingsData.SelectionItem(
-										settingItem.getKey(),
-										settingItem.getTitle(parent.getContext()),
-										settingItem.getKey().equals(selected)))
-								.toList(), selectedItem);
-
-						contentView.addView(radioGroup);
+						dialog.setItems(stream(setting.getItems())
+								.map(item -> new Selection.Selectable<>(
+										item.getTitle(context),
+										item.getKey(),
+										item.getKey().equals(selected) ? Selection.State.SELECTED : Selection.State.UNSELECTED
+								)).collect(Selection.collect()));
 					} else {
 						throw new IllegalArgumentException("Failed to load items list");
 					}
 				}
 
 				case MULTISELECT -> {
-					var selectionItems = new AtomicReference<Set<SettingsData.SelectionItem>>();
-
-					var contentView = new LinearLayoutCompat(parent.getContext());
-					contentView.setOrientation(LinearLayoutCompat.VERTICAL);
-
-					var chips = new ChipGroup(parent.getContext());
-					chips.setChipSpacingVertical(dpPx(-4));
-
-					var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
-					chips.setLayoutParams(chipsParams);
-
-					var dialog = new DialogBuilder(parent.getContext())
+					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.MULTI)
 							.setTitle(setting.getTitle(parent.getContext()))
-							.addView(contentView)
 							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton(R.string.confirm, _dialog -> {
-								if(chips.getParent() == null) return;
-
-								var items = selectionItems.get();
+							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
+								var items = selection.getAll(Selection.State.SELECTED);
 								if(items == null) return;
 
 								if(setting instanceof CustomSettingsItem customSetting) {
 									customSetting.saveValue(stream(items)
-											.filter(SettingsData.SelectionItem::isSelected)
-											.map(SettingsData.SelectionItem::getId)
+											.map(Selection.Selectable::getId)
 											.collect(Collectors.toSet()));
 
 									_dialog.dismiss();
@@ -421,7 +330,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									return;
 								}
 
-								SettingsData.saveSelectionList(setting.getBehaviour(), items);
+								SettingsData.saveSelectionList(setting.getBehaviour(), selection);
 								_dialog.dismiss();
 
 								if(setting.isRestartRequired()) {
@@ -431,8 +340,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.show();
 
 					if(setting.getBehaviour() != null) {
-						SettingsData.getSelectionList(getContext(parent), setting.getBehaviour(), (items, e) -> {
-							selectionItems.set(items);
+						SettingsData.getSelectionList(context, setting.getBehaviour(), (items, e) -> {
 							if(!dialog.isShown()) return;
 
 							if(e != null) {
@@ -441,66 +349,21 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								return;
 							}
 
-							var sorted = stream(items).sorted((a, b) ->
-											a.getTitle().compareToIgnoreCase(b.getTitle()))
-									.toList();
-
-							runOnUiThread(() -> {
-								for(var item : sorted) {
-									var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
-									var contextWrapper = new ContextThemeWrapper(context, style);
-
-									var chip = new Chip(contextWrapper);
-									chip.setCheckable(true);
-									chip.setText(item.getTitle());
-									chip.setChecked(item.isSelected());
-
-									chip.setOnCheckedChangeListener((_view, isChecked) ->
-											item.setSelected(isChecked));
-
-									chips.addView(chip);
-								}
-
-								contentView.addView(chips);
-							});
+							runOnUiThread(() -> dialog.setItems(items));
 						});
 					} else if(setting.getItems() != null) {
 						var selected = setting instanceof CustomSettingsItem customSetting
 								? (Set<String>) customSetting.getSavedValue()
 								: AwerySettings.getInstance().getStringSet(setting.getFullKey());
 
-						var items = stream(setting.getItems())
-								.map(settingItem -> new SettingsData.SelectionItem(
-										settingItem.getKey(),
-										settingItem.getTitle(parent.getContext()),
-										selected.contains(settingItem.getKey())))
-								.collect(Collectors.toSet());
-
-						selectionItems.set(items);
-						if(!dialog.isShown()) return;
-
-						var sorted = stream(items).sorted((a, b) ->
-										a.getTitle().compareToIgnoreCase(b.getTitle()))
-								.toList();
-
-						runOnUiThread(() -> {
-							for(var item : sorted) {
-								var style = com.google.android.material.R.style.Widget_Material3_Chip_Filter;
-								var contextWrapper = new ContextThemeWrapper(context, style);
-
-								var chip = new Chip(contextWrapper);
-								chip.setCheckable(true);
-								chip.setText(item.getTitle());
-								chip.setChecked(item.isSelected());
-
-								chip.setOnCheckedChangeListener((_view, isChecked) ->
-										item.setSelected(isChecked));
-
-								chips.addView(chip);
-							}
-
-							contentView.addView(chips);
-						});
+						dialog.setItems(stream(setting.getItems())
+								.map(item -> new Selection.Selectable<>(
+										item.getTitle(context),
+										item.getKey(),
+										selected.contains(item.getKey())
+												? Selection.State.SELECTED
+												: Selection.State.UNSELECTED
+								)).collect(Selection.collect()));
 					} else {
 						throw new IllegalArgumentException("Failed to load items list");
 					}

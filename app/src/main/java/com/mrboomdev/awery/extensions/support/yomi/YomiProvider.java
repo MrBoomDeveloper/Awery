@@ -18,13 +18,19 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public abstract class YomiProvider extends ExtensionProvider {
+
+	public YomiProvider(ExtensionsManager manager, Extension extension) {
+		super(manager, extension);
+	}
 
 	public abstract void setupPreferenceScreen(PreferenceScreen screen);
 
