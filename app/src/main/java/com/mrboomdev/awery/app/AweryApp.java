@@ -165,6 +165,10 @@ public class AweryApp extends Application {
 		}
 	}
 
+	public static boolean isLandscape() {
+		return getAnyContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+	}
+
 	public static boolean isTv() {
 		var pm = getAnyContext().getPackageManager();
 		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);

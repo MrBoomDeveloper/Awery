@@ -196,10 +196,8 @@ public class MediaInfoFragment extends Fragment {
 			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
 		});
 
-		binding.details.tracking.setOnClickListener(v -> {
-			var dialog = new TrackingSheet(media);
-			dialog.show(getParentFragmentManager(), TrackingSheet.TAG);
-		});
+		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
+				requireContext(), getChildFragmentManager(), media).show());
 
 		setMedia(media);
 		return binding.getRoot();

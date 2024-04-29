@@ -69,16 +69,10 @@
                 android:text="@string/status_title"
                 android:textSize="16sp" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <include android:id="@+id/status"
+                android:layout_height="50dp"
                 android:layout_width="150dp"
-                android:layout_height="50dp">
-
-                <include android:id="@+id/status"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    layout="@layout/widget_dropdown" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                layout="@layout/widget_dropdown" />
 
         </LinearLayout>
 
