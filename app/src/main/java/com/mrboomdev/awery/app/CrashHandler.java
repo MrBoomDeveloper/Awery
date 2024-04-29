@@ -121,9 +121,9 @@ public class CrashHandler {
 		if(throwable != null) {
 			var descriptor = new ExceptionDescriptor(throwable);
 			var description = descriptor.getMessage(context);
-			showErrorDialog(context, title, messagePrefix + "\n\n" + description, null);
+			showErrorDialogImpl(context, title, messagePrefix + "\n\n" + description, null);
 		} else {
-			showErrorDialog(context, title, messagePrefix, null);
+			showErrorDialogImpl(context, title, messagePrefix, null);
 		}
 	}
 

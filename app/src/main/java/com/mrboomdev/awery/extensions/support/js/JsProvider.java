@@ -360,16 +360,13 @@ public class JsProvider extends ExtensionProvider {
 						input.put("id", input, options.id);
 
 						if(options.lists != null) {
-							var lists = new NativeArray(options.lists.size());
-
-							for(var list : options.lists) {
-								var listObj = context.newObject(scope);
-								listObj.put("id", listObj, list.getId());
-								listObj.put("title", listObj, list.getTitle());
-								lists.add(listObj);
-							}
-
-							input.put("lists", input, lists);
+							input.put("lists", input, context.newArray(scope, stream(options.lists)
+									.map(list -> {
+										var listObj = context.newObject(scope);
+										listObj.put("id", listObj, list.getId());
+										listObj.put("title", listObj, list.getTitle());
+										return listObj;
+									}).toArray()));
 						}
 
 						if(options.currentList != null) {

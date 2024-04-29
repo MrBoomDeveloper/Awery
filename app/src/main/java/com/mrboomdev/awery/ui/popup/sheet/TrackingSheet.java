@@ -223,21 +223,59 @@ public class TrackingSheet {
 			binding.isPrivateWrapper.setOnClickListener(
 					v -> binding.isPrivate.toggle());
 
-			binding.confirm.setOnClickListener(v -> new Thread(() -> {
+			binding.isPrivate.setOnCheckedChangeListener((buttonView, isChecked) ->
+					trackingOptions.isPrivate = isChecked);
+
+			binding.confirm.setOnClickListener(v -> {
 				if(selectedSource == null || trackingOptions == null) return;
 
 				binding.confirm.setEnabled(false);
 				binding.delete.setEnabled(false);
 
-				if(trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_LISTS)) {
-					trackingOptions.currentList = trackingOptions.lists.get(0);
+				progress:
+				if(trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PROGRESS)) {
+					var text = binding.progress.getText();
+
+					if(text == null) {
+						break progress;
+					}
+
+					var textString = text.toString();
+
+					if(!textString.isBlank()) {
+						try {
+							trackingOptions.progress = Float.parseFloat(textString);
+						} catch(NumberFormatException e) {
+							binding.progress.setError("Invalid number!");
+							return;
+						}
+					}
+				}
+
+				score:
+				if(trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_SCORE)) {
+					var text = binding.score.getText();
+
+					if(text == null) {
+						break score;
+					}
+
+					var textString = text.toString();
+
+					if(!textString.isBlank()) {
+						try {
+							trackingOptions.score = Float.parseFloat(textString);
+						} catch(NumberFormatException e) {
+							binding.score.setError("Invalid number!");
+							return;
+						}
+					}
 				}
 
 				selectedSource.trackMedia(media, trackingOptions, new ExtensionProvider.ResponseCallback<>() {
 					@Override
 					public void onSuccess(CatalogTrackingOptions catalogTrackingOptions) {
 						var context = dialog.getContext();
-						if(context == null) return;
 
 						runOnUiThread(() -> {
 							binding.confirm.setEnabled(true);
@@ -245,35 +283,37 @@ public class TrackingSheet {
 
 							toast("Saved successfully");
 						});
+
+						new Thread(() -> {
+							var dao = getDatabase().getMediaProgressDao();
+							var progress = dao.get(media.globalId);
+
+							if(progress == null) {
+								progress = new CatalogMediaProgress(media.globalId);
+							}
+
+							progress.trackers.put(
+									selectedSource.getGlobalId(),
+									trackingOptions.id);
+
+							dao.insert(progress);
+						}).start();
 					}
 
 					@Override
 					public void onFailure(Throwable e) {
 						var context = dialog.getContext();
-						if(context == null) return;
 
 						runOnUiThread(() -> {
 							binding.confirm.setEnabled(true);
 							binding.delete.setEnabled(true);
 
+							Log.e(TAG, "Failed to save", e);
 							CrashHandler.showErrorDialog(context, "Failed to save!", e);
 						});
 					}
 				});
-
-				var dao = getDatabase().getMediaProgressDao();
-				var progress = dao.get(media.globalId);
-
-				if(progress == null) {
-					progress = new CatalogMediaProgress(media.globalId);
-				}
-
-				progress.trackers.put(
-						selectedSource.getGlobalId(),
-						trackingOptions.id);
-
-				dao.insert(progress);
-			}).start());
+			});
 
 			sourcesAdapter = new ArrayListAdapter<>((id, recycled, parent) -> {
 				var item = mappedIds.get(id);
@@ -339,9 +379,7 @@ public class TrackingSheet {
 					//TODO: Launch a SearchActivity
 				} else {
 					queryFilter.setValue(item);
-
-					toast("This functionality isn't done yet!");
-					//searchMedia(Objects.requireNonNull(mappedIds.get(item)));
+					searchMedia(selectedSource);
 				}
 			});
 
