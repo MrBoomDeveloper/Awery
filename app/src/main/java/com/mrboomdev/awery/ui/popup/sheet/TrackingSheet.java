@@ -2,9 +2,9 @@ package com.mrboomdev.awery.ui.popup.sheet;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -23,8 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.sidesheet.SideSheetDialog;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.extensions.Extension;
@@ -38,6 +36,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -48,6 +47,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +118,7 @@ public class TrackingSheet {
 
 			this.sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 					.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_TRACK))
-					.flatMap(AweryApp::stream)
+					.flatMap(NiceUtils::stream)
 					.toList();
 
 			dialog.setContentView(onCreateView(
@@ -143,8 +143,8 @@ public class TrackingSheet {
 						.setTitle("Select a status")
 						.setItems(trackingOptions == null ? null : stream(trackingOptions.lists)
 								.map(item -> {
-									var isSelected = (trackingOptions.currentList != null) &&
-											(item.getId().equals(trackingOptions.currentList.getId()));
+									var isSelected = (trackingOptions.currentLists != null) &&
+											(trackingOptions.currentLists.contains(item.getId()));
 
 									return new Selection.Selectable<>(item, item.getId(), item.getTitle(),
 											(isSelected ? Selection.State.SELECTED : Selection.State.UNSELECTED));
@@ -154,7 +154,7 @@ public class TrackingSheet {
 							var selected = selection.get(Selection.State.SELECTED);
 							if(selected == null) return;
 
-							trackingOptions.currentList = selected.getItem();
+							trackingOptions.currentLists = Collections.singletonList(selected.getItem().getId());
 							binding.status.input.setText(selected.getItem().getTitle());
 							dialog.dismiss();
 						}).show();
@@ -309,7 +309,7 @@ public class TrackingSheet {
 							binding.delete.setEnabled(true);
 
 							Log.e(TAG, "Failed to save", e);
-							CrashHandler.showErrorDialog(context, "Failed to save!", e);
+							updateTrackingDialogState(null, e);
 						});
 					}
 				});
@@ -347,8 +347,11 @@ public class TrackingSheet {
 
 				binding.source.input.setText(item.getName(), false);
 
-				toast("This functionality isn't done yet!");
-				//updateTrackingDialogState(null, null);
+				updateTrackingDialogState(null, null);
+				selectedSource = item;
+
+				queryFilter.setValue(media.getTitle());
+				searchMedia(selectedSource);
 			});
 
 			var titles = new ArrayList<>(media.titles);
@@ -378,6 +381,7 @@ public class TrackingSheet {
 					toast("Manual search isn't currently available :(");
 					//TODO: Launch a SearchActivity
 				} else {
+					updateTrackingDialogState(null, null);
 					queryFilter.setValue(item);
 					searchMedia(selectedSource);
 				}
@@ -484,7 +488,7 @@ public class TrackingSheet {
 							if(myId != loadId) return;
 
 							Log.e(TAG, "Failed to get tracking options", e);
-							CrashHandler.showErrorDialog(context, "Failed to get tracking options", e);
+							updateTrackingDialogState(null, e);
 
 							binding.searchStatus.setClickable(false);
 							binding.searchStatus.setFocusable(false);
@@ -498,7 +502,7 @@ public class TrackingSheet {
 					if(myId != loadId) return;
 
 					Log.e(TAG, "Failed to load items for a tracker", e);
-					CrashHandler.showErrorDialog(context, "Failed to load items for a tracker", e);
+					updateTrackingDialogState(null, e);
 
 					binding.searchStatus.setClickable(false);
 					binding.searchStatus.setFocusable(false);
@@ -527,6 +531,32 @@ public class TrackingSheet {
 				}
 			} else {
 				binding.loadingState.getRoot().setVisibility(View.GONE);
+
+				binding.progress.setText(String.valueOf(trackingOptions.progress));
+				binding.score.setText(String.valueOf(trackingOptions.score));
+				binding.isPrivate.setChecked(trackingOptions.isPrivate);
+
+				if(trackingOptions.currentLists != null) {
+					var first = trackingOptions.currentLists.get(0);
+
+					var found = stream(trackingOptions.lists)
+							.filter(item -> item.getId().equals(first))
+							.findFirst().orElse(null);
+
+					if(found != null) {
+						binding.status.input.setText(found.getTitle(), false);
+					}
+				}
+
+				if(trackingOptions.startDate != null) {
+					binding.startDate.setText(DateFormat.getDateInstance(DateFormat.LONG)
+							.format(trackingOptions.startDate.getTime()));
+				}
+
+				if(trackingOptions.endDate != null) {
+					binding.endDate.setText(DateFormat.getDateInstance(DateFormat.LONG)
+							.format(trackingOptions.endDate.getTime()));
+				}
 			}
 
 			binding.progressIncrement.setOnClickListener(v -> {
@@ -535,8 +565,6 @@ public class TrackingSheet {
 				trackingOptions.progress++;
 				binding.progress.setText(String.valueOf(trackingOptions.progress));
 			});
-
-			binding.progress.setText(String.valueOf(trackingOptions != null ? trackingOptions.progress : 0));
 
 			binding.progressWrapper.setVisibility(trackingOptions != null &&
 					trackingOptions.hasFeatures(CatalogTrackingOptions.FEATURE_PROGRESS) ? View.VISIBLE : View.GONE);

@@ -1,8 +1,9 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -91,7 +92,7 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 			var categories = new ArrayList<MediaCategoriesAdapter.Category>();
 
 			for(var list : lists) {
-				if(list.getId().equals(AweryApp.CATALOG_LIST_BLACKLIST)) continue;
+				if(list.getId().equals(CATALOG_LIST_BLACKLIST)) continue;
 
 				var mediasProgresses = db.getMediaProgressDao().getAllFromList(list.getId());
 				if(mediasProgresses.isEmpty()) continue;

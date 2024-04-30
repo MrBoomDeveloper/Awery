@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.anilist;
 
+import static com.mrboomdev.awery.data.Constants.ANILIST_EXTENSION_ID;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -45,6 +47,6 @@ public class AnilistProvider extends ExtensionProvider {
 
 	@Override
 	public String getId() {
-		return AweryApp.ANILIST_EXTENSION_ID;
+		return ANILIST_EXTENSION_ID;
 	}
 }

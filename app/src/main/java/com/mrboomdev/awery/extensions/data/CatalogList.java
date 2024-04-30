@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.extensions.data;
 
 public class CatalogList {
+	public static final int FEATURE_RENAME = 1;
+	public static final int FEATURE_DELETE = 2;
 	private String title;
 	private final String id;
 

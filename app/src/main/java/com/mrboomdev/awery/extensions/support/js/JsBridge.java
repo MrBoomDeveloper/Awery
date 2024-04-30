@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Log;
 
@@ -10,13 +10,16 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.io.HttpClient;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -141,6 +144,11 @@ public class JsBridge {
 		return Context.javaToJS(promise, scriptScope);
 	}
 
+	@Nullable
+	public static <A, B> A returnIfNotNullJs(B object, Callbacks.Result1<A, B> function) {
+		return isNull(object) ? null : function.run(object);
+	}
+
 	public static int intFromJs(Object object) {
 		var result = fromJs(object, Integer.class);
 		return result == null ? 0 : result;
@@ -163,6 +171,10 @@ public class JsBridge {
 
 	@Nullable
 	public static String stringFromJs(Object object) {
+		if(object instanceof NativeJavaObject o) {
+			object = o.unwrap();
+		}
+
 		if(isNull(object)) return null;
 		return object.toString();
 	}
@@ -171,6 +183,10 @@ public class JsBridge {
 	@Contract(pure = true)
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> listFromJs(Object object, Class<T> clazz) {
+		if(object instanceof NativeJavaObject o) {
+			object = o.unwrap();
+		}
+
 		if(isNull(object)) return null;
 
 		return stream((NativeArray) object)
@@ -180,12 +196,19 @@ public class JsBridge {
 
 	@Nullable
 	public static <T> T fromJs(Object object, Class<T> clazz) {
+		if(object instanceof NativeJavaObject o) {
+			object = o.unwrap();
+		}
+
 		if(isNull(object)) return null;
 
-		if(clazz.isAssignableFrom(String.class)) return clazz.cast(object.toString());
 		if(clazz == Integer.class) return clazz.cast(((Number) object).intValue());
 		if(clazz == Float.class) return clazz.cast(((Number) object).floatValue());
 		if(clazz == Long.class) return clazz.cast(((Number) object).longValue());
+
+		if(object instanceof ConsString) {
+			object = object.toString();
+		}
 
 		return clazz.cast(object);
 	}

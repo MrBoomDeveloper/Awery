@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.extensions.support.anilist.data;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.data.Constants.ANILIST_CATALOG_ITEM_ID_PREFIX;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.squareup.moshi.Json;
 
@@ -49,14 +49,13 @@ public class AnilistMedia {
 	}
 
 	public CatalogMedia toCatalogMedia() {
-		var media = new CatalogMedia(AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id);
+		var media = new CatalogMedia(ANILIST_CATALOG_ITEM_ID_PREFIX + id);
 		media.description = description;
 		media.setId("anilist", String.valueOf(id));
 		media.banner = bannerImage;
 		media.duration = duration;
 		media.episodesCount = episodes;
 		media.country = countryOfOrigin;
-		media.globalId = AweryApp.ANILIST_CATALOG_ITEM_ID_PREFIX + id;
 		media.averageScore = (averageScore != null) ? (averageScore / 10f) : null;
 		media.genres = new ArrayList<>(genres);
 		media.ageRating = isAdult ? "R" : null;

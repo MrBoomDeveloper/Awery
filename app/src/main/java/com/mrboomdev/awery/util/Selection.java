@@ -3,8 +3,6 @@ package com.mrboomdev.awery.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.app.AweryApp;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -58,7 +56,7 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	}
 
 	private Stream<T> find(State state) {
-		return AweryApp.stream(items)
+		return NiceUtils.stream(items)
 				.filter(entry -> entry.getValue() == state)
 				.map(Map.Entry::getKey);
 	}

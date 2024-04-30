@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
 import android.content.Context;
@@ -78,8 +78,21 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				if(hasExisted) {
 					toast("Extension updated successfully!");
 
+					var oldSetting = stream(getItems())
+							.filter(item -> {
+								if(item instanceof ExtensionSetting extensionSetting) {
+									return extensionSetting.getExtension().getId().equals(extension.getId());
+								}
+
+								return false;
+							})
+							.map(item -> (ExtensionSetting) item)
+							.findAny().orElse(null);
+
+					var index = getItems().indexOf(oldSetting);
+
 					if(editItemListener != null) {
-						editItemListener.run(setting, extensions.indexOf(extension));
+						editItemListener.run(setting, index);
 					}
 				} else {
 					toast("Extension installed successfully!");
@@ -257,6 +270,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					.setIconSize(1.2f)
 					.setTintIcon(false)
 					.build());
+		}
+
+		public Extension getExtension() {
+			return extension;
 		}
 
 		@Override

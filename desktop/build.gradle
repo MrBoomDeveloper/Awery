@@ -1,0 +1,29 @@
+plugins {
+    id "java"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.register('runWithJavaExec', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.mrboomdev.awery.desktop.Main"
+}
+
+dependencies {
+    // AwerySdk
+    implementation "com.github.MrBoomDeveloper:AwerySdk:4dcca61e7b"
+
+    // Utils
+    implementation "com.squareup.moshi:moshi:1.15.0"
+    implementation "org.mozilla:rhino:1.7.14"
+
+    // Networking
+    ext.okhttp_version = "5.0.0-alpha.12"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation "com.squareup.okhttp3:okhttp-dnsoverhttps:$okhttp_version"
+    implementation "com.squareup.okhttp3:okhttp-brotli:4.12.0"
+}

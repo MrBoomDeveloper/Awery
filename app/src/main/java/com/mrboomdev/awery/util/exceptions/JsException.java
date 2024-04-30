@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.util.exceptions;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ParserAdapter.arrayToString;
 import static com.mrboomdev.awery.util.ParserAdapter.objectToString;
 
@@ -48,9 +51,21 @@ public class JsException extends RuntimeException implements LocalizedException 
 	public JsException(@NonNull ScriptableObject scope) {
 		super(scope.has("id", scope) ? scope.get("id", scope).toString() : null);
 
-		this.errorId = scope.has("id", scope) ? scope.get("id", scope).toString() : null;
-		this.errorExtra = scope.has("extra", scope) ? scope.get("extra", scope) : null;
+		this.errorId = stringFromJs(scope.get("id", scope));
+		this.errorExtra = fromJs(scope.get("extra", scope), Object.class);
+
 		this.errors = null;
+	}
+
+	public JsException(Throwable cause, @NonNull Collection<Throwable> errors) {
+		super(stream(errors)
+				.map(Throwable::getMessage)
+				.filter(Objects::nonNull)
+				.collect(Collectors.joining("\n")), cause);
+
+		this.errors = errors;
+		this.errorId = null;
+		this.errorExtra = null;
 	}
 
 	public String getErrorId() {
@@ -67,17 +82,6 @@ public class JsException extends RuntimeException implements LocalizedException 
 
 	public Collection<Throwable> getErrors() {
 		return errors;
-	}
-
-	public JsException(Throwable cause, @NonNull Collection<Throwable> errors) {
-		super(stream(errors)
-				.map(Throwable::getMessage)
-				.filter(Objects::nonNull)
-				.collect(Collectors.joining("\n")), cause);
-
-		this.errors = errors;
-		this.errorId = null;
-		this.errorExtra = null;
 	}
 
 	@Override
@@ -106,12 +110,20 @@ public class JsException extends RuntimeException implements LocalizedException 
 			case ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
 
 			case OTHER -> {
+				if(isNull(getErrorExtra())) {
+					yield "null";
+				}
+
+				if(getErrorExtra() instanceof NativeArray arr) {
+					yield arrayToString(arr);
+				}
+
+				if(getErrorExtra() instanceof NativeObject obj) {
+					yield objectToString(obj);
+				}
+
 				if(getErrorExtra() instanceof Throwable t) {
 					yield Log.getStackTraceString(t);
-				} else if(getErrorExtra() instanceof NativeArray arr) {
-					yield arrayToString(arr);
-				} else if(getErrorExtra() instanceof NativeObject obj) {
-					yield objectToString(obj);
 				}
 
 				yield getErrorExtra().toString();

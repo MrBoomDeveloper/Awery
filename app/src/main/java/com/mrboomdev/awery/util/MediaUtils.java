@@ -2,8 +2,10 @@ package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
+import static com.mrboomdev.awery.data.Constants.HIDDEN_LISTS;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -87,7 +89,7 @@ public class MediaUtils {
 				return true;
 			}
 
-			if(saved.isInList(AweryApp.CATALOG_LIST_BLACKLIST)) {
+			if(saved.isInList(CATALOG_LIST_BLACKLIST)) {
 				return true;
 			}
 		}
@@ -144,7 +146,7 @@ public class MediaUtils {
 
 			var lists = listsDao.get(media.globalId);
 			if(lists == null) lists = new CatalogMediaProgress(media.globalId);
-			lists.addToList(AweryApp.CATALOG_LIST_BLACKLIST);
+			lists.addToList(CATALOG_LIST_BLACKLIST);
 
 			mediaDao.insert(DBCatalogMedia.fromCatalogMedia(media));
 			listsDao.insert(lists);
@@ -220,7 +222,7 @@ public class MediaUtils {
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
 		new Thread(() -> {
 			var lists = stream(AweryApp.getDatabase().getListDao().getAll())
-					.filter(item -> !AweryApp.HIDDEN_LISTS.contains(item.getId()))
+					.filter(item -> !HIDDEN_LISTS.contains(item.getId()))
 					.toList();
 
 			var progressDao = AweryApp.getDatabase().getMediaProgressDao();

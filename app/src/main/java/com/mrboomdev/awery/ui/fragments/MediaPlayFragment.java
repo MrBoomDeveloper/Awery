@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,6 +38,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
+import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -188,7 +189,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
-				.flatMap(AweryApp::stream)
+				.flatMap(NiceUtils::stream)
 				.sorted().toList();
 
 		var sourcesDropdownAdapter = new ArrayListAdapter<>(providers, this::bindDropdownItem);

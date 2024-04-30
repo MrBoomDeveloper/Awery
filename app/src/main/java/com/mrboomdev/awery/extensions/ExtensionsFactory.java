@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Application;
 import android.util.Log;
@@ -12,6 +12,7 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.util.NiceUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ExtensionsFactory {
 
 		var failedExtensions = stream(managers)
 				.map(manager -> manager.getExtensions(Extension.FLAG_ERROR))
-				.flatMap(AweryApp::stream)
+				.flatMap(NiceUtils::stream)
 				.filter(extension -> !Objects.equals(extension.getErrorTitle(), Extension.DISABLED_ERROR))
 				.toList();
 

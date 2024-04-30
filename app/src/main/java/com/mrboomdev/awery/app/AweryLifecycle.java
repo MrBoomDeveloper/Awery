@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -267,13 +267,27 @@ public class AweryLifecycle {
 
 		@Override
 		public int compareTo(ActivityInfo o) {
-			if(activity.hasWindowFocus() && !o.activity.hasWindowFocus()) return 1;
-			if(!activity.hasWindowFocus() && o.activity.hasWindowFocus()) return -1;
+			if(hasWindowFocus(activity) && !hasWindowFocus(o.activity)) return 1;
+			if(!hasWindowFocus(activity) && hasWindowFocus(o.activity)) return -1;
 
 			if(isPaused && !o.isPaused) return -1;
 			if(!isPaused && o.isPaused) return 1;
 
 			return Integer.compare(activity.getTaskId(), o.activity.getTaskId());
+		}
+
+		/**
+		 * Sometimes Android do throw this exception "java.lang.RuntimeException: Window couldn't find content container view".
+		 * Because we just need to check if the activity has focus or not we ignore the exception and return false.
+		 * @return true if the activity has focus or false if it doesn't
+		 * @author MrBoomDev
+		 */
+		private boolean hasWindowFocus(Activity activity) {
+			try {
+				return activity.hasWindowFocus();
+			} catch(RuntimeException e) {
+				return false;
+			}
 		}
 	}
 }

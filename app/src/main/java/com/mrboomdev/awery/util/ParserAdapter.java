@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Base64;
 import android.util.Log;

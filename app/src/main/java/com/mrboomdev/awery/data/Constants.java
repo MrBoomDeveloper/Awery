@@ -1,6 +1,16 @@
 package com.mrboomdev.awery.data;
 
+import com.mrboomdev.awery.extensions.support.js.JsManager;
+
+import java.util.List;
+
 public class Constants {
+	public static final String CATALOG_LIST_BLACKLIST = "7";
+	public static final String CATALOG_LIST_HISTORY = "9";
+	public static final List<String> HIDDEN_LISTS = List.of(CATALOG_LIST_BLACKLIST, CATALOG_LIST_HISTORY);
+	//TODO: Remove these fields after JS extensions will be made
+	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
+	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
 	public static final String LOGS_SEPARATOR = "-".repeat(75);
 	public static final String SUPPRESS_IGNORED_THROWABLE = "ThrowableResultOfMethodCallIgnored";
 	public static final String DEFAULT_UA = "Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36";

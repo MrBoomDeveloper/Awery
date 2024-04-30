@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

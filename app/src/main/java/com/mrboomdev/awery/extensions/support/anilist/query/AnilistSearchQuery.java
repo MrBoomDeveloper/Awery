@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.anilist.query;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import androidx.annotation.NonNull;
 
@@ -121,9 +121,9 @@ public class AnilistSearchQuery extends AnilistQuery<CatalogSearchResults<Catalo
 	protected CatalogSearchResults<CatalogMedia> processJson(String json) throws IOException {
 		AnilistPage<AnilistMedia> data = parsePageList(AnilistMedia.class, json);
 
-		return CatalogSearchResults.of(
-				stream(data.media).map(AnilistMedia::toCatalogMedia).toList(),
-				data.pageInfo.hasNextPage);
+		return CatalogSearchResults.of(stream(data.media)
+						.map(AnilistMedia::toCatalogMedia)
+						.toList(), data.pageInfo.hasNextPage);
 	}
 
 	@Override

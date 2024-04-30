@@ -3,6 +3,8 @@ package com.mrboomdev.awery.app;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 
 import android.app.Activity;
@@ -41,35 +43,20 @@ import com.mrboomdev.awery.data.db.DBCatalogList;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
-import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-
-import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import java9.util.stream.Stream;
-import java9.util.stream.StreamSupport;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
 public class AweryApp extends Application {
-	public static final String CATALOG_LIST_BLACKLIST = "7";
-	public static final String CATALOG_LIST_HISTORY = "9";
-	public static final List<String> HIDDEN_LISTS = List.of(CATALOG_LIST_BLACKLIST, CATALOG_LIST_HISTORY);
-	//TODO: Remove these fields after JS extensions will be made
-	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
-	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX = new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
 	private static final WeakHashMap<Runnable, Object> backPressedCallbacks = new WeakHashMap<>();
 	private static final String TAG = "AweryApp";
 	private static AweryDB db;
@@ -129,25 +116,6 @@ public class AweryApp extends Application {
 		}
 	}
 
-	@NonNull
-	@Contract("_ -> new")
-	public static <E> Stream<E> stream(Collection<E> e) {
-		return StreamSupport.stream(e);
-	}
-
-	@SafeVarargs
-	@NonNull
-	@Contract("_ -> new")
-	public static <E> Stream<E> stream(E... e) {
-		return StreamSupport.stream(Arrays.asList(e));
-	}
-
-	@NonNull
-	@Contract("_ -> new")
-	public static <K, V> Stream<Map.Entry<K,V>> stream(@NonNull Map<K, V> map) {
-		return StreamSupport.stream(map.entrySet());
-	}
-
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		return MaterialColors.getColor(context, res, Color.BLACK);
 	}
@@ -172,17 +140,6 @@ public class AweryApp extends Application {
 	public static boolean isTv() {
 		var pm = getAnyContext().getPackageManager();
 		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
-	}
-
-	@NonNull
-	@Contract("null -> fail; !null -> param1")
-	public static <T> T requireNonNull(T obj) {
-		if(obj == null) throw new NullPointerException();
-		return obj;
-	}
-
-	public static boolean nonNull(Object obj) {
-		return obj != null;
 	}
 
 	/**

@@ -1,9 +1,16 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.stream;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -39,6 +46,7 @@ import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
@@ -369,11 +377,8 @@ public class JsProvider extends ExtensionProvider {
 									}).toArray()));
 						}
 
-						if(options.currentList != null) {
-							var listObj = context.newObject(scope);
-							listObj.put("id", listObj, options.currentList.getId());
-							listObj.put("title", listObj, options.currentList.getTitle());
-							input.put("currentList", input, listObj);
+						if(options.currentLists != null) {
+							input.put("currentLists", input, context.newArray(scope, options.currentLists.toArray()));
 						}
 
 						if(options.startDate != null) {
@@ -404,48 +409,45 @@ public class JsProvider extends ExtensionProvider {
 								case "lists" -> CatalogTrackingOptions.FEATURE_LISTS;
 								case "isPrivate" -> CatalogTrackingOptions.FEATURE_PRIVATE;
 								case "createList" -> CatalogTrackingOptions.FEATURE_LIST_CREATE;
-								case "deleteList" -> CatalogTrackingOptions.FEATURE_LIST_DELETE;
-								case "editList" -> CatalogTrackingOptions.FEATURE_LIST_EDIT;
 								default -> 0;
 							};
 						}
 
 						var result = new CatalogTrackingOptions(features);
-						result.score = JsBridge.floatFromJs(o.get("score", o));
-						result.progress = JsBridge.floatFromJs(o.get("progress", o));
-						result.isPrivate = JsBridge.booleanFromJs(o.get("isPrivate", o));
-						result.id = JsBridge.stringFromJs(o.get("id", o));
+						result.score = floatFromJs(o.get("score", o));
+						result.progress = floatFromJs(o.get("progress", o));
+						result.isPrivate = booleanFromJs(o.get("isPrivate", o));
+						result.id = stringFromJs(o.get("id", o));
 
-						if(o.has("currentList", o)) {
-							var listObj = (NativeObject) o.get("currentList", o);
-							result.currentList = new CatalogList(listObj.get("title").toString(), listObj.get("id").toString());
+						if(!isNull(o.get("currentLists", o))) {
+							result.currentLists = listFromJs(o.get("currentLists", o), String.class);
 						}
 
-						if(o.has("lists", o)) {
-							result.lists = stream(JsBridge.listFromJs(o.get("lists", o), NativeObject.class))
+						if(!isNull(o.get("lists", o))) {
+							result.lists = stream(listFromJs(o.get("lists", o), NativeObject.class))
 									.map(itemObj -> new CatalogList(
 											itemObj.get("title").toString(),
 											itemObj.get("id").toString()))
 									.toList();
 						}
 
-						if(o.has("startDate", o)) {
-							var releaseDate = o.get("startDate");
+						if(!isNull(o.get("startDate", o))) {
+							var startDate = o.get("startDate");
 
-							if(releaseDate instanceof Number dateNumber) {
+							if(startDate instanceof Number dateNumber) {
 								result.startDate = ParserAdapter.calendarFromNumber(dateNumber);
 							} else {
-								result.startDate = ParserAdapter.calendarFromString(releaseDate.toString());
+								result.startDate = ParserAdapter.calendarFromString(startDate.toString());
 							}
 						}
 
-						if(o.has("endDate", o)) {
-							var releaseDate = o.get("endDate");
+						if(!isNull(o.get("endDate", o))) {
+							var endDate = o.get("endDate");
 
-							if(releaseDate instanceof Number dateNumber) {
+							if(endDate instanceof Number dateNumber) {
 								result.endDate = ParserAdapter.calendarFromNumber(dateNumber);
 							} else {
-								result.endDate = ParserAdapter.calendarFromString(releaseDate.toString());
+								result.endDate = ParserAdapter.calendarFromString(endDate.toString());
 							}
 						}
 
@@ -601,6 +603,11 @@ public class JsProvider extends ExtensionProvider {
 							return;
 						}
 
+						if(((NativeArray)o.get("items", o)).isEmpty()) {
+							callback.onFailure(new ZeroResultsException("Zero results", R.string.no_media_found));
+							return;
+						}
+
 						var results = new ArrayList<CatalogMedia>();
 
 						for(var arrayItem : (NativeArray) o.get("items", o)) {
@@ -608,37 +615,35 @@ public class JsProvider extends ExtensionProvider {
 							var item = (NativeObject) arrayItem;
 
 							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
-							result.banner = JsBridge.stringFromJs(item.get("banner"));
-							result.country = JsBridge.stringFromJs(item.get("country"));
-							result.ageRating = JsBridge.stringFromJs(item.get("ageRating"));
-							result.extra = JsBridge.stringFromJs(("extra"));
-							result.description = JsBridge.stringFromJs(item.get("description"));
+							result.banner = stringFromJs(item.get("banner"));
+							result.country = stringFromJs(item.get("country"));
+							result.ageRating = stringFromJs(item.get("ageRating"));
+							result.extra = stringFromJs(("extra"));
+							result.description = stringFromJs(item.get("description"));
 
-							result.averageScore = JsBridge.fromJs(item.get("averageScore"), Float.class);
-							result.duration = JsBridge.fromJs(item.get("duration"), Integer.class);
-							result.episodesCount = JsBridge.fromJs(item.get("episodesCount"), Integer.class);
-							result.latestEpisode = JsBridge.fromJs(item.get("latestEpisode"), Integer.class);
+							result.averageScore = fromJs(item.get("averageScore"), Float.class);
+							result.duration = fromJs(item.get("duration"), Integer.class);
+							result.episodesCount = fromJs(item.get("episodesCount"), Integer.class);
+							result.latestEpisode = fromJs(item.get("latestEpisode"), Integer.class);
 
-							if(item.has("endDate", item)) {
-								var releaseDate = item.get("endDate");
-
-								if(releaseDate instanceof Number releaseDateNumber) {
-									result.releaseDate = ParserAdapter.calendarFromNumber(releaseDateNumber);
+							result.releaseDate = returnIfNotNullJs(item.get("endDate", item), date -> {
+								if(date instanceof Number releaseDateNumber) {
+									return ParserAdapter.calendarFromNumber(releaseDateNumber);
 								} else {
-									result.releaseDate = ParserAdapter.calendarFromString(releaseDate.toString());
+									return ParserAdapter.calendarFromString(date.toString());
 								}
-							}
+							});
 
-							if(item.has("poster", item)) {
+							if(!isNull(item.get("poster", item))) {
 								var poster = item.get("poster");
 
 								if(poster instanceof NativeObject posterObject) {
 									result.poster = new CatalogMedia.ImageVersions();
-									result.poster.extraLarge = JsBridge.stringFromJs(posterObject.get("extraLarge"));
-									result.poster.large = JsBridge.stringFromJs(posterObject.get("large"));
-									result.poster.medium = JsBridge.stringFromJs(posterObject.get("medium"));
+									result.poster.extraLarge = stringFromJs(posterObject.get("extraLarge"));
+									result.poster.large = stringFromJs(posterObject.get("large"));
+									result.poster.medium = stringFromJs(posterObject.get("medium"));
 								} else {
-									result.setPoster(JsBridge.stringFromJs(poster));
+									result.setPoster(stringFromJs(poster));
 								}
 							}
 
@@ -711,7 +716,7 @@ public class JsProvider extends ExtensionProvider {
 						}
 
 						callback.onSuccess(CatalogSearchResults.of(
-								results, JsBridge.booleanFromJs(o.get("hasNextPage"))));
+								results, booleanFromJs(o.get("hasNextPage"))));
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);

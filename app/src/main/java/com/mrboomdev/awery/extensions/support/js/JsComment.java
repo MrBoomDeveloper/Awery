@@ -1,5 +1,9 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogComment;
@@ -22,18 +26,18 @@ public class JsComment extends CatalogComment {
 			}
 		}
 
-		authorName = o.has("authorName", o) ? JsBridge.fromJs(o.get("authorName", o), String.class) : null;
-		authorAvatar = o.has("authorAvatar", o) ? JsBridge.fromJs(o.get("authorAvatar", o), String.class) : null;
-		text = o.has("text", o) ? JsBridge.fromJs(o.get("text", o), String.class) : null;
-		date = o.has("date", o) ? JsBridge.fromJs(o.get("date", o), String.class) : null;
+		authorName = stringFromJs(o.get("authorName", o));
+		authorAvatar = stringFromJs(o.get("authorAvatar", o));
+		text = stringFromJs(o.get("text", o));
+		date = stringFromJs(o.get("date", o));
 
-		likes = o.has("likes", o) ? JsBridge.intFromJs(o.get("likes", o)) : CatalogComment.DISABLED;
-		dislikes = o.has("dislikes", o) ? JsBridge.intFromJs(o.get("dislikes", o)) : CatalogComment.DISABLED;
-		comments = o.has("comments", o) ? JsBridge.intFromJs(o.get("comments", o)) : CatalogComment.DISABLED;
+		likes = o.has("likes", o) ? intFromJs(o.get("likes", o)) : CatalogComment.DISABLED;
+		dislikes = o.has("dislikes", o) ? intFromJs(o.get("dislikes", o)) : CatalogComment.DISABLED;
+		comments = o.has("comments", o) ? intFromJs(o.get("comments", o)) : CatalogComment.DISABLED;
 		votes = o.has("votes", o) ? JsBridge.fromJs(o.get("votes", o), Integer.class) : null;
 
-		canComment = o.has("canComment", o) && JsBridge.booleanFromJs(o.get("canComment", o));
-		hasNextPage = o.has("hasNextPage", o) && JsBridge.booleanFromJs(o.get("hasNextPage", o));
+		canComment = booleanFromJs(o.get("canComment", o));
+		hasNextPage = booleanFromJs(o.get("hasNextPage", o));
 
 		this.customData = o;
 	}
