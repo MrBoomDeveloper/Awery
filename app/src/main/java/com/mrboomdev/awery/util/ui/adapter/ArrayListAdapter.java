@@ -19,13 +19,13 @@ public class ArrayListAdapter<T> extends BaseAdapter implements Filterable {
 	private CustomFilter filter;
 	private List<T> items, filteredItems;
 
-	public ArrayListAdapter(Collection<T> items, OnCreateView<T> onCreate) {
+	public ArrayListAdapter(OnCreateView<T> onCreate, Collection<T> items) {
 		this.onCreate = onCreate;
 		this.items = new ArrayList<>(items);
 	}
 
 	public ArrayListAdapter(OnCreateView<T> onCreate) {
-		this(new ArrayList<>(), onCreate);
+		this(onCreate, new ArrayList<>());
 	}
 
 	@NonNull

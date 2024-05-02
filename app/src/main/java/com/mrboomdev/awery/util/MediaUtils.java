@@ -68,13 +68,16 @@ public class MediaUtils {
 	}
 
 	@NonNull
-	public static Collection<CatalogMedia> filterMediaSync(@NonNull Collection<CatalogMedia> items) {
+	public static Collection<? extends CatalogMedia> filterMediaSync(@NonNull Collection<? extends CatalogMedia> items) {
 		return stream(items)
 				.filter(item -> !isMediaFilteredSync(item))
 				.toList();
 	}
 
-	public static void filterMedia(@NonNull Collection<CatalogMedia> items, Callbacks.Callback1<Collection<CatalogMedia>> callback) {
+	public static void filterMedia(
+			@NonNull Collection<? extends CatalogMedia> items,
+			Callbacks.Callback1<Collection<? extends CatalogMedia>> callback
+	) {
 		new Thread(() -> callback.run(filterMediaSync(items))).start();
 	}
 

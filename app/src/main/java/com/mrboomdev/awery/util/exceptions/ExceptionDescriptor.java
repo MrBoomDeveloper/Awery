@@ -30,9 +30,12 @@ public class ExceptionDescriptor {
 	private final Throwable throwable;
 
 	public ExceptionDescriptor(@NonNull Throwable t) {
+		this.throwable = unwrap(t);
+	}
+
+	public static Throwable unwrap(Throwable t) {
 		if(!isUnknownException(t)) {
-			throwable = t;
-			return;
+			return t;
 		}
 
 		while(t instanceof WrappedException e) {
@@ -55,13 +58,12 @@ public class ExceptionDescriptor {
 				if(cause == firstCause) break;
 
 				if(!isUnknownException(cause)) {
-					this.throwable = cause;
-					return;
+					return cause;
 				}
 			}
 		}
 
-		this.throwable = t;
+		return t;
 	}
 
 	public String getTitle(Context context) {
@@ -102,10 +104,31 @@ public class ExceptionDescriptor {
 		return getGenericTitle(context);
 	}
 
+	public static Reason getReason(Throwable t) {
+		for(var reason : Reason.values()) {
+			if(reason == Reason.OTHER) {
+				continue;
+			}
+
+			if(reason.isMe(t)) {
+				return reason;
+			}
+		}
+
+		return Reason.OTHER;
+	}
+
+	public Reason getReason() {
+		return getReason(throwable);
+	}
+
 	public boolean isNetworkException() {
 		if(throwable instanceof JsException js) {
 			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-				case JsException.ERROR_RATE_LIMITED, JsException.ERROR_HTTP -> true;
+				case JsException.ERROR_RATE_LIMITED,
+						JsException.ERROR_HTTP,
+						JsException.SERVER_ERROR,
+						JsException.SERVER_DOWN -> true;
 				default -> false;
 			};
 		}
@@ -158,17 +181,7 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof SocketException || throwable instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
 		} else if(throwable instanceof HttpException e) {
-			return switch(e.getCode()) {
-				case 400 -> "Error 400. The request was invalid, please try again later.";
-				case 401 -> "Error 401. You are not logged in, please log in and try again.";
-				case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
-				case 404 -> context.getString(R.string.not_found_detailed);
-				case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
-				case 500 -> "Error 500. An internal server error has occurred, please try again later.";
-				case 503 -> "Error 503. The service is temporarily unavailable, please try again later.";
-				case 504 -> "Error 504. The connection timed out, please try again later.";
-				default -> getGenericMessage(throwable);
-			};
+			return getHttpErrorTitle(context, e.getCode());
 		} else if(throwable instanceof UnknownHostException e) {
 			return e.getMessage();
 		} else if(throwable instanceof GraphQLException e) {
@@ -186,25 +199,146 @@ public class ExceptionDescriptor {
 			}
 
 			return builder.toString();
-		} else {
-			if(throwable instanceof JsonDecodingException
-					|| throwable instanceof InvalidSyntaxException) {
-				return "An error has occurred while parsing the response. " + throwable.getMessage();
-			} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
-				if(throwable instanceof InstanceCountViolation) {
-					return "Too much instances of the object was created. " + throwable.getMessage();
-				}
-
-				return "Bad thing has happened...";
+		} if(throwable instanceof JsonDecodingException ||
+				throwable instanceof InvalidSyntaxException) {
+			return "An error has occurred while parsing the response. " + throwable.getMessage();
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+			if(throwable instanceof InstanceCountViolation) {
+				return "Too much instances of the object was created. " + throwable.getMessage();
 			}
+
+			return "Bad thing has happened...";
 		}
 
 		return getGenericMessage(throwable);
+	}
+
+	private static String getHttpErrorTitle(Context context, int code) {
+		return switch(code) {
+			case 400 -> "Error 400. The request was invalid, please try again later.";
+			case 401 -> "Error 401. You are not logged in, please log in and try again.";
+			case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
+			case 404 -> context.getString(R.string.not_found_detailed);
+			case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
+			case 500 -> "Error 500. An internal server error has occurred, please try again later.";
+			case 503 -> "Error 503. The service is temporarily unavailable, please try again later.";
+			case 504 -> "Error 504. The connection timed out, please try again later.";
+			default -> "Error " + code + ". An unknown error has occurred, please try again later.";
+		};
 	}
 
 	@NonNull
 	@Override
 	public String toString() {
 		return Log.getStackTraceString(throwable);
+	}
+
+	public enum Reason {
+		SERVER_DOWN {
+			@Override
+			protected boolean isMeImpl(Throwable t) {
+				if(t instanceof JsException js) {
+					return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
+						case JsException.SERVER_DOWN, JsException.SERVER_ERROR -> true;
+						default -> false;
+					};
+				}
+
+				if(t instanceof HttpException e) {
+					return switch(e.getCode()) {
+						case 500, 503 -> true;
+						default -> false;
+					};
+				}
+
+				return false;
+			}
+		},
+		/*BAD_NETWORK {
+
+		},
+		NO_ACCESS {
+
+		},
+		BANNED {
+
+		},
+		ACCOUNT_REQUIRED {
+
+		},
+		BAD_CODE {
+
+		},
+		NOTHING_FOUND {
+
+		},
+		ILLEGAL_QUERY {
+
+		},
+		TIMEOUT {
+
+		},
+		RATE_LIMITED {
+
+		},*/
+		UNIMPLEMENTED {
+			@Override
+			protected boolean isMeImpl(Throwable t) {
+				if(t instanceof UnsupportedOperationException || t instanceof UnimplementedException) {
+					return true;
+				}
+
+				return false;
+			}
+		},
+		OTHER {
+			@Override
+			protected boolean isMeImpl(Throwable t) {
+				throw new UnsupportedOperationException("You must avoid calling this method on OTHER");
+			}
+		};
+
+		public boolean isMe(Throwable t) {
+			return isMeImpl(unwrap(t));
+		}
+
+		/*
+		if(throwable instanceof JsException js) {
+			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
+				case JsException.ERROR_RATE_LIMITED -> Reason.RATE_LIMITED;
+				case JsException.SERVER_ERROR, JsException.SERVER_DOWN -> Reason.SERVER_DOWN;
+				case JsException.ERROR_ACCOUNT_REQUIRED -> Reason.NO_ACCESS;
+				case JsException.ERROR_HTTP -> Reason.BAD_NETWORK;
+				case JsException.ERROR_NOTHING_FOUND -> Reason.NOTHING_FOUND;
+				case JsException.ERROR_BANNED -> Reason.BANNED;
+				default -> Reason.OTHER;
+			};
+		}
+
+		if(throwable instanceof ZeroResultsException) {
+			return Reason.NOTHING_FOUND;
+		}
+
+		if(throwable instanceof SocketTimeoutException) {
+			return Reason.TIMEOUT;
+		}
+
+		if(throwable instanceof SocketException ||
+				throwable instanceof HttpException ||
+				throwable instanceof SSLHandshakeException) {
+			return Reason.BAD_NETWORK;
+		}
+
+		if(throwable instanceof UnimplementedException ||
+				throwable instanceof UnsupportedOperationException) {
+			return Reason.UNIMPLEMENTED;
+		}
+
+		if(throwable instanceof InvalidSyntaxException) {
+
+		}
+		 */
+
+		protected abstract boolean isMeImpl(Throwable t);
 	}
 }

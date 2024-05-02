@@ -49,7 +49,7 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(Collection<CatalogMedia> items) {
+	public void setItems(Collection<? extends CatalogMedia> items) {
 		this.items.clear();
 		this.items.addAll(items);
 		adapter.notifyDataSetChanged();

@@ -175,31 +175,20 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public synchronized void setEnabled(boolean isEnabled, boolean force) {
+	public void setEnabled(boolean isEnabled) {
 		if(this.isEnabled == isEnabled) return;
-
-		boolean wasEnabled = this.isEnabled;
 		this.isEnabled = isEnabled;
 
 		try {
-			if(!force) {
-				if(wasEnabled) notifyItemRemoved(0);
-				else notifyItemInserted(0);
-			} else {
-				notifyDataSetChanged();
-			}
-		} catch(IllegalStateException e) {
+			notifyDataSetChanged();
+		} catch(RuntimeException e) {
 			handler.post(() -> setEnabled(isEnabled));
 		}
 	}
 
-	public synchronized void setEnabled(boolean isEnabled) {
-		setEnabled(isEnabled, false);
-	}
-
 	public void setEnabledSuperForce(boolean isEnabled) {
-		setEnabled(isEnabled, false);
-		setEnabled(isEnabled, true);
+		setEnabled(isEnabled);
+		setEnabled(isEnabled);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")

@@ -1,6 +1,10 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,42 +28,47 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
-import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
-import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
-import com.mrboomdev.awery.util.observable.ObservableArrayList;
-import com.mrboomdev.awery.util.observable.ObservableEmptyList;
-import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
+	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
+	private final CatalogFilter pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
+	private final List<CatalogFilter> filters = List.of(queryFilter, pageFilter);
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private final ObservableList<CatalogMedia> items = new ObservableArrayList<>();
+	private final List<CatalogMedia> items = new ArrayList<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private ExtensionProvider source;
 	private LayoutHeaderSearchBinding header;
 	private SwipeRefreshLayout refresher;
 	private RecyclerView recycler;
 	/* We initially set this value to "true" so that list won't try
 	to load anything because we haven't typed anything yet. */
-	private boolean isLoading = true, didReachedEnd;
+	private boolean isLoading = true, didReachedEnd, select;
 	private int searchId, currentPage;
-	private String searchQuery;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,12 +76,24 @@ public class SearchActivity extends AppCompatActivity {
 		EdgeToEdge.enable(this);
 		super.onCreate(savedInstanceState);
 
+		this.select = getIntent().getBooleanExtra("select", false);
+		this.queryFilter.setValue(getIntent().getStringExtra("query"));
+
+		this.source = returnWith(getIntent().getStringExtra("source"), sourceId -> {
+			if(sourceId == null) {
+				return AnilistProvider.getInstance();
+			}
+
+			return ExtensionsFactory.getExtensionProvider(sourceId);
+		});
+
 		var linear = new LinearLayoutCompat(this);
 		linear.setOrientation(LinearLayoutCompat.VERTICAL);
 		setContentView(linear);
 
 		header = LayoutHeaderSearchBinding.inflate(getLayoutInflater(), linear, true);
 		header.back.setOnClickListener(v -> finish());
+		header.edittext.setText(queryFilter.getStringValue());
 
 		header.edittext.requestFocus();
 
@@ -81,10 +102,13 @@ public class SearchActivity extends AppCompatActivity {
 
 		header.edittext.setOnEditorActionListener((v, action, event) -> {
 			if(action == EditorInfo.IME_ACTION_SEARCH) {
-				this.searchQuery = v.getText().toString();
-				this.didReachedEnd = false;
+				inputManager.hideSoftInputFromWindow(
+						header.edittext.getWindowToken(), 0);
+
+				queryFilter.setValue(v.getText().toString());
+				didReachedEnd = false;
+
 				search(0);
-				inputManager.hideSoftInputFromWindow(header.edittext.getWindowToken(), 0);
 				return true;
 			}
 
@@ -167,8 +191,27 @@ public class SearchActivity extends AppCompatActivity {
 		}
 	}
 
+	private void reachedEnd(long wasSearchId) {
+		loadingAdapter.getBinding((binding) -> runOnUiThread(() -> {
+			if(wasSearchId != searchId) return;
+
+			SearchActivity.this.didReachedEnd = true;
+			binding.title.setText(R.string.you_reached_end);
+			binding.message.setText(R.string.you_reached_end_description);
+
+			binding.progressBar.setVisibility(View.GONE);
+			binding.info.setVisibility(View.VISIBLE);
+
+			isLoading = false;
+			didReachedEnd = true;
+		}));
+	}
+
 	private void search(int page) {
-		if(searchQuery == null || searchQuery.isBlank()) return;
+		if(queryFilter.getValue() == null) {
+			queryFilter.setValue("");
+		}
+
 		var wasSearchId = ++searchId;
 
 		if(page == 0) {
@@ -183,102 +226,110 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		loadingAdapter.setEnabled(true);
+		pageFilter.setValue(page);
 
-		var adultMode = AwerySettings.getInstance().getEnum(
-				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
+		source.searchMedia(this, filters, new ExtensionProvider.ResponseCallback<>() {
+			@Override
+			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> items) {
+				if(wasSearchId != searchId) return;
 
-		AnilistSearchQuery.builder()
-				.setSearchQuery(searchQuery)
-				.setIsAdult(switch(adultMode) {
-					case ENABLED -> null;
-					case DISABLED -> false;
-					case ONLY -> true;
-				})
-				.setType(AnilistMedia.MediaType.ANIME)
-				.setSort(AnilistQuery.MediaSort.SEARCH_MATCH)
-				.setPage(page)
-				.build()
-				.executeQuery(this, items -> {
-					if(wasSearchId != searchId) return;
+				if(!items.hasNextPage()) {
+					reachedEnd(wasSearchId);
+				}
 
-					MediaUtils.filterMedia(items, filteredItems -> {
-						if(filteredItems.isEmpty()) {
-							throw new ZeroResultsException("No media was found", R.string.no_media_found);
-						}
+				MediaUtils.filterMedia(items, filteredItems -> {
+					if(filteredItems.isEmpty()) {
+						throw new ZeroResultsException("No media was found", R.string.no_media_found);
+					}
 
-						for(var item : filteredItems) {
-							item.visualId = idGenerator.getLong();
-						}
-
-						runOnUiThread(() -> {
-							if(wasSearchId != searchId) return;
-							this.isLoading = false;
-							this.currentPage = page;
-
-							if(page == 0) {
-								this.items.addAll(filteredItems);
-								adapter.setItems(this.items);
-							} else {
-								var wasSize = this.items.size();
-								this.items.addAll(filteredItems, false);
-								adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
-							}
-
-							AweryLifecycle.runDelayed(() ->
-									AweryLifecycle.runOnUiThread(this::tryLoadMore, recycler), 100);
-						});
-					});
-				}).catchExceptions(e -> {
-					if(wasSearchId != searchId) return;
-
-					var error = new ExceptionDescriptor(e);
-					Log.e(TAG, "Failed to search", e);
+					for(var item : filteredItems) {
+						item.visualId = idGenerator.getLong();
+					}
 
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
+						SearchActivity.this.isLoading = false;
+						SearchActivity.this.currentPage = page;
 
-						loadingAdapter.getBinding((binding) -> {
-							if(wasSearchId != searchId) return;
+						if(page == 0) {
+							SearchActivity.this.items.addAll(filteredItems);
+							adapter.setItems(SearchActivity.this.items);
+						} else {
+							var wasSize = SearchActivity.this.items.size();
+							SearchActivity.this.items.addAll(filteredItems);
+							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
+						}
 
-							if(page == 0) {
-								this.items.clear();
-								adapter.setItems(this.items);
-							}
-
-							if(e instanceof ZeroResultsException && page != 0) {
-								this.didReachedEnd = true;
-								binding.title.setText(R.string.you_reached_end);
-								binding.message.setText(R.string.you_reached_end_description);
-							} else {
-								binding.title.setText(error.getTitle(this));
-								binding.message.setText(error.getMessage(this));
-							}
-
-							binding.progressBar.setVisibility(View.GONE);
-							binding.info.setVisibility(View.VISIBLE);
-
-							this.isLoading = false;
-						});
+						runDelayed(() -> AweryLifecycle.runOnUiThread(
+								() -> tryLoadMore(), recycler), 1000);
 					});
-				}).onFinally(() -> {
-					if(wasSearchId != searchId) return;
-					refresher.setRefreshing(false);
 				});
+
+				onFinally();
+			}
+
+			@Override
+			public void onFailure(Throwable e) {
+				if(wasSearchId != searchId) return;
+
+				var error = new ExceptionDescriptor(e);
+				Log.e(TAG, "Failed to search", e);
+
+				runOnUiThread(() -> {
+					if(wasSearchId != searchId) return;
+
+					loadingAdapter.getBinding((binding) -> {
+						if(wasSearchId != searchId) return;
+
+						if(page == 0) {
+							SearchActivity.this.items.clear();
+							adapter.setItems(SearchActivity.this.items);
+						}
+
+						if(e instanceof ZeroResultsException && page != 0) {
+							reachedEnd(wasSearchId);
+						} else {
+							binding.title.setText(error.getTitle(SearchActivity.this));
+							binding.message.setText(error.getMessage(SearchActivity.this));
+						}
+
+						binding.progressBar.setVisibility(View.GONE);
+						binding.info.setVisibility(View.VISIBLE);
+
+						SearchActivity.this.isLoading = false;
+					});
+				});
+
+				onFinally();
+			}
+
+			private void onFinally() {
+				if(wasSearchId != searchId) return;
+				refresher.setRefreshing(false);
+			}
+		});
 	}
 
-	private static class Adapter extends RecyclerView.Adapter<ViewHolder> {
-		private ObservableList<CatalogMedia> items = ObservableEmptyList.getInstance();
+	private class Adapter extends RecyclerView.Adapter<ViewHolder> {
+		private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
+		private List<CatalogMedia> items;
 
 		public Adapter() {
 			setHasStableIds(true);
 		}
 
 		@SuppressLint("NotifyDataSetChanged")
-		public void setItems(ObservableList<CatalogMedia> items) {
+		public void setItems(List<CatalogMedia> items) {
+			idGenerator.clear();
+
 			if(items == null) {
-				this.items = ObservableEmptyList.getInstance();
+				this.items = Collections.emptyList();
 				notifyDataSetChanged();
 				return;
+			} else {
+				for(var item : items) {
+					item.visualId = idGenerator.getLong();
+				}
 			}
 
 			this.items = items;
@@ -287,7 +338,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		@Override
 		public long getItemId(int position) {
-			return Long.parseLong(items.get(position).getId("anilist"));
+			return items.get(position).visualId;
 		}
 
 		@NonNull
@@ -306,8 +357,16 @@ public class SearchActivity extends AppCompatActivity {
 
 			binding.getRoot().setLayoutParams(params);
 
-			binding.getRoot().setOnClickListener(view ->
-					MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
+			binding.getRoot().setOnClickListener(view -> {
+				if(select) {
+					var json = Parser.toString(CatalogMedia.class, viewHolder.getItem());
+					setResult(0, new Intent().putExtra("media", json));
+					finish();
+					return;
+				}
+
+				MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem());
+			});
 
 			binding.getRoot().setOnLongClickListener(view -> {
 				var media = viewHolder.getItem();
@@ -335,6 +394,10 @@ public class SearchActivity extends AppCompatActivity {
 
 		@Override
 		public int getItemCount() {
+			if(items == null) {
+				return 0;
+			}
+
 			return items.size();
 		}
 	}

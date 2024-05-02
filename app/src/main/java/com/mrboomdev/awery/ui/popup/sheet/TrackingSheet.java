@@ -4,11 +4,13 @@ import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.sidesheet.SideSheetDialog;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.extensions.Extension;
@@ -34,9 +37,11 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -44,6 +49,7 @@ import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -93,11 +99,13 @@ public class TrackingSheet {
 		public static final String TAG = "TrackingSheet";
 		private final Map<String, ExtensionProvider> mappedIds = new HashMap<>();
 		private final List<ExtensionProvider> sources;
+		private Map<String, String> trackedIds;
 		private final CatalogMedia media;
 		private final List<CatalogFilter> filters;
 		private final CatalogFilter pageFilter, queryFilter;
 		private final FragmentManager fragmentManager;
 		private final Dialog dialog;
+		private final Context context;
 		private LayoutTrackingOptionsBinding binding;
 		private ArrayListAdapter<String> sourcesAdapter;
 		private ExtensionProvider selectedSource;
@@ -109,6 +117,7 @@ public class TrackingSheet {
 			this.fragmentManager = fragmentManager;
 			this.dialog = dialog;
 			this.media = media;
+			this.context = dialog.getContext();
 
 			queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
 			pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
@@ -139,7 +148,7 @@ public class TrackingSheet {
 			binding.status.input.setOnClickListener(v -> {
 				binding.status.input.dismissDropDown();
 
-				new SelectionDialog<Selection.Selectable<CatalogList>>(dialog.getContext(), SelectionDialog.Mode.SINGLE)
+				new SelectionDialog<Selection.Selectable<CatalogList>>(context, SelectionDialog.Mode.SINGLE)
 						.setTitle("Select a status")
 						.setItems(trackingOptions == null ? null : stream(trackingOptions.lists)
 								.map(item -> {
@@ -170,7 +179,7 @@ public class TrackingSheet {
 				var progress = dao.get(media.globalId);
 
 				if(progress != null) {
-					progress.trackers.remove(selectedSource.getGlobalId());
+					progress.trackers.remove(selectedSource.getId());
 					dao.insert(progress);
 				}
 
@@ -275,8 +284,6 @@ public class TrackingSheet {
 				selectedSource.trackMedia(media, trackingOptions, new ExtensionProvider.ResponseCallback<>() {
 					@Override
 					public void onSuccess(CatalogTrackingOptions catalogTrackingOptions) {
-						var context = dialog.getContext();
-
 						runOnUiThread(() -> {
 							binding.confirm.setEnabled(true);
 							binding.delete.setEnabled(true);
@@ -293,7 +300,7 @@ public class TrackingSheet {
 							}
 
 							progress.trackers.put(
-									selectedSource.getGlobalId(),
+									selectedSource.getId(),
 									trackingOptions.id);
 
 							dao.insert(progress);
@@ -302,8 +309,6 @@ public class TrackingSheet {
 
 					@Override
 					public void onFailure(Throwable e) {
-						var context = dialog.getContext();
-
 						runOnUiThread(() -> {
 							binding.confirm.setEnabled(true);
 							binding.delete.setEnabled(true);
@@ -350,15 +355,17 @@ public class TrackingSheet {
 				updateTrackingDialogState(null, null);
 				selectedSource = item;
 
-				queryFilter.setValue(media.getTitle());
-				searchMedia(selectedSource);
+				queryFilter.setValue(trackedIds.containsKey(item.getId())
+						? trackedIds.get(item.getId()) : media.getTitle());
+
+				searchMedia();
 			});
 
 			var titles = new ArrayList<>(media.titles);
-			var more = dialog.getContext().getString(R.string.manual_search);
+			var more = context.getString(R.string.manual_search);
 			titles.add(more);
 
-			var titlesAdapter = new ArrayListAdapter<>(titles, (item, recycled, parent) -> {
+			var titlesAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
 				if(recycled == null) {
 					var itemBinding = ItemListDropdownBinding.inflate(inflater, parent, false);
 					recycled = itemBinding.getRoot();
@@ -368,7 +375,7 @@ public class TrackingSheet {
 				title.setText(item);
 
 				return recycled;
-			});
+			}, titles);
 
 			binding.title.input.setOnItemClickListener((parent, view, position, id) -> {
 				autoSelectNext = false;
@@ -378,12 +385,31 @@ public class TrackingSheet {
 
 				if(item.equals(more)) {
 					binding.title.input.setText(queryFilter.getStringValue(), false);
-					toast("Manual search isn't currently available :(");
-					//TODO: Launch a SearchActivity
+
+					var intent = new Intent(context, SearchActivity.class);
+					intent.putExtra("source", selectedSource.getId());
+					intent.putExtra("query", queryFilter.getStringValue());
+					intent.putExtra("select", true);
+
+					startActivityForResult(context, intent, result -> {
+						if(result == null) return;
+
+						var mediaJson = result.getStringExtra("media");
+						if(mediaJson == null) return;
+
+						try {
+							var media = Parser.fromString(CatalogMedia.class, mediaJson);
+							binding.title.input.setText(media.getTitle(), false);
+							binding.searchStatus.setText("Found \"" + media.getTitle() + "\"");
+							loadDataFromTracker(media);
+						} catch(IOException e) {
+							CrashHandler.showErrorDialog(context, e);
+						}
+					});
 				} else {
 					updateTrackingDialogState(null, null);
 					queryFilter.setValue(item);
-					searchMedia(selectedSource);
+					searchMedia();
 				}
 			});
 
@@ -404,7 +430,9 @@ public class TrackingSheet {
 
 				var __progress = progressDao.get(media.globalId);
 				if(__progress == null) __progress = new CatalogMediaProgress(media.globalId);
+
 				var progress = __progress;
+				trackedIds = progress.trackers;
 
 				for(var provider : sources) {
 					mappedIds.put(provider.getId(), provider);
@@ -419,7 +447,7 @@ public class TrackingSheet {
 								R.string.no_tracker_extensions));
 					} else {
 						var foundTracked = stream(sources)
-								.filter(provider -> progress.trackers.containsKey(provider.getGlobalId()))
+								.filter(provider -> progress.trackers.containsKey(provider.getId()))
 								.findFirst();
 
 						selectedSource = foundTracked.isPresent()
@@ -428,17 +456,17 @@ public class TrackingSheet {
 						binding.source.input.setText(selectedSource.getName(), false);
 
 						if(foundTracked.isPresent()) {
-							var query = progress.trackers.get(foundTracked.get().getGlobalId());
+							var query = trackedIds.get(foundTracked.get().getId());
 							queryFilter.setValue(query);
 							binding.title.input.setText(query, false);
 
-							searchMedia(foundTracked.get());
+							searchMedia();
 						} else {
 							var title = media.titles.get(0);
 							binding.title.input.setText(title, false);
 
 							queryFilter.setValue(title);
-							searchMedia(selectedSource);
+							searchMedia();
 						}
 					}
 
@@ -447,65 +475,72 @@ public class TrackingSheet {
 			}).start();
 		}
 
-		private void searchMedia(@NonNull ExtensionProvider source) {
-			runOnUiThread(() -> binding.searchStatus.setText("Searching \"" + queryFilter.getStringValue() + "\"..."));
+		private void loadDataFromTracker(CatalogMedia media) {
+			runOnUiThread(() -> binding.searchStatus.setText("Tracking \"" + queryFilter.getStringValue() + "\"..."));
 
 			var myId = ++loadId;
 
-			source.searchMedia(dialog.getContext(), filters, new ExtensionProvider.ResponseCallback<>() {
+			selectedSource.trackMedia(media, null, new ExtensionProvider.ResponseCallback<>() {
 				@Override
-				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
-					var context = dialog.getContext();
-					if(myId != loadId) return;
+				public void onSuccess(CatalogTrackingOptions catalogTrackingOptions) {
+					trackingOptions = catalogTrackingOptions;
 
-					var media = results.get(0);
+					runOnUiThread(() -> {
+						if(myId != loadId) return;
 
-					source.trackMedia(media, null, new ExtensionProvider.ResponseCallback<>() {
-						@Override
-						public void onSuccess(CatalogTrackingOptions catalogTrackingOptions) {
-							trackingOptions = catalogTrackingOptions;
+						updateTrackingDialogState(catalogTrackingOptions, null);
 
-							runOnUiThread(() -> {
-								var context = dialog.getContext();
-								if(myId != loadId) return;
+						binding.confirm.setEnabled(true);
+						binding.delete.setEnabled(true);
 
-								updateTrackingDialogState(catalogTrackingOptions, null);
+						binding.searchStatus.setText("Found \"" + media.getTitle() + "\"");
+						binding.searchStatus.setOnClickListener(v -> MediaUtils.launchMediaActivity(context, media));
 
-								binding.confirm.setEnabled(true);
-								binding.delete.setEnabled(true);
-
-								binding.searchStatus.setText("Found \"" + media.getTitle() + "\"");
-								binding.searchStatus.setOnClickListener(v -> MediaUtils.launchMediaActivity(context, media));
-
-								binding.searchStatus.setClickable(true);
-								binding.searchStatus.setFocusable(true);
-							});
-						}
-
-						@Override
-						public void onFailure(Throwable e) {
-							var context = dialog.getContext();
-							if(myId != loadId) return;
-
-							Log.e(TAG, "Failed to get tracking options", e);
-							updateTrackingDialogState(null, e);
-
-							binding.searchStatus.setClickable(false);
-							binding.searchStatus.setFocusable(false);
-						}
+						binding.searchStatus.setClickable(true);
+						binding.searchStatus.setFocusable(true);
 					});
 				}
 
 				@Override
 				public void onFailure(Throwable e) {
-					var context = dialog.getContext();
 					if(myId != loadId) return;
 
-					Log.e(TAG, "Failed to load items for a tracker", e);
-					updateTrackingDialogState(null, e);
+					runOnUiThread(() -> {
+						Log.e(TAG, "Failed to get tracking options", e);
+						updateTrackingDialogState(null, e);
 
-					binding.searchStatus.setClickable(false);
-					binding.searchStatus.setFocusable(false);
+						binding.searchStatus.setClickable(false);
+						binding.searchStatus.setFocusable(false);
+					});
+				}
+			});
+		}
+
+		private void searchMedia() {
+			runOnUiThread(() -> binding.searchStatus.setText("Searching \"" + queryFilter.getStringValue() + "\"..."));
+
+			var myId = ++loadId;
+
+			selectedSource.searchMedia(context, filters, new ExtensionProvider.ResponseCallback<>() {
+				@Override
+				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
+					if(myId != loadId) return;
+
+					var media = results.get(0);
+					loadDataFromTracker(media);
+				}
+
+				@Override
+				public void onFailure(Throwable e) {
+					if(myId != loadId) return;
+
+					runOnUiThread(() -> {
+						Log.e(TAG, "Failed to load items for a tracker", e);
+						updateTrackingDialogState(null, e);
+
+						binding.searchStatus.setClickable(false);
+						binding.searchStatus.setFocusable(false);
+					});
 				}
 			});
 		}
@@ -520,8 +555,8 @@ public class TrackingSheet {
 				if(throwable != null) {
 					var description = new ExceptionDescriptor(throwable);
 
-					binding.loadingState.title.setText(description.getTitle(dialog.getContext()));
-					binding.loadingState.message.setText(description.getMessage(dialog.getContext()));
+					binding.loadingState.title.setText(description.getTitle(context));
+					binding.loadingState.message.setText(description.getMessage(context));
 
 					binding.loadingState.progressBar.setVisibility(View.GONE);
 					binding.loadingState.info.setVisibility(View.VISIBLE);

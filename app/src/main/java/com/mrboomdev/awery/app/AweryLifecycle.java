@@ -17,8 +17,12 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
+
+import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 
@@ -63,6 +67,48 @@ public class AweryLifecycle {
 
 		if(activity != null) activity.finishAffinity();
 		else Runtime.getRuntime().exit(0);
+	}
+
+	/**
+	 * DO NOT EVER USE DIRECTLY THIS CLASS!
+	 * It was made just for the Android Framework to work properly!
+	 */
+	public static class CallbackFragment extends Fragment {
+		private final Callbacks.Callback1<Intent> callback;
+
+		public CallbackFragment(Callbacks.Callback1<Intent> callback) {
+			this.callback = callback;
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+			super.onActivityResult(requestCode, resultCode, data);
+			callback.run(data);
+		}
+	}
+
+	/**
+	 * This method is a little bit hacky so after library update it can break.
+	 * Please use with care!
+	 * @param context Context from the {@link FragmentActivity}
+	 * @author MrBoomDev
+	 */
+	@SuppressWarnings("deprecation")
+	public static void startActivityForResult(Context context, Intent intent, Callbacks.Callback1<Intent> callback) {
+		var activity = getActivity(context);
+
+		if(activity instanceof FragmentActivity fragmentActivity) {
+			var fragmentManager = fragmentActivity.getSupportFragmentManager();
+			var fragment = new CallbackFragment(callback);
+
+			fragmentManager.beginTransaction().add(fragment, String.valueOf(intent.hashCode())).commit();
+			fragmentManager.executePendingTransactions();
+
+			fragment.startActivityForResult(intent, 0);
+		} else {
+			throw new IllegalArgumentException("Activity must be an instance of FragmentActivity!");
+		}
 	}
 
 	@Nullable

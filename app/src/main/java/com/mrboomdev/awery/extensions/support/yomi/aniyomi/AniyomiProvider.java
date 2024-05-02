@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -156,13 +157,13 @@ public class AniyomiProvider extends YomiProvider {
 			throw new NullPointerException("params cannot be null!");
 		}
 
-		var query = stream(params).filter(item -> item.getName().equals("query")).findFirst().orElseThrow();
-		var page = stream(params).filter(item -> item.getName().equals("page")).findFirst().orElse(null);
+		var query = findIn(filter -> filter.getId().equals("query"), params);
+		var page = findIn(filter -> filter.getId().equals("page"), params);
 
 		var filter = source.getFilterList();
 
 		new Thread(() -> AniyomiKotlinBridge.searchAnime(source,
-				page != null ? page.getNumberValue() : 0,
+				page != null ? page.getIntegerValue() : 0,
 				query.getStringValue(), filter, (animePage, t) -> {
 			if(!checkSearchResults(animePage, t, callback)) return;
 

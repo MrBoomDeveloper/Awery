@@ -10,11 +10,12 @@ java {
 tasks.register('runWithJavaExec', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = "com.mrboomdev.awery.desktop.Main"
+    errorOutput = System.err
 }
 
 dependencies {
     // AwerySdk
-    implementation "com.github.MrBoomDeveloper:AwerySdk:4dcca61e7b"
+    implementation "com.github.MrBoomDeveloper:AwerySdk:653d1e0396"
 
     // Utils
     implementation "com.squareup.moshi:moshi:1.15.0"

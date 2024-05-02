@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -20,11 +21,18 @@ import java.util.List;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
 	private static final String TAG = "MediaCatalogAdapter";
-	private List<CatalogMedia> items;
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
+	private List<? extends CatalogMedia> items;
 
 	public MediaCatalogAdapter(List<CatalogMedia> items) {
 		setHasStableIds(true);
 		this.items = items;
+
+		if(items != null) {
+			for(var item : items) {
+				item.visualId = idGenerator.getLong();
+			}
+		}
 	}
 
 	public MediaCatalogAdapter() {
@@ -33,11 +41,11 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	@Override
 	public long getItemId(int position) {
-		return Long.parseLong(items.get(position).getId("anilist"));
+		return items.get(position).visualId;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(List<CatalogMedia> items) {
+	public void setItems(List<? extends CatalogMedia> items) {
 		if(items == null) {
 			this.items = null;
 			return;

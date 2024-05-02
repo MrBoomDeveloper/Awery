@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -156,7 +157,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		}
 
 		if(doneTasks == totalTasks && doneSuccessfully == 0) {
-			requireActivity().runOnUiThread(() -> {
+			runOnUiThread(() -> {
 				getBinding().swipeRefresher.setRefreshing(false);
 				getEmptyAdapter().setEnabledSuperForce(true);
 

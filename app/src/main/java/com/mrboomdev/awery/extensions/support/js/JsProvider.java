@@ -46,6 +46,7 @@ import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
@@ -457,7 +458,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryTrackMedia is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryTrackMedia is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -484,7 +485,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryLogin is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryLogin is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -501,7 +502,7 @@ public class JsProvider extends ExtensionProvider {
 				}
 			}
 
-			callback.onFailure(new NullPointerException("aweryIsLoggedIn is not a function or isn't defined!"));
+			callback.onFailure(new UnimplementedException("aweryIsLoggedIn is not a function or isn't defined!"));
 		});
 	}
 
@@ -529,7 +530,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryPostMediaComment is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryPostMediaComment is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -560,7 +561,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryReadMediaComments is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryReadMediaComments is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -578,11 +579,11 @@ public class JsProvider extends ExtensionProvider {
 					var jsFilters = this.context.newArray(scope, stream(filters)
 							.map(filter -> {
 								var obj = this.context.newObject(scope);
-								obj.put("name", obj, filter.getName());
+								obj.put("id", obj, filter.getId());
 
 								obj.put("value", obj, switch(filter.getType()) {
 									case STRING -> filter.getStringValue();
-									case NUMBER -> filter.getNumberValue();
+									case NUMBER, INTEGER -> filter.getNumberValue();
 									case TOGGLE -> filter.getToggleValue();
 									case DATE -> filter.getDateValue().getTimeInMillis();
 
@@ -722,7 +723,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("awerySearchMedia is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("awerySearchMedia is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -755,7 +756,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryMediaVideos is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryMediaVideos is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -801,7 +802,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryLoginScreen is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryLoginScreen is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -830,7 +831,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new NullPointerException("aweryMediaEpisodes is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("aweryMediaEpisodes is not a function or isn't defined!"));
 			}
 		});
 	}

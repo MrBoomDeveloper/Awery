@@ -3,8 +3,6 @@ package com.mrboomdev.awery.ui.fragments;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -26,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.AweryLifecycle;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
@@ -33,9 +33,10 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -58,6 +59,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	private final String TAG = "MediaPlayFragment";
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
+	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
+	private final List<CatalogFilter> filters = List.of(queryFilter,
+			new CatalogFilter(CatalogFilter.Type.NUMBER, "page", 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private List<ExtensionProvider> providers;
@@ -66,6 +70,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private CatalogMedia media;
 	private boolean autoChangeSource = true;
 	private int currentSourceIndex = 0;
+	private long loadId;
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -133,27 +138,34 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		if(providers.isEmpty()) {
-			handleExceptionUi(null, new ZeroResultsException("No extensions was found", R.string.no_episodes_found));
+			handleExceptionUi(null, new ZeroResultsException("No extensions was found", R.string.no_extensions_found));
 			variantsAdapter.setEnabled(false);
 			return;
 		}
 
+		queryFilter.setValue(media.getTitle());
 		selectProvider(providers.get(0));
 	}
 
-	@NonNull
-	private View bindDropdownItem(ExtensionProvider item, View recycled, ViewGroup parent) {
-		if(recycled == null) {
-			var inflater = LayoutInflater.from(parent.getContext());
-			var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
-			recycled = binding.getRoot();
-		}
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
+				.flatMap(NiceUtils::stream)
+				.sorted().toList();
 
-		if(recycled instanceof ViewGroup viewGroup) {
-			var title = (TextView) viewGroup.getChildAt(0);
+		var sourcesDropdownAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
+			if(recycled == null) {
+				var inflater = LayoutInflater.from(parent.getContext());
+				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
+				recycled = binding.getRoot();
+			}
+
+			TextView title = recycled.findViewById(R.id.title);
+			ImageView icon = recycled.findViewById(R.id.icon);
+
 			title.setText(item.getName());
 
-			var icon = (ImageView) viewGroup.getChildAt(1);
 			var status = sourceStatuses.get(item);
 
 			if(status != null) {
@@ -178,28 +190,77 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			} else {
 				icon.setVisibility(View.GONE);
 			}
-		} else {
-			throw new IllegalStateException("Recycled view is not a ViewGroup");
-		}
 
-		return recycled;
-	}
+			return recycled;
+		}, providers);
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
-				.flatMap(NiceUtils::stream)
-				.sorted().toList();
+		var more = "Search manually";
+		var titles = new ArrayList<>(media.titles);
+		titles.add(more);
 
-		var sourcesDropdownAdapter = new ArrayListAdapter<>(providers, this::bindDropdownItem);
+		var titlesAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
+			if(recycled == null) {
+				var inflater = LayoutInflater.from(parent.getContext());
+				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
+				recycled = binding.getRoot();
+			}
+
+			TextView title = recycled.findViewById(R.id.title);
+			title.setText(item);
+
+			return recycled;
+		}, titles);
 
 		variantsAdapter.getBinding((binding) -> {
 			binding.sourceDropdown.setAdapter(sourcesDropdownAdapter);
+			binding.searchDropdown.setAdapter(titlesAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
 				selectProvider(providers.get(position));
 				autoChangeSource = false;
+			});
+
+			binding.searchDropdown.setOnItemClickListener((parent, _view, position, id) -> {
+				var title = titles.get(position);
+
+				if(title.equals(more)) {
+					binding.searchDropdown.setText(queryFilter.getStringValue(), false);
+
+					var intent = new Intent(requireContext(), SearchActivity.class);
+					intent.putExtra("source", selectedSource.getId());
+					intent.putExtra("query", queryFilter.getStringValue());
+					intent.putExtra("select", true);
+
+					AweryLifecycle.startActivityForResult(requireContext(), intent, result -> {
+						if(result == null) return;
+
+						var mediaJson = result.getStringExtra("media");
+						if(mediaJson == null) return;
+
+						try {
+							var media = Parser.fromString(CatalogMedia.class, mediaJson);
+							binding.searchDropdown.setText(media.getTitle(), false);
+							queryFilter.setValue(media.getTitle());
+
+							placeholderAdapter.getBinding(placeholder -> {
+								placeholder.progressBar.setVisibility(View.VISIBLE);
+								placeholder.info.setVisibility(View.GONE);
+
+								placeholderAdapter.setEnabled(true);
+								episodesAdapter.setItems(media, Collections.emptyList());
+
+								autoChangeSource = false;
+								loadEpisodesFromSource(selectedSource, media);
+							});
+						} catch(IOException e) {
+							CrashHandler.showErrorDialog(requireContext(), e);
+						}
+					});
+				} else {
+					autoChangeSource = false;
+					queryFilter.setValue(title);
+					selectProvider(selectedSource);
+				}
 			});
 		});
 
@@ -221,7 +282,38 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 	}
 
+	private void loadEpisodesFromSource(@NonNull ExtensionProvider source, CatalogMedia media) {
+		var myId = ++loadId;
+
+		source.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+			@Override
+			public void onSuccess(List<? extends CatalogEpisode> episodes) {
+				if(source != selectedSource || myId != loadId) return;
+
+				sourceStatuses.put(source, ExtensionStatus.OK);
+
+				runOnUiThread(() -> {
+					placeholderAdapter.setEnabled(false);
+					episodesAdapter.setItems(media, episodes);
+				});
+			}
+
+			@Override
+			public void onFailure(@NonNull Throwable e) {
+				if(source != selectedSource || myId != loadId) return;
+
+				Log.e(TAG, "Failed to load episodes!", e);
+
+				handleExceptionMark(source, e);
+				if(autoSelectNextSource()) return;
+				handleExceptionUi(source, e);
+			}
+		});
+	}
+
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
+		var myId = ++loadId;
+
 		placeholderAdapter.setEnabled(true);
 		this.selectedSource = source;
 
@@ -241,63 +333,39 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var lastUsedTitleIndex = new AtomicInteger(0);
 		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>>();
 
-		var searchParams = List.of(new CatalogFilter(CatalogFilter.Type.STRING, "query"));
-		searchParams.get(0).setValue(media.titles.get(0));
+		if(autoChangeSource) {
+			queryFilter.setValue(media.titles.get(0));
+		}
 
 		variantsAdapter.getBinding((binding) ->
-				binding.searchDropdown.setText(searchParams.get(0).getStringValue(), false));
+				binding.searchDropdown.setText(queryFilter.getStringValue(), false));
 
 		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
 
 			@Override
 			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> mediaList) {
-				if(source != selectedSource) return;
-
-				source.getEpisodes(0, mediaList.get(0), new ExtensionProvider.ResponseCallback<>() {
-					@Override
-					public void onSuccess(List<? extends CatalogEpisode> episodes) {
-						if(source != selectedSource) return;
-						Activity activity;
-
-						try {
-							activity = requireActivity();
-						} catch(IllegalStateException e) {
-							return;
-						}
-
-						sourceStatuses.put(source, ExtensionStatus.OK);
-
-						activity.runOnUiThread(() -> {
-							placeholderAdapter.setEnabled(false);
-							episodesAdapter.setItems(media, episodes);
-						});
-					}
-
-					@Override
-					public void onFailure(@NonNull Throwable e) {
-						handleExceptionMark(source, e);
-						if(autoSelectNextSource()) return;
-						handleExceptionUi(source, e);
-					}
-				});
+				if(source != selectedSource || myId != loadId) return;
+				loadEpisodesFromSource(source, mediaList.get(0));
 			}
 
 			@Override
 			public void onFailure(Throwable e) {
 				var callback = foundMediaCallback.get();
-				if(callback == null) return;
+				if(callback == null || myId != loadId) return;
+
+				Log.e(TAG, "Failed to search media!", e);
 
 				runOnUiThread(() -> {
 					var context = getContext();
 					if(context == null) return;
 
-					if(lastUsedTitleIndex.get() < media.titles.size() - 1) {
+					if(autoChangeSource && lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
-						searchParams.get(0).setValue(media.titles.get(newIndex));
-						source.searchMedia(context, searchParams, callback);
+						queryFilter.setValue(media.titles.get(newIndex));
+						source.searchMedia(context, filters, callback);
 
 						variantsAdapter.getBinding((binding) -> binding.searchDropdown.setText(
-								searchParams.get(0).getStringValue(), false));
+								queryFilter.getStringValue(), false));
 					} else {
 						handleExceptionMark(source, e);
 						if(autoSelectNextSource()) return;
@@ -310,7 +378,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var context = getContext();
 		if(context == null) return;
 
-		source.searchMedia(context, searchParams, foundMediaCallback.get());
+		source.searchMedia(context, filters, foundMediaCallback.get());
 	}
 
 	private boolean autoSelectNextSource() {
@@ -330,28 +398,24 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(source != selectedSource) return;
 		var error = new ExceptionDescriptor(throwable);
 
-		if(!error.isNetworkException()) {
-			sourceStatuses.put(source, ExtensionStatus.BROKEN_PARSER);
-		} else if(throwable instanceof ZeroResultsException) {
-			sourceStatuses.put(source, ExtensionStatus.NOT_FOUND);
-		} else {
-			sourceStatuses.put(source, ExtensionStatus.OFFLINE);
-		}
+		/*sourceStatuses.put(source, switch(ExceptionDescriptor.getReason(throwable)) {
+			case SERVER_DOWN -> ExtensionStatus.SERVER_DOWN;
+			case OTHER, UNIMPLEMENTED -> ExtensionStatus.BROKEN_PARSER;
+		});*/
+
+		if(throwable instanceof ZeroResultsException) sourceStatuses.put(source, ExtensionStatus.NOT_FOUND);
+		else if(error.isNetworkException()) sourceStatuses.put(source, ExtensionStatus.OFFLINE);
+		else sourceStatuses.put(source, ExtensionStatus.BROKEN_PARSER);
 	}
 
 	private void handleExceptionUi(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource && source != null) return;
 		var error = new ExceptionDescriptor(throwable);
-		Context context;
 
-		try {
-			context = requireContext();
-		} catch(IllegalStateException e) {
-			Log.e(TAG, "Failed to get context. Pray that we just restored the fragment.");
-			return;
-		}
+		var context = getContext();
+		if(context == null) return;
 
-		placeholderAdapter.getBinding((binding) -> runOnUiThread(() -> {
+		placeholderAdapter.getBinding(binding -> runOnUiThread(() -> {
 			binding.title.setText(error.getTitle(context));
 			binding.message.setText(error.getMessage(context));
 
@@ -365,7 +429,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		var layoutManager = new LinearLayoutManager(inflater.getContext(), LinearLayoutManager.VERTICAL, false);
+		var layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
 		variantsAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var binding = LayoutWatchVariantsBinding.inflate(inflater, parent, false);
@@ -388,7 +452,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build();
 
-		ConcatAdapter concatAdapter = new ConcatAdapter(config, variantsAdapter, episodesAdapter, placeholderAdapter);
+		var concatAdapter = new ConcatAdapter(config,
+				variantsAdapter, episodesAdapter, placeholderAdapter);
 
 		var recycler = new RecyclerView(inflater.getContext());
 		recycler.setLayoutManager(layoutManager);

@@ -68,6 +68,14 @@ public class ExtensionsFactory {
 				.findFirst().orElseThrow();
 	}
 
+	public static ExtensionProvider getExtensionProvider(String id) {
+		return stream(getExtensions(0))
+				.map(Extension::getProviders)
+				.flatMap(NiceUtils::stream)
+				.filter(provider -> id.equals(provider.getId()))
+				.findAny().orElse(null);
+	}
+
 	@NonNull
 	public static Collection<Extension> getExtensions(int flags) {
 		return stream(managers)

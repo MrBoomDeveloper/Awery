@@ -270,6 +270,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
      */
     protected abstract fun episodeListParse(response: Response): List<SEpisode>
 
+    @Suppress("DEPRECATION")
     override suspend fun getVideoList(episode: SEpisode): List<Video> {
         return fetchVideoList(episode).awaitSingle()
     }

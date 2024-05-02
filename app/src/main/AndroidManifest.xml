@@ -114,6 +114,10 @@
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
+        <activity android:name=".ui.activity.MultiSearchActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="false" />
+
         <activity
             android:name=".ui.activity.LoginActivity"
             android:windowSoftInputMode="adjustPan"
@@ -138,6 +142,16 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <service
+            android:name=".app.services.DownloadService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <service
+            android:name=".app.services.SubscriptionsService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

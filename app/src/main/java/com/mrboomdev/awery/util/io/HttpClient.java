@@ -152,14 +152,19 @@ public class HttpClient {
 			thread.setName("HttpClient-" + thread.getId());
 
 			thread.setUncaughtExceptionHandler((t, e) ->
-					callback.onError(new HttpException(e)));
+					callback.onError(e));
 
 			thread.start();
 		}
 
 		private void call(Context context, HttpCallback callback, boolean check) {
 			if(check) checkFields();
-			HttpClient.call(context, this, callback);
+
+			try {
+				HttpClient.call(context, this, callback);
+			} catch(IOException e) {
+				callback.onError(e);
+			}
 		}
 
 		private void checkFields() {
@@ -216,7 +221,7 @@ public class HttpClient {
 				.setUrl(url);
 	}
 
-	private static void call(Context context, @NonNull Request request, HttpCallback callback) {
+	private static void call(Context context, @NonNull Request request, HttpCallback callback) throws IOException {
 		var okRequest = new okhttp3.Request.Builder();
 		okRequest.url(request.url);
 
@@ -251,7 +256,12 @@ public class HttpClient {
 		executeCall(context, okRequest, request.cacheMode, callback);
 	}
 
-	private static void executeCall(Context context, okhttp3.Request.Builder okRequest, CacheMode mode, HttpCallback callback) {
+	private static void executeCall(
+			Context context,
+			okhttp3.Request.Builder okRequest,
+			CacheMode mode,
+			HttpCallback callback
+	) throws IOException {
 		try(var response = getClient(context).newCall(okRequest.build()).execute()) {
 			if(mode == CacheMode.CACHE_FIRST && response.code() == 504) {
 				var cacheControl = new CacheControl.Builder().noCache().build();
@@ -260,8 +270,6 @@ public class HttpClient {
 			}
 
 			callback.onResponse(new HttpResponseImpl(response));
-		} catch(IOException e) {
-			callback.onError(new HttpException(e));
 		}
 	}
 
@@ -272,7 +280,7 @@ public class HttpClient {
 		/**
 		 * Called after the request was either successful or not.
 		 */
-		void onResult(@Nullable HttpResponse response, @Nullable HttpException exception);
+		void onResult(@Nullable HttpResponse response, @Nullable Throwable exception);
 
 		/**
 		 * Do not override this method, or else the whole idea of this interface will be lost!
@@ -286,14 +294,14 @@ public class HttpClient {
 		 * Do not override this method, or else the whole idea of this interface will be lost!
 		 */
 		@Override
-		default void onError(HttpException exception) {
+		default void onError(Throwable exception) {
 			onResult(null, exception);
 		}
 	}
 
 	public interface HttpCallback {
 		void onResponse(HttpResponse response);
-		void onError(HttpException exception);
+		void onError(Throwable exception);
 	}
 
 	public interface HttpResponse {
@@ -321,13 +329,6 @@ public class HttpClient {
 		@JSGetter("statusCode")
 		public int getStatusCode() {
 			return code;
-		}
-	}
-
-	public static class HttpException extends RuntimeException {
-
-		public HttpException(Throwable t) {
-			super(t);
 		}
 	}
 }

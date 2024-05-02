@@ -44,7 +44,7 @@ public abstract class AnilistQuery<T> {
 		return 60_000;
 	}
 
-	private void executeQueryHttp(Context context, ResponseCallback<String> callback) throws HttpClient.HttpException {
+	private void executeQueryHttp(Context context, ResponseCallback<String> callback) {
 		var data = new HashMap<String, String>() {{
 			put("query", getQuery());
 			put("variables", getVariables());
@@ -74,7 +74,7 @@ public abstract class AnilistQuery<T> {
 					}
 
 					@Override
-					public void onError(HttpClient.HttpException e) {
+					public void onError(Throwable e) {
 						resolveException(e);
 					}
 				});

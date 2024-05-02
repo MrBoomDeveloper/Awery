@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.util.observable.ObservableList;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> implements ObservableList.AddObserver<MediaCategoriesAdapter.Category> {
+public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> {
 	private static final RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
 	private List<Category> categories = new ArrayList<>();
 
@@ -75,11 +74,6 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		return categories.size();
 	}
 
-	@Override
-	public void added(Category item, int index) {
-		notifyItemInserted(index);
-	}
-
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		private final ItemListMediaCategoryBinding binding;
 		private MediaCatalogAdapter adapter;
@@ -116,7 +110,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		private List<CatalogMedia> items;
+		private List<? extends CatalogMedia> items;
 		public final String title;
 		public long id;
 		private ViewHolder associatedViewHolder;
@@ -128,8 +122,8 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		}
 
 		@SuppressLint("NotifyDataSetChanged")
-		public void setItems(Collection<CatalogMedia> items) {
-			if(items instanceof List<CatalogMedia> list) {
+		public void setItems(Collection<? extends CatalogMedia> items) {
+			if(items instanceof List<? extends CatalogMedia> list) {
 				this.items = list;
 			} else if(items != null) {
 				this.items = new ArrayList<>(items);
@@ -145,7 +139,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			this.associatedViewHolder = holder;
 		}
 
-		public Category(String title, Collection<CatalogMedia> items) {
+		public Category(String title, Collection<? extends CatalogMedia> items) {
 			this.title = title;
 			setItems(items);
 		}

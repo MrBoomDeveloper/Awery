@@ -61,6 +61,17 @@ public class JsBridge {
 		AweryApp.toast(object);
 	}
 
+	public String getAdultMode() {
+		var adultMode = AwerySettings.getInstance().getEnum(
+				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
+
+		return switch(adultMode) {
+			case ONLY -> "only";
+			case ENABLED -> "partial";
+			case DISABLED -> "none";
+		};
+	}
+
 	public Object fetch(@NonNull ScriptableObject options) {
 		var promise = new JsPromise(scriptScope);
 
@@ -136,7 +147,7 @@ public class JsBridge {
 			}
 
 			@Override
-			public void onError(HttpClient.HttpException exception) {
+			public void onError(Throwable exception) {
 				manager.postRunnable(() -> promise.reject(Context.javaToJS(exception, scriptScope)));
 			}
 		});

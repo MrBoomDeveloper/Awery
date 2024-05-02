@@ -107,15 +107,15 @@ android {
 
 dependencies {
     // AwerySdk
-    implementation "com.github.MrBoomDeveloper:AwerySdk:4dcca61e7b"
+    implementation "com.github.MrBoomDeveloper:AwerySdk:653d1e0396"
 
     // Compatibility for new methods in old Api
-    implementation "androidx.core:core-ktx:1.13.0"
+    implementation "androidx.core:core-ktx:1.13.1"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.browser:browser:1.8.0"
-    implementation "androidx.webkit:webkit:1.10.0"
-    implementation "androidx.fragment:fragment-ktx:1.6.2"
+    implementation "androidx.webkit:webkit:1.11.0"
+    implementation "androidx.fragment:fragment-ktx:1.7.0"
     implementation "androidx.preference:preference-ktx:1.2.1"
 
     // Exoplayer
