@@ -73,7 +73,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 			List<CatalogFilter> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
-		callback.onFailure(new UnimplementedException("Search not implemented!"));
+		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
 	}
 
 	/**
@@ -82,19 +82,23 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 * @author MrBoomDev
 	 */
 	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {
-		callback.onFailure(new UnimplementedException("Settings not implemented!"));
+		callback.onFailure(new UnimplementedException("Settings aren't implemented!"));
 	}
 
 	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments reading aren't implemented!"));
+		callback.onFailure(new UnimplementedException("Comments reading isn't implemented!"));
 	}
 
 	public void postMediaComment(CatalogComment parent, CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments posting aren't implemented!"));
+		callback.onFailure(new UnimplementedException("Comments posting isn't implemented!"));
 	}
 
-	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
-		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
+	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+		callback.onFailure(new UnimplementedException("Comments voting isn't implemented!"));
+	}
+
+	public void editComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+		callback.onFailure(new UnimplementedException("Comments editing isn't implemented!"));
 	}
 
 	public void trackMedia(
@@ -102,19 +106,19 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 			@Nullable CatalogTrackingOptions options,
 			@NonNull ResponseCallback<CatalogTrackingOptions> callback
 	) {
-		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
+		callback.onFailure(new UnimplementedException("Media tracking isn't implemented!"));
 	}
 
 	public void searchTags(@NonNull ResponseCallback<List<CatalogTag>> callback) {
-		callback.onFailure(new UnimplementedException("Comments voting aren't implemented!"));
+		callback.onFailure(new UnimplementedException("Tags search isn't implemented!"));
 	}
 
 	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {
-		callback.onFailure(new UnimplementedException("Episodes not implemented!"));
+		callback.onFailure(new UnimplementedException("Episodes aren't implemented!"));
 	}
 
 	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
-		callback.onFailure(new UnimplementedException("Videos not implemented!"));
+		callback.onFailure(new UnimplementedException("Videos aren't implemented!"));
 	}
 
 	/**
@@ -152,7 +156,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public void getCatalogCategories(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
-		callback.onFailure(new UnimplementedException("Categories not implemented!"));
+		callback.onFailure(new UnimplementedException("Categories aren't implemented!"));
 	}
 
 	@NonNull

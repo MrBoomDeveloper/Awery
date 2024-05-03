@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
@@ -33,7 +35,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentSendBinding;
@@ -114,13 +116,13 @@ public class MediaCommentsFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		AweryApp.addOnBackPressedListener(requireActivity(), backPressCallback);
+		addOnBackPressedListener(requireActivity(), backPressCallback);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		AweryApp.removeOnBackPressedListener(requireActivity(), onCloseRequestListener);
+		removeOnBackPressedListener(requireActivity(), backPressCallback);
 	}
 
 	public void setMedia(CatalogMedia media) {
@@ -435,6 +437,61 @@ public class MediaCommentsFragment extends Fragment {
 		public CommentViewHolder(@NonNull WidgetCommentBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+
+			binding.likeButton.setOnClickListener(v -> {
+				var comment = getComment();
+				if(comment == null) return;
+
+				comment.voteState = comment.voteState == CatalogComment.VOTE_STATE_LIKED ?
+						CatalogComment.VOTE_STATE_NONE : CatalogComment.VOTE_STATE_LIKED;
+
+				updateVotesState(true);
+			});
+
+			binding.dislikeButton.setOnClickListener(v -> {
+				var comment = getComment();
+				if(comment == null) return;
+
+				comment.voteState = comment.voteState == CatalogComment.VOTE_STATE_DISLIKED ?
+						CatalogComment.VOTE_STATE_NONE : CatalogComment.VOTE_STATE_DISLIKED;
+
+				updateVotesState(true);
+			});
+		}
+
+		private void updateVotesState(boolean sendRequest) {
+			binding.likeIcon.setImageResource(comment.voteState == CatalogComment.VOTE_STATE_LIKED
+					? R.drawable.ic_like_filled : R.drawable.ic_like_outlined);
+
+			binding.dislikeIcon.setImageResource(comment.voteState == CatalogComment.VOTE_STATE_DISLIKED
+					? R.drawable.ic_dislike_filled : R.drawable.ic_dislike_outlined);
+
+			binding.likesCount.setText(comment.likes == 0 ? "" : String.valueOf(comment.likes
+					+ (comment.voteState == CatalogComment.VOTE_STATE_LIKED ? 1 : 0)));
+
+			binding.dislikesCount.setText(comment.dislikes == 0 ? "" : String.valueOf(comment.dislikes
+					+ (comment.voteState == CatalogComment.VOTE_STATE_DISLIKED ? 1 : 0)));
+
+			binding.votesCount.setText((comment.votes == null || comment.votes == 0) ? ""
+					: String.valueOf(comment.votes + comment.voteState));
+
+			if(sendRequest) {
+				selectedProvider.voteComment(comment, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(CatalogComment updatedComment) {}
+
+					@Override
+					public void onFailure(Throwable e) {
+						var context = getContext();
+						if(context == null) return;
+
+						runOnUiThread(() -> {
+							Log.e(TAG, "Failed to vote comment", e);
+							CrashHandler.showErrorDialog(context, e);
+						});
+					}
+				});
+			}
 		}
 
 		public CatalogComment getComment() {
@@ -466,9 +523,6 @@ public class MediaCommentsFragment extends Fragment {
 			else binding.name.setText(comment.authorName + " • " + date);
 
 			binding.message.setText(comment.text);
-			binding.likesCount.setText(comment.likes == 0 ? "" : String.valueOf(comment.likes));
-			binding.dislikesCount.setText(comment.dislikes == 0 ? "" : String.valueOf(comment.dislikes));
-			binding.votesCount.setText((comment.votes == null || comment.votes == 0) ? "" : String.valueOf(comment.votes));
 			binding.commentsCount.setText(comment.comments == 0 ? "" : String.valueOf(comment.comments));
 
 			if(comment.likes == CatalogComment.DISABLED) {
@@ -523,6 +577,8 @@ public class MediaCommentsFragment extends Fragment {
 					.load(comment.authorAvatar)
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.into(binding.icon);
+
+			updateVotesState(false);
 		}
 	}
 }

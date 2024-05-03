@@ -352,6 +352,50 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
+	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryVoteComment") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[]{ comment, (Callback<NativeObject>) (o, e) -> {
+						if(e != null) {
+							callback.onFailure(new JsException(e));
+							return;
+						}
+
+						callback.onSuccess(new JsComment(o));
+					}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("Failed to call aweryVoteComment function!"));
+			}
+		});
+	}
+
+	@Override
+	public void editComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryEditComment") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[]{ comment, (Callback<NativeObject>) (o, e) -> {
+						if(e != null) {
+							callback.onFailure(new JsException(e));
+							return;
+						}
+
+						callback.onSuccess(new JsComment(o));
+					}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("Failed to call aweryEditComment function!"));
+			}
+		});
+	}
+
+	@Override
 	public void trackMedia(
 			CatalogMedia media,
 			@Nullable CatalogTrackingOptions options,

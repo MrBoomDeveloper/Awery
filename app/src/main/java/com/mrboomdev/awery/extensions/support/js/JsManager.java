@@ -44,7 +44,7 @@ public class JsManager extends ExtensionsManager {
 
 	public JsManager() {
 		Thread jsThread = new Thread(() -> {
-			var contextFactory = new ContextFactory() {
+			this.context = new ContextFactory() {
 				@Override
 				protected boolean hasFeature(org.mozilla.javascript.Context cx, int featureIndex) {
 					// Uhh... Why? Just why?
@@ -54,12 +54,10 @@ public class JsManager extends ExtensionsManager {
 
 					return super.hasFeature(cx, featureIndex);
 				}
-			};
+			}.enterContext();
 
-			contextFactory.enterContext();
-
-			this.context = contextFactory.enterContext();
-			this.context.setLanguageVersion(org.mozilla.javascript.Context.VERSION_ES6);
+			this.context.setLanguageVersion(
+					org.mozilla.javascript.Context.VERSION_ES6);
 
 			context.setErrorReporter(new ErrorReporter() {
 				@Override

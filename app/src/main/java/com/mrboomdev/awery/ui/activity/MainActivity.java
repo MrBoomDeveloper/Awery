@@ -1,13 +1,14 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,22 +18,33 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
+	private final Runnable backListener = new Runnable() {
+		private boolean doubleBackToExitPressedOnce;
+
+		@Override
+		public void run() {
+			if(doubleBackToExitPressedOnce) {
+				finish();
+			}
+
+			doubleBackToExitPressedOnce = true;
+			snackbar(MainActivity.this, getString(R.string.back_to_exit));
+			runDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+		}
+	};
 	public ScreenMainBinding binding;
 
 	@Override
@@ -45,14 +57,12 @@ public class MainActivity extends AppCompatActivity {
 		binding.getRoot().setMotionEventSplittingEnabled(false);
 		setContentView(binding.getRoot());
 
-		var prefs = AwerySettings.getInstance(this);
-		registerBackListener();
-
 		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
 		binding.pages.setAdapter(pagesAdapter);
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
+		var prefs = AwerySettings.getInstance(this);
 		var savedDefaultTab = prefs.getString(AwerySettings.ui.DEFAULT_HOME_TAB);
 		var currentPage = StringUtils.parseEnum(savedDefaultTab, Pages.MAIN);
 		int currentPageIndex = currentPage.ordinal();
@@ -79,6 +89,18 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		addOnBackPressedListener(this, backListener);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		removeOnBackPressedListener(this, backListener);
+	}
+
+	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putInt("nav_index", binding.navbar.getSelectedIndex());
 		super.onSaveInstanceState(outState);
@@ -90,23 +112,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	private void registerBackListener() {
-		var doubleBackToExitPressedOnce = new AtomicBoolean(false);
-
-		AweryApp.addOnBackPressedListener(this, () -> {
-			if(doubleBackToExitPressedOnce.get()) {
-				finish();
-			}
-
-			doubleBackToExitPressedOnce.set(true);
-			snackbar(this, getString(R.string.back_to_exit));
-			runDelayed(() -> doubleBackToExitPressedOnce.set(false), 2000);
-		});
-	}
-
-	enum Pages {
-		MAIN, LIBRARY
-	}
+	enum Pages { MAIN, LIBRARY }
 
 	private class MainFragmentAdapter extends FragmentStateAdapter {
 

@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 
@@ -34,7 +35,8 @@ public class JsComment extends CatalogComment {
 		likes = o.has("likes", o) ? intFromJs(o.get("likes", o)) : CatalogComment.DISABLED;
 		dislikes = o.has("dislikes", o) ? intFromJs(o.get("dislikes", o)) : CatalogComment.DISABLED;
 		comments = o.has("comments", o) ? intFromJs(o.get("comments", o)) : CatalogComment.DISABLED;
-		votes = o.has("votes", o) ? JsBridge.fromJs(o.get("votes", o), Integer.class) : null;
+		votes = o.has("votes", o) ? fromJs(o.get("votes", o), Integer.class) : null;
+		voteState = intFromJs(o.get("voteState", o));
 
 		canComment = booleanFromJs(o.get("canComment", o));
 		hasNextPage = booleanFromJs(o.get("hasNextPage", o));
@@ -59,6 +61,7 @@ public class JsComment extends CatalogComment {
 		o.put("likes", o, comment.likes);
 		o.put("dislikes", o, comment.dislikes);
 		o.put("votes", o, comment.votes);
+		o.put("voteState", o, comment.voteState);
 
 		o.put("canComment", o, comment.canComment);
 		o.put("hasNextPage", o, comment.hasNextPage);
