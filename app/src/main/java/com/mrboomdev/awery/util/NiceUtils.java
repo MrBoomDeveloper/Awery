@@ -27,6 +27,12 @@ public class NiceUtils {
 		return param == null ? null : callback.run(param);
 	}
 
+	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback) {
+		if(param != null) {
+			callback.run(param);
+		}
+	}
+
 	/**
 	 * @return The first item in the collection that matches the query
 	 * @author MrBoomDev

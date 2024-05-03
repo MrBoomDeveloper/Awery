@@ -356,14 +356,16 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryVoteComment") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ comment, (Callback<NativeObject>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
+					fun.call(context, scope, null, new Object[]{
+							JsComment.createJsComment(context, scope, comment),
+							(Callback<NativeObject>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
 
-						callback.onSuccess(new JsComment(o));
-					}});
+								callback.onSuccess(new JsComment(o));
+							}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
 				}

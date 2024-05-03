@@ -47,7 +47,7 @@ public class CatalogComment implements CatalogSearchResults<CatalogComment> {
 	 */
 	@Json(name = "votes")
 	public Integer votes;
-	public String date;
+	public String date, id;
 
 	/**
 	 * Used only for the Frontend
@@ -56,7 +56,6 @@ public class CatalogComment implements CatalogSearchResults<CatalogComment> {
 	 */
 	@Json(ignore = true)
 	public long visualId;
-	@Json(ignore = true)
 	public int voteState = VOTE_STATE_NONE;
 
 	@Override

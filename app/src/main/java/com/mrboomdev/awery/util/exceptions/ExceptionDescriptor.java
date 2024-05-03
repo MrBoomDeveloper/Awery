@@ -34,12 +34,12 @@ public class ExceptionDescriptor {
 	}
 
 	public static Throwable unwrap(Throwable t) {
-		if(!isUnknownException(t)) {
-			return t;
+		if(t instanceof WrappedException wrappedException) {
+			return unwrap(wrappedException.getWrappedException());
 		}
 
-		while(t instanceof WrappedException e) {
-			t = e.getWrappedException();
+		if(!isUnknownException(t)) {
+			return t;
 		}
 
 		var firstCause = t.getCause();

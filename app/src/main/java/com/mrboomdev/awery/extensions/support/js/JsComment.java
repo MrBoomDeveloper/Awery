@@ -37,6 +37,7 @@ public class JsComment extends CatalogComment {
 		comments = o.has("comments", o) ? intFromJs(o.get("comments", o)) : CatalogComment.DISABLED;
 		votes = o.has("votes", o) ? fromJs(o.get("votes", o), Integer.class) : null;
 		voteState = intFromJs(o.get("voteState", o));
+		id = stringFromJs(o.get("id", o));
 
 		canComment = booleanFromJs(o.get("canComment", o));
 		hasNextPage = booleanFromJs(o.get("hasNextPage", o));
@@ -46,17 +47,13 @@ public class JsComment extends CatalogComment {
 
 	public static Scriptable createJsComment(Context context, Scriptable scope, CatalogComment comment) {
 		if(comment == null) return null;
-
-		if(comment instanceof JsComment jsComment) {
-			return jsComment.customData;
-		}
-
 		var o = context.newObject(scope);
 
 		o.put("authorName", o, comment.authorName);
 		o.put("authorAvatar", o, comment.authorAvatar);
 		o.put("text", o, comment.text);
 		o.put("date", o, comment.date);
+		o.put("id", o, comment.id);
 
 		o.put("likes", o, comment.likes);
 		o.put("dislikes", o, comment.dislikes);

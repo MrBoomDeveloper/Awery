@@ -62,12 +62,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java9.util.Objects;
 
 public class MediaCommentsFragment extends Fragment {
+	private static final int LAST_PAGE = -1;
 	private static final String TAG = "MediaCommentsFragment";
 	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
+	private final WeakHashMap<CatalogComment, Integer> pages = new WeakHashMap<>();
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
 	private final Runnable backPressCallback;
+	private boolean isLoading;
 	private ExtensionProvider selectedProvider;
 	private RecyclerView recycler;
 	private Runnable onCloseRequestListener;
@@ -130,11 +133,11 @@ public class MediaCommentsFragment extends Fragment {
 		this.media = media;
 		if(adapter == null) return;
 
-		loadData(null, null);
+		loadData(null, null, 0);
 	}
 
 	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
-		this.recycler.scrollToPosition(0);
+		//this.recycler.scrollToPosition(0);
 		this.comment = comment;
 
 		if(comment != null) {
@@ -167,9 +170,13 @@ public class MediaCommentsFragment extends Fragment {
 			var layoutManager = requireNonNull(recycler.getLayoutManager());
 			layoutManager.onRestoreInstanceState(scrollPosition);
 		}
+
+		if(comment != null && !comment.hasNextPage()) {
+			reachedEnd();
+		}
 	}
 
-	private void loadData(CatalogComment parent, CatalogComment reloadThis) {
+	private void loadData(CatalogComment parent, CatalogComment reloadThis, int page) {
 		if(this.comment != null) {
 			var layoutManager = requireNonNull(recycler.getLayoutManager());
 			scrollPositions.put(this.comment, layoutManager.onSaveInstanceState());
@@ -199,16 +206,30 @@ public class MediaCommentsFragment extends Fragment {
 		}
 
 		var request = new ReadMediaCommentsRequest()
-				.setPage(0)
+				.setPage(page)
 				.setParentComment(parent)
 				.setMedia(media);
 
+		isLoading = true;
+
 		selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
 			@Override
-			public void onSuccess(CatalogComment parent) {
+			public void onSuccess(CatalogComment newComment) {
 				runOnUiThread(() -> {
 					if(getContext() == null) return;
-					setComment(parent, reloadThis);
+					isLoading = false;
+
+					if(page == 0) {
+						pages.put(newComment, 0);
+						setComment(newComment, reloadThis);
+						return;
+					}
+
+					commentsAdapter.addData(newComment);
+
+					if(!newComment.hasNextPage()) {
+						reachedEnd();
+					}
 				}, recycler);
 			}
 
@@ -217,6 +238,7 @@ public class MediaCommentsFragment extends Fragment {
 				loadingAdapter.getBinding(binding -> runOnUiThread(() -> {
 					if(getContext() == null) return;
 					swipeRefresher.setRefreshing(false);
+					isLoading = false;
 
 					if(parent != null && (reloadThis == null ||
 							(e instanceof JsException jsE && Objects.equals(jsE.getErrorId(), JsException.ERROR_NOTHING_FOUND)))) {
@@ -242,6 +264,18 @@ public class MediaCommentsFragment extends Fragment {
 		});
 	}
 
+	private void reachedEnd() {
+		pages.put(comment, LAST_PAGE);
+
+		loadingAdapter.getBinding(binding -> {
+			binding.info.setVisibility(View.VISIBLE);
+			binding.progressBar.setVisibility(View.GONE);
+			binding.title.setText(R.string.you_reached_end);
+			binding.message.setText(R.string.you_reached_end_description);
+			loadingAdapter.setEnabled(true);
+		});
+	}
+
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
@@ -257,6 +291,13 @@ public class MediaCommentsFragment extends Fragment {
 			selectedProvider = providers.get(0);
 		}
 
+		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				tryLoadMore();
+			}
+		});
+
 		setMedia(media);
 	}
 
@@ -264,7 +305,7 @@ public class MediaCommentsFragment extends Fragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
-		swipeRefresher.setOnRefreshListener(() -> loadData(comment, comment));
+		swipeRefresher.setOnRefreshListener(() -> loadData(comment, comment, 0));
 
 		var parentLayout = new LinearLayoutCompat(inflater.getContext());
 		parentLayout.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -284,7 +325,7 @@ public class MediaCommentsFragment extends Fragment {
 
 		adapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
-				loadingAdapter, commentsAdapter);
+				commentsAdapter, loadingAdapter);
 
 		recycler.setAdapter(adapter);
 		parentLayout.addView(recycler, createLinearParams(MATCH_PARENT, 0, 1));
@@ -318,7 +359,7 @@ public class MediaCommentsFragment extends Fragment {
 						/* So apparently people wanna to see all comments even after you did post a new one.
 						   Weird... */
 						loadData(MediaCommentsFragment.this.comment,
-								MediaCommentsFragment.this.comment);
+								MediaCommentsFragment.this.comment, 0);
 
 						sendBinding.loadingIndicator.setVisibility(View.GONE);
 						sendBinding.sendButton.setVisibility(View.VISIBLE);
@@ -349,6 +390,25 @@ public class MediaCommentsFragment extends Fragment {
 		return swipeRefresher;
 	}
 
+	private void tryLoadMore() {
+		if(media == null) return;
+		var page = pages.get(comment);
+
+		if(page == null) {
+			throw new NullPointerException("Page not found!");
+		}
+
+		if(!isLoading && page != LAST_PAGE) {
+			var lastIndex = comment.size() - 1;
+
+			if(recycler.getLayoutManager() instanceof LinearLayoutManager manager
+					&& manager.findLastVisibleItemPosition() >= lastIndex) {
+				pages.put(comment, page + 1);
+				loadData(comment, comment, page + 1);
+			}
+		}
+	}
+
 	private class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 		private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 		private CatalogComment root;
@@ -373,6 +433,18 @@ public class MediaCommentsFragment extends Fragment {
 			notifyDataSetChanged();
 		}
 
+		public void addData(@Nullable CatalogComment root) {
+			if(root == null) return;
+
+			for(var item : root.items) {
+				item.visualId = idGenerator.getLong();
+			}
+
+			var wasSize = comment.size();
+			this.root.items.addAll(root.items);
+			notifyItemRangeInserted(wasSize, root.items.size());
+		}
+
 		@NonNull
 		@Override
 		public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -384,7 +456,7 @@ public class MediaCommentsFragment extends Fragment {
 				var comment = holder.getComment();
 				if(comment == MediaCommentsFragment.this.comment) return;
 
-				loadData(comment, null);
+				loadData(comment, null, 0);
 			});
 
 			return holder;

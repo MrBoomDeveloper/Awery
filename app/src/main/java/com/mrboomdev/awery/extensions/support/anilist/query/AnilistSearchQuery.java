@@ -132,13 +132,13 @@ public class AnilistSearchQuery extends AnilistQuery<CatalogSearchResults<Catalo
 			{
 				Page(page: __PAGE__, perPage: __ITEMS_PER_PAGE__) {
 					media(__PARAMS__) {
-						format duration
+						duration
 						countryOfOrigin
 						id description bannerImage status
 						genres averageScore episodes
 						startDate { year month day }
 						endDate { year month day }
-						coverImage { extraLarge large color medium }
+						coverImage { extraLarge large medium }
 						tags { name }
 						title { romaji(stylised: false) english(stylised: false) native(stylised: false) }
 					}

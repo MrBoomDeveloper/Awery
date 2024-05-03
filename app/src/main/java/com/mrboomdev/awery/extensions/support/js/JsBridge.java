@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Log;
@@ -128,8 +129,8 @@ public class JsBridge {
 			}
 		}
 
-		if(options.has("method", options)) {
-			var method = options.get("method").toString().toLowerCase(Locale.ROOT);
+		doIfNotNull(stringFromJs(options.get("method")), method -> {
+			method = method.toLowerCase(Locale.ROOT);
 
 			request.setMethod(options.has("method", options) ? switch(method) {
 				case "get" -> HttpClient.Method.GET;
@@ -139,7 +140,12 @@ public class JsBridge {
 				case "patch" -> HttpClient.Method.PATCH;
 				default -> throw new IllegalArgumentException("Unsupported method: " + method);
 			} : null);
-		}
+
+			if(method.equals("post") && !options.has("body", options)) {
+				request.setBody("", MimeTypes.TEXT);
+
+			}
+		});
 
 		request.callAsync(getAnyContext(), new HttpClient.HttpCallback() {
 			@Override
