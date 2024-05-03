@@ -26,6 +26,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.UniqueTag;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +38,7 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class JsBridge {
 	private static final String TAG = "JsBridge";
-	protected AwerySettings prefs;
+	protected WeakReference<android.content.Context> context;
 	private final JsManager manager;
 	private final JsProvider provider;
 	private final Scriptable scriptScope;
@@ -233,11 +234,24 @@ public class JsBridge {
 	}
 
 	public Object getSaved(@NonNull Object key) {
-		return prefs.getString(key.toString());
+		return getSettings().getString(key.toString());
 	}
 
 	public void setSaved(@NonNull Object key, Object value) {
-		prefs.setString(key.toString(), value != null ? value.toString() : null);
-		prefs.saveSync();
+		var settings = getSettings();
+
+		settings.setString(key.toString(), value != null ? value.toString() : null);
+		settings.saveSync();
+	}
+
+	@NonNull
+	private AwerySettings getSettings() {
+		var context = this.context.get();
+
+		if(context == null) {
+			throw new NullPointerException("Context was been cleared by a garbage collector!");
+		}
+
+		return AwerySettings.getInstance(context, "JsBridge-" + provider.id);
 	}
 }

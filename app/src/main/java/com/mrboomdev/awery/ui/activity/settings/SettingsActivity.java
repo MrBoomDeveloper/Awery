@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -54,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		EdgeToEdge.enable(this);
+		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		var itemJson = getIntent().getStringExtra("item");

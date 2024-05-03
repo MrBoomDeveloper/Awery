@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		EdgeToEdge.enable(this);
+		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenMainBinding.inflate(getLayoutInflater());

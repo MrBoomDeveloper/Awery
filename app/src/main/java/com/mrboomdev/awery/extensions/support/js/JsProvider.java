@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -57,6 +56,7 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -140,7 +140,8 @@ public class JsProvider extends ExtensionProvider {
 			});
 		}
 
-		bridge.prefs = AwerySettings.getInstance(androidContext, "JsBridge-" + id);
+		var appContext = androidContext.getApplicationContext();
+		bridge.context = new WeakReference<>(appContext);
 		androidContext = null;
 
 		this.FEATURES = Collections.unmodifiableList(features);
@@ -383,7 +384,7 @@ public class JsProvider extends ExtensionProvider {
 						}
 
 						if(options.startDate != null) {
-							input.put("fromDate", input, options.startDate.getTimeInMillis());
+							input.put("startDate", input, options.startDate.getTimeInMillis());
 						}
 
 						if(options.endDate != null) {

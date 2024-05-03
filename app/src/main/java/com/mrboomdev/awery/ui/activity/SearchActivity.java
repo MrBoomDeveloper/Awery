@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,7 +73,7 @@ public class SearchActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		EdgeToEdge.enable(this);
+		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		this.select = getIntent().getBooleanExtra("select", false);

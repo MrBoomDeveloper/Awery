@@ -1,16 +1,14 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.TypeConverter;
 
-import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
@@ -120,7 +118,7 @@ public class ParserAdapter {
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
-			CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), "Awery has crashed!", e);
+			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
 			Log.e(TAG, "Failed to parse string to map", e);
 			return Collections.emptyMap();
 		}
@@ -148,7 +146,7 @@ public class ParserAdapter {
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
-			CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), "Awery has crashed!", e);
+			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
 			Log.e(TAG, "Failed to parse string to map", e);
 			return Collections.emptyMap();
 		}

@@ -213,6 +213,11 @@ public class AweryLifecycle {
 		}
 	}
 
+	@Nullable
+	public static Runnable postRunnable(Runnable runnable) {
+		return handler.post(runnable) ? runnable : null;
+	}
+
 	public static Runnable runOnUiThread(Runnable runnable) {
 		if(Thread.currentThread() != mainThread) handler.post(runnable);
 		else runnable.run();

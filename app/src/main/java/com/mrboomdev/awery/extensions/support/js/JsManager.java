@@ -13,6 +13,7 @@ import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.JsException;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
@@ -43,7 +44,21 @@ public class JsManager extends ExtensionsManager {
 
 	public JsManager() {
 		Thread jsThread = new Thread(() -> {
-			this.context = org.mozilla.javascript.Context.enter();
+			var contextFactory = new ContextFactory() {
+				@Override
+				protected boolean hasFeature(org.mozilla.javascript.Context cx, int featureIndex) {
+					// Uhh... Why? Just why?
+					if(featureIndex == org.mozilla.javascript.Context.FEATURE_NON_ECMA_GET_YEAR) {
+						return true;
+					}
+
+					return super.hasFeature(cx, featureIndex);
+				}
+			};
+
+			contextFactory.enterContext();
+
+			this.context = contextFactory.enterContext();
 			this.context.setLanguageVersion(org.mozilla.javascript.Context.VERSION_ES6);
 
 			context.setErrorReporter(new ErrorReporter() {

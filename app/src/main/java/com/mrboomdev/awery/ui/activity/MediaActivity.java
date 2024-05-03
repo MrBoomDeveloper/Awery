@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 
@@ -48,7 +49,7 @@ public class MediaActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		EdgeToEdge.enable(this);
+		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		binding = MediaDetailsActivityBinding.inflate(getLayoutInflater());

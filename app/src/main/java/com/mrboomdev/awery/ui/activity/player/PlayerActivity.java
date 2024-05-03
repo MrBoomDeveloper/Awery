@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
@@ -21,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -41,19 +41,19 @@ import androidx.media3.ui.AspectRatioFrameLayout;
 import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
-import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.sdk.util.StringUtils;
+import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,7 +92,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		EdgeToEdge.enable(this);
+		enableEdgeToEdge(this);
 
 		super.onCreate(savedInstanceState);
 		loadSettings();

@@ -526,8 +526,11 @@ public class TrackingSheet {
 				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
 					if(myId != loadId) return;
 
-					var media = results.get(0);
-					loadDataFromTracker(media);
+					runOnUiThread(() -> {
+						var media = results.get(0);
+						binding.title.input.setText(media.getTitle(), false);
+						loadDataFromTracker(media);
+					});
 				}
 
 				@Override

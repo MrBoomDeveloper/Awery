@@ -2,6 +2,7 @@ package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
@@ -24,6 +25,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.window.OnBackInvokedCallback;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.annotation.AttrRes;
@@ -80,6 +83,20 @@ public class AweryApp extends Application {
 
 	public static void toast(@StringRes int res) {
 		toast(getAnyContext().getString(res));
+	}
+
+	/**
+	 * Safely enables the "Edge to edge" experience.
+	 * I really don't know why, but sometimes it just randomly crashes! Because of it we have to rerun on a next frame.
+	 * @author MrBoomDev
+	 */
+	public static void enableEdgeToEdge(ComponentActivity context) {
+		try {
+			EdgeToEdge.enable(context);
+		} catch(RuntimeException e) {
+			Log.e(TAG, "Failed to enable EdgeToEdge! Will retry a little bit later.", e);
+			postRunnable(() -> enableEdgeToEdge(context));
+		}
 	}
 
 	public static void removeOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
