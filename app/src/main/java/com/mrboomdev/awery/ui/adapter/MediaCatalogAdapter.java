@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +20,11 @@ import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapter.ViewHolder> {
 	private static final String TAG = "MediaCatalogAdapter";
+	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private List<? extends CatalogMedia> items;
 
@@ -30,7 +34,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 		if(items != null) {
 			for(var item : items) {
-				item.visualId = idGenerator.getLong();
+				ids.put(item, idGenerator.getLong());
 			}
 		}
 	}
@@ -41,14 +45,26 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	@Override
 	public long getItemId(int position) {
-		return items.get(position).visualId;
+		var id = ids.get(items.get(position));
+
+		if(id == null) {
+			throw new IllegalStateException("No id found for item at position " + position);
+		}
+
+		return id;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(List<? extends CatalogMedia> items) {
+		idGenerator.clear();
+
 		if(items == null) {
 			this.items = null;
 			return;
+		} else {
+			for(var item : items) {
+				ids.put(item, idGenerator.getLong());
+			}
 		}
 
 		this.items = items;
@@ -62,7 +78,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
 
-		if(!ViewUtil.setRightMargin(binding.getRoot(), ViewUtil.dpPx(12))) {
+		if(!ViewUtil.setRightMargin(binding.getRoot(), dpPx(12))) {
 			throw new IllegalStateException("Failed to set right margin!");
 		}
 
@@ -75,15 +91,12 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			var media = viewHolder.getItem();
 			var index = items.indexOf(media);
 
-			MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
+			MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
+				if(!isFiltered) return;
 
-				MediaUtils.isMediaFiltered(media, isFiltered -> {
-					if(!isFiltered) return;
-
-					items.remove(media);
-					notifyItemRemoved(index);
-				});
-			});
+				items.remove(media);
+				notifyItemRemoved(index);
+			}));
 			return true;
 		});
 

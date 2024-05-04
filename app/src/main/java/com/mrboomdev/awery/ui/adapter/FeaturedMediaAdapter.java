@@ -8,7 +8,6 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
@@ -65,7 +64,7 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 		this.header = binding.header;
 		setEnabled(isEnabled());
 
-		if(Resources.getSystem().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		if(getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			binding.header.logo.setVisibility(View.GONE);
 		}
 
@@ -74,6 +73,11 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 			ViewUtil.setRightMargin(binding.headerWrapper, insets.right);
 			ViewUtil.setLeftMargin(binding.headerWrapper, insets.left);
 		}, parent);
+
+		if(binding.pageIndicator != null) {
+			ViewUtil.setOnApplyUiInsetsListener(binding.pageIndicator, insets ->
+					ViewUtil.setRightMargin(binding.pageIndicator, insets.right), parent);
+		}
 
 		return binding.getRoot();
 	}

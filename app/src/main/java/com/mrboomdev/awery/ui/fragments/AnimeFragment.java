@@ -78,6 +78,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		AnilistSearchQuery.builder()
 				.setCurrentSeason()
 				.setIsAdult(anilistAdultMode)
+				.setItemsPerPage(10)
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.POPULARITY_DESC)
 				.build().executeQuery(requireContext(), items -> {

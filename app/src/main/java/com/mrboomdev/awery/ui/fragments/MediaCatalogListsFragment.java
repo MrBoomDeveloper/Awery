@@ -44,19 +44,17 @@ public class MediaCatalogListsFragment extends Fragment {
 	}
 
 	public void setupHeader(@NonNull LayoutHeaderMainBinding header) {
-		if(header.tabsBar != null) {
-			header.tabsBar.selectTab(index, false);
+		header.tabsBar.selectTab(index, false);
 
-			header.tabsBar.setOnTabSelectedListener(tab -> {
-				var index = header.tabsBar.getTabIndex(tab);
+		header.tabsBar.setOnTabSelectedListener(tab -> {
+			var index = header.tabsBar.getTabIndex(tab);
 
-				if(mainActivity != null) {
-					mainActivity.binding.pages.setCurrentItem(index, false);
-				}
+			if(mainActivity != null) {
+				mainActivity.binding.pages.setCurrentItem(index, false);
+			}
 
-				return false;
-			});
-		}
+			return false;
+		});
 
 		header.search.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SearchActivity.class);
