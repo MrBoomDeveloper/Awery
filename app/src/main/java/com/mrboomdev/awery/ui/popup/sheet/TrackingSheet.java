@@ -383,6 +383,15 @@ public class TrackingSheet {
 				var item = titles.get(position);
 				if(item == null) return;
 
+				if(selectedSource == null) {
+					if(item.equals(more)) {
+						binding.title.input.setText(queryFilter.getStringValue(), false);
+					}
+
+					toast("You haven't selected any source!", 1);
+					return;
+				}
+
 				if(item.equals(more)) {
 					binding.title.input.setText(queryFilter.getStringValue(), false);
 

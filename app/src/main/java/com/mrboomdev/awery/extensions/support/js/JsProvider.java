@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
+import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
@@ -148,7 +148,7 @@ public class JsProvider extends ExtensionProvider {
 		this.didInit = true;
 	}
 
-	private class Settings extends SettingsItem implements ListenableSettingsItem {
+	private class Settings extends SettingsItem implements ObservableSettingsItem {
 		private final List<SettingsItem> items = new ArrayList<>();
 		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 
@@ -332,17 +332,18 @@ public class JsProvider extends ExtensionProvider {
 			public void onClick(android.content.Context context) {
 				var activity = getActivity(context);
 
-				var extensions = new ArrayList<>(manager.getAllExtensions());
-				var wasIndex = extensions.indexOf(manager.getExtension(id));
-
 				manager.uninstallExtension(context, id);
 				toast("Uninstalled successfully");
 
 				if(activity != null) {
+					var settingsScreen = root.getParent().getParent();
 					activity.finish();
 
-					if(root.getParent().getParent() instanceof ListenableSettingsItem listenable) {
-						runOnUiThread(() -> listenable.onRemoval(root, wasIndex));
+					if(settingsScreen instanceof ObservableSettingsItem listenable) {
+						var wasIndex = settingsScreen.getItems().indexOf(root.getParent());
+						runOnUiThread(() -> listenable.onRemoval(root.getParent(), wasIndex));
+					} else {
+						throw new IllegalStateException("Settings screen doesn't implement ObservableSettingsItem!");
 					}
 				}
 			}

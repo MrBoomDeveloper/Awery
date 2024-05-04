@@ -25,11 +25,12 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
+import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -39,12 +40,15 @@ import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import java9.util.stream.Collectors;
 
 public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHolder> {
-	private List<SettingsItem> items;
+	private final WeakHashMap<SettingsItem, Long> ids = new WeakHashMap<>();
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final SettingsDataHandler handler;
+	private List<SettingsItem> items;
 
 	public SettingsAdapter(SettingsItem data, SettingsDataHandler handler) {
 		this.handler = handler;
@@ -54,23 +58,32 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void setData(@NonNull SettingsItem data, boolean notify) {
+		idGenerator.clear();
+
 		this.items = new ArrayList<>(stream(data.getItems())
 				.filter(SettingsItem::isVisible)
 				.toList());
 
-		if(data instanceof ListenableSettingsItem listenable) {
+		for(var item : items) {
+			ids.put(item, idGenerator.getLong());
+		}
+
+		if(data instanceof ObservableSettingsItem listenable) {
 			listenable.setNewItemListener((setting, index) -> {
-				items.add(index, setting);
-				notifyItemInserted(index);
+				ids.put(setting, idGenerator.getLong());
+				items.add(setting);
+				notifyItemInserted(items.indexOf(setting));
 			});
 
 			listenable.setRemovalItemListener((setting, index) -> {
-				items.remove((int) index);
+				index = items.indexOf(setting);
+				items.remove(setting);
 				notifyItemRemoved(index);
 			});
 
 			listenable.setChangeItemListener((setting, index) -> {
-				items.set(index, setting);
+				var oldSetting = items.set(index, setting);
+				ids.put(setting, ids.get(oldSetting));
 				notifyItemChanged(index);
 			});
 		}
@@ -82,7 +95,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		var item = items.get(position);
+		var id = ids.get(item);
+
+		if(id == null) {
+			throw new IllegalStateException("Id for item " + item + " not found");
+		}
+
+		return id;
 	}
 
 	public void setData(@NonNull SettingsItem data) {

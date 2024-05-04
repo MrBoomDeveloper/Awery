@@ -18,7 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.AwerySettings;
-import com.mrboomdev.awery.data.settings.ListenableSettingsItem;
+import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
 
-public class ExtensionSettings extends SettingsItem implements SettingsDataHandler, ListenableSettingsItem {
+public class ExtensionSettings extends SettingsItem implements SettingsDataHandler, ObservableSettingsItem {
 	private static final String TAG = "ExtensionSettings";
 	private final ActivityResultLauncher<String> pickLauncher;
 	private final List<SettingsItem> headerItems = new ArrayList<>();
@@ -106,7 +106,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					currentDialog.dismiss();
 				}
 			} catch(Throwable e) {
-				Log.e(TAG, "Failed to load the extension!", e);
+				Log.e(TAG, "Failed to install an extension!", e);
 				CrashHandler.showErrorDialog(activity, e);
 			}
 		});
@@ -221,13 +221,14 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		}
 	}
 
-	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler, ListenableSettingsItem {
+	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler, ObservableSettingsItem {
 		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 		private final Extension extension;
 		@Json(ignore = true)
 		private final Activity activity;
 
 		public ExtensionSetting(Activity activity, @NonNull Extension extension) {
+			setParent(ExtensionSettings.this);
 			this.extension = extension;
 			this.activity = activity;
 
@@ -245,6 +246,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
 							@Override
 							public void onSuccess(SettingsItem item) {
+								if(item != null && item != SettingsItem.INVALID_SETTING) {
+									item.setParent(ExtensionSetting.this);
+								}
+
 								response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
 							}
 

@@ -2,7 +2,7 @@ package com.mrboomdev.awery.data.settings;
 
 import com.mrboomdev.awery.sdk.util.Callbacks;
 
-public interface ListenableSettingsItem {
+public interface ObservableSettingsItem {
 
 	void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener);
 

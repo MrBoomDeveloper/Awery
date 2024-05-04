@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -23,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
@@ -90,7 +90,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				setMedia(Parser.fromString(CatalogMedia.class, mediaJson));
 			} catch(IOException e) {
 				Log.e(TAG, "Failed to restore media!", e);
-				AweryApp.toast("Failed to restore media!", 1);
+				toast("Failed to restore media!", 1);
 			}
 		}
 	}
@@ -222,6 +222,15 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 			binding.searchDropdown.setOnItemClickListener((parent, _view, position, id) -> {
 				var title = titles.get(position);
+
+				if(selectedSource == null) {
+					if(title.equals(more)) {
+						binding.searchDropdown.setText(queryFilter.getStringValue(), false);
+					}
+
+					toast("You haven't selected any source!", 1);
+					return;
+				}
 
 				if(title.equals(more)) {
 					binding.searchDropdown.setText(queryFilter.getStringValue(), false);

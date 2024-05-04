@@ -101,7 +101,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}
 
 		var frame = new FrameLayout(this);
-		createView(item, viewPool, frame);
+		createView(item, frame);
 		setContentView(frame);
 
 		activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -177,11 +177,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				setHorizontalPadding(binding.getRoot(), insets.left, insets.right), parent);
 	}
 
-	private void createView(
-			@NonNull SettingsItem item,
-			RecyclerView.RecycledViewPool viewPool,
-			@NonNull FrameLayout frame
-	) {
+	private void createView(@NonNull SettingsItem item, @NonNull FrameLayout frame) {
 		item.restoreValues(AwerySettings.getInstance(this));
 
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
