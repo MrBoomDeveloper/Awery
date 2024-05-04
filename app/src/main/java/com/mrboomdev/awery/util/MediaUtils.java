@@ -33,6 +33,7 @@ import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;

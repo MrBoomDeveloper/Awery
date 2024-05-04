@@ -6,9 +6,11 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
@@ -68,8 +70,29 @@ public class ExtensionsFactory {
 				.findFirst().orElseThrow();
 	}
 
-	public static ExtensionProvider getExtensionProvider(String id) {
-		return stream(getExtensions(0))
+	@Nullable
+	public static ExtensionProvider getExtensionProvider(int extensionFlags, @NonNull String id) {
+		if(id.contains(";;;")) {
+			var parts = id.split(";;;");
+
+			//TODO: When js extensions will be fully done remove this shit from the code
+			if(parts[0].equals(JsManager.MANAGER_ID) && parts[1].equals(Constants.ANILIST_EXTENSION_ID)) {
+				return AnilistProvider.getInstance();
+			}
+
+			var extension = stream(managers)
+					.filter(manager -> manager.getId().equals(parts[0]))
+					.findAny().orElseThrow()
+					.getExtension(parts[1]);
+
+			if(extension == null) {
+				return null;
+			}
+
+			return extension.getProviders().get(0);
+		}
+
+		return stream(getExtensions(extensionFlags))
 				.map(Extension::getProviders)
 				.flatMap(NiceUtils::stream)
 				.filter(provider -> id.equals(provider.getId()))

@@ -36,8 +36,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JsManager extends ExtensionsManager {
-	private final List<Throwable> caughtExceptions = new ArrayList<>();
+	public static final String MANAGER_ID = "AWERY_JS";
 	private static final String TAG = "JsManager";
+	private final List<Throwable> caughtExceptions = new ArrayList<>();
 	private final Map<String, Extension> extensions = new HashMap<>();
 	private final Queue<JsTask> tasks = new ConcurrentLinkedDeque<>();
 	private org.mozilla.javascript.Context context;
@@ -338,6 +339,6 @@ public class JsManager extends ExtensionsManager {
 
 	@Override
 	public String getId() {
-		return "AWERY_JS";
+		return MANAGER_ID;
 	}
 }

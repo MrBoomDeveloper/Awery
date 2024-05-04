@@ -31,6 +31,7 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -84,7 +85,7 @@ public class SearchActivity extends AppCompatActivity {
 				return AnilistProvider.getInstance();
 			}
 
-			return ExtensionsFactory.getExtensionProvider(sourceId);
+			return ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, sourceId);
 		});
 
 		var linear = new LinearLayoutCompat(this);
