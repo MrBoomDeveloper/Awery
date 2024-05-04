@@ -406,4 +406,6 @@
     <string name="enabled">Activado</string>
     <string name="show_only_it">Mostrar solo</string>
     <string name="adult_content">Contenido para adultos</string>
+    <string name="extension_installed_successfully">¡La extensión se ha instalado correctamente!</string>
+    <string name="extension_installed_failed">¡No se pudo instalar una extensión!</string>
 </resources>
