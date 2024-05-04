@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.support.js;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 
 import androidx.annotation.NonNull;
@@ -13,13 +14,12 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.annotations.JSGetter;
 
 public class JsComment extends CatalogComment {
-	private final ScriptableObject customData;
+	private final NativeObject customData;
 
-	protected JsComment(@NonNull ScriptableObject o) {
+	protected JsComment(@NonNull NativeObject o) {
 		if(o.has("items", o)) {
 			for(var arrayItem : (NativeArray) o.get("items", o)) {
 				var jsItem = (NativeObject) arrayItem;
@@ -49,6 +49,15 @@ public class JsComment extends CatalogComment {
 		if(comment == null) return null;
 		var o = context.newObject(scope);
 
+		if(comment instanceof JsComment jsComment) {
+			for(var prop : jsComment.customData.entrySet()) {
+				var key = prop.getKey();
+				if(isNull(key)) continue;
+
+				o.put(prop.getKey().toString(), o, prop.getValue());
+			}
+		}
+
 		o.put("authorName", o, comment.authorName);
 		o.put("authorAvatar", o, comment.authorAvatar);
 		o.put("text", o, comment.text);
@@ -67,7 +76,7 @@ public class JsComment extends CatalogComment {
 	}
 
 	@JSGetter("customData")
-	public ScriptableObject getCustomData() {
+	public NativeObject getCustomData() {
 		return customData;
 	}
 }

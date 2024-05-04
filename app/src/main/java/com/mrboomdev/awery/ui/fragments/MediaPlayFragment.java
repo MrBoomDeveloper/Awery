@@ -294,6 +294,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source, CatalogMedia media) {
 		var myId = ++loadId;
 
+		variantsAdapter.getBinding(binding -> runOnUiThread(() ->
+				binding.searchStatus.setText("Searching episodes for \"" + media.getTitle() + "\"...")));
+
 		source.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(List<? extends CatalogEpisode> episodes) {
@@ -302,6 +305,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				sourceStatuses.put(source, ExtensionStatus.OK);
 
 				runOnUiThread(() -> {
+					variantsAdapter.getBinding(binding -> binding.searchStatus.setText(
+							"Selected \"" + media.getTitle() + "\""));
+
 					placeholderAdapter.setEnabled(false);
 					episodesAdapter.setItems(media, episodes);
 				});
@@ -373,6 +379,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						queryFilter.setValue(media.titles.get(newIndex));
 						source.searchMedia(context, filters, callback);
 
+						variantsAdapter.getBinding(binding -> runOnUiThread(() -> binding.searchStatus.setText(
+								"Searching for \"" + queryFilter.getStringValue() + "\"...")));
+
 						variantsAdapter.getBinding((binding) -> binding.searchDropdown.setText(
 								queryFilter.getStringValue(), false));
 					} else {
@@ -388,6 +397,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(context == null) return;
 
 		source.searchMedia(context, filters, foundMediaCallback.get());
+
+		variantsAdapter.getBinding(binding -> runOnUiThread(() ->
+				binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...")));
 	}
 
 	private boolean autoSelectNextSource() {
@@ -423,6 +435,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		var context = getContext();
 		if(context == null) return;
+
+		variantsAdapter.getBinding(binding ->
+				binding.searchStatus.setText("Failed to load"));
 
 		placeholderAdapter.getBinding(binding -> runOnUiThread(() -> {
 			binding.title.setText(error.getTitle(context));

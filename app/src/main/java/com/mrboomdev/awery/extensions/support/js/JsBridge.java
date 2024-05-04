@@ -141,9 +141,10 @@ public class JsBridge {
 				default -> throw new IllegalArgumentException("Unsupported method: " + method);
 			} : null);
 
-			if(method.equals("post") && !options.has("body", options)) {
-				request.setBody("", MimeTypes.TEXT);
-
+			if(isNull(options.get("form")) && !isNull(options.get("body", options))) {
+				switch(request.getMethod()) {
+					case PUT, PATCH, POST -> request.setBody("", MimeTypes.TEXT);
+				}
 			}
 		});
 

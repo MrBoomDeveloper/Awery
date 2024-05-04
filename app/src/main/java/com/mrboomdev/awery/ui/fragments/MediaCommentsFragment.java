@@ -391,7 +391,7 @@ public class MediaCommentsFragment extends Fragment {
 	}
 
 	private void tryLoadMore() {
-		if(media == null) return;
+		if(media == null || comment == null) return;
 		var page = pages.get(comment);
 
 		if(page == null) {
