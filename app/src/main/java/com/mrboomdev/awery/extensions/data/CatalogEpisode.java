@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.List;
 
 public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
-	private final String title, banner, description, url;
+	private String title, banner, description, url;
 	private final float number;
 	private final long releaseDate;
 	private List<CatalogVideo> videos;
@@ -64,6 +64,10 @@ public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 
 	public String getBanner() {
 		return banner;
+	}
+
+	public void setBanner(String banner) {
+		this.banner = banner;
 	}
 
 	public String getDescription() {

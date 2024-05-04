@@ -1,24 +1,37 @@
 package com.mrboomdev.awery.extensions.support.anilist;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.Constants.ANILIST_EXTENSION_ID;
 import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.extensions.support.anilist.data.AnilistEpisode;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.graphql.GraphQLParser;
+import com.mrboomdev.awery.util.io.HttpClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,6 +57,56 @@ public class AnilistProvider extends ExtensionProvider {
 	@Override
 	public Collection<Integer> getFeatures() {
 		return FEATURES;
+	}
+
+	@Override
+	public void getEpisodes(
+			int page,
+			@NonNull CatalogMedia media,
+			@NonNull ResponseCallback<List<? extends CatalogEpisode>> callback
+	) {
+		var id = media.getId("anilist");
+
+		if(id == null) {
+			callback.onFailure(new ZeroResultsException("No anilist id found!", R.string.no_episodes_found));
+			return;
+		}
+
+		try {
+			HttpClient.post("https://graphql.anilist.co")
+					.addHeader("Content-Type", "application/json")
+					.addHeader("Accept", "application/json")
+					.setBody(new JSONObject().put("query", """
+							{
+								Media(id: __ID__) {
+									streamingEpisodes {
+										title thumbnail
+									}
+								}
+							}
+					""").toString().replace("__ID__", id), MimeTypes.JSON)
+					.callAsync(getAnyContext(), (HttpClient.SimpleHttpCallback) (res, e) -> {
+						if(e != null) {
+							callback.onFailure(e);
+							return;
+						}
+
+						if(res == null) {
+							throw new IllegalStateException("Response is null!");
+						}
+
+						try {
+							var anilistMedia = GraphQLParser.parse(res.getText(), AnilistMedia.class);
+
+							callback.onSuccess(stream(anilistMedia.streamingEpisodes)
+									.map(AnilistEpisode::toCatalogEpisode).toList());
+						} catch(IOException ex) {
+							throw new IllegalStateException("Failed to parse response!", ex);
+						}
+					});
+		} catch(JSONException e) {
+			throw new IllegalStateException("Failed to construct a request!", e);
+		}
 	}
 
 	@Override

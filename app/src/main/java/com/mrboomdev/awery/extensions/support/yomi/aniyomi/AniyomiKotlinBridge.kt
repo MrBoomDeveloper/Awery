@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
-import com.mrboomdev.awery.ui.fragments.MediaInfoFragment
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -11,8 +10,11 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import uy.kohesive.injekt.Injekt
 
+/**
+ * Just a little bridge to use all Coroutine based methods.
+ * @author MrBoomDev
+ */
 object AniyomiKotlinBridge {
 
     interface ResponseCallback<T> {

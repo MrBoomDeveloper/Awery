@@ -65,6 +65,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			new CatalogFilter(CatalogFilter.Type.NUMBER, "page", 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+	private List<? extends CatalogEpisode> templateEpisodes;
 	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private ExtensionProvider selectedSource;
@@ -149,10 +150,20 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var mediaSource = ExtensionsFactory.getExtensionProvider(0, media.globalId);
 
 		if(mediaSource != null) {
-			//toast(mediaSource.getId());
-		}
+			mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+				@Override
+				public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
+					templateEpisodes = catalogEpisodes;
+					runOnUiThread(() -> selectProvider(providers.get(0)));
+				}
 
-		selectProvider(providers.get(0));
+				@Override
+				public void onFailure(Throwable e) {
+					// Don't merge any data. Just load original data
+					runOnUiThread(() -> selectProvider(providers.get(0)));
+				}
+			});
+		}
 	}
 
 	@Override
@@ -313,6 +324,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				if(source != selectedSource || myId != loadId) return;
 
 				sourceStatuses.put(source, ExtensionStatus.OK);
+
+				if(templateEpisodes != null) {
+					for(int i = 0; i < episodes.size(); i++) {
+						if(templateEpisodes.size() <= i) break;
+
+						var episode = episodes.get(i);
+						var template = templateEpisodes.get(i);
+
+						if(episode.getBanner() == null) {
+							episode.setBanner(template.getBanner());
+						}
+					}
+				}
 
 				runOnUiThread(() -> {
 					variantsAdapter.getBinding(binding -> {

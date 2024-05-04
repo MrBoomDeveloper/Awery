@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class AnilistMedia {
+	public List<AnilistEpisode> streamingEpisodes;
 	public List<String> genres;
 	public List<AnilistTag> tags;
 	public String description, bannerImage, countryOfOrigin;

@@ -3,6 +3,7 @@ package com.mrboomdev.awery.util.exceptions;
 import android.content.Context;
 import android.os.Build;
 import android.os.strictmode.InstanceCountViolation;
+import android.os.strictmode.NetworkViolation;
 import android.os.strictmode.Violation;
 import android.util.Log;
 
@@ -205,9 +206,11 @@ public class ExceptionDescriptor {
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
 			if(throwable instanceof InstanceCountViolation) {
 				return "Too much instances of the object was created. " + throwable.getMessage();
+			} else if(throwable instanceof NetworkViolation) {
+				return "You can't run network requests at the ui thread!";
 			}
 
-			return "Bad thing has happened...";
+			return getGenericMessage(throwable);
 		}
 
 		return getGenericMessage(throwable);

@@ -30,7 +30,7 @@ public class GraphQLParser {
 	}
 
 	@NonNull
-	public static <T> T parse(String json, @NonNull Class<?> clazz, Class<?>... genericClasses) throws IOException {
+	public static <T> T parse(String json, @NonNull Class<T> clazz, Class<?>... genericClasses) throws IOException {
 		GraphQLAdapter<T> adapter = createAdapter(clazz, genericClasses);
 		return adapter.parseFirst(json);
 	}
