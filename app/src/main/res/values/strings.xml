@@ -401,4 +401,6 @@
     <string name="enabled">Enabled</string>
     <string name="show_only_it">Show only it</string>
     <string name="adult_content">Adult Content</string>
+    <string name="extension_installed_successfully">Extension installed successfully!</string>
+    <string name="extension_installed_failed">Failed to install an extension!</string>
 </resources>
