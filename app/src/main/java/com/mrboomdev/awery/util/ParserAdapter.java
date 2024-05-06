@@ -140,7 +140,7 @@ public class ParserAdapter {
 		}
 
 		var moshi = new Moshi.Builder().build();
-		var type = Types.newParameterizedType(Map.class, String.class, String.class);
+		var type = Types.newParameterizedType(Map.class, Float.class, Long.class);
 		JsonAdapter<Map<Float, Long>> adapter = moshi.adapter(type);
 
 		try {

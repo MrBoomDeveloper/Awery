@@ -240,6 +240,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			binding.searchDropdown.setAdapter(titlesAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
+				episodesAdapter.setItems(null, null);
 				selectProvider(providers.get(position));
 				autoChangeSource = false;
 			});
@@ -283,6 +284,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 								episodesAdapter.setItems(media, Collections.emptyList());
 
 								autoChangeSource = false;
+								episodesAdapter.setItems(null, null);
 								loadEpisodesFromSource(selectedSource, media);
 							});
 						} catch(IOException e) {
@@ -290,6 +292,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						}
 					});
 				} else {
+					episodesAdapter.setItems(null, null);
 					autoChangeSource = false;
 					queryFilter.setValue(title);
 					selectProvider(selectedSource);

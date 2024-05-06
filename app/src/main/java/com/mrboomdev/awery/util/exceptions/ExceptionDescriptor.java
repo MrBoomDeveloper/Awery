@@ -80,26 +80,17 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof SSLHandshakeException) {
 			return context.getString(R.string.failed_handshake);
 		} else if(throwable instanceof HttpException e) {
-			return switch(e.getCode()) {
-				case 403 -> context.getString(R.string.access_denied);
-				case 404 -> context.getString(R.string.nothing_found);
-				case 429 -> context.getString(R.string.too_much_requests);
-				case 500, 503 -> context.getString(R.string.server_down);
-				case 504 -> context.getString(R.string.timed_out);
-				default -> getGenericTitle(context);
-			};
+			return getHttpErrorTitle(context, e.getCode());
 		} else if(throwable instanceof GraphQLException
 				| throwable instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(throwable instanceof UnknownHostException) {
 			return context.getString(R.string.no_internet);
-		} else {
-			if(throwable instanceof InvalidSyntaxException
-					|| throwable instanceof JsonDecodingException) {
-				return "Parser has crashed!";
-			} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
+		} else if(throwable instanceof InvalidSyntaxException
+				|| throwable instanceof JsonDecodingException) {
+			return "Parser has crashed!";
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
 				return "Bad thing has happened...";
-			}
 		}
 
 		return getGenericTitle(context);
@@ -182,7 +173,7 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof SocketException || throwable instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
 		} else if(throwable instanceof HttpException e) {
-			return getHttpErrorTitle(context, e.getCode());
+			return getHttpErrorMessage(context, e.getCode());
 		} else if(throwable instanceof UnknownHostException e) {
 			return e.getMessage();
 		} else if(throwable instanceof GraphQLException e) {
@@ -218,13 +209,26 @@ public class ExceptionDescriptor {
 
 	private static String getHttpErrorTitle(Context context, int code) {
 		return switch(code) {
+			case 400, 422 -> "Bad request";
+			case 403 -> context.getString(R.string.access_denied);
+			case 404 -> context.getString(R.string.nothing_found);
+			case 429 -> context.getString(R.string.too_much_requests);
+			case 500, 503 -> context.getString(R.string.server_down);
+			case 504 -> context.getString(R.string.timed_out);
+			default -> "Http error " + code;
+		};
+	}
+
+	private static String getHttpErrorMessage(Context context, int code) {
+		return switch(code) {
 			case 400 -> "Error 400. The request was invalid, please try again later.";
 			case 401 -> "Error 401. You are not logged in, please log in and try again.";
 			case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
 			case 404 -> context.getString(R.string.not_found_detailed);
+			case 422 -> "Error 422. The request was invalid, please try again later.";
 			case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
 			case 500 -> "Error 500. An internal server error has occurred, please try again later.";
-			case 503 -> "Error 503. The service is temporarily unavailable, please try again later.";
+			case 503 -> "Error 503. The server is currently unavailable, please try again later.";
 			case 504 -> "Error 504. The connection timed out, please try again later.";
 			default -> "Error " + code + ". An unknown error has occurred, please try again later.";
 		};

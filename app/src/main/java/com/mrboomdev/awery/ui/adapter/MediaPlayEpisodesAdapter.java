@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 
@@ -7,22 +10,30 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.theme.overlay.MaterialThemeOverlay;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.WeakHashMap;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
+	private final WeakHashMap<CatalogEpisode, Long> progresses = new WeakHashMap<>();
+	private final WeakHashMap<CatalogEpisode, Long> ids = new WeakHashMap<>();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
 	private ArrayList<CatalogEpisode> items = new ArrayList<>();
@@ -33,18 +44,40 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(CatalogMedia media, @NonNull Collection<? extends CatalogEpisode> items) {
+	public void setItems(CatalogMedia media, Collection<? extends CatalogEpisode> items) {
 		this.media = media;
 		idGenerator.clear();
 
+		if(media == null || items == null) {
+			this.items = null;
+			progresses.clear();
+			ids.clear();
+			notifyDataSetChanged();
+			return;
+		}
+
 		for(var item : items) {
-			item.setId(idGenerator.getLong());
+			ids.put(item, idGenerator.getLong());
 		}
 
 		this.items = new ArrayList<>(items);
 		Collections.sort(this.items);
 
-		notifyDataSetChanged();
+		new Thread(() -> {
+			var progressDao = getDatabase().getMediaProgressDao();
+			var progress = progressDao.get(media.globalId);
+
+			if(progress != null) {
+				for(var entry : progress.progresses.entrySet()) {
+					stream(items)
+							.filter(e -> e.getNumber() == entry.getKey())
+							.findFirst().ifPresent(episode ->
+									progresses.put(episode, entry.getValue()));
+				}
+			}
+
+			runOnUiThread(this::notifyDataSetChanged);
+		}).start();
 	}
 
 	public void setOnEpisodeSelectedListener(OnEpisodeSelectedListener listener) {
@@ -57,7 +90,28 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 	@Override
 	public long getItemId(int position) {
-		return items.get(position).getId();
+		var id = ids.get(items.get(position));
+
+		if(id == null) {
+			throw new IllegalStateException("Id for item not found: " + position);
+		}
+
+		return id;
+	}
+
+	private void changeWatchedState(CatalogEpisode episode, long episodeProgress, @NonNull ViewHolder holder) {
+		progresses.put(episode, episodeProgress);
+		holder.updateProgress();
+
+		new Thread(() -> {
+			var progressDao = getDatabase().getMediaProgressDao();
+
+			var progress = progressDao.get(media.globalId);
+			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
+
+			progress.progresses.put(episode.getNumber(), episodeProgress);
+			progressDao.insert(progress);
+		}).start();
 	}
 
 	@NonNull
@@ -68,21 +122,36 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		setTopMargin(binding.getRoot(), dpPx(12));
 		var holder = new ViewHolder(binding);
 
+		binding.options.setOnClickListener(v -> {
+			long progress = Objects.requireNonNullElse(
+					progresses.get(holder.getItem()), 0L);
+
+			var menu = new PopupMenu(MaterialThemeOverlay.wrap(v.getContext(), null,
+					0, com.google.android.material.R.style.Widget_Material3_PopupMenu), v);
+
+			menu.getMenu().add(0, 0, 0, progress != 0
+					? "Remove from watched" : "Mark as watched");
+
+			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
+				case 0 -> {
+					changeWatchedState(holder.getItem(), progress != 0 ? 0 : -1L, holder);
+					yield true;
+				}
+
+				case 1 -> throw new UnimplementedException("Download not implemented");
+				case 2 -> throw new UnimplementedException("Share not implemented");
+				case 3 -> throw new UnimplementedException("Hide not implemented");
+				default -> throw new IllegalStateException("Unexpected value: " + item.getItemId());
+			});
+
+			menu.show();
+		});
+
 		binding.container.setOnClickListener(v -> {
 			var item = holder.getItem();
-
-			/*if(media.lastEpisode < item.getNumber()) {
-				media.lastEpisode = item.getNumber();
-				notifyItemRangeChanged(0, items.size());
-
-				new Thread(() -> {
-					var db = AweryApp.getDatabase().getMediaDao();
-					var dbMedia = DBCatalogMedia.fromCatalogMedia(media);
-					db.insert(dbMedia);
-				}).start();
-			}*/
-			
 			if(onEpisodeSelectedListener == null) return;
+
+			changeWatchedState(holder.getItem(), -1, holder);
 			onEpisodeSelectedListener.onEpisodeSelected(item, items);
 		});
 
@@ -96,6 +165,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 	@Override
 	public int getItemCount() {
+		if(items == null) return 0;
 		return items.size();
 	}
 
@@ -112,12 +182,17 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			return item;
 		}
 
+		public void updateProgress() {
+			var progress = Objects.requireNonNullElse(progresses.get(item), 0L);
+			binding.container.setAlpha((progress != 0) ? .5f : 1);
+		}
+
 		@SuppressLint("SetTextI18n")
 		public void bind(@NonNull CatalogEpisode item) {
 			this.item = item;
 
 			binding.title.setText(item.getTitle());
-			//binding.container.setAlpha((media.lastEpisode >= item.getNumber()) ? .5f : 1);
+			updateProgress();
 
 			if(item.getReleaseDate() > 0) {
 				var calendar = Calendar.getInstance();
