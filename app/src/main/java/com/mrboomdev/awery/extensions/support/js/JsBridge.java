@@ -132,16 +132,16 @@ public class JsBridge {
 		doIfNotNull(stringFromJs(options.get("method")), method -> {
 			method = method.toLowerCase(Locale.ROOT);
 
-			request.setMethod(options.has("method", options) ? switch(method) {
+			request.setMethod(switch(method) {
 				case "get" -> HttpClient.Method.GET;
 				case "post" -> HttpClient.Method.POST;
 				case "put" -> HttpClient.Method.PUT;
 				case "delete" -> HttpClient.Method.DELETE;
 				case "patch" -> HttpClient.Method.PATCH;
 				default -> throw new IllegalArgumentException("Unsupported method: " + method);
-			} : null);
+			});
 
-			if(isNull(options.get("form")) && !isNull(options.get("body", options))) {
+			if(isNull(options.get("form")) && isNull(options.get("body", options))) {
 				switch(request.getMethod()) {
 					case PUT, PATCH, POST -> request.setBody("", MimeTypes.TEXT);
 				}

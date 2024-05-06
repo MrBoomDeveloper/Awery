@@ -92,7 +92,7 @@ public class MediaCommentsFragment extends Fragment {
 		});
 
 		backPressCallback = () -> {
-			if(!currentCommentsPath.isEmpty() && !loadingAdapter.isEnabled()) {
+			if(!currentCommentsPath.isEmpty() && !isLoading) {
 				currentCommentsPath.remove(currentCommentsPath.size() - 1);
 			}
 

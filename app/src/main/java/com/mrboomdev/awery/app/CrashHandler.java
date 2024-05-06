@@ -21,6 +21,8 @@ import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.LocalizedException;
+import com.mrboomdev.awery.util.exceptions.MaybeNotBadException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -109,6 +111,24 @@ public class CrashHandler {
 	}
 	
 	public static void showErrorDialog(Context context, Throwable throwable) {
+		if(throwable instanceof MaybeNotBadException e) {
+			if(!e.isBad()) {
+				if(throwable instanceof LocalizedException ex) {
+					showErrorDialogImpl(context,
+							ex.getTitle(context),
+							ex.getDescription(context),
+							null);
+				} else {
+					showErrorDialogImpl(context,
+							"Hmm...",
+							throwable.getMessage(),
+							null);
+				}
+
+				return;
+			}
+		}
+
 		var descriptor = new ExceptionDescriptor(throwable);
 
 		showErrorDialogImpl(context,

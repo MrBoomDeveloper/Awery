@@ -11,6 +11,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
@@ -27,10 +28,11 @@ import java9.util.stream.Collectors;
 /**
  * Can be thrown by {@link JsProvider}
  */
-public class JsException extends RuntimeException implements LocalizedException {
+public class JsException extends RuntimeException implements LocalizedException, MaybeNotBadException {
 	public static final String ERROR_NOTHING_FOUND = "nothing_found";
 	public static final String ERROR_ACCOUNT_REQUIRED = "account_required";
 	public static final String OTHER = "other";
+	public static final String MESSAGE = "message";
 	public static final String SERVER_DOWN = "server_down";
 	public static final String SERVER_ERROR = "server_error";
 	public static final String ERROR_RATE_LIMITED = "rate_limited";
@@ -94,6 +96,7 @@ public class JsException extends RuntimeException implements LocalizedException 
 			case ERROR_BANNED -> "You are banned!";
 			case SERVER_DOWN -> "Server is down!";
 			case SERVER_ERROR -> "Server error!";
+			case MESSAGE -> "Extension says:";
 			case OTHER -> "Extension has crashed!";
 
 			default -> "JsEngine has crashed" + (getErrorId() == null ? "" : ": " + getErrorId());
@@ -108,6 +111,7 @@ public class JsException extends RuntimeException implements LocalizedException 
 			case ERROR_NOTHING_FOUND -> "Nothing was found! Try using other sources.";
 			case ERROR_RATE_LIMITED -> "Too much requests in a so short time period.";
 			case ERROR_BANNED -> "Well you've made something really bad if they don't want to hear you again.";
+			case MESSAGE -> getErrorExtra().toString();
 
 			case OTHER -> {
 				if(isNull(getErrorExtra())) {
@@ -161,5 +165,24 @@ public class JsException extends RuntimeException implements LocalizedException 
 				yield errorId;
 			}
 		};
+	}
+
+	@Override
+	public boolean isBad() {
+		if(getErrorId() != null && getErrorId().equals(MESSAGE)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Nullable
+	@Override
+	public String getMessage() {
+		if(getErrorId() != null && getErrorId().equals(MESSAGE)) {
+			return getErrorExtra().toString();
+		}
+
+		return super.getMessage();
 	}
 }
