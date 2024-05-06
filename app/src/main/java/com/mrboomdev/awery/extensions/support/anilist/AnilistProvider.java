@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A temporary extension provider to adapt source-based search more quickly
@@ -80,7 +81,7 @@ public class AnilistProvider extends ExtensionProvider {
 							{
 								Media(id: __ID__) {
 									streamingEpisodes {
-										title thumbnail
+										thumbnail
 									}
 								}
 							}
@@ -97,9 +98,12 @@ public class AnilistProvider extends ExtensionProvider {
 
 						try {
 							var anilistMedia = GraphQLParser.parse(res.getText(), AnilistMedia.class);
+							var index = new AtomicInteger();
 
 							callback.onSuccess(stream(anilistMedia.streamingEpisodes)
-									.map(AnilistEpisode::toCatalogEpisode).toList());
+									.map(AnilistEpisode::toCatalogEpisode)
+									.peek(item -> item.setNumber(index.incrementAndGet()))
+									.toList());
 						} catch(IOException ex) {
 							throw new IllegalStateException("Failed to parse response!", ex);
 						}

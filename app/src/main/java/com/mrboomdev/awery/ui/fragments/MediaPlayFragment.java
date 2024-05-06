@@ -3,6 +3,10 @@ package com.mrboomdev.awery.ui.fragments;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -51,6 +55,7 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -325,15 +330,23 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 				sourceStatuses.put(source, ExtensionStatus.OK);
 
-				if(templateEpisodes != null) {
-					for(int i = 0; i < episodes.size(); i++) {
-						if(templateEpisodes.size() <= i) break;
+				episodes = new ArrayList<>(episodes);
+				episodes.sort(Comparator.comparing(CatalogEpisode::getNumber));
+				//Collections.reverse(episodes);
+				var finalEpisodes = episodes;
 
-						var episode = episodes.get(i);
-						var template = templateEpisodes.get(i);
+				if(templateEpisodes != null) {
+					for(var episode : episodes) {
+						var templateEpisode = stream(templateEpisodes)
+								.filter(e -> e.getNumber() == episode.getNumber())
+								.findFirst().orElse(null);
+
+						if(templateEpisode == null) {
+							continue;
+						}
 
 						if(episode.getBanner() == null) {
-							episode.setBanner(template.getBanner());
+							episode.setBanner(templateEpisode.getBanner());
 						}
 					}
 				}
@@ -345,7 +358,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					});
 
 					placeholderAdapter.setEnabled(false);
-					episodesAdapter.setItems(media, episodes);
+					episodesAdapter.setItems(media, finalEpisodes);
 				});
 			}
 
@@ -355,9 +368,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 				Log.e(TAG, "Failed to load episodes!", e);
 
-				handleExceptionMark(source, e);
-				if(autoSelectNextSource()) return;
-				handleExceptionUi(source, e);
+				runOnUiThread(() -> {
+					handleExceptionMark(source, e);
+					if(autoSelectNextSource()) return;
+					handleExceptionUi(source, e);
+				});
 			}
 		});
 	}
@@ -497,16 +512,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		var layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
-		variantsAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var binding = LayoutWatchVariantsBinding.inflate(inflater, parent, false);
-
-			ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-				ViewUtil.setTopPadding(binding.getRoot(), insets.top);
-				ViewUtil.setRightPadding(binding.getRoot(), insets.right);
-			}, container);
-
-			return binding;
-		});
+		variantsAdapter = SingleViewAdapter.fromBindingDynamic(parent ->
+				LayoutWatchVariantsBinding.inflate(inflater, parent, false));
 
 		placeholderAdapter = SingleViewAdapter.fromBindingDynamic(parent ->
 				LayoutLoadingBinding.inflate(inflater, parent, false));
@@ -524,6 +531,15 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var recycler = new RecyclerView(inflater.getContext());
 		recycler.setLayoutManager(layoutManager);
 		recycler.setAdapter(concatAdapter);
+
+		recycler.setClipToPadding(false);
+		setBottomPadding(recycler, dpPx(12));
+
+		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
+			setTopPadding(recycler, insets.top);
+			setRightPadding(recycler, insets.right);
+		}, container);
+
 		return recycler;
 	}
 }

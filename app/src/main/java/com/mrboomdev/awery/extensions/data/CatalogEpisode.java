@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 	private String title, banner, description, url;
-	private final float number;
+	private float number;
 	private final long releaseDate;
 	private List<CatalogVideo> videos;
 	private long id;
@@ -84,6 +84,10 @@ public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 
 	public float getNumber() {
 		return number;
+	}
+
+	public void setNumber(float number) {
+		this.number = number;
 	}
 
 	@Override

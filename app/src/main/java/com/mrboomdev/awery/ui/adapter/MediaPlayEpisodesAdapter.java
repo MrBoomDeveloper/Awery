@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +65,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemListEpisodeBinding.inflate(inflater, parent, false);
+		setTopMargin(binding.getRoot(), dpPx(12));
 		var holder = new ViewHolder(binding);
 
 		binding.container.setOnClickListener(v -> {
@@ -129,14 +133,14 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			}
 
 			if(item.getBanner() != null) {
-				binding.banner.setVisibility(View.VISIBLE);
+				binding.bannerWrapper.setVisibility(View.VISIBLE);
 				binding.banner.setImageDrawable(null);
 
 				Glide.with(binding.banner)
 						.load(item.getBanner())
 						.into(binding.banner);
 			} else {
-				binding.banner.setVisibility(View.GONE);
+				binding.bannerWrapper.setVisibility(View.GONE);
 				Glide.with(binding.banner).clear(binding.banner);
 			}
 		}
