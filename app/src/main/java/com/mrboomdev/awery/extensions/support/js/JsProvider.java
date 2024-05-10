@@ -126,6 +126,7 @@ public class JsProvider extends ExtensionProvider {
 			features.add(switch((String) feature) {
 				case "media_comments" -> FEATURE_MEDIA_COMMENTS;
 				case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
+				case "media_comments_per_episode" -> FEATURE_COMMENTS_PER_EPISODE;
 
 				case "media_watch" -> FEATURE_MEDIA_WATCH;
 				case "media_read" -> FEATURE_MEDIA_READ;
@@ -136,6 +137,8 @@ public class JsProvider extends ExtensionProvider {
 
 				case "account_login" -> FEATURE_LOGIN;
 				case "account_track" -> FEATURE_TRACK;
+
+				case "changelog" -> FEATURE_CHANGELOG;
 
 				default -> 0;
 			});
@@ -358,7 +361,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryVoteComment") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{
+					fun.call(context, scope, null, new Object[] {
 							JsComment.createJsComment(context, scope, comment),
 							(Callback<NativeObject>) (o, e) -> {
 								if(e != null) {
@@ -372,7 +375,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("Failed to call aweryVoteComment function!"));
+				callback.onFailure(new UnimplementedException("\"aweryVoteComment\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -382,19 +385,69 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryEditComment") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ comment, (Callback<NativeObject>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
+					fun.call(context, scope, null, new Object[] {
+							JsComment.createJsComment(this.context, this.scope, comment),
+							(Callback<NativeObject>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
 
-						callback.onSuccess(new JsComment(o));
-					}});
+								callback.onSuccess(new JsComment(o));
+							}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("Failed to call aweryEditComment function!"));
+				callback.onFailure(new UnimplementedException("\"aweryEditComment\" is not a function or isn't defined!"));
+			}
+		});
+	}
+
+	@Override
+	public void deleteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryDeleteComment") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[] {
+							JsComment.createJsComment(this.context, this.scope, comment),
+							(Callback<Boolean>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
+
+								callback.onSuccess(o);
+							}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("\"aweryDeleteComment\" is not a function or isn't defined!"));
+			}
+		});
+	}
+
+	@Override
+	public void getChangelog(@NonNull ResponseCallback<String> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryChangelog") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[]{
+							(Callback<Object>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
+
+								callback.onSuccess(o.toString());
+							}
+					});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("\"aweryChangelog\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -508,7 +561,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryTrackMedia is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("\"aweryTrackMedia\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -535,7 +588,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryLogin is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("\"aweryLogin\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -552,7 +605,7 @@ public class JsProvider extends ExtensionProvider {
 				}
 			}
 
-			callback.onFailure(new UnimplementedException("aweryIsLoggedIn is not a function or isn't defined!"));
+			callback.onFailure(new UnimplementedException("\"aweryIsLoggedIn\" is not a function or isn't defined!"));
 		});
 	}
 
@@ -580,7 +633,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryPostMediaComment is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("\"aweryPostMediaComment\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -611,7 +664,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryReadMediaComments is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("\"aweryReadMediaComments\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -655,7 +708,8 @@ public class JsProvider extends ExtensionProvider {
 						}
 
 						if(((NativeArray)o.get("items", o)).isEmpty()) {
-							callback.onFailure(new ZeroResultsException("Zero results", R.string.no_media_found));
+							callback.onFailure(new ZeroResultsException("Zero results",
+									R.string.no_media_found));
 							return;
 						}
 
@@ -773,7 +827,7 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("awerySearchMedia is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException("\"aweryMediaSearch\" function not found!"));
 			}
 		});
 	}
@@ -784,29 +838,32 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryMediaVideos") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { episode, (Callback<List<ScriptableObject>>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
+					fun.call(context, scope, null, new Object[] {
+							episode,
+							(Callback<List<ScriptableObject>>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
 
-						callback.onSuccess(stream(o)
-								.map(videoObject -> new CatalogVideo(
-										stringFromJs(videoObject.get("title")),
-										stringFromJs(videoObject.get("url")),
-										null,
-										stream((List<ScriptableObject>) videoObject.get("subtitles"))
-												.map(subtitleObject -> new CatalogSubtitle(
-														stringFromJs(subtitleObject.get("title")),
-														stringFromJs(subtitleObject.get("url"))))
-												.toList()))
-								.toList());
-					}});
+								callback.onSuccess(stream(o)
+										.map(videoObject -> new CatalogVideo(
+												stringFromJs(videoObject.get("title")),
+												stringFromJs(videoObject.get("url")),
+												null,
+												stream((List<ScriptableObject>) videoObject.get("subtitles"))
+														.map(subtitleObject -> new CatalogSubtitle(
+																stringFromJs(subtitleObject.get("title")),
+																stringFromJs(subtitleObject.get("url"))))
+														.toList()))
+										.toList());
+							}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryMediaVideos is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException(
+						"\"aweryMediaVideos\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -815,7 +872,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLogOut") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{(Callback<Boolean>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ (Callback<Boolean>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -826,6 +883,9 @@ public class JsProvider extends ExtensionProvider {
 				} catch(Throwable e) {
 					callback.onFailure(e);
 				}
+			} else {
+				callback.onFailure(new UnimplementedException(
+						"\"aweryLogOut\" is not a function or isn't defined!"));
 			}
 		});
 	}
@@ -834,7 +894,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLoginScreen") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{(Callback<ScriptableObject>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ (Callback<ScriptableObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -852,37 +912,45 @@ public class JsProvider extends ExtensionProvider {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryLoginScreen is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException(
+						"\"aweryLoginScreen\" is not a function or isn't defined!"));
 			}
 		});
 	}
 
 	@Override
-	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {
+	public void getEpisodes(
+			int page,
+			CatalogMedia media,
+			@NonNull ResponseCallback<List<? extends CatalogEpisode>> callback
+	) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryMediaEpisodes") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[] { page, media, (Callback<List<ScriptableObject>>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
+					fun.call(context, scope, null, new Object[] {
+							page, media,
+							(Callback<List<ScriptableObject>>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
 
-						callback.onSuccess(stream(o)
-								.map(item -> new CatalogEpisode(
-										stringFromJs(item.get("title")),
-										stringFromJs(item.get("url")),
-										stringFromJs(item.get("banner")),
-										stringFromJs(item.get("description")),
-										longFromJs(item.get("releaseDate")),
-										floatFromJs(item.get("number"))
-								)).toList());
-					}});
+								callback.onSuccess(stream(o)
+										.map(item -> new CatalogEpisode(
+												stringFromJs(item.get("title")),
+												stringFromJs(item.get("url")),
+												stringFromJs(item.get("banner")),
+												stringFromJs(item.get("description")),
+												longFromJs(item.get("releaseDate")),
+												floatFromJs(item.get("number"))
+										)).toList());
+							}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
 				}
 			} else {
-				callback.onFailure(new UnimplementedException("aweryMediaEpisodes is not a function or isn't defined!"));
+				callback.onFailure(new UnimplementedException(
+						"\"aweryMediaEpisodes\" is not a function or isn't defined!"));
 			}
 		});
 	}

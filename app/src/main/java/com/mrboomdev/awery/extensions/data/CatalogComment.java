@@ -28,6 +28,8 @@ public class CatalogComment implements CatalogSearchResults<CatalogComment> {
 	public boolean hasNextPage = false;
 	@Json(name = "can_comment")
 	public boolean canComment = false;
+	public boolean isDeletable = false;
+	public boolean isEditable = false;
 	/**
 	 * If this value equal to -1, then likes aren't shown
 	 * If -2, then you can't use them

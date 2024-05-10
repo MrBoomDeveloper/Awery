@@ -42,6 +42,9 @@ public class JsComment extends CatalogComment {
 		canComment = booleanFromJs(o.get("canComment", o));
 		hasNextPage = booleanFromJs(o.get("hasNextPage", o));
 
+		isEditable = booleanFromJs(o.get("isEditable", o));
+		isDeletable = booleanFromJs(o.get("isDeletable", o));
+
 		this.customData = o;
 	}
 
@@ -71,6 +74,9 @@ public class JsComment extends CatalogComment {
 
 		o.put("canComment", o, comment.canComment);
 		o.put("hasNextPage", o, comment.hasNextPage);
+
+		o.put("isEditable", o, comment.isEditable);
+		o.put("isDeletable", o, comment.isDeletable);
 
 		return o;
 	}

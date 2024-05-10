@@ -58,6 +58,7 @@ import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -580,6 +581,44 @@ public class MediaCommentsFragment extends Fragment {
 			super(binding.getRoot());
 			this.binding = binding;
 
+			binding.deleteButton.setOnClickListener(v -> {
+				var comment = getComment();
+				if(comment == null) return;
+
+				new DialogBuilder(requireContext())
+						.setTitle("Delete the comment?")
+						.setMessage("You'll be unable to undo this action later.")
+						.setPositiveButton(R.string.confirm, dialog -> {
+							selectedProvider.deleteComment(comment, new ExtensionProvider.ResponseCallback<>() {
+
+								@Override
+								public void onSuccess(Boolean success) {
+									var context = getContext();
+									if(context == null) return;
+
+									if(!success) {
+										toast("Failed to delete comment");
+										return;
+									}
+
+									loadData(MediaCommentsFragment.this.comment, MediaCommentsFragment.this.comment, 0);
+								}
+
+								@Override
+								public void onFailure(Throwable e) {
+									var context = getContext();
+									if(context == null) return;
+
+									CrashHandler.showErrorDialog(context, e);
+								}
+							});
+
+							dialog.dismiss();
+						})
+						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+						.show();
+			});
+
 			binding.likeButton.setOnClickListener(v -> {
 				var comment = getComment();
 				if(comment == null) return;
@@ -711,6 +750,9 @@ public class MediaCommentsFragment extends Fragment {
 
 			if(comment.votes != null) binding.votesCount.setVisibility(View.VISIBLE);
 			else binding.votesCount.setVisibility(View.GONE);
+
+			binding.editButton.setVisibility(comment.isEditable ? View.VISIBLE : View.GONE);
+			binding.deleteButton.setVisibility(comment.isDeletable ? View.VISIBLE : View.GONE);
 
 			Glide.with(binding.icon)
 					.clear(binding.icon);

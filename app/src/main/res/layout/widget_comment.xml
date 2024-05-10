@@ -182,4 +182,33 @@
         app:layout_constraintLeft_toLeftOf="@id/commentIcon"
         app:layout_constraintRight_toRightOf="@id/commentIcon" />
 
+    <ImageView
+        android:id="@+id/editButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="7dp"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/ic_edit_outlined"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnPrimarySurface"
+        app:layout_constraintRight_toLeftOf="@id/deleteButton"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon" />
+
+    <ImageView
+        android:id="@+id/deleteButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="7dp"
+        android:src="@drawable/ic_delete_outlined"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnPrimarySurface"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -42,6 +42,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_COMMENTS_REPORT = 8;
 	public static final int FEATURE_MEDIA_REPORT = 9;
 	public static final int FEATURE_MEDIA_SEARCH = 10;
+	public static final int FEATURE_COMMENTS_PER_EPISODE = 11;
+	public static final int FEATURE_CHANGELOG = 12;
 	private final ExtensionsManager manager;
 	private final Extension extension;
 
@@ -98,6 +100,14 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void editComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
 		callback.onFailure(new UnimplementedException("Comments editing isn't implemented!"));
+	}
+
+	public void deleteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
+		callback.onFailure(new UnimplementedException("Comments deletion isn't implemented!"));
+	}
+
+	public void getChangelog(@NonNull ResponseCallback<String> callback) {
+		callback.onFailure(new UnimplementedException("Changelog isn't implemented!"));
 	}
 
 	public void trackMedia(

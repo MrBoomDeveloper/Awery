@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.extensions;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
@@ -104,6 +106,26 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 				if(currentDialog != null) {
 					currentDialog.dismiss();
+				}
+
+				for(var source : extension.getProviders()) {
+					if(source.hasFeature(ExtensionProvider.FEATURE_CHANGELOG)) {
+						source.getChangelog(new ExtensionProvider.ResponseCallback<>() {
+							@Override
+							public void onSuccess(String s) {
+								runOnUiThread(() -> new DialogBuilder(activity)
+										.setTitle(extension.getVersion() + " Changelog")
+										.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
+										.setMessage(cleanString(s))
+										.show());
+							}
+
+							@Override
+							public void onFailure(Throwable e) {
+								CrashHandler.showErrorDialog(activity, "Failed ", e);
+							}
+						});
+					}
 				}
 			} catch(Throwable e) {
 				Log.e(TAG, "Failed to install an extension!", e);

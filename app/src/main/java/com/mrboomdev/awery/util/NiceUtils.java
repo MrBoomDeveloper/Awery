@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import java9.util.stream.Stream;
@@ -31,6 +32,26 @@ public class NiceUtils {
 		if(param != null) {
 			callback.run(param);
 		}
+	}
+
+	@NonNull
+	public static String cleanString(@NonNull String string) {
+		var builder = new StringBuilder();
+
+		var lines = string.split("\n");
+		var iterator = List.of(lines).iterator();
+
+		while(iterator.hasNext()) {
+			var line = iterator.next();
+
+			builder.append(line.trim());
+
+			if(iterator.hasNext()) {
+				builder.append("\n");
+			}
+		}
+
+		return builder.toString().trim();
 	}
 
 	/**
