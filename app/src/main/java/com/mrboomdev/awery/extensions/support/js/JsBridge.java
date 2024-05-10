@@ -63,6 +63,26 @@ public class JsBridge {
 		AweryApp.toast(object);
 	}
 
+	private static double parseDouble(Object object) {
+		if(object instanceof Number number) {
+			return number.doubleValue();
+		}
+
+		return Double.parseDouble(object.toString());
+	}
+
+	public int compareNumbers(Object a, Object b) {
+		return Double.compare(parseDouble(a), parseDouble(b));
+	}
+
+	public Object plus(Object a, Object b) {
+		return parseDouble(a) + parseDouble(b);
+	}
+
+	public Object currentTime() {
+		return System.currentTimeMillis();
+	}
+
 	public String getAdultMode() {
 		var adultMode = AwerySettings.getInstance().getEnum(
 				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);

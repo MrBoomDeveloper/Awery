@@ -9,6 +9,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -21,7 +22,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
@@ -29,17 +34,20 @@ import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.popup.sheet.TrackingSheet;
+import com.mrboomdev.awery.ui.window.GalleryWindow;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Calendar;
 
 import java9.util.Objects;
 
 public class MediaInfoFragment extends Fragment {
 	private static final String TAG = "MediaInfoFragment";
+	private WeakReference<Drawable> cachedPoster;
 	private MediaDetailsOverviewLayoutBinding binding;
 	private CatalogMedia media;
 
@@ -101,7 +109,35 @@ public class MediaInfoFragment extends Fragment {
 		Glide.with(binding.getRoot())
 				.load(media.poster.extraLarge)
 				.transition(DrawableTransitionOptions.withCrossFade())
+				.addListener(new RequestListener<>() {
+					@Override
+					public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+						return false;
+					}
+
+					@Override
+					public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+						cachedPoster = new WeakReference<>(resource);
+						return false;
+					}
+				})
 				.into(binding.poster);
+
+		binding.posterWrapper.setOnClickListener(v -> {
+			var poster = cachedPoster != null
+					? cachedPoster.get() : null;
+
+			if(poster != null) {
+				new GalleryWindow(requireActivity(), poster)
+						.show(binding.getRoot());
+			} else {
+				var bestPoster = media.getBestPoster();
+				if(bestPoster == null) return;
+
+				new GalleryWindow(requireActivity(), bestPoster)
+						.show(binding.getRoot());
+			}
+		});
 
 		binding.details.play.setOnClickListener(v -> {
 			if(requireActivity() instanceof MediaActivity activity) activity.launchAction("watch");

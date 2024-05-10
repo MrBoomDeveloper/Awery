@@ -16,7 +16,7 @@ public class CatalogTrackingOptions {
 	public List<String> currentLists;
 	public Calendar startDate, endDate;
 	public boolean isPrivate;
-	public float progress, score;
+	public Float progress, score;
 	public String id;
 
 	public CatalogTrackingOptions(int flags) {

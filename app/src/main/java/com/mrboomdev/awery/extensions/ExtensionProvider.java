@@ -40,9 +40,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_TRACK = 6;
 	public static final int FEATURE_COMMENTS_SORT = 7;
 	public static final int FEATURE_COMMENTS_REPORT = 8;
-	public static final int FEATURE_COMMENTS_VOTE = 9;
-	public static final int FEATURE_MEDIA_REPORT = 10;
-	public static final int FEATURE_MEDIA_SEARCH = 11;
+	public static final int FEATURE_MEDIA_REPORT = 9;
+	public static final int FEATURE_MEDIA_SEARCH = 10;
 	private final ExtensionsManager manager;
 	private final Extension extension;
 
@@ -155,7 +154,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return "en";
 	}
 
-	public void getCatalogCategories(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
+	public void getFeedsList(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
 		callback.onFailure(new UnimplementedException("Categories aren't implemented!"));
 	}
 

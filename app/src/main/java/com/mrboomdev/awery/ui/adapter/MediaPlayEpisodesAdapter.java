@@ -183,8 +183,9 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}
 
 		public void updateProgress() {
-			var progress = Objects.requireNonNullElse(progresses.get(item), 0L);
-			binding.container.setAlpha((progress != 0) ? .5f : 1);
+			long progress = Objects.requireNonNullElse(progresses.get(item), 0L);
+			binding.container.setAlpha((progress != 0) ? .6f : 1);
+			binding.bannerWrapper.setAlpha((progress != 0) ? .4f : 1);
 		}
 
 		@SuppressLint("SetTextI18n")

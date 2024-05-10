@@ -34,6 +34,10 @@ public class Constants {
 		return false;
 	}
 
+	public static <T> T returnMe(T t) {
+		return t;
+	}
+
 	/**
 	 * Typically your IDE will warn if you have any code after a throw statement,
 	 * but this method will let you keep the code uncommented!

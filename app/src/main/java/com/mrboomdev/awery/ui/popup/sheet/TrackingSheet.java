@@ -579,8 +579,8 @@ public class TrackingSheet {
 			} else {
 				binding.loadingState.getRoot().setVisibility(View.GONE);
 
-				binding.progress.setText(String.valueOf(trackingOptions.progress));
-				binding.score.setText(String.valueOf(trackingOptions.score));
+				binding.progress.setText(trackingOptions.progress != null ? String.valueOf(trackingOptions.progress) : null);
+				binding.score.setText(trackingOptions.score != null ? String.valueOf(trackingOptions.score) : null);
 				binding.isPrivate.setChecked(trackingOptions.isPrivate);
 
 				if(trackingOptions.currentLists != null) {

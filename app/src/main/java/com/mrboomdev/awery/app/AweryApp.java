@@ -15,7 +15,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
@@ -63,6 +67,20 @@ public class AweryApp extends Application {
 	private static final WeakHashMap<Runnable, Object> backPressedCallbacks = new WeakHashMap<>();
 	private static final String TAG = "AweryApp";
 	private static AweryDB db;
+
+	@NonNull
+	public static Bitmap drawableToBitmap(@NonNull Drawable drawable) {
+		var bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+		var config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+		bitmap.setConfig(config);
+
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
+
+		return bitmap;
+	}
+
 
 	public static AweryDB getDatabase() {
 		return db;

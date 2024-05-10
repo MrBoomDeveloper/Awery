@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +38,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
+import com.mrboomdev.awery.databinding.LayoutCommentsHeaderBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentSendBinding;
@@ -52,6 +56,7 @@ import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
@@ -65,19 +70,21 @@ public class MediaCommentsFragment extends Fragment {
 	private static final int LAST_PAGE = -1;
 	private static final String TAG = "MediaCommentsFragment";
 	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
+	private final ArrayListAdapter<ExtensionProvider> sourcesAdapter;
+	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
+	private final ConcatAdapter concatAdapter;
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
 	private final WeakHashMap<CatalogComment, Integer> pages = new WeakHashMap<>();
-	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
 	private final Runnable backPressCallback;
+	private List<ExtensionProvider> sources;
 	private boolean isLoading;
 	private ExtensionProvider selectedProvider;
 	private RecyclerView recycler;
 	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
-	private ConcatAdapter adapter;
-	private List<ExtensionProvider> providers;
 	private CatalogMedia media;
 	private CatalogComment comment;
 
@@ -90,6 +97,56 @@ public class MediaCommentsFragment extends Fragment {
 			var inflater = LayoutInflater.from(parent.getContext());
 			return LayoutLoadingBinding.inflate(inflater, parent, false);
 		});
+
+		sourcesAdapter = new ArrayListAdapter<>((item, recycled, parentView) -> {
+			if(recycled == null) {
+				var inflater = LayoutInflater.from(parentView.getContext());
+
+				recycled = ItemListDropdownBinding.inflate(
+						inflater, parentView, false).getRoot();
+			}
+
+			TextView textView = recycled.findViewById(R.id.title);
+			textView.setText(item.getName());
+
+			ImageView icon = recycled.findViewById(R.id.icon);
+			icon.setVisibility(View.GONE);
+
+			return recycled;
+		});
+
+		headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = LayoutInflater.from(parent.getContext());
+			var binding = LayoutCommentsHeaderBinding.inflate(inflater, parent, false);
+
+			binding.searchWrapper.setVisibility(View.GONE);
+			binding.seasonWrapper.setVisibility(View.GONE);
+
+			binding.sourceDropdown.setAdapter(sourcesAdapter);
+
+			binding.sourceDropdown.setOnItemClickListener((dropdownParent, _view, position, id) -> {
+				loadingAdapter.getBinding(loadingBinding -> {
+					loadingBinding.progressBar.setVisibility(View.VISIBLE);
+					loadingBinding.info.setVisibility(View.GONE);
+					loadingAdapter.setEnabled(true);
+				});
+
+				commentsAdapter.setData(null);
+				selectedProvider = sources.get(position);
+
+				currentCommentsPath.clear();
+				pages.clear();
+				scrollPositions.clear();
+
+				loadData(null, null, 0);
+			});
+
+			return binding;
+		});
+
+		concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
+				headerAdapter, commentsAdapter, loadingAdapter);
 
 		backPressCallback = () -> {
 			if(!currentCommentsPath.isEmpty() && !isLoading) {
@@ -131,18 +188,21 @@ public class MediaCommentsFragment extends Fragment {
 	public void setMedia(CatalogMedia media) {
 		if(media == null) return;
 		this.media = media;
-		if(adapter == null) return;
 
+		if(recycler == null) return;
 		loadData(null, null, 0);
 	}
 
 	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
-		//this.recycler.scrollToPosition(0);
+		this.recycler.scrollToPosition(0);
 		this.comment = comment;
 
 		if(comment != null) {
 			swipeRefresher.setRefreshing(false);
 			loadingAdapter.setEnabled(false);
+
+			headerAdapter.getBinding(binding ->
+					binding.searchStatus.setText("Found " + comment.size() + " comments"));
 
 			if(reloadThis == null) {
 				if(!currentCommentsPath.contains(comment)) {
@@ -182,7 +242,7 @@ public class MediaCommentsFragment extends Fragment {
 			scrollPositions.put(this.comment, layoutManager.onSaveInstanceState());
 		}
 
-		if(providers == null || providers.isEmpty()) {
+		if(sources == null || sources.isEmpty()) {
 			loadingAdapter.getBinding(binding -> {
 				binding.title.setText(R.string.nothing_found);
 				binding.message.setText(R.string.no_comment_extensions);
@@ -190,6 +250,9 @@ public class MediaCommentsFragment extends Fragment {
 				binding.info.setVisibility(View.VISIBLE);
 				binding.progressBar.setVisibility(View.GONE);
 			});
+
+			headerAdapter.getBinding(binding ->
+					binding.searchStatus.setText("Nothing found"));
 
 			swipeRefresher.setRefreshing(false);
 			return;
@@ -212,6 +275,9 @@ public class MediaCommentsFragment extends Fragment {
 
 		isLoading = true;
 
+		headerAdapter.getBinding(binding ->
+				binding.searchStatus.setText("Loading comments..."));
+
 		selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(CatalogComment newComment) {
@@ -226,6 +292,9 @@ public class MediaCommentsFragment extends Fragment {
 					}
 
 					commentsAdapter.addData(newComment);
+
+					headerAdapter.getBinding(binding ->
+							binding.searchStatus.setText("Found " + commentsAdapter.getItemCount() + " comments"));
 
 					if(!newComment.hasNextPage()) {
 						reachedEnd();
@@ -257,6 +326,9 @@ public class MediaCommentsFragment extends Fragment {
 					commentsAdapter.setData(null);
 					loadingAdapter.setEnabled(true);
 					sendBinding.getRoot().setVisibility(View.GONE);
+
+					headerAdapter.getBinding(headerBinding ->
+							headerBinding.searchStatus.setText("Failed to load"));
 				}, recycler));
 
 				Log.e("MediaCommentsFragment", "Failed to load comments!", e);
@@ -278,17 +350,19 @@ public class MediaCommentsFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
 				.flatMap(NiceUtils::stream)
 				.sorted().toList();
 
-		if(providers.size() > 1) {
-			toast("Sorry, but you cannot currently use more than 1 comment extension :(");
-		}
+		sourcesAdapter.setItems(sources);
 
-		if(!providers.isEmpty()) {
-			selectedProvider = providers.get(0);
+		if(!sources.isEmpty()) {
+			selectedProvider = sources.get(0);
+			sourcesAdapter.setItems(sources);
+
+			headerAdapter.getBinding(binding -> binding.sourceDropdown.setText(
+					selectedProvider.getName(), false));
 		}
 
 		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -323,11 +397,7 @@ public class MediaCommentsFragment extends Fragment {
 			setBottomPadding(recycler, padding);
 		}, container);
 
-		adapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
-				commentsAdapter, loadingAdapter);
-
-		recycler.setAdapter(adapter);
+		recycler.setAdapter(concatAdapter);
 		parentLayout.addView(recycler, createLinearParams(MATCH_PARENT, 0, 1));
 
 		var isSending = new AtomicBoolean();
@@ -356,8 +426,8 @@ public class MediaCommentsFragment extends Fragment {
 					if(getContext() == null) return;
 
 					runOnUiThread(() -> {
-						/* So apparently people wanna to see all comments even after you did post a new one.
-						   Weird... */
+						/* So apparently people wanna to see all comments
+						even after you did post a new one. Weird... */
 						loadData(MediaCommentsFragment.this.comment,
 								MediaCommentsFragment.this.comment, 0);
 
@@ -441,8 +511,8 @@ public class MediaCommentsFragment extends Fragment {
 			}
 
 			var wasSize = comment.size();
-			this.root.items.addAll(root.items);
-			notifyItemRangeInserted(wasSize, root.items.size());
+			this.root.addAll(root.items);
+			notifyItemRangeInserted(wasSize, root.size());
 		}
 
 		@NonNull

@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -23,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -124,7 +126,6 @@ public class JsProvider extends ExtensionProvider {
 			features.add(switch((String) feature) {
 				case "media_comments" -> FEATURE_MEDIA_COMMENTS;
 				case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
-				case "media_comments_vote" -> FEATURE_COMMENTS_VOTE;
 
 				case "media_watch" -> FEATURE_MEDIA_WATCH;
 				case "media_read" -> FEATURE_MEDIA_READ;
@@ -463,10 +464,11 @@ public class JsProvider extends ExtensionProvider {
 						}
 
 						var result = new CatalogTrackingOptions(features);
-						result.score = floatFromJs(o.get("score", o));
-						result.progress = floatFromJs(o.get("progress", o));
 						result.isPrivate = booleanFromJs(o.get("isPrivate", o));
 						result.id = stringFromJs(o.get("id", o));
+
+						result.progress = returnIfNotNullJs(fromJs(o.get("progress", o), Float.class), Constants::returnMe);
+						result.score = returnIfNotNullJs(fromJs(o.get("score", o), Float.class), Constants::returnMe);
 
 						if(!isNull(o.get("currentLists", o))) {
 							result.currentLists = listFromJs(o.get("currentLists", o), String.class);
@@ -790,13 +792,13 @@ public class JsProvider extends ExtensionProvider {
 
 						callback.onSuccess(stream(o)
 								.map(videoObject -> new CatalogVideo(
-										(String) videoObject.get("title"),
-										(String) videoObject.get("url"),
+										stringFromJs(videoObject.get("title")),
+										stringFromJs(videoObject.get("url")),
 										null,
 										stream((List<ScriptableObject>) videoObject.get("subtitles"))
 												.map(subtitleObject -> new CatalogSubtitle(
-														(String) subtitleObject.get("title"),
-														(String) subtitleObject.get("url")))
+														stringFromJs(subtitleObject.get("title")),
+														stringFromJs(subtitleObject.get("url"))))
 												.toList()))
 								.toList());
 					}});
@@ -868,12 +870,13 @@ public class JsProvider extends ExtensionProvider {
 
 						callback.onSuccess(stream(o)
 								.map(item -> new CatalogEpisode(
-										(String) item.get("title"),
-										(String) item.get("url"),
-										(String) item.get("banner"),
-										(String) item.get("description"),
-										(Long) item.get("releaseDate"),
-										(Float) item.get("number"))).toList());
+										stringFromJs(item.get("title")),
+										stringFromJs(item.get("url")),
+										stringFromJs(item.get("banner")),
+										stringFromJs(item.get("description")),
+										longFromJs(item.get("releaseDate")),
+										floatFromJs(item.get("number"))
+								)).toList());
 					}});
 				} catch(Throwable e) {
 					callback.onFailure(e);
