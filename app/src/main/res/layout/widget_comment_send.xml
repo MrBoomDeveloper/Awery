@@ -26,17 +26,27 @@
 
     </androidx.cardview.widget.CardView>
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha=".3"
+        app:layout_constraintLeft_toLeftOf="@id/input"
+        app:layout_constraintTop_toTopOf="@id/input"
+        app:layout_constraintRight_toRightOf="@id/input"
+        app:layout_constraintBottom_toBottomOf="@id/input"
+        android:background="@drawable/widget_comment_send_background" />
+
     <EditText
         android:id="@+id/input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:paddingVertical="6dp"
-        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="16dp"
         android:hint="Enter text"
         android:textSize="14sp"
         android:imeOptions="flagNoFullscreen|actionSend"
-        android:background="@drawable/widget_comment_send_background"
+        android:background="@null"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@id/sendButton"
@@ -49,11 +59,14 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_send_outlined"
-        android:background="@drawable/ripple_circle_white"
+        android:backgroundTint="?attr/colorSecondaryContainer"
+        android:background="@drawable/button_popup_background"
+        android:foreground="@drawable/button_popup_foreground"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintHeight_max="35dp"
-        android:padding="5dp"
+        app:layout_constraintHeight_max="38dp"
+        android:padding="8dp"
         android:layout_marginRight="8dp"
+        app:tint="?attr/colorAccent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
