@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 
@@ -28,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -77,6 +79,14 @@ public class SearchActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
+		var prefs = AwerySettings.getInstance(this);
+
+		var columnsCountLand = new AtomicInteger(prefs.getInt("settings_ui_media_columns_land"));
+		var autoColumnsCountLand = columnsCountLand.get() == 0;
+
+		var columnsCountPort = new AtomicInteger(prefs.getInt("settings_ui_media_columns_port"));
+		var autoColumnsCountPort = columnsCountPort.get() == 0;
+
 		this.select = getIntent().getBooleanExtra("select", false);
 		this.queryFilter.setValue(getIntent().getStringExtra("query"));
 
@@ -94,8 +104,8 @@ public class SearchActivity extends AppCompatActivity {
 
 		header = LayoutHeaderSearchBinding.inflate(getLayoutInflater(), linear, true);
 		header.back.setOnClickListener(v -> finish());
-		header.edittext.setText(queryFilter.getStringValue());
 
+		header.edittext.setText(queryFilter.getStringValue());
 		header.edittext.requestFocus();
 
 		var inputManager = getSystemService(InputMethodManager.class);
@@ -145,8 +155,9 @@ public class SearchActivity extends AppCompatActivity {
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build(), adapter, loadingAdapter);
 
-		var columnsCount = new AtomicInteger(3);
-		var layoutManager = new GridLayoutManager(this, columnsCount.get());
+		var layoutManager = new GridLayoutManager(this, isLandscape()
+				? (autoColumnsCountLand ? 3 : columnsCountLand.get())
+				: (autoColumnsCountPort ? 5 : columnsCountPort.get()));
 
 		recycler = new RecyclerView(this);
 		recycler.setLayoutManager(layoutManager);
@@ -161,24 +172,34 @@ public class SearchActivity extends AppCompatActivity {
 			}
 		});
 
-		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-			@Override
-			public int getSpanSize(int position) {
-				/* Don't ask. I don't know how it is working, so please don't ask about it. */
-				return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1 : columnsCount.get();
-			}
-		});
-
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
 			var padding = ViewUtil.dpPx(8);
 			ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
 			ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
 
-			float columnSize = ViewUtil.dpPx(110);
-			float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
-			columnsCount.set((int)(freeSpace / columnSize));
-			layoutManager.setSpanCount(columnsCount.get());
+			if(isLandscape() && autoColumnsCountLand) {
+				float columnSize = ViewUtil.dpPx(110);
+				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
+				columnsCountLand.set((int)(freeSpace / columnSize));
+				layoutManager.setSpanCount(columnsCountLand.get());
+			} else if(!isLandscape() && autoColumnsCountPort) {
+				float columnSize = ViewUtil.dpPx(110);
+				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
+				columnsCountPort.set((int)(freeSpace / columnSize));
+				layoutManager.setSpanCount(columnsCountPort.get());
+			}
 		});
+
+		if((isLandscape() && autoColumnsCountLand) || (!isLandscape() && autoColumnsCountPort)) {
+			layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+				@Override
+				public int getSpanSize(int position) {
+					/* Don't ask. I don't know how it is working, so please don't ask about it. */
+					return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1
+							: (isLandscape() ? columnsCountLand.get() : columnsCountPort.get());
+				}
+			});
+		}
 	}
 
 	private void tryLoadMore() {

@@ -51,6 +51,12 @@
 						{ "key": "MAIN", "title": "Anime" },
 						{ "key": "LIBRARY", "title": "Library" }
 					]
+				}, {
+					"key": "media_columns_land", "type": "int", "from": 0,
+					"title": "Media columns count at Landscape", "description": "0 is for auto"
+				}, {
+					"key": "media_columns_port", "type": "int", "from": 0,
+					"title": "Media columns count at Portrait", "description": "0 is for auto"
 				}
 			]
 		}, {

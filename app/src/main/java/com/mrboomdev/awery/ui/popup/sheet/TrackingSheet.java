@@ -314,7 +314,7 @@ public class TrackingSheet {
 							binding.delete.setEnabled(true);
 
 							Log.e(TAG, "Failed to save", e);
-							updateTrackingDialogState(null, e);
+							CrashHandler.showErrorDialog(context, e);
 						});
 					}
 				});
