@@ -6,6 +6,7 @@ import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.animesource.model.Video
+import eu.kanade.tachiyomi.util.lang.awaitSingle
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -22,12 +23,18 @@ object AniyomiKotlinBridge {
     }
 
     @JvmStatic
-    fun searchAnime(source: AnimeCatalogueSource, page: Int, query: String, filters: AnimeFilterList, callback: ResponseCallback<AnimesPage>) {
+    fun searchAnime(
+        source: AnimeCatalogueSource,
+        page: Int,
+        query: String,
+        filters: AnimeFilterList,
+        callback: ResponseCallback<AnimesPage>
+    ) {
         val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
         val scope = CoroutineScope(Job())
 
         scope.launch(exceptionHandler) {
-            callback.onResponse(source.getSearchAnime(page, query, filters), null)
+            callback.onResponse(source.getSearchAnime(page + 1, query, filters), null)
         }
     }
 

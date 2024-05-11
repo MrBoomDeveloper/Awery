@@ -190,16 +190,15 @@ public class SearchActivity extends AppCompatActivity {
 			}
 		});
 
-		if((isLandscape() && autoColumnsCountLand) || (!isLandscape() && autoColumnsCountPort)) {
-			layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-				@Override
-				public int getSpanSize(int position) {
-					/* Don't ask. I don't know how it is working, so please don't ask about it. */
-					return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1
-							: (isLandscape() ? columnsCountLand.get() : columnsCountPort.get());
-				}
-			});
-		}
+		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+			@Override
+			public int getSpanSize(int position) {
+				/* Don't ask. I don't know how it is working, so please don't ask about it. */
+				return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1 : (isLandscape()
+						? (columnsCountLand.get() == 0 ? 5 : columnsCountLand.get())
+						: columnsCountPort.get() == 0 ? 3 : columnsCountPort.get());
+			}
+		});
 	}
 
 	private void tryLoadMore() {

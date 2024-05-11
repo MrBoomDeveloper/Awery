@@ -45,6 +45,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_MEDIA_SEARCH = 10;
 	public static final int FEATURE_COMMENTS_PER_EPISODE = 11;
 	public static final int FEATURE_CHANGELOG = 12;
+	public static final int FEATURE_COMMENTS_OPEN_ACCOUNT = 13;
 	private final ExtensionsManager manager;
 	private final Extension extension;
 
