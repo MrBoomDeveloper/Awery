@@ -9,6 +9,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.data.CatalogCategory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -90,7 +91,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Comments reading isn't implemented!"));
 	}
 
-	public void postMediaComment(CatalogComment parent, CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+	public void postMediaComment(PostMediaCommentRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
 		callback.onFailure(new UnimplementedException("Comments posting isn't implemented!"));
 	}
 

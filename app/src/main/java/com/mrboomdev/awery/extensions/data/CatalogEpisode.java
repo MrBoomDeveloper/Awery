@@ -10,11 +10,11 @@ import org.jetbrains.annotations.Contract;
 import java.util.List;
 
 public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
-	private String title, banner, description, url;
-	private float number;
-	private final long releaseDate;
-	private List<CatalogVideo> videos;
-	private long id;
+	protected String title, banner, description, url;
+	protected float number;
+	protected final long releaseDate;
+	protected List<CatalogVideo> videos;
+	protected long id;
 
 	public CatalogEpisode(String title, String url, String banner, String description, long releaseDate, float number) {
 		this.title = title;
@@ -23,6 +23,10 @@ public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 		this.banner = banner;
 		this.description = description;
 		this.releaseDate = releaseDate;
+	}
+
+	public CatalogEpisode(float number) {
+		this(null, null, null, null, 0, number);
 	}
 
 	protected CatalogEpisode(@NonNull Parcel in) {

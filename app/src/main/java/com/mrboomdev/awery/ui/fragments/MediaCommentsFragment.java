@@ -20,9 +20,11 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,7 +50,9 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
@@ -127,20 +131,18 @@ public class MediaCommentsFragment extends Fragment {
 			binding.sourceDropdown.setAdapter(sourcesAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((dropdownParent, _view, position, id) -> {
-				loadingAdapter.getBinding(loadingBinding -> {
-					loadingBinding.progressBar.setVisibility(View.VISIBLE);
-					loadingBinding.info.setVisibility(View.GONE);
-					loadingAdapter.setEnabled(true);
-				});
-
-				commentsAdapter.setData(null);
 				selectedProvider = sources.get(position);
+				setSource(selectedProvider);
+			});
 
-				currentCommentsPath.clear();
-				pages.clear();
-				scrollPositions.clear();
+			binding.episodeDropdown.setOnEditorActionListener((v, actionId, event) -> {
+				if(actionId == EditorInfo.IME_ACTION_DONE) {
+					var text = v.getText().toString();
+					setSource(selectedProvider);
+					return true;
+				}
 
-				loadData(null, null, 0);
+				return false;
 			});
 
 			return binding;
@@ -171,6 +173,44 @@ public class MediaCommentsFragment extends Fragment {
 		setMedia(media);
 	}
 
+	public void setEpisode(CatalogEpisode episode) {
+		headerAdapter.getBinding(binding -> {
+			if(episode != null) {
+				var rounded = Math.round(episode.getNumber());
+
+				binding.episodeDropdown.setText((rounded == episode.getNumber())
+						? String.valueOf(rounded) : String.valueOf(episode.getNumber()));
+
+				setSource(selectedProvider);
+			} else {
+				binding.episodeDropdown.setText(null, false);
+			}
+		});
+	}
+
+	private void setSource(ExtensionProvider source) {
+		this.selectedProvider = source;
+
+		loadingAdapter.getBinding(loadingBinding -> {
+			loadingBinding.progressBar.setVisibility(View.VISIBLE);
+			loadingBinding.info.setVisibility(View.GONE);
+			loadingAdapter.setEnabled(true);
+		});
+
+		headerAdapter.getBinding(headerBinding -> {
+			headerBinding.episodeWrapper.setVisibility(source.hasFeature(
+					ExtensionProvider.FEATURE_COMMENTS_PER_EPISODE) ? View.VISIBLE : View.GONE);
+		});
+
+		runOnUiThread(() -> commentsAdapter.setData(null), recycler);
+
+		currentCommentsPath.clear();
+		pages.clear();
+		scrollPositions.clear();
+
+		loadData(null, null, 0);
+	}
+
 	public void setOnCloseRequestListener(Runnable listener) {
 		this.onCloseRequestListener = listener;
 	}
@@ -192,7 +232,7 @@ public class MediaCommentsFragment extends Fragment {
 		this.media = media;
 
 		if(recycler == null) return;
-		loadData(null, null, 0);
+		setSource(selectedProvider);
 	}
 
 	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
@@ -221,7 +261,7 @@ public class MediaCommentsFragment extends Fragment {
 			}
 		}
 
-		commentsAdapter.setData(comment);
+		runOnUiThread(() -> commentsAdapter.setData(comment), recycler);
 
 		//TODO: Load an avatar received from the extension
 		sendBinding.avatarWrapper.setVisibility(View.GONE);
@@ -278,6 +318,20 @@ public class MediaCommentsFragment extends Fragment {
 				.setPage(page)
 				.setParentComment(parent)
 				.setMedia(media);
+
+		getEpisodeNumber: try {
+			var binding = headerAdapter.getBinding();
+
+			if(binding != null) {
+				var text = binding.episodeDropdown.getText().toString();
+				if(text.isBlank()) break getEpisodeNumber;
+
+				var number = Float.parseFloat(text);
+				request.setEpisode(new CatalogEpisode(number));
+			}
+		} catch(NumberFormatException e) {
+			headerAdapter.getBinding().episodeWrapper.setError(e.getMessage());
+		}
 
 		isLoading = true;
 
@@ -463,10 +517,12 @@ public class MediaCommentsFragment extends Fragment {
 						if(getContext() == null) return;
 						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
 
-						toast("Failed to post a comment! :(");
 						Log.e(TAG, "Failed to post a comment", e);
 
 						runOnUiThread(() -> {
+							CrashHandler.showErrorDialog(requireContext(),
+									"Failed to post a comment! :(", e);
+
 							sendBinding.loadingIndicator.setVisibility(View.GONE);
 							sendBinding.sendButton.setVisibility(View.VISIBLE);
 							isSending.set(false);
@@ -474,7 +530,25 @@ public class MediaCommentsFragment extends Fragment {
 					}
 				});
 			} else {
-				selectedProvider.postMediaComment(comment, newComment, new ExtensionProvider.ResponseCallback<>() {
+				var request = new PostMediaCommentRequest()
+						.setComment(newComment)
+						.setParentComment(comment);
+
+				getEpisodeNumber: try {
+					var binding = headerAdapter.getBinding();
+
+					if(binding != null) {
+						var texta = binding.episodeDropdown.getText().toString();
+						if(texta.isBlank()) break getEpisodeNumber;
+
+						var number = Float.parseFloat(texta);
+						request.setEpisode(new CatalogEpisode(number));
+					}
+				} catch(NumberFormatException e) {
+					headerAdapter.getBinding().episodeWrapper.setError(e.getMessage());
+				}
+
+				selectedProvider.postMediaComment(request, new ExtensionProvider.ResponseCallback<>() {
 					@Override
 					public void onSuccess(CatalogComment comment) {
 						if(getContext() == null) return;
@@ -499,10 +573,12 @@ public class MediaCommentsFragment extends Fragment {
 						if(getContext() == null) return;
 						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
 
-						toast("Failed to post a comment! :(");
 						Log.e(TAG, "Failed to post a comment", e);
 
 						runOnUiThread(() -> {
+							CrashHandler.showErrorDialog(requireContext(),
+									"Failed to post a comment! :(", e);
+
 							sendBinding.loadingIndicator.setVisibility(View.GONE);
 							sendBinding.sendButton.setVisibility(View.VISIBLE);
 							isSending.set(false);

@@ -243,11 +243,14 @@ public class AweryLifecycle {
 		return callback;
 	}
 
-	public static Context getContext(@NonNull ViewBinding binding) {
+	public static Context getContext(ViewBinding binding) {
+		if(binding == null) return null;
 		return binding.getRoot().getContext();
 	}
 
-	public static Context getContext(@NonNull View view) {
+	@Contract("null -> null")
+	public static Context getContext(View view) {
+		if(view == null) return null;
 		return view.getContext();
 	}
 
@@ -264,7 +267,7 @@ public class AweryLifecycle {
 		} catch(IndexOutOfBoundsException ignored) {}
 
 		if(app == null) {
-			return getContextUsingPrivateApi();
+			app = getContextUsingPrivateApi();
 		}
 
 		return app;
@@ -272,13 +275,13 @@ public class AweryLifecycle {
 
 	@Nullable
 	@SuppressLint({"PrivateApi","DiscouragedPrivateApi" })
-	private static Context getContextUsingPrivateApi() {
-		Context context = null;
+	private static AweryApp getContextUsingPrivateApi() {
+		AweryApp context = null;
 
 		try {
 			var activityThreadClass = Class.forName("android.app.ActivityThread");
 			var method = activityThreadClass.getDeclaredMethod("currentApplication");
-			context = (Application) method.invoke(null);
+			context = (AweryApp) method.invoke(null);
 		} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			Log.e(TAG, "Failed to get Application from ActivityThread!", e);
 		}
@@ -287,7 +290,7 @@ public class AweryLifecycle {
 			try {
 				var appGlobalsClass = Class.forName("android.app.AppGlobals");
 				var method = appGlobalsClass.getDeclaredMethod("getInitialApplication");
-				context = (Application) method.invoke(null);
+				context = (AweryApp) method.invoke(null);
 			} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				Log.e(TAG, "Failed to get Application from AppGlobals!", e);
 			}

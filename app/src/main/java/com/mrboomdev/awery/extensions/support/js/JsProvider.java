@@ -40,6 +40,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.Callbacks;
@@ -612,16 +613,25 @@ public class JsProvider extends ExtensionProvider {
 
 	@Override
 	public void postMediaComment(
-			CatalogComment parent,
-			CatalogComment comment,
+			PostMediaCommentRequest request,
 			@NonNull ResponseCallback<CatalogComment> callback
 	) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryPostMediaComment") instanceof Function fun) {
 				try {
+					var jsRequest = this.context.newObject(scope);
+
+					jsRequest.put("episode", jsRequest, JsEpisode.getJsEpisode(
+							this.context, scope, request.getEpisode()));
+
+					jsRequest.put("comment", jsRequest, JsComment.createJsComment(
+							this.context, scope, request.getComment()));
+
+					jsRequest.put("parentComment", jsRequest, JsComment.createJsComment(
+							this.context, scope, request.getParentComment()));
+
 					fun.call(context, scope, null, new Object[] {
-							JsComment.createJsComment(context, scope, parent),
-							JsComment.createJsComment(context, scope, comment),
+							jsRequest,
 							(Callback<NativeObject>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
@@ -647,8 +657,10 @@ public class JsProvider extends ExtensionProvider {
 					var jsRequest = context.newObject(scope);
 					jsRequest.put("page", jsRequest, request.getPage());
 					jsRequest.put("sortMode", jsRequest, request.getSortMode());
-					jsRequest.put("episode", jsRequest, request.getEpisode());
 					jsRequest.put("media", jsRequest, request.getMedia());
+
+					jsRequest.put("episode", jsRequest, JsEpisode.getJsEpisode(
+							this.context, scope, request.getEpisode()));
 
 					jsRequest.put("parentComment", jsRequest, JsComment.createJsComment(
 							context, scope, request.getParentComment()));

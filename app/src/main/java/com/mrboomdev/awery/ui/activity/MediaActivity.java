@@ -8,7 +8,9 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
@@ -26,6 +28,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
+import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
@@ -43,7 +46,9 @@ import java.util.Objects;
 public class MediaActivity extends AppCompatActivity {
 	private static final String TAG = "MediaActivity";
 	private MediaDetailsActivityBinding binding;
+	private MediaCommentsFragment commentsFragment;
 	private CatalogMedia media;
+	private Object pendingExtra;
 
 	@SuppressLint("NonConstantResourceId")
 	@Override
@@ -121,16 +126,30 @@ public class MediaActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 	}
 
-	public void launchAction(@NonNull String action) {
+	public void launchAction(@NonNull String action, Object payload) {
 		var navigation = (NavigationBarView) binding.navigation;
 
 		navigation.setSelectedItemId(switch(action) {
-			case "info" -> R.id.info;
-			case "watch" -> R.id.watch;
-			case "comments" -> R.id.comments;
-			case "relations" -> R.id.relations;
-			default -> throw new IllegalArgumentException("Invalid action: " + getIntent().getStringExtra("action"));
+			case MediaUtils.ACTION_INFO -> R.id.info;
+			case MediaUtils.ACTION_WATCH -> R.id.watch;
+			case MediaUtils.ACTION_RELATIONS -> R.id.relations;
+
+			case MediaUtils.ACTION_COMMENTS -> {
+				if(commentsFragment != null) {
+					commentsFragment.setEpisode((CatalogEpisode) payload);
+				} else {
+					pendingExtra = payload;
+				}
+
+				yield R.id.comments;
+			}
+
+			default -> throw new IllegalArgumentException("Invalid action: " + action);
 		});
+	}
+
+	public void launchAction(@NonNull String action) {
+		launchAction(action, null);
 	}
 
 	private class PagerAdapter extends FragmentStateAdapter {
@@ -145,8 +164,14 @@ public class MediaActivity extends AppCompatActivity {
 			return switch(position) {
 				case 0 -> new MediaInfoFragment(media);
 				case 1 -> new MediaPlayFragment(media);
-				case 2 -> new MediaCommentsFragment(media);
 				case 3 -> new MediaRelationsFragment();
+
+				case 2 -> {
+					commentsFragment = new MediaCommentsFragment(media);
+					commentsFragment.setEpisode((CatalogEpisode) pendingExtra);
+					yield commentsFragment;
+				}
+
 				default -> throw new IllegalArgumentException("Invalid position: " + position);
 			};
 		}

@@ -49,7 +49,7 @@
             app:layout_constraintBottom_toTopOf="@id/description"
             app:layout_constraintRight_toLeftOf="@id/options"
             app:layout_goneMarginBottom="12dp"
-            tools:text="@tools:sample/lorem/random"
+            tools:text="@tools:sample/lorem"
             android:textColor="?attr/colorOnBackground" />
 
         <TextView

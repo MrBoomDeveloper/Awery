@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -22,6 +24,8 @@ import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.ArrayList;
@@ -132,15 +136,32 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			menu.getMenu().add(0, 0, 0, progress != 0
 					? "Remove from watched" : "Mark as watched");
 
+			menu.getMenu().add(0, 1, 0, "See comments");
+//			menu.getMenu().add(0, 2, 0, "Download");
+//			menu.getMenu().add(0, 3, 0, "Share");
+//			menu.getMenu().add(0, 4, 0, "Hide");
+
 			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
 				case 0 -> {
 					changeWatchedState(holder.getItem(), progress != 0 ? 0 : -1L, holder);
 					yield true;
 				}
 
-				case 1 -> throw new UnimplementedException("Download not implemented");
-				case 2 -> throw new UnimplementedException("Share not implemented");
-				case 3 -> throw new UnimplementedException("Hide not implemented");
+				case 1 -> {
+					var activity = (MediaActivity) getActivity(getContext(parent));
+					var episode = holder.getItem();
+
+					if(activity == null) {
+						throw new NullPointerException("No activity was found with type of MediaActivity");
+					}
+
+					activity.launchAction(MediaUtils.ACTION_COMMENTS, episode);
+					yield true;
+				}
+
+				case 2 -> throw new UnimplementedException("Download not implemented");
+				case 3 -> throw new UnimplementedException("Share not implemented");
+				case 4 -> throw new UnimplementedException("Hide not implemented");
 				default -> throw new IllegalStateException("Unexpected value: " + item.getItemId());
 			});
 
