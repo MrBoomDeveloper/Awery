@@ -222,6 +222,7 @@ public class AweryApp extends Application {
 
 	@Override
 	public void onCreate() {
+		AweryNotifications.registerNotificationChannels(this);
 		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
 

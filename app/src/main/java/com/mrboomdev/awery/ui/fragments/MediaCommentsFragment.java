@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
@@ -87,7 +88,7 @@ public class MediaCommentsFragment extends Fragment {
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
 	private CatalogMedia media;
-	private CatalogComment comment;
+	private CatalogComment comment, editedComment;
 
 	public MediaCommentsFragment() {
 		this(null);
@@ -197,6 +198,10 @@ public class MediaCommentsFragment extends Fragment {
 	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
 		this.recycler.scrollToPosition(0);
 		this.comment = comment;
+
+		sendBinding.editing.setVisibility(View.GONE);
+		sendBinding.input.setText(null);
+		editedComment = null;
 
 		if(comment != null) {
 			swipeRefresher.setRefreshing(false);
@@ -405,10 +410,16 @@ public class MediaCommentsFragment extends Fragment {
 		sendBinding = WidgetCommentSendBinding.inflate(inflater, parentLayout, true);
 		sendBinding.getRoot().setVisibility(View.GONE);
 
+		sendBinding.cancelEditing.setOnClickListener(v -> {
+			sendBinding.editing.setVisibility(View.GONE);
+			sendBinding.input.setText(null);
+		});
+
 		sendBinding.sendButton.setOnClickListener(v -> {
 			if(isSending.getAndSet(true)) return;
 
 			var text = sendBinding.input.getText().toString();
+			var wasCurrentComment = comment;
 
 			if(text.isBlank()) {
 				isSending.set(false);
@@ -421,38 +432,84 @@ public class MediaCommentsFragment extends Fragment {
 			sendBinding.loadingIndicator.setVisibility(View.VISIBLE);
 			sendBinding.sendButton.setVisibility(View.INVISIBLE);
 
-			selectedProvider.postMediaComment(comment, newComment, new ExtensionProvider.ResponseCallback<>() {
-				@Override
-				public void onSuccess(CatalogComment comment) {
-					if(getContext() == null) return;
+			if(editedComment != null) {
+				selectedProvider.editComment(editedComment, newComment, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(CatalogComment comment) {
+						if(getContext() == null) return;
+						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
 
-					runOnUiThread(() -> {
-						/* So apparently people wanna to see all comments
-						even after you did post a new one. Weird... */
-						loadData(MediaCommentsFragment.this.comment,
-								MediaCommentsFragment.this.comment, 0);
+						runOnUiThread(() -> {
+							if(editedComment == wasCurrentComment) {
+								//TODO: Modify all other stuff
+								wasCurrentComment.text = newComment.text;
 
-						sendBinding.loadingIndicator.setVisibility(View.GONE);
-						sendBinding.sendButton.setVisibility(View.VISIBLE);
-						sendBinding.input.setText(null);
-						isSending.set(false);
-					}, recycler);
-				}
+								commentsAdapter.setData(wasCurrentComment);
+								commentsAdapter.notifyItemChanged(0);
+							} else {
+								loadData(MediaCommentsFragment.this.comment,
+										MediaCommentsFragment.this.comment, 0);
+							}
 
-				@Override
-				public void onFailure(Throwable e) {
-					if(getContext() == null) return;
+							sendBinding.loadingIndicator.setVisibility(View.GONE);
+							sendBinding.sendButton.setVisibility(View.VISIBLE);
+							sendBinding.input.setText(null);
+							isSending.set(false);
+						}, recycler);
+					}
 
-					toast("Failed to post a comment! :(");
-					Log.e(TAG, "Failed to post a comment", e);
+					@Override
+					public void onFailure(Throwable e) {
+						if(getContext() == null) return;
+						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
 
-					runOnUiThread(() -> {
-						sendBinding.loadingIndicator.setVisibility(View.GONE);
-						sendBinding.sendButton.setVisibility(View.VISIBLE);
-						isSending.set(false);
-					}, recycler);
-				}
-			});
+						toast("Failed to post a comment! :(");
+						Log.e(TAG, "Failed to post a comment", e);
+
+						runOnUiThread(() -> {
+							sendBinding.loadingIndicator.setVisibility(View.GONE);
+							sendBinding.sendButton.setVisibility(View.VISIBLE);
+							isSending.set(false);
+						}, recycler);
+					}
+				});
+			} else {
+				selectedProvider.postMediaComment(comment, newComment, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(CatalogComment comment) {
+						if(getContext() == null) return;
+						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
+
+						runOnUiThread(() -> {
+							/* So apparently people wanna to see all comments
+							even after you did post a new one. Weird... */
+
+							loadData(MediaCommentsFragment.this.comment,
+									MediaCommentsFragment.this.comment, 0);
+
+							sendBinding.loadingIndicator.setVisibility(View.GONE);
+							sendBinding.sendButton.setVisibility(View.VISIBLE);
+							sendBinding.input.setText(null);
+							isSending.set(false);
+						}, recycler);
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						if(getContext() == null) return;
+						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
+
+						toast("Failed to post a comment! :(");
+						Log.e(TAG, "Failed to post a comment", e);
+
+						runOnUiThread(() -> {
+							sendBinding.loadingIndicator.setVisibility(View.GONE);
+							sendBinding.sendButton.setVisibility(View.VISIBLE);
+							isSending.set(false);
+						}, recycler);
+					}
+				});
+			}
 		});
 
 		ViewUtil.setOnApplyUiInsetsListener(sendBinding.getRoot(), insets ->
@@ -619,6 +676,13 @@ public class MediaCommentsFragment extends Fragment {
 						.show();
 			});
 
+			binding.editButton.setOnClickListener(v -> {
+				editedComment = getComment();
+
+				sendBinding.input.setText(editedComment.text);
+				sendBinding.editing.setVisibility(View.VISIBLE);
+			});
+
 			binding.likeButton.setOnClickListener(v -> {
 				var comment = getComment();
 				if(comment == null) return;
@@ -685,7 +749,9 @@ public class MediaCommentsFragment extends Fragment {
 			String date = null;
 
 			var isRoot = comment == MediaCommentsFragment.this.comment;
-			binding.getRoot().setBackgroundResource(isRoot ? R.color.main_element_background : 0);
+
+			binding.getRoot().setBackgroundColor(isRoot ? (resolveAttrColor(requireContext(),
+					com.google.android.material.R.attr.colorOnTertiary) - 0xBB000000) : 0);
 
 			if(comment.date != null) {
 				try {

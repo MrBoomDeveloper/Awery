@@ -286,7 +286,8 @@
             android:paddingLeft="10dp"
             android:paddingRight="18dp"
             android:paddingBottom="10dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:buffered_color="#aaffffff" />
 
     </LinearLayout>
 

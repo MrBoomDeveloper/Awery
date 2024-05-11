@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static androidx.media3.session.SessionResult.RESULT_ERROR_NOT_SUPPORTED;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
@@ -29,7 +30,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
+import androidx.media3.common.ForwardingPlayer;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
@@ -37,12 +40,19 @@ import androidx.media3.common.Player;
 import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.session.MediaSession;
+import androidx.media3.session.SessionCommand;
+import androidx.media3.session.SessionResult;
 import androidx.media3.ui.AspectRatioFrameLayout;
+import androidx.media3.ui.PlayerNotificationManager;
 import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.AweryNotifications;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -74,6 +84,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			| WindowInsetsCompat.Type.navigationBars();
 	protected final Set<View> buttons = new HashSet<>();
 	private final PlayerActivityController controller = new PlayerActivityController(this);
+	private MediaSession session;
 	private PlayerGestures gestures;
 	protected ScreenPlayerBinding binding;
 	protected Runnable showUiRunnableFromLeft, showUiRunnableFromRight;
@@ -108,15 +119,18 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.aspectRatioFrame.setAspectRatio(16f / 9f);
 		binding.aspectRatioFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
 
-		/*var audioAttributes = new AudioAttributes.Builder()
+		binding.subtitleView.setUserDefaultStyle();
+		binding.subtitleView.setUserDefaultTextSize();
+
+		var audioAttributes = new AudioAttributes.Builder()
 				.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
 				.setUsage(C.USAGE_MEDIA)
-				.build();*/
+				.build();
 
 		player = new ExoPlayer.Builder(this)
 				.setSeekBackIncrementMs(doubleTapSeek * 1000L + 1)
 				.setSeekForwardIncrementMs(doubleTapSeek * 1000L + 1)
-				//.setAudioAttributes(audioAttributes, true)
+				.setAudioAttributes(audioAttributes, true)
 				.build();
 
 		player.setVideoSurfaceView(binding.surfaceView);
@@ -549,6 +563,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		player.stop();
 		player.release();
+		//session.release();
 
 		player = null;
 		source = null;

@@ -381,12 +381,13 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void editComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+	public void editComment(CatalogComment oldComment, CatalogComment newComment, @NonNull ResponseCallback<CatalogComment> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryEditComment") instanceof Function fun) {
 				try {
 					fun.call(context, scope, null, new Object[] {
-							JsComment.createJsComment(this.context, this.scope, comment),
+							JsComment.createJsComment(this.context, this.scope, oldComment),
+							JsComment.createJsComment(this.context, this.scope, newComment),
 							(Callback<NativeObject>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));

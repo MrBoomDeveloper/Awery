@@ -77,6 +77,9 @@ public class PlayerActivityController {
 
 		activity.binding.slider.setPosition(position);
 
+		activity.binding.slider.setBufferedPosition(
+				activity.player.getBufferedPosition());
+
 		activity.binding.timer.setText(
 				StringUtils.formatClock(position) + "/" +
 				StringUtils.formatClock(duration));

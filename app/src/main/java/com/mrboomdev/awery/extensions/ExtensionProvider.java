@@ -98,7 +98,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Comments voting isn't implemented!"));
 	}
 
-	public void editComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
+	public void editComment(CatalogComment oldComment, CatalogComment newComment, @NonNull ResponseCallback<CatalogComment> callback) {
 		callback.onFailure(new UnimplementedException("Comments editing isn't implemented!"));
 	}
 
