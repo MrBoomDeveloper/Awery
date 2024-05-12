@@ -57,6 +57,19 @@
 				}, {
 					"key": "media_columns_port", "type": "int", "from": 0,
 					"title": "Media columns count at Portrait", "description": "0 is for auto"
+				}, {
+					"key": "episodes", "type": "screen", "show_if": "never",
+					"title": "Episodes list",
+					"items": [
+						{
+							"key": "mode", "type": "select", "string_value": "LIST",
+							"title": "View mode", "description": "${VALUE_TITLE}",
+							"items": [
+								{ "key": "LIST", "title": "List" },
+								{ "key": "GRID", "title": "Grid" }
+							]
+						}
+					]
 				}
 			]
 		}, {

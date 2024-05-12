@@ -1,7 +1,10 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
@@ -24,12 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
@@ -38,10 +43,13 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -63,21 +71,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
-	private final String TAG = "MediaPlayFragment";
+	public static final int VIEW_TYPE_VARIANTS = 1;
+	public static final int VIEW_TYPE_ERROR = 2;
+	public static final int VIEW_TYPE_EPISODE = 3;
+	private static final String TAG = "MediaPlayFragment";
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
 	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
 	private final List<CatalogFilter> filters = List.of(queryFilter,
 			new CatalogFilter(CatalogFilter.Type.NUMBER, "page", 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
+	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
+	private ConcatAdapter concatAdapter;
 	private List<? extends CatalogEpisode> templateEpisodes;
 	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
+	private RecyclerView recycler;
 	private ExtensionProvider selectedSource;
+	private ViewMode viewMode;
 	private CatalogMedia media;
-	private boolean autoChangeSource = true;
+	private boolean autoChangeSource = true, changeSettings = true;
 	private int currentSourceIndex = 0;
 	private long loadId;
+
+	public enum ViewMode { GRID, LIST }
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -110,6 +127,16 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		intent.putExtra("episode", episode);
 		intent.putParcelableArrayListExtra("episodes", episodes);
 		startActivity(intent);
+
+		new Thread(() -> {
+			var dao = getDatabase().getMediaProgressDao();
+
+			var progress = dao.get(media.globalId);
+			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
+
+			progress.lastWatchSource = selectedSource.getId();
+			dao.insert(progress);
+		}).start();
 	}
 
 	private enum ExtensionStatus {
@@ -152,23 +179,85 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			return;
 		}
 
-		var mediaSource = ExtensionsFactory.getExtensionProvider(0, media.globalId);
+		new Thread(() -> {
+			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
+			var mediaSource = ExtensionsFactory.getExtensionProvider(0, media.globalId);
 
-		if(mediaSource != null) {
-			mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
-				@Override
-				public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
-					templateEpisodes = catalogEpisodes;
-					runOnUiThread(() -> selectProvider(providers.get(0)));
-				}
+			if(progress != null) {
+				providers = new ArrayList<>(providers);
 
-				@Override
-				public void onFailure(Throwable e) {
-					// Don't merge any data. Just load original data
-					runOnUiThread(() -> selectProvider(providers.get(0)));
-				}
-			});
+				providers.sort((a, b) -> {
+					if(a.getId().equals(progress.lastWatchSource)) return -1;
+					if(b.getId().equals(progress.lastWatchSource)) return 1;
+					return 0;
+				});
+
+				sourcesDropdownAdapter.setItems(providers);
+			}
+
+			if(mediaSource != null) {
+				mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
+						templateEpisodes = catalogEpisodes;
+						runOnUiThread(() -> selectProvider(providers.get(0)));
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						// Don't merge any data. Just load original data
+						runOnUiThread(() -> selectProvider(providers.get(0)));
+					}
+				});
+			}
+		}).start();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(alwaysTrue()) return;
+
+		if(changeSettings) {
+			var prefs = AwerySettings.getInstance(requireContext());
+			var viewMode = StringUtils.parseEnum(prefs.getString("settings_ui_episodes_mode"), ViewMode.LIST);
+
+			if(viewMode != this.viewMode) {
+				this.viewMode = viewMode;
+
+				recycler.setLayoutManager(switch(viewMode) {
+					case LIST -> new LinearLayoutManager(requireContext());
+
+					case GRID -> {
+						var columnsCount = new AtomicInteger(3);
+						var layoutManager = new GridLayoutManager(requireContext(), columnsCount.get());
+
+						ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
+							var padding = ViewUtil.dpPx(8);
+							ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
+							ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
+
+							float columnSize = ViewUtil.dpPx(80);
+							float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
+							columnsCount.set((int)(freeSpace / columnSize));
+							layoutManager.setSpanCount(columnsCount.get());
+						});
+
+						layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+							@Override
+							public int getSpanSize(int position) {
+								/* Don't ask. I don't know how it is working, so please don't ask about it. */
+								return (concatAdapter.getItemViewType(position) == VIEW_TYPE_EPISODE) ? 1 : columnsCount.get();
+							}
+						});
+
+						yield layoutManager;
+					}
+				});
+			}
 		}
+
+		changeSettings = false;
 	}
 
 	@Override
@@ -178,7 +267,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.flatMap(NiceUtils::stream)
 				.sorted().toList();
 
-		var sourcesDropdownAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
+		sourcesDropdownAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
 			if(recycled == null) {
 				var inflater = LayoutInflater.from(parent.getContext());
 				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
@@ -298,6 +387,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					selectProvider(selectedSource);
 				}
 			});
+
+			/*binding.options.setOnClickListener(v -> {
+				var intent = new Intent(requireContext(), SettingsActivity.class);
+				intent.putExtra("path", "settings_ui_episodes");
+				startActivity(intent);
+				changeSettings = true;
+			});*/
 		});
 
 		setMedia(media);
@@ -516,22 +612,23 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
 		variantsAdapter = SingleViewAdapter.fromBindingDynamic(parent ->
-				LayoutWatchVariantsBinding.inflate(inflater, parent, false));
+				LayoutWatchVariantsBinding.inflate(inflater, parent, false), VIEW_TYPE_VARIANTS);
 
 		placeholderAdapter = SingleViewAdapter.fromBindingDynamic(parent ->
-				LayoutLoadingBinding.inflate(inflater, parent, false));
+				LayoutLoadingBinding.inflate(inflater, parent, false), VIEW_TYPE_ERROR);
 
 		episodesAdapter = new MediaPlayEpisodesAdapter();
 		episodesAdapter.setOnEpisodeSelectedListener(this);
 
 		var config = new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.setIsolateViewTypes(false)
 				.build();
 
-		var concatAdapter = new ConcatAdapter(config,
+		concatAdapter = new ConcatAdapter(config,
 				variantsAdapter, episodesAdapter, placeholderAdapter);
 
-		var recycler = new RecyclerView(inflater.getContext());
+		recycler = new RecyclerView(inflater.getContext());
 		recycler.setLayoutManager(layoutManager);
 		recycler.setAdapter(concatAdapter);
 

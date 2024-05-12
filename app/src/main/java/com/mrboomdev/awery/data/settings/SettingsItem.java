@@ -299,7 +299,8 @@ public class SettingsItem {
 
 	public SettingsItem find(@NonNull String query) {
 		return switch(type) {
-			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INT, MULTISELECT -> query.equals(getFullKey()) ? this : null;
+			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INT, MULTISELECT ->
+					query.equals(getFullKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {
 				if(query.equals(getFullKey())) {

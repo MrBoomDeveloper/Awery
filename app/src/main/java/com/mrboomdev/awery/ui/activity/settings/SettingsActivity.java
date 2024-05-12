@@ -70,8 +70,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		if(path != null) {
 			item = AwerySettings.getCached(path);
 
-			if(item != null && path.startsWith("ext_") && item.getItems().size() == 1) {
-				item = item.getItems().get(0);
+			if(item != null) {
+				if(path.startsWith("ext_") && item.getItems().size() == 1) {
+					item = item.getItems().get(0);
+				}
+			} else {
+				item = AwerySettings.getSettingsMap(this).find(path);
 			}
 
 			if(item == null) {

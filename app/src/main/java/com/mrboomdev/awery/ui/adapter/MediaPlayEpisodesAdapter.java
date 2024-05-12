@@ -25,6 +25,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
@@ -84,6 +85,11 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}).start();
 	}
 
+	@Override
+	public int getItemViewType(int position) {
+		return MediaPlayFragment.VIEW_TYPE_EPISODE;
+	}
+
 	public void setOnEpisodeSelectedListener(OnEpisodeSelectedListener listener) {
 		this.onEpisodeSelectedListener = listener;
 	}
@@ -103,7 +109,12 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		return id;
 	}
 
-	private void changeWatchedState(CatalogEpisode episode, long episodeProgress, @NonNull ViewHolder holder) {
+	private void changeWatchedState(
+			CatalogEpisode episode,
+			long episodeProgress,
+			@NonNull ViewHolder holder,
+			Runnable callback
+	) {
 		progresses.put(episode, episodeProgress);
 		holder.updateProgress();
 
@@ -115,6 +126,10 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 			progress.progresses.put(episode.getNumber(), episodeProgress);
 			progressDao.insert(progress);
+
+			if(callback != null) {
+				callback.run();
+			}
 		}).start();
 	}
 
@@ -143,7 +158,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
 				case 0 -> {
-					changeWatchedState(holder.getItem(), progress != 0 ? 0 : -1L, holder);
+					changeWatchedState(holder.getItem(), progress != 0 ? 0 : -1L, holder, null);
 					yield true;
 				}
 
@@ -172,8 +187,8 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			var item = holder.getItem();
 			if(onEpisodeSelectedListener == null) return;
 
-			changeWatchedState(holder.getItem(), -1, holder);
-			onEpisodeSelectedListener.onEpisodeSelected(item, items);
+			changeWatchedState(holder.getItem(), -1, holder, () ->
+					runOnUiThread(() -> onEpisodeSelectedListener.onEpisodeSelected(item, items)));
 		});
 
 		return holder;
