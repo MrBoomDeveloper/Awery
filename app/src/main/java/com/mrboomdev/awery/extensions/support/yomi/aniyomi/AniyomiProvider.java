@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
@@ -36,6 +37,7 @@ import eu.kanade.tachiyomi.animesource.model.AnimesPage;
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import java9.util.stream.Collectors;
+import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends YomiProvider {
@@ -166,6 +168,9 @@ public class AniyomiProvider extends YomiProvider {
 				callback.onFailure(new ZeroResultsException("Anime not found", R.string.no_media_found));
 				return;
 			}
+
+			try { anime.getUrl(); } catch(UninitializedPropertyAccessException ex) { anime.setUrl(id); }
+			try { anime.getTitle(); } catch(UninitializedPropertyAccessException ex) { anime.setTitle(id); }
 
 			callback.onSuccess(new AniyomiMedia(this, anime));
 		});

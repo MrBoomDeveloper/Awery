@@ -85,7 +85,7 @@ public class ExceptionDescriptor {
 				| throwable instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(throwable instanceof UnknownHostException) {
-			return context.getString(R.string.no_internet);
+			return throwable.getMessage();
 		} else if(throwable instanceof InvalidSyntaxException
 				|| throwable instanceof JsonDecodingException) {
 			return "Parser has crashed!";

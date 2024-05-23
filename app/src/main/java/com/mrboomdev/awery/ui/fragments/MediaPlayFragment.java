@@ -91,7 +91,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private ViewMode viewMode;
 	private CatalogMedia media;
 	private String searchId, searchTitle;
-	private boolean autoChangeSource = true, changeSettings = true;
+	private boolean autoChangeSource = true, autoChangeTitle = true, changeSettings = true;
 	private int currentSourceIndex = 0;
 	private long loadId;
 
@@ -344,8 +344,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				searchTitle = null;
 
 				episodesAdapter.setItems(null, null);
-				selectProvider(providers.get(position));
 				autoChangeSource = false;
+				autoChangeTitle = true;
+				selectProvider(providers.get(position));
 			});
 
 			binding.searchDropdown.setOnItemClickListener((parent, _view, position, id) -> {
@@ -390,6 +391,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 								episodesAdapter.setItems(media, Collections.emptyList());
 
 								autoChangeSource = false;
+								autoChangeTitle = false;
+
 								episodesAdapter.setItems(null, null);
 								loadEpisodesFromSource(selectedSource, media);
 							});
@@ -403,6 +406,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 					episodesAdapter.setItems(null, null);
 					autoChangeSource = false;
+					autoChangeTitle = false;
 					queryFilter.setValue(title);
 					selectProvider(selectedSource);
 				}
@@ -534,7 +538,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var context = getContext();
 					if(context == null) return;
 
-					if(autoChangeSource && lastUsedTitleIndex.get() < media.titles.size() - 1) {
+					if(autoChangeTitle && lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						queryFilter.setValue(media.titles.get(newIndex));
 						source.searchMedia(context, filters, this);
@@ -560,7 +564,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(searchId != null) {
 			variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
-				binding.searchStatus.setText("Searching for \"" + searchId + "\"...");
+				binding.searchStatus.setText("Searching for \"" + searchTitle + "\"...");
 				binding.searchStatus.setOnClickListener(null);
 			}));
 
@@ -568,12 +572,16 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				@Override
 				public void onSuccess(CatalogMedia media) {
 					if(source != selectedSource || myId != loadId) return;
+
+					media.setTitle(searchTitle);
 					loadEpisodesFromSource(source, media);
 					searchId = null;
 				}
 
 				@Override
 				public void onFailure(Throwable e) {
+					if(source != selectedSource || myId != loadId) return;
+
 					variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
 						binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
 						binding.searchStatus.setOnClickListener(null);
@@ -627,7 +635,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(context == null) return;
 
 		variantsAdapter.getBinding(binding -> {
-			binding.searchStatus.setText("Failed to load");
+			binding.searchStatus.setText(error.getMessage(context));
 			binding.searchStatus.setOnClickListener(null);
 		});
 
