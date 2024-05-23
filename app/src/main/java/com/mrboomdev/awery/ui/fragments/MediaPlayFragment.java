@@ -90,6 +90,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private ExtensionProvider selectedSource;
 	private ViewMode viewMode;
 	private CatalogMedia media;
+	private String searchId, searchTitle;
 	private boolean autoChangeSource = true, changeSettings = true;
 	private int currentSourceIndex = 0;
 	private long loadId;
@@ -135,6 +136,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
 
 			progress.lastWatchSource = selectedSource.getId();
+
+			var foundMedia = episodesAdapter.getMedia();
+			progress.lastId = foundMedia.getId();
+			progress.lastTitle = foundMedia.getTitle();
+
 			dao.insert(progress);
 		}).start();
 	}
@@ -186,6 +192,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			if(progress != null) {
 				providers = new ArrayList<>(providers);
 
+				searchId = progress.lastId;
+				searchTitle = progress.lastTitle;
+
 				providers.sort((a, b) -> {
 					if(a.getId().equals(progress.lastWatchSource)) return -1;
 					if(b.getId().equals(progress.lastWatchSource)) return 1;
@@ -200,12 +209,14 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					@Override
 					public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
 						templateEpisodes = catalogEpisodes;
+						currentSourceIndex = 0;
 						runOnUiThread(() -> selectProvider(providers.get(0)));
 					}
 
 					@Override
 					public void onFailure(Throwable e) {
 						// Don't merge any data. Just load original data
+						currentSourceIndex = 0;
 						runOnUiThread(() -> selectProvider(providers.get(0)));
 					}
 				});
@@ -329,6 +340,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			binding.searchDropdown.setAdapter(titlesAdapter);
 
 			binding.sourceDropdown.setOnItemClickListener((parent, _view, position, id) -> {
+				searchId = null;
+				searchTitle = null;
+
 				episodesAdapter.setItems(null, null);
 				selectProvider(providers.get(position));
 				autoChangeSource = false;
@@ -361,6 +375,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						if(mediaJson == null) return;
 
 						try {
+							searchId = null;
+							searchTitle = null;
+
 							var media = Parser.fromString(CatalogMedia.class, mediaJson);
 							binding.searchDropdown.setText(media.getTitle(), false);
 							queryFilter.setValue(media.getTitle());
@@ -381,6 +398,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						}
 					});
 				} else {
+					searchId = null;
+					searchTitle = null;
+
 					episodesAdapter.setItems(null, null);
 					autoChangeSource = false;
 					queryFilter.setValue(title);
@@ -403,15 +423,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		variantsAdapter.getBinding((binding) ->
 				binding.sourceDropdown.setText(provider.getName(), false));
 
-		selectVariant(provider, null);
+		loadEpisodesFromSource(provider);
 		variantsAdapter.getBinding((binding) -> binding.variantWrapper.setVisibility(View.GONE));
-	}
-
-	private void selectVariant(ExtensionProvider provider, String variant) {
-		variantsAdapter.getBinding((binding) -> {
-			binding.variantDropdown.setText(variant, false);
-			loadEpisodesFromSource(provider);
-		});
 	}
 
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source, CatalogMedia media) {
@@ -431,7 +444,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 				episodes = new ArrayList<>(episodes);
 				episodes.sort(Comparator.comparing(CatalogEpisode::getNumber));
-				//Collections.reverse(episodes);
 				var finalEpisodes = episodes;
 
 				if(templateEpisodes != null) {
@@ -496,7 +508,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 
 		var lastUsedTitleIndex = new AtomicInteger(0);
-		var foundMediaCallback = new AtomicReference<ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>>();
 
 		if(autoChangeSource) {
 			queryFilter.setValue(media.titles.get(0));
@@ -505,18 +516,17 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		variantsAdapter.getBinding((binding) ->
 				binding.searchDropdown.setText(queryFilter.getStringValue(), false));
 
-		foundMediaCallback.set(new ExtensionProvider.ResponseCallback<>() {
+		var foundMediaCallback = new ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>() {
 
 			@Override
-			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> mediaList) {
+			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> media) {
 				if(source != selectedSource || myId != loadId) return;
-				loadEpisodesFromSource(source, mediaList.get(0));
+				loadEpisodesFromSource(source, media.get(0));
 			}
 
 			@Override
 			public void onFailure(Throwable e) {
-				var callback = foundMediaCallback.get();
-				if(callback == null || myId != loadId) return;
+				if(myId != loadId) return;
 
 				Log.e(TAG, "Failed to search media!", e);
 
@@ -527,7 +537,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					if(autoChangeSource && lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						queryFilter.setValue(media.titles.get(newIndex));
-						source.searchMedia(context, filters, callback);
+						source.searchMedia(context, filters, this);
 
 						variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
 							binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
@@ -543,17 +553,43 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					}
 				});
 			}
-		});
+		};
 
 		var context = getContext();
 		if(context == null) return;
 
-		source.searchMedia(context, filters, foundMediaCallback.get());
+		if(searchId != null) {
+			variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
+				binding.searchStatus.setText("Searching for \"" + searchId + "\"...");
+				binding.searchStatus.setOnClickListener(null);
+			}));
 
-		variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
-			binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
-			binding.searchStatus.setOnClickListener(null);
-		}));
+			source.getMedia(requireContext(), searchId, new ExtensionProvider.ResponseCallback<>() {
+				@Override
+				public void onSuccess(CatalogMedia media) {
+					if(source != selectedSource || myId != loadId) return;
+					loadEpisodesFromSource(source, media);
+					searchId = null;
+				}
+
+				@Override
+				public void onFailure(Throwable e) {
+					variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
+						binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
+						binding.searchStatus.setOnClickListener(null);
+					}));
+
+					source.searchMedia(context, filters, foundMediaCallback);
+				}
+			});
+		} else {
+			variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
+				binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
+				binding.searchStatus.setOnClickListener(null);
+			}));
+
+			source.searchMedia(context, filters, foundMediaCallback);
+		}
 	}
 
 	private boolean autoSelectNextSource() {

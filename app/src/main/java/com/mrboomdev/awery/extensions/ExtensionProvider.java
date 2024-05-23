@@ -71,6 +71,10 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
+	public void getMedia(Context context, String id, @NonNull ResponseCallback<CatalogMedia> callback) {
+		callback.onFailure(new UnimplementedException("Media obtain isn't implemented!"));
+	}
+
 	public void searchMedia(
 			Context context,
 			List<CatalogFilter> filters,

@@ -12,6 +12,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
@@ -22,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class SettingsItem {
+	private static final String VAR_PREFIX = "${VAR.";
 	public static final SettingsItem INVALID_SETTING = new Builder(SettingsItemType.BOOLEAN)
 			.setTitle("Invalid!")
 			.setBooleanValue(false)
@@ -200,6 +203,24 @@ public class SettingsItem {
 
 	public String getDescription(Context context) {
 		if(description == null) return null;
+
+		var startIndex = description.indexOf(VAR_PREFIX);
+
+		if(startIndex != -1) {
+			var endIndex = description.indexOf('}', startIndex + 1);
+
+			if(endIndex == -1) {
+				throw new InvalidSyntaxException("No closing '}' found in description!");
+			}
+
+			var parsedKey = description.substring(startIndex + VAR_PREFIX.length(), endIndex);
+
+			return description.substring(0, startIndex) + switch(parsedKey) {
+				case "APP_VERSION" -> BuildConfig.VERSION_NAME;
+				case "IMAGE_CACHE_SIZE", "VIDEO_CACHE_SIZE", "HTTP_CACHE_SIZE" -> throw new UnimplementedException("TODO!");
+				default -> throw new IllegalArgumentException(parsedKey + " was not found!");
+			} + description.substring(endIndex + 1);
+		}
 
 		var got = getString(context, description);
 		if(got != null) return got;

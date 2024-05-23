@@ -20,6 +20,21 @@
         android:src="@drawable/ic_back"
         android:contentDescription="@string/back" />
 
+    <ImageView
+        android:id="@+id/clear"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/ic_close"
+        android:contentDescription="Clear" />
+
     <EditText
         android:id="@+id/edittext"
         android:layout_width="0dp"
@@ -27,7 +42,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/back"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/clear"
         android:background="@null"
         android:autofillHints="searchQuery"
         android:hint="@string/search"

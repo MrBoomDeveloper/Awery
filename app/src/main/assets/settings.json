@@ -146,7 +146,7 @@
 					"title": "quick_rewind", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
-						{ "key": "0", "title": "disabled" },
+						{ "key": "0", "title": "Disabled" },
 						{ "key": "30", "title": "30s" },
 						{ "key": "45", "title": "45s" },
 						{ "key": "60", "title": "1m" },
@@ -194,20 +194,35 @@
 			]
 		}, {
 			"key": "advanced", "type": "screen",
-			"title": "advanced", "icon": "ic_settings_outlined",
+			"title": "advanced", "icon": "ic_settings_filled",
 			"items": [
 				{
 					"key": "log_network", "type": "boolean", "restart": true,
 					"title": "Verbose network logging"
 				}, {
 					"key": "try_crash_native", "type": "action",
-					"title": "Try Native Crash"
+					"title": "Run Native Crash"
 				}, {
 					"key": "try_crash_java", "type": "action",
-					"title": "Try Java Crash"
+					"title": "Run Java Crash"
+				}
+			]
+		}, {
+			"key": "about", "type": "screen",
+			"title": "about", "icon": "ic_info_filled",
+			"items": [
+				{
+					"key": "app_version", "title": "App Version", "type": "action", "behaviour": "none",
+					"description": "${VAR.APP_VERSION}"
 				}, {
-					"key": "try_crash_anr", "type": "action",
-					"title": "Try ANR Crash"
+					"key": "telegram_group",  "type": "action",
+					"title": "Telegram Group", "icon": "ic_telegram"
+				}, {
+					"key": "discord_server", "type": "action",
+					"title": "Discord Server", "icon": "ic_discord"
+				}, {
+					"key": "github_repository", "type": "action",
+					"title": "GitHub Repository", "icon": "ic_github"
 				}
 			]
 		}

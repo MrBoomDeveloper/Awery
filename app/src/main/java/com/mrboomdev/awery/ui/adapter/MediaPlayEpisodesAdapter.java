@@ -85,6 +85,10 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}).start();
 	}
 
+	public CatalogMedia getMedia() {
+		return media;
+	}
+
 	@Override
 	public int getItemViewType(int position) {
 		return MediaPlayFragment.VIEW_TYPE_EPISODE;

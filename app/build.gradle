@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.mrboomdev.awery"
         targetSdk 34
-        versionName "1.0.4-Beta"
+        versionName "1.0.5"
 
         /* We want to make sure that all build versions across the planet will be in sync */
         var timezone = TimeZone.getTimeZone("UTC")

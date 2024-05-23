@@ -124,6 +124,20 @@ public class AweryLifecycle {
 		return null;
 	}
 
+	public static <A extends Activity> List<A> getActivities(Class<A> requiredSuper) {
+		try {
+			return stream(getAllActivitiesRecursively(requiredSuper))
+					.sorted(Collections.reverseOrder())
+					.map(info -> info.activity)
+					.toList();
+		} catch(Exception e) {
+			Log.e(TAG, "Failed to get activities!", e);
+			toast(getAppContext(), "So your device is not supported :(", 1);
+			System.exit(0);
+			return null;
+		}
+	}
+
 	@Nullable
 	@Contract(pure = true)
 	public static <A extends Activity> A getAnyActivity(Class<A> requiredSuper) {

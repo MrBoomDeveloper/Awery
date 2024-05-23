@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
+import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -35,6 +36,16 @@ object AniyomiKotlinBridge {
 
         scope.launch(exceptionHandler) {
             callback.onResponse(source.getSearchAnime(page + 1, query, filters), null)
+        }
+    }
+
+    @JvmStatic
+    fun getAnimeDetails(source: AnimeSource, anime: SAnime, callback: ResponseCallback<SAnime>) {
+        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
+        val scope = CoroutineScope(Job())
+
+        scope.launch(exceptionHandler) {
+            callback.onResponse(source.getAnimeDetails(anime), null)
         }
     }
 

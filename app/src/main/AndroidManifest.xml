@@ -99,6 +99,7 @@
             android:name=".ui.activity.player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
             android:screenOrientation="userLandscape"
             android:windowSoftInputMode="adjustPan"
             android:exported="true"

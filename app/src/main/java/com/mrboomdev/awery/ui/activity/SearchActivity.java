@@ -108,6 +108,8 @@ public class SearchActivity extends AppCompatActivity {
 		header.edittext.setText(queryFilter.getStringValue());
 		header.edittext.requestFocus();
 
+		header.clear.setOnClickListener(v -> header.edittext.setText(null));
+
 		var inputManager = getSystemService(InputMethodManager.class);
 		inputManager.showSoftInput(header.edittext, 0);
 

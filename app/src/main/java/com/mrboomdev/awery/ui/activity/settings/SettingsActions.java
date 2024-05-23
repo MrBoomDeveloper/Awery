@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import androidx.annotation.NonNull;
@@ -16,20 +17,16 @@ public class SettingsActions {
 	@Contract(pure = true)
 	public static void run(@NonNull String actionName) {
 		switch(actionName) {
-			case "clear_cache" -> {
+			case "settings_about_app_version" -> {}
+
+			case "clear_image_cache" -> {
 				var file = getAnyContext().getCacheDir();
 				if(file.exists()) file.delete();
 			}
 
-			case "settings_advanced_try_crash_anr" -> {
-				while(true) {
-					try {
-						Thread.sleep(1000);
-					} catch(InterruptedException e) {
-						Constants.alwaysThrowException();
-					}
-				}
-			}
+			case "settings_about_telegram_group" -> openUrl("https://t.me/mrboomdev_awery");
+			case "settings_about_discord_server" -> openUrl("https://discord.gg/yspYzD4Kbm");
+			case "settings_about_github_repository" -> openUrl("https://github.com/MrBoomDeveloper/Awery");
 
 			case "settings_advanced_try_crash_native" -> XCrash.testNativeCrash(false);
 			case "settings_advanced_try_crash_java" -> XCrash.testJavaCrash(false);

@@ -8,10 +8,14 @@ import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.UiModeManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -20,6 +24,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
@@ -175,6 +180,11 @@ public class AweryApp extends Application {
 	public static boolean isTv() {
 		var pm = getAnyContext().getPackageManager();
 		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
+	}
+
+	public static void openUrl(String url) {
+		var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		getAnyContext().startActivity(intent);
 	}
 
 	/**

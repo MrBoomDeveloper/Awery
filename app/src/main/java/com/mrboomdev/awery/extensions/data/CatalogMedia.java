@@ -51,7 +51,7 @@ public class CatalogMedia {
 		return globalId.split(";;;")[1];
 	}
 
-	public String getMediaId() {
+	public String getId() {
 		return globalId.split(";;;")[2];
 	}
 

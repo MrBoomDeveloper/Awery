@@ -24,6 +24,10 @@ public class CatalogMediaProgress {
 	public String lastVariant;
 	@ColumnInfo(name = "last_episode")
 	public Float lastEpisode;
+	@ColumnInfo(name = "last_id")
+	public String lastId;
+	@ColumnInfo(name = "last_title")
+	public String lastTitle;
 	@ColumnInfo(name = "last_comments_source")
 	public String lastCommentsSource;
 	@ColumnInfo(name = "last_relations_source")

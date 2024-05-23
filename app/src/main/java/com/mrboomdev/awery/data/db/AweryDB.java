@@ -16,10 +16,11 @@ import com.mrboomdev.awery.util.ParserAdapter;
 
 @TypeConverters(ParserAdapter.class)
 @Database(
-		version = 4,
+		version = 5,
 
 		autoMigrations = {
-				@AutoMigration(from = 1, to = 2)
+				@AutoMigration(from = 1, to = 2),
+				@AutoMigration(from = 4, to = 5)
 		},
 
 		entities = {

@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.animesource.model
 
-class SAnimeImpl : SAnime {
+open class SAnimeImpl : SAnime {
 
     override lateinit var url: String
 

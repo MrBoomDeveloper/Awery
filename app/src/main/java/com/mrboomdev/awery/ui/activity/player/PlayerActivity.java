@@ -7,13 +7,18 @@ import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +31,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -68,15 +74,16 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @OptIn(markerClass = UnstableApi.class)
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
+	public static final String PLAYBACK_ACTION = "AWERY_PLAYBACK";
+	public static final int PLAYBACK_ACTION_RESUME = 1;
+	public static final int PLAYBACK_ACTION_PAUSE = 2;
 	private static final String TAG = "PlayerActivity";
 	protected static ExtensionProvider source;
-	private static final String ACTION_PAUSE = "pause";
-	private static final String ACTION_PREVIOUS = "previous";
-	private static final String ACTION_NEXT = "next";
 	protected final int SHOW_UI_AFTER_MILLIS = 200;
 	protected final int UI_INSETS = WindowInsetsCompat.Type.displayCutout()
 			| WindowInsetsCompat.Type.systemGestures()
@@ -99,7 +106,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected GesturesMode gesturesMode;
 	private MediaItem videoItem;
 
-	@SuppressLint("ClickableViewAccessibility")
+	@SuppressLint({"ClickableViewAccessibility", "UnspecifiedRegisterReceiverFlag"})
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
@@ -108,8 +115,29 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		super.onCreate(savedInstanceState);
 		loadSettings();
 
+		registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				switch(intent.getIntExtra(PLAYBACK_ACTION, -1)) {
+					case PLAYBACK_ACTION_RESUME -> {
+						player.play();
+						isVideoPaused = false;
+					}
+
+					case PLAYBACK_ACTION_PAUSE -> {
+						player.pause();
+						isVideoPaused = true;
+					}
+
+					default -> throw new IllegalArgumentException("Unknown playback action has been permitted!");
+				}
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+					setPictureInPictureParams(getPipParams());
+				}
+			}}, new IntentFilter(PLAYBACK_ACTION));
+
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
-		//binding.subtitlesText.setVisibility(View.INVISIBLE);
 		setContentView(binding.getRoot());
 		applyFullscreen();
 
@@ -134,7 +162,23 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				.build();
 
 		player.setVideoSurfaceView(binding.surfaceView);
+		player.setHandleAudioBecomingNoisy(true);
 		player.addListener(this);
+
+		session = new MediaSession.Builder(this, player)
+				.setCallback(new MediaSession.Callback() {
+					@NonNull
+					@Override
+					public MediaSession.ConnectionResult onConnect(
+							@NonNull MediaSession session,
+							@NonNull MediaSession.ControllerInfo controller
+					) {
+						return new MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+								.setAvailableSessionCommands(MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS)
+								.build();
+					}
+				})
+				.build();
 
 		binding.doubleTapBackward.setOnTouchListener((view, event) -> gestures.onTouchEventLeft(event));
 		binding.doubleTapForward.setOnTouchListener((view, event) -> gestures.onTouchEventRight(event));
@@ -429,6 +473,33 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		}
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	protected PictureInPictureParams getPipParams() {
+		var pipParams = new PictureInPictureParams.Builder();
+		var format = player.getVideoFormat();
+
+		if(format != null) {
+			var ratio = new Rational(format.width, format.height);
+			pipParams.setAspectRatio(ratio);
+		}
+
+		var pauseAction = !isVideoPaused ? PLAYBACK_ACTION_PAUSE : PLAYBACK_ACTION_RESUME;
+		var pauseIcon = !isVideoPaused ? R.drawable.ic_round_pause_24 : R.drawable.ic_play_filled;
+		var pauseTitle = !isVideoPaused ? "Pause" : "Resume";
+
+		/*pipParams.setActions(List.of(new RemoteAction(
+				Icon.createWithResource(this, pauseIcon), pauseTitle, pauseTitle,
+				PendingIntent.getBroadcast(this, 0,
+						new Intent(this, BroadcastReceiver.class).putExtra(PLAYBACK_ACTION, pauseAction),
+						PendingIntent.FLAG_UPDATE_CURRENT))));*/
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			pipParams.setTitle(video != null ? video.getTitle() : null);
+		}
+
+		return pipParams.build();
+	}
+
 	private void setupPip() {
 		if((Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ||
 				(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE))) {
@@ -436,18 +507,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			return;
 		}
 
-		var pipParams = new PictureInPictureParams.Builder();
-
-		setupButton(binding.pip, () -> {
-			var format = player.getVideoFormat();
-
-			if(format != null) {
-				var ratio = new Rational(format.width, format.height);
-				pipParams.setAspectRatio(ratio);
-			}
-
-			enterPictureInPictureMode(pipParams.build());
-		});
+		setupButton(binding.pip, () ->
+				enterPictureInPictureMode(getPipParams()));
 	}
 
 	@Override
@@ -563,10 +624,11 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		player.stop();
 		player.release();
-		//session.release();
+		session.release();
 
 		player = null;
 		source = null;
+		session = null;
 	}
 
 	private void applyFullscreen() {

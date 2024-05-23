@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
@@ -26,10 +27,14 @@ import org.jetbrains.annotations.Contract;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource;
+import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
+import eu.kanade.tachiyomi.animesource.model.SAnime;
+import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import java9.util.stream.Collectors;
 import okhttp3.Headers;
 
@@ -145,6 +150,25 @@ public class AniyomiProvider extends YomiProvider {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void getMedia(Context context, String id, @NonNull ResponseCallback<CatalogMedia> callback) {
+		AniyomiKotlinBridge.getAnimeDetails(source, new SAnimeImpl() {{
+			setUrl(id);
+		}}, (anime, e) -> {
+			if(e != null) {
+				callback.onFailure(e);
+				return;
+			}
+
+			if(anime == null) {
+				callback.onFailure(new ZeroResultsException("Anime not found", R.string.no_media_found));
+				return;
+			}
+
+			callback.onSuccess(new AniyomiMedia(this, anime));
+		});
 	}
 
 	@Override
