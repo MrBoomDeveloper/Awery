@@ -116,18 +116,6 @@
 			"title": "player", "icon": "ic_round_video_settings_24",
 			"items": [
 				{
-					"key": "subtitles", "type": "screen", "show_if": "never",
-					"title": "subtitles", "icon": "ic_subtitles_filled",
-					"items": [
-						{
-							"key": "size", "type": "int", "title": "subtitles_size",
-							"from": 2, "to": 100, "int_value": 14
-						}, {
-							"key": "back_opacity", "type": "int", "title": "subtitles_back_opacity",
-							"from": 0, "to": 100, "int_value": 85
-						}
-					]
-				},{
 					"key": "double_tap_seek_length", "type": "select_int", "int_value": "10",
 					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}",
@@ -180,10 +168,25 @@
 					"key": "dim_screen", "type": "boolean", "boolean_value": true,
 					"title": "Dim screen", "icon": "ic_round_brightness_4_24",
 					"description": "After clicking on the screen, black overlay will be shown on top of the video."
+				}, {
+					"key": "subtitles", "type": "screen", "show_if": "never",
+					"title": "subtitles", "icon": "ic_subtitles_filled",
+					"items": [
+						{
+							"key": "size", "type": "int", "title": "subtitles_size",
+							"from": 2, "to": 100, "int_value": 14
+						}, {
+							"key": "back_opacity", "type": "int", "title": "subtitles_back_opacity",
+							"from": 0, "to": 100, "int_value": 85
+						}
+					]
+				}, {
+					"key": "system_subtitles", "type": "action",
+					"title": "subtitles", "icon": "ic_subtitles_filled"
 				}
 			]
 		}, {
-			"key": "reader", "type": "screen",
+			"key": "reader", "type": "screen", "show_if": "never",
 			"title": "reader", "icon": "ic_round_reader_settings",
 			"items": [
 				{

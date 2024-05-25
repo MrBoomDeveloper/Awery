@@ -3,6 +3,9 @@ package com.mrboomdev.awery.ui.activity.settings;
 import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
+import android.content.Intent;
+import android.provider.Settings;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.AweryApp;
@@ -18,6 +21,9 @@ public class SettingsActions {
 	public static void run(@NonNull String actionName) {
 		switch(actionName) {
 			case "settings_about_app_version" -> {}
+
+			case "settings_player_system_subtitles" -> getAnyContext()
+					.startActivity(new Intent(Settings.ACTION_CAPTIONING_SETTINGS));
 
 			case "clear_image_cache" -> {
 				var file = getAnyContext().getCacheDir();
