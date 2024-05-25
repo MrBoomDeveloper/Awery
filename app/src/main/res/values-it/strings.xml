@@ -100,10 +100,10 @@
     <string name="secondary_sub_outline_type_select">Tipo di contorno dei sottotitoli</string>
     <string name="sub_window_color_select">Colore della finestra dei sottotitoli</string>
     <string name="sub_window_color_info">La finestra dei sottotitoli è la parte sinistra e destra rispetto ad essi. (dove lo sfondo non c\'è)</string>
-    <string name="sub_font_select">Carattere dei sottotitoli</string>
+    <string name="sub_font_select">Carattere sottotitoli</string>
     <string name="subtitle_font_size">Dimensione Sottotitoli</string>
     <string name="auto">Auto</string>
-    <string name="auto_play_next_episode">Autoplay Prossimo Episodio</string>
+    <string name="auto_play_next_episode">Avvio automatico Prossimo episodio</string>
     <string name="auto_play_next_episode_info">Si disabilita automaticamente se non c\'è interazione con il giocatore dopo 1 ora.</string>
     <string name="auto_skip_fillers">Salta automaticamente i Fillers</string>
     <string name="auto_skip_fillers_info">Salta gli episodi Filler quando si passa all\'episodio successivo.</string>
@@ -124,7 +124,7 @@
     <string name="show_cast_button">Mostra pulsante Trasmetti</string>
     <string name="show_cast_button_info">Richiede \"Web Video Caster\" per trasmettere</string>
     <string name="sub_background_color_select">Colore sfondo sottotitoli</string>
-    <string name="immersive_mode">Nascondi barra di stato</string>
+    <string name="immersive_mode">Nascondi la barra di stato</string>
     <string name="immersive_mode_info">Richiede il riavvio dell\'app per completare la modifica.</string>
     <string name="previous">Precedente</string>
     <string name="current_page">Pagina corrente</string>
@@ -143,15 +143,15 @@
     <string name="default_settings">Impostazioni Predefinite</string>
     <string name="horizontal_scroll_bar">Barra di scorrimento orizzontale</string>
     <string name="dual_page">Doppia pagina</string>
-    <string name="dual_page_info">Mostra 2 immagini in una pagina, sembrerà strano se le immagini non hanno le stesse dimensioni</string>
-    <string name="true_colors">Colori veri</string>
+    <string name="dual_page_info">Mostra 2 immagini in 1 pagina, sembrerà strano se le immagini non hanno le stesse dimensioni</string>
+    <string name="true_colors">Colori reali</string>
     <string name="true_colors_info">(Modalità colore a 32 bit) Riduce le bande sulle immagini, potrebbe influire sulle prestazioni.</string>
     <string name="hide_page_numbers">Nascondi i numeri di pagina</string>
     <string name="sort_by_title">Ordina per titolo</string>
     <string name="sort_by_last_updated">Ordina per ultimo aggiornamento</string>
     <string name="sort_by_score">Ordina per punteggio</string>
     <string name="list_private">Privato</string>
-    <string name="wrap_images_info">Utile soprattutto per dispositivi più grandi, rimuove lo spazio tra le immagini, se presenti.</string>
+    <string name="wrap_images_info">Utile soprattutto per i dispositivi più grandi, rimuove lo spazio tra le immagini, se presenti.</string>
     <string name="share">Condividi</string>
     <string name="other">Altro</string>
     <string name="custom_lists">Elenchi personalizzati</string>
@@ -365,7 +365,7 @@
     <string name="watch_complete_percentage_info">La percentuale alla quale i tuoi progressi dovrebbero essere aggiornati dopo aver visto un episodio.
 \nImposta anche quando precaricare i collegamenti per l\'episodio successivo.</string>
     <string name="picture_in_picture">Picture in Picture</string>
-    <string name="always_minimize">Minimizza Sempre</string>
+    <string name="always_minimize">Minimizza sempre</string>
     <string name="always_minimize_info">Richiede che PiP sia abilitato, fa sì che il lettore si comporti come Youtube Player ma migliore.
 \nNasconde anche il pulsante PiP.</string>
     <string name="animations">Animazioni</string>
