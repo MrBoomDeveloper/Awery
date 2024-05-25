@@ -18,6 +18,7 @@ import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -113,6 +114,10 @@ public class MediaUtils {
 		var inflater = LayoutInflater.from(context);
 		var binding = PopupMediaActionsBinding.inflate(inflater);
 
+		if(media.url == null) {
+			binding.share.setVisibility(View.GONE);
+		}
+
 		binding.title.setText(media.getTitle());
 
 		binding.play.setOnClickListener(v -> {
@@ -162,7 +167,7 @@ public class MediaUtils {
 	public static void shareMedia(Context context, @NonNull CatalogMedia media) {
 		new ShareCompat.IntentBuilder(context)
 				.setType("text/plain")
-				.setText("https://anilist.co/anime/" + media.getId("anilist"))
+				.setText(media.url)
 				.startChooser();
 	}
 

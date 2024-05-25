@@ -19,7 +19,7 @@ public class CatalogMedia {
 	public List<String> titles = new ArrayList<>();
 	public Map<String, String> ids = new HashMap<>();
 	public Map<String, String> authors = new HashMap<>();
-	public String banner, description, country, ageRating, extra;
+	public String banner, description, country, ageRating, extra, url;
 	public MediaType type;
 	public ImageVersions poster = new ImageVersions();
 	public Calendar releaseDate;

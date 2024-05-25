@@ -13,10 +13,13 @@ import androidx.core.os.LocaleListCompat;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
+import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
+import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 
 import org.jetbrains.annotations.Contract;
@@ -100,28 +103,26 @@ public class SettingsData {
 			@NonNull String behaviourId,
 			Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
-		if(behaviourId.startsWith("extensions_")) {
-			switch(behaviourId) {
-				case "extensions_aweryjs" -> callback.onResult(
-						new ExtensionSettings(activity, ExtensionsFactory.getManager(JsManager.class)), null);
+		switch(behaviourId) {
+			case "extensions_aweryjs" -> callback.onResult(
+					new ExtensionSettings(activity, ExtensionsFactory.getManager(JsManager.class)), null);
 
-				case "extensions_miru" -> callback.onResult(null,
-						new IllegalArgumentException("Not now..."));
+			case "extensions_miru" -> callback.onResult(
+					new ExtensionSettings(activity, ExtensionsFactory.getManager(MiruManager.class)), null);
 
-				case "extensions_cloudstream" -> callback.onResult(null,
-						new IllegalArgumentException("Soon..."));
+			case "extensions_cloudstream" -> callback.onResult(
+					new ExtensionSettings(activity, ExtensionsFactory.getManager(CloudstreamManager.class)), null);
 
-				case "extensions_aniyomi" -> callback.onResult(
-						new ExtensionSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
+			case "extensions_aniyomi" -> callback.onResult(
+					new ExtensionSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
 
-				case "extensions_tachiyomi" -> callback.onResult(
-						new ExtensionSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
+			case "extensions_tachiyomi" -> callback.onResult(
+					new ExtensionSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
 
-				default -> callback.onResult(null,
-						new IllegalArgumentException("Unknown extensions screen: " + behaviourId));
-			}
-		} else {
-			callback.onResult(null, new IllegalArgumentException("Unknown screen: " + behaviourId));
+			case "tabs" -> callback.onResult(new TabsSettings(), null);
+
+			default -> callback.onResult(null,
+					new IllegalArgumentException("Unknown screen: " + behaviourId));
 		}
 	}
 }

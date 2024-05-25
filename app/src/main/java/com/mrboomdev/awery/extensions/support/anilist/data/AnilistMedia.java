@@ -53,6 +53,7 @@ public class AnilistMedia {
 		var media = new CatalogMedia(ANILIST_CATALOG_ITEM_ID_PREFIX + id);
 		media.description = description;
 		media.setId("anilist", String.valueOf(id));
+		media.url = "https://anilist.co/anime/" + id;
 		media.banner = bannerImage;
 		media.duration = duration;
 		media.episodesCount = episodes;

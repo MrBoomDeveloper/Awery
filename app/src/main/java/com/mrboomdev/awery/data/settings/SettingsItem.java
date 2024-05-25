@@ -48,6 +48,8 @@ public class SettingsItem {
 	private Float iconSize;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
+	@Json(name = "is_reordable")
+	private boolean isReordable;
 	@Json(name = "int_value")
 	private Integer intValue;
 	@Json(name = "string_set_value")
@@ -62,7 +64,20 @@ public class SettingsItem {
 		copyFrom(item);
 	}
 
-	protected SettingsItem() {}
+	public SettingsItem() {}
+
+	public SettingsItem(SettingsItemType type) {
+		this.type = type;
+	}
+
+	/**
+	 * Will be called after items reorder has been completed.
+	 * Override if {@code isReorderable}
+	 * @author MrBoomDev
+	 */
+	public boolean onReordered(int from, int to) {
+		return false;
+	}
 
 	protected void copyFrom(@NonNull SettingsItem item) {
 		this.key = item.key;
@@ -111,6 +126,10 @@ public class SettingsItem {
 
 	public Float getTo() {
 		return to;
+	}
+
+	public boolean isReordable() {
+		return isReordable;
 	}
 
 	public float getIconSize() {

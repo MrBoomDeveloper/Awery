@@ -41,8 +41,8 @@ import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends YomiProvider {
+	protected final AnimeCatalogueSource source;
 	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
-	private final AnimeCatalogueSource source;
 	private final boolean isFromSource;
 
 	public AniyomiProvider(ExtensionsManager manager, Extension extension, AnimeCatalogueSource source) {

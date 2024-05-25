@@ -25,9 +25,10 @@ import javax.net.ssl.SSLHandshakeException;
 
 import eu.kanade.tachiyomi.network.HttpException;
 import java9.util.Objects;
-import kotlinx.serialization.json.internal.JsonDecodingException;
+import kotlinx.serialization.SerializationException;
 
 public class ExceptionDescriptor {
+	private static final String ROOM_EXCEPTION = "Room cannot verify the data integrity. Looks like you've changed schema but forgot to update the version number.";
 	private final Throwable throwable;
 
 	public ExceptionDescriptor(@NonNull Throwable t) {
@@ -87,10 +88,14 @@ public class ExceptionDescriptor {
 		} else if(throwable instanceof UnknownHostException) {
 			return throwable.getMessage();
 		} else if(throwable instanceof InvalidSyntaxException
-				|| throwable instanceof JsonDecodingException) {
+				|| throwable instanceof SerializationException) {
 			return "Parser has crashed!";
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
 				return "Bad thing has happened...";
+		}
+
+		if(throwable.getMessage() != null && throwable.getMessage().contains(ROOM_EXCEPTION)) {
+			return "Database corrupted!";
 		}
 
 		return getGenericTitle(context);
@@ -143,7 +148,7 @@ public class ExceptionDescriptor {
 				t instanceof SSLHandshakeException ||
 				t instanceof HttpException ||
 				t instanceof UnsupportedOperationException ||
-				t instanceof JsonDecodingException ||
+				t instanceof SerializationException ||
 				t instanceof UnknownHostException ||
 				t instanceof GraphQLException);
 	}
@@ -191,7 +196,7 @@ public class ExceptionDescriptor {
 			}
 
 			return builder.toString();
-		} if(throwable instanceof JsonDecodingException ||
+		} if(throwable instanceof SerializationException ||
 				throwable instanceof InvalidSyntaxException) {
 			return "An error has occurred while parsing the response. " + throwable.getMessage();
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
@@ -202,6 +207,13 @@ public class ExceptionDescriptor {
 			}
 
 			return getGenericMessage(throwable);
+		}
+
+		if(throwable.getMessage() != null && throwable.getMessage().contains(ROOM_EXCEPTION)) {
+			return "Yeah, you've hear right. The database has been corrupted!" +
+					"\nHow can you fix it? You can't!" +
+					"\n\nPlease, do not use alpha versions to keep your library. Use them only to test new things." +
+					"\n\n" + getGenericMessage(throwable);
 		}
 
 		return getGenericMessage(throwable);

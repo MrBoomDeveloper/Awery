@@ -733,6 +733,7 @@ public class JsProvider extends ExtensionProvider {
 							var item = (NativeObject) arrayItem;
 
 							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
+							result.url = stringFromJs(item.get("url"));
 							result.banner = stringFromJs(item.get("banner"));
 							result.country = stringFromJs(item.get("country"));
 							result.ageRating = stringFromJs(item.get("ageRating"));

@@ -88,11 +88,14 @@ public class MediaActivity extends AppCompatActivity {
 		}
 	}
 
-	public static void handleOptionsClick(@NonNull View anchor, CatalogMedia media) {
+	public static void handleOptionsClick(@NonNull View anchor, @NonNull CatalogMedia media) {
 		var context = new ContextThemeWrapper(anchor.getContext(), anchor.getContext().getTheme());
-
 		var popup = new PopupMenu(context, anchor);
-		popup.getMenu().add(0, 0, 0, R.string.share);
+
+		if(media.url != null) {
+			popup.getMenu().add(0, 0, 0, R.string.share);
+		}
+
 		popup.getMenu().add(0, 1, 0, R.string.blacklist);
 
 		popup.setOnMenuItemClickListener(item -> switch(item.getItemId()) {

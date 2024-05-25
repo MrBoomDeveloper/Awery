@@ -1,13 +1,17 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.util.NiceUtils;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
 import java9.util.stream.Collectors;
 
 public class AniyomiMedia extends CatalogMedia {
@@ -29,6 +33,9 @@ public class AniyomiMedia extends CatalogMedia {
 			default -> CatalogMedia.MediaStatus.UNKNOWN;
 		};
 
+		this.url = provider.source instanceof AnimeHttpSource httpSource
+				? httpSource.getBaseUrl() + "/" + anime.getUrl() : null;
+
 		this.extra = anime.getUrl();
 		this.description = anime.getDescription();
 		this.anime = anime;
@@ -36,14 +43,18 @@ public class AniyomiMedia extends CatalogMedia {
 		this.authors.put("author", anime.getAuthor());
 		this.authors.put("artist", anime.getArtist());
 
-		var genre = anime.getGenre();
-
-		if(genre != null) {
+		doIfNotNull(anime.getGenre(), genre -> {
 			this.genres = stream(genre.split(", "))
 					.map(String::trim)
 					.filter(item -> !item.isBlank())
 					.toList();
-		}
+
+			this.tags = stream(genre.split(", "))
+					.map(String::trim)
+					.filter(item -> !item.isBlank())
+					.map(CatalogTag::new)
+					.toList();
+		});
 	}
 
 	protected static SAnime fromMedia(CatalogMedia media) {

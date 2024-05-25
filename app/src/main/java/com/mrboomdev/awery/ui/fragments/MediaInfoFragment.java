@@ -144,11 +144,14 @@ public class MediaInfoFragment extends Fragment {
 			else throw new IllegalStateException("Activity is not an instance of MediaActivity!");
 		});
 
-		binding.details.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(requireContext(), media));
+		binding.details.bookmark.setOnClickListener(v ->
+				MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
-		if(media.description != null) {
-			var html = Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT);
-			binding.details.description.setText(html.toString().trim());
+		var descriptionHtml = media.description == null ? null :
+				Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim();
+
+		if(media.description != null && !descriptionHtml.isBlank()) {
+			binding.details.description.setText(descriptionHtml);
 		} else {
 			binding.details.description.setVisibility(View.GONE);
 			binding.details.descriptionTitle.setVisibility(View.GONE);

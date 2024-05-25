@@ -38,6 +38,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -58,6 +59,17 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@SuppressLint("NotifyDataSetChanged")
 	private void setData(@NonNull SettingsItem data, boolean notify) {
+		if(data.getItems() == null) {
+			this.items = Collections.emptyList();
+			idGenerator.clear();
+
+			if(notify) {
+				notifyDataSetChanged();
+			}
+
+			return;
+		}
+
 		idGenerator.clear();
 
 		this.items = new ArrayList<>(stream(data.getItems())

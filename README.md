@@ -9,26 +9,23 @@
 
 # **Awery** - The Best Anime App
 
-Imagine the perfect app where you can customize everything, with tons of content and a **stylish** look. It's all about Awery!
+Imagine the perfect app where you can customize everything, with tons of features and a **stylish** look. It's all about Awery!
 
 <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot1.jpg" alt="Screenshot" />
 
 ## Features 🎩
 - Use any Aniyomi extension
-- Automatically select other sources if current is unavailable
+- Sync progress with your AniList, MyAnimeList and Shikimori accounts
+- Leave and read other comments
+- Translation for Spanish, France, Russian and more...
 - Filter out tags like mecha from the whole app!
 - Blacklist unwanted media
-- Best design among other anime apps
 
 ## Planned Features 🕒
-
-- Sync progress with your AniList, MyAnimeList and Shikimori accounts
-- Translation for Spanish, France, Russian and more...
 - Auto-Generated feeds from various sources
 - AndroidTV optimized ui
 - History page
 - Customize app to look how you want
-- Leave and read other comments
 - News reader
 
 ## Want to Contribute? 🤝

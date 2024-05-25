@@ -37,8 +37,8 @@ public class DBCatalogMedia {
 	@NonNull
 	public String globalId;
 
-	public String titles, ids;
-	public String banner, description, extra, country, authors;
+	public String titles, description, ids, url;
+	public String banner, extra, country, authors;
 	public String duration, type;
 	@ColumnInfo(name = "release_date")
 	public String releaseDate;
@@ -72,6 +72,7 @@ public class DBCatalogMedia {
 		dbMedia.extra = media.extra;
 		dbMedia.country = media.country;
 		dbMedia.ageRating = media.ageRating;
+		dbMedia.url = media.url;
 
 		dbMedia.ids = stream(media.ids.entrySet())
 				.map(entry -> "\"" + entry.getKey() + "\":\"" + entry.getValue() + "\"")
@@ -129,6 +130,7 @@ public class DBCatalogMedia {
 
 	public CatalogMedia toCatalogMedia() {
 		var media = new CatalogMedia(globalId);
+		media.url = url;
 		media.banner = banner;
 		media.description = description;
 		media.extra = extra;

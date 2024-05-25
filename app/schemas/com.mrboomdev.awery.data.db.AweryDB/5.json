@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "555c2941beb4a7dfd54fbf3a7471a96c",
+    "identityHash": "dc58519adb2abb74801c222e3ad7a273",
     "entities": [
       {
         "tableName": "media",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `titles` TEXT, `ids` TEXT, `banner` TEXT, `description` TEXT, `extra` TEXT, `country` TEXT, `authors` TEXT, `duration` TEXT, `type` TEXT, `release_date` TEXT, `episodes_count` TEXT, `average_score` TEXT, `tags` TEXT, `genres` TEXT, `status` TEXT, `poster_extra_large` TEXT, `poster_large` TEXT, `poster_medium` TEXT, `latest_episode` TEXT, `age_rating` TEXT, PRIMARY KEY(`global_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `titles` TEXT, `description` TEXT, `ids` TEXT, `url` TEXT, `banner` TEXT, `extra` TEXT, `country` TEXT, `authors` TEXT, `duration` TEXT, `type` TEXT, `release_date` TEXT, `episodes_count` TEXT, `average_score` TEXT, `tags` TEXT, `genres` TEXT, `status` TEXT, `poster_extra_large` TEXT, `poster_large` TEXT, `poster_medium` TEXT, `latest_episode` TEXT, `age_rating` TEXT, PRIMARY KEY(`global_id`))",
         "fields": [
           {
             "fieldPath": "globalId",
@@ -21,20 +21,26 @@
             "notNull": false
           },
           {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "ids",
             "columnName": "ids",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "banner",
-            "columnName": "banner",
+            "fieldPath": "url",
+            "columnName": "url",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "description",
-            "columnName": "description",
+            "fieldPath": "banner",
+            "columnName": "banner",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -260,7 +266,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '555c2941beb4a7dfd54fbf3a7471a96c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dc58519adb2abb74801c222e3ad7a273')"
     ]
   }
 }

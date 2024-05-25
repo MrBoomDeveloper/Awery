@@ -6,6 +6,7 @@ import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -106,7 +107,23 @@ public class NiceUtils {
 	@NonNull
 	@Contract("_ -> new")
 	public static <E> Stream<E> stream(Collection<E> e) {
+		if(e == null) throw new NullPointerException("Collection cannot be null!");
 		return StreamSupport.stream(e);
+	}
+
+	public static boolean clearDirectory(File file) {
+		if(file == null) return false;
+
+		if(file.isDirectory()) {
+			var children = file.listFiles();
+			if(children == null) return false;
+
+			for(var child : children) {
+				clearDirectory(child);
+			}
+		}
+
+		return true;
 	}
 
 	/**

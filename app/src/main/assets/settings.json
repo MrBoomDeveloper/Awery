@@ -77,6 +77,9 @@
 			"title": "content", "icon": "ic_round_grid_view_24",
 			"items": [
 				{
+					"key": "tabs", "type": "screen", "behaviour": "tabs",
+					"title": "Tabs", "icon": "ic_list"
+				}, {
 					"key": "hide_library_entries", "type": "boolean",
 					"title": "hide_library_entries", "icon": "ic_collections_bookmark_filled",
 					"description": "hide_library_entries_description"
@@ -186,7 +189,7 @@
 				}
 			]
 		}, {
-			"key": "reader", "type": "screen", "show_if": "never",
+			"key": "reader", "type": "screen", "show_if": "debug",
 			"title": "reader", "icon": "ic_round_reader_settings",
 			"items": [
 				{
@@ -194,6 +197,12 @@
 					"title": "Sorry bro, but you currently can't read those chinese comics.",
 					"description": "Come here later..."
 				}
+			]
+		}, {
+			"key": "storage", "type": "screen", "show_if": "debug",
+			"title": "Storage", "icon": "",
+			"items": [
+
 			]
 		}, {
 			"key": "advanced", "type": "screen",

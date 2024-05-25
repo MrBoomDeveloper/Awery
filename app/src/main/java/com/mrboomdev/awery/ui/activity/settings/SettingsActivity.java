@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
@@ -108,11 +109,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		createView(item, frame);
 		setContentView(frame);
 
-		activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-			for(var callback : callbacks) {
-				callback.onActivityResult(result);
-			}
-		});
+		activityResultLauncher = registerForActivityResult(
+				new ActivityResultContracts.StartActivityForResult(), result -> {
+					for(var callback : callbacks) {
+						callback.onActivityResult(result);
+					}
+				});
 	}
 
 	@Override
@@ -181,6 +183,31 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				setHorizontalPadding(binding.getRoot(), insets.left, insets.right), parent);
 	}
 
+	private void setupReordering(RecyclerView recycler, @NonNull SettingsItem item) {
+		if(!item.isReordable()) return;
+
+		var directions = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+
+		new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(directions, 0) {
+
+			@Override
+			public boolean onMove(
+					@NonNull RecyclerView recyclerView,
+					@NonNull RecyclerView.ViewHolder viewHolder,
+					@NonNull RecyclerView.ViewHolder target
+			) {
+				return item.onReordered(
+						viewHolder.getAbsoluteAdapterPosition(),
+						target.getAbsoluteAdapterPosition());
+			}
+
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+			}
+		}).attachToRecyclerView(recycler);
+	}
+
 	private void createView(@NonNull SettingsItem item, @NonNull FrameLayout frame) {
 		item.restoreValues(AwerySettings.getInstance(this));
 
@@ -199,12 +226,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					(item instanceof SettingsDataHandler handler) ? handler : this);
 
 			var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-				var headerBinding = LayoutHeaderSettingsBinding.inflate(getLayoutInflater(), parent, false);
+				var headerBinding = LayoutHeaderSettingsBinding.inflate(
+						getLayoutInflater(), parent, false);
+
 				setupHeader(headerBinding, item, parent);
 				return headerBinding;
 			});
 
 			binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
+			setupReordering(binding.recycler, item);
 		} else if(item.getBehaviour() != null) {
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
@@ -228,12 +258,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				});
 
 				var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-					var headerBinding = LayoutHeaderSettingsBinding.inflate(getLayoutInflater(), parent, false);
+					var headerBinding = LayoutHeaderSettingsBinding.inflate(
+							getLayoutInflater(), parent, false);
+
 					setupHeader(headerBinding, screen, parent);
 					return headerBinding;
 				});
 
 				binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
+				setupReordering(binding.recycler, screen);
 			});
 		} else {
 			Log.w(TAG, "Screen has no items, finishing.");
