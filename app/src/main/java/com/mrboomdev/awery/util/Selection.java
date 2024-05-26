@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	public static final Selection<Object> EMPTY = new Selection<>();
 	private static final Set<Collector.Characteristics> characteristics
 			= EnumSet.of(Collector.Characteristics.IDENTITY_FINISH, Collector.Characteristics.UNORDERED);
-	private final Map<T, State> items = new TreeMap<>();
+	private final Map<T, State> items = new LinkedHashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public static <T> Selection<T> empty() {
@@ -38,10 +39,15 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	}
 
 	public Selection(@Nullable Collection<T> items) {
-		if(items != null) {
-			for(var item : items) {
-				this.items.put(item, State.EXCLUDED);
+		if(items == null) return;
+
+		for(var item : items) {
+			if(item instanceof Selection.Selectable<?> selectable) {
+				this.items.put(item, selectable.state);
+				continue;
 			}
+
+			this.items.put(item, State.EXCLUDED);
 		}
 	}
 

@@ -105,9 +105,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 		}
 
-		var frame = new FrameLayout(this);
-		createView(item, frame);
-		setContentView(frame);
+		setContentView(createView(item));
 
 		activityResultLauncher = registerForActivityResult(
 				new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -208,14 +206,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}).attachToRecyclerView(recycler);
 	}
 
-	private void createView(@NonNull SettingsItem item, @NonNull FrameLayout frame) {
+	@NonNull
+	private View createView(@NonNull SettingsItem item) {
 		item.restoreValues(AwerySettings.getInstance(this));
 
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
-				setTopPadding(binding.recycler, insets.top + dpPx(12)), frame);
+				setTopPadding(binding.recycler, insets.top + dpPx(12)));
 
 		var config = new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
@@ -235,6 +234,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
 			setupReordering(binding.recycler, item);
+			binding.progressIndicator.setVisibility(View.GONE);
 		} else if(item.getBehaviour() != null) {
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
@@ -267,13 +267,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 				binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
 				setupReordering(binding.recycler, screen);
+				binding.progressIndicator.setVisibility(View.GONE);
 			});
 		} else {
 			Log.w(TAG, "Screen has no items, finishing.");
 			finish();
 		}
 
-		frame.addView(binding.getRoot());
+		return binding.getRoot();
 	}
 
 	@Override

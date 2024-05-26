@@ -1,11 +1,14 @@
 package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_READ;
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +17,7 @@ import eu.kanade.tachiyomi.source.SourceFactory;
 import java9.util.stream.StreamSupport;
 
 public class TachiyomiManager extends YomiManager {
+	private final List<Integer> BASE_FEATURES = List.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
 
 	@Override
 	public String getName() {
@@ -53,6 +57,11 @@ public class TachiyomiManager extends YomiManager {
 	@Override
 	public double getMaxVersion() {
 		return 1.5;
+	}
+
+	@Override
+	public Collection<Integer> getBaseFeatures() {
+		return BASE_FEATURES;
 	}
 
 	@Override

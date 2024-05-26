@@ -1,8 +1,10 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
+import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
@@ -19,7 +21,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.data.db.DBRepository;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -50,13 +54,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	private DialogBuilder currentDialog;
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
-		copyFrom(new Builder(SettingsItemType.SCREEN)
-				.setTitle(manager.getName() + " " + activity.getString(R.string.extensions))
-				.setItems(stream(manager.getExtensions(0)).sorted()
-						.map(extension -> new ExtensionSetting(activity, extension))
-						.toList())
-				.build());
-
 		this.activity = activity;
 		this.manager = manager;
 
@@ -142,6 +139,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			@Override
 			public void onClick(Context context) {
 				var inputField = new DialogEditTextField(context, R.string.repository_url);
+				inputField.setLinesCount(1);
 
 				currentDialog = new DialogBuilder(context)
 						.setTitle(R.string.add_extension)
@@ -158,17 +156,66 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							}
 
 							try {
-								new URL(text).toString();
-								inputField.setError(null);
-
-								toast("Extension repositories aren't done yet!");
+								new URL(text);
 							} catch(MalformedURLException e) {
 								Log.e(TAG, "Invalid URL", e);
 								inputField.setError("Invalid URL");
+								return;
 							}
+
+							inputField.setError(null);
+
+							manager.getRepository(text, (extensions, e) -> {
+								if(e != null) {
+									Log.e(TAG, "Failed to get a repository!", e);
+									inputField.setError(e.getMessage());
+									return;
+								}
+
+								new Thread(() -> {
+									var dao = getDatabase().getRepositoryDao();
+									var repos = dao.getRepositories(manager.getId());
+
+									if(findIn(item -> item.url.equals(text), repos) != null) {
+										toast("Repository already exists!");
+										return;
+									}
+
+									var repo = new DBRepository(text, manager.getId());
+									dao.add(repo);
+
+									dialog.dismiss();
+									toast("Repository added successfully!");
+
+									if(newItemListener != null) {
+										runOnUiThread(() -> newItemListener.run(
+												new RepositorySetting(repo), null));
+									}
+								}).start();
+							});
 						}).show();
 			}
 		});
+	}
+
+	public void setupLongOperations() {
+		var items = new ArrayList<SettingsItem>();
+
+		var repositories = getDatabase().getRepositoryDao()
+				.getRepositories(manager.getId());
+
+		items.addAll(stream(repositories)
+				.map(RepositorySetting::new)
+				.toList());
+
+		items.addAll(stream(manager.getExtensions(0)).sorted()
+				.map(extension -> new ExtensionSetting(activity, extension))
+				.toList());
+
+		copyFrom(new Builder(SettingsItemType.SCREEN)
+				.setTitle(manager.getName() + " " + activity.getString(R.string.extensions))
+				.setItems(items)
+				.build());
 	}
 
 	@Override
@@ -240,6 +287,38 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	public void onChange(SettingsItem item, int position) {
 		if(editItemListener != null) {
 			editItemListener.run(item, position);
+		}
+	}
+
+	private class RepositorySetting extends CustomSettingsItem {
+		private final DBRepository repository;
+
+		public RepositorySetting(DBRepository repository) {
+			super(SettingsItemType.ACTION);
+			this.repository = repository;
+		}
+
+		@Override
+		public String getTitle(Context context) {
+			return repository.url;
+		}
+
+		@Override
+		public void onClick(Context context) {
+			new DialogBuilder(context)
+					.setTitle("Delete repository")
+					.setMessage("Are you sure want to delete the \"" + repository.url + "\" repository? This action cannot be undone.")
+					.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+					.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
+						var dao = getDatabase().getRepositoryDao();
+						dao.remove(repository);
+
+						if(deleteItemListener != null) runOnUiThread(() ->
+								deleteItemListener.run(this, null));
+
+						dialog.dismiss();
+					}).start())
+					.show();
 		}
 	}
 

@@ -4,21 +4,41 @@ import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
+import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
 import eu.kanade.tachiyomi.source.ConfigurableSource;
 import eu.kanade.tachiyomi.source.MangaSource;
+import eu.kanade.tachiyomi.source.online.HttpSource;
 
 public class TachiyomiProvider extends YomiProvider {
-	private final Collection<Integer> FEATURES = List.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
+	private final List<Integer> features = new ArrayList<>();
 	private final MangaSource source;
 
-	public TachiyomiProvider(ExtensionsManager manager, Extension extension, MangaSource source) {
+	public TachiyomiProvider(YomiManager manager, Extension extension, MangaSource source) {
 		super(manager, extension);
+
+		this.features.addAll(manager.getBaseFeatures());
+
+		if(extension.isNsfw()) {
+			this.features.add(FEATURE_NSFW);
+		}
+
 		this.source = source;
+	}
+
+	@Override
+	public String getPreviewUrl() {
+		if(source instanceof HttpSource httpSource) {
+			return httpSource.getBaseUrl();
+		}
+
+		return null;
 	}
 
 	@Override
@@ -30,7 +50,7 @@ public class TachiyomiProvider extends YomiProvider {
 
 	@Override
 	public Collection<Integer> getFeatures() {
-		return FEATURES;
+		return features;
 	}
 
 	@Override

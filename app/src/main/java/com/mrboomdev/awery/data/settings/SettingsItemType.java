@@ -5,6 +5,10 @@ import com.squareup.moshi.Json;
 public enum SettingsItemType {
 	@Json(name = "boolean")
 	BOOLEAN,
+	@Json(name = "divider")
+	DIVIDER,
+	@Json(name = "category")
+	CATEGORY,
 	@Json(name = "screen_boolean")
 	SCREEN_BOOLEAN,
 	@Json(name = "color")

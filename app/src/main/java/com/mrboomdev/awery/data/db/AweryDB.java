@@ -11,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.mrboomdev.awery.data.db.dao.CatalogListDao;
 import com.mrboomdev.awery.data.db.dao.CatalogMediaDao;
 import com.mrboomdev.awery.data.db.dao.CatalogMediaProgressDao;
+import com.mrboomdev.awery.data.db.dao.RepositoryDao;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.util.ParserAdapter;
 
@@ -26,6 +27,7 @@ import com.mrboomdev.awery.util.ParserAdapter;
 		entities = {
 				DBCatalogMedia.class,
 				DBCatalogList.class,
+				DBRepository.class,
 				CatalogMediaProgress.class
 		}
 ) public abstract class AweryDB extends RoomDatabase {
@@ -33,6 +35,8 @@ import com.mrboomdev.awery.util.ParserAdapter;
 	public abstract CatalogMediaDao getMediaDao();
 
 	public abstract CatalogListDao getListDao();
+
+	public abstract RepositoryDao getRepositoryDao();
 
 	public abstract CatalogMediaProgressDao getMediaProgressDao();
 

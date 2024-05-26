@@ -4,12 +4,16 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 public abstract class ExtensionsManager {
 
@@ -67,6 +71,10 @@ public abstract class ExtensionsManager {
 
 	public void uninstallExtension(Context context, String id) {
 		unloadExtension(context, id);
+	}
+
+	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {
+		callback.onResult(null, new UnimplementedException("This extension manager do not support repositories!"));
 	}
 
 	/**

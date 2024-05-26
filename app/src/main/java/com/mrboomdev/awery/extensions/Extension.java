@@ -17,8 +17,7 @@ public class Extension implements Comparable<Extension> {
 	public static final int FLAG_ERROR = 1;
 	public static final int FLAG_WORKING = 2;
 	public static final int FLAG_NSFW = 4;
-	private final String version, id;
-	private final String name;
+	private final String version, id, name, fileUrl;
 	private boolean isLoaded;
 	private int flags;
 	private String error;
@@ -33,7 +32,21 @@ public class Extension implements Comparable<Extension> {
 		this.version = version;
 		this.id = id;
 		this.manager = manager;
+		this.fileUrl = null;
 		addFlags(FLAG_WORKING);
+	}
+
+	public Extension(String id, String name, String version, String fileUrl) {
+		this.name = name;
+		this.version = version;
+		this.id = id;
+		this.manager = null;
+		this.fileUrl = fileUrl;
+		addFlags(FLAG_WORKING);
+	}
+
+	public String getFileUrl() {
+		return fileUrl;
 	}
 
 	public ExtensionsManager getManager() {

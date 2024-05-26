@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -103,24 +104,27 @@ public class SettingsData {
 			@NonNull String behaviourId,
 			Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
+		if(behaviourId.startsWith("extensions_")) {
+			var manager = switch(behaviourId) {
+				case "extensions_aweryjs" -> JsManager.class;
+				case "extensions_miru" -> MiruManager.class;
+				case "extensions_cloudstream" -> CloudstreamManager.class;
+				case "extensions_aniyomi" -> AniyomiManager.class;
+				case "extensions_tachiyomi" -> TachiyomiManager.class;
+				default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
+			};
+
+			var screen = new ExtensionSettings(activity, ExtensionsFactory.getManager(manager));
+
+			new Thread(() -> {
+				screen.setupLongOperations();
+				runOnUiThread(() -> callback.onResult(screen, null));
+			}).start();
+
+			return;
+		}
+
 		switch(behaviourId) {
-			case "extensions_aweryjs" -> callback.onResult(
-					new ExtensionSettings(activity, ExtensionsFactory.getManager(JsManager.class)), null);
-
-			case "extensions_miru" -> callback.onResult(
-					new ExtensionSettings(activity, ExtensionsFactory.getManager(MiruManager.class)), null);
-
-			case "extensions_cloudstream" -> callback.onResult(
-					new ExtensionSettings(activity, ExtensionsFactory.getManager(CloudstreamManager.class)), null);
-
-			case "extensions_aniyomi" -> callback.onResult(
-					new ExtensionSettings(activity, ExtensionsFactory.getManager(AniyomiManager.class)), null);
-
-			case "extensions_tachiyomi" -> callback.onResult(
-					new ExtensionSettings(activity, ExtensionsFactory.getManager(TachiyomiManager.class)), null);
-
-			case "tabs" -> callback.onResult(new TabsSettings(), null);
-
 			default -> callback.onResult(null,
 					new IllegalArgumentException("Unknown screen: " + behaviourId));
 		}

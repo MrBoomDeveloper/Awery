@@ -40,7 +40,7 @@
         app:layout_constraintRight_toLeftOf="@id/toggle"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
         app:layout_goneMarginLeft="18dp"
-        tools:text="dvdfvdfvdfvdfvdfvdfvdffbvdfvdfv" />
+        tools:text="This is an complex multiline setting title" />
 
     <TextView
         android:id="@+id/description"
@@ -52,7 +52,7 @@
         app:layout_constraintRight_toRightOf="@id/title"
         app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:text="@tools:sample/lorem/random"
+        tools:text="My awesome super puper duper setting description."
         tools:visibility="visible" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial

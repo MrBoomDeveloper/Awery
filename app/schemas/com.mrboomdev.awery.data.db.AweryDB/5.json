@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "dc58519adb2abb74801c222e3ad7a273",
+    "identityHash": "0e19009c627d29c6752080968b942a8e",
     "entities": [
       {
         "tableName": "media",
@@ -177,6 +177,39 @@
         "foreignKeys": []
       },
       {
+        "tableName": "repository",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`url` TEXT NOT NULL, `manager` TEXT NOT NULL, `is_enabled` INTEGER NOT NULL DEFAULT true, PRIMARY KEY(`url`))",
+        "fields": [
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "manager",
+            "columnName": "manager",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "true"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "url"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "media_progress",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`global_id` TEXT NOT NULL, `last_watch_source` TEXT, `last_season` REAL, `last_variant` TEXT, `last_episode` REAL, `last_id` TEXT, `last_title` TEXT, `last_comments_source` TEXT, `last_relations_source` TEXT, `lists` TEXT, `trackers` TEXT, `progresses` TEXT, PRIMARY KEY(`global_id`))",
         "fields": [
@@ -266,7 +299,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dc58519adb2abb74801c222e3ad7a273')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0e19009c627d29c6752080968b942a8e')"
     ]
   }
 }

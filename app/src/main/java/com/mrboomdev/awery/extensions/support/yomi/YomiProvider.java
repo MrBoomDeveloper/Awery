@@ -88,8 +88,8 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 					@Override
 					public List<SettingsItem> getItems() {
-							return prefVariants;
-						}
+						return prefVariants;
+					}
 
 					@Override
 					public String getStringValue() {

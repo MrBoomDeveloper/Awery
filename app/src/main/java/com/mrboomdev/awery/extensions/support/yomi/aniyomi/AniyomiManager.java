@@ -1,12 +1,15 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_WATCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +18,7 @@ import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 
 public class AniyomiManager extends YomiManager {
 	protected static final String TYPE_ID = "ANIYOMI_KOTLIN";
+	private static final List<Integer> BASE_FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
 
 	@Override
 	public String getName() {
@@ -57,13 +61,18 @@ public class AniyomiManager extends YomiManager {
 	}
 
 	@Override
+	public Collection<Integer> getBaseFeatures() {
+		return BASE_FEATURES;
+	}
+
+	@Override
 	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeCatalogueSource source) {
 			return List.of(new AniyomiProvider(this, extension, source));
 		} else if(main instanceof AnimeSourceFactory factory) {
 			return stream(factory.createSources())
-					.map(source -> source instanceof AnimeCatalogueSource catalogueSource
-							? new AniyomiProvider(this, extension, catalogueSource, true) : null)
+					.map(source -> source instanceof AnimeCatalogueSource catalogueSource ? new AniyomiProvider(
+							this, extension, catalogueSource, true) : null)
 					.filter(item -> {
 						if(item == null) {
 							toast("Failed to create Aniyomi provider");

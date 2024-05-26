@@ -7,13 +7,13 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -27,33 +27,38 @@ import org.jetbrains.annotations.Contract;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource;
-import eu.kanade.tachiyomi.animesource.model.AnimeUpdateStrategy;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
-import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
 import java9.util.stream.Collectors;
 import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends YomiProvider {
 	protected final AnimeCatalogueSource source;
-	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
+	private final List<Integer> features = new ArrayList<>();
 	private final boolean isFromSource;
 
-	public AniyomiProvider(ExtensionsManager manager, Extension extension, AnimeCatalogueSource source) {
+	public AniyomiProvider(YomiManager manager, Extension extension, AnimeCatalogueSource source) {
 		super(manager, extension);
+
+		this.features.addAll(manager.getBaseFeatures());
+
+		if(extension.isNsfw()) {
+			this.features.add(FEATURE_NSFW);
+		}
 
 		this.source = source;
 		this.isFromSource = false;
 	}
 
-	public AniyomiProvider(ExtensionsManager manager, Extension extension, AnimeCatalogueSource source, boolean isFromSource) {
+	public AniyomiProvider(YomiManager manager, Extension extension, AnimeCatalogueSource source, boolean isFromSource) {
 		super(manager, extension);
+
+		this.features.addAll(manager.getBaseFeatures());
 
 		this.source = source;
 		this.isFromSource = isFromSource;
@@ -61,6 +66,15 @@ public class AniyomiProvider extends YomiProvider {
 
 	public boolean isFromSourceFactory() {
 		return isFromSource;
+	}
+
+	@Override
+	public String getPreviewUrl() {
+		if(source instanceof AnimeHttpSource httpSource) {
+			return httpSource.getBaseUrl();
+		}
+
+		return null;
 	}
 
 	@Override
@@ -116,7 +130,7 @@ public class AniyomiProvider extends YomiProvider {
 
 	@Override
 	public Collection<Integer> getFeatures() {
-		return FEATURES;
+		return features;
 	}
 
 	@NonNull

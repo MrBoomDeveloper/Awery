@@ -362,7 +362,7 @@ public class SettingsItem {
 				yield null;
 			}
 
-			case ACTION -> null;
+			case ACTION, DIVIDER, CATEGORY -> null;
 		};
 	}
 

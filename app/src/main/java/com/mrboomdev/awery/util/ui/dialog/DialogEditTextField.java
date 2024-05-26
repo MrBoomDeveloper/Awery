@@ -7,6 +7,7 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,7 +23,7 @@ public class DialogEditTextField implements DialogField {
 	private TextInputEditText editText;
 
 	public DialogEditTextField(@NonNull Context context, @StringRes int hint) {
-		this.hint = context.getString(hint);
+		this.hint = ContextCompat.getString(context, hint);
 		this.context = context;
 	}
 

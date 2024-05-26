@@ -46,12 +46,21 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final int FEATURE_COMMENTS_PER_EPISODE = 11;
 	public static final int FEATURE_CHANGELOG = 12;
 	public static final int FEATURE_COMMENTS_OPEN_ACCOUNT = 13;
+	/**
+	 * It's more not a feature. Just a mark that this provider is nsfw
+	 */
+	public static final int FEATURE_NSFW = 14;
 	private final ExtensionsManager manager;
 	private final Extension extension;
 
 	public ExtensionProvider(ExtensionsManager manager, Extension extension) {
 		this.manager = manager;
 		this.extension = extension;
+	}
+
+	public ExtensionProvider() {
+		this.manager = null;
+		this.extension = null;
 	}
 
 	public Extension getExtension() {
@@ -160,6 +169,10 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public abstract String getId();
+
+	public String getPreviewUrl() {
+		return null;
+	}
 
 	/**
 	 * @apiNote The returned value can be an array of format: "en;ru;jp"

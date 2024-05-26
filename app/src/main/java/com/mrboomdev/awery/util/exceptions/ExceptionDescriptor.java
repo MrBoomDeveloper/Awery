@@ -211,7 +211,7 @@ public class ExceptionDescriptor {
 
 		if(throwable.getMessage() != null && throwable.getMessage().contains(ROOM_EXCEPTION)) {
 			return "Yeah, you've hear right. The database has been corrupted!" +
-					"\nHow can you fix it? You can't!" +
+					"\nHow can you fix it? Clear app data." +
 					"\n\nPlease, do not use alpha versions to keep your library. Use them only to test new things." +
 					"\n\n" + getGenericMessage(throwable);
 		}

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -9,13 +10,21 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.io.HttpClient;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,6 +52,8 @@ public abstract class YomiManager extends ExtensionsManager {
 	public abstract double getMinVersion();
 
 	public abstract double getMaxVersion();
+
+	public abstract Collection<Integer> getBaseFeatures();
 
 	public abstract List<? extends ExtensionProvider> createProviders(Extension extension, Object main);
 
@@ -116,7 +127,8 @@ public abstract class YomiManager extends ExtensionsManager {
 			throw new NullPointerException("Extension " + id + " not found!");
 		}
 
-		if(!AwerySettings.getInstance().getBoolean(ExtensionSettings.getExtensionKey(extension) + "_enabled", true)) {
+		var key = ExtensionSettings.getExtensionKey(extension) + "_enabled";
+		if(!AwerySettings.getInstance().getBoolean(key, true)) {
 			return;
 		}
 
@@ -236,5 +248,39 @@ public abstract class YomiManager extends ExtensionsManager {
 		} else if(version > maxVersion) {
 			throw new IllegalArgumentException("Unsupported new version!");
 		}
+	}
+
+	@Override
+	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {
+		HttpClient.get(url).callAsync(getAnyContext(), new HttpClient.HttpCallback() {
+
+			@Override
+			public void onResponse(HttpClient.HttpResponse response) {
+				var moshi = new Moshi.Builder().build();
+				var adapter = moshi.<List<YomiRepoItem>>adapter(Types.newParameterizedType(List.class, YomiRepoItem.class));
+
+				try {
+					var list = adapter.fromJson(response.getText());
+
+					if(list == null) {
+						callback.onResult(null, new ZeroResultsException(
+								"No extensions found", R.string.no_extensions_found));
+
+						return;
+					}
+
+					callback.onResult(stream(list)
+							.map(item -> item.toExtension(YomiManager.this))
+							.toList(), null);
+				} catch(IOException e) {
+					callback.onResult(null, e);
+				}
+			}
+
+			@Override
+			public void onError(Throwable exception) {
+				callback.onResult(null, exception);
+			}
+		});
 	}
 }
