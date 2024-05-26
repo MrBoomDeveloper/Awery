@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.LayoutHeaderSettingsBinding;
@@ -291,6 +292,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Override
 	public void save(@NonNull SettingsItem item, Object newValue) {
+		if(item instanceof CustomSettingsItem custom) {
+			custom.saveValue(newValue);
+			return;
+		}
+
 		(switch(item.getType()) {
 			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue);
 			case SELECT -> settings.setString(item.getFullKey(), (String) newValue);

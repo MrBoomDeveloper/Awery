@@ -56,13 +56,13 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 					@Override
 					public void saveValue(Object value) {
-							switchPref.setChecked(false);
-						}
+						switchPref.setChecked((boolean) value);
+					}
 
 					@Override
 					public Boolean getBooleanValue() {
-							return switchPref.isChecked();
-						}
+						return switchPref.isChecked();
+					}
 				});
 			} else if(preference instanceof ListPreference listPref) {
 				var prefVariants = new ArrayList<SettingsItem>();
@@ -186,7 +186,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 		@Nullable
 		@Override
 		public String getDescription(Context context) {
-			return preference.getSummary() == null ? null : preference.getSummary().toString();
+			return preference.getSummary() == null ? null : preference.getSummary().toString().trim();
 		}
 	}
 }

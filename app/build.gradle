@@ -116,7 +116,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
-    implementation "androidx.fragment:fragment-ktx:1.7.0"
+    implementation "androidx.fragment:fragment-ktx:1.7.1"
     implementation "androidx.preference:preference-ktx:1.2.1"
 
     // Exoplayer
@@ -142,7 +142,7 @@ dependencies {
     implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
     implementation "com.github.VipulOG:ebook-reader:0.1.6"
     implementation "com.github.emilaleborn:PageIndicatorView:905cd4e2ab"
-    implementation "androidx.paging:paging-runtime-ktx:3.2.1"
+    implementation "androidx.paging:paging-runtime-ktx:3.3.0"
     implementation "com.github.skydoves:colorpickerview:2.3.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "com.github.skydoves:balloon:1.6.4"
