@@ -395,4 +395,5 @@
     <string name="movies">영화</string>
     <string name="most_favourited">가장 선호하는 항목</string>
     <string name="top_rated">상위 등급</string>
+    <string name="dalayed">일시 중단됨</string>
 </resources>
