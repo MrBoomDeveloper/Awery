@@ -391,4 +391,8 @@
     <string name="add_extension">확장자 추가</string>
     <string name="pick_from_storage">저장소에서 선택</string>
     <string name="you_reached_end_description">더 이상의 결과를 찾을 수 없습니다. 원하는 것을 찾지 못했다면 쿼리와 필터를 변경해 보십시오.</string>
+    <string name="trending">인기 급상승</string>
+    <string name="movies">영화</string>
+    <string name="most_favourited">가장 선호하는 항목</string>
+    <string name="top_rated">상위 등급</string>
 </resources>
