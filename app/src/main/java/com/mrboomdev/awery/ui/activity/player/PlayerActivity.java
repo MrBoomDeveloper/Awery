@@ -115,7 +115,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		super.onCreate(savedInstanceState);
 		loadSettings();
 
-		registerReceiver(new BroadcastReceiver() {
+		/*registerReceiver(new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				switch(intent.getIntExtra(PLAYBACK_ACTION, -1)) {
@@ -135,7 +135,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 					setPictureInPictureParams(getPipParams());
 				}
-			}}, new IntentFilter(PLAYBACK_ACTION));
+			}}, new IntentFilter(PLAYBACK_ACTION));*/
 
 		binding = ScreenPlayerBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());

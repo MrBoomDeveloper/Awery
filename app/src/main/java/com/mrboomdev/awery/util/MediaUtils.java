@@ -34,7 +34,6 @@ import com.mrboomdev.awery.data.db.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
@@ -178,7 +177,7 @@ public class MediaUtils {
 		var dialog = new DialogBuilder(context)
 				.setTitle("Create new list")
 				.addView(input.getView())
-				.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+				.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 				.setPositiveButton("Create", _dialog -> {
 					var text = input.getText().trim();
 
@@ -205,7 +204,7 @@ public class MediaUtils {
 		new DialogBuilder(context)
 				.setTitle("Delete \"" + list.getTitle() + "\"?")
 				.setMessage(R.string.sure_delete_list_description)
-				.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+				.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 				.setPositiveButton(R.string.delete, dialog -> {
 					new Thread(() -> {
 						var dbList = DBCatalogList.fromCatalogList(list);

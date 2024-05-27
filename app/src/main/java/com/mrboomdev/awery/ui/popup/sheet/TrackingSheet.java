@@ -158,7 +158,7 @@ public class TrackingSheet {
 									return new Selection.Selectable<>(item, item.getId(), item.getTitle(),
 											(isSelected ? Selection.State.SELECTED : Selection.State.UNSELECTED));
 								}).collect(Selection.collect()))
-						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.setPositiveButton(R.string.ok, (dialog, selection) -> {
 							var selected = selection.get(Selection.State.SELECTED);
 							if(selected == null) return;

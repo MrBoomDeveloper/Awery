@@ -4,6 +4,8 @@ import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 public abstract class CustomSettingsItem extends SettingsItem {
 
+	public CustomSettingsItem() {}
+
 	public CustomSettingsItem(SettingsItemType type) {
 		this.type = type;
 	}

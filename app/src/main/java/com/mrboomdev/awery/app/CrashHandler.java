@@ -11,10 +11,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.BuildConfig;
@@ -23,11 +26,13 @@ import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.LocalizedException;
 import com.mrboomdev.awery.util.exceptions.MaybeNotBadException;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Objects;
 
 import xcrash.Errno;
@@ -90,7 +95,7 @@ public class CrashHandler {
 		toast(text, 1);
 
 		if(type != CrashType.ANR && type != CrashType.ANR_FAST) {
-			var crashFile = new File(getAnyContext().getExternalFilesDir(null), "crash.txt");
+			var crashFile = new File(getAnyContext().getFilesDir(), "crash.txt");
 
 			try {
 				if(!crashFile.exists()) crashFile.createNewFile();
@@ -105,7 +110,7 @@ public class CrashHandler {
 
 			try {
 				var activity = Objects.requireNonNull(getAnyActivity(Activity.class));
-				showErrorDialogImpl(activity, text, message, crashFile);
+				showErrorDialogImpl(activity, text, message, crashFile, null);
 			} catch(Exception ignored) {}
 		}
 	}
@@ -117,12 +122,12 @@ public class CrashHandler {
 					showErrorDialogImpl(context,
 							ex.getTitle(context),
 							ex.getDescription(context),
-							null);
+							null, null);
 				} else {
 					showErrorDialogImpl(context,
 							"Hmm...",
 							throwable.getMessage(),
-							null);
+							null, null);
 				}
 
 				return;
@@ -134,16 +139,16 @@ public class CrashHandler {
 		showErrorDialogImpl(context,
 				descriptor.getTitle(context),
 				context.getString(R.string.please_report_bug_app)
-						+ "\n\n" + descriptor.getMessage(context), null);
+						+ "\n\n" + descriptor.getMessage(context), null, null);
 	}
 
 	public static void showErrorDialog(Context context, String title, String messagePrefix, Throwable throwable) {
 		if(throwable != null) {
 			var descriptor = new ExceptionDescriptor(throwable);
 			var description = descriptor.getMessage(context);
-			showErrorDialogImpl(context, title, messagePrefix + "\n\n" + description, null);
+			showErrorDialogImpl(context, title, messagePrefix + "\n\n" + description, null, null);
 		} else {
-			showErrorDialogImpl(context, title, messagePrefix, null);
+			showErrorDialogImpl(context, title, messagePrefix, null, null);
 		}
 	}
 
@@ -155,36 +160,63 @@ public class CrashHandler {
 			@NonNull Context context,
 			String title,
 			String message,
-			File file
+			File file,
+			Runnable dismissCallback
 	) {
-		runOnUiThread(() -> new MaterialAlertDialogBuilder(context)
+		runOnUiThread(() -> new DialogBuilder(context)
 				.setTitle(title.trim())
 				.setMessage(message.trim())
 				.setCancelable(false)
 				.setOnDismissListener(dialog -> {
 					if(file != null) file.delete();
+
+					if(dismissCallback != null) {
+						dismissCallback.run();
+					}
 				})
-				.setNeutralButton("Copy", (dialog, btn) -> {
+				.setNeutralButton("Copy", dialog -> {
 					var clipboard = context.getSystemService(ClipboardManager.class);
 					var clip = ClipData.newPlainText("Crash report", message);
 					clipboard.setPrimaryClip(clip);
+					toast("Copied to clipboard");
 				})
-				.setNegativeButton(R.string.share, (dialog, btn) -> {
+				.setNegativeButton(R.string.share, dialog -> {
+					var newFile = new File(context.getFilesDir(), "crash_report.txt");
 					var intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("text/plain");
-					intent.putExtra(Intent.EXTRA_SUBJECT, "Crash report");
-					intent.putExtra(Intent.EXTRA_TEXT, message);
-					context.startActivity(Intent.createChooser(intent, "Share crash report..."));
+					intent.setType("*/*");
+
+					try {
+						newFile.delete();
+						newFile.createNewFile();
+
+						try(var writer = new FileWriter(newFile)) {
+							writer.write(message);
+						}
+
+						intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+								context, "com.mrboomdev.awery.FileProvider", newFile));
+					} catch(IOException e) {
+						Log.e(TAG, "Failed to write a file!", e);
+						intent.putExtra(Intent.EXTRA_TEXT, message);
+					}
+
+					context.startActivity(Intent.createChooser(intent, "Share crash report"));
 				})
-				.setPositiveButton("OK", (dialog, btn) -> dialog.dismiss())
+				.setPositiveButton("OK", DialogBuilder::dismiss)
 				.show());
 	}
 
-	public static void reportIfCrashHappened(@NonNull Context context) {
-		var crashFile = new File(context.getExternalFilesDir(null), "crash.txt");
+	public static void reportIfCrashHappened(@NonNull Context context, Runnable dismissCallback) {
+		var crashFile = new File(context.getFilesDir(), "crash.txt");
 
 		try {
-			if(!crashFile.exists()) return;
+			if(!crashFile.exists()) {
+				if(dismissCallback != null) {
+					dismissCallback.run();
+				}
+
+				return;
+			}
 
 			try(var reader = new BufferedReader(new FileReader(crashFile))) {
 				StringBuilder result = new StringBuilder();
@@ -217,10 +249,11 @@ public class CrashHandler {
 				}
 
 				var content = context.getString(R.string.please_report_bug_app) + "\n\n" + message.trim();
-				showErrorDialogImpl(context, "Awery has crashed!", content, crashFile);
+				showErrorDialogImpl(context, "Awery has crashed!", content, crashFile, dismissCallback);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);
+			if(dismissCallback != null) dismissCallback.run();
 		}
 	}
 }

@@ -1,9 +1,11 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -246,5 +248,10 @@ public class AniyomiProvider extends YomiProvider {
 		if(source instanceof ConfigurableAnimeSource configurableAnimeSource) {
 			configurableAnimeSource.setupPreferenceScreen(screen);
 		}
+	}
+
+	@Override
+	protected SharedPreferences getSharedPreferences() {
+		return getAnyContext().getSharedPreferences("source_" + source.getId(), 0);
 	}
 }

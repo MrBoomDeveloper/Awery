@@ -188,13 +188,13 @@ public class SelectionDialog<T> extends DialogBuilder {
 	}
 
 	@Override
-	public SelectionDialog<T> setCancelButton(String label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setCancelButton(label, listener);
+	public SelectionDialog<T> setNegativeButton(String label, OnButtonClickListener listener) {
+		return (SelectionDialog<T>) super.setNegativeButton(label, listener);
 	}
 
 	@Override
-	public SelectionDialog<T> setCancelButton(int label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setCancelButton(label, listener);
+	public SelectionDialog<T> setNegativeButton(int label, OnButtonClickListener listener) {
+		return (SelectionDialog<T>) super.setNegativeButton(label, listener);
 	}
 
 	@Override

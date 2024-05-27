@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
@@ -72,14 +73,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		if(path != null) {
 			item = AwerySettings.getCached(path);
 
-			if(item != null) {
-				if(path.startsWith("ext_") && item.getItems().size() == 1) {
-					item = item.getItems().get(0);
-				}
-			} else {
-				item = AwerySettings.getSettingsMap(this).find(path);
-			}
-
 			if(item == null) {
 				toast(this, "Failed to get settings", 0);
 				finish();
@@ -106,14 +99,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 		}
 
-		setContentView(createView(item));
+		doIfNotNull(createView(item), view -> {
+			setContentView(view);
 
-		activityResultLauncher = registerForActivityResult(
-				new ActivityResultContracts.StartActivityForResult(), result -> {
-					for(var callback : callbacks) {
-						callback.onActivityResult(result);
-					}
-				});
+			activityResultLauncher = registerForActivityResult(
+					new ActivityResultContracts.StartActivityForResult(), result -> {
+						for(var callback : callbacks) {
+							callback.onActivityResult(result);
+						}
+					});
+		});
 	}
 
 	@Override
@@ -207,7 +202,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}).attachToRecyclerView(recycler);
 	}
 
-	@NonNull
+	@Nullable
 	private View createView(@NonNull SettingsItem item) {
 		item.restoreValues(AwerySettings.getInstance(this));
 
@@ -222,6 +217,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				.build();
 
 		if(item.getItems() != null) {
+			if(item.getItems().isEmpty()) {
+				finish();
+				return null;
+			}
+
 			var recyclerAdapter = new SettingsAdapter(item,
 					(item instanceof SettingsDataHandler handler) ? handler : this);
 

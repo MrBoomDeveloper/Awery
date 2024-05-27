@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
 
 		binding.navbar.removeTabAt(2);
-		reportIfCrashHappened(this);
 	}
 
 	@Override
@@ -115,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
 	enum Pages { MAIN, LIBRARY }
 
 	private class MainFragmentAdapter extends FragmentStateAdapter {
-
 
 		public MainFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
 			super(fragmentManager, lifecycle);

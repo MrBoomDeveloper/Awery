@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -748,7 +747,7 @@ public class MediaCommentsFragment extends Fragment {
 
 							dialog.dismiss();
 						})
-						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.show();
 			});
 

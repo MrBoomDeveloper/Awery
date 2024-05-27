@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +14,7 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreferenceCompat;
+import androidx.preference.TwoStatePreference;
 
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -32,7 +33,9 @@ public abstract class YomiProvider extends ExtensionProvider {
 		super(manager, extension);
 	}
 
-	public abstract void setupPreferenceScreen(PreferenceScreen screen);
+	protected abstract void setupPreferenceScreen(PreferenceScreen screen);
+
+	protected abstract SharedPreferences getSharedPreferences();
 
 	@Override
 	@SuppressLint("RestrictedApi")
@@ -50,106 +53,13 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 		for(int i = 0; i < screen.getPreferenceCount(); i++) {
 			var preference = screen.getPreference(i);
-
-			if(preference instanceof SwitchPreferenceCompat switchPref) {
-				items.add(new YomiSetting(SettingsItemType.BOOLEAN, preference) {
-
-					@Override
-					public void saveValue(Object value) {
-						switchPref.setChecked((boolean) value);
-					}
-
-					@Override
-					public Boolean getBooleanValue() {
-						return switchPref.isChecked();
-					}
-				});
-			} else if(preference instanceof ListPreference listPref) {
-				var prefVariants = new ArrayList<SettingsItem>();
-				var entries = listPref.getEntries();
-				var values = listPref.getEntryValues();
-
-				for(int index = 0; index < entries.length; index++) {
-					var title = entries[index];
-					var value = values[index];
-
-					prefVariants.add(new SettingsItem.Builder(SettingsItemType.STRING)
-							.setTitle(title.toString())
-							.setKey(value.toString())
-							.build());
-				}
-
-				items.add(new YomiSetting(SettingsItemType.SELECT, preference) {
-
-					@Override
-					public void saveValue(Object value) {
-							listPref.setValue(value.toString());
-						}
-
-					@Override
-					public List<SettingsItem> getItems() {
-						return prefVariants;
-					}
-
-					@Override
-					public String getStringValue() {
-							return listPref.getValue();
-						}
-				});
-			} else if(preference instanceof MultiSelectListPreference multiSelectPref) {
-				var prefVariants = new ArrayList<SettingsItem>();
-				var entries = multiSelectPref.getEntries();
-				var values = multiSelectPref.getEntryValues();
-
-				for(int index = 0; index < entries.length; index++) {
-					var title = entries[index];
-					var value = values[index];
-
-					prefVariants.add(new SettingsItem.Builder(SettingsItemType.STRING)
-							.setTitle(title.toString())
-							.setKey(value.toString())
-							.build());
-				}
-
-				items.add(new YomiSetting(SettingsItemType.MULTISELECT, preference) {
-
-					@Override
-					@SuppressWarnings("unchecked")
-					public void saveValue(Object value) {
-							multiSelectPref.setValues((Set<String>) value);
-						}
-
-					@Override
-					public List<SettingsItem> getItems() {
-							return prefVariants;
-						}
-
-					@Override
-					public Set<String> getStringSetValue() {
-							return multiSelectPref.getValues();
-						}
-				});
-			} else if(preference instanceof EditTextPreference editTextPreference) {
-				items.add(new YomiSetting(SettingsItemType.STRING, preference) {
-					@Override
-					public void saveValue(Object value) {
-							editTextPreference.setText(value.toString());
-						}
-
-					@Override
-					public String getStringValue() {
-							return editTextPreference.getText();
-						}
-				});
-			} else {
-				toast("Unsupported setting: " + preference.getClass().getName());
-			}
+			items.add(new YomiSetting(preference));
 		}
 
 		callback.onSuccess(new SettingsItem() {
 			@Override
 			public String getTitle(Context context) {
-				return getName() + " [" + getLang() + "]";
+				return getName();
 			}
 
 			@Override
@@ -164,12 +74,44 @@ public abstract class YomiProvider extends ExtensionProvider {
 		});
 	}
 
-	private static class YomiSetting extends CustomSettingsItem {
+	private class YomiSetting extends CustomSettingsItem {
+		private final List<SettingsItem> items;
 		private final Preference preference;
 
-		public YomiSetting(SettingsItemType type, Preference preference) {
-			super(type);
+		public YomiSetting(Preference preference) {
 			this.preference = preference;
+
+			if(preference instanceof ListPreference listPref) {
+				this.items = new ArrayList<>();
+				var entries = listPref.getEntries();
+				var values = listPref.getEntryValues();
+
+				for(int index = 0; index < entries.length; index++) {
+					var title = entries[index];
+					var value = values[index];
+
+					items.add(new SettingsItem.Builder(SettingsItemType.STRING)
+							.setTitle(title.toString())
+							.setKey(value.toString())
+							.build());
+				}
+			} else if(preference instanceof MultiSelectListPreference multiSelectPref) {
+				this.items = new ArrayList<>();
+				var entries = multiSelectPref.getEntries();
+				var values = multiSelectPref.getEntryValues();
+
+				for(int index = 0; index < entries.length; index++) {
+					var title = entries[index];
+					var value = values[index];
+
+					items.add(new SettingsItem.Builder(SettingsItemType.STRING)
+							.setTitle(title.toString())
+							.setKey(value.toString())
+							.build());
+				}
+			} else {
+				this.items = null;
+			}
 		}
 
 		@NonNull
@@ -187,6 +129,82 @@ public abstract class YomiProvider extends ExtensionProvider {
 		@Override
 		public String getDescription(Context context) {
 			return preference.getSummary() == null ? null : preference.getSummary().toString().trim();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void saveValue(Object value) {
+			var prefs = getSharedPreferences().edit();
+
+			if(preference instanceof TwoStatePreference) {
+				prefs.putBoolean(preference.getKey(), (boolean) value);
+			} else if(preference instanceof ListPreference) {
+				prefs.putString(preference.getKey(), value.toString());
+			} else if(preference instanceof MultiSelectListPreference) {
+				prefs.putStringSet(preference.getKey(), (Set<String>) value);
+			} else if(preference instanceof EditTextPreference textPref) {
+				prefs.putString(preference.getKey(), value.toString());
+			} else {
+				throw new IllegalStateException("Unknown preference type!");
+			}
+
+			prefs.apply();
+		}
+
+		@NonNull
+		@Override
+		public Boolean getBooleanValue() {
+			var prefs = getSharedPreferences();
+
+			if(preference instanceof TwoStatePreference switchPref) {
+				return prefs.getBoolean(preference.getKey(), switchPref.isChecked());
+			}
+
+			throw new IllegalStateException("Unknown preference type!");
+		}
+
+		@Override
+		public String getStringValue() {
+			var prefs = getSharedPreferences();
+
+			if(preference instanceof ListPreference listPref) {
+				return prefs.getString(preference.getKey(), listPref.getValue());
+			} else if(preference instanceof EditTextPreference textPref) {
+				return prefs.getString(preference.getKey(), textPref.getText());
+			}
+
+			throw new IllegalStateException("Unknown preference type!");
+		}
+
+		@Override
+		public Set<String> getStringSetValue() {
+			var prefs = getSharedPreferences();
+
+			if(preference instanceof MultiSelectListPreference multiSelectPref) {
+				return prefs.getStringSet(preference.getKey(), multiSelectPref.getValues());
+			}
+
+			throw new IllegalStateException("Unknown preference type!");
+		}
+
+		@Override
+		public SettingsItemType getType() {
+			if(preference instanceof TwoStatePreference) {
+				return SettingsItemType.BOOLEAN;
+			} else if(preference instanceof ListPreference) {
+				return SettingsItemType.SELECT;
+			} else if(preference instanceof MultiSelectListPreference) {
+				return SettingsItemType.MULTISELECT;
+			} else if(preference instanceof EditTextPreference) {
+				return SettingsItemType.STRING;
+			}
+
+			throw new IllegalStateException("Unknown preference type!");
+		}
+
+		@Override
+		public List<SettingsItem> getItems() {
+			return items;
 		}
 	}
 }

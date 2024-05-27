@@ -145,7 +145,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						.setTitle(R.string.add_extension)
 						.addView(inputField.getView())
 						.setOnDismissListener(dialog -> currentDialog = dialog)
-						.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
 						.setPositiveButton(R.string.ok, dialog -> {
 							var text = inputField.getText().trim();
@@ -308,7 +308,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			new DialogBuilder(context)
 					.setTitle("Delete repository")
 					.setMessage("Are you sure want to delete the \"" + repository.url + "\" repository? This action cannot be undone.")
-					.setCancelButton(R.string.cancel, DialogBuilder::dismiss)
+					.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 					.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
 						var dao = getDatabase().getRepositoryDao();
 						dao.remove(repository);

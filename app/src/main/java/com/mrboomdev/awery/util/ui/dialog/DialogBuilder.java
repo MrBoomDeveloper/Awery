@@ -26,6 +26,7 @@ public class DialogBuilder {
 	private ViewGroup fieldsWrapper;
 	private String title, message, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
 	private Dialog dialog;
+	private boolean isCancelable = true;
 
 	public DialogBuilder(Context context) {
 		this.context = context;
@@ -69,6 +70,11 @@ public class DialogBuilder {
 		return setNeutralButton(context.getString(label), listener);
 	}
 
+	public DialogBuilder setCancelable(boolean isCancelable) {
+		this.isCancelable = isCancelable;
+		return this;
+	}
+
 	public void performPositiveClick() {
 		if(okListener != null) {
 			okListener.clicked(this);
@@ -81,20 +87,20 @@ public class DialogBuilder {
 		}
 	}
 
-	public void performCancelClick() {
+	public void performNegativeClick() {
 		if(cancelListener != null) {
 			cancelListener.clicked(this);
 		}
 	}
 
-	public DialogBuilder setCancelButton(String label, OnButtonClickListener listener) {
+	public DialogBuilder setNegativeButton(String label, OnButtonClickListener listener) {
 		this.cancelListener = listener;
 		this.cancelButtonLabel = label;
 		return this;
 	}
 
-	public DialogBuilder setCancelButton(@StringRes int label, OnButtonClickListener listener) {
-		return setCancelButton(context.getString(label), listener);
+	public DialogBuilder setNegativeButton(@StringRes int label, OnButtonClickListener listener) {
+		return setNegativeButton(context.getString(label), listener);
 	}
 
 	public DialogBuilder setOnDismissListener(Callbacks.Callback1<DialogBuilder> listener) {
@@ -193,6 +199,7 @@ public class DialogBuilder {
 		}*/
 
 		var builder = new MaterialAlertDialogBuilder(context);
+		builder.setCancelable(isCancelable);
 
 		if(fieldsLinear.getChildCount() > 0) {
 			builder.setView(scroller);

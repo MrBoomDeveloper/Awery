@@ -167,7 +167,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
 							.addView(inputField.getView())
-							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
 								if(setting instanceof CustomSettingsItem custom) {
 									custom.saveValue(inputField.getText());
@@ -200,7 +200,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
 							.addView(inputField.getView())
-							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
 								if(inputField.getText().isBlank()) {
 									inputField.setError("Text cannot be empty!");
@@ -246,7 +246,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case SELECT, SELECT_INT -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
 							.setTitle(setting.getTitle(context))
-							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
 								if(setting instanceof CustomSettingsItem customSetting) {
 									var item = selection.get(Selection.State.SELECTED);
@@ -343,7 +343,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case MULTISELECT -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.MULTI)
 							.setTitle(setting.getTitle(parent.getContext()))
-							.setCancelButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
 								var items = selection.getAll(Selection.State.SELECTED);
 								if(items == null) return;
