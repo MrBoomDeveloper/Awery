@@ -482,4 +482,6 @@
     <string name="searching_episodes_for"></string>
     <string name="show_spoilers"></string>
     <string name="searching_for"></string>
+    <string name="see_error"></string>
+    <string name="wallpaper_based_colors"></string>
 </resources>
