@@ -449,5 +449,5 @@
     <string name="tracking">Verfolgung</string>
     <string name="adult_content">Erwachseneninhalt</string>
     <string name="read_now">Jetzt lesen</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
