@@ -48,7 +48,7 @@
 					"description": "default_tab_description",
 					"title": "startUpTab", "icon": "ic_round_home_24",
 					"items": [
-						{ "key": "MAIN", "title": "Anime" },
+						{ "key": "MAIN", "title": "Home" },
 						{ "key": "LIBRARY", "title": "Library" }
 					]
 				}, {

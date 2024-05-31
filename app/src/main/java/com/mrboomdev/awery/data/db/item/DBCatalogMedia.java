@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.data.db;
+package com.mrboomdev.awery.data.db.item;
 
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 

@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.db.DBCatalogMedia;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;

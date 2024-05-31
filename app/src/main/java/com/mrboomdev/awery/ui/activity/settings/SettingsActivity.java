@@ -27,8 +27,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
@@ -44,6 +46,7 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
@@ -127,11 +130,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		activityResultLauncher = null;
 	}
 
-	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
+	public void addActivityResultCallback(
+			ActivityResultCallback<ActivityResult> callback
+	) {
 		callbacks.add(callback);
 	}
 
-	public void removeActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
+	public void removeActivityResultCallback(
+			ActivityResultCallback<ActivityResult> callback
+	) {
 		callbacks.remove(callback);
 	}
 
@@ -177,28 +184,52 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				setHorizontalPadding(binding.getRoot(), insets.left, insets.right), parent);
 	}
 
-	private void setupReordering(RecyclerView recycler, @NonNull SettingsItem item) {
-		if(!item.isReordable()) return;
-
+	private void setupReordering(RecyclerView recycler, SettingsAdapter adapter) {
 		var directions = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
 
 		new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(directions, 0) {
 
 			@Override
-			public boolean onMove(
-					@NonNull RecyclerView recyclerView,
-					@NonNull RecyclerView.ViewHolder viewHolder,
-					@NonNull RecyclerView.ViewHolder target
-			) {
-				return item.onReordered(
-						viewHolder.getAbsoluteAdapterPosition(),
-						target.getAbsoluteAdapterPosition());
+			public int getDragDirs(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder current) {
+				if(adapter.getItems().get(current.getBindingAdapterPosition()).isDraggable()) {
+					return directions;
+				}
+
+				return 0;
 			}
 
 			@Override
-			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
+			public void onMoved(
+					@NonNull RecyclerView recyclerView,
+					@NonNull RecyclerView.ViewHolder viewHolder,
+					int fromPos,
+					@NonNull RecyclerView.ViewHolder target,
+					int toPos,
+					int x,
+					int y
+			) {
+				super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
+				((SettingsAdapter.ViewHolder)viewHolder).getItem().onDragged(fromPos, toPos);
 			}
+
+			@Override
+			public boolean onMove(
+					@NonNull RecyclerView recyclerView,
+					@NonNull RecyclerView.ViewHolder current,
+					@NonNull RecyclerView.ViewHolder target
+			) {
+				var from = current.getBindingAdapterPosition();
+				var to = target.getBindingAdapterPosition();
+
+				Collections.swap(adapter.getItems(), from, to);
+				adapter.notifyItemMoved(from, to);
+
+				return true;
+			}
+
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
+
 		}).attachToRecyclerView(recycler);
 	}
 
@@ -234,7 +265,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			});
 
 			binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
-			setupReordering(binding.recycler, item);
+			setupReordering(binding.recycler, recyclerAdapter);
 			binding.progressIndicator.setVisibility(View.GONE);
 		} else if(item.getBehaviour() != null) {
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
@@ -266,8 +297,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					return headerBinding;
 				});
 
+				TransitionManager.beginDelayedTransition(binding.getRoot());
 				binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
-				setupReordering(binding.recycler, screen);
+				setupReordering(binding.recycler, recyclerAdapter);
 				binding.progressIndicator.setVisibility(View.GONE);
 			});
 		} else {

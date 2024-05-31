@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/anime"
-        android:icon="@drawable/ic_movie_outlined"
-        android:title="@string/anime" />
+        android:icon="@drawable/ic_home_outlined"
+        android:title="@string/home" />
 
     <item
         android:id="@+id/library"
-        android:icon="@drawable/ic_home_outlined"
+        android:icon="@drawable/ic_collections_bookmark_outlined"
         android:title="@string/library" />
 
     <item
         android:id="@+id/manga"
         android:icon="@drawable/ic_round_import_contacts_24"
-        android:title="@string/manga"/>
+        android:title="@string/manga" />
 </menu>

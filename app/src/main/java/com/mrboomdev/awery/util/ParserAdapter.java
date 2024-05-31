@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.TypeConverter;
 
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
@@ -111,9 +112,8 @@ public class ParserAdapter {
 			return Collections.emptyMap();
 		}
 
-		var moshi = new Moshi.Builder().build();
-		var type = Types.newParameterizedType(Map.class, String.class, String.class);
-		JsonAdapter<Map<String, String>> adapter = moshi.adapter(type);
+		var adapter = new Moshi.Builder().build().<Map<String, String>>
+				adapter(Types.newParameterizedType(Map.class, String.class, String.class));
 
 		try {
 			return adapter.fromJson(value);
@@ -133,15 +133,41 @@ public class ParserAdapter {
 	}
 
 	@TypeConverter
+	public static List<CatalogFilter> filtersListFromString(String value) {
+		if(value == null) {
+			return Collections.emptyList();
+		}
+
+		var adapter = new Moshi.Builder().build().<List<CatalogFilter>>
+				adapter(Types.newParameterizedType(List.class, CatalogFilter.class));
+
+		try {
+			return adapter.fromJson(value);
+		} catch(IOException e) {
+			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
+			Log.e(TAG, "Failed to parse string to map", e);
+			return Collections.emptyList();
+		}
+	}
+
+	@NonNull
+	@TypeConverter
+	public static String filtersListToString(List<CatalogFilter> value) {
+		var adapter = new Moshi.Builder().build().<List<CatalogFilter>>
+				adapter(Types.newParameterizedType(List.class, CatalogFilter.class));
+
+		return adapter.toJson(value);
+	}
+
+	@TypeConverter
 	@FromJson
 	public static Map<Float, Long> floatLongMapFromString(String value) {
 		if(value == null) {
 			return Collections.emptyMap();
 		}
 
-		var moshi = new Moshi.Builder().build();
-		var type = Types.newParameterizedType(Map.class, Float.class, Long.class);
-		JsonAdapter<Map<Float, Long>> adapter = moshi.adapter(type);
+		var adapter = new Moshi.Builder().build().<Map<Float, Long>>
+				adapter(Types.newParameterizedType(Map.class, Float.class, Long.class));
 
 		try {
 			return adapter.fromJson(value);

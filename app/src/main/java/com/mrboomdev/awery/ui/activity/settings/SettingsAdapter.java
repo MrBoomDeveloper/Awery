@@ -51,15 +51,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	private final SettingsDataHandler handler;
 	private List<SettingsItem> items;
 
-	public SettingsAdapter(SettingsItem data, SettingsDataHandler handler) {
+	public SettingsAdapter(SettingsItem screen, SettingsDataHandler handler) {
 		this.handler = handler;
 		setHasStableIds(true);
-		setData(data, false);
+		setScreen(screen, false);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	private void setData(@NonNull SettingsItem data, boolean notify) {
-		if(data.getItems() == null) {
+	private void setScreen(@NonNull SettingsItem screen, boolean notify) {
+		if(screen.getItems() == null) {
 			this.items = Collections.emptyList();
 			idGenerator.clear();
 
@@ -72,17 +72,20 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 		idGenerator.clear();
 
-		this.items = new ArrayList<>(stream(data.getItems())
+		this.items = new ArrayList<>(stream(screen.getItems())
 				.filter(SettingsItem::isVisible)
 				.toList());
 
 		for(var item : items) {
-			ids.put(item, idGenerator.getLong());
+			var id = idGenerator.getLong();
+			ids.put(item, id);
 		}
 
-		if(data instanceof ObservableSettingsItem listenable) {
+		if(screen instanceof ObservableSettingsItem listenable) {
 			listenable.setNewItemListener((setting, index) -> {
-				ids.put(setting, idGenerator.getLong());
+				var id = idGenerator.getLong();
+				ids.put(setting, id);
+
 				items.add(setting);
 				notifyItemInserted(items.indexOf(setting));
 			});
@@ -95,7 +98,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			listenable.setChangeItemListener((setting, index) -> {
 				var oldSetting = items.set(index, setting);
-				ids.put(setting, ids.get(oldSetting));
+
+				var id = ids.get(oldSetting);
+				ids.put(setting, id);
+
 				notifyItemChanged(index);
 			});
 		}
@@ -103,6 +109,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		if(notify) {
 			notifyDataSetChanged();
 		}
+	}
+
+	public List<SettingsItem> getItems() {
+		return items;
 	}
 
 	@Override
@@ -117,8 +127,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		return id;
 	}
 
-	public void setData(@NonNull SettingsItem data) {
-		setData(data, true);
+	public void setScreen(@NonNull SettingsItem data) {
+		setScreen(data, true);
 	}
 
 	@NonNull
@@ -428,7 +438,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		holder.bind(items.get(position));
+		holder.bind(position, items.get(position));
 	}
 
 	@Override
@@ -436,17 +446,36 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		return items.size();
 	}
 
-	public static class ViewHolder extends RecyclerView.ViewHolder {
+	public class ViewHolder extends RecyclerView.ViewHolder {
 		private final ItemListSettingBinding binding;
 		private final Context context;
 		private SettingsItem item;
 		private boolean didInit;
+		private int position;
 
 		public ViewHolder(@NonNull ItemListSettingBinding binding) {
 			super(binding.getRoot());
 
 			this.binding = binding;
 			this.context = getContext(binding);
+		}
+
+		public int getItemIndex() {
+			return position;
+		}
+
+		public void setItemIndex(int index) {
+			this.position = index;
+		}
+
+		public long getId() {
+			var id = ids.get(item);
+
+			if(id == null) {
+				throw new IllegalStateException("Id for item " + item + " not found");
+			}
+
+			return id;
 		}
 
 		public SettingsItem getItem() {
@@ -518,8 +547,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			return result;
 		}
 
-		public void bind(@NonNull SettingsItem item) {
+		public void bind(int position, @NonNull SettingsItem item) {
 			this.didInit = false;
+			this.position = position;
 			this.item = item;
 
 			binding.title.setText(item.getTitle(context));

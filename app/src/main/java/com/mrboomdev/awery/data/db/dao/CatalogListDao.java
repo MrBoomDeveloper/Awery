@@ -3,9 +3,10 @@ package com.mrboomdev.awery.data.db.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.mrboomdev.awery.data.db.DBCatalogList;
+import com.mrboomdev.awery.data.db.item.DBCatalogList;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface CatalogListDao {
 	@Query("SELECT * FROM list WHERE id = :id")
 	DBCatalogList get(String id);
 
-	@Insert
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	void insert(DBCatalogList... lists);
 
 	@Delete

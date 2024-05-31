@@ -21,7 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.db.DBRepository;
+import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
@@ -198,7 +198,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		});
 	}
 
-	public void setupLongOperations() {
+	public void loadData() {
 		var items = new ArrayList<SettingsItem>();
 
 		var repositories = getDatabase().getRepositoryDao()

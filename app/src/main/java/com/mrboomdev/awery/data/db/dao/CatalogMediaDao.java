@@ -9,7 +9,7 @@ import androidx.room.RawQuery;
 import androidx.room.Update;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
-import com.mrboomdev.awery.data.db.DBCatalogMedia;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
 
 import java.util.List;
 

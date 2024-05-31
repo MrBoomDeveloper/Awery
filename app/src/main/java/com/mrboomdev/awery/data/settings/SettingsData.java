@@ -13,6 +13,7 @@ import androidx.core.os.LocaleListCompat;
 
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
@@ -105,19 +106,19 @@ public class SettingsData {
 			Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
 		if(behaviourId.startsWith("extensions_")) {
-			var manager = switch(behaviourId) {
+			var manager = ExtensionsFactory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
 				case "extensions_aweryjs" -> JsManager.class;
 				case "extensions_miru" -> MiruManager.class;
 				case "extensions_cloudstream" -> CloudstreamManager.class;
 				case "extensions_aniyomi" -> AniyomiManager.class;
 				case "extensions_tachiyomi" -> TachiyomiManager.class;
 				default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
-			};
+			});
 
-			var screen = new ExtensionSettings(activity, ExtensionsFactory.getManager(manager));
+			var screen = new ExtensionSettings(activity, manager);
 
 			new Thread(() -> {
-				screen.setupLongOperations();
+				screen.loadData();
 				runOnUiThread(() -> callback.onResult(screen, null));
 			}).start();
 
@@ -125,6 +126,12 @@ public class SettingsData {
 		}
 
 		switch(behaviourId) {
+			case "tabs" -> new Thread(() -> {
+				var screen = new TabsSettings();
+				screen.loadData();
+				runOnUiThread(() -> callback.onResult(screen, null));
+			}).start();
+
 			default -> callback.onResult(null,
 					new IllegalArgumentException("Unknown screen: " + behaviourId));
 		}

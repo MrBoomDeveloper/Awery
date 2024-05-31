@@ -123,7 +123,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 				.setIsAdult(anilistAdultMode)
 				.build(), cats);
 
-		loadCategory("Most Favorited", currentLoadId, AnilistSearchQuery.builder()
+		loadCategory("Most Favorite", currentLoadId, AnilistSearchQuery.builder()
 				.setType(AnilistMedia.MediaType.ANIME)
 				.setSort(AnilistQuery.MediaSort.FAVOURITES_DESC)
 				.setIsAdult(anilistAdultMode)
