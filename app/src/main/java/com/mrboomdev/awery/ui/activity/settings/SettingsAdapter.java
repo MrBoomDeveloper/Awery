@@ -157,10 +157,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case ACTION -> {
 					if(setting instanceof CustomSettingsItem) {
 						setting.onClick(parent.getContext());
+						holder.updateDescription(null);
 						return;
 					}
 
 					SettingsActions.run(setting.getFullKey());
+					holder.updateDescription(null);
 
 					if(setting.isRestartRequired()) {
 						suggestToRestart(parent);
@@ -326,7 +328,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							runOnUiThread(() -> dialog.setItems(items));
 						});
-					} else if(setting.getItems() != null && !setting.getItems().isEmpty()) {
+					} else if(setting.getItems() != null) {
 						String selected;
 
 						if(setting.getType() == SettingsItemType.SELECT_INT) {

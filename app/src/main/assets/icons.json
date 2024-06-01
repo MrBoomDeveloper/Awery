@@ -1,6 +1,6 @@
 {
-	"home": { "icon": "ic_home_outlined", "names": [ "Home", "Main" ] },
-	"add": { "icon": "ic_add", "names": [ "Add", "Plus", "Create", "New" ] },
+	"home": { "icon": "ic_home_outlined", "names": [ "Home", "Main", "Главная", "Дом" ] },
+	"add": { "icon": "ic_add", "names": [ "Add", "Plus", "Create", "New", "Создать", "Добавить", "Плюс" ] },
 	"bookmark": { "icon": "ic_bookmark_outlined", "names": [ "Favourite", "Bookmark" ] },
 	"chat": { "icon": "ic_chat_outlined", "names": [ "Chat", "Comments", "Discussion" ] },
 	"movie": { "icon": "ic_movie_outlined", "names": [ "Movie", "Video" ] },

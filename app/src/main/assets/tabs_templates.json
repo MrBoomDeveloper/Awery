@@ -19,6 +19,12 @@
 						"source_id": "BOOKMARKS",
 						"source_feed": "CONTINUE_WATCHING",
 						"display_mode": "LIST_HORIZONTAL"
+					}, {
+						"title": "Auto-Generated feeds",
+						"source_manager": "INTERNAL",
+						"source_id": "AUTO_GENERATE",
+						"source_feed": "ALL",
+						"display_mode": "LIST_HORIZONTAL"
 					}
 				]
 			}, {

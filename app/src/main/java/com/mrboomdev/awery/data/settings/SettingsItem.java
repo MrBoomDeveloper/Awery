@@ -225,13 +225,12 @@ public class SettingsItem {
 				throw new InvalidSyntaxException("No closing '}' found in description!");
 			}
 
-			var parsedKey = description.substring(startIndex + VAR_PREFIX.length(), endIndex);
+			var parsedKey = description.substring(
+					startIndex + VAR_PREFIX.length(), endIndex);
 
-			return description.substring(0, startIndex) + switch(parsedKey) {
-				case "APP_VERSION" -> BuildConfig.VERSION_NAME;
-				case "IMAGE_CACHE_SIZE", "VIDEO_CACHE_SIZE", "HTTP_CACHE_SIZE" -> throw new UnimplementedException("TODO!");
-				default -> throw new IllegalArgumentException(parsedKey + " was not found!");
-			} + description.substring(endIndex + 1);
+			return description.substring(0, startIndex)
+					+ SettingsData.resolveValue(parsedKey)
+					+ description.substring(endIndex + 1);
 		}
 
 		var got = getString(context, description);

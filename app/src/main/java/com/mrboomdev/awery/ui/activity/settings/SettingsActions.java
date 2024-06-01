@@ -34,16 +34,19 @@ public class SettingsActions {
 			case "settings_storage_clear_image_cache" -> {
 				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE);
 				clearDirectory(file);
+				toast("Cleared successfully!");
 			}
 
 			case "settings_storage_clear_webview_cache" -> {
 				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE);
 				clearDirectory(file);
+				toast("Cleared successfully!");
 			}
 
 			case "settings_storage_clear_net_cache" -> {
 				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE);
 				clearDirectory(file);
+				toast("Cleared successfully!");
 			}
 
 			case "settings_player_system_subtitles" -> getAnyContext()

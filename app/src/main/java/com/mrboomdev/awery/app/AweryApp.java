@@ -297,7 +297,7 @@ public class AweryApp extends Application {
 		var settings = AwerySettings.getInstance(this);
 		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
 			new Thread(() -> {
-				db.getListDao().insert(
+				getDatabase().getListDao().insert(
 						DBCatalogList.fromCatalogList(new CatalogList("Currently watching", "1")),
 						DBCatalogList.fromCatalogList(new CatalogList("Plan to watch", "2")),
 						DBCatalogList.fromCatalogList(new CatalogList("Delayed", "3")),

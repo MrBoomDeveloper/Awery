@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.data.settings;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
+import static com.mrboomdev.awery.util.NiceUtils.getDirectorySize;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -11,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
+import com.mrboomdev.awery.BuildConfig;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -23,15 +28,34 @@ import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import java9.util.stream.Collectors;
 
 public class SettingsData {
 	private static final String TAG = "SettingsData";
+
+	public static String resolveValue(@NonNull String key) {
+		return switch(key) {
+			case "APP_VERSION" -> BuildConfig.VERSION_NAME;
+
+			case "IMAGE_CACHE_SIZE" -> formatFileSize(getDirectorySize(new File(
+					getAppContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE)));
+
+			case "NET_CACHE_SIZE" -> formatFileSize(getDirectorySize(new File(
+					getAppContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE)));
+
+			case "WEBVIEW_CACHE_SIZE" -> formatFileSize(getDirectorySize(new File(
+					getAppContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE)));
+
+			default -> throw new IllegalArgumentException(key + " was not found!");
+		};
+	}
 
 	public static void getSelectionList(
 			Context context,

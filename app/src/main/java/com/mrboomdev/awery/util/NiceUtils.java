@@ -65,6 +65,39 @@ public class NiceUtils {
 		}
 	}
 
+	public static long getDirectorySize(@NonNull File file) {
+		if(file.isDirectory()) {
+			var children = file.listFiles();
+			if(children == null) return 0;
+
+			long totalSize = 0;
+
+			for(var child : children) {
+				totalSize += getDirectorySize(child);
+			}
+
+			return totalSize;
+		}
+
+		return file.length();
+	}
+
+	@NonNull
+	@Contract(pure = true)
+	public static String formatFileSize(long size) {
+		var BORDER = 1000 / 1024;
+
+		var kb = size / 1024;
+		var mb = kb / 1024;
+		var gb = mb / 1024;
+
+		if(gb > BORDER) return gb + " gb";
+		if(mb > BORDER) return mb + " mb";
+		if(kb > BORDER) return kb + " kb";
+
+		return gb + " b";
+	}
+
 	@Nullable
 	public static Object getField(Object target, String className, String fieldName) {
 		try {
@@ -165,6 +198,7 @@ public class NiceUtils {
 			}
 		}
 
+		file.delete();
 		return true;
 	}
 

@@ -3,7 +3,7 @@
 	"items": [
 		{
 			"key": "theme", "type": "screen",
-			"title": "theme", "icon": "ic_round_palette_24",
+			"title": "theme", "icon": "ic_paint_filled",
 			"items": [
 				{
 					"key": "use_material_you", "type": "boolean", "restart": true,
@@ -12,11 +12,11 @@
 					"show_if": "material_you"
 				}, {
 					"key": "dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
-					"title": "dark_theme", "icon": "ic_sharp_dark_mode",
+					"title": "dark_theme", "icon": "ic_dark_mode_filled",
 					"description": "dark_theme_description"
 				}, {
 					"key": "amoled", "type": "boolean", "restart": true,
-					"title": "amoled", "icon": "ic_round_brightness_medium_24",
+					"title": "amoled", "icon": "ic_contrast",
 					"description": "amoled_theme_description"
 				}, {
 					"key": "use_source_theme", "type": "boolean",
@@ -24,7 +24,7 @@
 					"show_if": "never"
 				}, {
 					"key": "pallet", "type": "select", "restart": true, "string_value": "RED",
-					"title": "color_palette", "icon": "ic_round_palette_24", "description": "${VALUE_TITLE}",
+					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "RED", "title": "red" },
 						{ "key": "PINK", "title": "pink" },
@@ -46,7 +46,7 @@
 				}, {
 					"key": "default_tab", "type": "select", "string_value": "MAIN",
 					"description": "default_tab_description",
-					"title": "startUpTab", "icon": "ic_round_home_24",
+					"title": "startUpTab", "icon": "ic_home_outlined",
 					"items": [
 						{ "key": "MAIN", "title": "Home" },
 						{ "key": "LIBRARY", "title": "Library" }
@@ -81,7 +81,7 @@
 					"title": "Tabs", "icon": "ic_list"
 				}, {
 					"key": "hide_library_entries", "type": "boolean",
-					"title": "hide_library_entries", "icon": "ic_collections_bookmark_filled",
+					"title": "hide_library_entries", "icon": "ic_collections_bookmark_outlined",
 					"description": "hide_library_entries_description"
 				}, {
 					"key": "global_excluded_tags", "type": "multiselect",
@@ -199,10 +199,19 @@
 				}
 			]
 		}, {
-			"key": "storage", "type": "screen", "show_if": "debug",
-			"title": "Storage", "icon": "",
+			"key": "storage", "type": "screen",
+			"title": "Storage", "icon": "ic_storage",
 			"items": [
-
+				{
+					"key": "clear_image_cache", "type": "action",
+					"title": "Clear images cache", "description": "${VAR.IMAGE_CACHE_SIZE}"
+				}, {
+					"key": "clear_webview_cache", "type": "action",
+					"title": "Clear WebView cache", "description": "${VAR.WEBVIEW_CACHE_SIZE}"
+				}, {
+					"key": "clear_net_cache", "type": "action",
+					"title": "Clear Network cache", "description": "${VAR.NET_CACHE_SIZE}"
+				}
 			]
 		}, {
 			"key": "advanced", "type": "screen",
