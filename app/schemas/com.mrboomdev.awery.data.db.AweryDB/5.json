@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "a50b355dde9e4e5870ebc5b96dffdf74",
+    "identityHash": "1c61de6b17eea123ccedcc014d78c25c",
     "entities": [
       {
         "tableName": "media",
@@ -243,7 +243,7 @@
       },
       {
         "tableName": "feed",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `filters` TEXT, `tab` TEXT, `title` TEXT, `source_manager` TEXT, `source_id` TEXT, `source_feed` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `filters` TEXT, `tab` TEXT, `title` TEXT, `source_manager` TEXT, `source_id` TEXT, `source_feed` TEXT, `display_mode` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -284,6 +284,12 @@
           {
             "fieldPath": "sourceFeed",
             "columnName": "source_feed",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "displayMode",
+            "columnName": "display_mode",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -387,7 +393,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a50b355dde9e4e5870ebc5b96dffdf74')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1c61de6b17eea123ccedcc014d78c25c')"
     ]
   }
 }

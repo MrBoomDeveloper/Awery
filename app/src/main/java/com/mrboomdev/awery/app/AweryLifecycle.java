@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.NiceUtils.getField;
+import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
@@ -280,44 +282,38 @@ public class AweryLifecycle {
 			if(activity != null) return activity;
 		} catch(IndexOutOfBoundsException ignored) {}
 
-		if(app == null) {
-			app = getContextUsingPrivateApi();
-		}
-
-		return app;
+		return getAppContext();
 	}
 
 	@Nullable
-	@SuppressLint({"PrivateApi","DiscouragedPrivateApi" })
+	@SuppressLint({"PrivateApi", "DiscouragedPrivateApi" })
 	private static AweryApp getContextUsingPrivateApi() {
-		AweryApp context = null;
+		var context = (AweryApp) invokeMethod(
+				"android.app.ActivityThread",
+				"currentApplication");
 
-		try {
-			var activityThreadClass = Class.forName("android.app.ActivityThread");
-			var method = activityThreadClass.getDeclaredMethod("currentApplication");
-			context = (AweryApp) method.invoke(null);
-		} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-			Log.e(TAG, "Failed to get Application from ActivityThread!", e);
-		}
+		if(context != null) return context;
 
-		if(context == null) {
-			try {
-				var appGlobalsClass = Class.forName("android.app.AppGlobals");
-				var method = appGlobalsClass.getDeclaredMethod("getInitialApplication");
-				context = (AweryApp) method.invoke(null);
-			} catch(ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-				Log.e(TAG, "Failed to get Application from AppGlobals!", e);
-			}
-		}
-
-		if(context != null) {
-			Log.w(TAG, "Using Context from a static method!");
-		}
+		context = (AweryApp) invokeMethod(
+				"android.app.AppGlobals",
+				"getInitialApplication");
 
 		return context;
 	}
 
 	public static Context getAppContext() {
+		if(app != null) {
+			return app;
+		}
+
+		synchronized(AweryLifecycle.class) {
+			if(app != null) {
+				return app;
+			}
+
+			app = getContextUsingPrivateApi();
+		}
+
 		return app;
 	}
 

@@ -1,12 +1,17 @@
 package com.mrboomdev.awery.util;
 
-import androidx.annotation.NonNull;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +38,42 @@ public class NiceUtils {
 	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback) {
 		if(param != null) {
 			callback.run(param);
+		}
+	}
+
+	@Nullable
+	public static Object invokeMethod(String className, String methodName) {
+		try {
+			var clazz = Class.forName(className);
+			var method = clazz.getMethod(methodName);
+			method.setAccessible(true);
+			return method.invoke(null);
+		} catch(ClassNotFoundException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			return null;
+		}
+	}
+
+	@Nullable
+	public static Object getField(String className, String fieldName) {
+		try {
+			var clazz = Class.forName(className);
+			var field = clazz.getField(fieldName);
+			field.setAccessible(true);
+			return field.get(null);
+		} catch(ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
+			return null;
+		}
+	}
+
+	@Nullable
+	public static Object getField(Object target, String className, String fieldName) {
+		try {
+			var clazz = Class.forName(className);
+			var field = clazz.getField(fieldName);
+			field.setAccessible(true);
+			return field.get(target);
+		} catch(ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
+			return null;
 		}
 	}
 

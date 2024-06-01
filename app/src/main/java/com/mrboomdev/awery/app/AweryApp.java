@@ -2,6 +2,7 @@ package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
@@ -62,6 +63,7 @@ import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import kotlin.UninitializedPropertyAccessException;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
@@ -83,8 +85,21 @@ public class AweryApp extends Application {
 		return bitmap;
 	}
 
-
 	public static AweryDB getDatabase() {
+		if(db != null) {
+			return db;
+		}
+
+		synchronized(AweryApp.class) {
+			if(db != null) {
+				return db;
+			}
+
+			db = Room.databaseBuilder(getAppContext(), AweryDB.class, "db")
+					.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
+					.build();
+		}
+
 		return db;
 	}
 
@@ -278,10 +293,6 @@ public class AweryApp extends Application {
 
 		setupStrictMode();
 		ExtensionsFactory.init(this);
-
-		db = Room.databaseBuilder(this, AweryDB.class, "db")
-				.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
-				.build();
 
 		var settings = AwerySettings.getInstance(this);
 		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {

@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.exitApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
@@ -154,6 +155,15 @@ public class CrashHandler {
 
 	public static void showErrorDialog(Context context, String title, Throwable throwable) {
 		showErrorDialog(context, title, context.getString(R.string.please_report_bug_app), throwable);
+	}
+
+	public static void showFatalErrorDialog(Context context, String title, Throwable throwable) {
+		showErrorDialogImpl(
+				context,
+				title,
+				new ExceptionDescriptor(throwable).getMessage(context),
+				null,
+				AweryLifecycle::exitApp);
 	}
 
 	private static void showErrorDialogImpl(

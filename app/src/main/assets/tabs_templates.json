@@ -1,0 +1,81 @@
+[
+	{
+		"id": "awery",
+		"title": "Awery",
+		"tabs": [
+			{
+				"title": "Home",
+				"icon": "home",
+				"feeds": [
+					{
+						"title": "Current Season",
+						"source_manager": "INTERNAL",
+						"source_id": "FEATURED",
+						"source_feed": "SEASON",
+						"display_mode": "SLIDES"
+					}, {
+						"title": "Continue Watching",
+						"source_manager": "INTERNAL",
+						"source_id": "BOOKMARKS",
+						"source_feed": "CONTINUE_WATCHING",
+						"display_mode": "LIST_HORIZONTAL"
+					}
+				]
+			}, {
+				"title": "Library",
+				"icon": "bookmark",
+				"feeds": [
+					{
+						"title": "Bookmarks",
+						"source_manager": "INTERNAL",
+						"source_id": "BOOKMARKS",
+						"source_feed": "ALL",
+						"display_mode": "LIST_HORIZONTAL"
+					}
+				]
+			}
+		]
+	}, {
+		"id": "dantotsu",
+		"title": "Dantotsu",
+		"tabs": [
+			{
+				"title": "Anime",
+				"icon": "movie",
+				"feeds": [
+					{
+						"title": "Current Season",
+						"source_manager": "INTERNAL",
+						"source_id": "FEATURED",
+						"source_feed": "SEASON",
+						"display_mode": "SLIDES"
+					}, {
+						"title": "Recently Updates",
+						"source_manager": "INTERNAL",
+						"source_id": "FEATURED",
+						"source_feed": "RECENT_UPDATES",
+						"display_mode": "LIST_HORIZONTAL"
+					}, {
+						"title": "Trending Movies",
+						"source_manager": "INTERNAL",
+						"source_id": "FEATURED",
+						"source_feed": "TRENDING_MOVIES",
+						"display_mode": "LIST_HORIZONTAL"
+					}
+				]
+			}, {
+				"title": "Home",
+				"icon": "bookmark",
+				"feeds": [
+					{
+						"title": "Bookmarks",
+						"source_manager": "INTERNAL",
+						"source_id": "BOOKMARKS",
+						"source_feed": "ALL",
+						"display_mode": "LIST_HORIZONTAL"
+					}
+				]
+			}
+		]
+	}
+]

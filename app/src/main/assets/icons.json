@@ -1,0 +1,9 @@
+{
+	"home": { "icon": "ic_home_outlined", "names": [ "Home", "Main" ] },
+	"add": { "icon": "ic_add", "names": [ "Add", "Plus", "Create", "New" ] },
+	"bookmark": { "icon": "ic_bookmark_outlined", "names": [ "Favourite", "Bookmark" ] },
+	"chat": { "icon": "ic_chat_outlined", "names": [ "Chat", "Comments", "Discussion" ] },
+	"movie": { "icon": "ic_movie_outlined", "names": [ "Movie", "Video" ] },
+	"sync": { "icon": "ic_sync", "names": [ "Sync", "Track" ] },
+	"search": { "icon": "ic_search", "names": [ "Search", "Explore" ] }
+}
