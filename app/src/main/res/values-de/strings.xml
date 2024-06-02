@@ -342,4 +342,13 @@
     <string name="no_tracker_extensions">Sie haben keine installierten Tracker-Erweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
     <string name="no_relations_extensions">Sie haben keine installierten Beziehungserweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
     <string name="no_subtitles_extensions">Sie haben keine installierten Untertitelerweiterungen. Laden Sie sie herunter, um hier etwas Neues zu sehen!</string>
+    <string name="bookmark">Lesezeichen</string>
+    <string name="dark_theme">Dunkles Thema</string>
+    <string name="green">Grün</string>
+    <string name="hide">Ausblenden</string>
+    <string name="red">Rot</string>
+    <string name="pink">Pink</string>
+    <string name="purple">Lila</string>
+    <string name="blue">Blau</string>
+    <string name="color_palette">Farbpalette</string>
 </resources>
