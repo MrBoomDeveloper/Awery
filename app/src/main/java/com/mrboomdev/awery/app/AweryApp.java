@@ -202,8 +202,7 @@ public class AweryApp extends Application {
 	public static void openUrl(String url) {
 		try {
 			var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-			//getAnyContext().startActivity(intent);
-			throw new ActivityNotFoundException();
+			getAnyContext().startActivity(intent);
 		} catch(ActivityNotFoundException e) {
 			Log.e(TAG, "Cannot open url!", e);
 
