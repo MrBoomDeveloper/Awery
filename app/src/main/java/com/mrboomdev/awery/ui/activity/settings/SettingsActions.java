@@ -56,7 +56,7 @@ public class SettingsActions {
 					openUrl("https://t.me/mrboomdev_awery");
 
 			case "settings_about_discord_server" ->
-					openUrl("https://discord.gg/yspYzD4Kbm");
+					openUrl("https://discord.com/invite/yspVzD4Kbm");
 
 			case "settings_about_github_repository" ->
 					openUrl("https://github.com/MrBoomDeveloper/Awery");
