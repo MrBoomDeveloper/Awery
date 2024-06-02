@@ -82,7 +82,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		}
 
 		if(screen instanceof ObservableSettingsItem listenable) {
-			listenable.setNewItemListener((setting, index) -> {
+			listenable.addSettingAdditionListener((setting, index) -> {
 				var id = idGenerator.getLong();
 				ids.put(setting, id);
 
@@ -90,13 +90,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				notifyItemInserted(items.indexOf(setting));
 			});
 
-			listenable.setRemovalItemListener((setting, index) -> {
+			listenable.addSettingRemovalListener((setting, index) -> {
 				index = items.indexOf(setting);
 				items.remove(setting);
 				notifyItemRemoved(index);
 			});
 
-			listenable.setChangeItemListener((setting, index) -> {
+			listenable.addSettingChangeListener((setting, index) -> {
 				var oldSetting = items.set(index, setting);
 
 				var id = ids.get(oldSetting);

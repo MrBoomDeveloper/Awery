@@ -49,8 +49,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
 	private final Activity activity;
-	@Json(ignore = true)
-	private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 	private DialogBuilder currentDialog;
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
@@ -89,16 +87,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							.findAny().orElse(null);
 
 					var index = getItems().indexOf(oldSetting);
-
-					if(editItemListener != null) {
-						editItemListener.run(setting, index);
-					}
+					onSettingChange(setting, index);
 				} else {
 					toast("Extension installed successfully!");
-
-					if(newItemListener != null) {
-						newItemListener.run(setting, extensions.indexOf(extension));
-					}
+					onSettingAddition(setting, extensions.indexOf(extension));
 				}
 
 				if(currentDialog != null) {
@@ -187,10 +179,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 									dialog.dismiss();
 									toast("Repository added successfully!");
 
-									if(newItemListener != null) {
-										runOnUiThread(() -> newItemListener.run(
-												new RepositorySetting(repo), null));
-									}
+									runOnUiThread(() -> onSettingAddition(
+											new RepositorySetting(repo), null));
 								}).start();
 							});
 						}).show();
@@ -254,42 +244,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		else manager.unloadExtension(activity, item.getKey());
 	}
 
-	@Override
-	public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-		this.newItemListener = listener;
-	}
-
-	@Override
-	public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-		this.deleteItemListener = listener;
-	}
-
-	@Override
-	public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-		this.editItemListener = listener;
-	}
-
-	@Override
-	public void onNewItem(SettingsItem item, int position) {
-		if(newItemListener != null) {
-			newItemListener.run(item, position);
-		}
-	}
-
-	@Override
-	public void onRemoval(SettingsItem item, int position) {
-		if(deleteItemListener != null) {
-			deleteItemListener.run(item, position);
-		}
-	}
-
-	@Override
-	public void onChange(SettingsItem item, int position) {
-		if(editItemListener != null) {
-			editItemListener.run(item, position);
-		}
-	}
-
 	private class RepositorySetting extends CustomSettingsItem {
 		private final DBRepository repository;
 
@@ -313,8 +267,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						var dao = getDatabase().getRepositoryDao();
 						dao.remove(repository);
 
-						if(deleteItemListener != null) runOnUiThread(() ->
-								deleteItemListener.run(this, null));
+						runOnUiThread(() -> onSettingRemoval(
+								this, null));
 
 						dialog.dismiss();
 					}).start())
@@ -323,7 +277,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	}
 
 	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler, ObservableSettingsItem {
-		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 		private final Extension extension;
 		@Json(ignore = true)
 		private final Activity activity;
@@ -396,41 +349,5 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		@Override
 		public void save(SettingsItem item, Object newValue) {}
-
-		@Override
-		public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.newItemListener = listener;
-		}
-
-		@Override
-		public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.deleteItemListener = listener;
-		}
-
-		@Override
-		public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.editItemListener = listener;
-		}
-
-		@Override
-		public void onNewItem(SettingsItem item, int position) {
-			if(newItemListener != null) {
-				newItemListener.run(item, position);
-			}
-		}
-
-		@Override
-		public void onRemoval(SettingsItem item, int position) {
-			if(deleteItemListener != null) {
-				deleteItemListener.run(item, position);
-			}
-		}
-
-		@Override
-		public void onChange(SettingsItem item, int position) {
-			if(editItemListener != null) {
-				editItemListener.run(item, position);
-			}
-		}
 	}
 }

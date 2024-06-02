@@ -155,7 +155,6 @@ public class JsProvider extends ExtensionProvider {
 
 	private class Settings extends SettingsItem implements ObservableSettingsItem {
 		private final List<SettingsItem> items = new ArrayList<>();
-		private Callbacks.Callback2<SettingsItem, Integer> newItemListener, editItemListener, deleteItemListener;
 
 		@NonNull
 		@Contract(pure = true)
@@ -176,42 +175,6 @@ public class JsProvider extends ExtensionProvider {
 
 		public void addItem(SettingsItem item) {
 			items.add(item);
-		}
-
-		@Override
-		public void setNewItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.newItemListener = listener;
-		}
-
-		@Override
-		public void setRemovalItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.deleteItemListener = listener;
-		}
-
-		@Override
-		public void setChangeItemListener(Callbacks.Callback2<SettingsItem, Integer> listener) {
-			this.editItemListener = listener;
-		}
-
-		@Override
-		public void onNewItem(SettingsItem item, int position) {
-			if(newItemListener != null) {
-				newItemListener.run(item, position);
-			}
-		}
-
-		@Override
-		public void onRemoval(SettingsItem item, int position) {
-			if(deleteItemListener != null) {
-				deleteItemListener.run(item, position);
-			}
-		}
-
-		@Override
-		public void onChange(SettingsItem item, int position) {
-			if(editItemListener != null) {
-				editItemListener.run(item, position);
-			}
 		}
 	}
 
@@ -256,7 +219,7 @@ public class JsProvider extends ExtensionProvider {
 							public void onSuccess(Boolean aBoolean) {
 								toast("Logged out successfully");
 								reload.run();
-								runOnUiThread(() -> root.onChange(setting, 0));
+								runOnUiThread(() -> root.onSettingChange(setting, 0));
 							}
 
 							@Override
@@ -289,7 +252,7 @@ public class JsProvider extends ExtensionProvider {
 												public void onSuccess(Boolean aBoolean) {
 													toast("Logged in successfully");
 													reload.run();
-													runOnUiThread(() -> root.onChange(setting, 0));
+													runOnUiThread(() -> root.onSettingChange(setting, 0));
 												}
 
 												@Override
@@ -346,7 +309,7 @@ public class JsProvider extends ExtensionProvider {
 
 					if(settingsScreen instanceof ObservableSettingsItem listenable) {
 						var wasIndex = settingsScreen.getItems().indexOf(root.getParent());
-						runOnUiThread(() -> listenable.onRemoval(root.getParent(), wasIndex));
+						runOnUiThread(() -> listenable.onSettingRemoval(root.getParent(), wasIndex));
 					} else {
 						throw new IllegalStateException("Settings screen doesn't implement ObservableSettingsItem!");
 					}

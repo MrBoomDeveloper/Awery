@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ScrollView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
@@ -17,16 +18,19 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class DialogBuilder {
+	private final Context context;
 	private final List<View> fields = new LinkedList<>();
+	private final WeakHashMap<View, Object> addedFields = new WeakHashMap<>();
+	private ScrollView scroller;
+	private ViewGroup fieldsWrapper;
+	private Dialog dialog;
 	private Callbacks.Callback1<DialogBuilder> dismissListener;
 	private OnButtonClickListener okListener, cancelListener, neutralListener;
-	private final Context context;
-	private ViewGroup fieldsWrapper;
 	private String title, message, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
-	private Dialog dialog;
-	private boolean isCancelable = true;
+	private boolean isCancelable = true, didCreateRoot;
 
 	public DialogBuilder(Context context) {
 		this.context = context;
@@ -112,10 +116,19 @@ public class DialogBuilder {
 		fields.add(index, field);
 
 		if(fieldsWrapper != null) {
-			fieldsWrapper.addView(field, index);
+			addField(field, index);
 		}
 
 		return this;
+	}
+
+	private void addField(View field, int index) {
+		if(addedFields.get(field) != null) {
+			return;
+		}
+
+		fieldsWrapper.addView(field, index);
+		addedFields.put(field, new Object());
 	}
 
 	public DialogBuilder addView(View view) {
@@ -123,14 +136,36 @@ public class DialogBuilder {
 		return this;
 	}
 
+	public DialogBuilder addView(@NonNull Callbacks.Result1<View, ViewGroup> callback) {
+		createRoot();
+		addView(callback.run(fieldsWrapper));
+		return this;
+	}
+
+	private void createRoot() {
+		if(didCreateRoot) return;
+		didCreateRoot = true;
+
+		/*var linear = new LinearLayoutCompat(context);
+		linear.setOrientation(LinearLayoutCompat.VERTICAL);
+		linear.setBackgroundResource(R.drawable.dialog_background);*/
+
+		scroller = new ScrollView(context);
+		scroller.setVerticalScrollBarEnabled(false);
+
+		var fieldsLinear = new LinearLayoutCompat(context);
+		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(24));
+		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
+		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
+		fieldsWrapper = fieldsLinear;
+	}
+
 	public DialogBuilder create() {
 		if(dialog != null) {
 			dismiss();
 		}
 
-		/*var linear = new LinearLayoutCompat(context);
-		linear.setOrientation(LinearLayoutCompat.VERTICAL);
-		linear.setBackgroundResource(R.drawable.dialog_background);*/
+		createRoot();
 
 		if(title != null) {
 			/*var text = new AppCompatTextView(context);
@@ -138,11 +173,8 @@ public class DialogBuilder {
 			text.setText(title);
 
 			ViewUtil.setPadding(text, ViewUtil.dpPx(16));
-			linear.addView(text);*/
+			linear.addView(text, 0);*/
 		}
-
-		var scroller = new ScrollView(context);
-		scroller.setVerticalScrollBarEnabled(false);
 
 		if(message == null) {
 			ViewUtil.setTopPadding(scroller, ViewUtil.dpPx(8));
@@ -150,14 +182,8 @@ public class DialogBuilder {
 
 		//linear.addView(scroller);
 
-		var fieldsLinear = new LinearLayoutCompat(context);
-		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(24));
-		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
-		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
-		fieldsWrapper = fieldsLinear;
-
 		for(var field : fields) {
-			fieldsLinear.addView(field);
+			addField(field, -1);
 		}
 
 		/*var actionsLinear = new LinearLayoutCompat(context);
@@ -201,7 +227,7 @@ public class DialogBuilder {
 		var builder = new MaterialAlertDialogBuilder(context);
 		builder.setCancelable(isCancelable);
 
-		if(fieldsLinear.getChildCount() > 0) {
+		if(fieldsWrapper.getChildCount() > 0) {
 			builder.setView(scroller);
 		}
 

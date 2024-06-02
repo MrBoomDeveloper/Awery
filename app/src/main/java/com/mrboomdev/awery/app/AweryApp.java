@@ -12,6 +12,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 import android.app.Activity;
 import android.app.Application;
 import android.app.UiModeManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -54,7 +55,11 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.sdk.PlatformApi;
+import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.ui.ViewUtil;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -195,8 +200,24 @@ public class AweryApp extends Application {
 	}
 
 	public static void openUrl(String url) {
-		var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-		getAnyContext().startActivity(intent);
+		try {
+			var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+			//getAnyContext().startActivity(intent);
+			throw new ActivityNotFoundException();
+		} catch(ActivityNotFoundException e) {
+			Log.e(TAG, "Cannot open url!", e);
+
+			new DialogBuilder(getAnyActivity(AppCompatActivity.class))
+					.setTitle("Here's the link")
+					.setMessage(url)
+					.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
+					.show();
+		}
+	}
+
+	@NonNull
+	public static AwerySettings getSettings() {
+		return AwerySettings.getInstance(getAppContext());
 	}
 
 	/**
@@ -247,23 +268,10 @@ public class AweryApp extends Application {
 		AweryNotifications.registerNotificationChannels(this);
 		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
-
-		var isDarkModeEnabled = AwerySettings.getInstance(this)
-				.getBoolean(AwerySettings.theme.DARK_THEME);
-
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			((UiModeManager) getSystemService(UI_MODE_SERVICE))
-					.setApplicationNightMode(isDarkModeEnabled
-						? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
-		} else {
-			AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
-					? AppCompatDelegate.MODE_NIGHT_YES
-					: AppCompatDelegate.MODE_NIGHT_NO);
-		}
-
+		ThemeManager.apply(this);
 		super.onCreate();
 
-		if(AwerySettings.getInstance(this).getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+		if(getSettings().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
 			var logFile = new File(getExternalFilesDir(null), "okhttp3_log.txt");
 			logFile.delete();
 
@@ -294,8 +302,7 @@ public class AweryApp extends Application {
 		setupStrictMode();
 		ExtensionsFactory.init(this);
 
-		var settings = AwerySettings.getInstance(this);
-		if(settings.getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
+		if(getSettings().getInt(AwerySettings.LAST_OPENED_VERSION) < 1) {
 			new Thread(() -> {
 				getDatabase().getListDao().insert(
 						DBCatalogList.fromCatalogList(new CatalogList("Currently watching", "1")),
@@ -307,8 +314,8 @@ public class AweryApp extends Application {
 						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_BLACKLIST)),
 						DBCatalogList.fromCatalogList(new CatalogList("History", CATALOG_LIST_HISTORY)));
 
-				settings.setInt(AwerySettings.LAST_OPENED_VERSION, 1);
-				settings.saveSync();
+				getSettings().setInt(AwerySettings.LAST_OPENED_VERSION, 1);
+				getSettings().saveSync();
 			}).start();
 		}
 	}

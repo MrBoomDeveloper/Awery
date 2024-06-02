@@ -141,14 +141,18 @@ public class AwerySettings {
 	 * @return the value of the specified key, or the default value if the key does not exist
 	 * @author MrBoomDev
 	 */
-	public boolean getBoolean(String key, boolean defaultValue) {
+	public Boolean getBoolean(String key, Boolean defaultValue) {
 		if(!prefs.contains(key)) {
+			if(defaultValue == null) {
+				return null;
+			}
+
 			checkEditorExistence().putBoolean(key, defaultValue);
 			saveSync();
 			return defaultValue;
 		}
 
-		return prefs.getBoolean(key, defaultValue);
+		return prefs.getBoolean(key, defaultValue != null && defaultValue);
 	}
 
 	/**
@@ -160,7 +164,7 @@ public class AwerySettings {
 	}
 
 	/**
-	 * @see #getBoolean(String, boolean)
+	 * @see #getBoolean(String, Boolean)
 	 * @return the value of the specified key or false if the key does not exist
 	 * @author MrBoomDev
 	 */

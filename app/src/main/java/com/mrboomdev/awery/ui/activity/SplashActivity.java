@@ -18,15 +18,22 @@ import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.ui.ThemeManager;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 	private static final String TAG = "SplashActivity";
+	private Intent pendingIntent;
+	private boolean isPaused;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		SplashScreen.installSplashScreen(this);
-		DynamicColors.applyToActivityIfAvailable(this);
+
+		try {
+			ThemeManager.apply(this);
+		} catch(Exception ignored) {}
+
 		super.onCreate(savedInstanceState);
 
 		var frame = new LinearLayout(this);
@@ -48,10 +55,30 @@ public class SplashActivity extends AppCompatActivity {
 			}
 
 			runOnUiThread(() -> {
-				var intent = new Intent(this, MainActivity.class);
-				startActivity(intent);
-				finish();
+				pendingIntent = new Intent(this, MainActivity.class);
+
+				if(!isPaused) {
+					startActivity(pendingIntent);
+					finish();
+				}
 			});
 		}).start());
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		isPaused = false;
+
+		if(pendingIntent != null) {
+			startActivity(pendingIntent);
+			finish();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		isPaused = true;
 	}
 }

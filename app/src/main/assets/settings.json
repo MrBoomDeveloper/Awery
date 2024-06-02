@@ -37,7 +37,7 @@
 			]
 		}, {
 			"key": "ui", "type": "screen",
-			"title": "ui", "icon": "ic_round_amp_stories_24",
+			"title": "ui", "icon": "ic_amp_stories_filled",
 			"items": [
 				{
 					"key": "language", "type": "select",
@@ -46,17 +46,18 @@
 				}, {
 					"key": "default_tab", "type": "select", "string_value": "MAIN",
 					"description": "default_tab_description",
-					"title": "startUpTab", "icon": "ic_home_outlined",
+					"title": "startUpTab", "icon": "ic_home_filled",
 					"items": [
 						{ "key": "MAIN", "title": "Home" },
 						{ "key": "LIBRARY", "title": "Library" }
 					]
 				}, {
 					"key": "media_columns_land", "type": "int", "from": 0,
-					"title": "Media columns count at Landscape", "description": "0 is for auto"
+					"title": "Media columns count at Landscape", "description": "0 for auto"
 				}, {
 					"key": "media_columns_port", "type": "int", "from": 0,
-					"title": "Media columns count at Portrait", "description": "0 is for auto"
+					"title": "Media columns count at Portrait", "description": "0 for auto",
+					"show_if": "!tv"
 				}, {
 					"key": "episodes", "type": "screen", "show_if": "never",
 					"title": "Episodes list",
@@ -74,7 +75,7 @@
 			]
 		}, {
 			"key": "content", "type": "screen",
-			"title": "content", "icon": "ic_round_grid_view_24",
+			"title": "content", "icon": "ic_view_cozy",
 			"items": [
 				{
 					"key": "tabs", "type": "screen", "behaviour": "tabs",
@@ -99,29 +100,13 @@
 				}
 			]
 		}, {
-			"key": "extensions", "type": "screen",
-			"title": "extensions", "icon": "ic_extension", "icon_size": 0.88,
-			"items": [
-				{
-					"key": "aweryjs", "type": "screen",
-					"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
-					"description": "Watch Movies, TV with Tracking and Comments!",
-					"behaviour": "extensions_aweryjs"
-				}, {
-					"key": "aniyomi", "type": "screen",
-					"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
-					"description": "It seems there is only Anime here?",
-					"behaviour": "extensions_aniyomi"
-				}
-			]
-		}, {
 			"key": "player", "type": "screen",
-			"title": "player", "icon": "ic_round_video_settings_24",
+			"title": "player", "icon": "ic_video_settings",
 			"items": [
 				{
 					"key": "double_tap_seek_length", "type": "select_int", "int_value": "10",
 					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
-					"description": "${VALUE_TITLE}",
+					"description": "${VALUE_TITLE}", "show_if": "!tv",
 					"items": [
 						{ "key": "0", "title": "disabled" },
 						{ "key": "3", "title": "3s" },
@@ -147,8 +132,8 @@
 					]
 				}, {
 					"key": "gestures", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
-					"title": "gesture_mode", "icon": "ic_round_swipe_vertical_24",
-					"description": "${VALUE_TITLE}",
+					"title": "gesture_mode", "icon": "ic_swipe_up_filled",
+					"description": "${VALUE_TITLE}", "show_if": "!tv",
 					"items": [
 						{ "key": "VOLUME_BRIGHTNESS", "title": "volume_and_brightness" },
 						{ "key": "DISABLED", "title": "disabled" }
@@ -190,12 +175,28 @@
 			]
 		}, {
 			"key": "reader", "type": "screen", "show_if": "debug",
-			"title": "reader", "icon": "ic_round_reader_settings",
+			"title": "reader", "icon": "ic_menu_book_filled",
 			"items": [
 				{
 					"key": "bruh", "type": "boolean",
 					"title": "Sorry bro, but you currently can't read those chinese comics.",
 					"description": "Come here later..."
+				}
+			]
+		}, {
+			"key": "extensions", "type": "screen",
+			"title": "extensions", "icon": "ic_extension_filled",
+			"items": [
+				{
+					"key": "aweryjs", "type": "screen",
+					"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
+					"description": "Watch Movies, TV with Tracking and Comments!",
+					"behaviour": "extensions_aweryjs"
+				}, {
+					"key": "aniyomi", "type": "screen",
+					"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
+					"description": "It seems there is only Anime here?",
+					"behaviour": "extensions_aniyomi"
 				}
 			]
 		}, {

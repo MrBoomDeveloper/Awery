@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryPlatform;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.squareup.moshi.Json;
@@ -138,14 +139,7 @@ public class SettingsItem {
 			var requirements = showIf.split(",");
 
 			for(var requirement : requirements) {
-				if(!switch(requirement) {
-					case "material_you" -> DynamicColors.isDynamicColorAvailable();
-					case "beta" -> BuildConfig.IS_BETA;
-					case "legacy" -> BuildConfig.IS_LEGACY;
-					case "debug" -> BuildConfig.DEBUG;
-					case "never" -> false;
-					default -> true;
-				}) return false;
+				if(!AweryPlatform.getInstance().isRequirementMet(requirement)) return false;
 			}
 		}
 

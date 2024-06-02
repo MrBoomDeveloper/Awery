@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
@@ -11,6 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.mrboomdev.awery.databinding.WidgetEdittextOutlinedBinding;
 
 public class DialogEditTextField implements DialogField {
 	private int imeFlags = EditorInfo.IME_FLAG_NO_FULLSCREEN;
@@ -121,11 +123,13 @@ public class DialogEditTextField implements DialogField {
 			return view;
 		}
 
-		view = new TextInputLayout(context);
-		editText = new TextInputEditText(context);
+		var binding = WidgetEdittextOutlinedBinding.inflate(
+				LayoutInflater.from(context),
+				null, false);
 
+		view = binding.getRoot();
+		editText = binding.edittext;
 		editText.setHint(hint);
-		view.addView(editText);
 
 		// We run all setters for a case if those values
 		// were set before view was created.

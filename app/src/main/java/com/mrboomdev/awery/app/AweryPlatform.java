@@ -13,13 +13,28 @@ public class AweryPlatform extends PlatformApi {
 
 	@Override
 	public boolean isRequirementMet(@NotNull String requirement) {
-		return switch(requirement) {
+		boolean invert = false;
+
+		if(requirement.startsWith("!")) {
+			invert = true;
+			requirement = requirement.substring(1);
+		}
+
+		var result = switch(requirement) {
 			case "material_you" -> DynamicColors.isDynamicColorAvailable();
+			case "tv" -> AweryApp.isTv();
 			case "beta" -> BuildConfig.IS_BETA;
 			case "legacy" -> BuildConfig.IS_LEGACY;
 			case "debug" -> BuildConfig.DEBUG;
-			default -> false;
+			case "never" -> false;
+			default -> true;
 		};
+
+		if(invert) {
+			return !result;
+		}
+
+		return result;
 	}
 
 	@Override

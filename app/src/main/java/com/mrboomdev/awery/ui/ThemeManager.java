@@ -1,11 +1,18 @@
 package com.mrboomdev.awery.ui;
 
+import static android.content.Context.UI_MODE_SERVICE;
+
+import static com.mrboomdev.awery.app.AweryApp.getSettings;
+
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.os.Build;
 
 import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
@@ -15,8 +22,8 @@ import com.mrboomdev.awery.data.settings.AwerySettings;
 public class ThemeManager {
 	private static final Theme DEFAULT_THEME = Theme.RED;
 
-	public static boolean isMaterialYou(Context context) {
-		var prefs = AwerySettings.getInstance(context);
+	public static boolean isMaterialYou() {
+		var prefs = getSettings();
 
 		if(!prefs.contains(AwerySettings.theme.USE_MATERIAL_YOU)) {
 			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
@@ -30,8 +37,18 @@ public class ThemeManager {
 		return prefs.getBoolean(AwerySettings.theme.USE_MATERIAL_YOU);
 	}
 
-	public static boolean isAmoled(Context context) {
-		return AwerySettings.getInstance().getBoolean(AwerySettings.theme.USE_OLED);
+	public static void apply(Context context) {
+		var isDarkModeEnabled = getSettings().getBoolean(AwerySettings.theme.DARK_THEME);
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			((UiModeManager) context.getSystemService(UI_MODE_SERVICE))
+					.setApplicationNightMode(isDarkModeEnabled
+							? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
+		} else {
+			AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
+					? AppCompatDelegate.MODE_NIGHT_YES
+					: AppCompatDelegate.MODE_NIGHT_NO);
+		}
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
@@ -39,7 +56,7 @@ public class ThemeManager {
 
 		boolean useOLED = prefs.getBoolean(AwerySettings.theme.USE_OLED);
 		boolean useColorsFromPoster = prefs.getBoolean(AwerySettings.theme.EXTRACT_COVER_COLORS);
-		boolean useMaterialYou = isMaterialYou(activity);
+		boolean useMaterialYou = isMaterialYou();
 
 		if(useMaterialYou || (useColorsFromPoster && bitmap != null)) {
 			applyMaterialYou(activity, bitmap, useOLED);
