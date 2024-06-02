@@ -23,6 +23,19 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Get Latest Commit
+      run: |
+          COMMIT_LOG=$(git log -1 --pretty=format:"● %s ~%an")
+          COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
+          COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
+          COMMIT_LOG="${COMMIT_LOG//$'\r'/'%0D'}"
+          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
+          echo "$COMMIT_LOG" > commit_log.txt
+          shell: bash
+          env:
+          CI: true
+          continue-on-error: true
+          
     - name: Build Beta APK
       run: ./gradlew assembleBetaModernRelease
 
@@ -110,3 +123,39 @@ jobs:
         name: "Legacy Production APK"
         retention-days: 90
         path: "app/build/outputs/apk/prodLegacy/release/app-prod-legacy-release-signed.apk"
+
+    - name: Send Beta APK to Telegram
+      if: always()
+      run: |
+        COMMIT_LOG=$(cat commit_log.txt)
+        COMMIT_LOG=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
+        curl -F document=@app/build/outputs/apk/betaModern/release/app-beta-modern-release-signed.apk \
+        -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+        -F caption="Alpha Release $COMMIT_LOG" \
+         https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
+         
+    - name: Send Legacy Beta APK to Telegram
+      if: always()
+      run: |
+          curl -F document=@app/build/outputs/apk/betaLegacy/release/app-beta-legacy-release-signed.apk \
+               -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+               https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
+               
+    - name: Send Beta APK to Discord
+      if: always()
+      run: |
+          commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
+          author_name=$(git log -1 --pretty=format:'%an')
+          author_link="[$author_name](https://github.com/${author_name})"
+          payload=$(jq -nc --arg content "<@&1246876742568644720> 
+          **Commit:** [${commit_id}](https://github.com/${author_name}/commit/${{ github.sha }}) by ${author_link} 
+          **Message:** $(cat commit_log.txt)" '{content: $content}') 
+          curl -F "payload_json=$payload" \
+           -F "file1=@app/build/outputs/apk/betaModern/release/app-beta-modern-release-signed.apk" \
+           ${{ secrets.DISCORD_WEBHOOK_URL }}
+           
+    - name: Send Legacy Beta APK to Discord
+      if: always()
+      run: |
+          curl -F "file1=@app/build/outputs/apk/betaLegacy/release/app-beta-legacy-release-signed.apk" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
