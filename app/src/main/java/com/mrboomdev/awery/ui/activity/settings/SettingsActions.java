@@ -2,19 +2,13 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.NiceUtils.clearDirectory;
+import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 
 import android.content.Intent;
 import android.provider.Settings;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import org.jetbrains.annotations.Contract;
 
@@ -32,20 +26,17 @@ public class SettingsActions {
 			case "settings_about_app_version" -> {}
 
 			case "settings_storage_clear_image_cache" -> {
-				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE);
-				clearDirectory(file);
+				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE));
 				toast("Cleared successfully!");
 			}
 
 			case "settings_storage_clear_webview_cache" -> {
-				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE);
-				clearDirectory(file);
+				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE));
 				toast("Cleared successfully!");
 			}
 
 			case "settings_storage_clear_net_cache" -> {
-				var file = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE);
-				clearDirectory(file);
+				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE));
 				toast("Cleared successfully!");
 			}
 

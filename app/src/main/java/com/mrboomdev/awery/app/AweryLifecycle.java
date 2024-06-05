@@ -76,9 +76,9 @@ public class AweryLifecycle {
 	 * It was made just for the Android Framework to work properly!
 	 */
 	public static class CallbackFragment extends Fragment {
-		private final Callbacks.Callback1<Intent> callback;
+		private final ActivityResultCallback callback;
 
-		public CallbackFragment(Callbacks.Callback1<Intent> callback) {
+		public CallbackFragment(ActivityResultCallback callback) {
 			this.callback = callback;
 		}
 
@@ -86,8 +86,12 @@ public class AweryLifecycle {
 		@SuppressWarnings("deprecation")
 		public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 			super.onActivityResult(requestCode, resultCode, data);
-			callback.run(data);
+			callback.run(requestCode, resultCode, data);
 		}
+	}
+
+	public interface ActivityResultCallback {
+		void run(int requestCode, int resultCode, Intent data);
 	}
 
 	/**
@@ -97,7 +101,7 @@ public class AweryLifecycle {
 	 * @author MrBoomDev
 	 */
 	@SuppressWarnings("deprecation")
-	public static void startActivityForResult(Context context, Intent intent, Callbacks.Callback1<Intent> callback) {
+	public static void startActivityForResult(Context context, Intent intent, ActivityResultCallback callback) {
 		var activity = getActivity(context);
 
 		if(activity instanceof FragmentActivity fragmentActivity) {

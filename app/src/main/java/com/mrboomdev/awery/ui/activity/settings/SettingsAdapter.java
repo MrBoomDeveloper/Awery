@@ -31,7 +31,8 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
+import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -258,7 +259,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case SELECT, SELECT_INT -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
 							.setTitle(setting.getTitle(context))
-							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
 							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
 								if(setting instanceof CustomSettingsItem customSetting) {
 									var item = selection.get(Selection.State.SELECTED);
@@ -355,7 +356,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case MULTISELECT -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.MULTI)
 							.setTitle(setting.getTitle(parent.getContext()))
-							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
+							.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
 							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
 								var items = selection.getAll(Selection.State.SELECTED);
 								if(items == null) return;

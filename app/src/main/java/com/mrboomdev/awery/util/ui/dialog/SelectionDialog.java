@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.popup.dialog;
+package com.mrboomdev.awery.util.ui.dialog;
 
 import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -18,12 +18,10 @@ import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.Objects;
 
-@SuppressWarnings("unchecked")
-public class SelectionDialog<T> extends DialogBuilder {
+public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<T>> {
 	private Selection<T> items = Selection.empty();
 	private final Mode mode;
 	private RadioGroup radioGroup;
@@ -139,91 +137,5 @@ public class SelectionDialog<T> extends DialogBuilder {
 
 	public enum Mode {
 		MULTI, SINGLE
-	}
-
-
-	/*--------------------------------
-		All methods below were overridden only
-		for valid builder method returns
-	 --------------------------------*/
-
-	@Override
-	public SelectionDialog<T> setTitle(String title) {
-		return (SelectionDialog<T>) super.setTitle(title);
-	}
-
-	@Override
-	public SelectionDialog<T> setMessage(String message) {
-		return (SelectionDialog<T>) super.setMessage(message);
-	}
-
-	@Override
-	public SelectionDialog<T> setTitle(int res) {
-		return (SelectionDialog<T>) super.setTitle(res);
-	}
-
-	@Override
-	public SelectionDialog<T> setMessage(int res) {
-		return (SelectionDialog<T>) super.setMessage(res);
-	}
-
-	@Override
-	public SelectionDialog<T> setPositiveButton(String label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setPositiveButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setPositiveButton(int label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setPositiveButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setNeutralButton(String label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setNeutralButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setNeutralButton(int label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setNeutralButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setNegativeButton(String label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setNegativeButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setNegativeButton(int label, OnButtonClickListener listener) {
-		return (SelectionDialog<T>) super.setNegativeButton(label, listener);
-	}
-
-	@Override
-	public SelectionDialog<T> setOnDismissListener(Callbacks.Callback1<DialogBuilder> listener) {
-		return (SelectionDialog<T>) super.setOnDismissListener(listener);
-	}
-
-	@Override
-	public SelectionDialog<T> addView(View view, int index) {
-		return (SelectionDialog<T>) super.addView(view, index);
-	}
-
-	@Override
-	public SelectionDialog<T> addView(View view) {
-		return (SelectionDialog<T>) super.addView(view);
-	}
-
-	@Override
-	public SelectionDialog<T> create() {
-		return (SelectionDialog<T>) super.create();
-	}
-
-	@Override
-	public SelectionDialog<T> show() {
-		return (SelectionDialog<T>) super.show();
-	}
-
-	@Override
-	public SelectionDialog<T> dismiss() {
-		return (SelectionDialog<T>) super.dismiss();
 	}
 }

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.data;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -42,6 +43,10 @@ public class CatalogSubtitle implements Parcelable {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public Uri getUri() {
+		return Uri.parse(getUrl());
 	}
 
 	@Override

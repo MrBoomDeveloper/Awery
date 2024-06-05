@@ -1,9 +1,15 @@
 package com.mrboomdev.awery.util;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+
+import android.annotation.SuppressLint;
+import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media3.common.MimeTypes;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.sdk.util.Callbacks;
@@ -17,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import java9.util.stream.Stream;
 import java9.util.stream.StreamSupport;
@@ -41,6 +48,67 @@ public class NiceUtils {
 		}
 	}
 
+	@SuppressLint("Range")
+	public static String parseMimeType(Object o) {
+		String fileName;
+
+		if(o instanceof Uri uri) {
+			if(Objects.equals(uri.getScheme(), "content")) {
+				try(var cursor = getAnyContext().getContentResolver().query(
+						uri, null, null, null, null)
+				) {
+					if(cursor == null) {
+						throw new NullPointerException("Cursor is null!");
+					}
+
+					cursor.moveToFirst();
+					fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+				}
+			} else {
+				fileName = uri.getLastPathSegment();
+
+				if(fileName == null) {
+					fileName = uri.toString();
+					fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+				}
+			}
+		} else if(o instanceof File file) {
+			fileName = file.getName();
+		} else {
+			fileName = new File(o.toString()).getName();
+		}
+
+		if(fileName.contains("#")) {
+			fileName = fileName.substring(0, fileName.indexOf("#"));
+		}
+
+		if(fileName.contains("?")) {
+			fileName = fileName.substring(0, fileName.indexOf("?"));
+		}
+
+		if(fileName.contains("/")) {
+			fileName = fileName.substring(0, fileName.indexOf("/"));
+		}
+
+		var ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+
+		return switch(ext) {
+			case "vtt" -> MimeTypes.TEXT_VTT;
+			case "srt" -> MimeTypes.APPLICATION_SUBRIP;
+			case "scc" -> MimeTypes.APPLICATION_CEA708;
+			case "ts" -> MimeTypes.APPLICATION_DVBSUBS;
+			case "mka" -> MimeTypes.APPLICATION_MATROSKA;
+			case "wvtt" -> MimeTypes.APPLICATION_MP4VTT;
+			case "pgs" -> MimeTypes.APPLICATION_PGS;
+			case "rtsp" -> MimeTypes.APPLICATION_RTSP;
+			case "ass", "ssa" -> MimeTypes.APPLICATION_SS;
+			case "ttml", "xml", "dfxp" -> MimeTypes.APPLICATION_TTML;
+			case "tx3g" -> MimeTypes.APPLICATION_TX3G;
+			case "idx", "sub" -> MimeTypes.APPLICATION_VOBSUB;
+			default -> throw new IllegalArgumentException("Unknown mime type! " + fileName);
+		};
+	}
+
 	@Nullable
 	public static Object invokeMethod(String className, String methodName) {
 		try {
@@ -63,23 +131,6 @@ public class NiceUtils {
 		} catch(ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
 			return null;
 		}
-	}
-
-	public static long getDirectorySize(@NonNull File file) {
-		if(file.isDirectory()) {
-			var children = file.listFiles();
-			if(children == null) return 0;
-
-			long totalSize = 0;
-
-			for(var child : children) {
-				totalSize += getDirectorySize(child);
-			}
-
-			return totalSize;
-		}
-
-		return file.length();
 	}
 
 	@NonNull
@@ -184,22 +235,6 @@ public class NiceUtils {
 	public static <E> Stream<E> stream(Collection<E> e) {
 		if(e == null) throw new NullPointerException("Collection cannot be null!");
 		return StreamSupport.stream(e);
-	}
-
-	public static boolean clearDirectory(File file) {
-		if(file == null) return false;
-
-		if(file.isDirectory()) {
-			var children = file.listFiles();
-			if(children == null) return false;
-
-			for(var child : children) {
-				clearDirectory(child);
-			}
-		}
-
-		file.delete();
-		return true;
 	}
 
 	/**

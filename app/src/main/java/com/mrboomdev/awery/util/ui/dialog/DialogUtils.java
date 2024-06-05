@@ -40,7 +40,7 @@ public class DialogUtils {
 
 			window.setNavigationBarColor(SurfaceColors.SURFACE_1.getColor(context));
 		} else {
-			/* If we'll try to do this shit with the SideSheetDialog, it will be centered,
+			/* If we'll try to do this shit with the SideSheetDialog, it will get centered,
 			   so we use different approaches for different dialog types.*/
 
 			var window = dialog.getWindow();

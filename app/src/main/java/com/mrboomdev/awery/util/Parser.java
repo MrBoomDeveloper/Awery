@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import org.jetbrains.annotations.Contract;
 
@@ -42,9 +43,13 @@ public class Parser {
 	}
 
 	@NonNull
-	@Contract("_ -> new")
-	public static <T> Adapter<T> getAdapter(@NonNull Class<T> type) {
-		return new Adapter<>(moshi.adapter(type));
+	@SuppressWarnings("unchecked")
+	public static <T> Adapter<T> getAdapter(@NonNull Class<?> type, Class<?>... generics) {
+		if(generics != null && generics.length > 0) {
+			return new Adapter<>(moshi.adapter(Types.newParameterizedType(type, generics)));
+		}
+
+		return (Adapter<T>) new Adapter<>(moshi.adapter(type));
 	}
 
 	public static class Adapter<T> {

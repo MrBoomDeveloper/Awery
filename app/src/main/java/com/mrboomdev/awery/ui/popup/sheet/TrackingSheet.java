@@ -38,7 +38,8 @@ import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
-import com.mrboomdev.awery.ui.popup.dialog.SelectionDialog;
+import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Parser;
@@ -158,7 +159,7 @@ public class TrackingSheet {
 									return new Selection.Selectable<>(item, item.getId(), item.getTitle(),
 											(isSelected ? Selection.State.SELECTED : Selection.State.UNSELECTED));
 								}).collect(Selection.collect()))
-						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNegativeButton(R.string.cancel, BaseDialogBuilder::dismiss)
 						.setPositiveButton(R.string.ok, (dialog, selection) -> {
 							var selected = selection.get(Selection.State.SELECTED);
 							if(selected == null) return;
@@ -400,7 +401,7 @@ public class TrackingSheet {
 					intent.putExtra("query", queryFilter.getStringValue());
 					intent.putExtra("select", true);
 
-					startActivityForResult(context, intent, result -> {
+					startActivityForResult(context, intent, (requestCode, resultCode, result) -> {
 						if(result == null) return;
 
 						var mediaJson = result.getStringExtra("media");

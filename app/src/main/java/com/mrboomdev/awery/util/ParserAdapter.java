@@ -17,6 +17,8 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
 import com.squareup.moshi.Types;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 
@@ -50,6 +52,24 @@ public class ParserAdapter {
 	public static String listToString(@NonNull List<String> value) {
 		return StringUtils.listToUniqueString(value);
 	}
+
+	/*@NonNull
+	@TypeConverter
+	@ToJson
+	public static IconStateful iconFromString(String str) {
+		var icon = new IconStateful();
+
+		try {
+			var json = new JSONObject(str);
+			icon.active = json.getString("active");
+			icon.inActive = json.getString("in_active");
+		} catch(JSONException e) {
+			icon.active = str;
+			icon.inActive = str;
+		}
+
+		return icon;
+	}*/
 
 	public static String arrayToString(NativeArray array) {
 		if(array == null) return null;

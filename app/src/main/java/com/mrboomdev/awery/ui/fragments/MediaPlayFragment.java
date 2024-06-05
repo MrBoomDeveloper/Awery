@@ -369,7 +369,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					intent.putExtra("query", queryFilter.getStringValue());
 					intent.putExtra("select", true);
 
-					AweryLifecycle.startActivityForResult(requireContext(), intent, result -> {
+					AweryLifecycle.startActivityForResult(requireContext(), intent, (requestCode, resultCode, result) -> {
 						if(result == null) return;
 
 						var mediaJson = result.getStringExtra("media");

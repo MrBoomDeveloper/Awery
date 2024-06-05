@@ -2,11 +2,16 @@ package com.mrboomdev.awery.ui.activity.player;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -25,14 +30,17 @@ import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -109,7 +117,15 @@ public class PlayerActivityController {
 		else cancelDelayed(hideUiRunnable);
 	}
 
+	private void checkIfReasonsAreValid() {
+		if(lockedUiReasons.contains("pause") && activity.player.isPlaying()) {
+			removeLockedUiReason("pause");
+		}
+	}
+
 	public void toggleUiVisibility() {
+		checkIfReasonsAreValid();
+
 		if(!isUiVisible) {
 			if(isUiFadeLocked) {
 				showUi();
@@ -268,18 +284,22 @@ public class PlayerActivityController {
 	}
 
 	public void openSubtitlesDialog() {
+		if(activity.video == null) return;
+
 		var subtitles = activity.video.getSubtitles();
 		if(subtitles == null) return;
 
+		var picker = new PopupItem(R.string.pick_from_storage);
+
 		var items = new LinkedHashMap<PopupItem, CatalogSubtitle>();
 		items.put(new PopupItem(R.string.none), null);
+		items.put(picker, null);
 
 		for(var subtitle : subtitles) {
 			items.put(new PopupItem().setTitle(subtitle.getTitle()), subtitle);
 		}
 
 		final var dialog = new AtomicReference<Dialog>();
-		final var didSelectedVideo = new AtomicBoolean();
 
 		var recycler = new RecyclerView(activity);
 		recycler.setVerticalScrollBarEnabled(false);
@@ -295,17 +315,34 @@ public class PlayerActivityController {
 			return binding;
 		});
 
-		var itemsAdapter = new SimpleAdapter<>(parent -> {
-			var binding = PopupSimpleItemBinding.inflate(
-					activity.getLayoutInflater(), parent, false);
+		var itemsAdapter = new PopupAdapter(new ArrayList<>(items.keySet()), item -> {
+			if(item == picker) {
+				var intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.setType(MimeTypes.ANY.toString());
+				var chooser = Intent.createChooser(intent, "Choose a subtitles file");
 
-			return new PopupItemHolder(binding, item -> {
-				var subtitle = items.get(item);
-				activity.selectSubtitles(subtitle);
-				didSelectedVideo.set(true);
+				startActivityForResult(activity, chooser, (requestCode, resultCode, result) -> {
+					if(resultCode != PlayerActivity.RESULT_OK) return;
+
+					var uri = Objects.requireNonNull(result.getData());
+					var file = new File(uri.toString());
+
+					activity.setSubtitles(new CatalogSubtitle(file.getName(), uri.toString()) {
+						@Override
+						public Uri getUri() {
+							return uri;
+						}
+					});
+				});
+
 				dialog.get().dismiss();
-			});
-		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
+				return;
+			}
+
+			var subtitle = items.get(item);
+			activity.setSubtitles(subtitle);
+			dialog.get().dismiss();
+		});
 
 		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
@@ -320,6 +357,8 @@ public class PlayerActivityController {
 	}
 
 	public void openQualityDialog(boolean isRequired) {
+		if(activity.episode == null) return;
+
 		var videos = activity.episode.getVideos();
 		if(videos == null) return;
 
@@ -344,17 +383,12 @@ public class PlayerActivityController {
 			return PopupSimpleHeaderBinding.inflate(inflater, parent, false);
 		});
 
-		var itemsAdapter = new SimpleAdapter<>(parent -> {
-			var binding = PopupSimpleItemBinding.inflate(
-					activity.getLayoutInflater(), parent, false);
-
-			return new PopupItemHolder(binding, item -> {
-				var video = Objects.requireNonNull(items.get(item));
-				activity.playVideo(video);
-				didSelectedVideo.set(true);
-				dialog.get().dismiss();
-			});
-		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
+		var itemsAdapter = new PopupAdapter(new ArrayList<>(items.keySet()), item -> {
+			var video = Objects.requireNonNull(items.get(item));
+			activity.setVideo(video);
+			didSelectedVideo.set(true);
+			dialog.get().dismiss();
+		});
 
 		if(isRequired) {
 			sheet.setOnDismissListener(_dialog -> {
@@ -376,6 +410,40 @@ public class PlayerActivityController {
 		sheet.show();
 
 		DialogUtils.fixDialog(dialog.get());
+	}
+
+	private class PopupAdapter extends RecyclerView.Adapter<PopupItemHolder> {
+		private final ItemSelectListener itemSelectListener;
+		private final List<PopupItem> items;
+
+		public PopupAdapter(List<PopupItem> items, ItemSelectListener itemSelectListener) {
+			this.itemSelectListener = itemSelectListener;
+			this.items = items;
+			setHasStableIds(true);
+		}
+
+		@NonNull
+		@Override
+		public PopupItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			var inflater = LayoutInflater.from(parent.getContext());
+			var binding = PopupSimpleItemBinding.inflate(inflater, parent, false);
+			return new PopupItemHolder(binding, itemSelectListener);
+		}
+
+		@Override
+		public void onBindViewHolder(@NonNull PopupItemHolder holder, int position) {
+			holder.bind(items.get(position));
+		}
+
+		@Override
+		public int getItemCount() {
+			return items.size();
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
 	}
 
 	public class PopupItem {

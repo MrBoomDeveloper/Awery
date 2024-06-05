@@ -1,24 +1,18 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static androidx.media3.session.SessionResult.RESULT_ERROR_NOT_SUPPORTED;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
-import android.app.RemoteAction;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,7 +32,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
-import androidx.media3.common.ForwardingPlayer;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
@@ -47,18 +40,13 @@ import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaSession;
-import androidx.media3.session.SessionCommand;
-import androidx.media3.session.SessionResult;
 import androidx.media3.ui.AspectRatioFrameLayout;
-import androidx.media3.ui.PlayerNotificationManager;
 import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.app.AweryNotifications;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -67,6 +55,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -74,7 +63,6 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @OptIn(markerClass = UnstableApi.class)
@@ -92,6 +80,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected final Set<View> buttons = new HashSet<>();
 	private final PlayerActivityController controller = new PlayerActivityController(this);
 	private MediaSession session;
+	private CatalogSubtitle currentSubtitle;
 	private PlayerGestures gestures;
 	protected ScreenPlayerBinding binding;
 	protected Runnable showUiRunnableFromLeft, showUiRunnableFromRight;
@@ -146,9 +135,6 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		binding.aspectRatioFrame.setAspectRatio(16f / 9f);
 		binding.aspectRatioFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-
-		binding.subtitleView.setUserDefaultStyle();
-		binding.subtitleView.setUserDefaultTextSize();
 
 		var audioAttributes = new AudioAttributes.Builder()
 				.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
@@ -298,6 +284,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		setupButton(binding.exit, this::finish);
 		setupButton(binding.settings, controller::openSettingsDialog);
+		setupButton(binding.subtitles, controller::openSubtitlesDialog);
 
 		if(bigSeek > 0) {
 			var time = StringUtils.formatTimer(bigSeek * 1000L);
@@ -357,7 +344,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		PlayerActivity.source = source;
 	}
 
-	public void selectSubtitles(@Nullable CatalogSubtitle subtitles) {
+	public void setSubtitles(@Nullable CatalogSubtitle subtitles) {
+		this.currentSubtitle = subtitles;
 		MediaItem.SubtitleConfiguration subtitleItem = null;
 
 		if(subtitles == null) {
@@ -365,12 +353,21 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			binding.subtitles.setAlpha(isEmpty ? .4f : 1f);
 			binding.subtitles.setImageResource(R.drawable.ic_subtitles_outlined);
 		} else {
+			String mimeType;
+
+			try {
+				mimeType = NiceUtils.parseMimeType(subtitles.getUri());
+			} catch(IllegalArgumentException e) {
+				Log.e(TAG, "Unknown subtitles mime type! " + subtitles.getUri(), e);
+				CrashHandler.showErrorDialog(this, "Unknown file type!", "Sorry, but Awery dpesn't support yet this file format! Please, tell developers about this problem, so they can fix it as soon as possible!", e);
+				return;
+			}
+
 			binding.subtitles.setAlpha(1f);
 			binding.subtitles.setImageResource(R.drawable.ic_subtitles_filled);
 
-			subtitleItem = new MediaItem.SubtitleConfiguration.Builder(Uri.parse(subtitles.getUrl()))
-					.setMimeType(MimeTypes.TEXT_VTT)
-					.setLanguage("en")
+			subtitleItem = new MediaItem.SubtitleConfiguration.Builder(subtitles.getUri())
+					.setMimeType(mimeType)
 					.setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
 					.build();
 		}
@@ -390,7 +387,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.play();
 	}
 
-	public void playVideo(@NonNull CatalogVideo video) {
+	public void setVideo(@NonNull CatalogVideo video) {
 		var url = video.getUrl();
 
 		// Handle torrents
@@ -405,6 +402,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			} catch(ActivityNotFoundException e) {
 				new DialogBuilder(this)
 						.setTitle("Can't play torrents")
+						.setCancelable(false)
 						.setMessage("Sorry, but Awery doesn't support torrents playback at this time. You can try installing a third-party torrent player to play this type of file.")
 						.setPositiveButton("Ok", dialog -> {
 							dialog.dismiss();
@@ -417,21 +415,14 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 						})
 						.show();
 			}
+
+			return;
 		}
 
 		this.videoItem = MediaItem.fromUri(url);
 		this.video = video;
 
-		selectSubtitles(null);
-
-		if(video.getSubtitles().isEmpty()) {
-			binding.subtitles.setAlpha(.35f);
-			setupButton(binding.subtitles, () -> {});
-		} else {
-			binding.subtitles.setAlpha(.6f);
-			setupButton(binding.subtitles, controller::openSubtitlesDialog);
-		}
-
+		setSubtitles(currentSubtitle);
 		didSelectedVideo = true;
 	}
 
@@ -522,9 +513,28 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.play();
 	}
 
-	@SuppressLint("ClickableViewAccessibility")
 	private void setupButton(@NonNull View view, Runnable clickListener) {
+		setupButton(view, clickListener, null);
+	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	private void setupButton(@NonNull View view, Runnable clickListener, Runnable longClickListener) {
 		buttons.add(view);
+
+		view.setOnLongClickListener(v -> {
+			if(!areButtonsClickable) {
+				return false;
+			}
+
+			controller.showUiTemporarily();
+
+			if(longClickListener != null) {
+				longClickListener.run();
+				return true;
+			}
+
+			return false;
+		});
 
 		view.setOnClickListener(v -> {
 			if(!areButtonsClickable) {
@@ -532,7 +542,10 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			}
 
 			controller.showUiTemporarily();
-			clickListener.run();
+
+			if(clickListener != null) {
+				clickListener.run();
+			}
 		});
 	}
 
@@ -608,6 +621,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		if(!isVideoPaused) {
 			player.play();
 		}
+
+		binding.subtitleView.setUserDefaultStyle();
+		binding.subtitleView.setUserDefaultTextSize();
 
 		controller.showUiTemporarily();
 	}

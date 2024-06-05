@@ -1,9 +1,36 @@
 {
-	"home": { "icon": "ic_home_outlined", "names": [ "Home", "Main", "Главная", "Дом" ] },
-	"add": { "icon": "ic_add", "names": [ "Add", "Plus", "Create", "New", "Создать", "Добавить", "Плюс" ] },
-	"bookmark": { "icon": "ic_bookmark_outlined", "names": [ "Favourite", "Bookmark" ] },
-	"chat": { "icon": "ic_chat_outlined", "names": [ "Chat", "Comments", "Discussion" ] },
-	"movie": { "icon": "ic_movie_outlined", "names": [ "Movie", "Video" ] },
-	"sync": { "icon": "ic_sync", "names": [ "Sync", "Track" ] },
-	"search": { "icon": "ic_search", "names": [ "Search", "Explore" ] }
+	"home": {
+		"active": "ic_home_outlined",
+		"names": [ "Home", "Main", "Главная", "Дом" ]
+	},
+
+	"add": {
+		"active": "ic_add",
+		"names": [ "Add", "Plus", "Create", "New", "Создать", "Добавить", "Плюс" ]
+	},
+
+	"bookmark": {
+		"active": "ic_bookmark_outlined",
+		"names": [ "Favourite", "Bookmark", "Любимое", "Закладка" ]
+	},
+
+	"chat": {
+		"active": "ic_chat_outlined",
+		"names": [ "Chat", "Comments", "Discussion", "Комментарий", "Чат" ]
+	},
+
+	"movie": {
+		"active": "ic_movie_outlined",
+		"names": [ "Movie", "Video", "Кино", "Видео" ]
+	},
+
+	"sync": {
+		"active": "ic_sync",
+		"names": [ "Sync", "Track" ]
+	},
+
+	"search": {
+		"active": "ic_search",
+		"names": [ "Search", "Explore", "Поиск" ]
+	}
 }

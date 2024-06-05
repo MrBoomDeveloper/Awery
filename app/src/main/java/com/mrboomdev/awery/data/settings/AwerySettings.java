@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,11 +9,13 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.util.Parser;
 import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -108,31 +111,16 @@ public class AwerySettings {
 			return settingsMapInstance;
 		}
 
-		try(var reader = new BufferedReader(new InputStreamReader(context.getAssets().open("settings.json"), StandardCharsets.UTF_8))) {
-			var builder = new StringBuilder();
-			String line;
+		try {
+			var json = readAssets(new File("settings.json"));
 
-			while((line = reader.readLine()) != null) {
-				builder.append(line);
-			}
+			settingsMapInstance = Parser.fromString(SettingsItem.class, json);
+			settingsMapInstance.setAsParentForChildren();
 
-			try {
-				var moshi = new Moshi.Builder().build();
-				var adapter = moshi.adapter(SettingsItem.class);
-				settingsMapInstance = adapter.fromJson(builder.toString());
-
-				if(settingsMapInstance == null) {
-					throw new IllegalStateException("Failed to parse settings");
-				}
-
-				settingsMapInstance.setAsParentForChildren();
-				reloadSettingsMapValues(context);
-				return settingsMapInstance;
-			} catch(IOException e) {
-				throw new InvalidSyntaxException("Failed to parse settings", e);
-			}
+			reloadSettingsMapValues(context);
+			return settingsMapInstance;
 		} catch(IOException e) {
-			throw new RuntimeException(e);
+			throw new InvalidSyntaxException("Failed to parse settings", e);
 		}
 	}
 
