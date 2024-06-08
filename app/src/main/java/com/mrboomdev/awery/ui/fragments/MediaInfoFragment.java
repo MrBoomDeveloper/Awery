@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -147,11 +148,15 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.bookmark.setOnClickListener(v ->
 				MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
-		var descriptionHtml = media.description == null ? null :
-				Html.fromHtml(media.description, Html.FROM_HTML_MODE_COMPACT).toString().trim();
+		if(media.description != null && !media.description.isBlank()) {
+			var description = getMarkwon(requireContext()).toMarkdown(media.description);
 
-		if(media.description != null && !descriptionHtml.isBlank()) {
-			binding.details.description.setText(descriptionHtml);
+			if(!description.toString().isBlank()) {
+				binding.details.description.setText(description);
+			} else {
+				binding.details.description.setVisibility(View.GONE);
+				binding.details.descriptionTitle.setVisibility(View.GONE);
+			}
 		} else {
 			binding.details.description.setVisibility(View.GONE);
 			binding.details.descriptionTitle.setVisibility(View.GONE);

@@ -254,6 +254,10 @@ public class SettingsItem {
 		return headerItems;
 	}
 
+	public List<SettingsItem> getActionItems() {
+		return null;
+	}
+
 	public Integer getIntValue() {
 		return intValue;
 	}

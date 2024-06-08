@@ -56,6 +56,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.SpoilerPlugin;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
@@ -69,6 +70,16 @@ import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import io.noties.markwon.AbstractMarkwonPlugin;
+import io.noties.markwon.LinkResolverDef;
+import io.noties.markwon.Markwon;
+import io.noties.markwon.MarkwonConfiguration;
+import io.noties.markwon.SoftBreakAddsNewLinePlugin;
+import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
+import io.noties.markwon.html.HtmlPlugin;
+import io.noties.markwon.html.TagHandlerNoOp;
+import io.noties.markwon.image.glide.GlideImagesPlugin;
+import io.noties.markwon.linkify.LinkifyPlugin;
 import kotlin.UninitializedPropertyAccessException;
 import okhttp3.OkHttpClient;
 
@@ -89,6 +100,18 @@ public class AweryApp extends Application {
 		drawable.draw(canvas);
 
 		return bitmap;
+	}
+
+	@NonNull
+	public static Markwon getMarkwon(Context context) {
+		return Markwon.builder(context)
+				.usePlugin(new SoftBreakAddsNewLinePlugin())
+				.usePlugin(StrikethroughPlugin.create())
+				.usePlugin(GlideImagesPlugin.create(context))
+				.usePlugin(LinkifyPlugin.create())
+				.usePlugin(SpoilerPlugin.create())
+				.usePlugin(HtmlPlugin.create())
+				.build();
 	}
 
 	public static int getResourceId(@NonNull Class<?> type, String res) {

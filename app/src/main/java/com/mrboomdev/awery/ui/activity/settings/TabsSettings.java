@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.item.DBTab;
@@ -210,6 +211,24 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 	private class TabSetting extends SettingsItem {
 		private final DBTab tab;
 
+		private final List<SettingsItem> actions = List.of(new CustomSettingsItem(SettingsItemType.ACTION) {
+
+			@Override
+			public String getTitle(Context context) {
+				return "Delete";
+			}
+
+			@Override
+			public Drawable getIcon(@NonNull Context context) {
+				return ContextCompat.getDrawable(context, R.drawable.ic_delete_outlined);
+			}
+
+			@Override
+			public void onClick(Context context) {
+
+			}
+		});
+
 		public TabSetting(DBTab tab) {
 			super(SettingsItemType.ACTION);
 			this.tab = tab;
@@ -218,6 +237,11 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		@Override
 		public String getTitle(Context context) {
 			return tab.title;
+		}
+
+		@Override
+		public List<SettingsItem> getActionItems() {
+			return actions;
 		}
 
 		@Nullable

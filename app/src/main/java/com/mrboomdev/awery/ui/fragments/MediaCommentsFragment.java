@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
@@ -69,6 +70,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.noties.markwon.Markwon;
 import java9.util.Objects;
 
 public class MediaCommentsFragment extends Fragment {
@@ -709,11 +711,13 @@ public class MediaCommentsFragment extends Fragment {
 
 	private class CommentViewHolder extends RecyclerView.ViewHolder {
 		private final WidgetCommentBinding binding;
+		private final Markwon markwon;
 		private CatalogComment comment;
 
 		public CommentViewHolder(@NonNull WidgetCommentBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+			this.markwon = getMarkwon(getContext());
 
 			binding.deleteButton.setOnClickListener(v -> {
 				var comment = getComment();
@@ -846,7 +850,7 @@ public class MediaCommentsFragment extends Fragment {
 			if(date == null) binding.name.setText(comment.authorName);
 			else binding.name.setText(comment.authorName + " • " + date);
 
-			binding.message.setText(comment.text);
+			markwon.setMarkdown(binding.message, comment.text);
 			binding.commentsCount.setText(comment.comments == 0 ? "" : String.valueOf(comment.comments));
 
 			if(comment.likes == CatalogComment.DISABLED) {

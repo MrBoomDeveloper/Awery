@@ -113,7 +113,7 @@ dependencies {
     // Compatibility for new methods in old Api
     implementation "androidx.core:core-ktx:1.13.1"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
-    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
     implementation "androidx.fragment:fragment-ktx:1.7.1"
@@ -138,7 +138,6 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "com.google.android.material:material:1.12.0"
     implementation "nl.joery.animatedbottombar:library:1.1.0"
-    implementation "io.noties.markwon:core:4.6.2"
     implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
     implementation "com.github.VipulOG:ebook-reader:0.1.6"
     implementation "com.github.emilaleborn:PageIndicatorView:905cd4e2ab"
@@ -146,6 +145,11 @@ dependencies {
     implementation "com.github.skydoves:colorpickerview:2.3.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "com.github.skydoves:balloon:1.6.4"
+
+    // Markdown
+    for(String module_name : List.of("core", "editor", "ext-strikethrough", "html", "image", "image-glide", "linkify")) {
+        implementation "io.noties.markwon:$module_name:4.6.2"
+    }
 
     // Utils
     implementation "me.xdrop:fuzzywuzzy:1.4.0"
