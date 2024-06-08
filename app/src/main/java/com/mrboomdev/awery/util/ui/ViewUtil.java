@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.ui;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+
 import android.content.res.Resources;
 import android.util.Log;
 import android.util.TypedValue;
@@ -159,6 +161,16 @@ public class ViewUtil {
 		return true;
 	}
 
+	public static boolean setVerticalMargin(View view, int top, int bottom) {
+		var margins = getMargins(view);
+		if(margins == null) return false;
+
+		margins.topMargin = top;
+		margins.bottomMargin = bottom;
+		view.setLayoutParams(margins);
+		return true;
+	}
+
 	public static boolean setRightMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;
@@ -257,7 +269,8 @@ public class ViewUtil {
 
 	/**
 	 * Automatically calls a listener.
-	 * Provided insets will be used on the first call
+	 * Provided insets will be used on the first call.
+	 * @author MrBoomDev
 	 */
 	public static void setOnApplyInsetsListener(View view, InsetsUpdateListener<WindowInsetsCompat> listener) {
 		ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
@@ -295,8 +308,7 @@ public class ViewUtil {
 
 		ViewCompat.setOnApplyWindowInsetsListener(view, (_view, insets) -> {
 			var uiInsets = insets.getInsets(UI_INSETS);
-			listener.updated(uiInsets);
-			return WindowInsetsCompat.CONSUMED;
+			return listener.updated(uiInsets) ? WindowInsetsCompat.CONSUMED : new WindowInsetsCompat(insets);
 		});
 	}
 
@@ -316,16 +328,20 @@ public class ViewUtil {
 	}
 
 	public static int dpPx(int dp) {
-		var metrics = Resources.getSystem().getDisplayMetrics();
+		var metrics = getAnyContext().getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
 	}
 
-	public static int spPx(int sp) {
-		var metrics = Resources.getSystem().getDisplayMetrics();
+	public static float spPx(int sp) {
+		var metrics = getAnyContext().getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics));
 	}
 
 	public interface InsetsUpdateListener<I> {
-		void updated(I insets);
+		/**
+		 * @return true if insets were consumed. If false was returned, then children won't get any updates.
+		 * @author MrBoomDev
+		 */
+		boolean updated(I insets);
 	}
 }

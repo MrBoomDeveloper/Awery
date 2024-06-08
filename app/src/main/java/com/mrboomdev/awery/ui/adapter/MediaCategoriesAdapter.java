@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -47,13 +50,15 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		binding.mediaCatalogCategoryItems.setHasFixedSize(true);
 		binding.mediaCatalogCategoryItems.setAdapter(adapter);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, insets ->
-				ViewUtil.setHorizontalPadding(binding.mediaCatalogCategoryTitle,
-						insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, insets -> {
+			setHorizontalPadding(binding.mediaCatalogCategoryTitle, insets.left + dpPx(16));
+			return true;
+		}, parent);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, insets ->
-				ViewUtil.setHorizontalPadding(binding.mediaCatalogCategoryItems,
-						insets.left + ViewUtil.dpPx(16)), parent.getRootWindowInsets());
+		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, insets -> {
+			setHorizontalPadding(binding.mediaCatalogCategoryItems, insets.left + dpPx(16));
+			return true;
+		}, parent);
 
 		viewHolder.setAdapter(adapter);
 		return viewHolder;

@@ -75,7 +75,7 @@ public class ExtensionsFactory {
 		if(id.contains(";;;")) {
 			var parts = id.split(";;;");
 
-			//TODO: When js extensions will be fully done remove this shit from the code
+			// TODO: When js extensions will be fully done remove this shit from the code
 			if(parts[0].equals(JsManager.MANAGER_ID) && parts[1].equals(Constants.ANILIST_EXTENSION_ID)) {
 				return AnilistProvider.getInstance();
 			}

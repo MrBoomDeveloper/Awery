@@ -659,6 +659,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			ViewUtil.setLeftMargin(binding.slider, systemInsets.left);
 			ViewUtil.setLeftMargin(binding.bottomControls, systemInsets.left);
 			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom);
+
+			return false;
 		});
 	}
 

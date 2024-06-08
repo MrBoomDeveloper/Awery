@@ -81,8 +81,10 @@ public class MainActivity extends AppCompatActivity {
 			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets ->
-				ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom));
+		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
+			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
+			return true;
+		});
 
 		binding.navbar.removeTabAt(2);
 	}

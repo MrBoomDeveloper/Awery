@@ -252,6 +252,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 							float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 							columnsCount.set((int)(freeSpace / columnSize));
 							layoutManager.setSpanCount(columnsCount.get());
+
+							return true;
 						});
 
 						layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -682,6 +684,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
 			setTopPadding(recycler, insets.top);
 			setRightPadding(recycler, insets.right);
+			return true;
 		}, container);
 
 		return recycler;

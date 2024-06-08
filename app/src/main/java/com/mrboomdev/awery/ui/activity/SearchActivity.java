@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -131,6 +132,7 @@ public class SearchActivity extends AppCompatActivity {
 		ViewUtil.setOnApplyUiInsetsListener(header.getRoot(), insets -> {
 			ViewUtil.setTopMargin(header.getRoot(), insets.top);
 			ViewUtil.setHorizontalMargin(header.getRoot(), insets.left, insets.right);
+			return true;
 		});
 
 		refresher = new SwipeRefreshLayout(this);
@@ -175,21 +177,23 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
-			var padding = ViewUtil.dpPx(8);
+			var padding = dpPx(8);
 			ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
 			ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
 
 			if(isLandscape() && autoColumnsCountLand) {
-				float columnSize = ViewUtil.dpPx(110);
+				float columnSize = dpPx(110);
 				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 				columnsCountLand.set((int)(freeSpace / columnSize));
 				layoutManager.setSpanCount(columnsCountLand.get());
 			} else if(!isLandscape() && autoColumnsCountPort) {
-				float columnSize = ViewUtil.dpPx(110);
+				float columnSize = dpPx(110);
 				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 				columnsCountPort.set((int)(freeSpace / columnSize));
 				layoutManager.setSpanCount(columnsCountPort.get());
 			}
+
+			return true;
 		});
 
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -197,8 +201,8 @@ public class SearchActivity extends AppCompatActivity {
 			public int getSpanSize(int position) {
 				/* Don't ask. I don't know how it is working, so please don't ask about it. */
 				return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1 : (isLandscape()
-						? (columnsCountLand.get() == 0 ? 5 : columnsCountLand.get())
-						: columnsCountPort.get() == 0 ? 3 : columnsCountPort.get());
+						? (columnsCountLand.get() == 0 ? layoutManager.getSpanCount() : columnsCountLand.get())
+						: columnsCountPort.get() == 0 ? layoutManager.getSpanCount() : columnsCountPort.get());
 			}
 		});
 	}
@@ -374,7 +378,7 @@ public class SearchActivity extends AppCompatActivity {
 			var params = binding.getRoot().getLayoutParams();
 			params.width = ViewUtil.MATCH_PARENT;
 
-			if(!ViewUtil.setHorizontalMargin(params, ViewUtil.dpPx(6))) {
+			if(!ViewUtil.setHorizontalMargin(params, dpPx(6))) {
 				throw new IllegalStateException("Failed to set horizontal margin for GridMediaCatalogBinding!");
 			}
 

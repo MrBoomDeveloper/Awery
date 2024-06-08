@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
@@ -22,8 +23,9 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import java.util.Objects;
 
 public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<T>> {
-	private Selection<T> items = Selection.empty();
 	private final Mode mode;
+	private final LinearLayoutCompat contentView;
+	private Selection<T> items = Selection.empty();
 	private RadioGroup radioGroup;
 	private ChipGroup chipGroup;
 	private boolean isChecking;
@@ -32,7 +34,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 		super(context);
 		this.mode = mode;
 
-		var contentView = new LinearLayoutCompat(context);
+		contentView = new LinearLayoutCompat(context);
 		contentView.setOrientation(LinearLayoutCompat.VERTICAL);
 
 		if(mode == Mode.SINGLE) {
@@ -46,8 +48,6 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 			contentView.addView(chipGroup, chipsParams);
 		}
-
-		addView(contentView);
 	}
 
 	public SelectionDialog<T> setItems(Selection<T> items) {
@@ -129,6 +129,12 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 
 	public Selection<T> getSelection() {
 		return items;
+	}
+
+	@Nullable
+	@Override
+	protected View getContentView(View parentView) {
+		return contentView;
 	}
 
 	public interface SelectionListener<T> {

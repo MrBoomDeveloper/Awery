@@ -15,6 +15,7 @@ public class DBFeed {
 	@PrimaryKey
 	@NonNull
 	public String id;
+	public int index;
 	public List<CatalogFilter> filters;
 	public String tab, title;
 	@ColumnInfo(name = "source_manager")

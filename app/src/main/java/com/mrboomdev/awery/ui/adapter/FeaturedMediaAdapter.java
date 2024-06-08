@@ -72,6 +72,7 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 			ViewUtil.setTopMargin(binding.headerWrapper, insets.top);
 			ViewUtil.setRightMargin(binding.headerWrapper, insets.right);
 			ViewUtil.setLeftMargin(binding.headerWrapper, insets.left);
+			return false;
 		}, parent);
 
 		if(binding.pageIndicator != null) {
@@ -117,14 +118,20 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 				return true;
 			});
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, insets ->
-					ViewUtil.setLeftMargin(binding.leftSideBarrier, insets.left), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.leftSideBarrier, insets -> {
+				ViewUtil.setLeftMargin(binding.leftSideBarrier, insets.left);
+				return true;
+			}, parent);
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, insets ->
-					ViewUtil.setRightMargin(binding.rightSideBarrier, insets.right), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.rightSideBarrier, insets -> {
+				ViewUtil.setRightMargin(binding.rightSideBarrier, insets.right);
+				return true;
+			}, parent);
 
-			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, insets ->
-					ViewUtil.setTopMargin(binding.topSideBarrier, insets.top), parent.getRootWindowInsets());
+			ViewUtil.setOnApplyUiInsetsListener(binding.topSideBarrier, insets -> {
+				ViewUtil.setTopMargin(binding.topSideBarrier, insets.top);
+				return true;
+			}, parent);
 
 			return holder;
 		}

@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -180,8 +181,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 		}
 
-		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
-				setHorizontalPadding(binding.getRoot(), insets.left, insets.right), parent);
+		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+			setHorizontalPadding(binding.getRoot(), insets.left, insets.right);
+			return false;
+		}, parent);
 	}
 
 	private void setupReordering(RecyclerView recycler, SettingsAdapter adapter) {
@@ -199,20 +202,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 
 			@Override
-			public void onMoved(
-					@NonNull RecyclerView recyclerView,
-					@NonNull RecyclerView.ViewHolder viewHolder,
-					int fromPos,
-					@NonNull RecyclerView.ViewHolder target,
-					int toPos,
-					int x,
-					int y
-			) {
-				super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
-				((SettingsAdapter.ViewHolder)viewHolder).getItem().onDragged(fromPos, toPos);
-			}
-
-			@Override
 			public boolean onMove(
 					@NonNull RecyclerView recyclerView,
 					@NonNull RecyclerView.ViewHolder current,
@@ -220,6 +209,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			) {
 				var from = current.getBindingAdapterPosition();
 				var to = target.getBindingAdapterPosition();
+
+				if(!adapter.getItems().get(from).isDraggableInto(adapter.getItems().get(to))) {
+					return false;
+				}
+
+				if(!adapter.getItems().get(from).onDragged(from, to)) {
+					return false;
+				}
 
 				Collections.swap(adapter.getItems(), from, to);
 				adapter.notifyItemMoved(from, to);
@@ -240,8 +237,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
 
-		setOnApplyUiInsetsListener(binding.getRoot(), insets ->
-				setTopPadding(binding.recycler, insets.top + dpPx(12)));
+		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+			setTopPadding(binding.recycler, insets.top + dpPx(12));
+			return false;
+		});
 
 		var config = new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)

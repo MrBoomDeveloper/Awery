@@ -17,7 +17,7 @@ public interface TabsDao {
 	List<DBTab> getAllTabs();
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
-	void insert(DBTab tab);
+	void insert(DBTab... tabs);
 
 	@Delete
 	void delete(DBTab tab);

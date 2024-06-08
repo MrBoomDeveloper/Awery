@@ -68,6 +68,8 @@ public class MediaActivity extends AppCompatActivity {
 				setBottomPadding(binding.navigation, insets.bottom, false);
 				getWindow().setNavigationBarColor(SurfaceColors.SURFACE_4.getColor(this));
 			}
+
+			return true;
 		});
 
 		if(binding.navigation instanceof NavigationRailView rail) {

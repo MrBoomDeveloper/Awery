@@ -9,6 +9,7 @@ import android.view.Window;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
@@ -143,6 +144,9 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		return (T) this;
 	}
 
+	@Nullable
+	protected abstract View getContentView(View parentView);
+
 	private void createRoot() {
 		if(didCreateRoot) return;
 		didCreateRoot = true;
@@ -182,6 +186,12 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		}
 
 		//linear.addView(scroller);
+
+		var contentView = getContentView(fieldsWrapper);
+
+		if(contentView != null) {
+			fieldsWrapper.addView(contentView);
+		}
 
 		for(var field : fields) {
 			addField(field, -1);

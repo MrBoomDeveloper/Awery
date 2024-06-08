@@ -36,6 +36,7 @@
         android:layout_marginTop="3dp"
         android:fontFamily="@font/poppins_semi_bold"
         android:textSize="16sp"
+        android:textColor="?attr/colorOnBackground"
         app:layout_constraintLeft_toRightOf="@id/icon"
         app:layout_constraintRight_toLeftOf="@id/toggle"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"

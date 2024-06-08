@@ -122,6 +122,7 @@ public class MediaCatalogListsFragment extends Fragment {
 			ViewUtil.setTopMargin(headerBinding.getRoot(), insets.top);
 			ViewUtil.setRightMargin(headerBinding.getRoot(), insets.right);
 			ViewUtil.setLeftMargin(headerBinding.getRoot(), insets.left);
+			return false;
 		}, container);
 
 		var headerParams = ViewUtil.createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);

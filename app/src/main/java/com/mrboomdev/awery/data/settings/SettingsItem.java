@@ -272,7 +272,7 @@ public class SettingsItem {
 
 	public void onClick(Context context) {}
 
-	public boolean onDragged(long fromPosition, long toPosition) {
+	public boolean onDragged(int fromPosition, int toPosition) {
 		return false;
 	}
 

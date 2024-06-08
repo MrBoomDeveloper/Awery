@@ -64,6 +64,7 @@ import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -88,6 +89,27 @@ public class AweryApp extends Application {
 		drawable.draw(canvas);
 
 		return bitmap;
+	}
+
+	public static int getResourceId(@NonNull Class<?> type, String res) {
+		try {
+			var field = type.getDeclaredField(res);
+			field.setAccessible(true);
+			var result = field.get(null);
+
+			if(result == null) {
+				Log.e(TAG, "Resource id \"" + res + "\" was not initialized in \"" + type.getName() + "\"!");
+				return 0;
+			}
+
+			return (int) result;
+		} catch(NoSuchFieldException e) {
+			Log.e(TAG, "Resource id \"" + res + "\" was not found in \"" + type.getName() + "\"!", e);
+			return 0;
+		} catch(IllegalAccessException e) {
+			throw new IllegalStateException(
+					"Generated resource id filed cannot be private! Check if the provided class is the R class", e);
+		}
 	}
 
 	public static AweryDB getDatabase() {

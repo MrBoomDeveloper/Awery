@@ -53,24 +53,6 @@ public class ParserAdapter {
 		return StringUtils.listToUniqueString(value);
 	}
 
-	/*@NonNull
-	@TypeConverter
-	@ToJson
-	public static IconStateful iconFromString(String str) {
-		var icon = new IconStateful();
-
-		try {
-			var json = new JSONObject(str);
-			icon.active = json.getString("active");
-			icon.inActive = json.getString("in_active");
-		} catch(JSONException e) {
-			icon.active = str;
-			icon.inActive = str;
-		}
-
-		return icon;
-	}*/
-
 	public static String arrayToString(NativeArray array) {
 		if(array == null) return null;
 

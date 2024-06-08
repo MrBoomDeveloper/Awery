@@ -14,7 +14,7 @@ public class Constants {
 	public static final String LOGS_SEPARATOR = "-".repeat(75);
 	public static final String SUPPRESS_IGNORED_THROWABLE = "ThrowableResultOfMethodCallIgnored";
 
-	//TODO: Remove these fields after JS extensions will be made
+	// TODO: Remove these fields after JS extensions will be made
 	public static final String ANILIST_EXTENSION_ID = "com.mrboomdev.awery.extension.anilist";
 	public static final String ANILIST_CATALOG_ITEM_ID_PREFIX =
 			new JsManager().getId() + ";;;" + ANILIST_EXTENSION_ID + ";;;";
@@ -40,6 +40,12 @@ public class Constants {
 	 */
 	public static boolean alwaysTrue() {
 		return true;
+	}
+
+	public static void throwIfNot(boolean is) {
+		if(!is) {
+			throw new IllegalArgumentException("Given value isn't true!");
+		}
 	}
 
 	/**

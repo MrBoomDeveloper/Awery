@@ -212,20 +212,30 @@ public class MediaInfoFragment extends Fragment {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
 
 		if(AweryApp.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
-			setOnApplyUiInsetsListener(binding.posterWrapper, insets ->
-					setTopMargin(binding.posterWrapper, insets.top + dpPx(24)));
+			setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
+				setTopMargin(binding.posterWrapper, insets.top + dpPx(24));
+				return true;
+			});
 		}
 
 		if(binding.back != null) {
 			binding.back.setOnClickListener(v -> requireActivity().finish());
-			setOnApplyUiInsetsListener(binding.back, insets -> setTopMargin(binding.back, insets.top + dpPx(16)));
+
+			setOnApplyUiInsetsListener(binding.back, insets -> {
+				setTopMargin(binding.back, insets.top + dpPx(16));
+				return true;
+			});
 		}
 
 		var options = binding.options != null ? binding.options : binding.details.options;
 		if(options == null) throw new NullPointerException("Options cannot be null!");
 
 		options.setOnClickListener(v -> MediaActivity.handleOptionsClick(v, media));
-		setOnApplyUiInsetsListener(options, insets -> setTopMargin(options, insets.top + dpPx(16)));
+
+		setOnApplyUiInsetsListener(options, insets -> {
+			setTopMargin(options, insets.top + dpPx(16));
+			return true;
+		});
 
 		if(binding.detailsScroller != null) setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
 			var margin = dpPx(8);
@@ -233,6 +243,8 @@ public class MediaInfoFragment extends Fragment {
 			setTopPadding(binding.detailsScroller, insets.top + margin);
 			setBottomPadding(binding.detailsScroller, insets.bottom + margin);
 			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
+
+			return false;
 		});
 
 		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(

@@ -1,16 +1,21 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.spPx;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,6 +150,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 			ViewUtil.setLeftPadding(binding.getRoot(), insets.left);
 			ViewUtil.setRightPadding(binding.getRoot(), insets.right);
+			return false;
 		}, parent);
 
 		binding.getRoot().setOnClickListener(view -> {
@@ -569,12 +575,28 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				if(item.tintIcon()) {
 					var context = binding.getRoot().getContext();
 					var colorAttr = com.google.android.material.R.attr.colorOnSecondaryContainer;
-					var color = AweryApp.resolveAttrColor(context, colorAttr);
+					var color = resolveAttrColor(context, colorAttr);
 					binding.icon.setImageTintList(ColorStateList.valueOf(color));
 				} else {
 					binding.icon.setImageTintList(null);
 				}
 			}
+
+			binding.title.setTextColor(resolveAttrColor(getContext(binding), item.getType() == SettingsItemType.CATEGORY
+					? com.google.android.material.R.attr.colorOnSecondaryContainer
+					: com.google.android.material.R.attr.colorOnBackground));
+
+			binding.title.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.getType() == SettingsItemType.CATEGORY ? 14 : 16);
+			binding.getRoot().setMinimumHeight(dpPx(item.getType() == SettingsItemType.CATEGORY ? 0 : 54));
+
+			if(item.getType() == SettingsItemType.CATEGORY) {
+				setVerticalMargin(binding.getRoot(), dpPx(-4));
+			} else {
+				setVerticalMargin(binding.getRoot(), 0, dpPx(6));
+			}
+
+			binding.getRoot().setClickable(item.getType() != SettingsItemType.CATEGORY);
+			binding.getRoot().setFocusable(item.getType() != SettingsItemType.CATEGORY);
 
 			if(item.getType() == SettingsItemType.BOOLEAN || item.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);

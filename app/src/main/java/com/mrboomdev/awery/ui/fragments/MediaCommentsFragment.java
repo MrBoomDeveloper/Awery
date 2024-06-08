@@ -262,7 +262,7 @@ public class MediaCommentsFragment extends Fragment {
 
 		runOnUiThread(() -> commentsAdapter.setData(comment), recycler);
 
-		//TODO: Load an avatar received from the extension
+		// TODO: Load an avatar received from the extension
 		sendBinding.avatarWrapper.setVisibility(View.GONE);
 
 		sendBinding.getRoot().setVisibility(
@@ -454,6 +454,8 @@ public class MediaCommentsFragment extends Fragment {
 			setTopPadding(recycler, insets.top + padding);
 			setRightPadding(recycler, insets.right);
 			setBottomPadding(recycler, padding);
+
+			return true;
 		}, container);
 
 		recycler.setAdapter(concatAdapter);
@@ -494,7 +496,7 @@ public class MediaCommentsFragment extends Fragment {
 
 						runOnUiThread(() -> {
 							if(editedComment == wasCurrentComment) {
-								//TODO: Modify all other stuff
+								// TODO: Modify all other stuff
 								wasCurrentComment.text = newComment.text;
 
 								commentsAdapter.setData(wasCurrentComment);

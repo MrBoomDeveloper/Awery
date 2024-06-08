@@ -1,15 +1,19 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getResourceId;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
@@ -35,12 +39,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
+	private final Map<String, IconStateful> icons;
 	private final List<SettingsItem> items = new ArrayList<>();
 	private final List<SettingsItem> headerItems = List.of(
 			new SettingsItem(SettingsItemType.ACTION) {
+
 				@Override
 				public Drawable getIcon(@NonNull Context context) {
 					return ContextCompat.getDrawable(context, R.drawable.ic_add);
@@ -49,6 +56,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 				@Override
 				public void onClick(Context context) {
 					var binding = new AtomicReference<WidgetIconEdittextBinding>();
+					var icon = new AtomicReference<>("catalog");
 
 					new DialogBuilder(context)
 							.setTitle("Create a tab")
@@ -57,22 +65,16 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 										LayoutInflater.from(context),
 										parent, false));
 
-								binding.get().icon.setOnClickListener(v -> {
-									try {
-										var json = readAssets(new File("icons.json"));
-										var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
-										var icons = Parser.fromString(adapter, json);
-
-										new IconPickerDialog(context)
+								binding.get().icon.setOnClickListener(v ->
+										new IconPickerDialog<Map.Entry<String, IconStateful>>(context, Map.Entry::getValue)
 												.setTitle("Select an icon")
-												.setItems(stream(icons)
-														.map(Map.Entry::getValue)
-														.toList())
-												.show();
-									} catch(IOException e) {
-										throw new RuntimeException("Failed to read icons list!", e);
-									}
-								});
+												.setItems(icons.entrySet())
+												.setSelectionListener(item -> {
+													var id = getResourceId(R.drawable.class, item.getValue().getActive());
+													var view = binding.get().icon;
+													view.setImageResource(id);
+													icon.set(item.getKey());
+												}).show());
 
 								binding.get().editText.setHint("Enter a name");
 								return binding.get().getRoot();
@@ -87,6 +89,18 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 								}
 
 								new Thread(() -> {
+									var dao = getDatabase().getTabsDao();
+
+									var tab = new DBTab();
+									tab.title = text.toString();
+									tab.icon = icon.get();
+
+									tab.index = stream(dao.getAllTabs())
+											.mapToInt(item -> item.index)
+											.max().orElse(0) + 1;
+
+									dao.insert(tab);
+
 									dialog.dismiss();
 									toast("Tab created successfully!");
 								}).start();
@@ -96,8 +110,19 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			}
 	);
 
+	public TabsSettings() {
+		try {
+			var json = readAssets(new File("icons.json"));
+			var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
+			icons = Parser.fromString(adapter, json);
+		} catch(IOException e) {
+			throw new RuntimeException("Failed to read an icons atlas!", e);
+		}
+	}
+
 	public void loadData() {
 		items.add(new SettingsItem(SettingsItemType.SELECT) {
+
 			@Override
 			public String getKey() {
 				return "default_tab";
@@ -130,9 +155,15 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		});
 
 		items.add(new CustomSettingsItem(SettingsItemType.ACTION) {
+
 			@Override
 			public String getTitle(Context context) {
 				return "Select a template";
+			}
+
+			@Override
+			public Drawable getIcon(@NonNull Context context) {
+				return ContextCompat.getDrawable(context, R.drawable.ic_view_cozy);
 			}
 
 			@Override
@@ -148,17 +179,17 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		});
 
 		var tabs = getDatabase().getTabsDao().getAllTabs();
+		Collections.sort(tabs);
 
 		if(!tabs.isEmpty()) {
-			items.add(new SettingsItem(SettingsItemType.CATEGORY) {
-				@Override
-				public String getTitle(Context context) {
-					return "Your tabs";
-				}
-			});
-		}
+			items.add(new SettingsItem.Builder(SettingsItemType.CATEGORY)
+					.setTitle("Your tabs")
+					.build());
 
-		this.items.addAll(stream(tabs).map(TabSetting::new).toList());
+			this.items.addAll(stream(tabs)
+					.map(TabSetting::new)
+					.toList());
+		}
 	}
 
 	@Override
@@ -176,7 +207,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		return items;
 	}
 
-	private static class TabSetting extends SettingsItem {
+	private class TabSetting extends SettingsItem {
 		private final DBTab tab;
 
 		public TabSetting(DBTab tab) {
@@ -189,9 +220,22 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			return tab.title;
 		}
 
+		@Nullable
+		@Override
+		public Drawable getIcon(@NonNull Context context) {
+			var icon = icons.get(tab.icon);
+
+			if(icon == null) {
+				return null;
+			}
+
+			var id = getResourceId(R.drawable.class, icon.getActive());
+			return ContextCompat.getDrawable(context, id);
+		}
+
 		@Override
 		public boolean isDraggableInto(SettingsItem item) {
-			return true;
+			return item instanceof TabSetting;
 		}
 
 		@Override
@@ -200,7 +244,20 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		}
 
 		@Override
-		public boolean onDragged(long fromPosition, long toPosition) {
+		public boolean onDragged(int fromPosition, int toPosition) {
+			Collections.swap(items, fromPosition, toPosition);
+
+			for(int i = 0; i < items.size(); i++) {
+				if(items.get(i) instanceof TabSetting tabSetting) {
+					tabSetting.tab.index = i;
+				}
+			}
+
+			new Thread(() -> getDatabase().getTabsDao().insert(stream(items)
+					.filter(item -> item instanceof TabSetting)
+					.map(setting -> ((TabSetting)setting).tab)
+					.toArray(DBTab[]::new))).start();
+
 			return true;
 		}
 	}

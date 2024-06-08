@@ -17,7 +17,8 @@
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintTop_toTopOf="@id/editTextWrapper"
         app:layout_constraintBottom_toBottomOf="@id/editTextWrapper"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:tint="?attr/colorOnBackground" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.FilledBox"
