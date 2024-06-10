@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -36,7 +38,10 @@ android {
     }
 
     sourceSets {
-        main.assets.srcDirs += files("$projectDir/schemas".toString())
+        main {
+            assets.srcDirs += files("$projectDir/schemas".toString())
+            java.srcDirs += file("$projectDir/awery_gen/main/java")
+        }
     }
 
     buildTypes {
@@ -185,3 +190,128 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json-okio:$kotlin_serialization_verison"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$kotlin_serialization_verison"
 }
+
+static def writeFile(File file, String content) {
+    try(var writer = new BufferedWriter(new FileWriter(file))) {
+        writer.write(content)
+    } catch(IOException e) {
+        throw new IllegalStateException("Failed to read an file! " + file, e)
+    }
+}
+
+static def readFile(File file) {
+    try(var reader = new BufferedReader(new FileReader(file))) {
+        var builder = new StringBuilder()
+        String line
+
+        while((line = reader.readLine()) != null) {
+            builder.append(line)
+        }
+
+        return builder.toString()
+    } catch(IOException e) {
+        throw new IllegalStateException("Failed to read an file! " + file, e)
+    }
+}
+
+static def toCamelCase(String text) {
+    var result = ""
+
+    for(String s : text.split("_")) {
+        result += Character.toUpperCase(s.charAt(0))
+
+        if(s.length() > 1) {
+            result += s.substring(1, s.length()).toLowerCase()
+        }
+    }
+
+    return result
+}
+
+static def formatKey(Object o) {
+    var result = "    public static final "
+
+    if(o.type == "select" && o.items != null) {
+        var enumName = toCamelCase(o.key.toUpperCase()) + "_Values"
+
+        result = "\n" + result
+        result += "EnumSetting<$enumName> ${o.key.toUpperCase()} = new EnumSetting<>(\"${o.key}\", ${enumName}.class);\n\n"
+
+        result += "    public enum ${enumName} implements EnumWithKey {\n        "
+
+        var iterator = o.items.iterator()
+
+        while(iterator.hasNext()) {
+            var item = iterator.next()
+            result += item.key.toUpperCase() + "(\"${item.key}\")"
+
+            if(iterator.hasNext()) {
+                result += ", "
+            }
+        }
+
+        result += ";\n\n        private final String key;\n\n        ${enumName}(String key) {\n"
+        result += "            this.key = key;\n        }\n\n        @Override\n        public String getKey() {\n"
+        result += "            return key;\n        }\n    }\n\n"
+
+        return result
+    }
+
+    if(List.of("action", "select", "multiselect").contains(o.type)) {
+        return result + "String ${o.key.toUpperCase()} = \"${o.key}\";\n"
+    }
+
+    switch(o.type) {
+        case "string": result += "String"; break
+        case [ "integer", "select_integer" ]: result += "Integer"; break
+        case "boolean": result += "Boolean"; break
+    }
+
+    result += "Setting ${o.key.toUpperCase()} = () -> \"${o.key}\";\n"
+    return result
+}
+
+static def collectKeys(Object from) {
+    var builder = new StringBuilder()
+
+    switch(from.type) {
+        case "screen": {
+            for(Object item : from.items) {
+                builder.append(collectKeys(item))
+            }
+        }; break
+
+        case [ "string", "integer", "boolean", "action",
+               "select", "select_integer", "multiselect"
+        ] : builder.append(formatKey(from)); break
+    }
+
+    return builder.toString()
+}
+
+tasks.register("generateClasses") {
+    def jsonSlurper = new JsonSlurper()
+    def settings = jsonSlurper.parseText(readFile(file("$projectDir/src/main/assets/settings.json")))
+
+    def dir = file("$projectDir/awery_gen/main/java/com/mrboomdev/awery/generated")
+    dir.mkdirs()
+
+    var builder = new StringBuilder()
+
+    builder.append("package com.mrboomdev.awery.generated;\n" +
+            "\n" +
+            "import com.mrboomdev.awery.data.settings.NicePreferences.*;\n" +
+            "\n" +
+            "/**\n" +
+            " * Auto-generated class created during the compilation. Please, do not edit it.\n" +
+            " * @author MrBoomDev\n" +
+            " */\n" +
+            "public class AwerySettings {\n")
+
+    builder.append(collectKeys(settings))
+    builder.append("}")
+
+    writeFile(new File(dir, "AwerySettings.java"), builder.toString())
+}
+
+preBuild.dependsOn generateClasses

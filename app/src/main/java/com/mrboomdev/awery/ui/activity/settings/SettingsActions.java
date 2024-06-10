@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.provider.Settings;
 
 import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.generated.AwerySettings;
 
 import org.jetbrains.annotations.Contract;
 
@@ -23,39 +24,39 @@ public class SettingsActions {
 		if(actionName == null) return;
 
 		switch(actionName) {
-			case "settings_about_app_version" -> {}
+			case AwerySettings.APP_VERSION -> {}
 
-			case "settings_storage_clear_image_cache" -> {
+			case AwerySettings.CLEAR_IMAGE_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE));
 				toast("Cleared successfully!");
 			}
 
-			case "settings_storage_clear_webview_cache" -> {
+			case AwerySettings.CLEAR_WEBVIEW_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE));
 				toast("Cleared successfully!");
 			}
 
-			case "settings_storage_clear_net_cache" -> {
+			case AwerySettings.CLEAR_NET_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE));
 				toast("Cleared successfully!");
 			}
 
-			case "settings_player_system_subtitles" -> getAnyContext()
+			case AwerySettings.PLAYER_SYSTEM_SUBTITLES -> getAnyContext()
 					.startActivity(new Intent(Settings.ACTION_CAPTIONING_SETTINGS));
 
-			case "settings_about_telegram_group" ->
+			case AwerySettings.TELEGRAM_GROUP ->
 					openUrl("https://t.me/mrboomdev_awery");
 
-			case "settings_about_discord_server" ->
+			case AwerySettings.DISCORD_SERVER ->
 					openUrl("https://discord.com/invite/yspVzD4Kbm");
 
-			case "settings_about_github_repository" ->
+			case AwerySettings.GITHUB_REPOSITORY ->
 					openUrl("https://github.com/MrBoomDeveloper/Awery");
 
-			case "settings_advanced_try_crash_native" ->
+			case AwerySettings.TRY_CRASH_NATIVE ->
 					XCrash.testNativeCrash(false);
 
-			case "settings_advanced_try_crash_java" ->
+			case AwerySettings.TRY_CRASH_JAVA ->
 					XCrash.testJavaCrash(false);
 
 			default -> toast("Unknown action: " + actionName);

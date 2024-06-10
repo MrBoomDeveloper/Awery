@@ -25,11 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
@@ -52,10 +53,9 @@ public class PlayerActivityController {
 	private final PlayerActivity activity;
 	private final Runnable hideUiRunnable;
 	private boolean isUiFadeLocked, isUiVisible;
-	private boolean dim;
+	private final boolean dim = AwerySettings.PLAYER_DIM_SCREEN.getValue();
 
 	public PlayerActivityController(PlayerActivity activity) {
-		this.dim = AwerySettings.getInstance().getBoolean(AwerySettings.player.DIM_SCREEN);
 		this.activity = activity;
 
 		this.hideUiRunnable = () -> {

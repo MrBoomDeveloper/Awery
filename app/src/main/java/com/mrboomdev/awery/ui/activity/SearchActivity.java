@@ -30,7 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -40,6 +40,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -80,12 +81,10 @@ public class SearchActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		var prefs = AwerySettings.getInstance(this);
-
-		var columnsCountLand = new AtomicInteger(prefs.getInt("settings_ui_media_columns_land"));
+		var columnsCountLand = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.getValue());
 		var autoColumnsCountLand = columnsCountLand.get() == 0;
 
-		var columnsCountPort = new AtomicInteger(prefs.getInt("settings_ui_media_columns_port"));
+		var columnsCountPort = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.getValue());
 		var autoColumnsCountPort = columnsCountPort.get() == 0;
 
 		this.select = getIntent().getBooleanExtra("select", false);

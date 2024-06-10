@@ -31,13 +31,14 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
 import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
@@ -83,9 +84,9 @@ public class MediaUtils {
 	}
 
 	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
-		var prefs = AwerySettings.getInstance();
-		var badTags = prefs.getStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS);
-		var excludeMediaEntries = prefs.getBoolean(AwerySettings.content.HIDE_LIBRARY_ENTRIES);
+		var prefs = NicePreferences.getPrefs();
+		var badTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS);
+		var excludeMediaEntries = AwerySettings.HIDE_LIBRARY_ENTRIES.getValue();
 		var saved = AweryApp.getDatabase().getMediaProgressDao().get(media.globalId);
 
 		if(saved != null) {

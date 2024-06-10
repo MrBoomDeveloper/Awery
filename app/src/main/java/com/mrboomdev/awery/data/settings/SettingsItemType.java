@@ -13,7 +13,7 @@ public enum SettingsItemType {
 	SCREEN_BOOLEAN,
 	@Json(name = "color")
 	COLOR,
-	@Json(name = "int")
+	@Json(name = "integer")
 	INT,
 	@Json(name = "string")
 	STRING,
@@ -21,8 +21,8 @@ public enum SettingsItemType {
 	SCREEN,
 	@Json(name = "select")
 	SELECT,
-	@Json(name = "select_int")
-	SELECT_INT,
+	@Json(name = "select_integer")
+	SELECT_INTEGER,
 	@Json(name = "multiselect")
 	MULTISELECT,
 	@Json(name = "action")

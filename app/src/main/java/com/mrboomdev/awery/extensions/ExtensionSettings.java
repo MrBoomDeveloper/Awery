@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -22,14 +23,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBRepository;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
 import com.squareup.moshi.Json;
@@ -225,7 +225,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
 		item.restoreValues();
 
-		AwerySettings.cachePath(cachedKey, item);
+		NicePreferences.cachePath(cachedKey, item);
 
 		var intent = new Intent(activity, SettingsActivity.class);
 		intent.putExtra("path", cachedKey);
@@ -236,9 +236,9 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	public void save(@NonNull SettingsItem item, Object newValue) {
 		var isEnabled = (boolean) newValue;
 
-		var prefs = AwerySettings.getInstance(activity);
-		prefs.setBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", isEnabled);
-		prefs.saveAsync();
+		NicePreferences.getPrefs()
+				.setBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", isEnabled)
+				.saveAsync();
 
 		if(isEnabled) manager.loadExtension(activity, item.getKey());
 		else manager.unloadExtension(activity, item.getKey());
@@ -323,7 +323,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						response.get().setParent(this);
 						return response.get();
 					}).filter(Objects::nonNull).toList())
-					.setBooleanValue(AwerySettings.getInstance(activity).getBoolean(
+					.setBooleanValue(NicePreferences.getPrefs().getBoolean(
 							getExtensionKey(extension) + "_enabled", true))
 					.setIcon(extension.getIcon())
 					.setIconSize(1.2f)
@@ -340,7 +340,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
 			item.restoreValues();
 
-			AwerySettings.cachePath(cachedKey, item);
+			NicePreferences.cachePath(cachedKey, item);
 
 			var intent = new Intent(activity, SettingsActivity.class);
 			intent.putExtra("path", cachedKey);

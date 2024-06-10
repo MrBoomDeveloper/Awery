@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.generated.AwerySettings;
+
 public class PlayerGestures {
 	private static final int GESTURE_START_Y = 150;
 	private static final String TAG = "PlayerGestures";
@@ -32,7 +34,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != PlayerActivity.GesturesMode.VOLUME_BRIGHTNESS) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesMode_Values.VOLUME_BRIGHTNESS) {
 					isRightIgnored = true;
 					yield false;
 				}
@@ -94,7 +96,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != PlayerActivity.GesturesMode.VOLUME_BRIGHTNESS) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesMode_Values.VOLUME_BRIGHTNESS) {
 					isLeftIgnored = true;
 					yield false;
 				}

@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
@@ -134,7 +134,7 @@ public class JsManager extends ExtensionsManager {
 				for(var file : files) {
 					var isEnabledKey = "ext_" + getId() + "_" + file.getName() + "_enabled";
 
-					if(!AwerySettings.getInstance().getBoolean(isEnabledKey, true)) {
+					if(!NicePreferences.getPrefs().getBoolean(isEnabledKey, true)) {
 						var name = file.getName();
 						var extension = new Extension(this, name, name, null);
 						extension.setError(Extension.DISABLED_ERROR);

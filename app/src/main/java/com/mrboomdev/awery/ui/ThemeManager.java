@@ -2,7 +2,7 @@ package com.mrboomdev.awery.ui;
 
 import static android.content.Context.UI_MODE_SERVICE;
 
-import static com.mrboomdev.awery.app.AweryApp.getSettings;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.app.Activity;
 import android.app.UiModeManager;
@@ -11,34 +11,36 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.generated.AwerySettings;
+
+import org.jetbrains.annotations.Contract;
 
 public class ThemeManager {
-	private static final Theme DEFAULT_THEME = Theme.RED;
 
 	public static boolean isMaterialYou() {
-		var prefs = getSettings();
-
-		if(!prefs.contains(AwerySettings.theme.USE_MATERIAL_YOU)) {
+		if(!AwerySettings.USE_MATERIAL_YOU.exists()) {
 			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
 
-			prefs.setBoolean(AwerySettings.theme.USE_MATERIAL_YOU, isMaterialYouSupported);
-			prefs.saveAsync();
+			getPrefs()
+					.setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported)
+					.saveAsync();
 
 			return isMaterialYouSupported;
 		}
 
-		return prefs.getBoolean(AwerySettings.theme.USE_MATERIAL_YOU);
+		return AwerySettings.USE_MATERIAL_YOU.getValue();
 	}
 
 	public static void apply(Context context) {
-		var isDarkModeEnabled = getSettings().getBoolean(AwerySettings.theme.DARK_THEME);
+		var isDarkModeEnabled = AwerySettings.USE_DARK_THEME.getValue();
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 			((UiModeManager) context.getSystemService(UI_MODE_SERVICE))
@@ -52,10 +54,8 @@ public class ThemeManager {
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
-		var prefs = AwerySettings.getInstance(activity);
-
-		boolean useOLED = prefs.getBoolean(AwerySettings.theme.USE_OLED);
-		boolean useColorsFromPoster = prefs.getBoolean(AwerySettings.theme.EXTRACT_COVER_COLORS);
+		boolean useOLED = AwerySettings.USE_AMOLED_THEME.getValue();
+		boolean useColorsFromPoster = AwerySettings.EXTRACT_BANNER_COLOR.getValue();
 		boolean useMaterialYou = isMaterialYou();
 
 		if(useMaterialYou || (useColorsFromPoster && bitmap != null)) {
@@ -63,26 +63,16 @@ public class ThemeManager {
 			return;
 		}
 
-		var savedTheme = prefs.getString(AwerySettings.theme.THEME_PALLET);
-		Theme enumTheme;
-
-		try {
-			enumTheme = Theme.valueOf(savedTheme);
-		} catch(IllegalArgumentException e) {
-			enumTheme = DEFAULT_THEME;
-			prefs.setString(AwerySettings.theme.THEME_PALLET, enumTheme.name());
-		}
+		var savedTheme = AwerySettings.THEME_COLOR_PALETTE.getValue();
 
 		// In light mode there is no amoled theme so we need to check the current night mode
 		if(useOLED && (activity.getResources().getConfiguration().uiMode
 				& Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
-			activity.setTheme(enumTheme.getRes());
+			activity.setTheme(getThemeRes(savedTheme, false));
 			return;
 		}
 
-		activity.setTheme(useOLED ?
-				enumTheme.getOledRes() :
-				enumTheme.getRes());
+		activity.setTheme(getThemeRes(savedTheme, useOLED));
 	}
 
 	public static void apply(Activity activity) {
@@ -103,31 +93,14 @@ public class ThemeManager {
 		DynamicColors.applyToActivityIfAvailable(activity, options.build());
 	}
 
-	public enum Theme {
-		PURPLE(R.style.Theme_Awery_Purple, R.style.Theme_Awery_PinkOLED),
-		BLUE(R.style.Theme_Awery_Blue, R.style.Theme_Awery_BlueOLED),
-		GREEN(R.style.Theme_Awery_Green, R.style.Theme_Awery_GreenOLED),
-		PINK(R.style.Theme_Awery_Pink, R.style.Theme_Awery_PinkOLED),
-		RED(R.style.Theme_Awery_Red, R.style.Theme_Awery_RedOLED),
-		CATPPUCCIN(R.style.Theme_Awery_Catppuccin, R.style.Theme_Awery_CatppuccinOLED),
-		LAVENDER(R.style.Theme_Awery_Lavender, R.style.Theme_Awery_LavenderOLED),
-		MONOCHROME(R.style.Theme_Awery_Monochrome, R.style.Theme_Awery_MonochromeOLED);
-
-		private final int res, oledRes;
-
-		Theme(int res, int oledRes) {
-			this.res = res;
-			this.oledRes = oledRes;
-		}
-
-		@StyleRes
-		public int getOledRes() {
-			return oledRes;
-		}
-
-		@StyleRes
-		public int getRes() {
-			return res;
-		}
+	private static int getThemeRes(@NonNull AwerySettings.ThemeColorPalette_Values theme, boolean isAmoled) {
+		return switch(theme) {
+			case RED -> isAmoled ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
+			case PINK -> isAmoled ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
+			case PURPLE -> isAmoled ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
+			case BLUE -> isAmoled ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
+			case GREEN -> isAmoled ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
+			case MONOCHROME -> isAmoled ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
+		};
 	}
 }

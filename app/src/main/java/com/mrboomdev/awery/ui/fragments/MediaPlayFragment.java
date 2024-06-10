@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
@@ -34,7 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
@@ -49,7 +48,6 @@ import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
-import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -68,7 +66,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
 	public static final int VIEW_TYPE_VARIANTS = 1;
@@ -230,7 +227,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(alwaysTrue()) return;
 
 		if(changeSettings) {
-			var prefs = AwerySettings.getInstance(requireContext());
+			var prefs = NicePreferences.getPrefs();
 			var viewMode = StringUtils.parseEnum(prefs.getString("settings_ui_episodes_mode"), ViewMode.LIST);
 
 			if(viewMode != this.viewMode) {

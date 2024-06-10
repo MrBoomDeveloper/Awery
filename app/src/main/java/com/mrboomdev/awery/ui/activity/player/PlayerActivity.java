@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
@@ -33,7 +34,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.text.CueGroup;
@@ -47,12 +47,13 @@ import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -92,7 +93,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected CatalogVideo video;
 	protected ExoPlayer player;
 	protected int doubleTapSeek, bigSeek;
-	protected GesturesMode gesturesMode;
+	protected AwerySettings.PlayerGesturesMode_Values gesturesMode;
 	private MediaItem videoItem;
 
 	@SuppressLint({"ClickableViewAccessibility", "UnspecifiedRegisterReceiverFlag"})
@@ -319,14 +320,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	private void loadSettings() {
-		var prefs = AwerySettings.getInstance(this);
-
-		doubleTapSeek = prefs.getInt(AwerySettings.player.DOUBLE_TAP_SEEK_LENGTH);
-		bigSeek = prefs.getInt(AwerySettings.player.BIG_SEEK_LENGTH);
-
-		gesturesMode = StringUtils.parseEnum(
-				prefs.getString(AwerySettings.player.GESTURES_MODE),
-				GesturesMode.VOLUME_BRIGHTNESS);
+		doubleTapSeek = AwerySettings.PLAYER_DOUBLE_TAP_SEEK_LENGTH.getValue();
+		bigSeek = AwerySettings.PLAYER_BIG_SEEK_LENGTH.getValue();
+		gesturesMode = AwerySettings.PLAYER_GESTURES_MODE.getValue();
 	}
 
 	@Override
@@ -662,9 +658,5 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 			return false;
 		});
-	}
-
-	public enum GesturesMode {
-		VOLUME_BRIGHTNESS, DISABLED
 	}
 }

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -22,6 +22,7 @@ import com.mrboomdev.awery.extensions.support.anilist.data.AnilistEpisode;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -122,13 +123,10 @@ public class AnilistProvider extends ExtensionProvider {
 		var queryFilter = findIn(filter -> filter.getId().equals("query"), filters);
 		var pageFilter = findIn(filter -> filter.getId().equals("page"), filters);
 
-		var adultMode = AwerySettings.getInstance().getEnum(
-				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
-
 		new AnilistSearchQuery.Builder()
 				.setSearchQuery(queryFilter.getStringValue())
 				.setPage(pageFilter == null ? 1 : pageFilter.getIntegerValue())
-				.setIsAdult(switch(adultMode) {
+				.setIsAdult(switch(AwerySettings.ADULT_MODE.getValue()) {
 					case ENABLED -> null;
 					case DISABLED -> false;
 					case ONLY -> true;

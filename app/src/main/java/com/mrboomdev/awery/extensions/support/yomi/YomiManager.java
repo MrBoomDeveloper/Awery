@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
@@ -20,7 +20,6 @@ import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.io.HttpClient;
-import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
@@ -128,7 +127,7 @@ public abstract class YomiManager extends ExtensionsManager {
 		}
 
 		var key = ExtensionSettings.getExtensionKey(extension) + "_enabled";
-		if(!AwerySettings.getInstance().getBoolean(key, true)) {
+		if(!NicePreferences.getPrefs().getBoolean(key, true)) {
 			return;
 		}
 

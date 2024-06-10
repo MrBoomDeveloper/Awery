@@ -1,9 +1,8 @@
 {
-	"key": "settings", "type": "screen", "title": "settings",
+	"type": "screen", "title": "settings",
 	"items": [
 		{
-			"key": "theme", "type": "screen",
-			"title": "theme", "icon": "ic_paint_filled",
+			"type": "screen", "title": "theme", "icon": "ic_paint_filled",
 			"items": [
 				{
 					"key": "use_material_you", "type": "boolean", "restart": true,
@@ -11,19 +10,19 @@
 					"description": "material_you_description",
 					"show_if": "material_you"
 				}, {
-					"key": "dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
+					"key": "use_dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
 					"title": "dark_theme", "icon": "ic_dark_mode_filled",
 					"description": "dark_theme_description"
 				}, {
-					"key": "amoled", "type": "boolean", "restart": true,
+					"key": "use_amoled_theme", "type": "boolean", "restart": true,
 					"title": "amoled", "icon": "ic_contrast",
 					"description": "amoled_theme_description"
 				}, {
-					"key": "use_source_theme", "type": "boolean",
+					"key": "extract_banner_color", "type": "boolean",
 					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
 					"show_if": "never"
 				}, {
-					"key": "pallet", "type": "select", "restart": true, "string_value": "RED",
+					"key": "theme_color_palette", "type": "select", "restart": true, "string_value": "RED",
 					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE_TITLE}",
 					"items": [
 						{ "key": "RED", "title": "red" },
@@ -36,34 +35,24 @@
 				}
 			]
 		}, {
-			"key": "ui", "type": "screen",
-			"title": "ui", "icon": "ic_amp_stories_filled",
+			"type": "screen", "title": "ui", "icon": "ic_amp_stories_filled",
 			"items": [
 				{
-					"key": "language", "type": "select",
+					"key": "ui_language", "type": "select",
 					"title": "app_language", "icon": "ic_language",
 					"behaviour": "languages", "show_if": "debug"
 				}, {
-					"key": "default_tab", "type": "select", "string_value": "MAIN",
-					"description": "default_tab_description",
-					"title": "startUpTab", "icon": "ic_home_filled",
-					"items": [
-						{ "key": "MAIN", "title": "Home" },
-						{ "key": "LIBRARY", "title": "Library" }
-					]
-				}, {
-					"key": "media_columns_land", "type": "int", "from": 0,
+					"key": "media_columns_count_land", "type": "integer", "from": 0,
 					"title": "Media columns count at Landscape", "description": "0 for auto"
 				}, {
-					"key": "media_columns_port", "type": "int", "from": 0,
+					"key": "media_columns_count_port", "type": "integer", "from": 0,
 					"title": "Media columns count at Portrait", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {
-					"key": "episodes", "type": "screen", "show_if": "never",
-					"title": "Episodes list",
+					"type": "screen", "show_if": "never", "title": "Episodes list",
 					"items": [
 						{
-							"key": "mode", "type": "select", "string_value": "LIST",
+							"key": "episodes_display_mode", "type": "select", "string_value": "LIST",
 							"title": "View mode", "description": "${VALUE_TITLE}",
 							"items": [
 								{ "key": "LIST", "title": "List" },
@@ -74,11 +63,10 @@
 				}
 			]
 		}, {
-			"key": "content", "type": "screen",
-			"title": "content", "icon": "ic_view_cozy",
+			"type": "screen", "title": "content", "icon": "ic_view_cozy",
 			"items": [
 				{
-					"key": "tabs", "type": "screen", "behaviour": "tabs",
+					"type": "screen", "behaviour": "tabs",
 					"title": "Tabs", "icon": "ic_list"
 				}, {
 					"key": "hide_library_entries", "type": "boolean",
@@ -90,7 +78,7 @@
 					"description": "global_tags_exclusion_description",
 					"behaviour": "excluded_tags"
 				}, {
-					"key": "adult_content_mode", "type": "select", "string_value": "DISABLED",
+					"key": "adult_mode", "type": "select", "string_value": "DISABLED",
 					"title": "adult_content", "description": "${VALUE_TITLE}", "icon": "ic_round_report",
 					"items": [
 						{ "key": "DISABLED", "title": "disabled" },
@@ -100,11 +88,10 @@
 				}
 			]
 		}, {
-			"key": "player", "type": "screen",
-			"title": "player", "icon": "ic_video_settings",
+			"type": "screen", "title": "player", "icon": "ic_video_settings",
 			"items": [
 				{
-					"key": "double_tap_seek_length", "type": "select_int", "int_value": "10",
+					"key": "player_double_tap_seek_length", "type": "select_integer", "int_value": "10",
 					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}", "show_if": "!tv",
 					"items": [
@@ -118,7 +105,7 @@
 						{ "key": "120", "title": "120s" }
 					]
 				}, {
-					"key": "big_seek_length", "type": "select_int", "int_value": "60",
+					"key": "player_big_seek_length", "type": "select_integer", "int_value": "60",
 					"title": "quick_rewind", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -131,7 +118,7 @@
 						{ "key": "240", "title": "4m" }
 					]
 				}, {
-					"key": "gestures", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
+					"key": "player_gestures_mode", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
 					"title": "gesture_mode", "icon": "ic_swipe_up_filled",
 					"description": "${VALUE_TITLE}", "show_if": "!tv",
 					"items": [
@@ -139,69 +126,65 @@
 						{ "key": "DISABLED", "title": "disabled" }
 					]
 				}, {
-					"key": "default_video_quality", "type": "select",  "int_value": 5,
+					"key": "player_default_video_quality", "type": "select", "string_value": "select",
 					"title": "default_video_quality", "show_if": "never",
 					"items": [
 						{ "key": "select", "title": "always_ask_video_quality" },
-						{ "key": "144", "title": "144p" },
-						{ "key": "240", "title": "240p" },
-						{ "key": "360", "title": "360p" },
-						{ "key": "480", "title": "480p" },
-						{ "key": "720", "title": "720p" },
-						{ "key": "1080", "title": "1080p" },
-						{ "key": "1440", "title": "1440p" },
-						{ "key": "2160", "title": "2160p" }
+						{ "key": "_144", "title": "144p" },
+						{ "key": "_240", "title": "240p" },
+						{ "key": "_360", "title": "360p" },
+						{ "key": "_480", "title": "480p" },
+						{ "key": "_720", "title": "720p" },
+						{ "key": "_1080", "title": "1080p" },
+						{ "key": "_1440", "title": "1440p" },
+						{ "key": "_2160", "title": "2160p" }
 					]
 				}, {
-					"key": "dim_screen", "type": "boolean", "boolean_value": true,
+					"key": "player_dim_screen", "type": "boolean", "boolean_value": true,
 					"title": "Dim screen", "icon": "ic_round_brightness_4_24",
 					"description": "After clicking on the screen, black overlay will be shown on top of the video."
 				}, {
-					"key": "subtitles", "type": "screen", "show_if": "never",
+					"type": "screen", "show_if": "never",
 					"title": "subtitles", "icon": "ic_subtitles_filled",
 					"items": [
 						{
-							"key": "size", "type": "int", "title": "subtitles_size",
+							"key": "subtitles_text_size", "type": "integer", "title": "subtitles_size",
 							"from": 2, "to": 100, "int_value": 14
 						}, {
-							"key": "back_opacity", "type": "int", "title": "subtitles_back_opacity",
+							"key": "subtitles_background_opacity", "type": "integer", "title": "subtitles_back_opacity",
 							"from": 0, "to": 100, "int_value": 85
 						}
 					]
 				}, {
-					"key": "system_subtitles", "type": "action",
+					"key": "player_system_subtitles", "type": "action",
 					"title": "subtitles", "icon": "ic_subtitles_filled"
 				}
 			]
 		}, {
-			"key": "reader", "type": "screen", "show_if": "debug",
+			"type": "screen", "show_if": "debug",
 			"title": "reader", "icon": "ic_menu_book_filled",
 			"items": [
 				{
-					"key": "bruh", "type": "boolean",
+					"key": "bruh", "type": "action", "behaviour": "none",
 					"title": "Sorry bro, but you currently can't read those chinese comics.",
 					"description": "Come here later..."
 				}
 			]
 		}, {
-			"key": "extensions", "type": "screen",
-			"title": "extensions", "icon": "ic_extension_filled",
+			"type": "screen", "title": "extensions", "icon": "ic_extension_filled",
 			"items": [
 				{
-					"key": "aweryjs", "type": "screen",
+					"type": "screen", "behaviour": "extensions_aweryjs",
 					"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
-					"description": "Watch Movies, TV with Tracking and Comments!",
-					"behaviour": "extensions_aweryjs"
+					"description": "Watch Movies, TV with Tracking and Comments!"
 				}, {
-					"key": "aniyomi", "type": "screen",
+					"type": "screen", "behaviour": "extensions_aniyomi",
 					"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
-					"description": "It seems there is only Anime here?",
-					"behaviour": "extensions_aniyomi"
+					"description": "It seems there is only Anime here?"
 				}
 			]
 		}, {
-			"key": "storage", "type": "screen",
-			"title": "Storage", "icon": "ic_storage",
+			"type": "screen", "title": "Storage", "icon": "ic_storage",
 			"items": [
 				{
 					"key": "clear_image_cache", "type": "action",
@@ -215,10 +198,12 @@
 				}
 			]
 		}, {
-			"key": "advanced", "type": "screen",
-			"title": "advanced", "icon": "ic_settings_filled",
+			"type": "screen", "title": "advanced", "icon": "ic_settings_filled",
 			"items": [
 				{
+					"type": "category",
+					"title": "Warning! These settings aren't meant for typical users. If you don't know what is that, don't touch it."
+				}, {
 					"key": "log_network", "type": "boolean", "restart": true,
 					"title": "Verbose network logging"
 				}, {
@@ -230,8 +215,7 @@
 				}
 			]
 		}, {
-			"key": "about", "type": "screen",
-			"title": "about", "icon": "ic_info_filled",
+			"type": "screen", "title": "about", "icon": "ic_info_filled",
 			"items": [
 				{
 					"key": "app_version", "title": "App Version", "type": "action", "behaviour": "none",
@@ -246,6 +230,13 @@
 					"key": "github_repository", "type": "action",
 					"title": "GitHub Repository", "icon": "ic_github"
 				}
+			]
+		}, {
+			"type": "screen", "show_if": "never",
+			"title": "What is that? This is an container for prefs, which aren't present in this schema.",
+			"items": [
+				{ "key": "default_home_tab", "type": "select" },
+				{ "key": "last_opened_version", "type": "integer" }
 			]
 		}
 	]

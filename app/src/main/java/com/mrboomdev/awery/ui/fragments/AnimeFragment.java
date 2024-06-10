@@ -12,10 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.support.anilist.data.AnilistMedia;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistQuery;
 import com.mrboomdev.awery.extensions.support.anilist.query.AnilistSearchQuery;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.adapter.FeaturedMediaAdapter;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
@@ -65,10 +66,7 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 		getEmptyAdapter().setEnabled(true);
 		setEmptyData(true);
 
-		var adultMode = AwerySettings.getInstance().getEnum(
-				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
-
-		var anilistAdultMode = switch(adultMode) {
+		var anilistAdultMode = switch(AwerySettings.ADULT_MODE.getValue()) {
 			case ENABLED -> null;
 			case DISABLED -> false;
 			case ONLY -> true;

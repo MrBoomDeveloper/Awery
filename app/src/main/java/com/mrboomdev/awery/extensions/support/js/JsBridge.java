@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -10,7 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
@@ -84,10 +86,7 @@ public class JsBridge {
 	}
 
 	public String getAdultMode() {
-		var adultMode = AwerySettings.getInstance().getEnum(
-				AwerySettings.content.ADULT_CONTENT, AwerySettings.AdultContentMode.class);
-
-		return switch(adultMode) {
+		return switch(AwerySettings.ADULT_MODE.getValue()) {
 			case ONLY -> "only";
 			case ENABLED -> "partial";
 			case DISABLED -> "none";
@@ -272,13 +271,13 @@ public class JsBridge {
 	}
 
 	@NonNull
-	private AwerySettings getSettings() {
+	private NicePreferences getSettings() {
 		var context = this.context.get();
 
 		if(context == null) {
 			throw new NullPointerException("Context was been cleared by a garbage collector!");
 		}
 
-		return AwerySettings.getInstance(context, "JsBridge-" + provider.id);
+		return getPrefs("JsBridge-" + provider.id);
 	}
 }

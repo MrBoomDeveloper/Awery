@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 
 import org.mozilla.javascript.annotations.JSGetter;
@@ -199,7 +199,7 @@ public class HttpClient {
 		var cache = new Cache(cacheDir, /* 10mb */ 10 * 1024 * 1024);
 		builder.cache(cache);
 
-		if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+		if(AwerySettings.LOG_NETWORK.getValue()) {
 			var httpLoggingInterceptor = new HttpLoggingInterceptor();
 			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 			builder.addNetworkInterceptor(httpLoggingInterceptor);

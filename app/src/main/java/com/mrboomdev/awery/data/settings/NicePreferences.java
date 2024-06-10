@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
@@ -10,79 +10,30 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.Parser;
-import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * An utility class for working with shared preferences, which contains constant key names for quick access.
+ * An utility class for working with shared preferences.
  * @author MrBoomDev
  */
-public class AwerySettings {
+public class NicePreferences {
 	private static final Map<String, SettingsItem> cachedPaths = new HashMap<>();
-	private static final String TAG = "AwerySettings";
 	public static final String APP_SETTINGS = "Awery";
 	private static boolean shouldReloadMapValues;
 	private static SettingsItem settingsMapInstance;
 	private final SharedPreferences prefs;
-	private final Context context;
 	private SharedPreferences.Editor editor;
 
-	public static final String VERBOSE_NETWORK = "settings_advanced_log_network";
-	public static final String LAST_OPENED_VERSION = "last_opened_version";
-
-	public enum AdultContentMode {
-		ENABLED, DISABLED, ONLY
-	}
-
-	public static final class theme {
-		public static final String USE_MATERIAL_YOU = "settings_theme_use_material_you";
-		public static final String DARK_THEME = "settings_theme_dark_theme";
-		public static final String EXTRACT_COVER_COLORS = "settings_theme_use_source_theme";
-		public static final String THEME_PALLET = "settings_theme_pallet";
-		public static final String USE_OLED = "settings_theme_amoled";
-	}
-
-	public static final class ui {
-		public static final String DEFAULT_HOME_TAB = "settings_ui_default_tab";
-	}
-
-	public static final class content {
-		public static final String HIDE_LIBRARY_ENTRIES = "settings_content_hide_library_entries";
-		public static final String GLOBAL_EXCLUDED_TAGS = "settings_content_global_excluded_tags";
-		public static final String ADULT_CONTENT = "settings_content_adult_content_mode";
-	}
-
-	public static final class player {
-		public static final String DIM_SCREEN = "settings_player_dim_screen";
-		public static final String GESTURES_MODE = "settings_player_gestures";
-		public static final String BIG_SEEK_LENGTH = "settings_player_big_seek_length";
-		public static final String DOUBLE_TAP_SEEK_LENGTH = "settings_player_double_tap_seek_length";
-	}
-
-	public static final class subtitles {
-		public static final String TEXT_FONT = "settings_player_subtitles_text_font";
-		public static final String TEXT_COLOR = "settings_player_subtitles_text_color";
-		public static final String TEXT_SIZE = "settings_player_subtitles_text_size";
-		public static final String TEXT_OPACITY = "settings_player_subtitles_text_opacity";
-		public static final String TEXT_OUTLINE_SIZE = "settings_player_subtitles_text_outline_size";
-		public static final String BACKGROUND_OPACITY = "settings_player_subtitles_background_opacity";
-		public static final String BACKGROUND_COLOR = "settings_player_subtitles_background_color";
-	}
-
-	private AwerySettings(@NonNull Context context, String name) {
+	private NicePreferences(@NonNull Context context, String name) {
 		this.prefs = context.getSharedPreferences(name, 0);
-		this.context = context;
 	}
 
 	public static void cachePath(String path, SettingsItem item) {
@@ -97,27 +48,27 @@ public class AwerySettings {
 		cachedPaths.clear();
 	}
 
-	private static void reloadSettingsMapValues(Context context) {
-		settingsMapInstance.restoreValues(AwerySettings.getInstance(context));
+	private static void reloadSettingsMapValues() {
+		settingsMapInstance.restoreValues(getPrefs());
 		shouldReloadMapValues = false;
 	}
 
-	public static SettingsItem getSettingsMap(Context context) {
+	public static SettingsItem getSettingsMap() {
 		if(settingsMapInstance != null) {
 			if(shouldReloadMapValues) {
-				reloadSettingsMapValues(context);
+				reloadSettingsMapValues();
 			}
 
 			return settingsMapInstance;
 		}
 
 		try {
-			var json = readAssets(new File("settings.json"));
+			var json = readAssets("settings.json");
 
 			settingsMapInstance = Parser.fromString(SettingsItem.class, json);
 			settingsMapInstance.setAsParentForChildren();
 
-			reloadSettingsMapValues(context);
+			reloadSettingsMapValues();
 			return settingsMapInstance;
 		} catch(IOException e) {
 			throw new InvalidSyntaxException("Failed to parse settings", e);
@@ -157,7 +108,7 @@ public class AwerySettings {
 	 * @author MrBoomDev
 	 */
 	public boolean getBoolean(String key) {
-		var found = getSettingsMap(context).find(key);
+		var found = getSettingsMap().find(key);
 
 		if(found != null) {
 			var value = found.getBooleanValue();
@@ -167,12 +118,12 @@ public class AwerySettings {
 		return getBoolean(key, false);
 	}
 
-	public AwerySettings setBoolean(String key, boolean value) {
+	public NicePreferences setBoolean(String key, boolean value) {
 		checkEditorExistence().putBoolean(key, value);
 		return this;
 	}
 
-	public int getInt(String key, int defaultValue) {
+	public int getInteger(String key, int defaultValue) {
 		if(!prefs.contains(key)) {
 			checkEditorExistence().putInt(key, defaultValue);
 			saveSync();
@@ -182,18 +133,18 @@ public class AwerySettings {
 		return prefs.getInt(key, defaultValue);
 	}
 
-	public Integer getInt(String key) {
-		var found = getSettingsMap(context).find(key);
+	public Integer getInteger(String key) {
+		var found = getSettingsMap().find(key);
 
 		if(found != null) {
 			var value = found.getIntValue();
 			if(value != null) return value;
 		}
 
-		return getInt(key, 0);
+		return getInteger(key, 0);
 	}
 
-	public AwerySettings setInt(String key, int value) {
+	public NicePreferences setInteger(String key, int value) {
 		checkEditorExistence().putInt(key, value);
 		return this;
 	}
@@ -209,7 +160,7 @@ public class AwerySettings {
 	}
 
 	public String getString(String key) {
-		var found = getSettingsMap(context).find(key);
+		var found = getSettingsMap().find(key);
 
 		if(found != null) {
 			var value = found.getStringValue();
@@ -244,7 +195,7 @@ public class AwerySettings {
 	}
 
 	public <T extends Enum<T>> T getEnum(String key, Class<T> enumClass) {
-		var found = getSettingsMap(context).find(key);
+		var found = getSettingsMap().find(key);
 
 		if(found != null) {
 			var value = found.getStringValue();
@@ -260,7 +211,7 @@ public class AwerySettings {
 		return saved;
 	}
 
-	public AwerySettings setString(String key, String value) {
+	public NicePreferences setString(String key, String value) {
 		checkEditorExistence().putString(key, value);
 		return this;
 	}
@@ -273,7 +224,7 @@ public class AwerySettings {
 		return prefs.getStringSet(name, new HashSet<>());
 	}
 
-	public AwerySettings setStringSet(String key, Set<String> value) {
+	public NicePreferences setStringSet(String key, Set<String> value) {
 		checkEditorExistence().putStringSet(key, value);
 		return this;
 	}
@@ -292,7 +243,7 @@ public class AwerySettings {
 	 * @see #saveSync()
 	 * @author MrBoomDev
 	 */
-	public AwerySettings saveAsync() {
+	public NicePreferences saveAsync() {
 		if(editor == null) {
 			return this;
 		}
@@ -309,7 +260,7 @@ public class AwerySettings {
 	 * @see #saveAsync()
 	 * @author MrBoomDev
 	 */
-	public AwerySettings saveSync() {
+	public NicePreferences saveSync() {
 		if(editor == null) {
 			return this;
 		}
@@ -323,53 +274,170 @@ public class AwerySettings {
 	/**
 	 * @param context Application context
 	 * @param name the name of file
-	 * @return the singleton instance of {@link AwerySettings}
+	 * @return the singleton instance of {@link NicePreferences}
 	 * @author MrBoomDev
-	 * @see #getInstance()
-	 * @see #getInstance(Context)
-	 * @see #getInstance(String)
+	 * @see #getPrefs()
+	 * @see #getPrefs(String)
 	 */
 	@NonNull
-	public static AwerySettings getInstance(@NonNull Context context, String name) {
-		return new AwerySettings(context, name);
-	}
-
-	/**
-	 * @param context Application context
-	 * @return the singleton instance of {@link AwerySettings}
-	 * @author MrBoomDev
-	 * @see #getInstance()
-	 * @see #getInstance(String)
-	 * @see #getInstance(Context, String)
-	 */
-	@NonNull
-	public static AwerySettings getInstance(@NonNull Context context) {
-		return getInstance(context, APP_SETTINGS);
+	private static NicePreferences getPrefs(@NonNull Context context, String name) {
+		return new NicePreferences(context, name);
 	}
 
 	/**
 	 * @param name the name of file
-	 * @return the singleton instance of {@link AwerySettings}
-	 * @see #getInstance()
-	 * @see #getInstance(Context)
-	 * @see #getInstance(Context, String)
+	 * @return the singleton instance of {@link NicePreferences}
+	 * @see #getPrefs()
+	 * @see #getPrefs(Context, String)
 	 * @author MrBoomDev
 	 */
 	@NonNull
-	public static AwerySettings getInstance(String name) {
-		return getInstance(getAnyContext(), name);
+	public static NicePreferences getPrefs(String name) {
+		return getPrefs(getAppContext(), name);
 	}
 
 	/**
-	 * @return the singleton instance of {@link AwerySettings}
-	 * @see #getInstance(String)
-	 * @see #getInstance(Context)
-	 * @see #getInstance(Context, String)
+	 * @return the singleton instance of {@link NicePreferences}
+	 * @see #getPrefs(String)
+
+	 * @see #getPrefs(Context, String)
 	 * @author MrBoomDev
 	 */
 	@NonNull
 	@Contract(" -> new")
-	public static AwerySettings getInstance() {
-		return getInstance(APP_SETTINGS);
+	public static NicePreferences getPrefs() {
+		return getPrefs(APP_SETTINGS);
+	}
+
+	public String getValue(@NonNull StringSetting setting) {
+		return getString(setting.getKey());
+	}
+
+	public NicePreferences setValue(@NonNull StringSetting setting, String value) {
+		return setString(setting.getKey(), value);
+	}
+
+	public NicePreferences setValue(@NonNull IntegerSetting setting, int value) {
+		return setInteger(setting.getKey(), value);
+	}
+
+	public NicePreferences setValue(@NonNull BooleanSetting setting, boolean value) {
+		return setBoolean(setting.getKey(), value);
+	}
+
+	public String getValue(@NonNull StringSetting setting, String defaultValue) {
+		return getString(setting.getKey(), defaultValue);
+	}
+
+	public int getValue(@NonNull IntegerSetting setting) {
+		return getInteger(setting.getKey());
+	}
+
+	public boolean getValue(@NonNull BooleanSetting setting) {
+		return getBoolean(setting.getKey());
+	}
+
+	public Boolean getValue(@NonNull BooleanSetting setting, Boolean defaultValue) {
+		return getBoolean(setting.getKey(), defaultValue);
+	}
+
+	public Integer getValue(@NonNull IntegerSetting setting, Integer defaultValue) {
+		return getInteger(setting.getKey(), defaultValue);
+	}
+
+	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting) {
+		var value = getString(setting.getKey());
+		return parseEnum(value, setting.getValueClass());
+	}
+
+	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting, T defaultValue) {
+		var value = getString(setting.getKey(), defaultValue != null ? defaultValue.getKey() : null);
+
+		var result = parseEnum(value, setting.getValueClass());
+		return result != null ? result : defaultValue;
+	}
+
+	@Contract("null, _ -> null; !null, null -> null")
+	@Nullable
+	private static <T extends Enum<T>> T parseEnum(@Nullable String string, @Nullable Class<T> enumClass) {
+		if(string == null || enumClass == null) return null;
+
+		try {
+			return T.valueOf(enumClass, string);
+		} catch(IllegalArgumentException | NullPointerException e) {
+			return null;
+		}
+	}
+
+	public interface EnumWithKey {
+		String getKey();
+	}
+
+	public static class EnumSetting<T extends Enum<T> & EnumWithKey> implements BaseSetting {
+		private final String key;
+		private final Class<T> clazz;
+
+		public EnumSetting(String key, Class<T> clazz) {
+			this.key = key;
+			this.clazz = clazz;
+		}
+
+		public T getValue() {
+			return getPrefs().getValue(this);
+		}
+
+		public T getValue(T defaultValue) {
+			return getPrefs().getValue(this, defaultValue);
+		}
+
+		public Class<T> getValueClass() {
+			return clazz;
+		}
+
+		@Override
+		public String getKey() {
+			return key;
+		}
+	}
+
+	public interface StringSetting extends BaseSetting {
+
+		default String getValue() {
+			return getPrefs().getValue(this);
+		}
+
+		default String getValue(String defaultValue) {
+			return getPrefs().getValue(this, defaultValue);
+		}
+	}
+
+	public interface IntegerSetting extends BaseSetting {
+
+		default int getValue() {
+			return getPrefs().getValue(this);
+		}
+
+		default Integer getValue(int defaultValue) {
+			return getPrefs().getValue(this, defaultValue);
+		}
+	}
+
+	public interface BooleanSetting extends BaseSetting {
+
+		default boolean exists() {
+			return getPrefs().contains(getKey());
+		}
+
+		default boolean getValue() {
+			return getPrefs().getValue(this);
+		}
+
+		default Boolean getValue(boolean defaultValue) {
+			return getPrefs().getValue(this, defaultValue);
+		}
+	}
+
+	private interface BaseSetting {
+		String getKey();
 	}
 }

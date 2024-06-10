@@ -1,20 +1,18 @@
 package com.mrboomdev.awery.data.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.google.android.material.color.DynamicColors;
-import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryPlatform;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
@@ -169,14 +167,14 @@ public class SettingsItem {
 		}
 	}
 
-	public void restoreValues(AwerySettings settings) {
+	public void restoreValues(NicePreferences settings) {
 		if(type == null) return;
 
 		switch(type) {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey(),
 					Objects.requireNonNullElse(booleanValue, false));
 
-			case INT, SELECT_INT -> intValue = settings.getInt(getFullKey(),
+			case INT, SELECT_INTEGER -> intValue = settings.getInteger(getFullKey(),
 					Objects.requireNonNullElse(intValue, 0));
 
 			case SELECT, STRING -> stringValue = settings.getString(getFullKey(), stringValue);
@@ -192,7 +190,7 @@ public class SettingsItem {
 	}
 
 	public void restoreValues() {
-		restoreValues(AwerySettings.getInstance());
+		restoreValues(NicePreferences.getPrefs());
 	}
 
 	public boolean isRestartRequired() {
@@ -200,11 +198,8 @@ public class SettingsItem {
 	}
 
 	public String getTitle(Context context) {
-		var got = getString(context, title);
-		if(got != null) return got;
-		if(title != null) return title;
-
-		return getKey();
+		var got = getString(R.string.class, title);
+		return got != null ? got : title;
 	}
 
 	public String getDescription(Context context) {
@@ -227,23 +222,8 @@ public class SettingsItem {
 					+ description.substring(endIndex + 1);
 		}
 
-		var got = getString(context, description);
-		if(got != null) return got;
-
-		return description;
-	}
-
-	@Nullable
-	private String getString(@NonNull Context context, String name) {
-		if(name == null) return null;
-
-		try {
-			var clazz = R.string.class;
-			var field = clazz.getField(name);
-			return context.getString(field.getInt(null));
-		} catch(NoSuchFieldException | IllegalAccessException e) {
-			return null;
-		}
+		var got = getString(R.string.class, description);
+		return got != null ? got : description;
 	}
 
 	public Boolean getBooleanValue() {
@@ -274,7 +254,9 @@ public class SettingsItem {
 		return stringSetValue;
 	}
 
-	public void onClick(Context context) {}
+	public void onClick(Context context) {
+		SettingsActions.run(getFullKey());
+	}
 
 	public boolean onDragged(int fromPosition, int toPosition) {
 		return false;
@@ -300,8 +282,11 @@ public class SettingsItem {
 		return parent != null;
 	}
 
+	@Deprecated
 	public String getFullKey() {
-		if(!hasParent()) {
+		return getKey();
+
+		/*if(!hasParent()) {
 			if(parentKey != null) {
 				return parentKey + "_" + key;
 			}
@@ -309,7 +294,7 @@ public class SettingsItem {
 			return key;
 		}
 
-		return parent.getFullKey() + SEPARATOR + key;
+		return parent.getFullKey() + SEPARATOR + key;*/
 	}
 
 	public String getKey() {
@@ -333,7 +318,7 @@ public class SettingsItem {
 
 	public SettingsItem find(@NonNull String query) {
 		return switch(type) {
-			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INT, MULTISELECT ->
+			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT ->
 					query.equals(getFullKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {

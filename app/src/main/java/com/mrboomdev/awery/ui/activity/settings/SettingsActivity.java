@@ -2,7 +2,6 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -16,7 +15,6 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResult;
@@ -28,14 +26,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -55,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
 	private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private ActivityResultLauncher<Intent> activityResultLauncher;
-	private AwerySettings settings;
+	private NicePreferences settings;
 	private boolean isMain;
 
 	@Override
@@ -71,11 +68,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			isMain = true;
 		}
 
-		settings = AwerySettings.getInstance(this);
+		settings = NicePreferences.getPrefs();
 		SettingsItem item = null;
 
 		if(path != null) {
-			item = AwerySettings.getCached(path);
+			item = NicePreferences.getCached(path);
 
 			if(item == null) {
 				toast(this, "Failed to get settings", 0);
@@ -86,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		if(item == null) {
 			if(itemJson == null) {
-				item = AwerySettings.getSettingsMap(this);
+				item = NicePreferences.getSettingsMap();
 			} else {
 				var moshi = new Moshi.Builder().build();
 				var adapter = moshi.adapter(SettingsItem.class);
@@ -120,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		super.onDestroy();
 
 		if(isMain) {
-			AwerySettings.clearCache();
+			NicePreferences.clearCache();
 		}
 
 		viewPool.clear();
@@ -232,7 +229,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Nullable
 	private View createView(@NonNull SettingsItem item) {
-		item.restoreValues(AwerySettings.getInstance(this));
+		item.restoreValues(NicePreferences.getPrefs());
 
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
@@ -331,7 +328,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		(switch(item.getType()) {
 			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue);
 			case SELECT -> settings.setString(item.getFullKey(), (String) newValue);
-			case SELECT_INT -> settings.setInt(item.getFullKey(), (int) newValue);
+			case SELECT_INTEGER -> settings.setInteger(item.getFullKey(), (int) newValue);
 			default -> throw new IllegalArgumentException("Unsupported type!");
 		}).saveAsync();
 	}

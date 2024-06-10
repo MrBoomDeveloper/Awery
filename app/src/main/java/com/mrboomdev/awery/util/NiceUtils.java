@@ -199,6 +199,10 @@ public class NiceUtils {
 		return callback.run(object);
 	}
 
+	public static <A> void with(A a, @NonNull Callbacks.Callback1<A> callback) {
+		callback.run(a);
+	}
+
 	/**
 	 * @throws NullPointerException if object is null
 	 * @return The object itself

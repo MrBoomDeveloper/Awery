@@ -25,10 +25,10 @@ import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -78,12 +78,14 @@ public class SettingsData {
 			}}), null);
 
 			case "excluded_tags" -> {
-				var flags = AwerySettings.getInstance().getBoolean(AwerySettings.content.ADULT_CONTENT)
-						? AnilistTagsQuery.ALL
-						: AnilistTagsQuery.SAFE;
+				var flags = switch(AwerySettings.ADULT_MODE.getValue()) {
+					case DISABLED -> AnilistTagsQuery.SAFE;
+					case ENABLED -> AnilistTagsQuery.ALL;
+					case ONLY -> AnilistTagsQuery.ADULT;
+				};
 
 				AnilistTagsQuery.getTags(flags).executeQuery(context, tags -> {
-					var excluded = AwerySettings.getInstance().getStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS);
+					var excluded = NicePreferences.getPrefs().getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS);
 
 					callback.onResult(stream(tags).map(tag -> {
 						var state = excluded.contains(tag.getName()) ?
@@ -114,8 +116,8 @@ public class SettingsData {
 						.map(Selection.Selectable::getItem)
 						.collect(Collectors.toSet());
 
-				AwerySettings.getInstance()
-						.setStringSet(AwerySettings.content.GLOBAL_EXCLUDED_TAGS, items)
+				NicePreferences.getPrefs()
+						.setStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS, items)
 						.saveAsync();
 			}
 

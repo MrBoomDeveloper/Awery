@@ -48,8 +48,11 @@ public class FileUtil {
 
 	@NonNull
 	public static String readAssets(@NonNull File file) throws IOException {
-		var path = file.getAbsolutePath().substring(1);
+		return readAssets(file.getAbsolutePath().substring(1));
+	}
 
+	@NonNull
+	public static String readAssets(String path) throws IOException {
 		try(var reader = new BufferedReader(new InputStreamReader(
 				getAnyContext().getAssets().open(path), StandardCharsets.UTF_8))
 		) {

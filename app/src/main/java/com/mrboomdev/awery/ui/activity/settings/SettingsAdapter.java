@@ -5,12 +5,11 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.NiceUtils.with;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.spPx;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.AwerySettings;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
@@ -36,7 +36,6 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
@@ -92,7 +91,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				var id = idGenerator.getLong();
 				ids.put(setting, id);
 
-				items.add(setting);
+				items.add(index, setting);
 				notifyItemInserted(items.indexOf(setting));
 			});
 
@@ -162,13 +161,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case SCREEN, SCREEN_BOOLEAN -> handler.onScreenLaunchRequest(setting);
 
 				case ACTION -> {
-					if(setting instanceof CustomSettingsItem) {
-						setting.onClick(parent.getContext());
-						holder.updateDescription(null);
-						return;
-					}
-
-					SettingsActions.run(setting.getFullKey());
+					setting.onClick(parent.getContext());
 					holder.updateDescription(null);
 
 					if(setting.isRestartRequired()) {
@@ -191,7 +184,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								if(setting instanceof CustomSettingsItem custom) {
 									custom.saveValue(inputField.getText());
 								} else {
-									var prefs = AwerySettings.getInstance(context);
+									var prefs = NicePreferences.getPrefs();
 									prefs.setString(setting.getFullKey(), inputField.getText());
 									prefs.saveAsync();
 								}
@@ -241,8 +234,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 										}
 									}
 
-									var prefs = AwerySettings.getInstance();
-									prefs.setInt(setting.getFullKey(), number);
+									var prefs = NicePreferences.getPrefs();
+									prefs.setInteger(setting.getFullKey(), number);
 									prefs.saveAsync();
 
 									setting.setIntValue(number);
@@ -262,7 +255,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					inputField.setCompletionCallback(dialog::performPositiveClick);
 				}
 
-				case SELECT, SELECT_INT -> {
+				case SELECT, SELECT_INTEGER -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
 							.setTitle(setting.getTitle(context))
 							.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
@@ -301,12 +294,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									var id = item.getId();
 									holder.updateDescription(id);
 
-									var prefs = AwerySettings.getInstance();
+									var prefs = NicePreferences.getPrefs();
 
-									if(setting.getType() == SettingsItemType.SELECT_INT) {
+									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
 										setting.setIntValue(integer);
-										prefs.setInt(setting.getFullKey(), integer);
+										prefs.setInteger(setting.getFullKey(), integer);
 									} else {
 										setting.setStringValue(id);
 										prefs.setString(setting.getFullKey(), id);
@@ -338,7 +331,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					} else if(setting.getItems() != null) {
 						String selected;
 
-						if(setting.getType() == SettingsItemType.SELECT_INT) {
+						if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 							selected = String.valueOf(setting instanceof CustomSettingsItem customSetting
 									? customSetting.getSavedValue()
 									: setting.getIntValue());
@@ -405,7 +398,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					} else if(setting.getItems() != null) {
 						var selected = setting instanceof CustomSettingsItem customSetting
 								? (Set<String>) customSetting.getSavedValue()
-								: AwerySettings.getInstance().getStringSet(setting.getFullKey());
+								: NicePreferences.getPrefs().getStringSet(setting.getFullKey());
 
 						dialog.setItems(stream(setting.getItems())
 								.map(item -> new Selection.Selectable<>(
@@ -513,7 +506,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			if(result == null) return null;
 
 			if(result.contains("${VALUE_TITLE}")) {
-				var prefs = payload == null ? AwerySettings.getInstance() : null;
+				var prefs = payload == null ? NicePreferences.getPrefs() : null;
 
 				var value = switch(item.getType()) {
 					case STRING -> payload != null ? payload : (item instanceof CustomSettingsItem customSetting
@@ -525,7 +518,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								? (Boolean) customSetting.getSavedValue()
 								: prefs.getBoolean(item.getFullKey()))) ? "Enabled" : "Disabled";
 
-					case INT -> payload != null ? payload : String.valueOf(prefs.getInt(item.getFullKey()));
+					case INT -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getFullKey()));
 
 					case SELECT -> {
 						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
@@ -539,9 +532,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						yield found.isPresent() ? found.get().getTitle(context) : "";
 					}
 
-					case SELECT_INT -> {
+					case SELECT_INTEGER -> {
 						var selected = payload != null ? payload : String.valueOf(item instanceof CustomSettingsItem customSetting
-								? customSetting.getSavedValue() : prefs.getInt(item.getFullKey()));
+								? customSetting.getSavedValue() : prefs.getInteger(item.getFullKey()));
 
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";
@@ -556,23 +549,70 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			return result;
 		}
 
-		public void bind(int position, @NonNull SettingsItem item) {
+		public void bind(int position, @NonNull SettingsItem setting) {
 			this.didInit = false;
 			this.position = position;
-			this.item = item;
+			this.item = setting;
 
-			binding.title.setText(item.getTitle(context));
-			updateDescription(null);
-			var icon = item.getIcon(context);
+			with(setting.getTitle(context), title -> {
+				if(title == null) {
+					binding.title.setText(null);
+					return;
+				}
 
-			if(icon == null) {
-				binding.icon.setVisibility(View.GONE);
-			} else {
+				binding.title.setTextColor(resolveAttrColor(context, setting.getType() == SettingsItemType.CATEGORY
+						? com.google.android.material.R.attr.colorOnSecondaryContainer
+						: com.google.android.material.R.attr.colorOnBackground));
+
+				binding.title.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+						(setting.getType() == SettingsItemType.CATEGORY) ? 14 : 16);
+
+				binding.title.setText(title);
+			});
+
+			with(setting.getActionItems(), items -> {
+				if(items == null || items.isEmpty()) {
+					binding.options.setVisibility(View.GONE);
+					return;
+				}
+
+				if(items.size() > 1) {
+					binding.options.setImageResource(R.drawable.ic_round_dots_vertical_24);
+
+					binding.options.setOnClickListener(v -> {
+						var menu = new PopupMenu(context, binding.getRoot());
+
+						for(int i = 0; i < items.size(); i++) {
+							menu.getMenu().add(0, i, 0, items.get(i).getTitle(context));
+						}
+
+						menu.setOnMenuItemClickListener(item -> {
+							items.get(item.getItemId()).onClick(context);
+							return true;
+						});
+
+						menu.show();
+					});
+				} else {
+					var action = items.get(0);
+					binding.options.setImageDrawable(action.getIcon(context));
+					binding.options.setOnClickListener(v -> action.onClick(context));
+				}
+
+				binding.options.setVisibility(View.VISIBLE);
+			});
+
+			with(setting.getIcon(context), icon -> {
+				if(icon == null) {
+					binding.icon.setVisibility(View.GONE);
+					return;
+				}
+
 				binding.icon.setVisibility(View.VISIBLE);
 				binding.icon.setImageDrawable(icon);
-				setScale(binding.icon, item.getIconSize());
+				setScale(binding.icon, setting.getIconSize());
 
-				if(item.tintIcon()) {
+				if(setting.tintIcon()) {
 					var context = binding.getRoot().getContext();
 					var colorAttr = com.google.android.material.R.attr.colorOnSecondaryContainer;
 					var color = resolveAttrColor(context, colorAttr);
@@ -580,27 +620,24 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				} else {
 					binding.icon.setImageTintList(null);
 				}
-			}
+			});
 
-			binding.title.setTextColor(resolveAttrColor(getContext(binding), item.getType() == SettingsItemType.CATEGORY
-					? com.google.android.material.R.attr.colorOnSecondaryContainer
-					: com.google.android.material.R.attr.colorOnBackground));
+			updateDescription(null);
 
-			binding.title.setTextSize(TypedValue.COMPLEX_UNIT_SP, item.getType() == SettingsItemType.CATEGORY ? 14 : 16);
-			binding.getRoot().setMinimumHeight(dpPx(item.getType() == SettingsItemType.CATEGORY ? 0 : 54));
+			binding.getRoot().setMinimumHeight(dpPx(setting.getType() == SettingsItemType.CATEGORY ? 0 : 54));
 
-			if(item.getType() == SettingsItemType.CATEGORY) {
-				setVerticalMargin(binding.getRoot(), dpPx(-4));
+			if(setting.getType() == SettingsItemType.CATEGORY) {
+				setVerticalMargin(binding.getRoot(), dpPx(-16), dpPx(-12));
 			} else {
 				setVerticalMargin(binding.getRoot(), 0, dpPx(6));
 			}
 
-			binding.getRoot().setClickable(item.getType() != SettingsItemType.CATEGORY);
-			binding.getRoot().setFocusable(item.getType() != SettingsItemType.CATEGORY);
+			binding.getRoot().setClickable(setting.getType() != SettingsItemType.CATEGORY);
+			binding.getRoot().setFocusable(setting.getType() != SettingsItemType.CATEGORY);
 
-			if(item.getType() == SettingsItemType.BOOLEAN || item.getType() == SettingsItemType.SCREEN_BOOLEAN) {
+			if(setting.getType() == SettingsItemType.BOOLEAN || setting.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);
-				binding.toggle.setChecked(item.getBooleanValue());
+				binding.toggle.setChecked(setting.getBooleanValue());
 			} else {
 				binding.toggle.setVisibility(View.GONE);
 			}

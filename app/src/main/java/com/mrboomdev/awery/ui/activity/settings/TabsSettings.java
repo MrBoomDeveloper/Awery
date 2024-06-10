@@ -2,29 +2,27 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.item.DBTab;
-import com.mrboomdev.awery.data.settings.AwerySettings;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
@@ -32,15 +30,12 @@ import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-import com.squareup.moshi.Moshi;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
@@ -102,8 +97,23 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 									dao.insert(tab);
 
-									dialog.dismiss();
-									toast("Tab created successfully!");
+									runOnUiThread(() -> {
+										if(items.size() == 2) {
+											var title = new SettingsItem.Builder(SettingsItemType.CATEGORY)
+													.setTitle("Your tabs")
+													.build();
+
+											items.add(title);
+											onSettingAddition(title, 2);
+										}
+
+										var newSetting = new TabSetting(tab);
+										items.add(newSetting);
+										onSettingAddition(newSetting, items.size() - 1);
+
+										dialog.dismiss();
+										toast("Tab created successfully!");
+									});
 								}).start();
 							})
 							.show();
@@ -113,7 +123,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 	public TabsSettings() {
 		try {
-			var json = readAssets(new File("icons.json"));
+			var json = readAssets("icons.json");
 			var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
 			icons = Parser.fromString(adapter, json);
 		} catch(IOException e) {
@@ -131,7 +141,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getFullKey() {
-				return AwerySettings.ui.DEFAULT_HOME_TAB;
+				return AwerySettings.DEFAULT_HOME_TAB;
 			}
 
 			@Override
@@ -225,7 +235,31 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public void onClick(Context context) {
+				new DialogBuilder(context)
+						.setTitle("Are you sure?")
+						.setMessage("You won't be able to revert the deletion.")
+						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
+						.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
+							var tabsDao = getDatabase().getTabsDao();
+							var feedsDao = getDatabase().getFeedsDao();
 
+							for(var feed : feedsDao.getAllFromTab(tab.id)) {
+								feedsDao.delete(feed);
+							}
+
+							tabsDao.delete(tab);
+
+							runOnUiThread(() -> {
+								items.remove(TabSetting.this);
+								onSettingRemoval(TabSetting.this, null);
+
+								if(items.size() == 3) {
+									onSettingRemoval(items.remove(2), null);
+								}
+
+								dialog.dismiss();
+							});
+						}).start()).show();
 			}
 		});
 

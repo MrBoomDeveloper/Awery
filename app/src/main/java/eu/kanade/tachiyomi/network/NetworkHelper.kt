@@ -2,7 +2,8 @@ package eu.kanade.tachiyomi.network
 
 import android.content.Context
 import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.NicePreferences
+import com.mrboomdev.awery.generated.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UserAgentInterceptor
@@ -35,7 +36,7 @@ class NetworkHelper(
             .addInterceptor(UncaughtExceptionInterceptor())
             .addInterceptor(UserAgentInterceptor(::defaultUserAgentProvider))
 
-        if(AwerySettings.getInstance().getBoolean(AwerySettings.VERBOSE_NETWORK)) {
+        if(AwerySettings.LOG_NETWORK.value) {
             val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }

@@ -70,6 +70,25 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/options"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginRight="16dp"
+        android:importantForAccessibility="no"
+        android:padding="10dp"
+        android:layout_marginTop="-10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_guideline"
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
+        android:visibility="gone"
+        tools:src="@drawable/ic_round_dots_vertical_24"
+        tools:visibility="visible"
+        app:tint="?attr/colorAccent" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_guideline"
         android:layout_width="wrap_content"
