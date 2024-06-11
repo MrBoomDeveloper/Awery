@@ -223,7 +223,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		if(!item.getBooleanValue()) return;
 
 		var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
-		item.restoreValues();
+		item.restoreSavedValues();
 
 		NicePreferences.cachePath(cachedKey, item);
 
@@ -338,7 +338,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		@Override
 		public void onScreenLaunchRequest(@NonNull SettingsItem item) {
 			var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
-			item.restoreValues();
+			item.restoreSavedValues();
 
 			NicePreferences.cachePath(cachedKey, item);
 

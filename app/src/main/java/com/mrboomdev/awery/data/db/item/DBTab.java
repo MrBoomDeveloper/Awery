@@ -2,7 +2,10 @@ package com.mrboomdev.awery.data.db.item;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import java.util.List;
 
 @Entity(tableName = "tab")
 public class DBTab implements Comparable<DBTab> {
@@ -11,6 +14,8 @@ public class DBTab implements Comparable<DBTab> {
 	public String id;
 	public String icon, title;
 	public int index;
+	@Ignore
+	public List<DBFeed> feeds;
 
 	public DBTab() {
 		id = String.valueOf(System.currentTimeMillis());

@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
 	private final Map<String, IconStateful> icons;
 	private final List<SettingsItem> items = new ArrayList<>();
+	private final List<DBTab> tabs = new ArrayList<>();
 	private final List<SettingsItem> headerItems = List.of(
 			new SettingsItem(SettingsItemType.ACTION) {
 
@@ -55,7 +56,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					var icon = new AtomicReference<>("catalog");
 
 					new DialogBuilder(context)
-							.setTitle("Create a tab")
+							.setTitle(R.string.create_tab)
 							.addView(parent -> {
 								binding.set(WidgetIconEdittextBinding.inflate(
 										LayoutInflater.from(context),
@@ -63,7 +64,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 								binding.get().icon.setOnClickListener(v ->
 										new IconPickerDialog<Map.Entry<String, IconStateful>>(context, Map.Entry::getValue)
-												.setTitle("Select an icon")
+												.setTitle(R.string.select_icon)
 												.setItems(icons.entrySet())
 												.setSelectionListener(item -> {
 													var id = getResourceId(R.drawable.class, item.getValue().getActive());
@@ -72,7 +73,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 													icon.set(item.getKey());
 												}).show());
 
-								binding.get().editText.setHint("Enter a name");
+								binding.get().editText.setHint(R.string.enter_text);
 								return binding.get().getRoot();
 							})
 							.setNegativeButton(R.string.cancel, BaseDialogBuilder::dismiss)
@@ -80,7 +81,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 								var text = binding.get().editText.getText();
 
 								if(text == null || text.toString().isBlank()) {
-									binding.get().editText.setError("Tab name cannot be blank!");
+									binding.get().editText.setError(context.getString(R.string.tab_name_empty_error));
 									return;
 								}
 
@@ -100,7 +101,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
 											var title = new SettingsItem.Builder(SettingsItemType.CATEGORY)
-													.setTitle("Your tabs")
+													.setTitle(R.string.custom_tabs)
 													.build();
 
 											items.add(title);
@@ -109,6 +110,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 										var newSetting = new TabSetting(tab);
 										items.add(newSetting);
+										tabs.add(tab);
 										onSettingAddition(newSetting, items.size() - 1);
 
 										dialog.dismiss();
@@ -136,11 +138,6 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getKey() {
-				return "default_tab";
-			}
-
-			@Override
-			public String getFullKey() {
 				return AwerySettings.DEFAULT_HOME_TAB;
 			}
 
@@ -160,8 +157,14 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			}
 
 			@Override
-			public List<SettingsItem> getItems() {
-				return Collections.emptyList();
+			public List<? extends SettingsItem> getItems() {
+				if(tabs.isEmpty()) {
+					// TODO: Return tabs from the template
+				}
+
+				return stream(tabs)
+						.map(TabSetting::new)
+						.toList();
 			}
 		});
 
@@ -169,7 +172,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getTitle(Context context) {
-				return "Select a template";
+				return context.getString(R.string.select_template);
 			}
 
 			@Override
@@ -178,9 +181,14 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			}
 
 			@Override
+			public String getDescription(Context context) {
+				return "Warning! All your custom tabs will be deleted after the template selection";
+			}
+
+			@Override
 			public void onClick(Context context) {
 				new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
-						.setTitle("Templates")
+						.setTitle(R.string.select_template)
 						.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
 						.setPositiveButton(R.string.confirm, dialog -> {
 							toast("This functionality isn't done yet!");
@@ -192,9 +200,12 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		var tabs = getDatabase().getTabsDao().getAllTabs();
 		Collections.sort(tabs);
 
+		this.tabs.clear();
+		this.tabs.addAll(tabs);
+
 		if(!tabs.isEmpty()) {
 			items.add(new SettingsItem.Builder(SettingsItemType.CATEGORY)
-					.setTitle("Your tabs")
+					.setTitle(R.string.custom_tabs)
 					.build());
 
 			this.items.addAll(stream(tabs)
@@ -204,8 +215,8 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 	}
 
 	@Override
-	public String getTitle(Context context) {
-		return "Tabs";
+	public String getTitle(@NonNull Context context) {
+		return context.getString(R.string.tabs);
 	}
 
 	@Override
@@ -225,7 +236,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getTitle(Context context) {
-				return "Delete";
+				return context.getString(R.string.delete);
 			}
 
 			@Override
@@ -236,7 +247,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			@Override
 			public void onClick(Context context) {
 				new DialogBuilder(context)
-						.setTitle("Are you sure?")
+						.setTitle(R.string.are_you_sure)
 						.setMessage("You won't be able to revert the deletion.")
 						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
@@ -251,6 +262,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 							runOnUiThread(() -> {
 								items.remove(TabSetting.this);
+								tabs.remove(tab);
 								onSettingRemoval(TabSetting.this, null);
 
 								if(items.size() == 3) {
@@ -271,6 +283,11 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 		@Override
 		public String getTitle(Context context) {
 			return tab.title;
+		}
+
+		@Override
+		public String getKey() {
+			return tab.id;
 		}
 
 		@Override

@@ -1,12 +1,15 @@
 package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.getString;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
@@ -29,7 +32,6 @@ public class SettingsItem {
 			.setBooleanValue(false)
 			.build();
 
-	public static final String SEPARATOR = "_";
 	private String key, title, description, icon, behaviour;
 	protected SettingsItemType type;
 	private String parentKey;
@@ -38,7 +40,7 @@ public class SettingsItem {
 	@Json(name = "show_if")
 	private String showIf;
 	private boolean restart;
-	private List<SettingsItem> items;
+	private List<? extends SettingsItem> items;
 	@Json(name = "header_items")
 	private List<SettingsItem> headerItems;
 	@Json(ignore = true)
@@ -68,19 +70,19 @@ public class SettingsItem {
 	}
 
 	protected void copyFrom(@NonNull SettingsItem item) {
-		this.key = item.key;
-		this.type = item.type;
-		this.items = item.items;
+		this.key = item.getKey();
+		this.type = item.getType();
+		this.items = item.getItems();
 
-		this.booleanValue = item.booleanValue;
-		this.stringValue = item.stringValue;
+		this.booleanValue = item.getBooleanValue();
+		this.stringValue = item.getStringValue();
 
-		this.intValue = item.intValue;
-		this.from = item.from;
-		this.to = item.to;
+		this.intValue = item.getIntValue();
+		this.from = item.getFrom();
+		this.to = item.getTo();
 
-		this.behaviour = item.behaviour;
-		this.restart = item.restart;
+		this.behaviour = item.getBehaviour();
+		this.restart = item.isRestartRequired();
 		this.showIf = item.showIf;
 
 		this.icon = item.icon;
@@ -105,7 +107,7 @@ public class SettingsItem {
 	}
 
 	public boolean isFromToAvailable() {
-		return from != null && to != null;
+		return getFrom() != null && getTo() != null;
 	}
 
 	public Float getFrom() {
@@ -144,10 +146,6 @@ public class SettingsItem {
 		return true;
 	}
 
-	public void setItems(Collection<SettingsItem> items) {
-		this.items = List.copyOf(items);
-	}
-
 	public String getBehaviour() {
 		return behaviour;
 	}
@@ -167,30 +165,31 @@ public class SettingsItem {
 		}
 	}
 
-	public void restoreValues(NicePreferences settings) {
-		if(type == null) return;
+	/**
+	 * Call before showing any data to a user
+	 * @author MrBoomDev
+	 */
+	public void restoreSavedValues() {
+		if(getType() == null) return;
+		var settings = getPrefs();
 
-		switch(type) {
-			case BOOLEAN -> booleanValue = settings.getBoolean(getFullKey(),
+		switch(getType()) {
+			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(),
 					Objects.requireNonNullElse(booleanValue, false));
 
-			case INT, SELECT_INTEGER -> intValue = settings.getInteger(getFullKey(),
+			case INT, SELECT_INTEGER -> intValue = settings.getInteger(getKey(),
 					Objects.requireNonNullElse(intValue, 0));
 
-			case SELECT, STRING -> stringValue = settings.getString(getFullKey(), stringValue);
+			case SELECT, STRING -> stringValue = settings.getString(getKey(), stringValue);
 
 			case SCREEN -> {
 				if(items == null) return;
 
-				for(var item : items) {
-					item.restoreValues(settings);
+				for(var item : getItems()) {
+					item.restoreSavedValues();
 				}
 			}
 		}
-	}
-
-	public void restoreValues() {
-		restoreValues(NicePreferences.getPrefs());
 	}
 
 	public boolean isRestartRequired() {
@@ -255,7 +254,7 @@ public class SettingsItem {
 	}
 
 	public void onClick(Context context) {
-		SettingsActions.run(getFullKey());
+		SettingsActions.run(getKey());
 	}
 
 	public boolean onDragged(int fromPosition, int toPosition) {
@@ -278,25 +277,6 @@ public class SettingsItem {
 		return parent;
 	}
 
-	public boolean hasParent() {
-		return parent != null;
-	}
-
-	@Deprecated
-	public String getFullKey() {
-		return getKey();
-
-		/*if(!hasParent()) {
-			if(parentKey != null) {
-				return parentKey + "_" + key;
-			}
-
-			return key;
-		}
-
-		return parent.getFullKey() + SEPARATOR + key;*/
-	}
-
 	public String getKey() {
 		return key;
 	}
@@ -305,7 +285,7 @@ public class SettingsItem {
 		return type;
 	}
 
-	public List<SettingsItem> getItems() {
+	public List<? extends SettingsItem> getItems() {
 		return items;
 	}
 
@@ -319,10 +299,10 @@ public class SettingsItem {
 	public SettingsItem find(@NonNull String query) {
 		return switch(type) {
 			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT ->
-					query.equals(getFullKey()) ? this : null;
+					query.equals(getKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {
-				if(query.equals(getFullKey())) {
+				if(query.equals(getKey())) {
 					yield this;
 				}
 
@@ -364,6 +344,11 @@ public class SettingsItem {
 
 		public Builder setTitle(String title) {
 			item.title = title;
+			return this;
+		}
+
+		public Builder setTitle(@StringRes int title) {
+			item.title = getAnyContext().getString(title);
 			return this;
 		}
 
@@ -430,7 +415,7 @@ public class SettingsItem {
 			var newItem = new SettingsItem(item);
 
 			if(item.getParent() != null) {
-				newItem.parentKey = item.getParent().getFullKey();
+				newItem.parentKey = item.getParent().getKey();
 			}
 
 			return newItem;

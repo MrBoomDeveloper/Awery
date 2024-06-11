@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.graphics.drawable.Drawable;
@@ -139,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
 				CrashHandler.showErrorDialog(this, "Failed to read an icons list!", e);
 			}
 
+			AnimatedBottomBar.Tab selectedNavbarItem = null;
+
 			for(int i = 0; i < tabs.size(); i++) {
 				Drawable drawable = null;
 				var tab = tabs.get(i);
@@ -157,13 +160,25 @@ public class MainActivity extends AppCompatActivity {
 							this, R.drawable.ic_view_cozy);
 				}
 
-				binding.navbar.addTabAt(i, new AnimatedBottomBar.Tab(
+				var navbarItem = new AnimatedBottomBar.Tab(
 						Objects.requireNonNull(drawable),
 						tab.title,
 						CUSTOM_TABS_START + i,
 						null,
-						true));
+						true);
+
+				if(tab.id.equals(savedDefaultTab)) {
+					selectedNavbarItem = navbarItem;
+				}
+
+				binding.navbar.addTabAt(i, navbarItem);
 			}
+
+			if(selectedNavbarItem == null) {
+				selectedNavbarItem = binding.navbar.getTabs().get(0);
+			}
+
+			binding.navbar.selectTab(selectedNavbarItem, false);
 		}).start();
 	}
 

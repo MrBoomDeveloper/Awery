@@ -49,7 +49,7 @@ public class NicePreferences {
 	}
 
 	private static void reloadSettingsMapValues() {
-		settingsMapInstance.restoreValues(getPrefs());
+		settingsMapInstance.restoreSavedValues();
 		shouldReloadMapValues = false;
 	}
 

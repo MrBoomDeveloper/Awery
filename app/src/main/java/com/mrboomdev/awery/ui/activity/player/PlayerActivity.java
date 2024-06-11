@@ -289,7 +289,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 
 		if(bigSeek > 0) {
 			var time = StringUtils.formatTimer(bigSeek * 1000L);
-			binding.quickSkip.setText("Skip " + time);
+			binding.quickSkip.setText(getString(R.string.skip) + " " + time);
 
 			setupButton(binding.quickSkip, () -> {
 				player.seekTo(player.getCurrentPosition() + bigSeek * 1000L);
@@ -355,7 +355,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				mimeType = NiceUtils.parseMimeType(subtitles.getUri());
 			} catch(IllegalArgumentException e) {
 				Log.e(TAG, "Unknown subtitles mime type! " + subtitles.getUri(), e);
-				CrashHandler.showErrorDialog(this, "Unknown file type!", "Sorry, but Awery dpesn't support yet this file format! Please, tell developers about this problem, so they can fix it as soon as possible!", e);
+				CrashHandler.showErrorDialog(this, getString(R.string.unknown_file_type), getString(R.string.unknown_file_type_description), e);
 				return;
 			}
 
@@ -397,14 +397,14 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				finish();
 			} catch(ActivityNotFoundException e) {
 				new DialogBuilder(this)
-						.setTitle("Can't play torrents")
+						.setTitle(R.string.torrent_usupported)
 						.setCancelable(false)
-						.setMessage("Sorry, but Awery doesn't support torrents playback at this time. You can try installing a third-party torrent player to play this type of file.")
-						.setPositiveButton("Ok", dialog -> {
+						.setMessage(R.string.torrent_unsupported_message)
+						.setPositiveButton(R.string.ok, dialog -> {
 							dialog.dismiss();
 							finish();
 						})
-						.setNeutralButton("Copy link", dialog -> {
+						.setNeutralButton(R.string.copy, dialog -> {
 							var clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 							var clipData = ClipData.newRawUri(url, uri);
 							clipboard.setPrimaryClip(clipData);
@@ -587,15 +587,14 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		Log.e(TAG, "Player error has occurred", e);
 
 		toast(switch(e.errorCode) {
-			case PlaybackException.ERROR_CODE_TIMEOUT -> "Connection timeout has occurred, please try again later";
+			case PlaybackException.ERROR_CODE_TIMEOUT -> getString(R.string.connection_timeout);
 			case PlaybackException.ERROR_CODE_DECODING_FAILED -> "Video decoding failed, please try again later";
 			case PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> "Video not found, please try again later";
 
 			case PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS,
-					PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED ->
-					"Connection error has occurred, please try again later";
+					PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> getString(R.string.connection_error);
 
-			default -> "Unknown error has occurred, please try again later";
+			default -> getString(R.string.unknown_error);
 		}, 1);
 
 		controller.openQualityDialog(true);

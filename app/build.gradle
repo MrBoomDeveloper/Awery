@@ -150,6 +150,7 @@ dependencies {
     implementation "com.github.skydoves:colorpickerview:2.3.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "com.github.skydoves:balloon:1.6.4"
+    implementation "nl.dionsegijn:konfetti-xml:2.0.4"
 
     // Markdown
     for(String module_name : List.of("core", "editor", "ext-strikethrough", "html", "image", "image-glide", "linkify")) {

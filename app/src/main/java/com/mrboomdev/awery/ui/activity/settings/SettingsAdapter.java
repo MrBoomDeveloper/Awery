@@ -55,6 +55,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final SettingsDataHandler handler;
 	private List<SettingsItem> items;
+	private SettingsItem screen;
 
 	public SettingsAdapter(SettingsItem screen, SettingsDataHandler handler) {
 		this.handler = handler;
@@ -62,8 +63,14 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		setScreen(screen, false);
 	}
 
+	public SettingsItem getScreen() {
+		return screen;
+	}
+
 	@SuppressLint("NotifyDataSetChanged")
 	private void setScreen(@NonNull SettingsItem screen, boolean notify) {
+		this.screen = screen;
+
 		if(screen.getItems() == null) {
 			this.items = Collections.emptyList();
 			idGenerator.clear();
@@ -170,6 +177,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 
 				case STRING -> {
+					setting.restoreSavedValues();
+
 					var inputField = new DialogEditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setText(setting.getStringValue());
@@ -185,7 +194,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									custom.saveValue(inputField.getText());
 								} else {
 									var prefs = NicePreferences.getPrefs();
-									prefs.setString(setting.getFullKey(), inputField.getText());
+									prefs.setString(setting.getKey(), inputField.getText());
 									prefs.saveAsync();
 								}
 
@@ -215,7 +224,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
 								if(inputField.getText().isBlank()) {
-									inputField.setError("Text cannot be empty!");
+									inputField.setError(R.string.text_cant_empty);
 									return;
 								}
 
@@ -235,12 +244,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									}
 
 									var prefs = NicePreferences.getPrefs();
-									prefs.setInteger(setting.getFullKey(), number);
+									prefs.setInteger(setting.getKey(), number);
 									prefs.saveAsync();
 
 									setting.setIntValue(number);
 								} catch(NumberFormatException e) {
-									inputField.setError("This is not a number!");
+									inputField.setError(R.string.this_not_number);
 									return;
 								}
 
@@ -299,10 +308,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
 										setting.setIntValue(integer);
-										prefs.setInteger(setting.getFullKey(), integer);
+										prefs.setInteger(setting.getKey(), integer);
 									} else {
 										setting.setStringValue(id);
-										prefs.setString(setting.getFullKey(), id);
+										prefs.setString(setting.getKey(), id);
 									}
 
 									prefs.saveAsync();
@@ -336,6 +345,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									? customSetting.getSavedValue()
 									: setting.getIntValue());
 						} else {
+							setting.restoreSavedValues();
+
 							selected = setting instanceof CustomSettingsItem customSetting
 									? (String) customSetting.getSavedValue()
 									: setting.getStringValue();
@@ -398,7 +409,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					} else if(setting.getItems() != null) {
 						var selected = setting instanceof CustomSettingsItem customSetting
 								? (Set<String>) customSetting.getSavedValue()
-								: NicePreferences.getPrefs().getStringSet(setting.getFullKey());
+								: NicePreferences.getPrefs().getStringSet(setting.getKey());
 
 						dialog.setItems(stream(setting.getItems())
 								.map(item -> new Selection.Selectable<>(
@@ -434,8 +445,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	private void suggestToRestart(View parent) {
-		Snackbar.make(parent, "Restart is required to apply changes", 2250)
-				.setAction("Restart", _view -> restartApp()).show();
+		Snackbar.make(parent, R.string.restart_app, 2250)
+				.setAction(R.string.confirm, _view -> restartApp()).show();
 	}
 
 	@Override
@@ -510,19 +521,19 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 				var value = switch(item.getType()) {
 					case STRING -> payload != null ? payload : (item instanceof CustomSettingsItem customSetting
-							? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
+							? (String) customSetting.getSavedValue() : prefs.getString(item.getKey()));
 
-					case BOOLEAN, SCREEN_BOOLEAN -> (payload != null
+					case BOOLEAN, SCREEN_BOOLEAN -> context.getString((payload != null
 							? Boolean.parseBoolean(payload)
 							: (item instanceof CustomSettingsItem customSetting
 								? (Boolean) customSetting.getSavedValue()
-								: prefs.getBoolean(item.getFullKey()))) ? "Enabled" : "Disabled";
+								: prefs.getBoolean(item.getKey()))) ? R.string.enabled : R.string.disabled);
 
-					case INT -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getFullKey()));
+					case INT -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getKey()));
 
 					case SELECT -> {
 						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
-								? (String) customSetting.getSavedValue() : prefs.getString(item.getFullKey()));
+								? (String) customSetting.getSavedValue() : prefs.getString(item.getKey()));
 
 						if(item.getItems() == null) {
 							yield "";
@@ -534,7 +545,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 					case SELECT_INTEGER -> {
 						var selected = payload != null ? payload : String.valueOf(item instanceof CustomSettingsItem customSetting
-								? customSetting.getSavedValue() : prefs.getInteger(item.getFullKey()));
+								? customSetting.getSavedValue() : prefs.getInteger(item.getKey()));
 
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";

@@ -16,7 +16,7 @@
 
     <nl.joery.animatedbottombar.AnimatedBottomBar
         android:id="@+id/navbar"
-        android:layout_width="240dp"
+        android:layout_width="300dp"
         android:layout_height="56dp"
         android:layout_gravity="center_horizontal"
         app:layout_constraintBottom_toTopOf="@id/bottom_side_barrier"
@@ -26,7 +26,8 @@
         android:layout_marginBottom="26dp"
         android:background="@drawable/bottom_nav"
         android:elevation="4dp"
-        android:padding="8dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp"
         android:translationZ="12dp"
         app:abb_animationDuration="300"
         app:abb_animationInterpolator="@anim/over_shoot"

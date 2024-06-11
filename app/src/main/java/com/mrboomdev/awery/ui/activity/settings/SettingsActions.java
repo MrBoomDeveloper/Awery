@@ -8,8 +8,10 @@ import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 import android.content.Intent;
 import android.provider.Settings;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 
 import org.jetbrains.annotations.Contract;
 
@@ -28,17 +30,17 @@ public class SettingsActions {
 
 			case AwerySettings.CLEAR_IMAGE_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE));
-				toast("Cleared successfully!");
+				toast(R.string.cleared_successfully);
 			}
 
 			case AwerySettings.CLEAR_WEBVIEW_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE));
-				toast("Cleared successfully!");
+				toast(R.string.cleared_successfully);
 			}
 
 			case AwerySettings.CLEAR_NET_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE));
-				toast("Cleared successfully!");
+				toast(R.string.cleared_successfully);
 			}
 
 			case AwerySettings.PLAYER_SYSTEM_SUBTITLES -> getAnyContext()
@@ -58,6 +60,13 @@ public class SettingsActions {
 
 			case AwerySettings.TRY_CRASH_JAVA ->
 					XCrash.testJavaCrash(false);
+
+			case AwerySettings.START_ONBOARDING -> {
+				var context = getAnyContext();
+
+				var intent = new Intent(context, SetupActivity.class);
+				context.startActivity(intent);
+			}
 
 			default -> toast("Unknown action: " + actionName);
 		}

@@ -175,6 +175,10 @@ public class AweryApp extends Application {
 		toast(getAnyContext().getString(res));
 	}
 
+	public static void toast(@StringRes int res, int duration) {
+		toast(getAnyContext().getString(res), duration);
+	}
+
 	/**
 	 * Safely enables the "Edge to edge" experience.
 	 * I really don't know why, but sometimes it just randomly crashes!
@@ -337,12 +341,12 @@ public class AweryApp extends Application {
 		if(AwerySettings.LAST_OPENED_VERSION.getValue() < 1) {
 			new Thread(() -> {
 				getDatabase().getListDao().insert(
-						DBCatalogList.fromCatalogList(new CatalogList("Currently watching", "1")),
-						DBCatalogList.fromCatalogList(new CatalogList("Plan to watch", "2")),
-						DBCatalogList.fromCatalogList(new CatalogList("Delayed", "3")),
-						DBCatalogList.fromCatalogList(new CatalogList("Completed", "4")),
-						DBCatalogList.fromCatalogList(new CatalogList("Dropped", "5")),
-						DBCatalogList.fromCatalogList(new CatalogList("Favorites", "6")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.currently_watching), "1")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.planning_watch), "2")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.delayed), "3")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.completed), "4")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.dropped), "5")),
+						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.favourites), "6")),
 						DBCatalogList.fromCatalogList(new CatalogList("Hidden", CATALOG_LIST_BLACKLIST)),
 						DBCatalogList.fromCatalogList(new CatalogList("History", CATALOG_LIST_HISTORY)));
 

@@ -138,7 +138,7 @@ public class AweryLifecycle {
 					.toList();
 		} catch(Exception e) {
 			Log.e(TAG, "Failed to get activities!", e);
-			toast(getAppContext(), "So your device is not supported :(", 1);
+			toast(getAppContext(), "Your device is not supported :(", 1);
 			System.exit(0);
 			return null;
 		}

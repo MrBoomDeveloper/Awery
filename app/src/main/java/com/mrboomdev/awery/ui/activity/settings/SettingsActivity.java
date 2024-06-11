@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -68,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			isMain = true;
 		}
 
-		settings = NicePreferences.getPrefs();
+		settings = getPrefs();
 		SettingsItem item = null;
 
 		if(path != null) {
@@ -227,10 +228,24 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}).attachToRecyclerView(recycler);
 	}
 
+	private void finishLoading(
+			@NonNull ScreenSettingsBinding binding,
+			SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderSettingsBinding> headerAdapter,
+			@NonNull SettingsAdapter settingsAdapter
+	) {
+		settingsAdapter.getScreen().restoreSavedValues();
+
+		var config = new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build();
+
+		binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, settingsAdapter));
+		setupReordering(binding.recycler, settingsAdapter);
+		binding.progressIndicator.setVisibility(View.GONE);
+	}
+
 	@Nullable
 	private View createView(@NonNull SettingsItem item) {
-		item.restoreValues(NicePreferences.getPrefs());
-
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
 
@@ -238,10 +253,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			setTopPadding(binding.recycler, insets.top + dpPx(12));
 			return false;
 		});
-
-		var config = new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build();
 
 		if(item.getItems() != null) {
 			if(item.getItems().isEmpty()) {
@@ -260,9 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				return headerBinding;
 			});
 
-			binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
-			setupReordering(binding.recycler, recyclerAdapter);
-			binding.progressIndicator.setVisibility(View.GONE);
+			finishLoading(binding, headerAdapter, recyclerAdapter);
 		} else if(item.getBehaviour() != null) {
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
@@ -294,9 +303,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				});
 
 				TransitionManager.beginDelayedTransition(binding.getRoot());
-				binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, recyclerAdapter));
-				setupReordering(binding.recycler, recyclerAdapter);
-				binding.progressIndicator.setVisibility(View.GONE);
+				finishLoading(binding, headerAdapter, recyclerAdapter);
 			});
 		} else {
 			Log.w(TAG, "Screen has no items, finishing.");
@@ -308,7 +315,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Override
 	public void onScreenLaunchRequest(@NonNull SettingsItem item) {
-		item.restoreValues();
+		item.restoreSavedValues();
 
 		var moshi = new Moshi.Builder().add(new SettingsItem.Adapter()).build();
 		var jsonAdapter = moshi.adapter(SettingsItem.class);
@@ -326,9 +333,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}
 
 		(switch(item.getType()) {
-			case BOOLEAN -> settings.setBoolean(item.getFullKey(), (boolean) newValue);
-			case SELECT -> settings.setString(item.getFullKey(), (String) newValue);
-			case SELECT_INTEGER -> settings.setInteger(item.getFullKey(), (int) newValue);
+			case BOOLEAN -> settings.setBoolean(item.getKey(), (boolean) newValue);
+			case SELECT -> settings.setString(item.getKey(), (String) newValue);
+			case SELECT_INTEGER -> settings.setInteger(item.getKey(), (int) newValue);
 			default -> throw new IllegalArgumentException("Unsupported type!");
 		}).saveAsync();
 	}

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.app;
 
+import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.exitApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
@@ -80,18 +81,18 @@ public class CrashHandler {
 	}
 
 	private static void handleError(@NonNull CrashType type, String message) {
-		var text = switch(type) {
-			case ANR -> "Awery isn't responding for a long time ._.";
+		var text = getAnyContext().getString(switch(type) {
+			case ANR -> R.string.app_not_responding_restart;
 
 			case ANR_FAST -> {
-				toast("Awery isn't responding. Trying to restart ._.", 1);
+				toast(R.string.app_not_responding_restart, 1);
 				restartApp();
-				yield null;
+				yield 0;
 			}
 
-			case JAVA -> "Awery has crashed :(";
-			case NATIVE -> "Something REALLY TERRIBLE has happened O_O";
-		};
+			case JAVA -> R.string.app_crash;
+			case NATIVE -> R.string.something_terrible_happened;
+		});
 
 		toast(text, 1);
 
@@ -184,11 +185,11 @@ public class CrashHandler {
 						dismissCallback.run();
 					}
 				})
-				.setNeutralButton("Copy", dialog -> {
+				.setNeutralButton(R.string.copy, dialog -> {
 					var clipboard = context.getSystemService(ClipboardManager.class);
-					var clip = ClipData.newPlainText("Crash report", message);
+					var clip = ClipData.newPlainText(context.getString(R.string.crash_report), message);
 					clipboard.setPrimaryClip(clip);
-					toast("Copied to clipboard");
+					toast(R.string.copied_to_clipboard);
 				})
 				.setNegativeButton(R.string.share, dialog -> {
 					var newFile = new File(context.getFilesDir(), "crash_report.txt");
@@ -259,7 +260,7 @@ public class CrashHandler {
 				}
 
 				var content = context.getString(R.string.please_report_bug_app) + "\n\n" + message.trim();
-				showErrorDialogImpl(context, "Awery has crashed!", content, crashFile, dismissCallback);
+				showErrorDialogImpl(context, context.getString(R.string.app_crash), content, crashFile, dismissCallback);
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

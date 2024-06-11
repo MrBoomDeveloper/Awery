@@ -183,7 +183,7 @@ public class PlayerActivityController {
 		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = activity.getLayoutInflater();
 			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
-			binding.text.setText("Select video aspect ratio");
+			binding.text.setText(R.string.aspect_ratio);
 			return binding;
 		});
 
@@ -311,7 +311,7 @@ public class PlayerActivityController {
 		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = activity.getLayoutInflater();
 			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
-			binding.text.setText("Select subtitles");
+			binding.text.setText(R.string.subtitles);
 			return binding;
 		});
 

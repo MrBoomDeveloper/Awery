@@ -43,10 +43,10 @@
 					"behaviour": "languages", "show_if": "debug"
 				}, {
 					"key": "media_columns_count_land", "type": "integer", "from": 0,
-					"title": "Media columns count at Landscape", "description": "0 for auto"
+					"title": "media_columns_count_land", "description": "0 for auto"
 				}, {
 					"key": "media_columns_count_port", "type": "integer", "from": 0,
-					"title": "Media columns count at Portrait", "description": "0 for auto",
+					"title": "media_columns_count_port", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {
 					"type": "screen", "show_if": "never", "title": "Episodes list",
@@ -67,7 +67,7 @@
 			"items": [
 				{
 					"type": "screen", "behaviour": "tabs",
-					"title": "Tabs", "icon": "ic_list"
+					"title": "tabs", "icon": "ic_list"
 				}, {
 					"key": "hide_library_entries", "type": "boolean",
 					"title": "hide_library_entries", "icon": "ic_collections_bookmark_outlined",
@@ -141,7 +141,7 @@
 					]
 				}, {
 					"key": "player_dim_screen", "type": "boolean", "boolean_value": true,
-					"title": "Dim screen", "icon": "ic_round_brightness_4_24",
+					"title": "dim_screen", "icon": "ic_round_brightness_4_24",
 					"description": "After clicking on the screen, black overlay will be shown on top of the video."
 				}, {
 					"type": "screen", "show_if": "never",
@@ -184,17 +184,17 @@
 				}
 			]
 		}, {
-			"type": "screen", "title": "Storage", "icon": "ic_storage",
+			"type": "screen", "title": "storage", "icon": "ic_storage",
 			"items": [
 				{
 					"key": "clear_image_cache", "type": "action",
-					"title": "Clear images cache", "description": "${VAR.IMAGE_CACHE_SIZE}"
+					"title": "clear_images_cache", "description": "${VAR.IMAGE_CACHE_SIZE}"
 				}, {
 					"key": "clear_webview_cache", "type": "action",
-					"title": "Clear WebView cache", "description": "${VAR.WEBVIEW_CACHE_SIZE}"
+					"title": "clear_webview_cache", "description": "${VAR.WEBVIEW_CACHE_SIZE}"
 				}, {
 					"key": "clear_net_cache", "type": "action",
-					"title": "Clear Network cache", "description": "${VAR.NET_CACHE_SIZE}"
+					"title": "clear_network_cache", "description": "${VAR.NET_CACHE_SIZE}"
 				}
 			]
 		}, {
@@ -212,6 +212,9 @@
 				}, {
 					"key": "try_crash_java", "type": "action",
 					"title": "Run Java Crash"
+				}, {
+					"key": "start_onboarding", "type": "action",
+					"title": "Start onboarding"
 				}
 			]
 		}, {
