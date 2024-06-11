@@ -77,7 +77,7 @@
     <string name="ui">Interfaccia Utente</string>
     <string name="common">Comune</string>
     <string name="theme">Tema</string>
-    <string name="about">Riguardo</string>
+    <string name="about">Informazioni su</string>
     <string name="devs">Sviluppatori</string>
     <string name="disclaimer">Dichiarazioni di non responsabilità</string>
     <string name="end_date">Data Fine</string>
@@ -96,7 +96,7 @@
     <string name="resize_mode_button">Modalità di ridimensionamento predefinita</string>
     <string name="subtitles">Sottotitoli</string>
     <string name="primary_sub_color_select">Colore Sottotitoli</string>
-    <string name="secondary_sub_color_select">Colore Contorno Sottotitoli</string>
+    <string name="secondary_sub_color_select">Colore contorno dei sottotitoli</string>
     <string name="secondary_sub_outline_type_select">Tipo di contorno dei sottotitoli</string>
     <string name="sub_window_color_select">Colore della finestra dei sottotitoli</string>
     <string name="sub_window_color_info">La finestra dei sottotitoli è la parte sinistra e destra rispetto ad essi. (dove lo sfondo non c\'è)</string>
@@ -109,19 +109,19 @@
     <string name="auto_skip_fillers_info">Salta gli episodi Filler quando si passa all\'episodio successivo.</string>
     <string name="update_progress">Aggiorna Progressi</string>
     <string name="ask_update_progress_anime">Richiedi ad ogni Media \"Singolarmente\"</string>
-    <string name="watch_complete_percentage">Guarda Percentuale di aggiornamento</string>
+    <string name="watch_complete_percentage">Guarda percentuale di aggiornamento</string>
     <string name="behaviour">Comportamento</string>
-    <string name="always_continue">Continua sempre da dove eri rimasto</string>
+    <string name="always_continue">Continua sempre da dove hai lasciato</string>
     <string name="pause_video_focus">Pausa quando non sei concentrato</string>
-    <string name="gestures">Volume &amp; Luminosità Gestures</string>
-    <string name="double_tap">Tocca due volte per cercare</string>
+    <string name="gestures">Gestures di Volume &amp; Luminosità</string>
+    <string name="double_tap">Doppio tocco per andare avanti o indietro</string>
     <string name="fast_forward">Avanti Veloce</string>
     <string name="double_tap_info">Allo spegnimento verranno visualizzati i pulsanti di avanzamento rapido e riavvolgimento</string>
-    <string name="seek_time">Tempo di ricerca</string>
+    <string name="seek_time">Seek Time</string>
     <string name="amoled">Tema Amoled</string>
-    <string name="seek_time_info">Quantità di tempo in secondi per l\'avanzamento veloce e il riavvolgimento.</string>
-    <string name="skip_time">Salta il Tempo</string>
-    <string name="show_cast_button">Mostra pulsante Trasmetti</string>
+    <string name="seek_time_info">di quanti secondi andare avanti &amp; indietro veloce</string>
+    <string name="skip_time">Tempo di Skip</string>
+    <string name="show_cast_button">Mostra il pulsante Trasmetti</string>
     <string name="show_cast_button_info">Richiede \"Web Video Caster\" per trasmettere</string>
     <string name="sub_background_color_select">Colore sfondo sottotitoli</string>
     <string name="immersive_mode">Nascondi la barra di stato</string>
@@ -163,7 +163,7 @@
     <string name="show_skip_time_stamp_button">Mostra il pulsante Salta Time Stamp</string>
     <string name="auto_skip_op_ed">Salto automatico OP / ED</string>
     <string name="requires_time_stamps_to_be_enabled">Richiede l\'abilitazione di Time Stamp</string>
-    <string name="keep_screen_on">Mantieni lo schermo acceso</string>
+    <string name="keep_screen_on">Mantieni lo schermo attivo</string>
     <string name="previous_season">Stagione precedente</string>
     <string name="include_media_in_list">Includi elenco</string>
     <string name="release_calendar">Calendario</string>
@@ -178,7 +178,7 @@
 \n%S</string>
     <string name="setting_progress">Impostazione dell\'avanzamento su %1$d</string>
     <string name="back_to_exit">Si prega di ripetere l\'operazione per uscire</string>
-    <string name="no_internet_connection">Nessuna Connessione a internet</string>
+    <string name="no_internet_connection">Nessuna Connessione ad internet</string>
     <string name="disabled_auto_skip">Disattivato il salto automatico OP &amp; ED</string>
     <string name="auto_skip">Salto automatico OP &amp; ED</string>
     <string name="copied_to_clipboard">Copiato negli Appunti</string>
@@ -287,7 +287,7 @@
     <string name="volume_and_brightness">Volume e Luminosità</string>
     <string name="disabled">Disabilitato</string>
     <string name="quick_rewind">Riavvolgimento rapido</string>
-    <string name="double_tap_seek">Tocca due volte per cercare</string>
+    <string name="double_tap_seek">Doppio tocco per andare avanti o indietro</string>
     <string name="uninstall_extension">Disinstalla estensione</string>
     <string name="pick_from_storage">Seleziona dalla memoria</string>
     <string name="repository_url">Archivio URL</string>
@@ -332,7 +332,7 @@
     <string name="top_rated">Più Votati</string>
     <string name="dalayed">In Ritardo</string>
     <string name="dropped">Abbandonato</string>
-    <string name="adult_content">Contenuti per adulti</string>
+    <string name="adult_content">Contenuto per adulti</string>
     <string name="trending">Tendenza</string>
     <string name="login">Accesso</string>
     <string name="english">Inglese</string>
