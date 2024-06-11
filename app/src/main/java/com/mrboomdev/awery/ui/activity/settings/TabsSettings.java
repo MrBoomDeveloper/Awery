@@ -4,10 +4,13 @@ import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 
@@ -23,6 +26,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
@@ -52,6 +56,13 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 				@Override
 				public void onClick(Context context) {
+					// TODO: Remove this temp block
+
+					if(alwaysTrue()) {
+						toast("This this isn't done yet. Come back later!");
+						return;
+					}
+
 					var binding = new AtomicReference<WidgetIconEdittextBinding>();
 					var icon = new AtomicReference<>("catalog");
 
@@ -181,19 +192,22 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			}
 
 			@Override
-			public String getDescription(Context context) {
-				return "Warning! All your custom tabs will be deleted after the template selection";
-			}
-
-			@Override
 			public void onClick(Context context) {
-				new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
-						.setTitle(R.string.select_template)
-						.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
-						.setPositiveButton(R.string.confirm, dialog -> {
-							toast("This functionality isn't done yet!");
-						})
-						.show();
+				var intent = new Intent(context, SetupActivity.class);
+				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_TEMPLATE);
+				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
+
+				startActivityForResult(context, intent, (requestCode, resultCode, result) -> {
+					if(resultCode != SetupActivity.RESULT_OK) return;
+
+					for(int i = items.size() - 1; i >= 0; i--) {
+						if(i <= 1) break;
+
+						var setting = items.get(i);
+						items.remove(setting);
+						onSettingRemoval(setting, i);
+					}
+				});
 			}
 		});
 

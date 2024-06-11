@@ -239,7 +239,9 @@
 			"title": "What is that? This is an container for prefs, which aren't present in this schema.",
 			"items": [
 				{ "key": "default_home_tab", "type": "select" },
-				{ "key": "last_opened_version", "type": "integer" }
+				{ "key": "last_opened_version", "type": "integer" },
+				{ "key": "setup_version_finished", "type": "integer" },
+				{ "key": "tabs_template", "type": "select" }
 			]
 		}
 	]

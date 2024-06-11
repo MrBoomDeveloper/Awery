@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 				return;
 			}
 
+			// TODO: Remove lines below after templates will be done
 			for(var tab : binding.navbar.getTabs()) {
 				binding.navbar.removeTab(tab);
 			}

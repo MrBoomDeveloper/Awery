@@ -96,7 +96,9 @@ public class AweryLifecycle {
 
 	/**
 	 * This method is a little bit hacky so after library update it can break.
-	 * Please use with care!
+	 * <p></p>
+	 * {@code void run(int requestCode, int resultCode, Intent data);}
+	 * <p></p>
 	 * @param context Context from the {@link FragmentActivity}
 	 * @author MrBoomDev
 	 */

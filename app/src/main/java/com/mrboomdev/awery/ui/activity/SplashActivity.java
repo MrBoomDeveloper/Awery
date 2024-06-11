@@ -18,13 +18,13 @@ import androidx.core.splashscreen.SplashScreen;
 
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
 	private static final String TAG = "SplashActivity";
-	private Intent pendingIntent;
-	private boolean isPaused;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,31 +54,14 @@ public class SplashActivity extends AppCompatActivity {
 				return;
 			}
 
-			runOnUiThread(() -> {
-				pendingIntent = new Intent(this, MainActivity.class);
+			if(AwerySettings.SETUP_VERSION_FINISHED.getValue() < SetupActivity.SETUP_VERSION) {
+				var intent = new Intent(this, SetupActivity.class);
+				startActivity(intent);
+				finish();
+				return;
+			}
 
-				if(!isPaused) {
-					startActivity(pendingIntent);
-					finish();
-				}
-			});
+			startActivity(new Intent(this, MainActivity.class));
 		}).start());
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		isPaused = false;
-
-		if(pendingIntent != null) {
-			startActivity(pendingIntent);
-			finish();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		isPaused = true;
 	}
 }
