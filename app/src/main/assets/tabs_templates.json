@@ -6,6 +6,7 @@
 			{
 				"title": "Home",
 				"icon": "home",
+				"id": "home",
 				"feeds": [
 					{
 						"title": "Current Season",
@@ -29,6 +30,7 @@
 				]
 			}, {
 				"title": "Library",
+				"id": "library",
 				"icon": "bookmark",
 				"feeds": [
 					{
@@ -47,6 +49,7 @@
 		"tabs": [
 			{
 				"title": "Anime",
+				"id": "anime",
 				"icon": "movie",
 				"feeds": [
 					{
@@ -71,7 +74,8 @@
 				]
 			}, {
 				"title": "Home",
-				"icon": "bookmark",
+				"id": "home",
+				"icon": "home",
 				"feeds": [
 					{
 						"title": "Bookmarks",

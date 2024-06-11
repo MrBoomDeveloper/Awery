@@ -49,8 +49,8 @@ public class SettingsItem {
 	private Float iconSize;
 	@Json(name = "boolean_value")
 	private Boolean booleanValue;
-	@Json(name = "int_value")
-	private Integer intValue;
+	@Json(name = "integer_value")
+	private Integer integerValue;
 	@Json(name = "string_set_value")
 	private Set<String> stringSetValue;
 	private Float from, to;
@@ -77,7 +77,7 @@ public class SettingsItem {
 		this.booleanValue = item.getBooleanValue();
 		this.stringValue = item.getStringValue();
 
-		this.intValue = item.getIntValue();
+		this.integerValue = item.getIntegerValue();
 		this.from = item.getFrom();
 		this.to = item.getTo();
 
@@ -177,8 +177,8 @@ public class SettingsItem {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(),
 					Objects.requireNonNullElse(booleanValue, false));
 
-			case INT, SELECT_INTEGER -> intValue = settings.getInteger(getKey(),
-					Objects.requireNonNullElse(intValue, 0));
+			case INT, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(),
+					Objects.requireNonNullElse(integerValue, 0));
 
 			case SELECT, STRING -> stringValue = settings.getString(getKey(), stringValue);
 
@@ -237,12 +237,12 @@ public class SettingsItem {
 		return null;
 	}
 
-	public Integer getIntValue() {
-		return intValue;
+	public Integer getIntegerValue() {
+		return integerValue;
 	}
 
-	public void setIntValue(int value) {
-		intValue = value;
+	public void setIntegerValue(int value) {
+		integerValue = value;
 	}
 
 	public String getStringValue() {

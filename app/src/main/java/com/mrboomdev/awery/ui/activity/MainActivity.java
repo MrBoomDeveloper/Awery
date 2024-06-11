@@ -14,6 +14,7 @@ import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.NicePreferences;
@@ -37,6 +39,7 @@ import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -84,14 +87,6 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		var prefs = NicePreferences.getPrefs();
-		var savedDefaultTab = prefs.getString(AwerySettings.DEFAULT_HOME_TAB);
-		var currentPage = StringUtils.parseEnum(savedDefaultTab, Pages.MAIN);
-		int currentPageIndex = currentPage.ordinal();
-
-		binding.navbar.selectTabAt(currentPageIndex, false);
-		binding.pages.setCurrentItem(currentPageIndex, false);
-
 		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
 
 			@Override
@@ -113,74 +108,85 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		});
 
-		// TODO: Manga screen
-		binding.navbar.removeTabAt(2);
+		var template = AwerySettings.TABS_TEMPLATE.getValue();
+		if(template != null) loadTemplateTabs(template); else loadCustomTabs();
+	}
 
-		new Thread(() -> {
-			tabs = getDatabase().getTabsDao().getAllTabs();
+	private void loadCustomTabs() {
+		new Thread(() -> setupTabs(getDatabase().getTabsDao().getAllTabs())).start();
+	}
 
-			if(tabs.isEmpty()) {
-				//var json = readAssets("templates.json");
-				return;
-			}
+	private void loadTemplateTabs(String templateName) {
+		try {
+			var templateJson = readAssets("tabs_templates.json");
+			var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
+			var templates = Parser.fromString(adapter, templateJson);
 
-			// TODO: Remove lines below after templates will be done
-			for(var tab : binding.navbar.getTabs()) {
-				binding.navbar.removeTab(tab);
-			}
+			var selected = findIn(template -> template.id.equals(templateName), templates);
+			setupTabs(selected != null ? selected.tabs : Collections.emptyList());
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-			Collections.sort(tabs);
-			Map<String, IconStateful> icons = null;
+	private void setupTabs(List<DBTab> tabs) {
+		Collections.sort(tabs);
 
-			try {
-				var json = readAssets("icons.json");
-				var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
-				icons = Parser.fromString(adapter, json);
-			} catch(IOException e) {
-				Log.e(TAG, "Failed to read an icons atlas!", e);
-				CrashHandler.showErrorDialog(this, "Failed to read an icons list!", e);
-			}
+		var savedDefaultTab = AwerySettings.DEFAULT_HOME_TAB.getValue();
+		Map<String, IconStateful> icons = null;
 
-			AnimatedBottomBar.Tab selectedNavbarItem = null;
+		try {
+			var json = readAssets("icons.json");
+			var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
+			icons = Parser.fromString(adapter, json);
+		} catch(IOException e) {
+			Log.e(TAG, "Failed to read an icons atlas!", e);
+			CrashHandler.showErrorDialog(this, "Failed to read an icons list!", e);
+		}
 
-			for(int i = 0; i < tabs.size(); i++) {
-				Drawable drawable = null;
-				var tab = tabs.get(i);
+		AnimatedBottomBar.Tab selectedNavbarItem = null;
 
-				if(icons != null) {
-					var icon = icons.get(tab.icon);
+		for(int i = 0; i < tabs.size(); i++) {
+			Drawable drawable = null;
+			var tab = tabs.get(i);
 
-					if(icon != null) {
-						var id = getResourceId(R.drawable.class, icon.getInActive());
-						drawable = ContextCompat.getDrawable(this, id);
-					}
+			if(icons != null) {
+				var icon = icons.get(tab.icon);
+
+				if(icon != null) {
+					var id = getResourceId(R.drawable.class, icon.getInActive());
+					drawable = ContextCompat.getDrawable(this, id);
 				}
-
-				if(drawable == null) {
-					drawable = ContextCompat.getDrawable(
-							this, R.drawable.ic_view_cozy);
-				}
-
-				var navbarItem = new AnimatedBottomBar.Tab(
-						Objects.requireNonNull(drawable),
-						tab.title,
-						CUSTOM_TABS_START + i,
-						null,
-						true);
-
-				if(tab.id.equals(savedDefaultTab)) {
-					selectedNavbarItem = navbarItem;
-				}
-
-				binding.navbar.addTabAt(i, navbarItem);
 			}
 
-			if(selectedNavbarItem == null) {
-				selectedNavbarItem = binding.navbar.getTabs().get(0);
+			if(drawable == null) {
+				drawable = ContextCompat.getDrawable(
+						this, R.drawable.ic_view_cozy);
 			}
 
+			var navbarItem = new AnimatedBottomBar.Tab(
+					Objects.requireNonNull(drawable),
+					tab.title,
+					CUSTOM_TABS_START + i,
+					null,
+					true);
+
+			if(tab.id.equals(savedDefaultTab)) {
+				selectedNavbarItem = navbarItem;
+			}
+
+			binding.navbar.addTabAt(i, navbarItem);
+		}
+
+		if(selectedNavbarItem == null && binding.navbar.getTabCount() > 0) {
+			selectedNavbarItem = binding.navbar.getTabs().get(0);
+		}
+
+		if(selectedNavbarItem != null) {
 			binding.navbar.selectTab(selectedNavbarItem, false);
-		}).start();
+		} else {
+			binding.navbar.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -206,8 +212,6 @@ public class MainActivity extends AppCompatActivity {
 		binding.navbar.selectTabAt(savedInstanceState.getInt("nav_index"), false);
 		super.onRestoreInstanceState(savedInstanceState);
 	}
-
-	enum Pages { MAIN, LIBRARY }
 
 	private class MainFragmentAdapter extends FragmentStateAdapter {
 

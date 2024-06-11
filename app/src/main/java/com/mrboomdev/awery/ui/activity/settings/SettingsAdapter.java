@@ -214,7 +214,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var inputField = new DialogEditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
-					inputField.setText(setting.getIntValue());
+					inputField.setText(setting.getIntegerValue());
 					inputField.setLinesCount(1);
 
 					var dialog = new DialogBuilder(context)
@@ -247,7 +247,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									prefs.setInteger(setting.getKey(), number);
 									prefs.saveAsync();
 
-									setting.setIntValue(number);
+									setting.setIntegerValue(number);
 								} catch(NumberFormatException e) {
 									inputField.setError(R.string.this_not_number);
 									return;
@@ -307,7 +307,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
-										setting.setIntValue(integer);
+										setting.setIntegerValue(integer);
 										prefs.setInteger(setting.getKey(), integer);
 									} else {
 										setting.setStringValue(id);
@@ -343,7 +343,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 							selected = String.valueOf(setting instanceof CustomSettingsItem customSetting
 									? customSetting.getSavedValue()
-									: setting.getIntValue());
+									: setting.getIntegerValue());
 						} else {
 							setting.restoreSavedValues();
 

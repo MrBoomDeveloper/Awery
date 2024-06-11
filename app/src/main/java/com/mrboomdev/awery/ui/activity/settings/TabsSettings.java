@@ -2,10 +2,15 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
+import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
@@ -19,6 +24,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
@@ -29,6 +36,7 @@ import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
@@ -40,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
@@ -108,6 +117,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 											.max().orElse(0) + 1;
 
 									dao.insert(tab);
+									getPrefs().setValue(AwerySettings.TABS_TEMPLATE, null).saveAsync();
 
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
@@ -149,7 +159,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getKey() {
-				return AwerySettings.DEFAULT_HOME_TAB;
+				return AwerySettings.DEFAULT_HOME_TAB.getKey();
 			}
 
 			@Override
@@ -169,8 +179,23 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public List<? extends SettingsItem> getItems() {
-				if(tabs.isEmpty()) {
-					// TODO: Return tabs from the template
+				var savedTemplate = AwerySettings.TABS_TEMPLATE.getValue();
+
+				if(savedTemplate != null) {
+					try {
+						var templatesJson = readAssets("tabs_templates.json");
+						var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
+						var templates = Parser.fromString(adapter, templatesJson);
+
+						var selected = findIn(template -> template.id.equals(savedTemplate), templates);
+						if(selected == null) return Collections.emptyList();
+
+						return stream(selected.tabs)
+								.map(TabSetting::new)
+								.toList();
+					} catch(IOException e) {
+						throw new RuntimeException(e);
+					}
 				}
 
 				return stream(tabs)
@@ -207,6 +232,9 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 						items.remove(setting);
 						onSettingRemoval(setting, i);
 					}
+
+					snackbar(Objects.requireNonNull(getActivity(context)),
+							"Restart required!", "Restart", AweryLifecycle::restartApp);
 				});
 			}
 		});

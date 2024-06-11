@@ -11,15 +11,18 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenSetupBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.SplashActivity;
+import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -72,7 +75,11 @@ public class SetupActivity extends AppCompatActivity {
 
 			case STEP_TEMPLATE -> {
 				binding.title.setText(R.string.select_template);
-				binding.message.setText("Sorry, but this thing isn't done yet.");
+				binding.message.setText("The content you see through the app.");
+
+				binding.recycler.setLayoutManager(new GridLayoutManager(this, 3));
+				binding.recycler.setAdapter(new SetupTabsAdapters());
+				binding.recycler.setVisibility(View.VISIBLE);
 			}
 
 			case STEP_FINISH -> {
@@ -92,7 +99,13 @@ public class SetupActivity extends AppCompatActivity {
 	private void tryToStartNextStep() {
 		switch(getIntent().getIntExtra(EXTRA_STEP, STEP_WELCOME)) {
 			case STEP_TEMPLATE -> {
-				// TODO: Check if template was selected
+				var selected = ((SetupTabsAdapters) Objects.requireNonNull(binding.recycler.getAdapter())).getSelected();
+
+				if(selected == null) {
+					getPrefs().setValue(AwerySettings.TABS_TEMPLATE, null).saveAsync();
+					startNextStep();
+					return;
+				}
 
 				binding.continueButton.setEnabled(false);
 				binding.backButton.setEnabled(false);
@@ -137,6 +150,7 @@ public class SetupActivity extends AppCompatActivity {
 					}
 
 					runOnUiThread(() -> {
+						getPrefs().setValue(AwerySettings.TABS_TEMPLATE, selected.id).saveAsync();
 						startNextStep();
 						binding.continueButton.setEnabled(true);
 						binding.backButton.setEnabled(true);

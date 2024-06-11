@@ -63,6 +63,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -367,16 +368,36 @@ public class AweryApp extends Application {
 		return getConfiguration(getAnyContext());
 	}
 
-	public static void snackbar(@NonNull Activity activity, Object input) {
+	public static void snackbar(@NonNull Activity activity, Object title) {
+		snackbar(activity, title, null, null);
+	}
+
+	public static void snackbar(
+			@NonNull Activity activity,
+			@StringRes int title,
+			@StringRes int button,
+			Runnable buttonCallback
+	) {
+		var context = getAnyContext();
+		snackbar(activity, context.getString(title), context.getString(button), buttonCallback);
+	}
+
+	public static void snackbar(@NonNull Activity activity, Object title, Object button, Runnable buttonCallback) {
 		runOnUiThread(() -> {
-			var text = input == null ? "null" : input.toString();
+			var titleText = title == null ? "null" : title.toString();
+			var buttonText = button == null ? "null" : button.toString();
+
 			var rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-			var snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT);
+			var snackbar = Snackbar.make(rootView, titleText, Snackbar.LENGTH_SHORT);
 
 			ViewUtil.<FrameLayout.LayoutParams>useLayoutParams(snackbar.getView(), params -> {
 				params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
 				params.width = WRAP_CONTENT;
 			});
+
+			if(buttonCallback != null) {
+				snackbar.setAction(buttonText, view -> buttonCallback.run());
+			}
 
 			snackbar.getView().setOnClickListener(v -> snackbar.dismiss());
 			snackbar.show();

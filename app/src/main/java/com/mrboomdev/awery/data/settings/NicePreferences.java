@@ -137,7 +137,7 @@ public class NicePreferences {
 		var found = getSettingsMap().find(key);
 
 		if(found != null) {
-			var value = found.getIntValue();
+			var value = found.getIntegerValue();
 			if(value != null) return value;
 		}
 

@@ -91,7 +91,7 @@
 			"type": "screen", "title": "player", "icon": "ic_video_settings",
 			"items": [
 				{
-					"key": "player_double_tap_seek_length", "type": "select_integer", "int_value": "10",
+					"key": "player_double_tap_seek_length", "type": "select_integer", "integer_value": 10,
 					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
 					"description": "${VALUE_TITLE}", "show_if": "!tv",
 					"items": [
@@ -105,7 +105,7 @@
 						{ "key": "120", "title": "120s" }
 					]
 				}, {
-					"key": "player_big_seek_length", "type": "select_integer", "int_value": "60",
+					"key": "player_big_seek_length", "type": "select_integer", "integer_value": 60,
 					"title": "quick_rewind", "icon": "outline_fast_forward_24",
 					"description": "${VALUE_TITLE}",
 					"items": [
@@ -238,10 +238,10 @@
 			"type": "screen", "show_if": "never",
 			"title": "What is that? This is an container for prefs, which aren't present in this schema.",
 			"items": [
-				{ "key": "default_home_tab", "type": "select" },
+				{ "key": "default_home_tab", "type": "string" },
 				{ "key": "last_opened_version", "type": "integer" },
 				{ "key": "setup_version_finished", "type": "integer" },
-				{ "key": "tabs_template", "type": "select" }
+				{ "key": "tabs_template", "type": "string" }
 			]
 		}
 	]

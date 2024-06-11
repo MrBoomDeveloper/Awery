@@ -39,7 +39,6 @@
         app:abb_tabColor="?attr/colorOutline"
         app:abb_tabColorDisabled="?attr/colorPrimaryContainer"
         app:abb_tabColorSelected="?attr/colorPrimary"
-        app:abb_tabs="@menu/bottom_navbar_menu"
         app:abb_textAppearance="@style/NavBarText" />
 
     <View android:id="@+id/bottom_side_barrier"
