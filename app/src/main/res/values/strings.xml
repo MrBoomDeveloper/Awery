@@ -432,4 +432,14 @@
     <string name="welcome_to_app">Welcome to Awery</string>
     <string name="restore_backup">Restore backup</string>
     <string name="lets_begin">Let\'s begin</string>
+    <string name="cleared_successfully">Cleared successfully!</string>
+    <string name="unknown_file_type">Unknown file type!</string>
+    <string name="unknown_file_type_description">Sorry, but Awery doesn\'t support yet this file format! Please, tell developers about this problem, so that they can fix it as soon as possible.</string>
+    <string name="torrent_usupported">Torrents are not supported</string>
+    <string name="connection_error">Connection error has occured, please try again later</string>
+    <string name="torrent_unsupported_message">Sorry, but Awery doesn\'t support torrents at the moment. You can try installing a third-party torrent player to play this type of file.</string>
+    <string name="unknown_error">Unknown error has occured, please try again later</string>
+    <string name="connection_timeout">Connection timeout has occured, please try again later</string>
+    <string name="text_cant_empty">Text cannot be empty!</string>
+    <string name="this_not_number">This is not a number!</string>
 </resources>
