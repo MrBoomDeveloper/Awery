@@ -153,7 +153,6 @@
     <string name="seek_time_info">Zeitdauer in Sekunden für das Vorspulen und Rückspulen.</string>
     <string name="skip_time">Übersprungene Zeit</string>
     <string name="show_cast_button">Wiedergabebutton anzeigen</string>
-    <string name="show_cast_button_info">Benötigt die App Web Video Caster, um zu übertragen.</string>
     <string name="picture_in_picture">Bild-in-Bild</string>
     <string name="always_minimize">Immer minimieren</string>
     <string name="always_minimize_info">Erfordert die Aktivierung von PiP und bewirkt, dass sich der Player wie der Youtube-Player verhält, jedoch besser.
