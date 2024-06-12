@@ -1,8 +1,8 @@
 {
-    "language_name": "Russian",
-    "language_code": "ru",
+    "language_name": "Spanish",
+    "language_code": "es",
     "translated_percent": "100.0",
-    "translation_file": "app/src/main/res/values-ru/strings.xml",
+    "translation_file": "app/src/main/res/values-es/strings.xml",
     "project_component_name": "Awery - Android Client",
     "project_component_url_slug": "awery-android-client",
     "project_name": "Awery",

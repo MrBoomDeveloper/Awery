@@ -441,4 +441,5 @@
     <string name="github_repository">Repositorio GitHub</string>
     <string name="app_crash">¡Awery falló!</string>
     <string name="share_crash_report">Compartir el informen de fallos</string>
+    <string name="continue_action">Continuar</string>
 </resources>
