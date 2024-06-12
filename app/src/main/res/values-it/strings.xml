@@ -104,7 +104,6 @@
     <string name="subtitle_font_size">Dimensione sottotitoli</string>
     <string name="auto">Auto</string>
     <string name="auto_play_next_episode">Riproduzione automatica del prossimo episodio</string>
-    <string name="auto_play_next_episode_info">Si disabilita automaticamente se non c\'è interazione con il giocatore dopo 1 ora.</string>
     <string name="auto_skip_fillers">Salta automaticamente i Fillers</string>
     <string name="auto_skip_fillers_info">Salta gli episodi Filler quando si passa all\'episodio successivo.</string>
     <string name="update_progress">Aggiorna Progressi</string>
