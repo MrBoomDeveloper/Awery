@@ -436,5 +436,4 @@
     <string name="connection_timeout">Connection timeout has occured, please try again later</string>
     <string name="text_cant_empty">Text cannot be empty!</string>
     <string name="this_not_number">This is not a number!</string>
-    <string name="continue">Continue</string>
 </resources>
