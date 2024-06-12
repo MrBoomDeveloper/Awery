@@ -121,7 +121,6 @@
     <string name="seek_time_info">Quantità di tempo in secondi per l\'avanzamento e il riavvolgimento rapido.</string>
     <string name="skip_time">Salta il tempo</string>
     <string name="show_cast_button">Mostra il pulsante Trasmetti</string>
-    <string name="show_cast_button_info">Richiede \"Web Video Caster\" per trasmettere</string>
     <string name="sub_background_color_select">Colore sfondo sottotitoli</string>
     <string name="immersive_mode">Nascondi la barra di stato</string>
     <string name="immersive_mode_info">Richiede il riavvio dell\'app per completare la modifica.</string>
