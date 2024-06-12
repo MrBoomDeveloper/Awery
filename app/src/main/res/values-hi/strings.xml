@@ -134,7 +134,6 @@
     <string name="subtitle_font_size">सबटाइटल आकार</string>
     <string name="auto">स्वचालित</string>
     <string name="auto_play_next_episode">अगला एपिसोड स्वचालित चलाएं</string>
-    <string name="auto_play_next_episode_info">अगर प्लेयर के साथ कोई संवाद नहीं होता है तो यह स्वचालित रूप से अक्षम हो जाता है।</string>
     <string name="auto_skip_fillers">ऑटो स्किप फिलर</string>
     <string name="auto_skip_fillers_info">अगले एपिसोड में जाते समय फिलर एपिसोड को स्किप कर देता है।</string>
     <string name="update_progress">प्रगति अपडेट करें</string>
