@@ -436,7 +436,6 @@
     <string name="torrent_usupported">Торренты не поддерживаются</string>
     <string name="text_cant_empty">Текст не может быть пустым!</string>
     <string name="this_not_number">Это не число!</string>
-    <string name="continue">Продолжить</string>
     <string name="unknown_error">Произошла непонятная ошибка, пожалуйста попробуйте еще раз позже</string>
     <string name="unknown_file_type">Неизвестный тип файла!</string>
     <string name="torrent_unsupported_message">Извините, но Awery в данный момент не поддерживает торренты. Вы можете попробовать установить сторонний торрент-плеер для воспроизведения файлов такого типа.</string>
