@@ -22,9 +22,9 @@
     <string name="korea">Corea</string>
     <string name="manga">Manga</string>
     <string name="info">Info</string>
-    <string name="adult_content_description">Non sicuro per bambini</string>
-    <string name="no_internet">Nessuna Connessione a Internet</string>
-    <string name="refresh">Ricaricare</string>
+    <string name="adult_content_description">Non sicuro per bambini.</string>
+    <string name="no_internet">Nessuna connessione ad Internet</string>
+    <string name="refresh">Aggiornare</string>
     <string name="sort_by">Ordina per</string>
     <string name="genre">Genere</string>
     <string name="top_score">Miglior Punteggio</string>
@@ -61,7 +61,7 @@
     <string name="ep">Episodio</string>
     <string name="chaps">Capitoli</string>
     <string name="chap">Capitolo</string>
-    <string name="filler">Filler</string>
+    <string name="filler">Riempitivo</string>
     <string name="tag">Tag</string>
     <string name="tags">Tags</string>
     <string name="synonyms">Sinonimi</string>
@@ -72,7 +72,7 @@
     <string name="extensions">Estensioni</string>
     <string name="player_settings">Impostazione del lettore video</string>
     <string name="player">Lettore video</string>
-    <string name="reader">Reader</string>
+    <string name="reader">Lettore</string>
     <string name="reader_settings">Impostazioni Reader</string>
     <string name="ui">Interfaccia Utente</string>
     <string name="common">Comune</string>
@@ -111,12 +111,12 @@
     <string name="watch_complete_percentage">Guarda percentuale di aggiornamento</string>
     <string name="behaviour">Comportamento</string>
     <string name="always_continue">Continua sempre da dove hai lasciato</string>
-    <string name="pause_video_focus">Pausa quando non sei concentrato</string>
+    <string name="pause_video_focus">Pausa quando non è a fuoco</string>
     <string name="gestures">Gestures di Volume &amp; Luminosità</string>
-    <string name="double_tap">Doppio tocco per andare avanti o indietro</string>
+    <string name="double_tap">Doppio tocco per cercare</string>
     <string name="fast_forward">Avanti Veloce</string>
     <string name="double_tap_info">Allo spegnimento verranno visualizzati i pulsanti di avanzamento rapido e riavvolgimento</string>
-    <string name="seek_time">Seek Time</string>
+    <string name="seek_time">Tempo di ricerca</string>
     <string name="amoled">Tema Amoled</string>
     <string name="seek_time_info">Quantità di tempo in secondi per l\'avanzamento e il riavvolgimento rapido.</string>
     <string name="skip_time">Salta il tempo</string>
@@ -158,7 +158,7 @@
     <string name="over_scroll">Scorri sopra per il capitolo Successivo/Precedente</string>
     <string name="volume_buttons">Cambia pagina con i tasti del volume</string>
     <string name="always_load_time_stamps">Carica sempre i Time Stamps</string>
-    <string name="show_skip_time_stamp_button">Mostra il pulsante Salta Time Stamp</string>
+    <string name="show_skip_time_stamp_button">Mostra il pulsante Salta Timestamp</string>
     <string name="auto_skip_op_ed">Salto automatico OP / ED</string>
     <string name="requires_time_stamps_to_be_enabled">Richiede l\'abilitazione di Time Stamp</string>
     <string name="keep_screen_on">Mantieni lo schermo attivo</string>
@@ -173,11 +173,11 @@
     <string name="crop_borders">Ritaglia bordi</string>
     <string name="error_loading_data">Errore durante il caricamento dei dati %1$s</string>
     <string name="saved_to_path">Salvato in:
-\n%S</string>
+\n%s</string>
     <string name="setting_progress">Impostazione dell\'avanzamento su %1$d</string>
     <string name="back_to_exit">Si prega di ripetere l\'operazione per uscire</string>
     <string name="no_internet_connection">Nessuna Connessione ad internet</string>
-    <string name="disabled_auto_skip">Disattivato il salto automatico OP &amp; ED</string>
+    <string name="disabled_auto_skip">Disabilitato il salto automatico OP &amp; ED</string>
     <string name="auto_skip">Salto automatico OP &amp; ED</string>
     <string name="copied_to_clipboard">Copiato negli Appunti</string>
     <string name="auto_select_server_error">Impossibile selezionare automaticamente il server. Riprova!</string>
@@ -257,7 +257,7 @@
     <string name="color_picker">Selettore di colori</string>
     <string name="android12_requires">Richiede Android 12+</string>
     <string name="comments">Commenti</string>
-    <string name="select_quality">Seleziona Qualità</string>
+    <string name="select_quality">Seleziona qualità</string>
     <string name="oled_theme_variant">Variante del tema OLED</string>
     <string name="custom_theme">Tema personalizzato</string>
     <string name="use_unique_theme_for_each_item">Colore uguale al poster multimediale</string>
@@ -281,14 +281,14 @@
     <string name="volume_and_brightness">Volume e Luminosità</string>
     <string name="disabled">Disabilitato</string>
     <string name="quick_rewind">Riavvolgimento rapido</string>
-    <string name="double_tap_seek">Doppio tocco per andare avanti o indietro</string>
+    <string name="double_tap_seek">Toccare due volte per cercare</string>
     <string name="uninstall_extension">Disinstalla estensione</string>
     <string name="pick_from_storage">Seleziona dalla memoria</string>
     <string name="repository_url">Archivio URL</string>
     <string name="sure_delete_list_description">Sei sicuro di voler eliminare questa lista?</string>
     <string name="blacklist">Lista nera</string>
     <string name="tracking">Monitoraggio</string>
-    <string name="use_material_you">Material You</string>
+    <string name="use_material_you">Material you</string>
     <string name="read_more">Per saperne di più</string>
     <string name="read_less">Leggi di meno</string>
     <string name="enter_text">Inserire il testo</string>
@@ -311,8 +311,8 @@
     <string name="movies">Film</string>
     <string name="cancelled">Cancellato</string>
     <string name="completed">Completato</string>
-    <string name="planning_watch">Pianificato da guardare</string>
-    <string name="planning_read">Pianificato da leggere</string>
+    <string name="planning_watch">Previsto da guardare</string>
+    <string name="planning_read">Previsto da leggere</string>
     <string name="currently_watching">Attualmente sto guardando</string>
     <string name="favorite">Preferito</string>
     <string name="please_report_bug_app">Si prega di inviare il seguente testo agli sviluppatori dell\'app!</string>
@@ -324,7 +324,7 @@
     <string name="extension_installed_failed">Impossibile installare un\'estensione!</string>
     <string name="most_favourited">Più Amati</string>
     <string name="top_rated">Più Votati</string>
-    <string name="dalayed">In Ritardo</string>
+    <string name="dalayed">In ritardo</string>
     <string name="dropped">Abbandonato</string>
     <string name="adult_content">Contenuto per adulti</string>
     <string name="trending">Tendenza</string>
@@ -336,7 +336,7 @@
     <string name="no_episodes_found">Nessun episodio trovato. Prova a cambiare domanda e i filtri.</string>
     <string name="no_subtitles_extensions">Non hai estensioni per i sottotitoli installate. Scaricali per vedere qualcosa di nuovo qui!</string>
     <string name="search">Cerca</string>
-    <string name="username">Username</string>
+    <string name="username">Nome utente</string>
     <string name="save">Salva</string>
     <string name="name">Nome</string>
     <string name="delete">Elimina</string>
@@ -385,7 +385,7 @@
     <string name="type_source">Fonte</string>
     <string name="duration">Durata</string>
     <string name="title_update_progress">Aggiornare i progressi su anilist?</string>
-    <string name="timestamps">Time Stamps</string>
+    <string name="timestamps">Timestamps</string>
     <string name="access_denied">Accesso negato!</string>
     <string name="too_much_requests">Troppe richieste!</string>
     <string name="confirm">Conferma</string>
@@ -443,4 +443,5 @@
     <string name="share_crash_report">Condividi il rapporto sugli arresti anomali</string>
     <string name="app_not_responding_restart">Awery non risponde. Cerco di riavviare ._.</string>
     <string name="unknown_file_type">Tipo di file sconosciuto!</string>
+    <string name="continue_action">Continua</string>
 </resources>
