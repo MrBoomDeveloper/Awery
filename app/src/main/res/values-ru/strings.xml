@@ -443,4 +443,5 @@
     <string name="unknown_file_type_description">Извините, но Awery пока не поддерживает этот формат файлов! Пожалуйста, сообщите разработчикам об этой проблеме, чтобы они исправили ее как можно скорее.</string>
     <string name="connection_error">Произошла ошибка подключения, пожалуйста попробуйте еще раз позже</string>
     <string name="connection_timeout">Истекло время подключения, пожалуйста попробуйте еще раз позже</string>
+    <string name="continue_action">Продолжить</string>
 </resources>
