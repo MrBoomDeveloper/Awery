@@ -134,7 +134,6 @@
     <string name="subtitle_font_size">Subtitle Size</string>
     <string name="auto">Auto</string>
     <string name="auto_play_next_episode">Autoplay Next Episode</string>
-    <string name="auto_play_next_episode_info">Automatically disables if there is no interaction with player after 1 hour.</string>
     <string name="auto_skip_fillers">Auto Skip Fillers</string>
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
     <string name="update_progress">Update Progress</string>
