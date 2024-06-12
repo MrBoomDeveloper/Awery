@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">Tamaño de los subtítulos</string>
     <string name="auto">Automático</string>
     <string name="auto_play_next_episode">Reproducción automática del siguiente episodio</string>
-    <string name="auto_play_next_episode_info">Se desactiva automáticamente si no hay interacción con el reproductor después de 1 hora.</string>
     <string name="auto_skip_fillers">Saltar automáticamente los rellenos</string>
     <string name="auto_skip_fillers_info">Salta los episodios de relleno al pasar al siguiente episodio.</string>
     <string name="update_progress">Actualizar progreso</string>
