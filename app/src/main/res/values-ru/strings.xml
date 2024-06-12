@@ -156,7 +156,6 @@
     <string name="seek_time_info">Amount of time in seconds for fast forward &amp; rewind.</string>
     <string name="skip_time">Время Пропуска</string>
     <string name="show_cast_button">Show Cast Button</string>
-    <string name="show_cast_button_info">Requires \"Web Video Caster\" app to cast.</string>
     <string name="picture_in_picture">Картинка в Картинке</string>
     <string name="always_minimize">Always Minimize</string>
     <string name="always_minimize_info">Requires PiP to be enabled, makes the player behave like Youtube Player but better.
