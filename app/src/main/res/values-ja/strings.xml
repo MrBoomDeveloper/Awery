@@ -303,7 +303,6 @@
     <string name="watched_num">"見た "</string>
     <string name="read_num">"読んだ "</string>
     <string name="episodes_out_of">" / "</string>
-    <string name="episodes_total_of">"合計 "</string>
     <string name="no_description_available">説明はありません</string>
     <string name="selected">選択済み</string>
     <string name="found">見つかりました</string>
