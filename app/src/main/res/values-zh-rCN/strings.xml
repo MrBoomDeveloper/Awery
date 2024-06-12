@@ -153,7 +153,6 @@
     <string name="seek_time_info">快进和倒带的时间量（以秒为单位）。</string>
     <string name="skip_time">跳过时间</string>
     <string name="show_cast_button">显示投射按钮</string>
-    <string name="show_cast_button_info">需要“Web Video Caster”应用来投射。</string>
     <string name="picture_in_picture">画中画</string>
     <string name="always_minimize">始终最小化</string>
     <string name="always_minimize_info">需要启用 PiP，使播放器的行为类似于 Youtube 播放器但更好。
