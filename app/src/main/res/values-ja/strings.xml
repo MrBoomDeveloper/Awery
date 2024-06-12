@@ -153,7 +153,6 @@
     <string name="seek_time_info">早送りおよび巻き戻しのための秒数の量。</string>
     <string name="skip_time">スキップ時間</string>
     <string name="show_cast_button">キャストボタンを表示</string>
-    <string name="show_cast_button_info">キャストするには「Web Video Caster」アプリが必要です。</string>
     <string name="picture_in_picture">ピクチャーインピクチャー</string>
     <string name="always_minimize">常に最小化</string>
     <string name="always_minimize_info">PiPが有効になっている必要があり、プレーヤーがYouTubeプレーヤーのように動作しますが、より優れています。
