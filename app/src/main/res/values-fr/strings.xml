@@ -153,7 +153,6 @@
     <string name="seek_time_info">Quantité de temps en secondes pour l\'avance rapide et le retour rapide.</string>
     <string name="skip_time">Temps de saut</string>
     <string name="show_cast_button">Afficher le bouton Cast</string>
-    <string name="show_cast_button_info">Nécessite l\'application Web Video Caster pour caster.</string>
     <string name="picture_in_picture">Image dans l\'image</string>
     <string name="always_minimize">Minimiser toujours</string>
     <string name="always_minimize_info">Nécessite que PiP soit activé, fait fonctionner le lecteur comme le lecteur Youtube mais mieux.
