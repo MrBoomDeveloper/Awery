@@ -298,7 +298,6 @@
     <string name="watched_num">"Просмотренно "</string>
     <string name="read_num">"Прочитанно "</string>
     <string name="episodes_out_of">" из "</string>
-    <string name="episodes_total_of">"Всего "</string>
     <string name="no_description_available">Описание не доступно</string>
     <string name="selected">Выбранно</string>
     <string name="found">Найдено</string>
