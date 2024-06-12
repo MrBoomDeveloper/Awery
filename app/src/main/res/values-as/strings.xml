@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">সাবটাইটেলৰ আকাৰ</string>
     <string name="auto">অট\'মেটিক</string>
     <string name="auto_play_next_episode">পৰৱৰ্তী এপিস\'ড অট\'মেটিক প্ৰচাৰ কৰক</string>
-    <string name="auto_play_next_episode_info">যদি প্ৰচাৰকাৰীলৈ এক ঘণ্টাৰ পাছত কোনো আপাতত সম্পৰ্ক নহয় তেওঁলোৱা নিষ্ক্ৰিয় কৰা হ\'ব।</string>
     <string name="auto_skip_fillers">অট\'মেটিক ফিলাৰসমূহ অগ্ৰসৰণ কৰক</string>
     <string name="auto_skip_fillers_info">পৰবন্ধৰ উল্লেখকাৰীলৈ প্ৰচাৰ কৰিবলৈ অট\'মেটিকভাৱে ফিলাৰ এপিস\'ডসমূহ অগ্ৰসৰণ কৰে।</string>
     <string name="update_progress">প্ৰগ্ৰেছ আপডেট কৰক</string>
