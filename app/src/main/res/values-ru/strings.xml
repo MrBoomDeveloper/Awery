@@ -137,7 +137,6 @@
     <string name="subtitle_font_size">Размер Субтитров</string>
     <string name="auto">Автоматически</string>
     <string name="auto_play_next_episode">Автовоспроизведение следющего эпизода</string>
-    <string name="auto_play_next_episode_info">Automatically disables if there is no interaction with player after 1 hour.</string>
     <string name="auto_skip_fillers">Автоматически пропускать Филлеры</string>
     <string name="auto_skip_fillers_info">Skips filler episodes when going to next episode.</string>
     <string name="update_progress">Обновить Прогресс</string>
