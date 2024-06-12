@@ -152,7 +152,6 @@
     <string name="seek_time_info">Cantidad de tiempo en segundos para avance rápido y retroceso.</string>
     <string name="skip_time">Tiempo de salto</string>
     <string name="show_cast_button">Mostrar botón de emisión</string>
-    <string name="show_cast_button_info">Requiere la aplicación Web Video Caster para emitir.</string>
     <string name="picture_in_picture">Imagen en imagen</string>
     <string name="always_minimize">Siempre minimizar</string>
     <string name="always_minimize_info">Requiere que PiP esté habilitado, hace que el reproductor se comporte como el reproductor de Youtube pero mejor. También oculta el botón de PiP.</string>
