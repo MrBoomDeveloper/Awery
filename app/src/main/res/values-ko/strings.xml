@@ -303,7 +303,6 @@
     <string name="lets_go">출발하기</string>
     <string name="watched_num">"시청함 "</string>
     <string name="read_num">"읽음 "</string>
-    <string name="episodes_out_of">"중 "</string>
     <string name="no_description_available">사용 가능한 설명 없음</string>
     <string name="selected">선택됨</string>
     <string name="found">발견됨</string>
