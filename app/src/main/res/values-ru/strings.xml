@@ -432,5 +432,16 @@
     <string name="finish">Завершить</string>
     <string name="welcome_to_app">Добро пожаловать в Awery</string>
     <string name="restore_backup">Восстановить резервную копию</string>
-    <string name="lets_begin">Поехали</string>
+    <string name="lets_begin">Начать</string>
+    <string name="torrent_usupported">Торренты не поддерживаются</string>
+    <string name="text_cant_empty">Текст не может быть пустым!</string>
+    <string name="this_not_number">Это не число!</string>
+    <string name="continue">Продолжить</string>
+    <string name="unknown_error">Произошла непонятная ошибка, пожалуйста попробуйте еще раз позже</string>
+    <string name="unknown_file_type">Неизвестный тип файла!</string>
+    <string name="torrent_unsupported_message">Извините, но Awery в данный момент не поддерживает торренты. Вы можете попробовать установить сторонний торрент-плеер для воспроизведения файлов такого типа.</string>
+    <string name="cleared_successfully">Очищено успешно!</string>
+    <string name="unknown_file_type_description">Извините, но Awery пока не поддерживает этот формат файлов! Пожалуйста, сообщите разработчикам об этой проблеме, чтобы они исправили ее как можно скорее.</string>
+    <string name="connection_error">Произошла ошибка подключения, пожалуйста попробуйте еще раз позже</string>
+    <string name="connection_timeout">Истекло время подключения, пожалуйста попробуйте еще раз позже</string>
 </resources>
