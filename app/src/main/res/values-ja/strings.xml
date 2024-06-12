@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">字幕サイズ</string>
     <string name="auto">自動</string>
     <string name="auto_play_next_episode">次のエピソードを自動再生</string>
-    <string name="auto_play_next_episode_info">プレーヤーとの対話が1時間経過すると自動的に無効になります。</string>
     <string name="auto_skip_fillers">フィラーを自動スキップ</string>
     <string name="auto_skip_fillers_info">次のエピソードに移動する際にフィラーエピソードをスキップします。</string>
     <string name="update_progress">進捗状況を更新</string>
