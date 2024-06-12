@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">Untertitelgröße</string>
     <string name="auto">Automatisch</string>
     <string name="auto_play_next_episode">Automatisch nächste Episode abspielen</string>
-    <string name="auto_play_next_episode_info">Deaktiviert automatisch, wenn nach 1 Stunde keine Interaktion mit dem Player erfolgt.</string>
     <string name="auto_skip_fillers">Füllmaterial automatisch überspringen</string>
     <string name="auto_skip_fillers_info">Überspringt Füllmaterial-Episoden beim Wechsel zur nächsten Episode.</string>
     <string name="update_progress">Fortschritt aktualisieren</string>
