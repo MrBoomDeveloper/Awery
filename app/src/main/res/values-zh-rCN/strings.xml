@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">字幕大小</string>
     <string name="auto">自动</string>
     <string name="auto_play_next_episode">自动播放下一集</string>
-    <string name="auto_play_next_episode_info">如果与播放器没有交互，则自动在1小时后禁用。</string>
     <string name="auto_skip_fillers">自动跳过填充</string>
     <string name="auto_skip_fillers_info">在转到下一集时跳过填充剧集。</string>
     <string name="update_progress">更新进度</string>
