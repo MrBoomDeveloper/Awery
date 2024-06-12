@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
+import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 
 public class AniyomiManager extends YomiManager {
@@ -67,23 +68,15 @@ public class AniyomiManager extends YomiManager {
 
 	@Override
 	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
-		if(main instanceof AnimeCatalogueSource source) {
+		if(main instanceof AnimeSource source) {
 			return List.of(new AniyomiProvider(this, extension, source));
 		} else if(main instanceof AnimeSourceFactory factory) {
 			return stream(factory.createSources())
-					.map(source -> source instanceof AnimeCatalogueSource catalogueSource ? new AniyomiProvider(
-							this, extension, catalogueSource, true) : null)
-					.filter(item -> {
-						if(item == null) {
-							toast("Failed to create Aniyomi provider");
-							return false;
-						}
-
-						return true;
-					}).toList();
+					.map(source -> new AniyomiProvider(this, extension, source, true))
+					.toList();
 		}
 
-		toast("Failed to create Aniyomi provider");
+		toast("Failed to create an Aniyomi provider!");
 		return Collections.emptyList();
 	}
 }

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 
-import com.mrboomdev.awery.data.db.item.DBFeed;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFragmentBinding;
@@ -27,7 +27,6 @@ public class MediaCatalogListsFragment extends Fragment {
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> emptyAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderMainBinding> headerAdapter;
 	private final ConcatAdapter concatAdapter;
-	private List<DBFeed> feeds;
 	private MediaCatalogFragmentBinding binding;
 	private MainActivity mainActivity;
 	private int index;
@@ -44,11 +43,6 @@ public class MediaCatalogListsFragment extends Fragment {
 	public Fragment setupWithMainActivity(MainActivity activity, int index) {
 		this.mainActivity = activity;
 		this.index = index;
-		return this;
-	}
-
-	public MediaCatalogListsFragment setFeeds(List<DBFeed> feeds) {
-		this.feeds = feeds;
 		return this;
 	}
 

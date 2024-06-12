@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * An utility class for working with shared preferences.
@@ -32,8 +33,8 @@ public class NicePreferences {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
-	private NicePreferences(@NonNull Context context, String name) {
-		this.prefs = context.getSharedPreferences(name, 0);
+	private NicePreferences(SharedPreferences prefs) {
+		this.prefs = prefs;
 	}
 
 	public static void cachePath(String path, SettingsItem item) {
@@ -49,7 +50,7 @@ public class NicePreferences {
 	}
 
 	private static void reloadSettingsMapValues() {
-		settingsMapInstance.restoreSavedValues();
+		settingsMapInstance.restoreSavedValues(false);
 		shouldReloadMapValues = false;
 	}
 
@@ -76,6 +77,14 @@ public class NicePreferences {
 	}
 
 	/**
+	 * @return whether the specified key exists
+	 * @author MrBoomDev
+	 */
+	public boolean contains(String key) {
+		return prefs.contains(key);
+	}
+
+	/**
 	 * @see #getBoolean(String)
 	 * @return the value of the specified key, or the default value if the key does not exist
 	 * @author MrBoomDev
@@ -92,14 +101,6 @@ public class NicePreferences {
 		}
 
 		return prefs.getBoolean(key, defaultValue != null && defaultValue);
-	}
-
-	/**
-	 * @return whether the specified key exists
-	 * @author MrBoomDev
-	 */
-	public boolean contains(String key) {
-		return prefs.contains(key);
 	}
 
 	/**
@@ -123,14 +124,18 @@ public class NicePreferences {
 		return this;
 	}
 
-	public int getInteger(String key, int defaultValue) {
+	public Integer getInteger(String key, Integer defaultValue) {
 		if(!prefs.contains(key)) {
+			if(defaultValue == null) {
+				return null;
+			}
+
 			checkEditorExistence().putInt(key, defaultValue);
 			saveSync();
 			return defaultValue;
 		}
 
-		return prefs.getInt(key, defaultValue);
+		return prefs.getInt(key, defaultValue != null ? defaultValue : 0);
 	}
 
 	public Integer getInteger(String key) {
@@ -151,6 +156,10 @@ public class NicePreferences {
 
 	public String getString(String key, String defaultValue) {
 		if(!prefs.contains(key)) {
+			if(defaultValue == null) {
+				return null;
+			}
+
 			checkEditorExistence().putString(key, defaultValue);
 			saveSync();
 			return defaultValue;
@@ -168,6 +177,11 @@ public class NicePreferences {
 		}
 
 		return getString(key, null);
+	}
+
+	public NicePreferences setString(String key, String value) {
+		checkEditorExistence().putString(key, value);
+		return this;
 	}
 
 	public <T extends Enum<T>> T getEnum(String key, T defaultValue, Class<T> enumClass) {
@@ -211,11 +225,6 @@ public class NicePreferences {
 		return saved;
 	}
 
-	public NicePreferences setString(String key, String value) {
-		checkEditorExistence().putString(key, value);
-		return this;
-	}
-
 	public Set<String> getStringSet(String name) {
 		if(contains(name)) {
 			return prefs.getStringSet(name, null);
@@ -230,11 +239,7 @@ public class NicePreferences {
 	}
 
 	private SharedPreferences.Editor checkEditorExistence() {
-		if(editor == null) {
-			editor = prefs.edit();
-		}
-
-		return editor;
+		return editor != null ? editor : (editor = prefs.edit());
 	}
 
 	/**
@@ -272,45 +277,31 @@ public class NicePreferences {
 	}
 
 	/**
-	 * @param context Application context
-	 * @param name the name of file
 	 * @return the singleton instance of {@link NicePreferences}
-	 * @author MrBoomDev
-	 * @see #getPrefs()
-	 * @see #getPrefs(String)
-	 */
-	@NonNull
-	private static NicePreferences getPrefs(@NonNull Context context, String name) {
-		return new NicePreferences(context, name);
-	}
-
-	/**
-	 * @param name the name of file
-	 * @return the singleton instance of {@link NicePreferences}
-	 * @see #getPrefs()
-	 * @see #getPrefs(Context, String)
 	 * @author MrBoomDev
 	 */
 	@NonNull
-	public static NicePreferences getPrefs(String name) {
-		return getPrefs(getAppContext(), name);
+	public static NicePreferences getPrefs(String fileName) {
+		var context = getAppContext().getApplicationContext();
+		return new NicePreferences(context.getSharedPreferences(fileName, 0));
 	}
 
 	/**
 	 * @return the singleton instance of {@link NicePreferences}
-	 * @see #getPrefs(String)
-
-	 * @see #getPrefs(Context, String)
 	 * @author MrBoomDev
 	 */
 	@NonNull
-	@Contract(" -> new")
 	public static NicePreferences getPrefs() {
 		return getPrefs(APP_SETTINGS);
 	}
 
 	public String getValue(@NonNull StringSetting setting) {
 		return getString(setting.getKey());
+	}
+
+	public NicePreferences removeValue(@NonNull BaseSetting setting) {
+		checkEditorExistence().remove(setting.getKey());
+		return this;
 	}
 
 	public NicePreferences setValue(@NonNull StringSetting setting, String value) {
@@ -437,7 +428,7 @@ public class NicePreferences {
 		}
 	}
 
-	private interface BaseSetting {
+	public interface BaseSetting {
 		String getKey();
 	}
 }

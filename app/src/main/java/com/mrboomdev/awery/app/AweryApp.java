@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 
 import android.app.Activity;
@@ -389,11 +390,6 @@ public class AweryApp extends Application {
 
 			var rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
 			var snackbar = Snackbar.make(rootView, titleText, Snackbar.LENGTH_SHORT);
-
-			ViewUtil.<FrameLayout.LayoutParams>useLayoutParams(snackbar.getView(), params -> {
-				params.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-				params.width = WRAP_CONTENT;
-			});
 
 			if(buttonCallback != null) {
 				snackbar.setAction(buttonText, view -> buttonCallback.run());

@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.data.db.item;
+package com.mrboomdev.awery.extensions.data;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -8,10 +8,15 @@ import androidx.room.PrimaryKey;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.squareup.moshi.Json;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(tableName = "feed")
-public class DBFeed {
+public class CatalogFeed implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1;
 	@PrimaryKey
 	@NonNull
 	public String id;
@@ -27,11 +32,12 @@ public class DBFeed {
 	@ColumnInfo(name = "source_feed")
 	@Json(name = "source_feed")
 	public String sourceFeed;
+	public List<String> features = new ArrayList<>();
 	@ColumnInfo(name = "display_mode")
 	@Json(name = "display_mode")
 	public DisplayMode displayMode;
 
-	public DBFeed() {
+	public CatalogFeed() {
 		id = String.valueOf(System.currentTimeMillis());
 	}
 

@@ -16,7 +16,7 @@ import com.mrboomdev.awery.data.db.dao.RepositoryDao;
 import com.mrboomdev.awery.data.db.dao.TabsDao;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
 import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
-import com.mrboomdev.awery.data.db.item.DBFeed;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
@@ -36,7 +36,7 @@ import com.mrboomdev.awery.util.ParserAdapter;
 				DBCatalogList.class,
 				DBRepository.class,
 				DBTab.class,
-				DBFeed.class,
+				CatalogFeed.class,
 				CatalogMediaProgress.class
 		}
 ) public abstract class AweryDB extends RoomDatabase {

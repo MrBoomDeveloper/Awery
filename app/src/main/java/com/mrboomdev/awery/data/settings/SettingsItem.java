@@ -165,28 +165,32 @@ public class SettingsItem {
 		}
 	}
 
+	public void restoreSavedValues() {
+		restoreSavedValues(true);
+	}
+
 	/**
 	 * Call before showing any data to a user
 	 * @author MrBoomDev
 	 */
-	public void restoreSavedValues() {
+	public void restoreSavedValues(boolean canWritePrefs) {
 		if(getType() == null) return;
 		var settings = getPrefs();
 
 		switch(getType()) {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(),
-					Objects.requireNonNullElse(booleanValue, false));
+					canWritePrefs ? Objects.requireNonNullElse(booleanValue, false) : null);
 
 			case INT, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(),
-					Objects.requireNonNullElse(integerValue, 0));
+					canWritePrefs ? Objects.requireNonNullElse(integerValue, 0) : null);
 
-			case SELECT, STRING -> stringValue = settings.getString(getKey(), stringValue);
+			case SELECT, STRING -> stringValue = settings.getString(getKey(), canWritePrefs ? stringValue : null);
 
 			case SCREEN -> {
 				if(items == null) return;
 
 				for(var item : getItems()) {
-					item.restoreSavedValues();
+					item.restoreSavedValues(canWritePrefs);
 				}
 			}
 		}

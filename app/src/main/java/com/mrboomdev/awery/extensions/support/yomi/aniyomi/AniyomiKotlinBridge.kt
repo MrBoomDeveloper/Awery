@@ -40,6 +40,26 @@ object AniyomiKotlinBridge {
     }
 
     @JvmStatic
+    fun getPopularAnime(source: AnimeCatalogueSource, page: Int, callback: ResponseCallback<AnimesPage>) {
+        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
+        val scope = CoroutineScope(Job())
+
+        scope.launch(exceptionHandler) {
+            callback.onResponse(source.getPopularAnime(page + 1), null)
+        }
+    }
+
+    @JvmStatic
+    fun getLatestAnime(source: AnimeCatalogueSource, page: Int, callback: ResponseCallback<AnimesPage>) {
+        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
+        val scope = CoroutineScope(Job())
+
+        scope.launch(exceptionHandler) {
+            callback.onResponse(source.getLatestUpdates(page + 1), null)
+        }
+    }
+
+    @JvmStatic
     fun getAnimeDetails(source: AnimeSource, anime: SAnime, callback: ResponseCallback<SAnime>) {
         val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
         val scope = CoroutineScope(Job())
@@ -50,7 +70,7 @@ object AniyomiKotlinBridge {
     }
 
     @JvmStatic
-    fun getEpisodesList(source: AnimeCatalogueSource, anime: SAnime, callback: ResponseCallback<List<SEpisode>>) {
+    fun getEpisodesList(source: AnimeSource, anime: SAnime, callback: ResponseCallback<List<SEpisode>>) {
         val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
         val scope = CoroutineScope(Job())
 
@@ -60,7 +80,7 @@ object AniyomiKotlinBridge {
     }
 
     @JvmStatic
-    fun getVideosList(source: AnimeCatalogueSource, episode: SEpisode, callback: ResponseCallback<List<Video>>) {
+    fun getVideosList(source: AnimeSource, episode: SEpisode, callback: ResponseCallback<List<Video>>) {
         val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
         val scope = CoroutineScope(Job())
 

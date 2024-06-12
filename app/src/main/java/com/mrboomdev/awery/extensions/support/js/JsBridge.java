@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
@@ -40,6 +41,9 @@ import java.util.Locale;
  */
 @SuppressWarnings("unused")
 public class JsBridge {
+	public final String FILTER_FEED = CatalogFilter.FILTER_FEED;
+	public final String FILTER_PAGE = CatalogFilter.FILTER_PAGE;
+	public final String FILTER_QUERY = CatalogFilter.FILTER_QUERY;
 	private static final String TAG = "JsBridge";
 	protected WeakReference<android.content.Context> context;
 	private final JsManager manager;

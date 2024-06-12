@@ -121,7 +121,7 @@ public class TrackingSheet {
 			this.context = dialog.getContext();
 
 			queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-			pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
+			pageFilter = new CatalogFilter(CatalogFilter.Type.INTEGER, "page");
 			filters = List.of(queryFilter, pageFilter);
 
 			queryFilter.setValue(media.getTitle());

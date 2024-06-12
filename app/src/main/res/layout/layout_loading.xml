@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
+    android:layout_height="wrap_content"
+    android:minHeight="250dp"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -36,9 +37,17 @@
             android:textAlignment="center"
             android:gravity="center"
             android:textIsSelectable="true"
-            android:textSize="14sp"
             tools:text="@tools:sample/lorem/random"
             android:ellipsize="end"/>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="Awesome button" />
 
     </LinearLayout>
 

@@ -51,9 +51,4 @@ public class AweryPlatform extends PlatformApi {
 	public FancyVersion getJvmLibraryVersion() {
 		return JVM_LIB_VERSION;
 	}
-
-	@Override
-	public boolean isBeta() {
-		return BuildConfig.IS_BETA;
-	}
 }

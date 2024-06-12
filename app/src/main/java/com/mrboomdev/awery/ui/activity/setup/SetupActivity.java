@@ -102,7 +102,7 @@ public class SetupActivity extends AppCompatActivity {
 				var selected = ((SetupTabsAdapters) Objects.requireNonNull(binding.recycler.getAdapter())).getSelected();
 
 				if(selected == null) {
-					getPrefs().setValue(AwerySettings.TABS_TEMPLATE, null).saveAsync();
+					getPrefs().removeValue(AwerySettings.TABS_TEMPLATE).saveSync();
 					startNextStep();
 					return;
 				}

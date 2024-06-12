@@ -11,6 +11,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,20 +31,25 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.fragments.AnimeFragment;
+import com.mrboomdev.awery.ui.fragments.FeedsFragment;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.ui.fragments.MangaFragment;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
+import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -78,36 +84,6 @@ public class MainActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		binding = ScreenMainBinding.inflate(getLayoutInflater());
-		binding.getRoot().setMotionEventSplittingEnabled(false);
-		setContentView(binding.getRoot());
-
-		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
-		binding.pages.setAdapter(pagesAdapter);
-		binding.pages.setUserInputEnabled(false);
-		binding.pages.setPageTransformer(new FadeTransformer());
-
-		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
-
-			@Override
-			public void onTabSelected(
-					int previousIndex,
-					@Nullable AnimatedBottomBar.Tab previousTab,
-					int currentIndex,
-					@NonNull AnimatedBottomBar.Tab currentTab
-			) {
-				binding.pages.setCurrentItem(currentIndex, false);
-			}
-
-			@Override
-			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
-		});
-
-		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
-			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
-			return true;
-		});
-
 		var template = AwerySettings.TABS_TEMPLATE.getValue();
 		if(template != null) loadTemplateTabs(template); else loadCustomTabs();
 	}
@@ -129,7 +105,15 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void setupTabs(List<DBTab> tabs) {
+	private void setupTabs(@NonNull List<DBTab> tabs) {
+		this.tabs = tabs;
+
+		if(tabs.isEmpty()) {
+			setupEmpty();
+			return;
+		}
+
+		setupNavigation();
 		Collections.sort(tabs);
 
 		var savedDefaultTab = AwerySettings.DEFAULT_HOME_TAB.getValue();
@@ -175,18 +159,62 @@ public class MainActivity extends AppCompatActivity {
 				selectedNavbarItem = navbarItem;
 			}
 
-			binding.navbar.addTabAt(i, navbarItem);
+			binding.navbar.addTab(navbarItem);
 		}
 
 		if(selectedNavbarItem == null && binding.navbar.getTabCount() > 0) {
 			selectedNavbarItem = binding.navbar.getTabs().get(0);
 		}
 
-		if(selectedNavbarItem != null) {
-			binding.navbar.selectTab(selectedNavbarItem, false);
-		} else {
-			binding.navbar.setVisibility(View.GONE);
-		}
+		binding.navbar.selectTab(Objects.requireNonNull(selectedNavbarItem), false);
+	}
+
+	/**
+	 * Called after setupTabs() if no tabs was found
+	 */
+	private void setupEmpty() {
+		var binding = new EmptyView(this);
+
+		binding.setInfo("No tabs found",
+				"Please selecting an template or either create your own tabs to see anything here.",
+				"Go to settings", () -> startActivity(new Intent(this, SettingsActivity.class)));
+
+		setContentView(binding.getRoot());
+	}
+
+	/**
+	 * Called after setupTabs()
+	 */
+	private void setupNavigation() {
+		binding = ScreenMainBinding.inflate(getLayoutInflater());
+		binding.getRoot().setMotionEventSplittingEnabled(false);
+		setContentView(binding.getRoot());
+
+		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
+		binding.pages.setAdapter(pagesAdapter);
+		binding.pages.setUserInputEnabled(false);
+		binding.pages.setPageTransformer(new FadeTransformer());
+
+		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
+
+			@Override
+			public void onTabSelected(
+					int previousIndex,
+					@Nullable AnimatedBottomBar.Tab previousTab,
+					int currentIndex,
+					@NonNull AnimatedBottomBar.Tab currentTab
+			) {
+				binding.pages.setCurrentItem(currentIndex, false);
+			}
+
+			@Override
+			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
+		});
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
+			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
+			return true;
+		});
 	}
 
 	@Override
@@ -203,13 +231,19 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putInt("nav_index", binding.navbar.getSelectedIndex());
+		if(binding != null) {
+			outState.putInt("nav_index", binding.navbar.getSelectedIndex());
+		}
+
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-		binding.navbar.selectTabAt(savedInstanceState.getInt("nav_index"), false);
+		if(binding != null) {
+			binding.navbar.selectTabAt(savedInstanceState.getInt("nav_index"), false);
+		}
+
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
@@ -222,17 +256,25 @@ public class MainActivity extends AppCompatActivity {
 		@NonNull
 		@Override
 		public Fragment createFragment(int position) {
-			return switch(position) {
+			var arguments = new Bundle();
+			arguments.putSerializable("feeds", (Serializable) tabs.get(position).feeds);
+
+			var fragment = new FeedsFragment();
+			fragment.setArguments(arguments);
+
+			return fragment;
+
+			/*return switch(position) {
 				case 0 -> new AnimeFragment().setupWithMainActivity(MainActivity.this, 0);
 				case 1 -> new LibraryFragment().setupWithMainActivity(MainActivity.this, 1);
 				case 2 -> new MangaFragment().setupWithMainActivity(MainActivity.this, 2);
 				default -> throw new IllegalArgumentException("Invalid page position! " + position);
-			};
+			};*/
 		}
 
 		@Override
 		public int getItemCount() {
-			return 3;
+			return tabs.size();
 		}
 	}
 }

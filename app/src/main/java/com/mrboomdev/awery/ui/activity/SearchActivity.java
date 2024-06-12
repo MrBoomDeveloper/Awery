@@ -60,7 +60,7 @@ public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
 	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-	private final CatalogFilter pageFilter = new CatalogFilter(CatalogFilter.Type.NUMBER, "page");
+	private final CatalogFilter pageFilter = new CatalogFilter(CatalogFilter.Type.INTEGER, "page");
 	private final List<CatalogFilter> filters = List.of(queryFilter, pageFilter);
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();

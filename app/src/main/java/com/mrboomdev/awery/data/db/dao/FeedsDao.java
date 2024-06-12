@@ -5,7 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.mrboomdev.awery.data.db.item.DBFeed;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import java.util.List;
 public interface FeedsDao {
 
 	@Query("SELECT * FROM feed WHERE tab = :tabId")
-	List<DBFeed> getAllFromTab(String tabId);
+	List<CatalogFeed> getAllFromTab(String tabId);
 
 	@Insert
-	void insert(DBFeed feed);
+	void insert(CatalogFeed feed);
 
 	@Delete
-	void delete(DBFeed feed);
+	void delete(CatalogFeed feed);
 }

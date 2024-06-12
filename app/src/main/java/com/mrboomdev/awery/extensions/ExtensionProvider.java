@@ -5,8 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.extensions.data.CatalogCategory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
@@ -50,6 +50,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 * It's more not a feature. Just a mark that this provider is nsfw
 	 */
 	public static final int FEATURE_NSFW = 14;
+	public static final int FEATURE_FEEDS = 15;
 	private final ExtensionsManager manager;
 	private final Extension extension;
 
@@ -183,7 +184,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return "en";
 	}
 
-	public void getFeedsList(@NonNull ResponseCallback<Map<String, CatalogCategory>> callback) {
+	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
 		callback.onFailure(new UnimplementedException("Categories aren't implemented!"));
 	}
 

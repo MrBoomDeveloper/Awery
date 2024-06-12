@@ -656,25 +656,7 @@ public class JsProvider extends ExtensionProvider {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
 					var jsFilters = this.context.newArray(scope, stream(filters)
-							.map(filter -> {
-								var obj = this.context.newObject(scope);
-								obj.put("id", obj, filter.getId());
-
-								obj.put("value", obj, switch(filter.getType()) {
-									case STRING -> filter.getStringValue();
-									case NUMBER, INTEGER -> filter.getNumberValue();
-									case TOGGLE -> filter.getToggleValue();
-									case DATE -> filter.getDateValue().getTimeInMillis();
-
-									case DISABLEABLE -> switch(filter.getDisablableValue()) {
-										case CHECKED -> "checked";
-										case UNCHECKED -> "unchecked";
-										case DISABLED -> "disabled";
-									};
-								});
-
-								return obj;
-							})
+							.map(filter -> new JsFilter(filter).toScriptable(this.context, fun))
 							.toArray());
 
 					fun.call(this.context, scope, null, new Object[] { jsFilters, (Callback<NativeObject>) (o, e) -> {

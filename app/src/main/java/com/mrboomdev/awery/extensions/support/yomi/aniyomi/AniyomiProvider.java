@@ -15,6 +15,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -22,6 +23,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
@@ -31,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
+import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
@@ -40,12 +43,20 @@ import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends YomiProvider {
-	protected final AnimeCatalogueSource source;
+	private static final String FEED_LATEST = "latest";
+	private static final String FEED_POPULAR = "popular";
+	protected final AnimeSource source;
 	private final List<Integer> features = new ArrayList<>();
 	private final boolean isFromSource;
 
-	public AniyomiProvider(YomiManager manager, Extension extension, AnimeCatalogueSource source) {
+	public AniyomiProvider(YomiManager manager, Extension extension, AnimeSource source) {
+		this(manager, extension, source, false);
+	}
+
+	public AniyomiProvider(YomiManager manager, Extension extension, AnimeSource source, boolean isFromSource) {
 		super(manager, extension);
+		this.source = source;
+		this.isFromSource = isFromSource;
 
 		this.features.addAll(manager.getBaseFeatures());
 
@@ -53,21 +64,9 @@ public class AniyomiProvider extends YomiProvider {
 			this.features.add(FEATURE_NSFW);
 		}
 
-		this.source = source;
-		this.isFromSource = false;
-	}
-
-	public AniyomiProvider(YomiManager manager, Extension extension, AnimeCatalogueSource source, boolean isFromSource) {
-		super(manager, extension);
-
-		this.features.addAll(manager.getBaseFeatures());
-
-		this.source = source;
-		this.isFromSource = isFromSource;
-	}
-
-	public boolean isFromSourceFactory() {
-		return isFromSource;
+		if(source instanceof AnimeCatalogueSource) {
+			this.features.add(FEATURE_FEEDS);
+		}
 	}
 
 	@Override
@@ -193,29 +192,81 @@ public class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
+	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
+		if(source instanceof AnimeCatalogueSource catalogueSource) {
+			var feeds = new ArrayList<CatalogFeed>();
+
+			if(catalogueSource.getSupportsLatest()) {
+				feeds.add(new CatalogFeed() {{
+					this.id = getId() + "_feed_latest";
+					this.title = "Latest in " + getName();
+					this.sourceManager = AniyomiManager.TYPE_ID;
+					this.sourceId = getId();
+					this.sourceFeed = FEED_LATEST;
+					this.displayMode = DisplayMode.LIST_HORIZONTAL;
+				}});
+			}
+
+			feeds.add(new CatalogFeed() {{
+				this.id = getId() + "_feed_popular";
+				this.title = "Popular in " + getName();
+				this.sourceManager = AniyomiManager.TYPE_ID;
+				this.sourceId = getId();
+				this.sourceFeed = FEED_POPULAR;
+				this.displayMode = DisplayMode.LIST_HORIZONTAL;
+			}});
+
+			callback.onSuccess(feeds);
+		} else {
+			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+		}
+	}
+
+	@Override
 	public void searchMedia(
 			Context context,
 			List<CatalogFilter> params,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
-		if(params == null) {
-			throw new NullPointerException("params cannot be null!");
+		if(source instanceof AnimeCatalogueSource catalogueSource) {
+			if(params == null) {
+				throw new NullPointerException("params cannot be null!");
+			}
+
+			var query = findIn(filter -> filter.getId().equals("query"), params);
+			var page = findIn(filter -> filter.getId().equals("page"), params);
+			var feed = findIn(filter -> filter.getId().equals(CatalogFilter.FILTER_FEED), params);
+
+			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
+				if(!checkSearchResults(animePage, t, callback)) return;
+
+				callback.onSuccess(CatalogSearchResults.of(stream(animePage.getAnimes())
+						.map(item -> new AniyomiMedia(this, item))
+						.toList(), animePage.getHasNextPage()));
+			};
+
+			if(feed != null) {
+				switch(feed.getStringValue()) {
+					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getPopularAnime(
+							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
+
+					case FEED_POPULAR -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
+							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
+
+					default -> callback.onFailure(new IllegalArgumentException("Unknown feed! " + feed));
+				}
+
+				return;
+			}
+
+			var filter = catalogueSource.getFilterList();
+
+			new Thread(() -> AniyomiKotlinBridge.searchAnime(catalogueSource,
+					page != null ? page.getIntegerValue() : 0,
+					query.getStringValue(), filter, searchCallback)).start();
+		} else {
+			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}
-
-		var query = findIn(filter -> filter.getId().equals("query"), params);
-		var page = findIn(filter -> filter.getId().equals("page"), params);
-
-		var filter = source.getFilterList();
-
-		new Thread(() -> AniyomiKotlinBridge.searchAnime(source,
-				page != null ? page.getIntegerValue() : 0,
-				query.getStringValue(), filter, (animePage, t) -> {
-			if(!checkSearchResults(animePage, t, callback)) return;
-
-			callback.onSuccess(CatalogSearchResults.of(stream(animePage.getAnimes())
-					.map(item -> new AniyomiMedia(this, item))
-					.toList(), animePage.getHasNextPage()));
-		})).start();
 	}
 
 	@NonNull

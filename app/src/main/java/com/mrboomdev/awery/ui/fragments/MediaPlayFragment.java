@@ -75,7 +75,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
 	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
 	private final List<CatalogFilter> filters = List.of(queryFilter,
-			new CatalogFilter(CatalogFilter.Type.NUMBER, "page", 0));
+			new CatalogFilter(CatalogFilter.Type.INTEGER, "page", 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
