@@ -134,7 +134,6 @@
     <string name="subtitle_font_size">자막 크기</string>
     <string name="auto">자동</string>
     <string name="auto_play_next_episode">다음 에피소드 자동 재생</string>
-    <string name="auto_play_next_episode_info">플레이어와 상호 작용이 없는 경우 1시간 후 자동으로 비활성화됩니다.</string>
     <string name="auto_skip_fillers">자동 파기 채우기</string>
     <string name="auto_skip_fillers_info">다음 에피소드로 이동할 때 필러 에피소드를 건너뜁니다.</string>
     <string name="update_progress">진행 업데이트</string>
