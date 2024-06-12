@@ -303,7 +303,6 @@
     <string name="watched_num">"Vu "</string>
     <string name="read_num">"Lu "</string>
     <string name="episodes_out_of">" sur "</string>
-    <string name="episodes_total_of">"Total de "</string>
     <string name="no_description_available">Aucune description disponible</string>
     <string name="selected">Sélectionné</string>
     <string name="found">Trouvé</string>
