@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">Taille des sous-titres</string>
     <string name="auto">Automatique</string>
     <string name="auto_play_next_episode">Lire automatiquement l\'épisode suivant</string>
-    <string name="auto_play_next_episode_info">Se désactive automatiquement s\'il n\'y a aucune interaction avec le lecteur après 1 heure.</string>
     <string name="auto_skip_fillers">Sauter automatiquement les fillers</string>
     <string name="auto_skip_fillers_info">Sauter les épisodes de remplissage en passant à l\'épisode suivant.</string>
     <string name="update_progress">Mettre à jour le progrès</string>
