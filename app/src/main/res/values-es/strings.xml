@@ -301,7 +301,6 @@
     <string name="watched_num">"Visto "</string>
     <string name="read_num">"Leído "</string>
     <string name="episodes_out_of">" de "</string>
-    <string name="episodes_total_of">"Total de "</string>
     <string name="no_description_available">No hay descripción disponible</string>
     <string name="selected">Seleccionado</string>
     <string name="found">Encontrado</string>
