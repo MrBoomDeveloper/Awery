@@ -13,12 +13,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 
 public class AniyomiManager extends YomiManager {
-	protected static final String TYPE_ID = "ANIYOMI_KOTLIN";
+	public static final String MANAGER_ID = "ANIYOMI_KOTLIN";
 	private static final List<Integer> BASE_FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
 
 	@Override
@@ -28,7 +27,7 @@ public class AniyomiManager extends YomiManager {
 
 	@Override
 	public String getId() {
-		return TYPE_ID;
+		return MANAGER_ID;
 	}
 
 	@Override

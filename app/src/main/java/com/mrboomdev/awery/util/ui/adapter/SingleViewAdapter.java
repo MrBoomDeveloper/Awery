@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;

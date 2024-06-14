@@ -14,6 +14,7 @@ import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiProvider;
 import com.mrboomdev.awery.util.NiceUtils;
 
 import java.util.Collection;
@@ -68,6 +69,14 @@ public class ExtensionsFactory {
 		return (T) stream(managers)
 				.filter(manager -> manager.getClass() == clazz)
 				.findFirst().orElseThrow();
+	}
+
+	public static ExtensionsManager getManager(@NonNull String name) {
+		return getManager((Class<? extends ExtensionsManager>) switch(name) {
+			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
+			case JsManager.MANAGER_ID -> JsManager.class;
+			default -> throw new IllegalArgumentException("Extensions manager \"" + name + " \" was not found!");
+		});
 	}
 
 	@Nullable

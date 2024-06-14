@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.viewbinding.ViewBinding;
 
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -59,6 +60,14 @@ public class EmptyView implements ViewBinding {
 
 	public void setInfo(String title, String message) {
 		setInfo(title, message, null, null);
+	}
+
+	public void setInfo(@StringRes int title, @StringRes int message) {
+		setInfo(getContext().getString(title), getContext().getString(message));
+	}
+
+	public Context getContext() {
+		return binding.getRoot().getContext();
 	}
 
 	public void startLoading() {

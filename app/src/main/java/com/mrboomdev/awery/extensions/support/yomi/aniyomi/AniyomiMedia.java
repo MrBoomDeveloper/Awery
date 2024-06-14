@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
-import com.mrboomdev.awery.util.NiceUtils;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
@@ -18,7 +17,7 @@ public class AniyomiMedia extends CatalogMedia {
 	private final SAnime anime;
 
 	public AniyomiMedia(@NonNull AniyomiProvider provider, @NonNull SAnime anime) {
-		super(AniyomiManager.TYPE_ID + ";;;"
+		super(AniyomiManager.MANAGER_ID + ";;;"
 				+ provider.getId() + ";;;"
 				+ anime.getUrl());
 

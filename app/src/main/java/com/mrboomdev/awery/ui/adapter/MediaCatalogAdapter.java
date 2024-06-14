@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.util.MediaUtils.launchMediaActivity;
+import static com.mrboomdev.awery.util.MediaUtils.openMediaActionsMenu;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
@@ -19,6 +22,7 @@ import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -68,7 +72,6 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		}
 
 		this.items = items;
-
 		notifyDataSetChanged();
 	}
 
@@ -78,20 +81,20 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
 
-		if(!ViewUtil.setRightMargin(binding.getRoot(), dpPx(12))) {
+		if(!setRightMargin(binding.getRoot(), dpPx(12))) {
 			throw new IllegalStateException("Failed to set right margin!");
 		}
 
 		var viewHolder = new ViewHolder(binding);
 
 		binding.getRoot().setOnClickListener(view ->
-				MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem()));
+				launchMediaActivity(parent.getContext(), viewHolder.getItem()));
 
 		binding.getRoot().setOnLongClickListener(view -> {
 			var media = viewHolder.getItem();
 			var index = items.indexOf(media);
 
-			MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
+			openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
 				if(!isFiltered) return;
 
 				items.remove(media);
@@ -110,11 +113,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	@Override
 	public int getItemCount() {
-		if(items == null) {
-			return 0;
-		}
-
-		return items.size();
+		return items != null ? items.size() : 0;
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder {

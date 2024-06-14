@@ -11,20 +11,20 @@
 					{
 						"title": "Current Season",
 						"source_manager": "INTERNAL",
-						"source_id": "FEATURED",
-						"source_feed": "SEASON",
+						"source_id": "TEMPLATE",
+						"source_feed": "FEATURED",
 						"display_mode": "SLIDES"
 					}, {
-						"title": "Continue Watching",
+						"title": "Continue where you stopped",
 						"source_manager": "INTERNAL",
-						"source_id": "BOOKMARKS",
-						"source_feed": "CONTINUE_WATCHING",
+						"source_id": "TEMPLATE",
+						"source_feed": "CONTINUE",
 						"display_mode": "LIST_HORIZONTAL"
 					}, {
 						"title": "Auto-Generated feeds",
 						"source_manager": "INTERNAL",
-						"source_id": "AUTO_GENERATE",
-						"source_feed": "ALL",
+						"source_id": "TEMPLATE",
+						"source_feed": "AUTO_GENERATE",
 						"display_mode": "LIST_HORIZONTAL"
 					}
 				]
@@ -36,8 +36,8 @@
 					{
 						"title": "Bookmarks",
 						"source_manager": "INTERNAL",
-						"source_id": "BOOKMARKS",
-						"source_feed": "ALL",
+						"source_id": "TEMPLATE",
+						"source_feed": "BOOKMARKS",
 						"display_mode": "LIST_HORIZONTAL"
 					}
 				]
@@ -55,19 +55,19 @@
 					{
 						"title": "Current Season",
 						"source_manager": "INTERNAL",
-						"source_id": "FEATURED",
-						"source_feed": "SEASON",
+						"source_id": "AWERY_JS",
+						"source_feed": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "SLIDES"
 					}, {
 						"title": "Recently Updates",
-						"source_manager": "INTERNAL",
-						"source_id": "FEATURED",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"source_feed": "RECENT_UPDATES",
 						"display_mode": "LIST_HORIZONTAL"
 					}, {
 						"title": "Trending Movies",
-						"source_manager": "INTERNAL",
-						"source_id": "FEATURED",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"source_feed": "TRENDING_MOVIES",
 						"display_mode": "LIST_HORIZONTAL"
 					}
@@ -80,8 +80,8 @@
 					{
 						"title": "Bookmarks",
 						"source_manager": "INTERNAL",
-						"source_id": "BOOKMARKS",
-						"source_feed": "ALL",
+						"source_id": "TEMPLATE",
+						"source_feed": "BOOKMARKS",
 						"display_mode": "LIST_HORIZONTAL"
 					}
 				]

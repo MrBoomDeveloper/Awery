@@ -13,7 +13,6 @@ import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
@@ -200,7 +199,7 @@ public class AniyomiProvider extends YomiProvider {
 				feeds.add(new CatalogFeed() {{
 					this.id = getId() + "_feed_latest";
 					this.title = "Latest in " + getName();
-					this.sourceManager = AniyomiManager.TYPE_ID;
+					this.sourceManager = AniyomiManager.MANAGER_ID;
 					this.sourceId = getId();
 					this.sourceFeed = FEED_LATEST;
 					this.displayMode = DisplayMode.LIST_HORIZONTAL;
@@ -210,7 +209,7 @@ public class AniyomiProvider extends YomiProvider {
 			feeds.add(new CatalogFeed() {{
 				this.id = getId() + "_feed_popular";
 				this.title = "Popular in " + getName();
-				this.sourceManager = AniyomiManager.TYPE_ID;
+				this.sourceManager = AniyomiManager.MANAGER_ID;
 				this.sourceId = getId();
 				this.sourceFeed = FEED_POPULAR;
 				this.displayMode = DisplayMode.LIST_HORIZONTAL;
@@ -247,10 +246,10 @@ public class AniyomiProvider extends YomiProvider {
 
 			if(feed != null) {
 				switch(feed.getStringValue()) {
-					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getPopularAnime(
+					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
 							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
 
-					case FEED_POPULAR -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
+					case FEED_POPULAR -> new Thread(() -> AniyomiKotlinBridge.getPopularAnime(
 							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
 
 					default -> callback.onFailure(new IllegalArgumentException("Unknown feed! " + feed));

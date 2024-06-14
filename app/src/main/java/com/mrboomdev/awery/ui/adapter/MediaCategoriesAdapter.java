@@ -1,10 +1,14 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -12,14 +16,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.WeakHashMap;
 
 public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategoriesAdapter.ViewHolder> {
 	private static final RecyclerView.RecycledViewPool itemsPool = new RecyclerView.RecycledViewPool();
+	private final WeakHashMap<Category, Long> ids = new WeakHashMap<>();
+	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private List<Category> categories = new ArrayList<>();
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -29,13 +40,33 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 	@Override
 	public long getItemId(int position) {
-		return categories.get(position).id;
+		return Objects.requireNonNull(ids.get(categories.get(position)));
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setCategories(List<Category> categories) {
-		this.categories = categories;
+	public void setCategories(@NonNull List<Category> categories) {
+		this.categories.clear();
+		this.categories.addAll(categories);
+		this.idGenerator.clear();
+
+		for(var category : categories) {
+			ids.put(category, idGenerator.getLong());
+		}
+
 		notifyDataSetChanged();
+	}
+
+	public void addCategory(Category category) {
+		this.categories.add(category);
+		this.ids.put(category, idGenerator.getLong());
+		notifyItemInserted(categories.size() - 1);
+	}
+
+	public void removeCategory(Category category) {
+		var wasIndex = this.categories.indexOf(category);
+		this.categories.remove(category);
+		this.ids.remove(category);
+		notifyItemRemoved(wasIndex);
 	}
 
 	@NonNull
@@ -47,15 +78,19 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		var adapter = new MediaCatalogAdapter();
 
 		binding.mediaCatalogCategoryItems.setRecycledViewPool(itemsPool);
-		binding.mediaCatalogCategoryItems.setHasFixedSize(true);
 		binding.mediaCatalogCategoryItems.setAdapter(adapter);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, insets -> {
+		setOnApplyUiInsetsListener(binding.mediaCatalogCategoryTitle, insets -> {
 			setHorizontalPadding(binding.mediaCatalogCategoryTitle, insets.left + dpPx(16));
 			return true;
 		}, parent);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, insets -> {
+		setOnApplyUiInsetsListener(binding.expand, insets -> {
+			setRightMargin(binding.expand, insets.right + dpPx(10));
+			return true;
+		}, parent);
+
+		setOnApplyUiInsetsListener(binding.mediaCatalogCategoryItems, insets -> {
 			setHorizontalPadding(binding.mediaCatalogCategoryItems, insets.left + dpPx(16));
 			return true;
 		}, parent);
@@ -89,10 +124,6 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			this.binding = binding;
 		}
 
-		public Category getCategory() {
-			return associatedCategory;
-		}
-
 		public void setAdapter(MediaCatalogAdapter adapter) {
 			this.adapter = adapter;
 		}
@@ -103,6 +134,16 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 			this.associatedCategory = category;
 			category.setAssociatedViewHolder(this);
+
+			if(category.items instanceof CatalogSearchResults<?> searchResults && searchResults.hasNextPage()) {
+				binding.expand.setVisibility(View.VISIBLE);
+
+				binding.expand.setOnClickListener(v -> {
+					toast("Sorry, but this screen isn't done yet!");
+				});
+			} else {
+				binding.expand.setVisibility(View.GONE);
+			}
 		}
 
 		public void unbind() {
@@ -115,16 +156,10 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		private List<? extends CatalogMedia> items;
 		public final String title;
 		public long id;
+		private List<? extends CatalogMedia> items;
 		private ViewHolder associatedViewHolder;
-
-		private void createListIfNecessary() {
-			if(items == null) {
-				items = new ArrayList<>();
-			}
-		}
 
 		@SuppressLint("NotifyDataSetChanged")
 		public void setItems(Collection<? extends CatalogMedia> items) {
@@ -135,7 +170,10 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			}
 
 			if(associatedViewHolder != null) {
-				createListIfNecessary();
+				if(items == null) {
+					this.items = Collections.emptyList();
+				}
+
 				associatedViewHolder.bind(this);
 			}
 		}
@@ -147,10 +185,6 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		public Category(String title, Collection<? extends CatalogMedia> items) {
 			this.title = title;
 			setItems(items);
-		}
-
-		public Category(String title) {
-			this(title, null);
 		}
 	}
 }
