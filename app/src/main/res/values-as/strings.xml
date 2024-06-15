@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">সাবটাইটেলৰ আকাৰ</string>
     <string name="auto">অট\'মেটিক</string>
     <string name="auto_play_next_episode">পৰৱৰ্তী এপিস\'ড অট\'মেটিক প্ৰচাৰ কৰক</string>
-    <string name="auto_play_next_episode_info">যদি প্ৰচাৰকাৰীলৈ এক ঘণ্টাৰ পাছত কোনো আপাতত সম্পৰ্ক নহয় তেওঁলোৱা নিষ্ক্ৰিয় কৰা হ\'ব।</string>
     <string name="auto_skip_fillers">অট\'মেটিক ফিলাৰসমূহ অগ্ৰসৰণ কৰক</string>
     <string name="auto_skip_fillers_info">পৰবন্ধৰ উল্লেখকাৰীলৈ প্ৰচাৰ কৰিবলৈ অট\'মেটিকভাৱে ফিলাৰ এপিস\'ডসমূহ অগ্ৰসৰণ কৰে।</string>
     <string name="update_progress">প্ৰগ্ৰেছ আপডেট কৰক</string>
@@ -154,7 +153,6 @@
     <string name="seek_time_info">দ্বিগুণ ট্রান্সপার &amp; পূনৰাবৃত্তিৰ বাবে সেকেণ্ডত সময়ৰ পরিমাণ।</string>
     <string name="skip_time">স্কিপ সময়</string>
     <string name="show_cast_button">কাষ্ট বুটাম প্ৰদৰ্শন কৰক</string>
-    <string name="show_cast_button_info">কাষ্ট কৰিবলৈ \"ওৱেব ভিডিঅ\' কাষ্টাৰ\" এপ্লিকেশ্বন প্ৰযোজ্য।</string>
     <string name="picture_in_picture">ছবি ভিতৰত ছবি</string>
     <string name="always_minimize">সদাই সৰহা কৰা</string>
     <string name="always_minimize_info">পি.আই.পি সক্ৰিয় কৰিবলৈ আৱশ্যক, খন্ Youtube প্ৰদাৰ সম্পৰ্কত প্লেয়াৰক পোহৰ সমৰ্থন কৰে বা বেটা।
@@ -302,10 +300,6 @@
     <string name="no_chapter">কোনো অধ্যায় নাই</string>
     <string name="available">উপলব্ধ</string>
     <string name="lets_go">চলো যাই</string>
-    <string name="watched_num">"চাওক "</string>
-    <string name="read_num">"পড়া "</string>
-    <string name="episodes_out_of">" মুক্তি প্ৰদান কৰা পৰ্বেৰ পৰা "</string>
-    <string name="episodes_total_of">"মুক্তি প্ৰদান কৰা মুঠ পৰ্বেৰ পৰা "</string>
     <string name="no_description_available">বিৱৰণ উপলব্ধ নাই</string>
     <string name="selected">বাছনি কৰা হ\'ল</string>
     <string name="found">পোৱা হ\'ল</string>

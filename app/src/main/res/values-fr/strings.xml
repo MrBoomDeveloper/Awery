@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">Taille des sous-titres</string>
     <string name="auto">Automatique</string>
     <string name="auto_play_next_episode">Lire automatiquement l\'épisode suivant</string>
-    <string name="auto_play_next_episode_info">Se désactive automatiquement s\'il n\'y a aucune interaction avec le lecteur après 1 heure.</string>
     <string name="auto_skip_fillers">Sauter automatiquement les fillers</string>
     <string name="auto_skip_fillers_info">Sauter les épisodes de remplissage en passant à l\'épisode suivant.</string>
     <string name="update_progress">Mettre à jour le progrès</string>
@@ -154,7 +153,6 @@
     <string name="seek_time_info">Quantité de temps en secondes pour l\'avance rapide et le retour rapide.</string>
     <string name="skip_time">Temps de saut</string>
     <string name="show_cast_button">Afficher le bouton Cast</string>
-    <string name="show_cast_button_info">Nécessite l\'application Web Video Caster pour caster.</string>
     <string name="picture_in_picture">Image dans l\'image</string>
     <string name="always_minimize">Minimiser toujours</string>
     <string name="always_minimize_info">Nécessite que PiP soit activé, fait fonctionner le lecteur comme le lecteur Youtube mais mieux.
@@ -302,10 +300,6 @@
     <string name="no_chapter">Pas de chapitre</string>
     <string name="available">Disponible</string>
     <string name="lets_go">Allons-y</string>
-    <string name="watched_num">"Vu "</string>
-    <string name="read_num">"Lu "</string>
-    <string name="episodes_out_of">" sur "</string>
-    <string name="episodes_total_of">"Total de "</string>
     <string name="no_description_available">Aucune description disponible</string>
     <string name="selected">Sélectionné</string>
     <string name="found">Trouvé</string>

@@ -133,7 +133,6 @@
     <string name="subtitle_font_size">字幕大小</string>
     <string name="auto">自动</string>
     <string name="auto_play_next_episode">自动播放下一集</string>
-    <string name="auto_play_next_episode_info">如果与播放器没有交互，则自动在1小时后禁用。</string>
     <string name="auto_skip_fillers">自动跳过填充</string>
     <string name="auto_skip_fillers_info">在转到下一集时跳过填充剧集。</string>
     <string name="update_progress">更新进度</string>
@@ -154,7 +153,6 @@
     <string name="seek_time_info">快进和倒带的时间量（以秒为单位）。</string>
     <string name="skip_time">跳过时间</string>
     <string name="show_cast_button">显示投射按钮</string>
-    <string name="show_cast_button_info">需要“Web Video Caster”应用来投射。</string>
     <string name="picture_in_picture">画中画</string>
     <string name="always_minimize">始终最小化</string>
     <string name="always_minimize_info">需要启用 PiP，使播放器的行为类似于 Youtube 播放器但更好。
@@ -302,10 +300,6 @@
     <string name="no_chapter">没有章节</string>
     <string name="available">可用</string>
     <string name="lets_go">让我们开始</string>
-    <string name="watched_num">“观看了”</string>
-    <string name="read_num">“阅读了”</string>
-    <string name="episodes_out_of">“其中的”</string>
-    <string name="episodes_total_of">“总共”</string>
     <string name="no_description_available">“无可用描述”</string>
     <string name="selected">已选择</string>
     <string name="found">已找到</string>

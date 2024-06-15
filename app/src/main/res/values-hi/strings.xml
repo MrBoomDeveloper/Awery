@@ -134,7 +134,6 @@
     <string name="subtitle_font_size">सबटाइटल आकार</string>
     <string name="auto">स्वचालित</string>
     <string name="auto_play_next_episode">अगला एपिसोड स्वचालित चलाएं</string>
-    <string name="auto_play_next_episode_info">अगर प्लेयर के साथ कोई संवाद नहीं होता है तो यह स्वचालित रूप से अक्षम हो जाता है।</string>
     <string name="auto_skip_fillers">ऑटो स्किप फिलर</string>
     <string name="auto_skip_fillers_info">अगले एपिसोड में जाते समय फिलर एपिसोड को स्किप कर देता है।</string>
     <string name="update_progress">प्रगति अपडेट करें</string>
@@ -155,7 +154,6 @@
     <string name="seek_time_info">तेज़ी से आगे और पीछे के लिए समय की मात्रा।</string>
     <string name="skip_time">समय छोड़ें</string>
     <string name="show_cast_button">कास्ट बटन दिखाएं</string>
-    <string name="show_cast_button_info">कास्ट करने के लिए वेब वीडियो कास्टर ऐप की आवश्यकता होती है।</string>
     <string name="picture_in_picture">पिक्चर इन पिक्चर</string>
     <string name="always_minimize">हमेशा न्यूनतम करें</string>
     <string name="always_minimize_info">पाइप को सक्षम करने के लिए आवश्यक है, प्लेयर को यूट्यूब प्लेयर के तरह बरताता है लेकिन बेहतर।
@@ -303,10 +301,6 @@
     <string name="no_chapter">कोई अध्याय नहीं</string>
     <string name="available">उपलब्ध</string>
     <string name="lets_go">चलो चलें</string>
-    <string name="watched_num">"देखा "</string>
-    <string name="read_num">"पढ़ा "</string>
-    <string name="episodes_out_of">"का बाहर एपिसोड "</string>
-    <string name="episodes_total_of">"के कुल "</string>
     <string name="no_description_available">कोई विवरण उपलब्ध नहीं है</string>
     <string name="selected">चयनित</string>
     <string name="found">पाया गया</string>
