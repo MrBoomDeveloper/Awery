@@ -3,7 +3,7 @@ package com.mrboomdev.awery.extensions.support.js;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 
 import androidx.annotation.NonNull;
@@ -55,7 +55,7 @@ public class JsComment extends CatalogComment {
 		if(comment instanceof JsComment jsComment) {
 			for(var prop : jsComment.customData.entrySet()) {
 				var key = prop.getKey();
-				if(isNull(key)) continue;
+				if(isNullJs(key)) continue;
 
 				o.put(prop.getKey().toString(), o, prop.getValue());
 			}

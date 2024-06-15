@@ -11,6 +11,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,7 @@ import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -53,7 +55,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class FeedsFragment extends Fragment {
 	private static final String TAG = "FeedsFragment";
 	private static final int MAX_LOADING_FEEDS_AT_TIME = 5;
-	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter();
+	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
+			failedRowsAdapter = new MediaCategoriesAdapter();
 	private final SingleViewAdapter.BindingSingleViewAdapter<EmptyView> emptyStateAdapter =
 			SingleViewAdapter.fromBindingDynamic(parent -> new EmptyView(parent, false));
 	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>(), loadingFeeds = new LinkedBlockingQueue<>();
@@ -75,37 +78,37 @@ public class FeedsFragment extends Fragment {
 
 		emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
 			binding.startLoading();
+			rowsAdapter.setCategories(Collections.emptyList());
+
+			swipeRefreshLayout.setRefreshing(false);
 			emptyStateAdapter.notifyDataSetChanged();
+
+			new Thread(() -> {
+				var processedFeeds = new ArrayList<>(CatalogFeed.processFeeds(feeds));
+				Collections.shuffle(processedFeeds);
+
+				if(processedFeeds.isEmpty()) {
+					tryToLoadNextFeed(null, currentLoadId);
+				} else if(processedFeeds.size() <= MAX_LOADING_FEEDS_AT_TIME) {
+					loadingFeeds.addAll(processedFeeds);
+				} else {
+					loadingFeeds.addAll(processedFeeds.subList(0, MAX_LOADING_FEEDS_AT_TIME));
+					pendingFeeds.addAll(processedFeeds.subList(MAX_LOADING_FEEDS_AT_TIME, processedFeeds.size()));
+				}
+
+				for(var loadingFeed : loadingFeeds) {
+					loadFeed(loadingFeed, currentLoadId);
+				}
+			}).start();
 		}, recycler));
-
-		new Thread(() -> {
-			var processedFeeds = new ArrayList<>(CatalogFeed.processFeeds(feeds));
-			Collections.shuffle(processedFeeds);
-
-			if(processedFeeds.isEmpty()) {
-				tryToLoadNextFeed(null, currentLoadId);
-			} else if(processedFeeds.size() <= MAX_LOADING_FEEDS_AT_TIME) {
-				loadingFeeds.addAll(processedFeeds);
-			} else {
-				loadingFeeds.addAll(processedFeeds.subList(0, MAX_LOADING_FEEDS_AT_TIME));
-				pendingFeeds.addAll(processedFeeds.subList(MAX_LOADING_FEEDS_AT_TIME, processedFeeds.size()));
-			}
-
-			runOnUiThread(() -> {
-				rowsAdapter.setCategories(Collections.emptyList());
-				swipeRefreshLayout.setRefreshing(false);
-			}, recycler);
-
-			for(var loadingFeed : loadingFeeds) {
-				loadFeed(loadingFeed, currentLoadId);
-			}
-		}).start();
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
+		var requiredFeatures = List.of(ExtensionProvider.FEATURE_FEEDS, ExtensionProvider.FEATURE_MEDIA_SEARCH);
+
 		var provider = stream(ExtensionsFactory.getManager(feed.sourceManager).getExtensions(Extension.FLAG_WORKING))
 				.flatMap(NiceUtils::stream)
-				.map(Extension::getProviders)
+				.map(ext -> ext.getProviders(requiredFeatures))
 				.flatMap(NiceUtils::stream)
 				.filter(extProvider -> extProvider.getId().equals(feed.sourceId))
 				.findAny().orElse(null);
@@ -128,19 +131,39 @@ public class FeedsFragment extends Fragment {
 				@Override
 				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> catalogMedia) {
 					if(currentLoadId != loadId) return;
-					tryToLoadNextFeed(feed, currentLoadId);
 
 					runOnUiThread(() -> rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(
 							feed.title, catalogMedia)), recycler);
+
+					tryToLoadNextFeed(feed, currentLoadId);
 				}
 
 				@Override
 				public void onFailure(Throwable e) {
-					Log.e(TAG, "Failed to load an field!", e);
+					Log.e(TAG, "Failed to load an feed!", e);
+
+					if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
+						runOnUiThread(() -> failedRowsAdapter.addCategory(
+								new MediaCategoriesAdapter.Category(feed.title, e)), recycler);
+					}
+
 					tryToLoadNextFeed(feed, currentLoadId);
 				}
 			});
 		} else {
+			runOnUiThread(() -> failedRowsAdapter.addCategory(
+					new MediaCategoriesAdapter.Category(feed.title, new ZeroResultsException("No provider was found!", 0) {
+						@Override
+						public String getTitle(@NonNull Context context) {
+							return "Provider not found!";
+						}
+
+						@Override
+						public String getDescription(@NonNull Context context) {
+							return "Please check your filters again. Maybe used extension was removed.";
+						}
+					})), recycler);
+
 			tryToLoadNextFeed(feed, currentLoadId);
 		}
 	}
@@ -188,7 +211,7 @@ public class FeedsFragment extends Fragment {
 
 		recycler.setAdapter(new ConcatAdapter(new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
-				rowsAdapter, emptyStateAdapter));
+				rowsAdapter, emptyStateAdapter, failedRowsAdapter));
 
 		var header = LayoutHeaderMainBinding.inflate(getLayoutInflater());
 		frame.addView(header.getRoot(), MATCH_PARENT, WRAP_CONTENT);

@@ -99,6 +99,12 @@ public class Extension implements Comparable<Extension> {
 				.toList();
 	}
 
+	public Collection<ExtensionProvider> getProviders(List<Integer> features) {
+		return stream(getProviders())
+				.filter(provider -> provider.hasFeatures(features))
+				.toList();
+	}
+
 	public String getId() {
 		return id;
 	}

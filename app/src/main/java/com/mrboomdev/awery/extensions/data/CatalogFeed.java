@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.data;
 
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.os.Looper;
@@ -7,6 +8,7 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.extensions.Extension;
@@ -42,6 +44,9 @@ public class CatalogFeed implements Serializable {
 	public int index;
 	public List<CatalogFilter> filters;
 	public String tab, title;
+	@Ignore
+	@Json(name = "hide_if_empty", ignore = true)
+	public boolean hideIfEmpty;
 	@ColumnInfo(name = "source_manager")
 	@Json(name = "source_manager")
 	public String sourceManager;
@@ -86,6 +91,18 @@ public class CatalogFeed implements Serializable {
 		return switch(feed.sourceFeed) {
 			// TODO: Finish other templates
 
+			case TEMPLATE_BOOKMARKS -> stream(getDatabase().getListDao().getAll())
+					.map(list -> {
+						var result = new CatalogFeed();
+						result.sourceManager = TEMPLATING_SOURCE_MANAGER;
+						result.sourceId = TEMPLATE_BOOKMARKS;
+						result.sourceFeed = list.getId();
+						result.title = list.getName();
+						result.hideIfEmpty = true;
+						return result;
+					})
+					.toList();
+
 			case TEMPLATE_AUTO_GENERATE -> stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 					.map(Extension::getProviders)
 					.flatMap(NiceUtils::stream)
@@ -116,9 +133,6 @@ public class CatalogFeed implements Serializable {
 	}
 
 	public enum DisplayMode {
-		LIST_HORIZONTAL,
-		LIST_VERTICAL,
-		SLIDES,
-		GRID
+		LIST_HORIZONTAL, LIST_VERTICAL, SLIDES, GRID
 	}
 }

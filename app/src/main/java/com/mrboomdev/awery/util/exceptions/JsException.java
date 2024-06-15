@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.exceptions;
 
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ParserAdapter.arrayToString;
@@ -114,7 +114,7 @@ public class JsException extends RuntimeException implements LocalizedException,
 			case MESSAGE -> getErrorExtra().toString();
 
 			case OTHER -> {
-				if(isNull(getErrorExtra())) {
+				if(isNullJs(getErrorExtra())) {
 					yield "null";
 				}
 

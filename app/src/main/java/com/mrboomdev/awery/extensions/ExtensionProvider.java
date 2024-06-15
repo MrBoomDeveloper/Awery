@@ -161,6 +161,10 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getFeatures().contains(feature);
 	}
 
+	public boolean hasFeatures(Collection<Integer> features) {
+		return getFeatures().containsAll(features);
+	}
+
 	/**
 	 * @return A human-readable name of the extension
 	 * @author MrBoomDev

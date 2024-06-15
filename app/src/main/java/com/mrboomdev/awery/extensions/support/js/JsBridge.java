@@ -164,7 +164,7 @@ public class JsBridge {
 				default -> throw new IllegalArgumentException("Unsupported method: " + method);
 			});
 
-			if(isNull(options.get("form")) && isNull(options.get("body", options))) {
+			if(isNullJs(options.get("form")) && isNullJs(options.get("body", options))) {
 				switch(request.getMethod()) {
 					case PUT, PATCH, POST -> request.setBody("", MimeTypes.TEXT);
 				}
@@ -188,7 +188,7 @@ public class JsBridge {
 
 	@Nullable
 	public static <A, B> A returnIfNotNullJs(B object, Callbacks.Result1<A, B> function) {
-		return isNull(object) ? null : function.run(object);
+		return isNullJs(object) ? null : function.run(object);
 	}
 
 	public static int intFromJs(Object object) {
@@ -217,7 +217,7 @@ public class JsBridge {
 			object = o.unwrap();
 		}
 
-		if(isNull(object)) return null;
+		if(isNullJs(object)) return null;
 		return object.toString();
 	}
 
@@ -229,7 +229,7 @@ public class JsBridge {
 			object = o.unwrap();
 		}
 
-		if(isNull(object)) return null;
+		if(isNullJs(object)) return null;
 
 		return stream((NativeArray) object)
 				.map(item -> fromJs(item, clazz))
@@ -242,7 +242,7 @@ public class JsBridge {
 			object = o.unwrap();
 		}
 
-		if(isNull(object)) return null;
+		if(isNullJs(object)) return null;
 
 		if(clazz == Integer.class) return clazz.cast(((Number) object).intValue());
 		if(clazz == Float.class) return clazz.cast(((Number) object).floatValue());
@@ -255,8 +255,12 @@ public class JsBridge {
 		return clazz.cast(object);
 	}
 
-	public static boolean isNull(Object o) {
+	public static boolean isNullJs(Object o) {
 		return o == null || Undefined.isUndefined(o) || o == UniqueTag.NOT_FOUND || o == UniqueTag.NULL_VALUE;
+	}
+
+	public static <T> T notNullJs(T t) {
+		return isNullJs(t) ? null : t;
 	}
 
 	public void log(Object o) {

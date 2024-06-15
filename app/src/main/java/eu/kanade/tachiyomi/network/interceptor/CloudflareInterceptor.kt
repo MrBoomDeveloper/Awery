@@ -5,6 +5,7 @@ import android.content.Context
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
 import eu.kanade.tachiyomi.network.AndroidCookieJar
 import eu.kanade.tachiyomi.util.system.WebViewClientCompat
 import eu.kanade.tachiyomi.util.system.isOutdated
@@ -34,17 +35,20 @@ class CloudflareInterceptor(
         try {
             response.close()
             cookieManager.remove(request.url, COOKIE_NAMES, 0)
+
             val oldCookie = cookieManager.get(request.url)
                 .firstOrNull { it.name == "cf_clearance" }
+
             resolveWithWebView(request, oldCookie)
 
             return chain.proceed(request)
         }
+
         // Because OkHttp's enqueue only handles IOExceptions, wrap the exception so that
         // we don't crash the entire app
-        catch (e: CloudflareBypassException) {
-            throw IOException("Failed to bypass Cloudflare")
-        } catch (e: Exception) {
+        catch(e: CloudflareBypassException) {
+            throw BotSecurityBypassException(BotSecurityBypassException.CLOUDFLARE, "Failed to bypass Cloudflare")
+        } catch(e: Exception) {
             throw IOException(e)
         }
     }

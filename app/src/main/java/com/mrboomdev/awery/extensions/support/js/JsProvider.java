@@ -6,9 +6,10 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNull;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.notNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -33,6 +34,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -43,7 +45,6 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
@@ -102,7 +103,7 @@ public class JsProvider extends ExtensionProvider {
 		rhinoContext.evaluateString(scope, script, null, 1,null);
 
 		if(!didInit) {
-			throw new JsException("It looks like your forgot to call the \"setManifest\"!");
+			throw new JsException("It looks like you've forgot to call the \"setManifest\"!");
 		}
 	}
 
@@ -140,6 +141,7 @@ public class JsProvider extends ExtensionProvider {
 				case "account_track" -> FEATURE_TRACK;
 
 				case "changelog" -> FEATURE_CHANGELOG;
+				case "feeds" -> FEATURE_FEEDS;
 
 				default -> 0;
 			});
@@ -345,6 +347,33 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryFeeds") instanceof Function fun) {
+				try {
+					fun.call(context, scope, null, new Object[] {
+							(Callback<NativeArray>) (o, e) -> {
+								if(e != null) {
+									callback.onFailure(new JsException(e));
+									return;
+								}
+
+								callback.onSuccess(stream(o)
+										.filter(feed -> !isNullJs(feed))
+										.map(item -> JsFeed.fromJs(this, (NativeObject) item))
+										.toList());
+							}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("\"aweryFeeds\" is not a function or isn't defined!"));
+			}
+		});
+	}
+
+	@Override
 	public void editComment(CatalogComment oldComment, CatalogComment newComment, @NonNull ResponseCallback<CatalogComment> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryEditComment") instanceof Function fun) {
@@ -467,7 +496,7 @@ public class JsProvider extends ExtensionProvider {
 						int features = 0;
 
 						for(var feature : (NativeArray) o.get("features", o)) {
-							if(JsBridge.isNull(feature)) continue;
+							if(JsBridge.isNullJs(feature)) continue;
 
 							features = features | switch(feature.toString()) {
 								case "startDate" -> CatalogTrackingOptions.FEATURE_DATE_START;
@@ -488,11 +517,11 @@ public class JsProvider extends ExtensionProvider {
 						result.progress = returnIfNotNullJs(fromJs(o.get("progress", o), Float.class), Constants::returnMe);
 						result.score = returnIfNotNullJs(fromJs(o.get("score", o), Float.class), Constants::returnMe);
 
-						if(!isNull(o.get("currentLists", o))) {
+						if(!isNullJs(o.get("currentLists", o))) {
 							result.currentLists = listFromJs(o.get("currentLists", o), String.class);
 						}
 
-						if(!isNull(o.get("lists", o))) {
+						if(!isNullJs(o.get("lists", o))) {
 							result.lists = stream(listFromJs(o.get("lists", o), NativeObject.class))
 									.map(itemObj -> new CatalogList(
 											itemObj.get("title").toString(),
@@ -500,7 +529,7 @@ public class JsProvider extends ExtensionProvider {
 									.toList();
 						}
 
-						if(!isNull(o.get("startDate", o))) {
+						if(!isNullJs(o.get("startDate", o))) {
 							var startDate = o.get("startDate");
 
 							if(startDate instanceof Number dateNumber) {
@@ -510,7 +539,7 @@ public class JsProvider extends ExtensionProvider {
 							}
 						}
 
-						if(!isNull(o.get("endDate", o))) {
+						if(!isNullJs(o.get("endDate", o))) {
 							var endDate = o.get("endDate");
 
 							if(endDate instanceof Number dateNumber) {
@@ -674,7 +703,7 @@ public class JsProvider extends ExtensionProvider {
 						var results = new ArrayList<CatalogMedia>();
 
 						for(var arrayItem : (NativeArray) o.get("items", o)) {
-							if(JsBridge.isNull(arrayItem)) continue;
+							if(JsBridge.isNullJs(arrayItem)) continue;
 							var item = (NativeObject) arrayItem;
 
 							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
@@ -698,7 +727,7 @@ public class JsProvider extends ExtensionProvider {
 								}
 							});
 
-							if(!isNull(item.get("poster", item))) {
+							if(!isNullJs(item.get("poster", item))) {
 								var poster = item.get("poster");
 
 								if(poster instanceof NativeObject posterObject) {
@@ -713,7 +742,7 @@ public class JsProvider extends ExtensionProvider {
 
 							if(item.get("tags", item) instanceof NativeArray array) {
 								result.tags = stream(array)
-										.filter(jsTag -> !JsBridge.isNull(jsTag))
+										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
 										.map(obj -> {
 											var jsTag = (NativeObject) obj;
 											var tag = new CatalogTag();
@@ -726,12 +755,12 @@ public class JsProvider extends ExtensionProvider {
 
 							if(item.get("genres", item) instanceof NativeArray array) {
 								result.genres = stream(array)
-										.filter(jsTag -> !JsBridge.isNull(jsTag))
+										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
 										.map(Object::toString)
 										.toList();
 							}
 
-							if(!JsBridge.isNull(item.get("status"))) {
+							if(!JsBridge.isNullJs(item.get("status"))) {
 								result.status = switch(item.get("status").toString().toLowerCase(Locale.ROOT)) {
 									case "cancelled" -> CatalogMedia.MediaStatus.CANCELLED;
 									case "coming_soon" -> CatalogMedia.MediaStatus.COMING_SOON;
@@ -742,7 +771,7 @@ public class JsProvider extends ExtensionProvider {
 								};
 							}
 
-							if(!JsBridge.isNull(item.get("type"))) {
+							if(!JsBridge.isNullJs(item.get("type"))) {
 								result.type = switch(item.get("type").toString().toLowerCase(Locale.ROOT)) {
 									case "movie" -> CatalogMedia.MediaType.MOVIE;
 									case "book" -> CatalogMedia.MediaType.BOOK;
@@ -755,15 +784,15 @@ public class JsProvider extends ExtensionProvider {
 							if(item.has("title", item)) {
 								var title = item.get("title");
 
-								if(!JsBridge.isNull(title)) {
+								if(!JsBridge.isNullJs(title)) {
 									result.setTitle(title.toString());
 								}
 							}
 
 							if(item.get("ids") instanceof NativeObject ids) {
 								for(var entry : ids.entrySet()) {
-									if(JsBridge.isNull(entry.getKey())) continue;
-									if(JsBridge.isNull(entry.getValue())) continue;
+									if(JsBridge.isNullJs(entry.getKey())) continue;
+									if(JsBridge.isNullJs(entry.getValue())) continue;
 
 									result.setId(entry.getKey().toString(), entry.getValue().toString());
 								}
@@ -771,7 +800,7 @@ public class JsProvider extends ExtensionProvider {
 
 							if(item.get("titles") instanceof NativeArray titles) {
 								result.setTitles(stream(titles)
-										.filter(jsTag -> !JsBridge.isNull(jsTag))
+										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
 										.map(Object::toString)
 										.toList());
 							}

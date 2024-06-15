@@ -35,6 +35,10 @@ public class ExceptionDescriptor {
 		this.throwable = unwrap(t);
 	}
 
+	public Throwable getThrowable() {
+		return throwable;
+	}
+
 	public static Throwable unwrap(Throwable t) {
 		if(t instanceof WrappedException wrappedException) {
 			return unwrap(wrappedException.getWrappedException());
@@ -68,37 +72,57 @@ public class ExceptionDescriptor {
 		return t;
 	}
 
-	public String getTitle(Context context) {
-		if(throwable instanceof LocalizedException e) {
-			return e.getTitle(context);
-		} else if(throwable instanceof UnimplementedException
-				|| throwable instanceof UnsupportedOperationException) {
-			return context.getString(R.string.not_implemented);
-		} else if(throwable instanceof SocketTimeoutException) {
-			return context.getString(R.string.timed_out);
-		} else if(throwable instanceof SocketException e) {
-			return e.getMessage();
-		} else if(throwable instanceof SSLHandshakeException) {
-			return context.getString(R.string.failed_handshake);
-		} else if(throwable instanceof HttpException e) {
-			return getHttpErrorTitle(context, e.getCode());
-		} else if(throwable instanceof GraphQLException
-				| throwable instanceof NullPointerException) {
-			return "Parser is broken!";
-		} else if(throwable instanceof UnknownHostException) {
-			return throwable.getMessage();
-		} else if(throwable instanceof InvalidSyntaxException
-				|| throwable instanceof SerializationException) {
-			return "Parser has crashed!";
-		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
-				return "Bad thing has happened...";
+	public static String print(Throwable t, Context context) {
+		var title = getTitle(t, context);
+		var message = getMessage(t, context);
+
+		if(title == null) return message;
+		if(message == null) return title;
+
+		if(Objects.equals(title, message)) {
+			return title;
 		}
 
-		if(throwable.getMessage() != null && throwable.getMessage().contains(ROOM_EXCEPTION)) {
+		return title + "\n" + message;
+	}
+
+	public static String getTitle(Throwable t, Context context) {
+		if(t instanceof LocalizedException e) {
+			return e.getTitle(context);
+		} else if(t instanceof UnimplementedException
+				|| t instanceof UnsupportedOperationException) {
+			return context.getString(R.string.not_implemented);
+		} else if(t instanceof SocketTimeoutException) {
+			return context.getString(R.string.timed_out);
+		} else if(t instanceof BotSecurityBypassException e) {
+			return "Failed to bypass " + e.getBlockerName();
+		} else if(t instanceof SocketException e) {
+			return e.getMessage();
+		} else if(t instanceof SSLHandshakeException) {
+			return context.getString(R.string.failed_handshake);
+		} else if(t instanceof HttpException e) {
+			return getHttpErrorTitle(context, e.getCode());
+		} else if(t instanceof GraphQLException
+				| t instanceof NullPointerException) {
+			return "Parser is broken!";
+		} else if(t instanceof UnknownHostException) {
+			return t.getMessage();
+		} else if(t instanceof InvalidSyntaxException
+				|| t instanceof SerializationException) {
+			return "Parser has crashed!";
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
+			return "Bad thing has happened...";
+		}
+
+		if(t.getMessage() != null && t.getMessage().contains(ROOM_EXCEPTION)) {
 			return "Database corrupted!";
 		}
 
 		return getGenericTitle(context);
+	}
+
+	public String getTitle(Context context) {
+		return getTitle(throwable, context);
 	}
 
 	public static Reason getReason(Throwable t) {
@@ -155,7 +179,7 @@ public class ExceptionDescriptor {
 
 	@NonNull
 	@Contract(pure = true)
-	private String getGenericTitle(@NonNull Context context) {
+	private static String getGenericTitle(@NonNull Context context) {
 		return context.getString(R.string.something_went_wrong);
 	}
 
@@ -168,20 +192,22 @@ public class ExceptionDescriptor {
 		return getMessage(throwable, context);
 	}
 
-	private static String getMessage(@NonNull Throwable throwable, Context context) {
-		if(throwable instanceof LocalizedException e) {
+	public static String getMessage(@NonNull Throwable t, Context context) {
+		if(t instanceof LocalizedException e) {
 			return e.getDescription(context);
-		} else if(throwable instanceof UnimplementedException) {
-			return throwable.getMessage();
-		} else if(throwable instanceof SocketTimeoutException) {
-			return "The connection timed out, please try again later.";
-		} else if(throwable instanceof SocketException || throwable instanceof SSLHandshakeException) {
+		} else if(t instanceof UnimplementedException) {
+			return t.getMessage();
+		} if(t instanceof BotSecurityBypassException) {
+			return "Try opening the website and completing their bot check.";
+		} else if(t instanceof SocketTimeoutException) {
+			return context.getString(R.string.connection_timeout);
+		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
-		} else if(throwable instanceof HttpException e) {
+		} else if(t instanceof HttpException e) {
 			return getHttpErrorMessage(context, e.getCode());
-		} else if(throwable instanceof UnknownHostException e) {
+		} else if(t instanceof UnknownHostException e) {
 			return e.getMessage();
-		} else if(throwable instanceof GraphQLException e) {
+		} else if(t instanceof GraphQLException e) {
 			var errors = e.getGraphQLErrors();
 			var builder = new StringBuilder();
 
@@ -196,27 +222,27 @@ public class ExceptionDescriptor {
 			}
 
 			return builder.toString();
-		} if(throwable instanceof SerializationException ||
-				throwable instanceof InvalidSyntaxException) {
-			return "An error has occurred while parsing the response. " + throwable.getMessage();
-		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && throwable instanceof Violation) {
-			if(throwable instanceof InstanceCountViolation) {
-				return "Too much instances of the object was created. " + throwable.getMessage();
-			} else if(throwable instanceof NetworkViolation) {
+		} if(t instanceof SerializationException ||
+				t instanceof InvalidSyntaxException) {
+			return "An error has occurred while parsing the response. " + t.getMessage();
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
+			if(t instanceof InstanceCountViolation) {
+				return "Too much instances of the object was created. " + t.getMessage();
+			} else if(t instanceof NetworkViolation) {
 				return "You can't run network requests at the ui thread!";
 			}
 
-			return getGenericMessage(throwable);
+			return getGenericMessage(t);
 		}
 
-		if(throwable.getMessage() != null && throwable.getMessage().contains(ROOM_EXCEPTION)) {
+		if(t.getMessage() != null && t.getMessage().contains(ROOM_EXCEPTION)) {
 			return "Yeah, you've hear right. The database has been corrupted!" +
 					"\nHow can you fix it? Clear app data." +
 					"\n\nPlease, do not use alpha versions to keep your library. Use them only to test new things." +
-					"\n\n" + getGenericMessage(throwable);
+					"\n\n" + getGenericMessage(t);
 		}
 
-		return getGenericMessage(throwable);
+		return getGenericMessage(t);
 	}
 
 	private static String getHttpErrorTitle(Context context, int code) {
@@ -242,7 +268,7 @@ public class ExceptionDescriptor {
 			case 500 -> "Error 500. An internal server error has occurred, please try again later.";
 			case 503 -> "Error 503. The server is currently unavailable, please try again later.";
 			case 504 -> "Error 504. The connection timed out, please try again later.";
-			default -> "Error " + code + ". An unknown error has occurred, please try again later.";
+			default -> "(" + code + ") " + context.getString(R.string.unknown_error);
 		};
 	}
 

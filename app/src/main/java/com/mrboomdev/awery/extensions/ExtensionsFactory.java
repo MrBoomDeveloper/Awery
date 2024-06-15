@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
+import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
@@ -30,7 +31,8 @@ public class ExtensionsFactory {
 			//new TachiyomiManager(), // We doesn't support manga reading at the moment so we can just disable it for now
 			//new CloudstreamManager(),
 			//new MiruManager(),
-			new JsManager());
+			new JsManager(),
+			new InternalManager());
 
 	public static void init(@NonNull Application context) {
 		YomiHelper.init(context);
@@ -75,7 +77,8 @@ public class ExtensionsFactory {
 		return getManager((Class<? extends ExtensionsManager>) switch(name) {
 			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
 			case JsManager.MANAGER_ID -> JsManager.class;
-			default -> throw new IllegalArgumentException("Extensions manager \"" + name + " \" was not found!");
+			case InternalManager.MANAGER_ID -> InternalManager.class;
+			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
 		});
 	}
 
