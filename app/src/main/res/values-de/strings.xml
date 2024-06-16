@@ -345,4 +345,12 @@
     <string name="purple">Lila</string>
     <string name="blue">Blau</string>
     <string name="color_palette">Farbpalette</string>
+    <string name="amoled_theme_description">Ich bin dunkler als die Nacht!</string>
+    <string name="nsfw_setting_description">Inhalte für Erwachsene in der App anzeigen</string>
+    <string name="gesture_mode">Gestenmodus</string>
+    <string name="volume_and_brightness">Lautstärke und Helligkeit</string>
+    <string name="disabled">Deaktiviert</string>
+    <string name="monochrome">Monochrom</string>
+    <string name="app_language">App-Sprache</string>
+    <string name="dark_theme_description">Ich bin Batman!</string>
 </resources>
