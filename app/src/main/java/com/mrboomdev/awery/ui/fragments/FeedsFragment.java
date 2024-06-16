@@ -1,13 +1,15 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 
 import android.annotation.SuppressLint;
@@ -29,6 +31,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -43,7 +47,6 @@ import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
@@ -104,7 +107,7 @@ public class FeedsFragment extends Fragment {
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
-		var requiredFeatures = List.of(ExtensionProvider.FEATURE_FEEDS, ExtensionProvider.FEATURE_MEDIA_SEARCH);
+		var requiredFeatures = List.of(ExtensionProvider.FEATURE_MEDIA_SEARCH);
 
 		var provider = stream(ExtensionsFactory.getManager(feed.sourceManager).getExtensions(Extension.FLAG_WORKING))
 				.flatMap(NiceUtils::stream)
@@ -118,8 +121,8 @@ public class FeedsFragment extends Fragment {
 			if(context == null) return;
 
 			var filters = List.of(
-					new CatalogFilter(CatalogFilter.Type.INTEGER, "page", 0),
-					new CatalogFilter(CatalogFilter.Type.STRING, CatalogFilter.FILTER_FEED, feed.sourceFeed)
+					new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
+					new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed)
 			);
 
 			if(feed.filters != null && !feed.filters.isEmpty()) {
@@ -206,8 +209,8 @@ public class FeedsFragment extends Fragment {
 		setVerticalPadding(recycler, dpPx(100));
 		swipeRefreshLayout.addView(recycler, MATCH_PARENT, MATCH_PARENT);
 
-		recycler.setLayoutManager(new LinearLayoutManager(requireContext(),
-				LinearLayoutManager.VERTICAL, false));
+		recycler.setLayoutManager(new LinearLayoutManager(
+				requireContext(), LinearLayoutManager.VERTICAL, false));
 
 		recycler.setAdapter(new ConcatAdapter(new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
@@ -238,9 +241,9 @@ public class FeedsFragment extends Fragment {
 		setPadding(header.getRoot(), dpPx(16));
 
 		setOnApplyUiInsetsListener(header.getRoot(), insets -> {
-			ViewUtil.setTopMargin(header.getRoot(), insets.top);
-			ViewUtil.setRightMargin(header.getRoot(), insets.right);
-			ViewUtil.setLeftMargin(header.getRoot(), insets.left);
+			setTopMargin(header.getRoot(), insets.top);
+			setRightMargin(header.getRoot(), insets.right);
+			setLeftMargin(header.getRoot(), insets.left);
 			return false;
 		});
 	}

@@ -205,7 +205,7 @@ public class CrashHandler {
 						}
 
 						intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-								context, "com.mrboomdev.awery.FileProvider", newFile));
+								context, BuildConfig.FILE_PROVIDER, newFile));
 					} catch(IOException e) {
 						Log.e(TAG, "Failed to write a file!", e);
 						intent.putExtra(Intent.EXTRA_TEXT, message);

@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.util.NiceUtils.getField;
 import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -19,12 +20,15 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
@@ -36,10 +40,19 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AweryLifecycle {
+	private static final UniqueIdGenerator activityRequestCodes = new UniqueIdGenerator();
 	private static final String TAG = "AweryLifecycle";
 	private static AweryApp app;
 	private static Thread mainThread;
 	private static Handler handler;
+
+	static {
+		activityRequestCodes.getInteger();
+	}
+
+	public static int getActivityResultCode() {
+		return activityRequestCodes.getInteger();
+	}
 
 	protected static void init(AweryApp app) {
 		AweryLifecycle.app = app;
@@ -76,22 +89,52 @@ public class AweryLifecycle {
 	 * It was made just for the Android Framework to work properly!
 	 */
 	public static class CallbackFragment extends Fragment {
+		private final FragmentManager fragmentManager;
 		private final ActivityResultCallback callback;
+		private final int requestCode;
 
-		public CallbackFragment(ActivityResultCallback callback) {
+		public CallbackFragment(FragmentManager manager, ActivityResultCallback callback, int requestCode) {
+			this.fragmentManager = manager;
 			this.callback = callback;
+			this.requestCode = requestCode;
 		}
 
 		@Override
 		@SuppressWarnings("deprecation")
 		public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 			super.onActivityResult(requestCode, resultCode, data);
-			callback.run(requestCode, resultCode, data);
+
+			if(requestCode == this.requestCode) {
+				callback.run(resultCode, data);
+
+				fragmentManager.beginTransaction().remove(this).commit();
+				fragmentManager.executePendingTransactions();
+			}
 		}
 	}
 
 	public interface ActivityResultCallback {
-		void run(int requestCode, int resultCode, Intent data);
+		void run(int resultCode, Intent data);
+	}
+
+	@NonNull
+	@Contract("null, _, _ -> fail")
+	private static Fragment addActivityResultListener(
+			Activity activity,
+			int requestCode,
+			ActivityResultCallback callback
+	) {
+		if(activity instanceof FragmentActivity fragmentActivity) {
+			var fragmentManager = fragmentActivity.getSupportFragmentManager();
+			var fragment = new CallbackFragment(fragmentManager, callback, requestCode);
+
+			fragmentManager.beginTransaction().add(fragment, null).commit();
+			fragmentManager.executePendingTransactions();
+
+			return fragment;
+		} else {
+			throw new IllegalArgumentException("Activity must be an instance of FragmentActivity!");
+		}
 	}
 
 	/**
@@ -103,20 +146,36 @@ public class AweryLifecycle {
 	 * @author MrBoomDev
 	 */
 	@SuppressWarnings("deprecation")
-	public static void startActivityForResult(Context context, Intent intent, ActivityResultCallback callback) {
+	public static void startActivityForResult(
+			Context context,
+			Intent intent,
+			int requestCode,
+			ActivityResultCallback callback
+	) {
 		var activity = getActivity(context);
 
-		if(activity instanceof FragmentActivity fragmentActivity) {
-			var fragmentManager = fragmentActivity.getSupportFragmentManager();
-			var fragment = new CallbackFragment(callback);
+		var fragment = addActivityResultListener(activity, requestCode, callback);
+		fragment.startActivityForResult(intent, requestCode);
+	}
 
-			fragmentManager.beginTransaction().add(fragment, String.valueOf(intent.hashCode())).commit();
-			fragmentManager.executePendingTransactions();
+	public static void requestPermission(
+			Context context,
+			String permission,
+			int requestCode,
+			ActivityResultCallback callback
+	) {
+		requestPermissions(context, new String[] { permission }, requestCode, callback);
+	}
 
-			fragment.startActivityForResult(intent, 0);
-		} else {
-			throw new IllegalArgumentException("Activity must be an instance of FragmentActivity!");
-		}
+	public static void requestPermissions(
+			Context context,
+			String[] permissions,
+			int requestCode,
+			ActivityResultCallback callback
+	) {
+		var activity = Objects.requireNonNull(getActivity(context));
+		addActivityResultListener(activity, requestCode, callback);
+		ActivityCompat.requestPermissions(activity, permissions, requestCode);
 	}
 
 	@Nullable

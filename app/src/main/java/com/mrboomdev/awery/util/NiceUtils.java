@@ -13,6 +13,7 @@ import androidx.media3.common.MimeTypes;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
@@ -185,7 +186,18 @@ public class NiceUtils {
 	 * @return The first item in the collection that matches the query
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static <A> A findIn(@NonNull Callbacks.Result1<Boolean, A> checker, Collection<A> collection) {
+		return stream(collection)
+				.filter(checker::run)
+				.findAny().orElse(null);
+	}
+
+	public static <A> A find(A[] array, @NonNull Callbacks.Result1<Boolean, A> checker) {
+		return find(Arrays.asList(array), checker);
+	}
+
+	public static <A> A find(Collection<A> collection, @NonNull Callbacks.Result1<Boolean, A> checker) {
 		return stream(collection)
 				.filter(checker::run)
 				.findAny().orElse(null);

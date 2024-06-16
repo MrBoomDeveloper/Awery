@@ -49,7 +49,7 @@
     <application
         android:name=".app.AweryApp"
         android:allowBackup="true"
-        android:label="@string/app_name"
+        android:label="${appLabel}"
         android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
@@ -92,6 +92,18 @@
                 <data android:scheme="awery" />
                 <data android:host="mrboomdev.ru" />
                 <data android:pathPrefix="/awery/app-login" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.OPENABLE" />
+
+                <data android:mimeType="*/*" />
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.awerybck" />
             </intent-filter>
         </activity>
 
@@ -164,6 +176,11 @@
             android:exported="false" />
 
         <service
+            android:name=".app.services.BackupService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
             android:enabled="false"
             android:exported="false">
@@ -176,7 +193,7 @@
         
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.mrboomdev.awery.FileProvider"
+            android:authorities="${fileProvider}"
             android:grantUriPermissions="true"
             android:exported="false">
 

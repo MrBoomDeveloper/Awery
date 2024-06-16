@@ -12,16 +12,14 @@ import android.graphics.Bitmap;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.generated.AwerySettings;
 
-import org.jetbrains.annotations.Contract;
+import java.util.Objects;
 
 public class ThemeManager {
 
@@ -29,27 +27,26 @@ public class ThemeManager {
 		if(!AwerySettings.USE_MATERIAL_YOU.exists()) {
 			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
 
-			getPrefs()
-					.setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported)
-					.saveAsync();
-
+			getPrefs().setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported).saveAsync();
 			return isMaterialYouSupported;
 		}
 
 		return AwerySettings.USE_MATERIAL_YOU.getValue();
 	}
 
-	public static void apply(Context context) {
-		var isDarkModeEnabled = AwerySettings.USE_DARK_THEME.getValue();
+	public static void applyApp(Context context) {
+		var isDarkModeEnabled = AwerySettings.USE_DARK_THEME.getValue(null);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			((UiModeManager) context.getSystemService(UI_MODE_SERVICE))
-					.setApplicationNightMode(isDarkModeEnabled
-							? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
-		} else {
-			AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
-					? AppCompatDelegate.MODE_NIGHT_YES
-					: AppCompatDelegate.MODE_NIGHT_NO);
+		if(isDarkModeEnabled != null) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+				((UiModeManager) context.getSystemService(UI_MODE_SERVICE))
+						.setApplicationNightMode(isDarkModeEnabled
+								? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
+			} else {
+				AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
+						? AppCompatDelegate.MODE_NIGHT_YES
+						: AppCompatDelegate.MODE_NIGHT_NO);
+			}
 		}
 	}
 
@@ -63,7 +60,9 @@ public class ThemeManager {
 			return;
 		}
 
-		var savedTheme = AwerySettings.THEME_COLOR_PALETTE.getValue();
+		var savedTheme = Objects.requireNonNullElse(
+				AwerySettings.THEME_COLOR_PALETTE.getValue(),
+				AwerySettings.ThemeColorPalette_Values.RED);
 
 		// In light mode there is no amoled theme so we need to check the current night mode
 		if(useOLED && (activity.getResources().getConfiguration().uiMode

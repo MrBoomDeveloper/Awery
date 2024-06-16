@@ -66,13 +66,14 @@
 
     </com.google.android.flexbox.FlexboxLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
         android:id="@+id/recycler"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_margin="32dp"
         android:visibility="gone"
         tools:visibility="visible"
+        app:spanCount="3"
         app:layout_constraintWidth_percent=".45"
         app:layout_constraintRight_toRightOf="parent" />
 

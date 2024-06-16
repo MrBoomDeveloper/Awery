@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.TypeConverter;
 
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
@@ -135,13 +136,13 @@ public class ParserAdapter {
 	}
 
 	@TypeConverter
-	public static List<CatalogFilter> filtersListFromString(String value) {
+	public static List<SettingsItem> filtersListFromString(String value) {
 		if(value == null) {
 			return Collections.emptyList();
 		}
 
-		var adapter = new Moshi.Builder().build().<List<CatalogFilter>>
-				adapter(Types.newParameterizedType(List.class, CatalogFilter.class));
+		var adapter = new Moshi.Builder().build().<List<SettingsItem>>
+				adapter(Types.newParameterizedType(List.class, SettingsItem.class));
 
 		try {
 			return adapter.fromJson(value);
@@ -154,9 +155,9 @@ public class ParserAdapter {
 
 	@NonNull
 	@TypeConverter
-	public static String filtersListToString(List<CatalogFilter> value) {
-		var adapter = new Moshi.Builder().build().<List<CatalogFilter>>
-				adapter(Types.newParameterizedType(List.class, CatalogFilter.class));
+	public static String filtersListToString(List<SettingsItem> value) {
+		var adapter = new Moshi.Builder().build().<List<SettingsItem>>
+				adapter(Types.newParameterizedType(List.class, SettingsItem.class));
 
 		return adapter.toJson(value);
 	}

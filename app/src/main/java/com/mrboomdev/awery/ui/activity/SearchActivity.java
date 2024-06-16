@@ -30,7 +30,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
@@ -41,7 +42,6 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -59,9 +59,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
-	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-	private final CatalogFilter pageFilter = new CatalogFilter(CatalogFilter.Type.INTEGER, "page");
-	private final List<CatalogFilter> filters = List.of(queryFilter, pageFilter);
+	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
+	private final SettingsItem pageFilter = new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
+	private final List<SettingsItem> filters = List.of(queryFilter, pageFilter);
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final List<CatalogMedia> items = new ArrayList<>();
@@ -234,7 +234,7 @@ public class SearchActivity extends AppCompatActivity {
 	}
 
 	private void search(int page) {
-		if(queryFilter.getValue() == null) {
+		if(queryFilter.getStringValue() == null) {
 			queryFilter.setValue("");
 		}
 

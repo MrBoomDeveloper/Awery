@@ -5,7 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
@@ -168,7 +168,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 									var dao = getDatabase().getRepositoryDao();
 									var repos = dao.getRepositories(manager.getId());
 
-									if(findIn(item -> item.url.equals(text), repos) != null) {
+									if(find(repos, item -> item.url.equals(text)) != null) {
 										toast("Repository already exists!");
 										return;
 									}
@@ -323,7 +323,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						response.get().setParent(this);
 						return response.get();
 					}).filter(Objects::nonNull).toList())
-					.setBooleanValue(NicePreferences.getPrefs().getBoolean(
+					.setValue(NicePreferences.getPrefs().getBoolean(
 							getExtensionKey(extension) + "_enabled", true))
 					.setIcon(extension.getIcon())
 					.setIconSize(1.2f)

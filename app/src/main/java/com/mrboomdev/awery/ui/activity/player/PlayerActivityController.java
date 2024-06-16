@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
@@ -48,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerActivityController {
+	private static final int REQUEST_CODE_PICK_SUBTITLES = AweryLifecycle.getActivityResultCode();
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;
 	private final Set<String> lockedUiReasons = new HashSet<>();
 	private final PlayerActivity activity;
@@ -321,7 +323,7 @@ public class PlayerActivityController {
 				intent.setType(MimeTypes.ANY.toString());
 				var chooser = Intent.createChooser(intent, "Choose a subtitles file");
 
-				startActivityForResult(activity, chooser, (requestCode, resultCode, result) -> {
+				startActivityForResult(activity, chooser, REQUEST_CODE_PICK_SUBTITLES, (resultCode, result) -> {
 					if(resultCode != PlayerActivity.RESULT_OK) return;
 
 					var uri = Objects.requireNonNull(result.getData());

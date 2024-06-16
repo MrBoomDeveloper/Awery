@@ -25,7 +25,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.sidesheet.SideSheetDialog;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.extensions.Extension;
@@ -36,7 +39,6 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
@@ -47,7 +49,6 @@ import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
@@ -97,13 +98,14 @@ public class TrackingSheet {
 	}
 
 	private static class Controller {
-		public static final String TAG = "TrackingSheet";
+		private static final int REQUEST_CODE_PICK_MEDIA = AweryLifecycle.getActivityResultCode();
+		private static final String TAG = "TrackingSheet";
 		private final Map<String, ExtensionProvider> mappedIds = new HashMap<>();
 		private final List<ExtensionProvider> sources;
 		private Map<String, String> trackedIds;
 		private final CatalogMedia media;
-		private final List<CatalogFilter> filters;
-		private final CatalogFilter pageFilter, queryFilter;
+		private final List<SettingsItem> filters;
+		private final SettingsItem pageFilter, queryFilter;
 		private final FragmentManager fragmentManager;
 		private final Dialog dialog;
 		private final Context context;
@@ -120,8 +122,8 @@ public class TrackingSheet {
 			this.media = media;
 			this.context = dialog.getContext();
 
-			queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-			pageFilter = new CatalogFilter(CatalogFilter.Type.INTEGER, "page");
+			queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
+			pageFilter = new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
 			filters = List.of(queryFilter, pageFilter);
 
 			queryFilter.setValue(media.getTitle());
@@ -401,7 +403,7 @@ public class TrackingSheet {
 					intent.putExtra("query", queryFilter.getStringValue());
 					intent.putExtra("select", true);
 
-					startActivityForResult(context, intent, (requestCode, resultCode, result) -> {
+					startActivityForResult(context, intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
 
 						var mediaJson = result.getStringExtra("media");

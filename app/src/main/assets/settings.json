@@ -10,7 +10,7 @@
 					"description": "material_you_description",
 					"show_if": "material_you"
 				}, {
-					"key": "use_dark_theme", "type": "boolean", "restart": true, "boolean_value": true,
+					"key": "use_dark_theme", "type": "boolean", "restart": true,
 					"title": "dark_theme", "icon": "ic_dark_mode_filled",
 					"description": "dark_theme_description"
 				}, {
@@ -187,6 +187,9 @@
 			"type": "screen", "title": "storage", "icon": "ic_storage",
 			"items": [
 				{
+					"type": "category",
+					"title": "Free space"
+				}, {
 					"key": "clear_image_cache", "type": "action",
 					"title": "clear_images_cache", "description": "${VAR.IMAGE_CACHE_SIZE}"
 				}, {
@@ -195,6 +198,15 @@
 				}, {
 					"key": "clear_net_cache", "type": "action",
 					"title": "clear_network_cache", "description": "${VAR.NET_CACHE_SIZE}"
+				}, {
+					"type": "category",
+					"title": "Backup & Restore"
+				}, {
+					"key": "backup", "title": "Backup", "type": "action",
+					"description": "Your settings and local library will be saved into a single file."
+				}, {
+					"key": "restore", "title": "Restore", "type": "action",
+					"description": "Your current library and settings will be wiped out."
 				}
 			]
 		}, {

@@ -1,8 +1,12 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.util.NiceUtils.findIn;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,11 +82,8 @@ public class SetupTabsAdapters extends RecyclerView.Adapter<SetupTabsAdapters.Vi
 			this.template = template;
 			binding.title.setText(template != null ? template.title : "None");
 
-			if(template == selected) {
-				binding.getRoot().setBackgroundColor(0x55ff0000);
-			} else {
-				binding.getRoot().setBackgroundColor(0);
-			}
+			binding.getRoot().setBackgroundTintList(ColorStateList.valueOf(template != selected ? 0 :
+					resolveAttrColor(getContext(binding), com.google.android.material.R.attr.colorOnSecondary)));
 		}
 	}
 }

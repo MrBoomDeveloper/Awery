@@ -14,7 +14,7 @@ public enum SettingsItemType {
 	@Json(name = "color")
 	COLOR,
 	@Json(name = "integer")
-	INT,
+	INTEGER,
 	@Json(name = "string")
 	STRING,
 	@Json(name = "screen")

@@ -1,7 +1,8 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -12,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
@@ -30,10 +33,12 @@ import org.jetbrains.annotations.Contract;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource;
+import eu.kanade.tachiyomi.animesource.model.AnimeFilter;
 import eu.kanade.tachiyomi.animesource.model.AnimesPage;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
@@ -75,6 +80,37 @@ public class AniyomiProvider extends YomiProvider {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
+		if(source instanceof AnimeCatalogueSource catalogueSource) {
+			callback.onSuccess(stream(catalogueSource.getFilterList())
+					.map(filter -> {
+						if(filter instanceof AnimeFilter.CheckBox selectFilter) {
+							return new SettingsItem.Builder(SettingsItemType.BOOLEAN)
+									.setTitle(selectFilter.getName())
+									.setKey(selectFilter.getName())
+									.setValue(selectFilter.getState())
+									.build();
+						}
+
+						if(filter instanceof AnimeFilter.Text textFilter) {
+							return new SettingsItem.Builder(SettingsItemType.STRING)
+									.setTitle(textFilter.getName())
+									.setKey(textFilter.getName())
+									.setValue(textFilter.getState())
+									.build();
+						}
+
+						toast("Found an unknown filter! " + filter.getClass().getName(), 1);
+						return null;
+					})
+					.filter(Objects::nonNull)
+					.toList());
+		} else {
+			callback.onFailure(new UnimplementedException("Filters aren't supported!"));
+		}
 	}
 
 	@Override
@@ -224,17 +260,17 @@ public class AniyomiProvider extends YomiProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			List<CatalogFilter> params,
+			List<SettingsItem> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			if(params == null) {
+			if(filters == null) {
 				throw new NullPointerException("params cannot be null!");
 			}
 
-			var query = findIn(filter -> filter.getId().equals("query"), params);
-			var page = findIn(filter -> filter.getId().equals("page"), params);
-			var feed = findIn(filter -> filter.getId().equals(CatalogFilter.FILTER_FEED), params);
+			var query = find(filters, filter -> filter.getKey().equals(FILTER_QUERY));
+			var page = find(filters, filter -> filter.getKey().equals(FILTER_PAGE));
+			var feed = find(filters, filter -> filter.getKey().equals(FILTER_FEED));
 
 			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
 				if(!checkSearchResults(animePage, t, callback)) return;

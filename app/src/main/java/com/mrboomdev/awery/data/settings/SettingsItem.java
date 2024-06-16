@@ -19,17 +19,18 @@ import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class SettingsItem {
+public class SettingsItem implements Serializable {
 	private static final String VAR_PREFIX = "${VAR.";
 	public static final SettingsItem INVALID_SETTING = new Builder(SettingsItemType.BOOLEAN)
 			.setTitle("Invalid!")
-			.setBooleanValue(false)
+			.setValue(false)
 			.build();
 
 	private String key, title, description, icon, behaviour;
@@ -57,7 +58,7 @@ public class SettingsItem {
 	@Json(name = "string_value")
 	private String stringValue;
 	@Json(ignore = true)
-	private Drawable iconDrawable;
+	private transient Drawable iconDrawable;
 
 	public SettingsItem(@NonNull SettingsItem item) {
 		copyFrom(item);
@@ -67,6 +68,23 @@ public class SettingsItem {
 
 	public SettingsItem(SettingsItemType type) {
 		this.type = type;
+	}
+
+	public SettingsItem(SettingsItemType type, String key) {
+		this.type = type;
+		this.key = key;
+	}
+
+	public SettingsItem(SettingsItemType type, String key, int intValue) {
+		this.type = type;
+		this.key = key;
+		this.integerValue = intValue;
+	}
+
+	public SettingsItem(SettingsItemType type, String key, String stringValue) {
+		this.type = type;
+		this.key = key;
+		this.stringValue = stringValue;
 	}
 
 	protected void copyFrom(@NonNull SettingsItem item) {
@@ -90,8 +108,8 @@ public class SettingsItem {
 		this.tintIcon = item.tintIcon;
 		this.iconSize = item.iconSize;
 
-		this.title = item.title;
-		this.description = item.description;
+		this.title = item.title != null ? item.title : item.getTitle(getAnyContext());
+		this.description = item.description != null ? item.description : item.getDescription(getAnyContext());
 
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
@@ -181,7 +199,7 @@ public class SettingsItem {
 			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(),
 					canWritePrefs ? Objects.requireNonNullElse(booleanValue, false) : null);
 
-			case INT, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(),
+			case INTEGER, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(),
 					canWritePrefs ? Objects.requireNonNullElse(integerValue, 0) : null);
 
 			case SELECT, STRING -> stringValue = settings.getString(getKey(), canWritePrefs ? stringValue : null);
@@ -245,7 +263,7 @@ public class SettingsItem {
 		return integerValue;
 	}
 
-	public void setIntegerValue(int value) {
+	public void setValue(int value) {
 		integerValue = value;
 	}
 
@@ -265,11 +283,18 @@ public class SettingsItem {
 		return false;
 	}
 
-	public void setStringValue(String value) {
+	public void setValue(String value) {
 		stringValue = value;
 	}
 
-	public void setBooleanValue(boolean value) {
+	public void clearValue() {
+		stringValue = null;
+		integerValue = null;
+		booleanValue = null;
+		stringSetValue = null;
+	}
+
+	public void setValue(boolean value) {
 		booleanValue = value;
 	}
 
@@ -293,16 +318,9 @@ public class SettingsItem {
 		return items;
 	}
 
-	private SettingsItem findDirect(String key) {
-		return stream(items)
-				.filter(item -> item.getKey().equals(key))
-				.findFirst()
-				.orElse(null);
-	}
-
-	public SettingsItem find(@NonNull String query) {
+	public SettingsItem findItem(@NonNull String query) {
 		return switch(type) {
-			case BOOLEAN, INT, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT ->
+			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT ->
 					query.equals(getKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {
@@ -315,7 +333,7 @@ public class SettingsItem {
 				}
 
 				for(var item : items) {
-					var found = item.find(query);
+					var found = item.findItem(query);
 
 					if(found != null) {
 						yield found;
@@ -341,8 +359,13 @@ public class SettingsItem {
 			return this;
 		}
 
-		public Builder setBooleanValue(boolean value) {
+		public Builder setValue(boolean value) {
 			item.booleanValue = value;
+			return this;
+		}
+
+		public Builder setValue(String value) {
+			item.stringValue = value;
 			return this;
 		}
 
@@ -366,7 +389,7 @@ public class SettingsItem {
 			return this;
 		}
 
-		public Builder setStringSetValue(Set<String> values) {
+		public Builder setValue(Set<String> values) {
 			item.stringSetValue = values;
 			return this;
 		}

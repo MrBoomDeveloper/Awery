@@ -10,7 +10,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
@@ -52,6 +52,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
+	private static final int REQUEST_CODE_SETUP = AweryLifecycle.getActivityResultCode();
 	private final Map<String, IconStateful> icons;
 	private final List<SettingsItem> items = new ArrayList<>();
 	private final List<DBTab> tabs = new ArrayList<>();
@@ -187,7 +188,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 						var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
 						var templates = Parser.fromString(adapter, templatesJson);
 
-						var selected = findIn(template -> template.id.equals(savedTemplate), templates);
+						var selected = find(templates, template -> template.id.equals(savedTemplate));
 						if(selected == null) return Collections.emptyList();
 
 						return stream(selected.tabs)
@@ -222,7 +223,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_TEMPLATE);
 				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
 
-				startActivityForResult(context, intent, (requestCode, resultCode, result) -> {
+				startActivityForResult(context, intent, REQUEST_CODE_SETUP, (resultCode, result) -> {
 					if(resultCode != SetupActivity.RESULT_OK) return;
 
 					for(int i = items.size() - 1; i >= 0; i--) {

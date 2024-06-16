@@ -9,7 +9,6 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.notNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -44,7 +43,6 @@ import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
@@ -676,16 +674,41 @@ public class JsProvider extends ExtensionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
+		manager.postRunnable(() -> {
+			if(scope.get("aweryFilters") instanceof Function fun) {
+				try {
+					fun.call(this.context, scope, null, new Object[] { (Callback<NativeArray>) (o, e) -> {
+						if(e != null) {
+							callback.onFailure(new JsException(e));
+							return;
+						}
+
+						callback.onSuccess(stream(o)
+								.map(item -> JsSettingsItem.fromJs((NativeObject) item))
+								.toList());
+					}});
+				} catch(Throwable e) {
+					callback.onFailure(e);
+				}
+			} else {
+				callback.onFailure(new UnimplementedException("\"aweryFilters\" function not found!"));
+			}
+		});
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public void searchMedia(
 			android.content.Context context,
-			List<CatalogFilter> filters,
+			List<SettingsItem> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
 					var jsFilters = this.context.newArray(scope, stream(filters)
-							.map(filter -> new JsFilter(filter).toScriptable(this.context, fun))
+							.map(filter -> JsSettingsItem.toJs(filter, this.context, fun))
 							.toArray());
 
 					fun.call(this.context, scope, null, new Object[] { jsFilters, (Callback<NativeObject>) (o, e) -> {

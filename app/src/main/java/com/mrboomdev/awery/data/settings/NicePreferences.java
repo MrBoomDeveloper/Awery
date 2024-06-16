@@ -3,7 +3,6 @@ package com.mrboomdev.awery.data.settings;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * An utility class for working with shared preferences.
@@ -109,7 +107,7 @@ public class NicePreferences {
 	 * @author MrBoomDev
 	 */
 	public boolean getBoolean(String key) {
-		var found = getSettingsMap().find(key);
+		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
 			var value = found.getBooleanValue();
@@ -139,7 +137,7 @@ public class NicePreferences {
 	}
 
 	public Integer getInteger(String key) {
-		var found = getSettingsMap().find(key);
+		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
 			var value = found.getIntegerValue();
@@ -169,7 +167,7 @@ public class NicePreferences {
 	}
 
 	public String getString(String key) {
-		var found = getSettingsMap().find(key);
+		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
 			var value = found.getStringValue();
@@ -209,7 +207,7 @@ public class NicePreferences {
 	}
 
 	public <T extends Enum<T>> T getEnum(String key, Class<T> enumClass) {
-		var found = getSettingsMap().find(key);
+		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
 			var value = found.getStringValue();
@@ -336,11 +334,13 @@ public class NicePreferences {
 		return getInteger(setting.getKey(), defaultValue);
 	}
 
+	@Nullable
 	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting) {
 		var value = getString(setting.getKey());
 		return parseEnum(value, setting.getValueClass());
 	}
 
+	@Nullable
 	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting, T defaultValue) {
 		var value = getString(setting.getKey(), defaultValue != null ? defaultValue.getKey() : null);
 
@@ -373,6 +373,7 @@ public class NicePreferences {
 			this.clazz = clazz;
 		}
 
+		@Nullable
 		public T getValue() {
 			return getPrefs().getValue(this);
 		}
@@ -408,7 +409,7 @@ public class NicePreferences {
 			return getPrefs().getValue(this);
 		}
 
-		default Integer getValue(int defaultValue) {
+		default Integer getValue(Integer defaultValue) {
 			return getPrefs().getValue(this, defaultValue);
 		}
 	}
@@ -423,7 +424,7 @@ public class NicePreferences {
 			return getPrefs().getValue(this);
 		}
 
-		default Boolean getValue(boolean defaultValue) {
+		default Boolean getValue(Boolean defaultValue) {
 			return getPrefs().getValue(this, defaultValue);
 		}
 	}

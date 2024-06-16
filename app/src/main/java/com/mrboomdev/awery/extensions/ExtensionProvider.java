@@ -18,6 +18,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
+import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;
@@ -30,6 +31,9 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
+	public static final String FILTER_PAGE = "_AWERY_FILTER_PAGE_";
+	public static final String FILTER_FEED = "_AWERY_FILTER_FEED_";
+	public static final String FILTER_QUERY = "_AWERY_FILTER_QUERY_";
 	public static final int FEATURE_TAGS_SEARCH = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
@@ -87,10 +91,14 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void searchMedia(
 			Context context,
-			List<CatalogFilter> filters,
+			List<SettingsItem> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
+	}
+
+	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
+		callback.onFailure(new UnimplementedException("Filters aren't implemented!"));
 	}
 
 	/**

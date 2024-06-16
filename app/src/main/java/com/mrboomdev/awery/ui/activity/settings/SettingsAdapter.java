@@ -199,7 +199,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								}
 
 								_dialog.dismiss();
-								setting.setStringValue(inputField.getText());
+								setting.setValue(inputField.getText());
 
 								if(setting.isRestartRequired()) {
 									suggestToRestart(parent);
@@ -210,7 +210,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					inputField.setCompletionCallback(dialog::performPositiveClick);
 				}
 
-				case INT -> {
+				case INTEGER -> {
 					var inputField = new DialogEditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
@@ -247,7 +247,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									prefs.setInteger(setting.getKey(), number);
 									prefs.saveAsync();
 
-									setting.setIntegerValue(number);
+									setting.setValue(number);
 								} catch(NumberFormatException e) {
 									inputField.setError(R.string.this_not_number);
 									return;
@@ -307,10 +307,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
-										setting.setIntegerValue(integer);
+										setting.setValue(integer);
 										prefs.setInteger(setting.getKey(), integer);
 									} else {
-										setting.setStringValue(id);
+										setting.setValue(id);
 										prefs.setString(setting.getKey(), id);
 									}
 
@@ -432,7 +432,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			var item = holder.getItem();
 			if(item == null || !holder.didInit()) return;
 
-			item.setBooleanValue(isChecked);
+			item.setValue(isChecked);
 			handler.save(item, isChecked);
 			holder.updateDescription(String.valueOf(isChecked));
 
@@ -529,7 +529,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								? (Boolean) customSetting.getSavedValue()
 								: prefs.getBoolean(item.getKey()))) ? R.string.enabled : R.string.disabled);
 
-					case INT -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getKey()));
+					case INTEGER -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getKey()));
 
 					case SELECT -> {
 						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
@@ -637,11 +637,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			binding.getRoot().setMinimumHeight(dpPx(setting.getType() == SettingsItemType.CATEGORY ? 0 : 54));
 
-			if(setting.getType() == SettingsItemType.CATEGORY) {
-				setVerticalMargin(binding.getRoot(), dpPx(-16), dpPx(-12));
-			} else {
-				setVerticalMargin(binding.getRoot(), 0, dpPx(6));
-			}
+			if(setting.getType() == SettingsItemType.CATEGORY) setVerticalMargin(binding.getRoot(), dpPx(-8), dpPx(-12));
+			else setVerticalMargin(binding.getRoot(), 0, dpPx(6));
 
 			binding.getRoot().setClickable(setting.getType() != SettingsItemType.CATEGORY);
 			binding.getRoot().setFocusable(setting.getType() != SettingsItemType.CATEGORY);

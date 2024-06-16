@@ -11,6 +11,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
@@ -42,7 +43,7 @@ public class CatalogFeed implements Serializable {
 	@NonNull
 	public String id;
 	public int index;
-	public List<CatalogFilter> filters;
+	public List<SettingsItem> filters;
 	public String tab, title;
 	@Ignore
 	@Json(name = "hide_if_empty", ignore = true)

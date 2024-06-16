@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -26,10 +27,10 @@ public class InternalProviders {
 		@Override
 		public void searchMedia(
 				Context context,
-				List<CatalogFilter> filters,
+				List<SettingsItem> filters,
 				@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 		) {
-			var feed = findIn(filter -> filter.getId().equals(CatalogFilter.FILTER_FEED), filters);
+			var feed = find(filters, filter -> filter.getKey().equals(FILTER_FEED));
 
 			if(feed == null) {
 				callback.onFailure(new IllegalArgumentException("No feed filter was found!"));

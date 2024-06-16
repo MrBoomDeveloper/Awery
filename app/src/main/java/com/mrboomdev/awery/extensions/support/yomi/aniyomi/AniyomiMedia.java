@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
@@ -32,8 +33,9 @@ public class AniyomiMedia extends CatalogMedia {
 			default -> CatalogMedia.MediaStatus.UNKNOWN;
 		};
 
-		this.url = provider.source instanceof AnimeHttpSource httpSource
-				? httpSource.getBaseUrl() + "/" + anime.getUrl() : null;
+		if(provider.source instanceof AnimeHttpSource httpSource) {
+			this.url = YomiProvider.concatLink(httpSource.getBaseUrl(), anime.getUrl());
+		}
 
 		this.extra = anime.getUrl();
 		this.description = anime.getDescription();

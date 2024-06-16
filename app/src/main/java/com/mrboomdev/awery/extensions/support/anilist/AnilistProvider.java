@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions.support.anilist;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.Constants.ANILIST_EXTENSION_ID;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -117,16 +118,16 @@ public class AnilistProvider extends ExtensionProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			@Nullable List<CatalogFilter> filters,
+			@Nullable List<SettingsItem> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
-		var queryFilter = findIn(filter -> filter.getId().equals("query"), filters);
-		var pageFilter = findIn(filter -> filter.getId().equals("page"), filters);
+		var query = find(filters, filter -> filter.getKey().equals(FILTER_QUERY));
+		var page = find(filters, filter -> filter.getKey().equals(FILTER_PAGE));
 
 		new AnilistSearchQuery.Builder()
-				.setSearchQuery(queryFilter.getStringValue())
-				.setPage(pageFilter == null ? 1 : pageFilter.getIntegerValue())
-				.setIsAdult(switch(AwerySettings.ADULT_MODE.getValue()) {
+				.setSearchQuery(query.getStringValue())
+				.setPage(page == null ? 1 : page.getIntegerValue() + 1)
+				.setIsAdult(switch(AwerySettings.ADULT_MODE.getValue(AwerySettings.AdultMode_Values.DISABLED)) {
 					case ENABLED -> null;
 					case DISABLED -> false;
 					case ONLY -> true;

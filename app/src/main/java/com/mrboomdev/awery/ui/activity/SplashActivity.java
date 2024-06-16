@@ -28,11 +28,11 @@ public class SplashActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		SplashScreen.installSplashScreen(this);
-
 		try {
 			ThemeManager.apply(this);
 		} catch(Exception ignored) {}
+
+		SplashScreen.installSplashScreen(this);
 
 		super.onCreate(savedInstanceState);
 

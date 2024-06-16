@@ -37,6 +37,19 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 	protected abstract SharedPreferences getSharedPreferences();
 
+	@NonNull
+	public static String concatLink(@NonNull String domain, String other) {
+		if(domain.endsWith("/")) {
+			domain = domain.substring(0, domain.length() - 1);
+		}
+
+		if(other.startsWith("/")) {
+			other = other.substring(1);
+		}
+
+		return domain + "/" + other;
+	}
+
 	@Override
 	@SuppressLint("RestrictedApi")
 	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {

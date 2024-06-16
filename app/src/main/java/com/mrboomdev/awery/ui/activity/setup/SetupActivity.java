@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.activity.setup;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.SplashActivity;
 import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration;
 
 import java.util.List;
 import java.util.Objects;
@@ -77,7 +79,7 @@ public class SetupActivity extends AppCompatActivity {
 				binding.title.setText(R.string.select_template);
 				binding.message.setText("The content you see through the app.");
 
-				binding.recycler.setLayoutManager(new GridLayoutManager(this, 3));
+				binding.recycler.addItemDecoration(DpadGridSpacingDecoration.create(dpPx(6), dpPx(6), 0));
 				binding.recycler.setAdapter(new SetupTabsAdapters());
 				binding.recycler.setVisibility(View.VISIBLE);
 			}

@@ -34,6 +34,8 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
@@ -44,7 +46,6 @@ import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
@@ -68,14 +69,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
+	private static final int REQUEST_CODE_PICK_MEDIA = AweryLifecycle.getActivityResultCode();
 	public static final int VIEW_TYPE_VARIANTS = 1;
 	public static final int VIEW_TYPE_ERROR = 2;
 	public static final int VIEW_TYPE_EPISODE = 3;
 	private static final String TAG = "MediaPlayFragment";
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
-	private final CatalogFilter queryFilter = new CatalogFilter(CatalogFilter.Type.STRING, "query");
-	private final List<CatalogFilter> filters = List.of(queryFilter,
-			new CatalogFilter(CatalogFilter.Type.INTEGER, "page", 0));
+	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
+	private final List<SettingsItem> filters = List.of(queryFilter,
+			new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
@@ -368,7 +370,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					intent.putExtra("query", queryFilter.getStringValue());
 					intent.putExtra("select", true);
 
-					AweryLifecycle.startActivityForResult(requireContext(), intent, (requestCode, resultCode, result) -> {
+					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
 
 						var mediaJson = result.getStringExtra("media");

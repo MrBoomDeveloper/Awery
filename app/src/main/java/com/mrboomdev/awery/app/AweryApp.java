@@ -8,8 +8,6 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
-import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 
 import android.app.Activity;
 import android.app.Application;
@@ -29,8 +27,6 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.window.OnBackInvokedCallback;
 
@@ -51,20 +47,17 @@ import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.SpoilerPlugin;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -306,7 +299,7 @@ public class AweryApp extends Application {
 		AweryNotifications.registerNotificationChannels(this);
 		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
-		ThemeManager.apply(this);
+		ThemeManager.applyApp(this);
 		super.onCreate();
 
 		if(AwerySettings.LOG_NETWORK.getValue()) {

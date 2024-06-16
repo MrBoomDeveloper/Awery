@@ -48,7 +48,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
         }
 
@@ -65,26 +64,49 @@ android {
     flavorDimensions = [ "type", "sdk" ]
 
     productFlavors {
+        alpha {
+            dimension "type"
+            versionNameSuffix "-alpha"
+            applicationIdSuffix ".alpha"
+            buildConfigField("boolean", "IS_BETA", "true")
+            buildConfigField("String", "CHANNEL", "\"ALPHA\"")
+            manifestPlaceholders.appLabel = "Awery Alpha"
+
+            buildConfigField("String", "FILE_PROVIDER", "\"com.mrboomdev.awery.alpha.FileProvider\"")
+            manifestPlaceholders.fileProvider = "com.mrboomdev.awery.alpha.FileProvider"
+        }
+
         beta {
+            isDefault true
+
             dimension "type"
             versionNameSuffix "-beta"
             applicationIdSuffix ".beta"
             buildConfigField("boolean", "IS_BETA", "true")
-            isDefault true
+            buildConfigField("String", "CHANNEL", "\"BETA\"")
+            manifestPlaceholders.appLabel = "Awery Beta"
+
+            buildConfigField("String", "FILE_PROVIDER", "\"com.mrboomdev.awery.beta.FileProvider\"")
+            manifestPlaceholders.fileProvider = "com.mrboomdev.awery.beta.FileProvider"
         }
 
         prod {
             dimension "type"
-            versionNameSuffix "-prod"
+            versionNameSuffix "-stable"
             buildConfigField("boolean", "IS_BETA", "false")
+            buildConfigField("String", "CHANNEL", "\"STABLE\"")
+            manifestPlaceholders.appLabel = "Awery"
+
+            buildConfigField("String", "FILE_PROVIDER", "\"com.mrboomdev.awery.FileProvider\"")
+            manifestPlaceholders.fileProvider = "com.mrboomdev.awery.FileProvider"
         }
 
         modern {
             versionNameSuffix "-modern"
             dimension "sdk"
             buildConfigField("boolean", "IS_LEGACY", "false")
-            isDefault true
             minSdk 25
+            isDefault true
         }
 
         legacy {

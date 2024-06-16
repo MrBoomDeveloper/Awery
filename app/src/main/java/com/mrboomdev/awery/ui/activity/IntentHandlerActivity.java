@@ -3,10 +3,18 @@ package com.mrboomdev.awery.ui.activity;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.color.DynamicColors;
+import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.services.BackupService;
+import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.Objects;
 
@@ -15,6 +23,7 @@ public class IntentHandlerActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		ThemeManager.apply(this);
 		super.onCreate(savedInstanceState);
 
 		var uri = getIntent().getData();
@@ -32,8 +41,23 @@ public class IntentHandlerActivity extends AppCompatActivity {
 			startActivity(intent);
 
 			finish();
+		} else if(uri.getPath().endsWith(".awerybck")) {
+			new DialogBuilder(this)
+					.setTitle("Restore backup")
+					.setMessage("Are you sure want to restore an saved backup? All your current data will be erased!")
+					.setNegativeButton(R.string.cancel, dialog -> finish())
+					.setPositiveButton(R.string.confirm, dialog -> {
+						dialog.dismiss();
+
+						var backupIntent = new Intent(this, BackupService.class);
+						backupIntent.setAction(BackupService.ACTION_RESTORE);
+						backupIntent.setData(uri);
+
+						if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) startService(backupIntent);
+						else startForegroundService(backupIntent);
+					}).show();
 		} else {
-			toast("Unknown url!", 1);
+			toast("Unknown intent!", 1);
 			finish();
 		}
 	}
