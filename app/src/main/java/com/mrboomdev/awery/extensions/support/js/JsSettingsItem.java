@@ -107,6 +107,7 @@ public class JsSettingsItem extends SettingsItem {
 		var o = context.newObject(scope);
 		var ctx = getAnyContext();
 
+    o.put("key", o, setting.getKey());
 		o.put("title", o, setting.getTitle(ctx));
 		o.put("description", o, setting.getDescription(ctx));
 		o.put("from", o, setting.getFrom());
