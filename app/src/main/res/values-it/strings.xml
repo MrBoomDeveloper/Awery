@@ -82,7 +82,7 @@
     <string name="disclaimer">Dichiarazioni di non responsabilità</string>
     <string name="end_date">Data di fine</string>
     <string name="relations">Relazioni</string>
-    <string name="downloads">Scaricamenti</string>
+    <string name="downloads">Downloads</string>
     <string name="default_source">Sorgente predefinita</string>
     <string name="download_manager_select">Gestore dei download</string>
     <string name="list_editor">Editor di liste</string>
@@ -426,7 +426,7 @@
     <string name="delayed">Ritardato</string>
     <string name="favourites">Preferiti</string>
     <string name="finish">Fine</string>
-    <string name="welcome_to_app">Benvenuti ad Awery</string>
+    <string name="welcome_to_app">Benvenuto su Awery</string>
     <string name="restore_backup">Ripristina backup</string>
     <string name="lets_begin">Cominciamo</string>
     <string name="cleared_successfully">Cancellato con successo!</string>
