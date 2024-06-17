@@ -134,17 +134,15 @@ android {
 }
 
 dependencies {
-    // AwerySdk
-    implementation "com.github.MrBoomDeveloper:AwerySdk:67856bbc66"
-
-    // Compatibility for new methods in old Api
+    // Core
     implementation "androidx.core:core-ktx:1.13.1"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
-    implementation "androidx.fragment:fragment-ktx:1.7.1"
+    implementation "androidx.fragment:fragment-ktx:1.8.0"
     implementation "androidx.preference:preference-ktx:1.2.1"
+    implementation "com.github.MrBoomDeveloper:AwerySdk:67856bbc66"
 
     // Exoplayer
     ext.exo_version = "1.3.1"
@@ -295,13 +293,17 @@ static def formatKey(Object o) {
     return result
 }
 
-static def collectKeys(Object from) {
+static def collectKeys(Object from, Set<String> usedKeys) {
+    if(from.key != null && !usedKeys.add(from.key)) {
+        throw new IllegalStateException("Duplicate keys were found! ${from.key}")
+    }
+
     var builder = new StringBuilder()
 
     switch(from.type) {
         case "screen": {
             for(Object item : from.items) {
-                builder.append(collectKeys(item))
+                builder.append(collectKeys(item, usedKeys))
             }
         }; break
 
@@ -332,7 +334,7 @@ tasks.register("generateClasses") {
             " */\n" +
             "public class AwerySettings {\n")
 
-    builder.append(collectKeys(settings))
+    builder.append(collectKeys(settings, new HashSet<String>()))
     builder.append("}")
 
     writeFile(new File(dir, "AwerySettings.java"), builder.toString())

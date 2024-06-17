@@ -8,14 +8,14 @@ import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,20 +27,13 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBTab;
-import com.mrboomdev.awery.data.settings.NicePreferences;
-import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
-import com.mrboomdev.awery.ui.fragments.AnimeFragment;
 import com.mrboomdev.awery.ui.fragments.FeedsFragment;
-import com.mrboomdev.awery.ui.fragments.LibraryFragment;
-import com.mrboomdev.awery.ui.fragments.MangaFragment;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
@@ -50,6 +43,8 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +55,6 @@ import nl.joery.animatedbottombar.AnimatedBottomBar;
 public class MainActivity extends AppCompatActivity {
 	public ScreenMainBinding binding;
 	private static final String TAG = "MainActivity";
-	private static final int CUSTOM_TABS_START = -99999;
 	private List<DBTab> tabs;
 
 	private final Runnable backListener = new Runnable() {
@@ -85,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		var template = AwerySettings.TABS_TEMPLATE.getValue();
-		if(template != null) loadTemplateTabs(template); else loadCustomTabs();
+		if(template.equals("custom")) loadCustomTabs(); else loadTemplateTabs(template);
 	}
 
 	private void loadCustomTabs() {
@@ -98,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 			var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
 			var templates = Parser.fromString(adapter, templateJson);
 
-			var selected = findIn(template -> template.id.equals(templateName), templates);
+			var selected = find(templates, template -> template.id.equals(templateName));
 			setupTabs(selected != null ? selected.tabs : Collections.emptyList());
 		} catch(IOException e) {
 			throw new RuntimeException(e);
@@ -149,11 +143,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			var navbarItem = new AnimatedBottomBar.Tab(
-					Objects.requireNonNull(drawable),
-					tab.title,
-					CUSTOM_TABS_START + i,
-					null,
-					true);
+					Objects.requireNonNull(drawable), tab.title,
+					i, null, true);
 
 			if(tab.id.equals(savedDefaultTab)) {
 				selectedNavbarItem = navbarItem;
@@ -190,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 		binding.getRoot().setMotionEventSplittingEnabled(false);
 		setContentView(binding.getRoot());
 
-		var pagesAdapter = new MainFragmentAdapter(getSupportFragmentManager(), getLifecycle());
+		var pagesAdapter = new FeedsAdapter(tabs, getSupportFragmentManager(), getLifecycle());
 		binding.pages.setAdapter(pagesAdapter);
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
@@ -208,7 +199,18 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {}
+			public void onTabReselected(int i, @NonNull AnimatedBottomBar.Tab tab) {
+				var adapter = (FeedsAdapter) binding.pages.getAdapter();
+				if(adapter == null) return;
+
+				var ref = adapter.fragments.get(i);
+				if(ref == null) return;
+
+				var fragment = ref.get();
+				if(fragment == null) return;
+
+				fragment.scrollToTop();
+			}
 		});
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
@@ -247,10 +249,21 @@ public class MainActivity extends AppCompatActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	private class MainFragmentAdapter extends FragmentStateAdapter {
+	private static class FeedsAdapter extends FragmentStateAdapter {
+		public final List<WeakReference<FeedsFragment>> fragments;
+		private final List<DBTab> tabs;
 
-		public MainFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+		public FeedsAdapter(
+				@NonNull List<DBTab> tabs,
+				@NonNull FragmentManager fragmentManager,
+				@NonNull Lifecycle lifecycle
+		) {
 			super(fragmentManager, lifecycle);
+			this.tabs = tabs;
+
+			this.fragments = new ArrayList<>(stream(tabs)
+					.map(a -> (WeakReference<FeedsFragment>) null)
+					.toList());
 		}
 
 		@NonNull
@@ -262,14 +275,8 @@ public class MainActivity extends AppCompatActivity {
 			var fragment = new FeedsFragment();
 			fragment.setArguments(arguments);
 
+			fragments.set(position, new WeakReference<>(fragment));
 			return fragment;
-
-			/*return switch(position) {
-				case 0 -> new AnimeFragment().setupWithMainActivity(MainActivity.this, 0);
-				case 1 -> new LibraryFragment().setupWithMainActivity(MainActivity.this, 1);
-				case 2 -> new MangaFragment().setupWithMainActivity(MainActivity.this, 2);
-				default -> throw new IllegalArgumentException("Invalid page position! " + position);
-			};*/
 		}
 
 		@Override

@@ -118,7 +118,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 											.max().orElse(0) + 1;
 
 									dao.insert(tab);
-									getPrefs().setValue(AwerySettings.TABS_TEMPLATE, null).saveAsync();
+									getPrefs().setValue(AwerySettings.TABS_TEMPLATE, "custom").saveAsync();
 
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
@@ -182,21 +182,26 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			public List<? extends SettingsItem> getItems() {
 				var savedTemplate = AwerySettings.TABS_TEMPLATE.getValue();
 
-				if(savedTemplate != null) {
+				if(!Objects.equals(savedTemplate, "custom")) {
 					try {
 						var templatesJson = readAssets("tabs_templates.json");
 						var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
 						var templates = Parser.fromString(adapter, templatesJson);
 
 						var selected = find(templates, template -> template.id.equals(savedTemplate));
-						if(selected == null) return Collections.emptyList();
 
-						return stream(selected.tabs)
-								.map(TabSetting::new)
-								.toList();
+						if(selected != null) {
+							return stream(selected.tabs)
+									.map(TabSetting::new)
+									.toList();
+						}
 					} catch(IOException e) {
 						throw new RuntimeException(e);
 					}
+				}
+
+				if(tabs == null) {
+					return Collections.emptyList();
 				}
 
 				return stream(tabs)

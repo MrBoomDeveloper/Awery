@@ -2,17 +2,14 @@ package com.mrboomdev.awery.ui.activity.setup;
 
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.util.NiceUtils.findIn;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.databinding.GridSimpleCardBinding;
@@ -23,6 +20,7 @@ import com.mrboomdev.awery.util.TabsTemplate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SetupTabsAdapters extends RecyclerView.Adapter<SetupTabsAdapters.ViewHolder> {
 	private final List<TabsTemplate> templates = new ArrayList<>();
@@ -33,11 +31,15 @@ public class SetupTabsAdapters extends RecyclerView.Adapter<SetupTabsAdapters.Vi
 			var json = readAssets("tabs_templates.json");
 			var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
 
-			templates.add(null);
+			templates.add(new TabsTemplate() {{
+				this.id = "custom";
+				this.title = "Custom";
+			}});
+
 			templates.addAll(Parser.fromString(adapter, json));
 
 			var savedSelected = AwerySettings.TABS_TEMPLATE.getValue();
-			selected = findIn(template -> template != null && template.id.equals(savedSelected), templates);
+			selected = find(templates, template -> Objects.equals(template.id, savedSelected));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -78,9 +80,9 @@ public class SetupTabsAdapters extends RecyclerView.Adapter<SetupTabsAdapters.Vi
 			});
 		}
 
-		public void bind(@Nullable TabsTemplate template) {
+		public void bind(@NonNull TabsTemplate template) {
 			this.template = template;
-			binding.title.setText(template != null ? template.title : "None");
+			binding.title.setText(template.title);
 
 			binding.getRoot().setBackgroundTintList(ColorStateList.valueOf(template != selected ? 0 :
 					resolveAttrColor(getContext(binding), com.google.android.material.R.attr.colorOnSecondary)));

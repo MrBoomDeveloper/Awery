@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.activity.player;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -172,6 +173,15 @@ public class PlayerActivityController {
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
+	public void setAspectRatio(@NonNull AwerySettings.VideoAspectRatio_Values aspectRatio) {
+		activity.binding.aspectRatioFrame.setResizeMode(switch(aspectRatio) {
+			case FIT -> AspectRatioFrameLayout.RESIZE_MODE_FIT;
+			case FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL;
+			case ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
+		});
+	}
+
+	@OptIn(markerClass = UnstableApi.class)
 	public void openScaleSettingsDialog() {
 		final var dialog = new AtomicReference<Dialog>();
 
@@ -189,12 +199,10 @@ public class PlayerActivityController {
 			return binding;
 		});
 
-		enum Mode { FIT, FILL, ZOOM }
-
-		var items = new LinkedHashMap<PopupItem, Mode>() {{
-			put(new PopupItem(R.string.fit), Mode.FIT);
-			put(new PopupItem(R.string.fill), Mode.FILL);
-			put(new PopupItem(R.string.zoom), Mode.ZOOM);
+		var items = new LinkedHashMap<PopupItem, AwerySettings.VideoAspectRatio_Values>() {{
+			put(new PopupItem(R.string.fit), AwerySettings.VideoAspectRatio_Values.FIT);
+			put(new PopupItem(R.string.fill), AwerySettings.VideoAspectRatio_Values.FILL);
+			put(new PopupItem(R.string.zoom), AwerySettings.VideoAspectRatio_Values.ZOOM);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -202,17 +210,14 @@ public class PlayerActivityController {
 					activity.getLayoutInflater(), parent, false);
 
 			return new PopupItemHolder(binding, item -> {
-				var action = items.get(item);
+				var ratio = items.get(item);
 
-				if(action == null) {
-					throw new NullPointerException("Action was null");
+				if(ratio == null) {
+					throw new NullPointerException("Ratio was null");
 				}
 
-				activity.binding.aspectRatioFrame.setResizeMode(switch(action) {
-					case FIT -> AspectRatioFrameLayout.RESIZE_MODE_FIT;
-					case FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL;
-					case ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
-				});
+				setAspectRatio(ratio);
+				getPrefs().setValue(AwerySettings.VIDEO_ASPECT_RATIO, ratio).saveAsync();
 			});
 		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
 

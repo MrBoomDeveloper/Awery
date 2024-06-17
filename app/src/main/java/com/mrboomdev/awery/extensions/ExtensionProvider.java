@@ -34,6 +34,9 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String FILTER_PAGE = "_AWERY_FILTER_PAGE_";
 	public static final String FILTER_FEED = "_AWERY_FILTER_FEED_";
 	public static final String FILTER_QUERY = "_AWERY_FILTER_QUERY_";
+	public static final String FILTER_START_DATE = "_AWERY_FILTER_START_DATE_";
+	public static final String FILTER_END_DATE = "_AWERY_FILTER_END_DATE_";
+	public static final String FILTER_TAGS = "_AWERY_FILTER_TAGS_";
 	public static final int FEATURE_TAGS_SEARCH = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}

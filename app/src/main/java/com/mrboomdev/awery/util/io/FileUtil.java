@@ -3,6 +3,11 @@ package com.mrboomdev.awery.util.io;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
+import android.annotation.SuppressLint;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,6 +30,23 @@ import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
 	private static final int BUFFER_SIZE = 1024 * 5;
+
+	@SuppressLint("Range")
+	@Nullable
+	public static String getUriFileName(Uri uri) {
+		var resolver = getAnyContext().getContentResolver();
+
+		try(var cursor = resolver.query(uri, new String[] {
+				MediaStore.MediaColumns.DISPLAY_NAME
+		}, null, null, null)) {
+			if(cursor == null) {
+				return null;
+			}
+
+			cursor.moveToFirst();
+			return cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+		}
+	}
 
 	public static List<File> getFiles(@NonNull File parent) {
 		if(parent.isDirectory()) {

@@ -52,6 +52,8 @@ public class SettingsItem implements Serializable {
 	private Boolean booleanValue;
 	@Json(name = "integer_value")
 	private Integer integerValue;
+	@Json(name = "long_value")
+	private Long longValue;
 	@Json(name = "string_set_value")
 	private Set<String> stringSetValue;
 	private Float from, to;
@@ -94,11 +96,11 @@ public class SettingsItem implements Serializable {
 
 		this.booleanValue = item.getBooleanValue();
 		this.stringValue = item.getStringValue();
-
 		this.integerValue = item.getIntegerValue();
+		this.longValue = item.getLongValue();
+
 		this.from = item.getFrom();
 		this.to = item.getTo();
-
 		this.behaviour = item.getBehaviour();
 		this.restart = item.isRestartRequired();
 		this.showIf = item.showIf;
@@ -152,6 +154,14 @@ public class SettingsItem implements Serializable {
 		return tintIcon == null || tintIcon;
 	}
 
+	public Long getLongValue() {
+		return longValue;
+	}
+
+	public void setValue(long value) {
+		this.longValue = value;
+	}
+
 	public boolean isVisible() {
 		if(showIf != null) {
 			var requirements = showIf.split(",");
@@ -183,32 +193,24 @@ public class SettingsItem implements Serializable {
 		}
 	}
 
-	public void restoreSavedValues() {
-		restoreSavedValues(true);
-	}
-
 	/**
 	 * Call before showing any data to a user
 	 * @author MrBoomDev
 	 */
-	public void restoreSavedValues(boolean canWritePrefs) {
+	public void restoreSavedValues() {
 		if(getType() == null) return;
 		var settings = getPrefs();
 
 		switch(getType()) {
-			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(),
-					canWritePrefs ? Objects.requireNonNullElse(booleanValue, false) : null);
-
-			case INTEGER, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(),
-					canWritePrefs ? Objects.requireNonNullElse(integerValue, 0) : null);
-
-			case SELECT, STRING -> stringValue = settings.getString(getKey(), canWritePrefs ? stringValue : null);
+			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(), booleanValue);
+			case INTEGER, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(), integerValue);
+			case SELECT, STRING -> stringValue = settings.getString(getKey(), stringValue);
 
 			case SCREEN -> {
 				if(items == null) return;
 
 				for(var item : getItems()) {
-					item.restoreSavedValues(canWritePrefs);
+					item.restoreSavedValues();
 				}
 			}
 		}
@@ -292,6 +294,7 @@ public class SettingsItem implements Serializable {
 		integerValue = null;
 		booleanValue = null;
 		stringSetValue = null;
+		longValue = null;
 	}
 
 	public void setValue(boolean value) {
@@ -320,7 +323,7 @@ public class SettingsItem implements Serializable {
 
 	public SettingsItem findItem(@NonNull String query) {
 		return switch(type) {
-			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT ->
+			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT, DATE ->
 					query.equals(getKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {

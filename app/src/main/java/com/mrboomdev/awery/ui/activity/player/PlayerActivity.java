@@ -64,6 +64,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @OptIn(markerClass = UnstableApi.class)
@@ -316,6 +317,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupPip();
 		loadData();
 		setButtonsClickability(false);
+
+		controller.setAspectRatio(Objects.requireNonNull(AwerySettings.VIDEO_ASPECT_RATIO.getValue()));
 		controller.showUiTemporarily();
 	}
 

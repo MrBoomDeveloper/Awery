@@ -27,7 +27,7 @@ public class ThemeManager {
 		if(!AwerySettings.USE_MATERIAL_YOU.exists()) {
 			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
 
-			getPrefs().setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported).saveAsync();
+			getPrefs().setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported).saveSync();
 			return isMaterialYouSupported;
 		}
 

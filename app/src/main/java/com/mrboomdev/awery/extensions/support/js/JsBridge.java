@@ -45,6 +45,9 @@ public class JsBridge {
 	public final String FILTER_FEED = ExtensionProvider.FILTER_FEED;
 	public final String FILTER_PAGE = ExtensionProvider.FILTER_PAGE;
 	public final String FILTER_QUERY = ExtensionProvider.FILTER_QUERY;
+	public final String FILTER_START_DATE = ExtensionProvider.FILTER_START_DATE;
+	public final String FILTER_END_DATE = ExtensionProvider.FILTER_END_DATE;
+	public final String FILTER_TAGS = ExtensionProvider.FILTER_TAGS;
 	private static final String TAG = "JsBridge";
 	protected WeakReference<android.content.Context> context;
 	private final JsManager manager;

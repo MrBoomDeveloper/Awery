@@ -33,7 +33,7 @@ public class CatalogMedia {
 
 	/**
 	 * @param globalId The unique id of the media in the following format:
-	 * <p>{@code MANAGER_ID;;;EXTENSION_ID;;;ITEM_ID}</p>
+	 * <p>{@code MANAGER_ID;;;PROVIDER_ID;;;ITEM_ID}</p>
 	 */
 	public CatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;

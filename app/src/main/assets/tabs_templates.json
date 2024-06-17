@@ -59,7 +59,7 @@
 						"display_mode": "SLIDES",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "status", "string_value": "RELEASING", "type": "select", items: [] },
+							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
 							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {

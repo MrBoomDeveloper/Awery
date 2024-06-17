@@ -121,6 +121,7 @@ public class JsSettingsItem extends SettingsItem {
 
 		o.put("value", o, switch(setting.getType()) {
 			case BOOLEAN, SCREEN_BOOLEAN -> setting.getBooleanValue();
+			case DATE -> setting.getLongValue();
 			case DIVIDER, CATEGORY, COLOR, SCREEN, ACTION -> null;
 			case INTEGER, SELECT_INTEGER -> setting.getIntegerValue();
 			case STRING, SELECT -> setting.getStringValue();

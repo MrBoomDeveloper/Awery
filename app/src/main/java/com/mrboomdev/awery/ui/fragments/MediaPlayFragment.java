@@ -55,6 +55,7 @@ import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -78,7 +79,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 	private final List<SettingsItem> filters = List.of(queryFilter,
 			new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
-	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> placeholderAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
 	private ConcatAdapter concatAdapter;
@@ -186,17 +187,29 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		new Thread(() -> {
 			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
-			var mediaSource = ExtensionsFactory.getExtensionProvider(0, media.globalId);
+			var mediaSource = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, media.globalId);
 
 			if(progress != null) {
-				providers = new ArrayList<>(providers);
-
 				searchId = progress.lastId;
 				searchTitle = progress.lastTitle;
 
 				providers.sort((a, b) -> {
 					if(a.getId().equals(progress.lastWatchSource)) return -1;
 					if(b.getId().equals(progress.lastWatchSource)) return 1;
+
+					if(mediaSource != null) {
+						if(a.getId().equals(mediaSource.getId())) return -1;
+						if(b.getId().equals(mediaSource.getId())) return 1;
+					}
+
+					return 0;
+				});
+
+				sourcesDropdownAdapter.setItems(providers);
+			} else if(mediaSource != null) {
+				providers.sort((a, b) -> {
+					if(a.getId().equals(mediaSource.getId())) return -1;
+					if(b.getId().equals(mediaSource.getId())) return 1;
 					return 0;
 				});
 
@@ -219,6 +232,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						runOnUiThread(() -> selectProvider(providers.get(0)));
 					}
 				});
+			} else {
+				currentSourceIndex = 0;
+				runOnUiThread(() -> selectProvider(providers.get(0)));
 			}
 		}).start();
 	}
@@ -274,10 +290,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		providers = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
 				.flatMap(NiceUtils::stream)
-				.sorted().toList();
+				.sorted().toList());
 
 		sourcesDropdownAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
 			if(recycled == null) {
@@ -385,9 +401,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 							queryFilter.setValue(media.getTitle());
 
 							placeholderAdapter.getBinding(placeholder -> {
-								placeholder.progressBar.setVisibility(View.VISIBLE);
-								placeholder.info.setVisibility(View.GONE);
-
+								placeholder.startLoading();
 								placeholderAdapter.setEnabled(true);
 								episodesAdapter.setItems(media, Collections.emptyList());
 
@@ -494,15 +508,11 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
+		this.selectedSource = source;
 		var myId = ++loadId;
 
 		placeholderAdapter.setEnabled(true);
-		this.selectedSource = source;
-
-		placeholderAdapter.getBinding((binding) -> {
-			binding.info.setVisibility(View.GONE);
-			binding.progressBar.setVisibility(View.VISIBLE);
-		});
+		placeholderAdapter.getBinding(EmptyView::startLoading);
 
 		runOnUiThread(() -> {
 			try {
@@ -641,12 +651,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 
 		placeholderAdapter.getBinding(binding -> runOnUiThread(() -> {
-			binding.title.setText(error.getTitle(context));
-			binding.message.setText(error.getMessage(context));
-
-			binding.info.setVisibility(View.VISIBLE);
-			binding.progressBar.setVisibility(View.GONE);
-
+			binding.setInfo(error.getTitle(context), error.getMessage(context));
 			placeholderAdapter.setEnabled(true);
 		}));
 	}
@@ -660,7 +665,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				LayoutWatchVariantsBinding.inflate(inflater, parent, false), VIEW_TYPE_VARIANTS);
 
 		placeholderAdapter = SingleViewAdapter.fromBindingDynamic(parent ->
-				LayoutLoadingBinding.inflate(inflater, parent, false), VIEW_TYPE_ERROR);
+				new EmptyView(parent, false), VIEW_TYPE_ERROR);
 
 		episodesAdapter = new MediaPlayEpisodesAdapter();
 		episodesAdapter.setOnEpisodeSelectedListener(this);

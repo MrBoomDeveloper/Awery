@@ -42,10 +42,10 @@
 					"title": "app_language", "icon": "ic_language",
 					"behaviour": "languages", "show_if": "debug"
 				}, {
-					"key": "media_columns_count_land", "type": "integer", "from": 0,
+					"key": "media_columns_count_land", "type": "integer", "from": 0, "integer_value": 0,
 					"title": "media_columns_count_land", "description": "0 for auto"
 				}, {
-					"key": "media_columns_count_port", "type": "integer", "from": 0,
+					"key": "media_columns_count_port", "type": "integer", "from": 0, "integer_value": 0,
 					"title": "media_columns_count_port", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {
@@ -118,6 +118,14 @@
 						{ "key": "240", "title": "4m" }
 					]
 				}, {
+					"key": "video_aspect_ratio", "type": "select", "string_value": "FIT",
+					"title": "aspect_ratio",
+					"items": [
+						{ "key": "FIT", "title": "fit" },
+						{ "key": "FILL", "title": "fill" },
+						{ "key": "ZOOM", "title": "zoom" }
+					]
+				}, {
 					"key": "player_gestures_mode", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
 					"title": "gesture_mode", "icon": "ic_swipe_up_filled",
 					"description": "${VALUE_TITLE}", "show_if": "!tv",
@@ -149,10 +157,10 @@
 					"items": [
 						{
 							"key": "subtitles_text_size", "type": "integer", "title": "subtitles_size",
-							"from": 2, "to": 100, "int_value": 14
+							"from": 2, "to": 100, "integer_value": 14
 						}, {
 							"key": "subtitles_background_opacity", "type": "integer", "title": "subtitles_back_opacity",
-							"from": 0, "to": 100, "int_value": 85
+							"from": 0, "to": 100, "integer_value": 85
 						}
 					]
 				}, {
@@ -251,9 +259,9 @@
 			"title": "What is that? This is an container for prefs, which aren't present in this schema.",
 			"items": [
 				{ "key": "default_home_tab", "type": "string" },
-				{ "key": "last_opened_version", "type": "integer" },
-				{ "key": "setup_version_finished", "type": "integer" },
-				{ "key": "tabs_template", "type": "string" }
+				{ "key": "last_opened_version", "type": "integer", "integer_value": 0 },
+				{ "key": "setup_version_finished", "type": "integer", "integer_value": 0 },
+				{ "key": "tabs_template", "type": "string", "string_value": "awery" }
 			]
 		}
 	]

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
@@ -27,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -52,6 +54,7 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -75,13 +78,31 @@ public class FeedsFragment extends Fragment {
 		this.feeds = (List<CatalogFeed>) requireArguments().getSerializable("feeds");
 	}
 
+	public void scrollToTop() {
+		Objects.requireNonNull(recycler.getLayoutManager()).startSmoothScroll(new LinearSmoothScroller(requireContext()) {
+			{ setTargetPosition(0); }
+
+			@Override
+			protected int getVerticalSnapPreference() {
+				return LinearSmoothScroller.SNAP_TO_START;
+			}
+
+			@Override
+			protected int getHorizontalSnapPreference() {
+				return LinearSmoothScroller.SNAP_TO_START;
+			}
+		});
+	}
+
 	@SuppressLint("NotifyDataSetChanged")
 	public void loadData(boolean isReload) {
+		scrollToTop();
 		var currentLoadId = ++loadId;
 
 		emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
 			binding.startLoading();
 			rowsAdapter.setCategories(Collections.emptyList());
+			failedRowsAdapter.setCategories(Collections.emptyList());
 
 			swipeRefreshLayout.setRefreshing(false);
 			emptyStateAdapter.notifyDataSetChanged();
@@ -109,7 +130,10 @@ public class FeedsFragment extends Fragment {
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
 		var requiredFeatures = List.of(ExtensionProvider.FEATURE_MEDIA_SEARCH);
 
-		var provider = stream(ExtensionsFactory.getManager(feed.sourceManager).getExtensions(Extension.FLAG_WORKING))
+		var extensions = ExtensionsFactory.getManager(feed.sourceManager)
+				.getExtensions(Extension.FLAG_WORKING);
+
+		var provider = stream(extensions)
 				.flatMap(NiceUtils::stream)
 				.map(ext -> ext.getProviders(requiredFeatures))
 				.flatMap(NiceUtils::stream)
@@ -131,12 +155,15 @@ public class FeedsFragment extends Fragment {
 			}
 
 			provider.searchMedia(context, filters, new ExtensionProvider.ResponseCallback<>() {
+				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> catalogMedia) {
 					if(currentLoadId != loadId) return;
 
-					runOnUiThread(() -> rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(
-							feed.title, catalogMedia)), recycler);
+					runOnUiThread(() -> {
+						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed.title, catalogMedia));
+						if(rowsAdapter.getItemCount() < 2) recycler.getAdapter().notifyDataSetChanged();
+					}, recycler);
 
 					tryToLoadNextFeed(feed, currentLoadId);
 				}
@@ -155,10 +182,11 @@ public class FeedsFragment extends Fragment {
 			});
 		} else {
 			runOnUiThread(() -> failedRowsAdapter.addCategory(
-					new MediaCategoriesAdapter.Category(feed.title, new ZeroResultsException("No provider was found!", 0) {
+					new MediaCategoriesAdapter.Category(feed.title,
+							new ZeroResultsException("No extension provider was found!", 0) {
 						@Override
 						public String getTitle(@NonNull Context context) {
-							return "Provider not found!";
+							return "Extension was not found!";
 						}
 
 						@Override

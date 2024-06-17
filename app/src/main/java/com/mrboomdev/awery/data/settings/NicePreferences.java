@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class NicePreferences {
 	}
 
 	private static void reloadSettingsMapValues() {
-		settingsMapInstance.restoreSavedValues(false);
+		settingsMapInstance.restoreSavedValues();
 		shouldReloadMapValues = false;
 	}
 
@@ -107,6 +108,10 @@ public class NicePreferences {
 	 * @author MrBoomDev
 	 */
 	public boolean getBoolean(String key) {
+		if(contains(key)) {
+			return getBoolean(key, null);
+		}
+
 		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
@@ -114,7 +119,7 @@ public class NicePreferences {
 			if(value != null) return value;
 		}
 
-		return getBoolean(key, false);
+		return getBoolean(key, null);
 	}
 
 	public NicePreferences setBoolean(String key, boolean value) {
@@ -137,6 +142,10 @@ public class NicePreferences {
 	}
 
 	public Integer getInteger(String key) {
+		if(contains(key)) {
+			return getInteger(key, null);
+		}
+
 		var found = getSettingsMap().findItem(key);
 
 		if(found != null) {
@@ -144,7 +153,7 @@ public class NicePreferences {
 			if(value != null) return value;
 		}
 
-		return getInteger(key, 0);
+		return getInteger(key, null);
 	}
 
 	public NicePreferences setInteger(String key, int value) {
@@ -300,6 +309,10 @@ public class NicePreferences {
 	public NicePreferences removeValue(@NonNull BaseSetting setting) {
 		checkEditorExistence().remove(setting.getKey());
 		return this;
+	}
+
+	public <T extends Enum<T> & EnumWithKey> NicePreferences setValue(@NonNull EnumSetting<T> setting, T value) {
+		return setString(setting.getKey(), value != null ? value.getKey() : null);
 	}
 
 	public NicePreferences setValue(@NonNull StringSetting setting, String value) {

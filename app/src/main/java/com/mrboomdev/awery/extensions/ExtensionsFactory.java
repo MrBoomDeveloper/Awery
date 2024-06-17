@@ -92,16 +92,11 @@ public class ExtensionsFactory {
 				return AnilistProvider.getInstance();
 			}
 
-			var extension = stream(managers)
-					.filter(manager -> manager.getId().equals(parts[0]))
-					.findAny().orElseThrow()
-					.getExtension(parts[1]);
-
-			if(extension == null) {
-				return null;
-			}
-
-			return extension.getProviders().get(0);
+			return stream(getManager(parts[0]).getExtensions(extensionFlags))
+					.map(Extension::getProviders)
+					.flatMap(NiceUtils::stream)
+					.filter(provider -> provider.getId().equals(parts[1]))
+					.findAny().orElse(null);
 		}
 
 		return stream(getExtensions(extensionFlags))

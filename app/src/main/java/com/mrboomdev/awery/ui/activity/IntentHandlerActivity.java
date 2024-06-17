@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.util.NiceUtils.returnIfNotNull;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+import static com.mrboomdev.awery.util.NiceUtils.with;
 
 import android.content.Intent;
 import android.os.Build;
@@ -14,6 +17,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.io.FileUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.Objects;
@@ -41,7 +45,7 @@ public class IntentHandlerActivity extends AppCompatActivity {
 			startActivity(intent);
 
 			finish();
-		} else if(uri.getPath().endsWith(".awerybck")) {
+		} else if(returnWith(FileUtil.getUriFileName(uri), name -> (name != null && name.endsWith(".awerybck")))) {
 			new DialogBuilder(this)
 					.setTitle("Restore backup")
 					.setMessage("Are you sure want to restore an saved backup? All your current data will be erased!")
