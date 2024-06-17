@@ -2,8 +2,8 @@
    <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/banner.webp" alt="Awery Banner" width=100% >
 </p>
 <p align="center">
-   <a href="https://t.me/mrboomdev_awery"><img src="https://img.shields.io/badge/telegram-channel-blue?style=for-the-badge" alt="Telegram Channel"></a>
-   <a href="https://discord.com/invite/yspVzD4Kbm"><img src="https://img.shields.io/discord/1208816442313805855.svg?style=for-the-badge&logo=discord&colorB=7289DA" alt="Discord Server"></a>
+   <a href="https://discord.com/invite/yspVzD4Kbm"><img src="https://dcbadge.limes.pink/api/server/https://discord.com/invite/yspVzD4Kbm" alt="Discord Server"></a>
+   <a href="https://t.me/mrboomdev_awery"><img src="https://img.shields.io/endpoint?label=Telegram+Channel&labelColor=0e91e3&color=545454&logo=telegram&style=for-the-badge&url=https%3A%2F%2Fmogyo.ro%2Fquart-apis%2Ftgmembercount%3Fchat_id%3Dmrboomdev_awery" alt="Telegram Channel"></a>
    <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?style=for-the-badge" alt="GitHub Downloads"></a>
 </p>
 
@@ -15,18 +15,21 @@ Imagine the perfect app where you can customize everything, with tons of feature
 
 ## Features 🎩
 - Use any Aniyomi extension
-- Sync progress with your AniList, MyAnimeList and Shikimori accounts
+- Sync progress with your AniList, MyAnimeList, Shikimori and etc.
 - Leave and read other comments
-- Translation for Spanish, France, Russian and more...
+- Translation into many languages
 - Filter out tags like mecha from the whole app!
 - Blacklist unwanted media
 
-## Planned Features 🕒
-- Auto-Generated feeds from various sources
+## Planned Features 🕜
 - AndroidTV optimized ui
 - History page
 - Customize app to look how you want
 - News reader
+- Manga reader
+- Torrents support
+- Offline playback
+- Update notifications
 
 ## Want to Contribute? 🤝
 
