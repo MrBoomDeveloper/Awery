@@ -59,7 +59,8 @@
 						"display_mode": "SLIDES",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "current_season", "boolean_value": true, "type": "boolean" }
+							{ "key": "status", "string_value": "RELEASING", "type": "select", items: [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {
 						"title": "Recently Updated",
@@ -67,7 +68,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "UPDATED_AT_DESC", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "UPDATED_AT_DESC", "type": "select", "items": [] },
+							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {
 						"title": "Trending Movies",
@@ -76,7 +79,8 @@
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MOVIE", "type": "select", "items": [] }
+							{ "key": "format", "string_value": "MOVIE", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {
 						"title": "Top rated",
@@ -84,7 +88,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "SCORE_DESC", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "SCORE_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {
 						"title": "Most Favourite",
@@ -92,7 +97,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}, {
 						"title": "Popular Anime",
@@ -100,7 +106,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_VERTICAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "POPULARITY_DESC", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "POPULARITY_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
 						]
 					}
 				]
