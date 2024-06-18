@@ -10,7 +10,7 @@
     <string name="library">Libreria</string>
     <string name="advanced">Opzioni Avanzate</string>
     <string name="no_comment_extensions">Non hai estensioni per i commenti installate. Scaricali per vedere qualcosa di nuovo qui!</string>
-    <string name="no_tracker_extensions">Non hai estensioni tracker installate. Scaricali per vedere qualcosa di nuovo qui!</string>
+    <string name="no_tracker_extensions">Non hai estensioni di monitoraggio installate. Scaricali per vedere qualcosa di nuovo qui!</string>
     <string name="no_relations_extensions">Non hai estensioni installate. Scaricali per vedere qualcosa di nuovo qui!</string>
     <string name="material_you_description">I colori dell\'app verranno generati in base allo sfondo</string>
     <string name="default_tab_description">Verrà aperto all\'avvio dell\'app</string>
@@ -75,7 +75,7 @@
     <string name="reader">Lettore</string>
     <string name="reader_settings">Impostazioni Reader</string>
     <string name="ui">Interfaccia Utente</string>
-    <string name="common">Comune</string>
+    <string name="common">Impostazioni generali</string>
     <string name="theme">Tema</string>
     <string name="about">Informazioni su</string>
     <string name="devs">Sviluppatori</string>
@@ -186,7 +186,7 @@
     <string name="next_chapter_not_found">Capitolo successivo non trovato</string>
     <string name="episode_not_found">Impossibile trovare l\'episodio: %1$s</string>
     <string name="list_updated">Elenco aggiornato</string>
-    <string name="deleted_from_list">Cancella dalla lista</string>
+    <string name="deleted_from_list">Elimina dalla lista</string>
     <string name="checking_for_update">Verifica dell\'aggiornamento</string>
     <string name="dont_show_again">Non mostrare più per la versione %1$s</string>
     <string name="downloading_update">Download dell\'aggiornamento %1$s</string>
@@ -285,9 +285,9 @@
     <string name="uninstall_extension">Disinstalla estensione</string>
     <string name="pick_from_storage">Seleziona dalla memoria</string>
     <string name="repository_url">Archivio URL</string>
-    <string name="sure_delete_list_description">Sei sicuro di voler eliminare questa lista?</string>
+    <string name="sure_delete_list_description">Sei sicuro di voler eliminare questa voce dalla lista?</string>
     <string name="blacklist">Lista nera</string>
-    <string name="tracking">Monitoraggio</string>
+    <string name="tracking">Tracking</string>
     <string name="use_material_you">Material you</string>
     <string name="read_more">Per saperne di più</string>
     <string name="read_less">Leggi di meno</string>
@@ -311,9 +311,9 @@
     <string name="movies">Film</string>
     <string name="cancelled">Cancellato</string>
     <string name="completed">Completato</string>
-    <string name="planning_watch">Previsto da guardare</string>
-    <string name="planning_read">Previsto da leggere</string>
-    <string name="currently_watching">Attualmente sto guardando</string>
+    <string name="planning_watch">Da guardare</string>
+    <string name="planning_read">Da leggere</string>
+    <string name="currently_watching">Sto guardando</string>
     <string name="favorite">Preferito</string>
     <string name="please_report_bug_app">Si prega di inviare il seguente testo agli sviluppatori dell\'app!</string>
     <string name="please_report_bug_extension">Si prega di inviare il seguente testo agli sviluppatori dell\'estensione!</string>
@@ -444,4 +444,7 @@
     <string name="app_not_responding_restart">Awery non risponde. Cerco di riavviare ._.</string>
     <string name="unknown_file_type">Tipo di file sconosciuto!</string>
     <string name="continue_action">Continua</string>
+    <string name="restart">Riavvia</string>
+    <string name="clear">Ripulire</string>
+    <string name="restart_to_apply_settings">Per applicare le impostazioni, è necessario riavviare l\'applicazione</string>
 </resources>
