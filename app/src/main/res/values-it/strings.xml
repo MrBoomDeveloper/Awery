@@ -172,8 +172,7 @@
     <string name="sort_by_release_date">Ordina per Data di Rilascio</string>
     <string name="crop_borders">Ritaglia Bordi</string>
     <string name="error_loading_data">Errore nel caricamento dei dati %1$s</string>
-    <string name="saved_to_path">Salvato in:
-\n%s</string>
+    <string name="saved_to_path">Salvato in:\n%s</string>
     <string name="setting_progress">Impostazione del progresso a %1$d</string>
     <string name="back_to_exit">Per favore, premi Indietro di nuovo per Uscire</string>
     <string name="no_internet_connection">Nessuna Connessione Internet</string>
