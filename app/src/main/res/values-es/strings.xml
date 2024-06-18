@@ -442,4 +442,7 @@
     <string name="app_crash">¡Awery falló!</string>
     <string name="share_crash_report">Compartir el informen de fallos</string>
     <string name="continue_action">Continuar</string>
+    <string name="restart">Reiniciar</string>
+    <string name="clear">Limpiar</string>
+    <string name="restart_to_apply_settings">Para aplicar la configuración, debe reiniciar la aplicación</string>
 </resources>
