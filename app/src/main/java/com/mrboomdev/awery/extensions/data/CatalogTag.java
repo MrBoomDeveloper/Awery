@@ -1,6 +1,11 @@
 package com.mrboomdev.awery.extensions.data;
 
-public class CatalogTag {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class CatalogTag implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1;
 	private String name, id, description;
 	private boolean isAdult, isSpoiler;
 

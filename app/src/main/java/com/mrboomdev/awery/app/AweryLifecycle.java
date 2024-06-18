@@ -1,14 +1,11 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.util.NiceUtils.getField;
 import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -27,12 +24,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -388,6 +383,13 @@ public class AweryLifecycle {
 
 	public static void runDelayed(Runnable runnable, long delay) {
 		handler.postDelayed(runnable, delay);
+	}
+
+	@NonNull
+	public static Runnable runDelayed(Runnable runnable, long delay, RecyclerView recycler) {
+		Runnable result = () -> runOnUiThread(runnable, recycler);
+		handler.postDelayed(result, delay);
+		return result;
 	}
 
 	private static class ActivityInfo<A extends Activity> implements Comparable<ActivityInfo<A>> {

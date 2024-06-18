@@ -2,7 +2,6 @@ package com.mrboomdev.awery.util.ui;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
-import android.content.res.Resources;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -143,6 +142,24 @@ public class ViewUtil {
 			if(params == null) return false;
 
 			callback.onUse((T) params);
+			view.setLayoutParams(params);
+			return true;
+		} catch(ClassCastException e) {
+			Log.e(TAG, "Failed to cast layout params!", e);
+			return false;
+		}
+	}
+
+	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
+			@NonNull View view,
+			UseLayoutParamsCallback<T> callback,
+			Class<T> paramsType
+	) {
+		try {
+			var params = view.getLayoutParams();
+			if(params == null) return false;
+
+			callback.onUse(paramsType.cast(params));
 			view.setLayoutParams(params);
 			return true;
 		} catch(ClassCastException e) {

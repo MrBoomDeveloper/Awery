@@ -106,9 +106,9 @@ public class LibraryFragment extends MediaCatalogListsFragment {
 						.map(DBCatalogMedia::toCatalogMedia)
 						.toList();
 
-				var category = new MediaCategoriesAdapter.Category(list.getName(), mediaList);
+				/*var category = new MediaCategoriesAdapter.Category(list.getName(), mediaList);
 				category.id = idGenerator.getLong();
-				categories.add(category);
+				categories.add(category);*/
 			}
 
 			loadCategories(categories, wasLoadId);

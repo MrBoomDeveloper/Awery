@@ -11,7 +11,8 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/large_margin"
+        android:layout_marginLeft="32dp"
+        android:paddingRight="32dp"
         android:layout_marginTop="6dp"
         android:fontFamily="@font/poppins_bold"
         android:textSize="18sp"
@@ -30,7 +31,8 @@
         android:background="@drawable/ripple_circle_white"
         android:src="@drawable/ic_back"
         android:padding="5dp"
-        android:scaleX="-1"
+        android:scaleX="-1.25"
+        android:scaleY="1.25"
         android:layout_marginRight="16dp"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintTop_toTopOf="@id/title"
@@ -51,7 +53,7 @@
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:listitem="@layout/grid_media_catalog" />
 
-    <com.mrboomdev.awery.ui.widgets.ExpandableTextView
+    <TextView
         android:id="@+id/errorMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -60,9 +62,7 @@
         tools:text="@tools:sample/lorem/random"
         android:layout_marginTop="5dp"
         android:paddingBottom="20dp"
-        app:collapsedLines="5"
         android:textIsSelectable="true"
-        app:ellipsizeTextColor="?attr/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintRight_toRightOf="@id/expand" />

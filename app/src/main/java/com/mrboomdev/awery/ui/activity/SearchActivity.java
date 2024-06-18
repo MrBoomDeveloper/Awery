@@ -3,8 +3,15 @@ package com.mrboomdev.awery.ui.activity;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -44,6 +51,7 @@ import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.sheet.FiltersSheet;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
@@ -54,28 +62,34 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
+	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 	private final SettingsItem pageFilter = new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
-	private final List<SettingsItem> filters = List.of(queryFilter, pageFilter);
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final List<CatalogMedia> items = new ArrayList<>();
+	private List<SettingsItem> filters;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private ExtensionProvider source;
 	private LayoutHeaderSearchBinding header;
 	private SwipeRefreshLayout refresher;
 	private RecyclerView recycler;
-	/* We initially set this value to "true" so that list won't try
-	to load anything because we haven't typed anything yet. */
-	private boolean isLoading = true, didReachedEnd, select;
+	private boolean didReachedEnd, select;
 	private int searchId, currentPage;
 
+	/** We initially set this value to "true" so that list won't try
+	 to load anything because we haven't typed anything yet. **/
+	private boolean isLoading = true;
+
+	@SuppressLint("NotifyDataSetChanged")
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
 		enableEdgeToEdge(this);
@@ -90,6 +104,10 @@ public class SearchActivity extends AppCompatActivity {
 		this.select = getIntent().getBooleanExtra("select", false);
 		this.queryFilter.setValue(getIntent().getStringExtra("query"));
 
+		this.filters = (List<SettingsItem>) getIntent().getSerializableExtra("filters");
+		this.filters = new ArrayList<>(filters != null ? filters : Collections.emptyList());
+		this.filters.addAll(List.of(queryFilter, pageFilter));
+
 		this.source = returnWith(getIntent().getStringExtra("source"), sourceId -> {
 			if(sourceId == null) {
 				return AnilistProvider.getInstance();
@@ -103,12 +121,16 @@ public class SearchActivity extends AppCompatActivity {
 		setContentView(linear);
 
 		header = LayoutHeaderSearchBinding.inflate(getLayoutInflater(), linear, true);
-		header.back.setOnClickListener(v -> finish());
-
 		header.edittext.setText(queryFilter.getStringValue());
 		header.edittext.requestFocus();
 
+		header.back.setOnClickListener(v -> finish());
 		header.clear.setOnClickListener(v -> header.edittext.setText(null));
+
+		header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, () -> {
+			didReachedEnd = false;
+			search(0);
+		}).show());
 
 		var inputManager = getSystemService(InputMethodManager.class);
 		inputManager.showSoftInput(header.edittext, 0);
@@ -128,14 +150,14 @@ public class SearchActivity extends AppCompatActivity {
 			return false;
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(header.getRoot(), insets -> {
-			ViewUtil.setTopMargin(header.getRoot(), insets.top);
-			ViewUtil.setHorizontalMargin(header.getRoot(), insets.left, insets.right);
+		setOnApplyUiInsetsListener(header.getRoot(), insets -> {
+			setTopMargin(header.getRoot(), insets.top);
+			setHorizontalMargin(header.getRoot(), insets.left, insets.right);
 			return true;
 		});
 
 		refresher = new SwipeRefreshLayout(this);
-		linear.addView(refresher, ViewUtil.createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT));
+		linear.addView(refresher, createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT));
 
 		refresher.setOnRefreshListener(() -> {
 			this.didReachedEnd = false;
@@ -175,10 +197,10 @@ public class SearchActivity extends AppCompatActivity {
 			}
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
+		setOnApplyUiInsetsListener(recycler, insets -> {
 			var padding = dpPx(8);
-			ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
-			ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
+			setVerticalPadding(recycler, padding + padding * 2);
+			setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
 
 			if(isLandscape() && autoColumnsCountLand) {
 				float columnSize = dpPx(110);
@@ -198,11 +220,20 @@ public class SearchActivity extends AppCompatActivity {
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
 			@Override
 			public int getSpanSize(int position) {
-				/* Don't ask. I don't know how it is working, so please don't ask about it. */
-				return (concatAdapter.getItemViewType(position) == LOADING_VIEW_TYPE) ? 1 : (isLandscape()
+				return (position < items.size()) ? 1 : (isLandscape()
 						? (columnsCountLand.get() == 0 ? layoutManager.getSpanCount() : columnsCountLand.get())
 						: columnsCountPort.get() == 0 ? layoutManager.getSpanCount() : columnsCountPort.get());
 			}
+		});
+
+		doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra("loadedMedia"), loadedMedia -> {
+			for(var item : loadedMedia) {
+				ids.put(item, idGenerator.getLong());
+			}
+
+			isLoading = false;
+			items.addAll(loadedMedia);
+			adapter.notifyItemRangeInserted(0, items.size());
 		});
 	}
 
@@ -233,6 +264,7 @@ public class SearchActivity extends AppCompatActivity {
 		}));
 	}
 
+	@SuppressLint("NotifyDataSetChanged")
 	private void search(int page) {
 		if(queryFilter.getStringValue() == null) {
 			queryFilter.setValue("");
@@ -242,7 +274,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		if(page == 0) {
 			this.items.clear();
-			adapter.setItems(this.items);
+			adapter.notifyDataSetChanged();
 			idGenerator.clear();
 		}
 
@@ -255,6 +287,7 @@ public class SearchActivity extends AppCompatActivity {
 		pageFilter.setValue(page);
 
 		source.searchMedia(this, filters, new ExtensionProvider.ResponseCallback<>() {
+			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> items) {
 				if(wasSearchId != searchId) return;
@@ -269,7 +302,7 @@ public class SearchActivity extends AppCompatActivity {
 					}
 
 					for(var item : filteredItems) {
-						item.visualId = idGenerator.getLong();
+						ids.put(item, idGenerator.getLong());
 					}
 
 					runOnUiThread(() -> {
@@ -279,21 +312,21 @@ public class SearchActivity extends AppCompatActivity {
 
 						if(page == 0) {
 							SearchActivity.this.items.addAll(filteredItems);
-							adapter.setItems(SearchActivity.this.items);
+							adapter.notifyDataSetChanged();
 						} else {
 							var wasSize = SearchActivity.this.items.size();
 							SearchActivity.this.items.addAll(filteredItems);
 							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
 						}
 
-						runDelayed(() -> AweryLifecycle.runOnUiThread(
-								() -> tryLoadMore(), recycler), 1000);
+						runDelayed(() -> tryLoadMore(), 1000, recycler);
 					});
 				});
 
 				onFinally();
 			}
 
+			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onFailure(Throwable e) {
 				if(wasSearchId != searchId) return;
@@ -309,7 +342,7 @@ public class SearchActivity extends AppCompatActivity {
 
 						if(page == 0) {
 							SearchActivity.this.items.clear();
-							adapter.setItems(SearchActivity.this.items);
+							adapter.notifyDataSetChanged();
 						}
 
 						if(e instanceof ZeroResultsException && page != 0) {
@@ -337,34 +370,14 @@ public class SearchActivity extends AppCompatActivity {
 	}
 
 	private class Adapter extends RecyclerView.Adapter<ViewHolder> {
-		private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-		private List<CatalogMedia> items;
 
 		public Adapter() {
 			setHasStableIds(true);
 		}
 
-		@SuppressLint("NotifyDataSetChanged")
-		public void setItems(List<CatalogMedia> items) {
-			idGenerator.clear();
-
-			if(items == null) {
-				this.items = Collections.emptyList();
-				notifyDataSetChanged();
-				return;
-			} else {
-				for(var item : items) {
-					item.visualId = idGenerator.getLong();
-				}
-			}
-
-			this.items = items;
-			notifyDataSetChanged();
-		}
-
 		@Override
 		public long getItemId(int position) {
-			return items.get(position).visualId;
+			return ids.get(items.get(position));
 		}
 
 		@NonNull
@@ -377,7 +390,7 @@ public class SearchActivity extends AppCompatActivity {
 			var params = binding.getRoot().getLayoutParams();
 			params.width = ViewUtil.MATCH_PARENT;
 
-			if(!ViewUtil.setHorizontalMargin(params, dpPx(6))) {
+			if(!setHorizontalMargin(params, dpPx(6))) {
 				throw new IllegalStateException("Failed to set horizontal margin for GridMediaCatalogBinding!");
 			}
 
@@ -420,10 +433,6 @@ public class SearchActivity extends AppCompatActivity {
 
 		@Override
 		public int getItemCount() {
-			if(items == null) {
-				return 0;
-			}
-
 			return items.size();
 		}
 	}

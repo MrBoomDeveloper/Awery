@@ -192,12 +192,12 @@ public class AnimeFragment extends MediaCatalogListsFragment {
 			requireActivity().runOnUiThread(() -> {
 				if(loadId != this.loadId) return;
 
-				var category = new MediaCategoriesAdapter.Category(title, filtered);
+				/*var category = new MediaCategoriesAdapter.Category(title, filtered);
 				category.id = idGenerator.getLong();
 
 				var wasSize = list.size();
 				list.add(category);
-				categoriesAdapter.notifyItemInserted(wasSize);
+				categoriesAdapter.notifyItemInserted(wasSize);*/
 
 				finishedLoading(loadId, null);
 			});

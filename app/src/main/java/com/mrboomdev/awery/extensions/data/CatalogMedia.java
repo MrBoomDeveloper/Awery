@@ -6,6 +6,8 @@ import com.google.common.collect.Lists;
 import com.mrboomdev.awery.util.Parser;
 import com.squareup.moshi.Json;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -13,7 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CatalogMedia {
+public class CatalogMedia implements Serializable {
+	@Serial
+	private static final long serialVersionUID = 1;
 	@NonNull
 	public String globalId;
 	public List<String> titles = new ArrayList<>();
@@ -113,7 +117,9 @@ public class CatalogMedia {
 		MOVIE, BOOK, TV, POST
 	}
 
-	public static class ImageVersions {
+	public static class ImageVersions implements Serializable {
+		@Serial
+		private static final long serialVersionUID = 1;
 		public String extraLarge, large, medium;
 	}
 }

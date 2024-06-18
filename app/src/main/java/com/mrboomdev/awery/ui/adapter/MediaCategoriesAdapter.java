@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
@@ -9,23 +8,26 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
+import org.jetbrains.annotations.Contract;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,6 +89,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		var viewHolder = new ViewHolder(binding);
 		var adapter = new MediaCatalogAdapter();
 
+		binding.title.setOnClickListener(v -> binding.expand.performClick());
 		binding.recycler.setRecycledViewPool(itemsPool);
 		binding.recycler.setAdapter(adapter);
 
@@ -139,7 +142,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		}
 
 		public void bind(@NonNull Category category) {
-			binding.title.setText(category.title);
+			binding.title.setText(category.sourceFeed.title);
 			adapter.setItems(category.getItems());
 
 			this.associatedCategory = category;
@@ -149,10 +152,15 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 				binding.expand.setVisibility(View.VISIBLE);
 
 				binding.expand.setOnClickListener(v -> {
-					toast("Sorry, but this screen isn't done yet!");
+					var intent = new Intent(getContext(v), SearchActivity.class);
+					intent.putExtra("source", category.sourceFeed.sourceId);
+					intent.putExtra("filters", (Serializable) category.sourceFeed.filters);
+					intent.putExtra("loadedMedia", (Serializable) category.items);
+					getContext(v).startActivity(intent);
 				});
 			} else {
 				binding.expand.setVisibility(View.GONE);
+				binding.expand.setOnClickListener(null);
 			}
 
 			if(category.getItems() == null || category.getItems().isEmpty()) {
@@ -181,11 +189,11 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 	}
 
 	public static class Category {
-		public final String title;
+		public final CatalogFeed sourceFeed;
 		public long id;
 		private List<? extends CatalogMedia> items;
 		private ViewHolder associatedViewHolder;
-		private Throwable throwable;
+		private final Throwable throwable;
 
 		public List<? extends CatalogMedia> getItems() {
 			return items;
@@ -212,13 +220,15 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 			this.associatedViewHolder = holder;
 		}
 
-		public Category(String title, Collection<? extends CatalogMedia> items) {
-			this.title = title;
+		public Category(@NonNull CatalogFeed sourceFeed, Collection<? extends CatalogMedia> items) {
+			this.sourceFeed = sourceFeed;
+			this.throwable = null;
 			setItems(items);
 		}
 
-		public Category(String title, Throwable throwable) {
-			this.title = title;
+		@Contract(pure = true)
+		public Category(@NonNull CatalogFeed sourceFeed, Throwable throwable) {
+			this.sourceFeed = sourceFeed;
 			this.throwable = throwable;
 		}
 	}

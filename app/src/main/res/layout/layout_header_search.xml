@@ -9,7 +9,7 @@
         android:id="@+id/back"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:padding="10dp"
+        android:padding="12dp"
         android:clickable="true"
         android:focusable="true"
         android:scaleType="fitCenter"
@@ -24,7 +24,22 @@
         android:id="@+id/clear"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:padding="10dp"
+        android:padding="11dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/filters"
+        android:src="@drawable/ic_close"
+        android:contentDescription="Clear" />
+
+    <ImageView
+        android:id="@+id/filters"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="11dp"
         android:clickable="true"
         android:focusable="true"
         android:scaleType="fitCenter"
@@ -32,8 +47,8 @@
         app:tint="?attr/colorOnBackground"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Clear" />
+        android:src="@drawable/ic_filter_list"
+        android:contentDescription="@string/filter" />
 
     <EditText
         android:id="@+id/edittext"

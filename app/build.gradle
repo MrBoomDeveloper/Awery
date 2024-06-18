@@ -5,6 +5,13 @@ plugins {
     id "kotlin-android"
 }
 
+// Edit this line every release
+def releaseVersion = "1.0.5"
+
+def gitCommitHash = providers.exec {
+    commandLine("git", "rev-parse", "--short", "HEAD")
+}.standardOutput.asText.get().trim()
+
 android {
     namespace "com.mrboomdev.awery"
     compileSdk 34
@@ -12,7 +19,6 @@ android {
     defaultConfig {
         applicationId "com.mrboomdev.awery"
         targetSdk 34
-        versionName "1.0.5"
 
         /* We want to make sure that all build versions across the planet will be in sync */
         var timezone = TimeZone.getTimeZone("UTC")
@@ -24,6 +30,8 @@ android {
 
         /* Only one version can be published per hour or else horrible things will happen */
         var newVersionCodeTimeout = 60 * 60 * 1000
+
+        versionName "$releaseVersion-$gitCommitHash"
         versionCode (((calendarCurrent.timeInMillis - calendarBegin.timeInMillis) / newVersionCodeTimeout) as int)
 
         javaCompileOptions {

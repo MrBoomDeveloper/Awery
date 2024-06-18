@@ -81,20 +81,11 @@ public class CrashHandler {
 	}
 
 	private static void handleError(@NonNull CrashType type, String message) {
-		var text = getAnyContext().getString(switch(type) {
-			case ANR -> R.string.app_not_responding_restart;
-
-			case ANR_FAST -> {
-				toast(R.string.app_not_responding_restart, 1);
-				restartApp();
-				yield 0;
-			}
-
+		toast(getAnyContext().getString(switch(type) {
+			case ANR, ANR_FAST -> R.string.app_not_responding_restart;
 			case JAVA -> R.string.app_crash;
 			case NATIVE -> R.string.something_terrible_happened;
-		});
-
-		toast(text, 1);
+		}), 1);
 
 		if(type != CrashType.ANR && type != CrashType.ANR_FAST) {
 			var crashFile = new File(getAnyContext().getFilesDir(), "crash.txt");
@@ -109,12 +100,9 @@ public class CrashHandler {
 			} catch(Throwable e) {
 				Log.e(TAG, "Failed to write crash file!", e);
 			}
-
-			try {
-				var activity = Objects.requireNonNull(getAnyActivity(Activity.class));
-				showErrorDialogImpl(activity, text, message, crashFile, null);
-			} catch(Exception ignored) {}
 		}
+
+		restartApp();
 	}
 	
 	public static void showErrorDialog(Context context, Throwable throwable) {

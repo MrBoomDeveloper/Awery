@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.popup.sheet;
+package com.mrboomdev.awery.ui.sheet;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;

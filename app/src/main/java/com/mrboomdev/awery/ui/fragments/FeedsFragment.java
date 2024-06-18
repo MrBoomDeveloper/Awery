@@ -161,8 +161,12 @@ public class FeedsFragment extends Fragment {
 					if(currentLoadId != loadId) return;
 
 					runOnUiThread(() -> {
-						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed.title, catalogMedia));
-						if(rowsAdapter.getItemCount() < 2) recycler.getAdapter().notifyDataSetChanged();
+						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, catalogMedia));
+
+						// I hope it'll don't do anything bad
+						if(rowsAdapter.getItemCount() < 2) {
+							Objects.requireNonNull(recycler.getAdapter()).notifyDataSetChanged();
+						}
 					}, recycler);
 
 					tryToLoadNextFeed(feed, currentLoadId);
@@ -174,7 +178,7 @@ public class FeedsFragment extends Fragment {
 
 					if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
 						runOnUiThread(() -> failedRowsAdapter.addCategory(
-								new MediaCategoriesAdapter.Category(feed.title, e)), recycler);
+								new MediaCategoriesAdapter.Category(feed, e)), recycler);
 					}
 
 					tryToLoadNextFeed(feed, currentLoadId);
@@ -182,7 +186,7 @@ public class FeedsFragment extends Fragment {
 			});
 		} else {
 			runOnUiThread(() -> failedRowsAdapter.addCategory(
-					new MediaCategoriesAdapter.Category(feed.title,
+					new MediaCategoriesAdapter.Category(feed,
 							new ZeroResultsException("No extension provider was found!", 0) {
 						@Override
 						public String getTitle(@NonNull Context context) {
