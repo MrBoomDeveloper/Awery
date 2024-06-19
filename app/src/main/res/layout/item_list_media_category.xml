@@ -7,6 +7,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="-6dp"
+        android:clickable="true"
+        android:background="@drawable/ripple_round_you"
+        android:focusable="false"
+        app:layout_constraintRight_toRightOf="@id/expand"
+        app:layout_constraintLeft_toLeftOf="@id/title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        tools:ignore="KeyboardInaccessibleWidget" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"

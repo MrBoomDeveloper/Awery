@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
@@ -24,6 +25,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
+import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
@@ -85,46 +87,95 @@ public class AniyomiProvider extends YomiProvider {
 	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
 			callback.onSuccess(stream(catalogueSource.getFilterList())
-					.map(filter -> {
-						if(filter instanceof AnimeFilter.CheckBox selectFilter) {
-							return new SettingsItem.Builder(SettingsItemType.BOOLEAN)
-									.setTitle(selectFilter.getName())
-									.setKey(selectFilter.getName())
-									.setValue(selectFilter.getState())
-									.build();
-						}
-
-						if(filter instanceof AnimeFilter.Text textFilter) {
-							return new SettingsItem.Builder(SettingsItemType.STRING)
-									.setTitle(textFilter.getName())
-									.setKey(textFilter.getName())
-									.setValue(textFilter.getState())
-									.build();
-						}
-
-						if(filter instanceof AnimeFilter.Separator) {
-							return new SettingsItem(SettingsItemType.DIVIDER);
-						}
-
-						if(filter instanceof AnimeFilter.Sort sort) {
-							return new SettingsItem.Builder(SettingsItemType.SELECT)
-									.setTitle(sort.getName())
-									.setKey(sort.getName())
-									.setItems(stream(sort.getValues()).map(state -> new SettingsItem.Builder()
-											.setTitle(state)
-											.setKey(state)
-											.build()).toList())
-									.build();
-						}
-
-						toast("Found an unknown filter! " + filter.getClass().getName(), 1);
-						return null;
-					})
+					.map(AniyomiProvider::mapAnimeFilter)
 					.filter(Objects::nonNull)
 					.toList());
 		} else {
 			callback.onFailure(new UnimplementedException("Filters aren't supported!"));
 		}
+	}
+
+	@Nullable
+	private static SettingsItem mapAnimeFilter(Object filter) {
+		if(filter instanceof AnimeFilter.CheckBox selectFilter) {
+			return new SettingsItem.Builder(SettingsItemType.BOOLEAN)
+					.setTitle(selectFilter.getName())
+					.setKey(selectFilter.getName())
+					.setValue(selectFilter.getState())
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.Select<?> select) {
+			var items = stream(select.getValues())
+					.map(AniyomiProvider::mapAnimeFilter)
+					.toList();
+
+			return new SettingsItem.Builder(SettingsItemType.SELECT)
+					.setTitle(select.getName())
+					.setKey(select.getName())
+					.setValue(items.get(select.getState()).getKey())
+					.setItems(items)
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.Text textFilter) {
+			return new SettingsItem.Builder(SettingsItemType.STRING)
+					.setTitle(textFilter.getName())
+					.setKey(textFilter.getName())
+					.setValue(textFilter.getState())
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.Separator) {
+			return new SettingsItem(SettingsItemType.DIVIDER);
+		}
+
+		if(filter instanceof AnimeFilter.Sort sort) {
+			return new SettingsItem.Builder(SettingsItemType.SELECT)
+					.setTitle(sort.getName())
+					.setKey(sort.getName())
+					.setItems(stream(sort.getValues()).map(state -> new SettingsItem.Builder()
+							.setTitle(state)
+							.setKey(state)
+							.build()).toList())
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.TriState triState) {
+			var state = Selection.State.UNSELECTED;
+			if(triState.isIgnored()) state = Selection.State.EXCLUDED;
+			if(triState.isIncluded()) state = Selection.State.SELECTED;
+
+			return new SettingsItem.Builder(SettingsItemType.EXCLUDABLE)
+					.setTitle(triState.getName())
+					.setKey(triState.getName())
+					.setValue(state)
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.Group<?> group) {
+			return new SettingsItem.Builder(SettingsItemType.SCREEN)
+					.setTitle(group.getName())
+					.setKey(group.getName())
+					.setItems(stream(group.getState()).map(AniyomiProvider::mapAnimeFilter).toList())
+					.build();
+		}
+
+		if(filter instanceof AnimeFilter.Header header) {
+			return new SettingsItem.Builder(SettingsItemType.CATEGORY)
+					.setTitle(header.getName())
+					.build();
+		}
+
+		if(filter instanceof String string) {
+			return new SettingsItem.Builder(SettingsItemType.ACTION)
+					.setKey(string)
+					.setTitle(string)
+					.build();
+		}
+
+		toast("Found an unknown filter! " + filter.getClass().getName(), 1);
+		return null;
 	}
 
 	@Override

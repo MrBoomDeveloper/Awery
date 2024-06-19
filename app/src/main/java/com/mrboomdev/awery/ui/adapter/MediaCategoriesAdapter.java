@@ -87,7 +87,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		var viewHolder = new ViewHolder(binding);
 		var adapter = new MediaCatalogAdapter();
 
-		binding.title.setOnClickListener(v -> binding.expand.performClick());
+		binding.header.setOnClickListener(v -> binding.expand.performClick());
 		binding.recycler.setRecycledViewPool(itemsPool);
 		binding.recycler.setAdapter(adapter);
 
@@ -97,7 +97,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		}, parent);
 
 		setOnApplyUiInsetsListener(binding.expand, insets -> {
-			setRightMargin(binding.expand, insets.right + dpPx(10));
+			setRightMargin(binding.expand, insets.right + dpPx(16));
 			return true;
 		}, parent);
 
@@ -148,6 +148,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 			if(category.getItems() instanceof CatalogSearchResults<?> searchResults && searchResults.hasNextPage()) {
 				binding.expand.setVisibility(View.VISIBLE);
+				binding.header.setClickable(true);
 
 				binding.expand.setOnClickListener(v -> {
 					var intent = new Intent(getContext(v), SearchActivity.class);
@@ -157,8 +158,8 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 					getContext(v).startActivity(intent);
 				});
 			} else {
+				binding.header.setClickable(false);
 				binding.expand.setVisibility(View.GONE);
-				binding.expand.setOnClickListener(null);
 			}
 
 			if(category.getItems() == null || category.getItems().isEmpty()) {

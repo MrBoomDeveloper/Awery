@@ -7,6 +7,8 @@ public enum SettingsItemType {
 	BOOLEAN,
 	@Json(name = "date")
 	DATE,
+	@Json(name = "excludable")
+	EXCLUDABLE,
 	@Json(name = "divider")
 	DIVIDER,
 	@Json(name = "category")

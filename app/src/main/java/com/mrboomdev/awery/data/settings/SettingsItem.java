@@ -15,6 +15,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryPlatform;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
+import com.mrboomdev.awery.util.Selection;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
@@ -50,6 +51,8 @@ public class SettingsItem implements Serializable {
 	private Boolean booleanValue;
 	@Json(name = "integer_value")
 	private Integer integerValue;
+	@Json(name = "excludable_value")
+	private Selection.State excludableValue;
 	@Json(name = "long_value")
 	private Long longValue;
 	@Json(name = "string_set_value")
@@ -96,6 +99,7 @@ public class SettingsItem implements Serializable {
 		this.stringValue = item.getStringValue();
 		this.integerValue = item.getIntegerValue();
 		this.longValue = item.getLongValue();
+		this.excludableValue = item.getExcludableValue();
 
 		this.from = item.getFrom();
 		this.to = item.getTo();
@@ -130,6 +134,14 @@ public class SettingsItem implements Serializable {
 
 	public Float getFrom() {
 		return from;
+	}
+
+	public Selection.State getExcludableValue() {
+		return excludableValue;
+	}
+
+	public void setExcludableValue(Selection.State state) {
+		this.excludableValue = state;
 	}
 
 	public Float getTo() {
@@ -321,7 +333,7 @@ public class SettingsItem implements Serializable {
 
 	public SettingsItem findItem(@NonNull String query) {
 		return switch(type) {
-			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT, DATE ->
+			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT, DATE, EXCLUDABLE ->
 					query.equals(getKey()) ? this : null;
 
 			case SCREEN, SCREEN_BOOLEAN -> {
@@ -374,6 +386,11 @@ public class SettingsItem implements Serializable {
 
 		public Builder setTitle(String title) {
 			item.title = title;
+			return this;
+		}
+
+		public Builder setValue(Selection.State state) {
+			item.excludableValue = state;
 			return this;
 		}
 

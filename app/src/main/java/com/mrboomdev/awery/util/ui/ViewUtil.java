@@ -85,6 +85,35 @@ public class ViewUtil {
 		return true;
 	}
 
+	public static int getTopMargin(View view) {
+		var margins = getMargins(view);
+		return margins == null ? 0 : margins.topMargin;
+	}
+
+	public static int getBottomMargin(View view) {
+		var margins = getMargins(view);
+		return margins == null ? 0 : margins.bottomMargin;
+	}
+
+	public static int getRightMargin(View view) {
+		var margins = getMargins(view);
+		return margins == null ? 0 : margins.rightMargin;
+	}
+
+	public static int getLeftMargin(View view) {
+		var margins = getMargins(view);
+		return margins == null ? 0 : margins.leftMargin;
+	}
+
+	public static boolean setMargin(View view, int horizontal, int vertical) {
+		var margins = getMargins(view);
+		if(margins == null) return false;
+
+		margins.setMargins(horizontal, vertical, horizontal, vertical);
+		view.setLayoutParams(margins);
+		return true;
+	}
+
 	public static void setPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, padding, padding, padding);
 	}

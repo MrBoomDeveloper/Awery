@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.util.NiceUtils.formatNumber;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
@@ -582,8 +583,8 @@ public class TrackingSheet {
 			} else {
 				binding.loadingState.getRoot().setVisibility(View.GONE);
 
-				binding.progress.setText(trackingOptions.progress != null ? String.valueOf(trackingOptions.progress) : null);
-				binding.score.setText(trackingOptions.score != null ? String.valueOf(trackingOptions.score) : null);
+				binding.progress.setText(formatNumber(trackingOptions.progress));
+				binding.score.setText(formatNumber(trackingOptions.score));
 				binding.isPrivate.setChecked(trackingOptions.isPrivate);
 
 				if(trackingOptions.currentLists != null) {
@@ -613,7 +614,7 @@ public class TrackingSheet {
 				if(trackingOptions == null) return;
 
 				trackingOptions.progress++;
-				binding.progress.setText(String.valueOf(trackingOptions.progress));
+				binding.progress.setText(formatNumber(trackingOptions.progress));
 			});
 
 			binding.progressWrapper.setVisibility(trackingOptions != null &&

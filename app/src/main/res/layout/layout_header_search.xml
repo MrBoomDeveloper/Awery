@@ -33,7 +33,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@id/filters"
         android:src="@drawable/ic_close"
-        android:contentDescription="Clear" />
+        android:contentDescription="@string/clear" />
 
     <ImageView
         android:id="@+id/filters"

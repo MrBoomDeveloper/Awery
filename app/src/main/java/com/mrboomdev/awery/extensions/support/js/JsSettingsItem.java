@@ -5,13 +5,16 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+import static com.mrboomdev.awery.util.NiceUtils.returnIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.util.Selection;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
@@ -31,8 +34,10 @@ public class JsSettingsItem extends SettingsItem {
 
 	@NonNull
 	@Contract(value = "_ -> new", pure = true)
-	public static SettingsItem fromJs(NativeObject o) {
-		return new SettingsItem(new SettingsItem() {
+	public static SettingsItem fromJs(@NonNull NativeObject o) {
+		return new SettingsItem(new SettingsItem(SettingsItemType.valueOf(Objects.requireNonNull(
+				stringFromJs(o.get("type", o))).toUpperCase(Locale.ROOT))) {
+
 			@Override
 			public String getTitle(android.content.Context context) {
 				return stringFromJs(o.get("title", o));
@@ -41,12 +46,6 @@ public class JsSettingsItem extends SettingsItem {
 			@Override
 			public String getDescription(android.content.Context context) {
 				return stringFromJs(o.get("description", o));
-			}
-
-			@Override
-			public SettingsItemType getType() {
-				return SettingsItemType.valueOf(Objects.requireNonNull(
-						stringFromJs(o.get("type", o))).toUpperCase(Locale.ROOT));
 			}
 
 			@Override
@@ -70,6 +69,20 @@ public class JsSettingsItem extends SettingsItem {
 			}
 
 			@Override
+			public Selection.State getExcludableValue() {
+				var string = stringFromJs(o.get("value", o));
+				if(string == null) return null;
+
+				return switch(string) {
+					case "disabled" -> Selection.State.DISABLED;
+					case "excluded" -> Selection.State.EXCLUDED;
+					case "selected" -> Selection.State.SELECTED;
+					case "unselected" -> Selection.State.UNSELECTED;
+					default -> null;
+				};
+			}
+
+			@Override
 			public String getStringValue() {
 				return stringFromJs(o.get("value", o));
 			}
@@ -85,6 +98,11 @@ public class JsSettingsItem extends SettingsItem {
 						.filter(Objects::nonNull)
 						.map(JsSettingsItem::fromJs)
 						.toList();
+			}
+
+			@Override
+			public Long getLongValue() {
+				return longFromJs(o.get("value", o));
 			}
 
 			@Override
@@ -120,6 +138,14 @@ public class JsSettingsItem extends SettingsItem {
 		}
 
 		o.put("value", o, switch(setting.getType()) {
+			case EXCLUDABLE -> Objects.requireNonNullElse(returnIfNotNull(
+					setting.getExcludableValue(), state -> switch(state) {
+				case DISABLED -> "disabled";
+				case EXCLUDED -> "excluded";
+				case SELECTED -> "selected";
+				case UNSELECTED -> "unselected";
+			}), Selection.State.UNSELECTED);
+
 			case BOOLEAN, SCREEN_BOOLEAN -> setting.getBooleanValue();
 			case DATE -> setting.getLongValue();
 			case DIVIDER, CATEGORY, COLOR, SCREEN, ACTION -> null;

@@ -5,15 +5,12 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media3.common.MimeTypes;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.sdk.util.Callbacks;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
@@ -21,7 +18,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -198,6 +194,17 @@ public class NiceUtils {
 	 */
 	public static <A, B> A returnWith(B object, @NonNull Callbacks.Result1<A, B> callback) {
 		return callback.run(object);
+	}
+
+	@NonNull
+	public static String formatNumber(Number number) {
+		if(number == null) return "";
+
+		if(number.floatValue() == number.longValue()) {
+			return String.valueOf(number.longValue());
+		}
+
+		return String.valueOf(number);
 	}
 
 	public static <A> void with(A a, @NonNull Callbacks.Callback1<A> callback) {

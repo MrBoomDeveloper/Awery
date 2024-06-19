@@ -18,6 +18,7 @@ import com.mrboomdev.awery.sdk.util.Callbacks;
 
 public class EditTextField extends FancyField<TextInputLayout> {
 	private final Context context;
+	private TextInputLayout layout;
 	private TextInputEditText editText;
 	private Callbacks.Callback1<String> editListener;
 	private Runnable completionListener;
@@ -43,7 +44,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	public void setHint(String hint) {
 		this.hint = hint;
 
-		if(isCreated()) {
+		if(editText != null) {
 			editText.setHint(hint);
 		}
 	}
@@ -55,15 +56,15 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	public void setError(@Nullable String error) {
 		this.error = error;
 
-		if(isCreated()) {
-			getView().setError(error);
+		if(layout != null) {
+			layout.setError(error);
 		}
 	}
 
 	public void setEditListener(Callbacks.Callback1<String> editListener) {
 		this.editListener = editListener;
 
-		if(isCreated() && editListener != null) {
+		if(editText != null && editListener != null) {
 			editText.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -82,7 +83,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	public void setLinesCount(int lines) {
 		this.lines = lines;
 
-		if(isCreated()) {
+		if(editText != null) {
 			editText.setLines(lines);
 		}
 	}
@@ -91,14 +92,14 @@ public class EditTextField extends FancyField<TextInputLayout> {
 		if(text == null) this.text = "";
 		else this.text = text.toString();
 
-		if(isCreated()) {
+		if(editText != null) {
 			editText.setText(this.text);
 		}
 	}
 
 	public void setCompletionListener(Runnable callback) {
 		this.completionListener = callback;
-		if(!isCreated()) return;
+		if(editText == null) return;
 
 		editText.setOnEditorActionListener((v, actionId, event) -> switch(actionId) {
 			case EditorInfo.IME_ACTION_DONE,
@@ -124,7 +125,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	 */
 	public void setImeFlags(int flags) {
 		this.imeFlags = EditorInfo.IME_FLAG_NO_FULLSCREEN | flags;
-		if(isCreated()) editText.setImeOptions(this.imeFlags);
+		if(editText != null) editText.setImeOptions(this.imeFlags);
 	}
 
 	/**
@@ -134,13 +135,13 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	public void setType(int flags) {
 		this.type = flags;
 
-		if(isCreated()) {
+		if(editText != null) {
 			editText.setInputType(type);
 		}
 	}
 
 	public String getText() {
-		if(!isCreated()) {
+		if(editText == null) {
 			return "";
 		}
 
@@ -151,6 +152,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	@Override
 	public TextInputLayout createView() {
 		var binding = WidgetEdittextOutlinedBinding.inflate(LayoutInflater.from(context));
+		layout = binding.getRoot();
 		editText = binding.edittext;
 
 		// We run all setters for a case if those values

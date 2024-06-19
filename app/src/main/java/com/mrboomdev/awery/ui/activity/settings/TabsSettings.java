@@ -5,7 +5,6 @@ import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
@@ -24,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
@@ -38,10 +36,8 @@ import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
-import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
-import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
-import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -240,7 +236,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					}
 
 					snackbar(Objects.requireNonNull(getActivity(context)),
-							"Restart required!", "Restart", AweryLifecycle::restartApp);
+							R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
 				});
 			}
 		});
