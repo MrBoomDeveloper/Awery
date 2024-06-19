@@ -1,2 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="japanese">Japoneză</string>
+    <string name="empty_library_message">Răsfoiește catalogul și elementele vizionate vor apărea aici!</string>
+    <string name="russia">Rusia</string>
+    <string name="watch">Vizionează</string>
+    <string name="library">Librărie</string>
+    <string name="advanced">Avansat</string>
+    <string name="read">Citește</string>
+    <string name="login">Loghează-te</string>
+    <string name="logout">Ieși din cont</string>
+    <string name="english">Engleză</string>
+    <string name="russian">Rusă</string>
+    <string name="chinese">Chineză</string>
+    <string name="korean">Coreană</string>
+    <string name="us">SUA</string>
+    <string name="japan">Japonia</string>
+    <string name="china">China</string>
+    <string name="korea">Coreea</string>
+    <string name="global_excluded_tags">Etichete Excluse Global</string>
+    <string name="back">Înapoi</string>
+    <string name="home">Acasă</string>
+    <string name="info">Informații</string>
+    <string name="watch_now">Vizionează Acum</string>
+    <string name="new_list">Creează o listă</string>
+    <string name="no_media_found">Nu s-a găsit nimic. Incearcă sa modifici fraza sau filtrele.</string>
+    <string name="add_to_bookmarks">Adaugă la o listă</string>
+    <string name="no_episodes_found">Niciun episod găsit. Incearcă sa modifici fraza sau filtrele.</string>
+    <string name="no_extensions_found">Nicio extensie găsită. Incearcă sa modifici fraza sau filtrele.</string>
+    <string name="no_tracker_extensions">Nu ai extensii „Tracker” instalate. Descarcă-le pentru a vedea ceva nou aici!</string>
+    <string name="no_relations_extensions">Nu aveți extensii de relații instalate. Descărcați-le pentru a vedea ceva nou aici!</string>
+    <string name="default_tab_description">Vor fi deschise când aplicația pornește</string>
+    <string name="adult_content_description">Nesigur pentru copii.</string>
+    <string name="top_score">Cel mai Mare Scor</string>
+    <string name="recently_updated">Actualizate Recent</string>
+    <string name="username">Nume de Utilizator</string>
+    <string name="hide_library_entries">Ascunde Elementele Librăriei</string>
+    <string name="hide_library_entries_description">Ascunde elementele înafara librăriei</string>
+    <string name="list_editor">Editor de Liste</string>
+    <string name="notifications">Notificări</string>
+    <string name="progress">Progres</string>
+    <string name="score">Scor</string>
+    <string name="save">Salvează</string>
+    <string name="delete">Elimină</string>
+    <string name="remove">Șterge</string>
+    <string name="name">Nume</string>
+    <string name="format">Format</string>
+    <string name="status_title">Status</string>
+    <string name="ep_duration">Durată Medie</string>
+    <string name="season">Sezon</string>
+    <string name="start_date">Data Începerii</string>
+    <string name="end_date">Data Terminării</string>
+    <string name="main_studio">Studio</string>
+    <string name="genres">Genuri</string>
+    <string name="characters">Personaje</string>
+    <string name="roles">Roluri</string>
+    <string name="play_yt">Vizioneaza pe YouTube</string>
+    <string name="ep">Episod</string>
+    <string name="chaps">Capitole</string>
+    <string name="chap">Capitol</string>
+    <string name="filler">Filler</string>
+    <string name="tag">Etichetă</string>
+    <string name="tags">Etichete</string>
+    <string name="prequel">Predecesor</string>
+    <string name="sequel">Succesor</string>
+    <string name="settings">Setări</string>
+    <string name="extensions">Extensii</string>
+    <string name="player_settings">Setări Player</string>
+    <string name="player">Player</string>
+    <string name="reader_settings">Setări Cititor</string>
+    <string name="default_source">Sursă Implicită</string>
+    <string name="devs">Dezvoltatori</string>
+    <string name="disclaimer">Atenție</string>
+    <string name="video">Video</string>
+    <string name="video_info_info">Arată rezoluția video curentă, utilă pentru serverele <b>„Multi Quality”</b>.</string>
+    <string name="default_quality">Selectare Auto. a Calității</string>
+    <string name="secondary_sub_outline_type_select">Tipul Conturului Subtitrărilor</string>
+    <string name="sub_background_color_select">Culoarea de Fundal a Subtitrărilor</string>
+    <string name="width">Lățime</string>
+    <string name="default_playback_speed">Viteza de redare implicită: %1$s</string>
+    <string name="resize_mode_button">Modul implicit de redimensionare</string>
+    <string name="subtitles">Subtitrări</string>
+    <string name="primary_sub_color_select">Culoarea Subtitrărilor</string>
+    <string name="secondary_sub_color_select">Culoarea Conturului Subtitrărilor</string>
+    <string name="sub_font_select">Fontul Subtitrărilor</string>
+    <string name="subtitle_font_size">Mărimea Subtitrărilor</string>
+    <string name="auto">Auto</string>
+    <string name="auto_play_next_episode">Redă Automat Episodul Următor</string>
+    <string name="auto_skip_fillers">Sari Automat Peste Filler</string>
+    <string name="auto_skip_fillers_info">Sari peste Fillere când treci la episodul următor.</string>
+    <string name="update_progress">Actualizează Progresul</string>
+    <string name="ask_update_progress_anime">Întreabă pentru fiecare media \"individual\"</string>
+    <string name="ask_update_progress_info_ep">Dezactivarea va actualiza întotdeauna automat progresul atunci când episodul este vizionat.</string>
+    <string name="watch_complete_percentage">Procentajul de Actualizare a Vizionării</string>
+    <string name="behaviour">Comportament</string>
+    <string name="always_continue">Întotdeauna continuă de unde ai rămas</string>
+    <string name="pause_video_focus">Pauză cănd nu este in Focus(de ex. cănd ești în meniul p/u setări rapide)</string>
+    <string name="gestures">Gest Volum &amp; Luminozitate</string>
+    <string name="double_tap">Apasă de două ori pentru a căuta</string>
+    <string name="empty_library_title">Librărie goală</string>
+    <string name="no_subtitles_extensions">Nu aveți extensii de subtitrări instalate. Descărcați-le pentru a vedea ceva nou aici!</string>
+    <string name="material_you_description">Culorile aplicației vor fi generate bazat pe imaginea de fundal</string>
+    <string name="no_internet">Fără Conexiune la Internet</string>
+    <string name="refresh">Reîmprospătează</string>
+    <string name="search">Caută</string>
+    <string name="sort_by">Sortează După</string>
+    <string name="genre">Gen</string>
+    <string name="continue_watching">Continuă să Vizionezi</string>
+    <string name="continue_reading">Continuă să Citești</string>
+    <string name="recommended">Recomandate</string>
+    <string name="get_recommendations">Vizioneză/Citește niște Anime sau Manga pentru a primi Recomandări</string>
+    <string name="started_at">Început la</string>
+    <string name="completed_at">Completat la</string>
+    <string name="total_chaps">Nr. Total de Capitole</string>
+    <string name="total_eps">Nr. Total de Episoade</string>
+    <string name="source">Sursă</string>
+    <string name="description">Descriere</string>
+    <string name="relations">Legături</string>
+    <string name="details">Detalii</string>
+    <string name="eps">Episoade</string>
+    <string name="ui">Interfața Utilizatorului</string>
+    <string name="common">Comun</string>
+    <string name="theme">Temă</string>
+    <string name="about">Despre</string>
+    <string name="synonyms">Sinonime</string>
+    <string name="downloads">Descărcări</string>
+    <string name="reader">Cititor</string>
+    <string name="download_manager_select">Manager Descărcări</string>
+    <string name="trailer">Trailer</string>
+    <string name="opening">Opening</string>
+    <string name="ending">Ending</string>
+    <string name="no_comment_extensions">Nu ai extensii pentru comentarii instalate. Descarcă-le pentru a vedea ceva nou aici!</string>
+    <string name="sub_window_color_select">Culoarea Ferestrei Subtitrărilor</string>
+    <string name="sub_window_color_info">Fereastra de subtitrare este partea stângă și dreaptă de la acestea. (în partea unde fundalul nu este)</string>
+    <string name="watch_complete_percentage_info">Procentul la care ar trebui să fie actualizat progresul după ce ai urmărit un episod.
+\nAcest lucru setează și încărcarea prealabilă a link-urilor pentru episodul următor.</string>
+    <string name="full_disclaimer">‐ De sine stătător, Awery furnizează un Tracker de anime și manga și nu distribuie anime sau manga pentru vizionat sau descărcat.
+\n
+\n‐ Awery sau dezvoltatorii/personalul ei nu dețin(e) conținutul găsit in Awery. Orice imagine și informație anime/manga găsită în aplicație sunt obținute de la API-uri publice (AniList, MyAnimeList, Kitsu).
+\n
+\n- În plus, toate linkurile găsite în Awery sunt luate de la plugin-uri 3rd party și nu au legătură cu Awery sau personalul său.
+\n
+\n- Awery sau deținătorii săi nu sunt responsabili pentru folosirea incorectă a conținutului găsit în sau înafara aplicației și nu pot fi trași la răspundere pentru distribuirea conținutului găsit în aplicație.
+\n
+\n- Folosind Awery, tu accepți că autorii aplicației nu sunt responsabili pentru orice conținut găsit în aplicație. Tu accepți faptul că nu ai voie să folosești Awery pentru a descărca sau viziona conținut protejat prin drepturi de autor.
+\n
+\n- În cazul în care sunt implicate probleme de încălcare a dreptului la internet, contactați site-ul sursă. Dezvoltatorii nu îșî asumă nicio responsabilitate legală.</string>
+    <string name="height">Înălțime</string>
+    <string name="default_quality_info">Utilizează automat cea mai apropiată calitate disponibilă în mod implicit, se aplică DOAR pentru serverele „Multi Quality”. Se schimbă automat la redarea unui videoclip.</string>
+</resources>
