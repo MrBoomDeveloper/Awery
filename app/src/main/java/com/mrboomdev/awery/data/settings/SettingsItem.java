@@ -3,7 +3,6 @@ package com.mrboomdev.awery.data.settings;
 import static com.mrboomdev.awery.app.AweryApp.getString;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -23,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class SettingsItem implements Serializable {
@@ -356,6 +354,8 @@ public class SettingsItem implements Serializable {
 		public Builder(SettingsItemType type) {
 			item.type = type;
 		}
+
+		public Builder() {}
 
 		public Builder setKey(String key) {
 			item.key = key;

@@ -42,10 +42,10 @@
 					"title": "app_language", "icon": "ic_language",
 					"behaviour": "languages", "show_if": "debug"
 				}, {
-					"key": "media_columns_count_land", "type": "integer", "from": 0, "integer_value": 0,
+					"key": "media_columns_count_land", "type": "integer", "from": 0, "to": 10, "integer_value": 0,
 					"title": "media_columns_count_land", "description": "0 for auto"
 				}, {
-					"key": "media_columns_count_port", "type": "integer", "from": 0, "integer_value": 0,
+					"key": "media_columns_count_port", "type": "integer", "from": 0, "to": 10, "integer_value": 0,
 					"title": "media_columns_count_port", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {

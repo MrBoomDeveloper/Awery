@@ -4,9 +4,13 @@ import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
@@ -25,10 +29,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
@@ -36,15 +40,16 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
+import com.mrboomdev.awery.util.ui.fields.FancyField;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -153,9 +158,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		var binding = ItemListSettingBinding.inflate(inflater, parent, false);
 		var holder = new ViewHolder(binding);
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-			ViewUtil.setLeftPadding(binding.getRoot(), insets.left);
-			ViewUtil.setRightPadding(binding.getRoot(), insets.right);
+		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+			setLeftPadding(binding.getRoot(), insets.left);
+			setRightPadding(binding.getRoot(), insets.right);
 			return false;
 		}, parent);
 
@@ -193,7 +198,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								if(setting instanceof CustomSettingsItem custom) {
 									custom.saveValue(inputField.getText());
 								} else {
-									var prefs = NicePreferences.getPrefs();
+									var prefs = getPrefs();
 									prefs.setString(setting.getKey(), inputField.getText());
 									prefs.saveAsync();
 								}
@@ -211,46 +216,61 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 
 				case INTEGER -> {
-					var inputField = new EditTextField(context);
-					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
-					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
-					inputField.setText(setting.getIntegerValue());
-					inputField.setLinesCount(1);
+					Object field;
+
+					if(setting.isFromToAvailable()) {
+						var slider = new Slider(context);
+						slider.setValueFrom(setting.getFrom());
+						slider.setValueTo(setting.getTo());
+						slider.setStepSize(1);
+						slider.setValue(Objects.requireNonNullElse(setting.getIntegerValue(), 0));
+						field = slider;
+					} else {
+						var inputField = new EditTextField(context);
+						inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
+						inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
+						inputField.setText(setting.getIntegerValue());
+						inputField.setLinesCount(1);
+						field = inputField;
+					}
 
 					var dialog = new DialogBuilder(context)
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
-							.addView(inputField.getView())
+							.addView(field instanceof FancyField<?> fancy ? fancy.getView() : (View) field)
 							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
-								if(inputField.getText().isBlank()) {
-									inputField.setError(R.string.text_cant_empty);
-									return;
-								}
-
-								try {
-									var number = Integer.parseInt(inputField.getText());
-
-									if(setting.isFromToAvailable()) {
-										if(number > setting.getTo()) {
-											inputField.setError("Value is too high. Max is: " + Math.round(setting.getTo()));
-											return;
-										}
-
-										if(number < setting.getFrom()) {
-											inputField.setError("Value is too low. Min is: " + Math.round(setting.getFrom()));
-											return;
-										}
+								if(field instanceof EditTextField inputField) {
+									if(inputField.getText().isBlank()) {
+										inputField.setError(R.string.text_cant_empty);
+										return;
 									}
 
-									var prefs = NicePreferences.getPrefs();
-									prefs.setInteger(setting.getKey(), number);
-									prefs.saveAsync();
+									try {
+										var number = Integer.parseInt(inputField.getText());
 
-									setting.setValue(number);
-								} catch(NumberFormatException e) {
-									inputField.setError(R.string.this_not_number);
-									return;
+										if(setting.isFromToAvailable()) {
+											if(number > setting.getTo()) {
+												inputField.setError("Value is too high. Max is: " + Math.round(setting.getTo()));
+												return;
+											}
+
+											if(number < setting.getFrom()) {
+												inputField.setError("Value is too low. Min is: " + Math.round(setting.getFrom()));
+												return;
+											}
+										}
+
+										getPrefs().setInteger(setting.getKey(), number).saveAsync();
+										setting.setValue(number);
+									} catch(NumberFormatException e) {
+										inputField.setError(R.string.this_not_number);
+										return;
+									}
+								} else {
+									var slider = (Slider) field;
+									getPrefs().setInteger(setting.getKey(), (int) slider.getValue()).saveAsync();
+									setting.setValue((int) slider.getValue());
 								}
 
 								_dialog.dismiss();
@@ -261,7 +281,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							})
 							.show();
 
-					inputField.setCompletionListener(dialog::performPositiveClick);
+					if(field instanceof EditTextField inputField) {
+						inputField.setCompletionListener(dialog::performPositiveClick);
+					}
 				}
 
 				case SELECT, SELECT_INTEGER -> {
@@ -303,7 +325,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									var id = item.getId();
 									holder.updateDescription(id);
 
-									var prefs = NicePreferences.getPrefs();
+									var prefs = getPrefs();
 
 									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
@@ -409,7 +431,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					} else if(setting.getItems() != null) {
 						var selected = setting instanceof CustomSettingsItem customSetting
 								? (Set<String>) customSetting.getSavedValue()
-								: NicePreferences.getPrefs().getStringSet(setting.getKey());
+								: getPrefs().getStringSet(setting.getKey());
 
 						dialog.setItems(stream(setting.getItems())
 								.map(item -> new Selection.Selectable<>(
@@ -517,7 +539,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			if(result == null) return null;
 
 			if(result.contains("${VALUE_TITLE}")) {
-				var prefs = payload == null ? NicePreferences.getPrefs() : null;
+				var prefs = payload == null ? getPrefs() : null;
 
 				var value = switch(item.getType()) {
 					case STRING -> payload != null ? payload : (item instanceof CustomSettingsItem customSetting

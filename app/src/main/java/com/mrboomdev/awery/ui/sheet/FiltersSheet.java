@@ -156,7 +156,7 @@ public class FiltersSheet extends SheetDialog {
 					progressBar.setVisibility(View.GONE);
 
 					for(var filter : filters) {
-						//createFilterView(filter, fields);
+						createFilterView(filter, fields);
 					}
 				});
 			}

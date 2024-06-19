@@ -102,9 +102,18 @@ public class AniyomiProvider extends YomiProvider {
 									.build();
 						}
 
-						if(filter instanceof AnimeFilter.Text text) {
-							return new SettingsItem.Builder(SettingsItemType.CATEGORY)
-									.setTitle(text.getName())
+						if(filter instanceof AnimeFilter.Separator) {
+							return new SettingsItem(SettingsItemType.DIVIDER);
+						}
+
+						if(filter instanceof AnimeFilter.Sort sort) {
+							return new SettingsItem.Builder(SettingsItemType.SELECT)
+									.setTitle(sort.getName())
+									.setKey(sort.getName())
+									.setItems(stream(sort.getValues()).map(state -> new SettingsItem.Builder()
+											.setTitle(state)
+											.setKey(state)
+											.build()).toList())
 									.build();
 						}
 
