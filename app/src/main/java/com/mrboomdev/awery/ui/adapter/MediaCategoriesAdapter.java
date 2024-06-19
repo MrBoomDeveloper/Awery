@@ -29,8 +29,6 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -190,46 +188,39 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 	public static class Category {
 		public final CatalogFeed sourceFeed;
-		public long id;
-		private List<? extends CatalogMedia> items;
-		private ViewHolder associatedViewHolder;
+		private final CatalogSearchResults<? extends CatalogMedia> items;
 		private final Throwable throwable;
+		private ViewHolder associatedViewHolder;
 
 		public List<? extends CatalogMedia> getItems() {
 			return items;
-		}
-
-		@SuppressLint("NotifyDataSetChanged")
-		private void setItems(Collection<? extends CatalogMedia> items) {
-			if(items instanceof List<? extends CatalogMedia> list) {
-				this.items = list;
-			} else if(items != null) {
-				this.items = new ArrayList<>(items);
-			}
-
-			if(associatedViewHolder != null) {
-				if(items == null) {
-					this.items = Collections.emptyList();
-				}
-
-				associatedViewHolder.bind(this);
-			}
 		}
 
 		protected void setAssociatedViewHolder(ViewHolder holder) {
 			this.associatedViewHolder = holder;
 		}
 
-		public Category(@NonNull CatalogFeed sourceFeed, Collection<? extends CatalogMedia> items) {
+		public Category(
+				@NonNull CatalogFeed sourceFeed,
+				CatalogSearchResults<? extends CatalogMedia> items,
+				Throwable throwable
+		) {
 			this.sourceFeed = sourceFeed;
-			this.throwable = null;
-			setItems(items);
+			this.items = items;
+			this.throwable = throwable;
+
+			if(associatedViewHolder != null) {
+				associatedViewHolder.bind(this);
+			}
+		}
+
+		public Category(@NonNull CatalogFeed sourceFeed, CatalogSearchResults<? extends CatalogMedia> items) {
+			this(sourceFeed, items, null);
 		}
 
 		@Contract(pure = true)
 		public Category(@NonNull CatalogFeed sourceFeed, Throwable throwable) {
-			this.sourceFeed = sourceFeed;
-			this.throwable = throwable;
+			this(sourceFeed, CatalogSearchResults.empty(), throwable);
 		}
 	}
 }

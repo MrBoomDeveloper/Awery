@@ -69,8 +69,6 @@ public class SearchActivity extends AppCompatActivity {
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
-	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
-	private final SettingsItem pageFilter = new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final List<CatalogMedia> items = new ArrayList<>();
@@ -82,6 +80,12 @@ public class SearchActivity extends AppCompatActivity {
 	private RecyclerView recycler;
 	private boolean didReachedEnd, select;
 	private int searchId, currentPage;
+
+	private final SettingsItem queryFilter = new SettingsItem(
+			SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
+
+	private final SettingsItem pageFilter = new SettingsItem(
+			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
 
 	/** We initially set this value to "true" so that list won't try
 	 to load anything because we haven't typed anything yet. **/

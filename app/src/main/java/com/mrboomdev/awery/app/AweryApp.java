@@ -8,9 +8,13 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +45,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.elevation.SurfaceColors;
+import com.google.android.material.sidesheet.SideSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
@@ -99,6 +106,37 @@ public class AweryApp extends Application {
 				.usePlugin(SpoilerPlugin.create())
 				.usePlugin(HtmlPlugin.create())
 				.build();
+	}
+
+	/**
+	 * A hacky method to fix the height, width of the dialog and color of the navigation bar.
+	 * @author MrBoomDev
+	 */
+	public static void fixDialog(@NonNull Dialog dialog) {
+		var context = dialog.getContext();
+		var window = dialog.getWindow();
+
+		if(window == null) {
+			throw new IllegalStateException("You can't invoke this method before dialog is being shown!");
+		}
+
+		if(dialog instanceof BottomSheetDialog sheet) {
+			sheet.getBehavior().setPeekHeight(1000);
+			window.setNavigationBarColor(SurfaceColors.SURFACE_1.getColor(context));
+		}
+
+		if(dialog instanceof SideSheetDialog) {
+			var sheet = window.findViewById(com.google.android.material.R.id.m3_side_sheet);
+			useLayoutParams(sheet, params -> params.width = dpPx(400));
+			window.setNavigationBarColor(SurfaceColors.SURFACE_1.getColor(context));
+		} else {
+			/* If we'll try to do this shit with the SideSheetDialog, it will get centered,
+			   so we use different approaches for different dialog types.*/
+
+			if(getConfiguration().screenWidthDp > 400) {
+				window.setLayout(dpPx(400), MATCH_PARENT);
+			}
+		}
 	}
 
 	public static int getResourceId(@NonNull Class<?> type, String res) {

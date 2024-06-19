@@ -18,12 +18,11 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -100,6 +99,12 @@ public class AniyomiProvider extends YomiProvider {
 									.setTitle(textFilter.getName())
 									.setKey(textFilter.getName())
 									.setValue(textFilter.getState())
+									.build();
+						}
+
+						if(filter instanceof AnimeFilter.Text text) {
+							return new SettingsItem.Builder(SettingsItemType.CATEGORY)
+									.setTitle(text.getName())
 									.build();
 						}
 

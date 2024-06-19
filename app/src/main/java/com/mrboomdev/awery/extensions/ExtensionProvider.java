@@ -5,25 +5,22 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base class for all extension providers.
@@ -37,6 +34,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String FILTER_START_DATE = "_AWERY_FILTER_START_DATE_";
 	public static final String FILTER_END_DATE = "_AWERY_FILTER_END_DATE_";
 	public static final String FILTER_TAGS = "_AWERY_FILTER_TAGS_";
+
 	public static final int FEATURE_TAGS_SEARCH = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}

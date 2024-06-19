@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
@@ -42,10 +41,10 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
+import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
@@ -61,15 +60,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class FeedsFragment extends Fragment {
 	private static final String TAG = "FeedsFragment";
 	private static final int MAX_LOADING_FEEDS_AT_TIME = 5;
-	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
-			failedRowsAdapter = new MediaCategoriesAdapter();
-	private final SingleViewAdapter.BindingSingleViewAdapter<EmptyView> emptyStateAdapter =
-			SingleViewAdapter.fromBindingDynamic(parent -> new EmptyView(parent, false));
-	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>(), loadingFeeds = new LinkedBlockingQueue<>();
+	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>();
+	private final Queue<CatalogFeed> loadingFeeds = new LinkedBlockingQueue<>();
 	private List<CatalogFeed> feeds;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private RecyclerView recycler;
 	private long loadId;
+
+	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
+			failedRowsAdapter = new MediaCategoriesAdapter();
+
+	private final SingleViewAdapter.BindingSingleViewAdapter<EmptyView> emptyStateAdapter =
+			SingleViewAdapter.fromBindingDynamic(parent -> new EmptyView(parent, false));
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -79,7 +81,12 @@ public class FeedsFragment extends Fragment {
 	}
 
 	public void scrollToTop() {
-		Objects.requireNonNull(recycler.getLayoutManager()).startSmoothScroll(new LinearSmoothScroller(requireContext()) {
+		if(recycler == null) return;
+
+		var layoutManager = recycler.getLayoutManager();
+		if(layoutManager == null) return;
+
+		layoutManager.startSmoothScroll(new LinearSmoothScroller(requireContext()) {
 			{ setTargetPosition(0); }
 
 			@Override
@@ -160,8 +167,11 @@ public class FeedsFragment extends Fragment {
 				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> catalogMedia) {
 					if(currentLoadId != loadId) return;
 
+					var filtered = MediaUtils.filterMediaSync(catalogMedia);
+					var filteredResults = CatalogSearchResults.of(filtered, catalogMedia.hasNextPage());
+
 					runOnUiThread(() -> {
-						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, catalogMedia));
+						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, filteredResults));
 
 						// I hope it'll don't do anything bad
 						if(rowsAdapter.getItemCount() < 2) {
@@ -259,7 +269,10 @@ public class FeedsFragment extends Fragment {
 	}
 
 
-	private void setupHeader(@NonNull LayoutHeaderMainBinding header, RecyclerView recycler) {
+	private void setupHeader(
+			@NonNull LayoutHeaderMainBinding header,
+			RecyclerView recycler
+	) {
 		header.search.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SearchActivity.class);
 			startActivity(intent);

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util;
 
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -43,8 +44,7 @@ import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
+import com.mrboomdev.awery.util.ui.fields.EditTextField;
 
 import org.jetbrains.annotations.Contract;
 
@@ -70,7 +70,9 @@ public class MediaUtils {
 	}
 
 	@NonNull
-	public static Collection<? extends CatalogMedia> filterMediaSync(@NonNull Collection<? extends CatalogMedia> items) {
+	public static Collection<? extends CatalogMedia> filterMediaSync(
+			@NonNull Collection<? extends CatalogMedia> items
+	) {
 		return stream(items)
 				.filter(item -> !isMediaFilteredSync(item))
 				.toList();
@@ -145,7 +147,7 @@ public class MediaUtils {
 		sheet.setContentView(binding.getRoot());
 		sheet.show();
 
-		DialogUtils.fixDialog(sheet);
+		fixDialog(sheet);
 	}
 
 	public static void blacklistMedia(CatalogMedia media, Runnable callback) {
@@ -172,7 +174,7 @@ public class MediaUtils {
 	}
 
 	public static void requestCreateNewList(Context context, OnListCreatedListener callback) {
-		var input = new DialogEditTextField(context, "List name");
+		var input = new EditTextField(context, "List name");
 		input.setLinesCount(1);
 
 		var dialog = new DialogBuilder(context)
@@ -198,7 +200,7 @@ public class MediaUtils {
 					_dialog.dismiss();
 				}).show();
 
-		input.setCompletionCallback(dialog::performPositiveClick);
+		input.setCompletionListener(dialog::performPositiveClick);
 	}
 
 	public static void requestDeleteList(Context context, @NonNull CatalogList list, Runnable callback) {
@@ -314,7 +316,7 @@ public class MediaUtils {
 				sheet.setContentView(binding.getRoot());
 				sheet.show();
 
-				DialogUtils.fixDialog(sheet);
+				fixDialog(sheet);
 			});
 		}).start();
 	}

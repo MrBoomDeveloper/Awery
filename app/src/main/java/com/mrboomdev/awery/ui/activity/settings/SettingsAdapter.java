@@ -40,7 +40,7 @@ import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-import com.mrboomdev.awery.util.ui.dialog.DialogEditTextField;
+import com.mrboomdev.awery.util.ui.fields.EditTextField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,7 +179,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case STRING -> {
 					setting.restoreSavedValues();
 
-					var inputField = new DialogEditTextField(context);
+					var inputField = new EditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setText(setting.getStringValue());
 					inputField.setLinesCount(1);
@@ -207,11 +207,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							})
 							.show();
 
-					inputField.setCompletionCallback(dialog::performPositiveClick);
+					inputField.setCompletionListener(dialog::performPositiveClick);
 				}
 
 				case INTEGER -> {
-					var inputField = new DialogEditTextField(context);
+					var inputField = new EditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setType(EditorInfo.TYPE_CLASS_NUMBER);
 					inputField.setText(setting.getIntegerValue());
@@ -261,7 +261,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							})
 							.show();
 
-					inputField.setCompletionCallback(dialog::performPositiveClick);
+					inputField.setCompletionListener(dialog::performPositiveClick);
 				}
 
 				case SELECT, SELECT_INTEGER -> {

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 
 import android.content.Context;
@@ -25,6 +26,10 @@ public abstract class SheetDialog implements DialogInterface {
 		return dialog;
 	}
 
+	public Context getContext() {
+		return context;
+	}
+
 	public void show() {
 		dismiss();
 
@@ -32,18 +37,46 @@ public abstract class SheetDialog implements DialogInterface {
 			@Override
 			protected void onStart() {
 				super.onStart();
-				DialogUtils.fixDialog(dialog);
+				fixDialog(dialog);
+			}
+
+			@Override
+			protected void onStop() {
+				super.onStop();
+				dialog = null;
+			}
+
+			@Override
+			public void onDetachedFromWindow() {
+				super.onDetachedFromWindow();
+				dialog = null;
 			}
 		} : new BottomSheetDialog(context) {
 			@Override
 			protected void onStart() {
 				super.onStart();
-				DialogUtils.fixDialog(dialog);
+				fixDialog(dialog);
+			}
+
+			@Override
+			protected void onStop() {
+				super.onStop();
+				dialog = null;
+			}
+
+			@Override
+			public void onDetachedFromWindow() {
+				super.onDetachedFromWindow();
+				dialog = null;
 			}
 		};
 
 		dialog.setContentView(getContentView(context));
 		dialog.show();
+	}
+
+	public boolean isShown() {
+		return dialog != null;
 	}
 
 	public void dismiss() {

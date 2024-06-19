@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public interface CatalogSearchResults<T> extends List<T> {
@@ -16,8 +17,6 @@ public interface CatalogSearchResults<T> extends List<T> {
 		public Impl(Collection<T> collection) {
 			super(collection);
 		}
-
-		public Impl() {}
 	}
 
 	@NonNull
@@ -28,6 +27,17 @@ public interface CatalogSearchResults<T> extends List<T> {
 			@Override
 			public boolean hasNextPage() {
 				return hasNextPage;
+			}
+		};
+	}
+
+	@NonNull
+	static <T> CatalogSearchResults<T> empty() {
+		return new CatalogSearchResults.Impl<>(Collections.emptyList()) {
+
+			@Override
+			public boolean hasNextPage() {
+				return false;
 			}
 		};
 	}

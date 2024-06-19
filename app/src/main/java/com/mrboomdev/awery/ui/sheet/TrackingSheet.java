@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.sheet;
 
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.toast;
@@ -49,7 +50,6 @@ import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -138,7 +138,7 @@ public class TrackingSheet {
 		}
 
 		public void onStart() {
-			DialogUtils.fixDialog(dialog);
+			fixDialog(dialog);
 		}
 
 		@NonNull

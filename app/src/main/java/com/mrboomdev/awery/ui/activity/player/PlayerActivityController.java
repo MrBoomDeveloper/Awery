@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
@@ -27,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -37,7 +37,6 @@ import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
-import com.mrboomdev.awery.util.ui.dialog.DialogUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -230,7 +229,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtils.fixDialog(dialog.get());
+		fixDialog(dialog.get());
 	}
 
 	public void openSettingsDialog() {
@@ -287,7 +286,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtils.fixDialog(dialog.get());
+		fixDialog(dialog.get());
 	}
 
 	public void openSubtitlesDialog() {
@@ -360,7 +359,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtils.fixDialog(dialog.get());
+		fixDialog(dialog.get());
 	}
 
 	public void openQualityDialog(boolean isRequired) {
@@ -416,7 +415,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		DialogUtils.fixDialog(dialog.get());
+		fixDialog(dialog.get());
 	}
 
 	private class PopupAdapter extends RecyclerView.Adapter<PopupItemHolder> {
