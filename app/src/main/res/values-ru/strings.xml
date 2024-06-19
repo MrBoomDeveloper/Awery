@@ -444,4 +444,7 @@
     <string name="connection_error">Произошла ошибка подключения, пожалуйста попробуйте еще раз позже</string>
     <string name="connection_timeout">Истекло время подключения, пожалуйста попробуйте еще раз позже</string>
     <string name="continue_action">Продолжить</string>
+    <string name="restart">Перезапустить</string>
+    <string name="restart_to_apply_settings">Для применения настроек необходимо перезапустить приложение</string>
+    <string name="clear">Очистить</string>
 </resources>

@@ -437,4 +437,7 @@
     <string name="text_cant_empty">Text cannot be empty!</string>
     <string name="this_not_number">This is not a number!</string>
     <string name="continue_action">Continue</string>
+    <string name="restart">Restart</string>
+    <string name="restart_to_apply_settings">To apply the settings, you must restart the application</string>
+    <string name="clear">Clear</string>
 </resources>
