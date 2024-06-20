@@ -3,19 +3,24 @@ package com.mrboomdev.awery.ui.activity;
 import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
-import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +31,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBTab;
@@ -67,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			doubleBackToExitPressedOnce = true;
-			snackbar(MainActivity.this, getString(R.string.back_to_exit));
+			toast(R.string.back_to_exit);
 			runDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
 		}
 	};
@@ -122,42 +129,76 @@ public class MainActivity extends AppCompatActivity {
 			CrashHandler.showErrorDialog(this, "Failed to read an icons list!", e);
 		}
 
-		AnimatedBottomBar.Tab selectedNavbarItem = null;
+		int selected = 0;
 
-		for(int i = 0; i < tabs.size(); i++) {
-			Drawable drawable = null;
-			var tab = tabs.get(i);
+		switch(getNavigationStyle()) {
+			case BUBBLE -> {
+				for(int i = 0; i < tabs.size(); i++) {
+					Drawable drawable = null;
+					var tab = tabs.get(i);
 
-			if(icons != null) {
-				var icon = icons.get(tab.icon);
+					if(icons != null) {
+						var icon = icons.get(tab.icon);
 
-				if(icon != null) {
-					var id = getResourceId(R.drawable.class, icon.getInActive());
-					drawable = ContextCompat.getDrawable(this, id);
+						if(icon != null) {
+							var id = getResourceId(R.drawable.class, icon.getInActive());
+							drawable = ContextCompat.getDrawable(this, id);
+						}
+					}
+
+					if(drawable == null) {
+						drawable = ContextCompat.getDrawable(
+								this, R.drawable.ic_view_cozy);
+					}
+
+					var navbarItem = new AnimatedBottomBar.Tab(
+							Objects.requireNonNull(drawable), tab.title,
+							i, null, true);
+
+					if(tab.id.equals(savedDefaultTab)) {
+						selected = i;
+					}
+
+					binding.navbarBubble.addTab(navbarItem);
 				}
+
+				binding.navbarBubble.selectTabAt(selected, false);
+				binding.navbarBubble.setVisibility(View.VISIBLE);
 			}
 
-			if(drawable == null) {
-				drawable = ContextCompat.getDrawable(
-						this, R.drawable.ic_view_cozy);
+			case MATERIAL -> {
+				var nav = (NavigationBarView) binding.navbarMaterial;
+
+				for(int i = 0; i < tabs.size(); i++) {
+					Drawable drawable = null;
+					var tab = tabs.get(i);
+
+					if(icons != null) {
+						var icon = icons.get(tab.icon);
+
+						if(icon != null) {
+							var id = getResourceId(R.drawable.class, icon.getInActive());
+							drawable = ContextCompat.getDrawable(this, id);
+						}
+					}
+
+					if(drawable == null) {
+						drawable = ContextCompat.getDrawable(
+								this, R.drawable.ic_view_cozy);
+					}
+
+					if(tab.id.equals(savedDefaultTab)) {
+						selected = i;
+					}
+
+					nav.getMenu().add(0, i, 0, tab.title);
+					nav.getMenu().getItem(i).setIcon(drawable);
+				}
+
+				nav.setSelectedItemId(selected);
+				nav.setVisibility(View.VISIBLE);
 			}
-
-			var navbarItem = new AnimatedBottomBar.Tab(
-					Objects.requireNonNull(drawable), tab.title,
-					i, null, true);
-
-			if(tab.id.equals(savedDefaultTab)) {
-				selectedNavbarItem = navbarItem;
-			}
-
-			binding.navbar.addTab(navbarItem);
 		}
-
-		if(selectedNavbarItem == null && binding.navbar.getTabCount() > 0) {
-			selectedNavbarItem = binding.navbar.getTabs().get(0);
-		}
-
-		binding.navbar.selectTab(Objects.requireNonNull(selectedNavbarItem), false);
 	}
 
 	/**
@@ -186,7 +227,38 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		binding.navbar.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
+		setOnApplyUiInsetsListener(binding.navbarMaterial, insets -> {
+			setTopPadding(binding.navbarMaterial, (binding.navbarMaterial instanceof NavigationRailView) ? insets.top : 0);
+
+			setLeftPadding(binding.navbarMaterial, insets.left);
+			setBottomPadding(binding.navbarMaterial, insets.bottom);
+			return true;
+		});
+
+		setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
+			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
+			return true;
+		});
+
+		((NavigationBarView) binding.navbarMaterial).setOnItemSelectedListener(item -> {
+			binding.pages.setCurrentItem(item.getItemId(), false);
+			return true;
+		});
+
+		((NavigationBarView) binding.navbarMaterial).setOnItemReselectedListener(item -> {
+			var adapter = (FeedsAdapter) binding.pages.getAdapter();
+			if(adapter == null) return;
+
+			var ref = adapter.fragments.get(item.getItemId());
+			if(ref == null) return;
+
+			var fragment = ref.get();
+			if(fragment == null) return;
+
+			fragment.scrollToTop();
+		});
+
+		binding.navbarBubble.setOnTabSelectListener(new AnimatedBottomBar.OnTabSelectListener() {
 
 			@Override
 			public void onTabSelected(
@@ -212,11 +284,6 @@ public class MainActivity extends AppCompatActivity {
 				fragment.scrollToTop();
 			}
 		});
-
-		ViewUtil.setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
-			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
-			return true;
-		});
 	}
 
 	@Override
@@ -234,7 +301,10 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		if(binding != null) {
-			outState.putInt("nav_index", binding.navbar.getSelectedIndex());
+			outState.putInt("nav_index", switch(getNavigationStyle()) {
+				case BUBBLE -> binding.navbarBubble.getSelectedIndex();
+				case MATERIAL -> ((NavigationBarView) binding.navbarMaterial).getSelectedItemId();
+			});
 		}
 
 		super.onSaveInstanceState(outState);
@@ -243,7 +313,9 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
 		if(binding != null) {
-			binding.navbar.selectTabAt(savedInstanceState.getInt("nav_index"), false);
+			/*var index = savedInstanceState.getInt("nav_index");
+			binding.navbarBubble.selectTabAt(index, false);
+			((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);*/
 		}
 
 		super.onRestoreInstanceState(savedInstanceState);

@@ -6,19 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.viewbinding.ViewBinding;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 
 public class EmptyView implements ViewBinding {
 	private final LayoutLoadingBinding binding;
 	public final TextView title, message;
-	public final ProgressBar progressBar;
+	public final CircularProgressIndicator progressBar;
 	public final LinearLayout info;
 	public final Button button;
 

@@ -49,6 +49,12 @@
 					"title": "media_columns_count_port", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {
+					"key": "navigation_style", "type": "select", "string_value": "BUBBLE", "restart": true, "show_if": "!tv",
+					"title": "Navigation style", "items": [
+						{ "key": "BUBBLE", "title": "Bubble" },
+						{ "key": "MATERIAL", "title": "Material" }
+					]
+				}, {
 					"type": "screen", "show_if": "never", "title": "Episodes list",
 					"items": [
 						{

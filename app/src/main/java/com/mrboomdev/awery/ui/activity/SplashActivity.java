@@ -8,15 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
-import com.google.android.material.color.DynamicColors;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -40,7 +38,8 @@ public class SplashActivity extends AppCompatActivity {
 		frame.setGravity(Gravity.CENTER);
 		setContentView(frame);
 
-		var loading = new ProgressBar(this);
+		var loading = new CircularProgressIndicator(this);
+		loading.setIndeterminate(true);
 		frame.addView(loading);
 
 		reportIfCrashHappened(this, () -> new Thread(() -> {

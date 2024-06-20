@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.ui.widgets;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,13 +32,14 @@ public class TVTabView extends FrameLayout {
 		addView(background, ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 
 		title = new AppCompatTextView(context);
-		ViewUtil.setPadding(title, ViewUtil.dpPx(24), ViewUtil.dpPx(8));
+		ViewUtil.setPadding(title, dpPx(getContext(), 24), dpPx(getContext(), 8));
 		addView(title);
 
-		var attributes = context.obtainStyledAttributes(attrs, R.styleable.TVTabView);
-		setText(attributes.getString(R.styleable.TVTabView_android_text));
-		setIsSelected(attributes.getBoolean(R.styleable.TVTabView_android_state_selected, false));
-		attributes.recycle();
+		try(var attributes = context.obtainStyledAttributes(attrs, R.styleable.TVTabView)) {
+			setText(attributes.getString(R.styleable.TVTabView_android_text));
+			setIsSelected(attributes.getBoolean(R.styleable.TVTabView_android_state_selected, false));
+			attributes.recycle();
+		}
 	}
 
 	public TVTabView(Context context, @Nullable AttributeSet attrs) {
@@ -78,7 +81,6 @@ public class TVTabView extends FrameLayout {
 	}
 
 	public TVTabView setIsSelected(boolean isSelected) {
-
 		background.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
 		title.setTextColor(isSelected ? 0xFF_000000 : 0xFF_EEEEEE);
 		title.setShadowLayer(isSelected ? 0 : 10, 0, 0, 0xDD_000000);

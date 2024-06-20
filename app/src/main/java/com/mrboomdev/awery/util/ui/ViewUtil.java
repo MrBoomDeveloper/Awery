@@ -2,6 +2,7 @@ package com.mrboomdev.awery.util.ui;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
+import android.content.Context;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -374,12 +375,20 @@ public class ViewUtil {
 	}
 
 	public static int dpPx(int dp) {
-		var metrics = getAnyContext().getResources().getDisplayMetrics();
+		return dpPx(getAnyContext(), dp);
+	}
+
+	public static int dpPx(@NonNull Context context, int dp) {
+		var metrics = context.getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
 	}
 
 	public static float spPx(int sp) {
-		var metrics = getAnyContext().getResources().getDisplayMetrics();
+		return spPx(getAnyContext(), sp);
+	}
+
+	public static float spPx(@NonNull Context context, int sp) {
+		var metrics = context.getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics));
 	}
 

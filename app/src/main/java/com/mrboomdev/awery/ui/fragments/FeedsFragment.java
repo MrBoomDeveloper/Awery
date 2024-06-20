@@ -1,16 +1,14 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
-import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,18 +26,18 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
+import com.mrboomdev.awery.databinding.ScreenFeedBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
@@ -62,9 +59,8 @@ public class FeedsFragment extends Fragment {
 	private static final int MAX_LOADING_FEEDS_AT_TIME = 5;
 	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>();
 	private final Queue<CatalogFeed> loadingFeeds = new LinkedBlockingQueue<>();
+	private ScreenFeedBinding binding;
 	private List<CatalogFeed> feeds;
-	private SwipeRefreshLayout swipeRefreshLayout;
-	private RecyclerView recycler;
 	private long loadId;
 
 	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
@@ -81,9 +77,9 @@ public class FeedsFragment extends Fragment {
 	}
 
 	public void scrollToTop() {
-		if(recycler == null) return;
+		if(binding == null) return;
 
-		var layoutManager = recycler.getLayoutManager();
+		var layoutManager = binding.recycler.getLayoutManager();
 		if(layoutManager == null) return;
 
 		layoutManager.startSmoothScroll(new LinearSmoothScroller(requireContext()) {
@@ -111,7 +107,7 @@ public class FeedsFragment extends Fragment {
 			rowsAdapter.setCategories(Collections.emptyList());
 			failedRowsAdapter.setCategories(Collections.emptyList());
 
-			swipeRefreshLayout.setRefreshing(false);
+			this.binding.swipeRefresher.setRefreshing(false);
 			emptyStateAdapter.notifyDataSetChanged();
 
 			new Thread(() -> {
@@ -131,7 +127,7 @@ public class FeedsFragment extends Fragment {
 					loadFeed(loadingFeed, currentLoadId);
 				}
 			}).start();
-		}, recycler));
+		}, this.binding.recycler));
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
@@ -175,9 +171,9 @@ public class FeedsFragment extends Fragment {
 
 						// I hope it'll don't do anything bad
 						if(rowsAdapter.getItemCount() < 2) {
-							Objects.requireNonNull(recycler.getAdapter()).notifyDataSetChanged();
+							Objects.requireNonNull(binding.recycler.getAdapter()).notifyDataSetChanged();
 						}
-					}, recycler);
+					}, binding.recycler);
 
 					tryToLoadNextFeed(feed, currentLoadId);
 				}
@@ -188,7 +184,7 @@ public class FeedsFragment extends Fragment {
 
 					if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
 						runOnUiThread(() -> failedRowsAdapter.addCategory(
-								new MediaCategoriesAdapter.Category(feed, e)), recycler);
+								new MediaCategoriesAdapter.Category(feed, e)), binding.recycler);
 					}
 
 					tryToLoadNextFeed(feed, currentLoadId);
@@ -207,7 +203,7 @@ public class FeedsFragment extends Fragment {
 						public String getDescription(@NonNull Context context) {
 							return "Please check your filters again. Maybe used extension was removed.";
 						}
-					})), recycler);
+					})), binding.recycler);
 
 			tryToLoadNextFeed(feed, currentLoadId);
 		}
@@ -230,7 +226,7 @@ public class FeedsFragment extends Fragment {
 			emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
 				binding.setInfo(R.string.you_reached_end, R.string.you_reached_end_description);
 				emptyStateAdapter.notifyDataSetChanged();
-			}, recycler));
+			}, this.binding.recycler));
 		}
 	}
 
@@ -241,54 +237,60 @@ public class FeedsFragment extends Fragment {
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState
 	) {
-		var frame = new FrameLayout(requireContext());
+		binding = ScreenFeedBinding.inflate(inflater, container, false);
+		binding.swipeRefresher.setOnRefreshListener(() -> loadData(true));
+		setupHeader();
 
-		swipeRefreshLayout = new SwipeRefreshLayout(requireContext());
-		frame.addView(swipeRefreshLayout, MATCH_PARENT, MATCH_PARENT);
+		binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView v, int newState) {
+				var layoutManager = (LinearLayoutManager) Objects.requireNonNull(v.getLayoutManager());
+				var firstFullyVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
 
-		recycler = new RecyclerView(requireContext());
-		recycler.setClipToPadding(false);
-		setVerticalPadding(recycler, dpPx(100));
-		swipeRefreshLayout.addView(recycler, MATCH_PARENT, MATCH_PARENT);
+				if(firstFullyVisiblePosition == 0 && binding.headerWrapper.isLifted()) {
+					binding.headerWrapper.setExpanded(true, true);
+				}
 
-		recycler.setLayoutManager(new LinearLayoutManager(
-				requireContext(), LinearLayoutManager.VERTICAL, false));
+				binding.swipeRefresher.setEnabled(firstFullyVisiblePosition == 0 && binding.recycler.computeVerticalScrollOffset() == 0);
+			}
+		});
 
-		recycler.setAdapter(new ConcatAdapter(new ConcatAdapter.Config.Builder()
+		binding.headerWrapper.addOnOffsetChangedListener((v, offset) ->
+				binding.swipeRefresher.setEnabled(offset == 0));
+
+		binding.recycler.setAdapter(new ConcatAdapter(new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
 				rowsAdapter, emptyStateAdapter, failedRowsAdapter));
 
-		var header = LayoutHeaderMainBinding.inflate(getLayoutInflater());
-		frame.addView(header.getRoot(), MATCH_PARENT, WRAP_CONTENT);
-		setupHeader(header, recycler);
-
-		swipeRefreshLayout.setOnRefreshListener(() -> loadData(true));
 		loadData(false);
-
-		return frame;
+		return binding.getRoot();
 	}
 
-
-	private void setupHeader(
-			@NonNull LayoutHeaderMainBinding header,
-			RecyclerView recycler
-	) {
-		header.search.setOnClickListener(v -> {
+	private void setupHeader() {
+		binding.search.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SearchActivity.class);
 			startActivity(intent);
 		});
 
-		header.settingsWrapper.setOnClickListener(v -> {
+		binding.settingsWrapper.setOnClickListener(v -> {
 			var intent = new Intent(requireActivity(), SettingsActivity.class);
 			startActivity(intent);
 		});
 
-		setPadding(header.getRoot(), dpPx(16));
+		setOnApplyUiInsetsListener(binding.header, insets -> {
+			setTopPadding(binding.header, insets.top + dpPx(16));
+			setRightPadding(binding.header, insets.right + dpPx(16));
 
-		setOnApplyUiInsetsListener(header.getRoot(), insets -> {
-			setTopMargin(header.getRoot(), insets.top);
-			setRightMargin(header.getRoot(), insets.right);
-			setLeftMargin(header.getRoot(), insets.left);
+			if(isLandscape()) {
+				if(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL) {
+					setLeftPadding(binding.header, dpPx(16));
+				} else {
+					setLeftPadding(binding.header, dpPx(16) + insets.left);
+				}
+			} else {
+				setLeftPadding(binding.header, dpPx(16));
+			}
+
 			return false;
 		});
 	}

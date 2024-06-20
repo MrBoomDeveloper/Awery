@@ -1,14 +1,14 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.snackbar;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
@@ -30,9 +30,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.slider.Slider;
-import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
@@ -159,7 +159,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		var holder = new ViewHolder(binding);
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-			setLeftPadding(binding.getRoot(), insets.left);
 			setRightPadding(binding.getRoot(), insets.right);
 			return false;
 		}, parent);
@@ -467,8 +466,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	private void suggestToRestart(View parent) {
-		Snackbar.make(parent, R.string.restart_app, 2250)
-				.setAction(R.string.confirm, _view -> restartApp()).show();
+		snackbar(Objects.requireNonNull(getActivity(getContext(parent))),
+				R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
 	}
 
 	@Override

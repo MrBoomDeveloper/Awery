@@ -42,7 +42,6 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.ui.fragments.LibraryFragment;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 
@@ -305,7 +304,9 @@ public class MediaUtils {
 							getDatabase().getMediaDao().insert(DBCatalogMedia.fromCatalogMedia(media));
 
 							progressDao.insert(progress);
-							LibraryFragment.notifyDataChanged();
+
+							// TODO: Need to replace this with something new
+							//LibraryFragment.notifyDataChanged();
 						} catch(Exception e) {
 							AweryApp.toast("Failed to save!");
 							Log.e("MediaUtils", "Failed to save bookmark", e);

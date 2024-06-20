@@ -21,9 +21,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <include android:id="@+id/header"
-            layout="@layout/layout_header_main" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
@@ -392,6 +393,11 @@ public class AweryApp extends Application {
 		return Resources.getSystem().getConfiguration().orientation;
 	}
 
+	public static AwerySettings.NavigationStyle_Values getNavigationStyle() {
+		return returnWith(AwerySettings.NAVIGATION_STYLE.getValue(), style ->
+				(style == null || isTv()) ? AwerySettings.NavigationStyle_Values.MATERIAL : style);
+	}
+
 	public static Configuration getConfiguration(@NonNull Context context) {
 		return context.getResources().getConfiguration();
 	}
@@ -400,27 +406,33 @@ public class AweryApp extends Application {
 		return getConfiguration(getAnyContext());
 	}
 
-	public static void snackbar(@NonNull Activity activity, Object title) {
-		snackbar(activity, title, null, null);
-	}
-
 	public static void snackbar(
 			@NonNull Activity activity,
 			@StringRes int title,
 			@StringRes int button,
 			Runnable buttonCallback
 	) {
-		var context = getAnyContext();
-		snackbar(activity, context.getString(title), context.getString(button), buttonCallback);
+		snackbar(activity, title, button, buttonCallback, Snackbar.LENGTH_SHORT);
 	}
 
-	public static void snackbar(@NonNull Activity activity, Object title, Object button, Runnable buttonCallback) {
+	public static void snackbar(
+			@NonNull Activity activity,
+			@StringRes int title,
+			@StringRes int button,
+			Runnable buttonCallback,
+			int duration
+	) {
+		var context = getAnyContext();
+		snackbar(activity, context.getString(title), context.getString(button), buttonCallback, duration);
+	}
+
+	public static void snackbar(@NonNull Activity activity, Object title, Object button, Runnable buttonCallback, int duration) {
 		runOnUiThread(() -> {
 			var titleText = title == null ? "null" : title.toString();
 			var buttonText = button == null ? "null" : button.toString();
 
 			var rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
-			var snackbar = Snackbar.make(rootView, titleText, Snackbar.LENGTH_SHORT);
+			var snackbar = Snackbar.make(rootView, titleText, duration);
 
 			if(buttonCallback != null) {
 				snackbar.setAction(buttonText, view -> buttonCallback.run());

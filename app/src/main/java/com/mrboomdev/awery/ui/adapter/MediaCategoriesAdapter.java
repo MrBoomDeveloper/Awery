@@ -1,9 +1,11 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 
@@ -21,6 +23,7 @@ import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.activity.SearchActivity;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
@@ -92,7 +95,12 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		binding.recycler.setAdapter(adapter);
 
 		setOnApplyUiInsetsListener(binding.title, insets -> {
-			setHorizontalMargin(binding.title, insets.left + dpPx(16));
+			if(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL && isLandscape()) {
+				setLeftMargin(binding.title, insets.left + dpPx(16));
+			} else {
+				setLeftMargin(binding.title, dpPx(16));
+			}
+
 			return true;
 		}, parent);
 
@@ -102,7 +110,12 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		}, parent);
 
 		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			setHorizontalPadding(binding.recycler, insets.left + dpPx(16));
+			if(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL && isLandscape()) {
+				setHorizontalPadding(binding.recycler, insets.left + dpPx(16), insets.right + dpPx(16));
+			} else {
+				setHorizontalPadding(binding.recycler, dpPx(16));
+			}
+
 			return true;
 		}, parent);
 

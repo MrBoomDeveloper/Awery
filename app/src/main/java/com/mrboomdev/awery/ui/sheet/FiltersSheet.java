@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
@@ -34,11 +33,13 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.NestedScrollView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.divider.MaterialDivider;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -268,7 +269,7 @@ public class FiltersSheet extends SheetDialog {
 
 	@Override
 	public View getContentView(Context context) {
-		var scroller = new ScrollView(context);
+		var scroller = new NestedScrollView(context);
 
 		var linear = new LinearLayoutCompat(context);
 		linear.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -283,7 +284,8 @@ public class FiltersSheet extends SheetDialog {
 			createFilterView(filter, fields);
 		}
 
-		var progressBar = new ProgressBar(context);
+		var progressBar = new CircularProgressIndicator(context);
+		progressBar.setIndeterminate(true);
 		linear.addView(progressBar, MATCH_PARENT, WRAP_CONTENT);
 		setVerticalMargin(progressBar, dpPx(8));
 

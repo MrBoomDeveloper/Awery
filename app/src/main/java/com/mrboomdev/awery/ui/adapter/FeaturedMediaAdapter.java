@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.mrboomdev.awery.databinding.LayoutHeaderMainBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -40,12 +39,7 @@ import java9.util.stream.Collectors;
 
 public class FeaturedMediaAdapter extends SingleViewAdapter {
 	private final List<CatalogMedia> items = new ArrayList<>();
-	private LayoutHeaderMainBinding header;
 	private final PagerAdapter adapter = new PagerAdapter();
-
-	public LayoutHeaderMainBinding getHeader() {
-		return header;
-	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(Collection<? extends CatalogMedia> items) {
@@ -61,12 +55,8 @@ public class FeaturedMediaAdapter extends SingleViewAdapter {
 		var binding = MediaCatalogFeaturedPagerBinding.inflate(inflater, parent, false);
 		binding.pager.setAdapter(adapter);
 
-		this.header = binding.header;
+		// What? I don't even remember why is it there.
 		setEnabled(isEnabled());
-
-		if(getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			binding.header.logo.setVisibility(View.GONE);
-		}
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.headerWrapper, insets -> {
 			ViewUtil.setTopMargin(binding.headerWrapper, insets.top);

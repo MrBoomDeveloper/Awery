@@ -29,18 +29,17 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.databinding.LayoutHeaderSettingsBinding;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
@@ -145,8 +144,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		return activityResultLauncher;
 	}
 
-	private void setupHeader(@NonNull LayoutHeaderSettingsBinding binding, @NonNull SettingsItem item, View parent) {
-		binding.back.setOnClickListener(v -> finish());
+	private void setupHeader(@NonNull ScreenSettingsBinding binding, @NonNull SettingsItem item) {
 		binding.title.setText(item.getTitle(this));
 		binding.actions.removeAllViews();
 
@@ -179,10 +177,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 		}
 
-		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-			setHorizontalPadding(binding.getRoot(), insets.left, insets.right);
+		setOnApplyUiInsetsListener(binding.recycler, insets -> {
+			setHorizontalPadding(binding.recycler, insets.left, insets.right);
 			return false;
-		}, parent);
+		});
 	}
 
 	private void setupReordering(RecyclerView recycler, SettingsAdapter adapter) {
@@ -230,7 +228,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	private void finishLoading(
 			@NonNull ScreenSettingsBinding binding,
-			SingleViewAdapter.BindingSingleViewAdapter<LayoutHeaderSettingsBinding> headerAdapter,
 			@NonNull SettingsAdapter settingsAdapter
 	) {
 		settingsAdapter.getScreen().restoreSavedValues();
@@ -239,7 +236,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build();
 
-		binding.recycler.setAdapter(new ConcatAdapter(config, headerAdapter, settingsAdapter));
+		binding.recycler.setAdapter(new ConcatAdapter(config, settingsAdapter));
 		setupReordering(binding.recycler, settingsAdapter);
 		binding.progressIndicator.setVisibility(View.GONE);
 	}
@@ -248,9 +245,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	private View createView(@NonNull SettingsItem item) {
 		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		binding.recycler.setRecycledViewPool(viewPool);
+		binding.back.setOnClickListener(v -> finish());
 
-		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-			setTopPadding(binding.recycler, insets.top + dpPx(12));
+		setOnApplyUiInsetsListener(binding.header, insets -> {
+			setTopPadding(binding.header, insets.top);
+			setHorizontalPadding(binding.header, insets.left, insets.right);
 			return false;
 		});
 
@@ -263,15 +262,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			var recyclerAdapter = new SettingsAdapter(item,
 					(item instanceof SettingsDataHandler handler) ? handler : this);
 
-			var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-				var headerBinding = LayoutHeaderSettingsBinding.inflate(
-						getLayoutInflater(), parent, false);
-
-				setupHeader(headerBinding, item, parent);
-				return headerBinding;
-			});
-
-			finishLoading(binding, headerAdapter, recyclerAdapter);
+			setupHeader(binding, item);
+			finishLoading(binding, recyclerAdapter);
 		} else if(item.getBehaviour() != null) {
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
@@ -294,16 +286,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					}
 				});
 
-				var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-					var headerBinding = LayoutHeaderSettingsBinding.inflate(
-							getLayoutInflater(), parent, false);
-
-					setupHeader(headerBinding, screen, parent);
-					return headerBinding;
-				});
-
-				TransitionManager.beginDelayedTransition(binding.getRoot());
-				finishLoading(binding, headerAdapter, recyclerAdapter);
+				TransitionManager.beginDelayedTransition(binding.getRoot(), new Fade());
+				setupHeader(binding, screen);
+				finishLoading(binding, recyclerAdapter);
 			});
 		} else {
 			Log.w(TAG, "Screen has no items, finishing.");
