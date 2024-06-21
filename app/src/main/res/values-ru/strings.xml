@@ -447,4 +447,5 @@
     <string name="restart">Перезапустить</string>
     <string name="restart_to_apply_settings">Для применения настроек необходимо перезапустить приложение</string>
     <string name="clear">Очистить</string>
+    <string name="done">Завершить</string>
 </resources>
