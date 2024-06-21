@@ -188,6 +188,10 @@ public class NiceUtils {
 				.findAny().orElse(null);
 	}
 
+	public static <A> boolean hasAny(Collection<A> collection, Callbacks.Result1<Boolean, A> checker) {
+		return find(collection, checker) != null;
+	}
+
 	/**
 	 * @return The result of the callback
 	 * @author MrBoomDev

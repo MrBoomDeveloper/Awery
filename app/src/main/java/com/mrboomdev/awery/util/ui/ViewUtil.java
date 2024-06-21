@@ -339,7 +339,7 @@ public class ViewUtil {
 		setOnApplyUiInsetsListener(view, listener, parentView.getRootWindowInsets());
 	}
 
-	public static void setOnApplyUiInsetsListener(
+	private static void setOnApplyUiInsetsListener(
 			View view,
 			InsetsUpdateListener<Insets> listener,
 			WindowInsets rootInsets
@@ -349,13 +349,13 @@ public class ViewUtil {
 		}
 
 		if(rootInsets != null) {
-			var uiInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets).getInsets(UI_INSETS);
+			var uiInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets, view).getInsets(UI_INSETS);
 			listener.updated(uiInsets);
 		}
 
 		ViewCompat.setOnApplyWindowInsetsListener(view, (_view, insets) -> {
 			var uiInsets = insets.getInsets(UI_INSETS);
-			return listener.updated(uiInsets) ? WindowInsetsCompat.CONSUMED : new WindowInsetsCompat(insets);
+			return listener.updated(uiInsets) ? WindowInsetsCompat.CONSUMED : insets;
 		});
 	}
 

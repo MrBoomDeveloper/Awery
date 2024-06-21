@@ -15,7 +15,7 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="6dp"
+            android:paddingVertical="8dp"
             android:layout_marginHorizontal="12dp"
             app:layout_scrollFlags="snap|scroll|enterAlways|exitUntilCollapsed">
 

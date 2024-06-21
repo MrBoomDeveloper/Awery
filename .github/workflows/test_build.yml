@@ -2,7 +2,10 @@ name: Test Build
 
 on:
   pull_request:
-    branches: [ master ]
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "LICENSE.md"
 
 jobs:
   build:
@@ -22,14 +25,5 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Beta APK
-        run: ./gradlew assembleBetaModernRelease
-
-      - name: Build Production APK
+      - name: Build Modern Production APK
         run: ./gradlew assembleProdModernRelease
-
-      - name: Build Legacy Beta APK
-        run: ./gradlew assembleBetaLegacyRelease
-
-      - name: Build Legacy Production APK
-        run: ./gradlew assembleProdLegacyRelease

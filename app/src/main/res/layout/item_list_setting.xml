@@ -4,12 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
+    android:background="@drawable/ripple_round_you"
     android:layout_marginBottom="6dp"
     android:clickable="true"
     android:focusable="true"
     android:minHeight="54dp"
     android:paddingBottom="10dp">
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
         android:id="@+id/icon"

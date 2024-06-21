@@ -131,7 +131,13 @@ public class SearchActivity extends AppCompatActivity {
 		header.back.setOnClickListener(v -> finish());
 		header.clear.setOnClickListener(v -> header.edittext.setText(null));
 
-		header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, () -> {
+		header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, newFilters -> {
+			this.filters.clear();
+
+			this.filters.add(pageFilter);
+			this.filters.add(queryFilter);
+			this.filters.addAll(newFilters);
+
 			didReachedEnd = false;
 			search(0);
 		}).show());

@@ -116,7 +116,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 				setHorizontalPadding(binding.recycler, dpPx(16));
 			}
 
-			return true;
+			return false;
 		}, parent);
 
 		viewHolder.setAdapter(adapter);

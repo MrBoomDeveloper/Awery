@@ -23,9 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -240,20 +238,6 @@ public class FeedsFragment extends Fragment {
 		binding = ScreenFeedBinding.inflate(inflater, container, false);
 		binding.swipeRefresher.setOnRefreshListener(() -> loadData(true));
 		setupHeader();
-
-		binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrollStateChanged(@NonNull RecyclerView v, int newState) {
-				var layoutManager = (LinearLayoutManager) Objects.requireNonNull(v.getLayoutManager());
-				var firstFullyVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
-
-				if(firstFullyVisiblePosition == 0 && binding.headerWrapper.isLifted()) {
-					binding.headerWrapper.setExpanded(true, true);
-				}
-
-				binding.swipeRefresher.setEnabled(firstFullyVisiblePosition == 0 && binding.recycler.computeVerticalScrollOffset() == 0);
-			}
-		});
 
 		binding.headerWrapper.addOnOffsetChangedListener((v, offset) ->
 				binding.swipeRefresher.setEnabled(offset == 0));

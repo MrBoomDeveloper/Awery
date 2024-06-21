@@ -40,6 +40,7 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.Selection;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
@@ -248,7 +249,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		binding.back.setOnClickListener(v -> finish());
 
 		setOnApplyUiInsetsListener(binding.header, insets -> {
-			setTopPadding(binding.header, insets.top);
+			setTopPadding(binding.header, insets.top + dpPx(8));
 			setHorizontalPadding(binding.header, insets.left, insets.right);
 			return false;
 		});
@@ -311,6 +312,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void save(@NonNull SettingsItem item, Object newValue) {
 		if(item instanceof CustomSettingsItem custom) {
 			custom.saveValue(newValue);
@@ -319,8 +321,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		(switch(item.getType()) {
 			case BOOLEAN -> settings.setBoolean(item.getKey(), (boolean) newValue);
-			case SELECT -> settings.setString(item.getKey(), (String) newValue);
-			case SELECT_INTEGER -> settings.setInteger(item.getKey(), (int) newValue);
+			case SELECT, STRING -> settings.setString(item.getKey(), (String) newValue);
+			case SELECT_INTEGER, INTEGER -> settings.setInteger(item.getKey(), (int) newValue);
+
+			case MULTISELECT -> {
+				SettingsData.saveSelectionList(item.getBehaviour(), (Selection<Selection.Selectable<String>>) newValue);
+				yield settings;
+			}
+
 			default -> throw new IllegalArgumentException("Unsupported type!");
 		}).saveAsync();
 	}
