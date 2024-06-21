@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="logout">Uscita</string>
+    <string name="logout">Disconnessione</string>
     <string name="russian">Russo</string>
     <string name="japanese">Giapponese</string>
     <string name="chinese">Cinese</string>
@@ -33,7 +33,7 @@
     <string name="continue_watching">Continua a Guardare</string>
     <string name="recommended">Consigliati</string>
     <string name="get_recommendations">Guarda/leggi alcuni anime o manga per ottenere consigli</string>
-    <string name="hide_library_entries">Nascondi voci dalla libreria</string>
+    <string name="hide_library_entries">Nascondi voci della libreria</string>
     <string name="us">USA</string>
     <string name="watch_now">Guarda adesso</string>
     <string name="add_to_bookmarks">Aggiungi al segnalibro</string>
@@ -175,7 +175,7 @@
     <string name="saved_to_path">Salvato in:
 \n%s</string>
     <string name="setting_progress">Impostazione dell\'avanzamento su %1$d</string>
-    <string name="back_to_exit">Premi BACK un altra volta per uscire</string>
+    <string name="back_to_exit">Premi di nuovo per uscire</string>
     <string name="no_internet_connection">Nessuna Connessione ad internet</string>
     <string name="disabled_auto_skip">Disabilitato il salto automatico OP &amp; ED</string>
     <string name="auto_skip">Salto automatico OP &amp; ED</string>
@@ -287,7 +287,7 @@
     <string name="repository_url">Archivio URL</string>
     <string name="sure_delete_list_description">Sei sicuro di voler eliminare questa voce dalla lista?</string>
     <string name="blacklist">Lista nera</string>
-    <string name="tracking">Tracking</string>
+    <string name="tracking">Monitoraggio</string>
     <string name="use_material_you">Material you</string>
     <string name="read_more">Per saperne di più</string>
     <string name="read_less">Leggi di meno</string>
@@ -423,7 +423,7 @@
     <string name="crash_report">Rapporto sull\'anomalia</string>
     <string name="copy">Copia</string>
     <string name="something_terrible_happened">È successo qualcosa di VERAMENTE TERRIBILE 0_0</string>
-    <string name="delayed">Ritardato</string>
+    <string name="delayed">Rimandato</string>
     <string name="favourites">Preferiti</string>
     <string name="finish">Fine</string>
     <string name="welcome_to_app">Benvenuto su Awery</string>

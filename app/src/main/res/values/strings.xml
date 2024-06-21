@@ -440,4 +440,5 @@
     <string name="restart">Restart</string>
     <string name="restart_to_apply_settings">To apply the settings, you must restart the application</string>
     <string name="clear">Clear</string>
+    <string name="done">Done</string>
 </resources>
