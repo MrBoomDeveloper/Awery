@@ -51,11 +51,11 @@ public class ThemeManager {
 	}
 
 	public static void apply(Activity activity, Bitmap bitmap) {
-		boolean useOLED = AwerySettings.USE_AMOLED_THEME.getValue();
-		boolean useColorsFromPoster = AwerySettings.EXTRACT_BANNER_COLOR.getValue();
-		boolean useMaterialYou = isMaterialYou();
+		var useOLED = Boolean.TRUE.equals(AwerySettings.USE_AMOLED_THEME.getValue(null));
+		var useColorsFromPoster = Boolean.TRUE.equals(AwerySettings.EXTRACT_BANNER_COLOR.getValue(null));
+		var useMaterialYou = isMaterialYou();
 
-		if(useMaterialYou || (useColorsFromPoster && bitmap != null)) {
+		if(useMaterialYou || (Boolean.TRUE.equals(useColorsFromPoster) && bitmap != null)) {
 			applyMaterialYou(activity, bitmap, useOLED);
 			return;
 		}

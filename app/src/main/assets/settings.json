@@ -23,7 +23,7 @@
 					"show_if": "never"
 				}, {
 					"key": "theme_color_palette", "type": "select", "restart": true, "string_value": "RED",
-					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE_TITLE}",
+					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE}",
 					"items": [
 						{ "key": "RED", "title": "red" },
 						{ "key": "PINK", "title": "pink" },
@@ -59,7 +59,7 @@
 					"items": [
 						{
 							"key": "episodes_display_mode", "type": "select", "string_value": "LIST",
-							"title": "View mode", "description": "${VALUE_TITLE}",
+							"title": "View mode", "description": "${VALUE}",
 							"items": [
 								{ "key": "LIST", "title": "List" },
 								{ "key": "GRID", "title": "Grid" }
@@ -85,7 +85,7 @@
 					"behaviour": "excluded_tags"
 				}, {
 					"key": "adult_mode", "type": "select", "string_value": "DISABLED",
-					"title": "adult_content", "description": "${VALUE_TITLE}", "icon": "ic_round_report",
+					"title": "adult_content", "description": "${VALUE}", "icon": "ic_round_report",
 					"items": [
 						{ "key": "DISABLED", "title": "disabled" },
 						{ "key": "ENABLED", "title": "enabled" },
@@ -99,7 +99,7 @@
 				{
 					"key": "player_double_tap_seek_length", "type": "select_integer", "integer_value": 10,
 					"title": "double_tap_seek", "icon": "ic_round_touch_app_24",
-					"description": "${VALUE_TITLE}", "show_if": "!tv",
+					"description": "${VALUE}", "show_if": "!tv",
 					"items": [
 						{ "key": "0", "title": "disabled" },
 						{ "key": "3", "title": "3s" },
@@ -113,7 +113,7 @@
 				}, {
 					"key": "player_big_seek_length", "type": "select_integer", "integer_value": 60,
 					"title": "quick_rewind", "icon": "outline_fast_forward_24",
-					"description": "${VALUE_TITLE}",
+					"description": "${VALUE}",
 					"items": [
 						{ "key": "0", "title": "Disabled" },
 						{ "key": "30", "title": "30s" },
@@ -134,7 +134,7 @@
 				}, {
 					"key": "player_gestures_mode", "type": "select", "string_value": "VOLUME_BRIGHTNESS",
 					"title": "gesture_mode", "icon": "ic_swipe_up_filled",
-					"description": "${VALUE_TITLE}", "show_if": "!tv",
+					"description": "${VALUE}", "show_if": "!tv",
 					"items": [
 						{ "key": "VOLUME_BRIGHTNESS", "title": "volume_and_brightness" },
 						{ "key": "DISABLED", "title": "disabled" }

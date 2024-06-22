@@ -278,12 +278,17 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 						? handler : new SettingsDataHandler() {
 					@Override
 					public void onScreenLaunchRequest(SettingsItem item) {
-						toast("Currently not supported", 1);
+						throw new UnsupportedOperationException();
 					}
 
 					@Override
-					public void save(SettingsItem item, Object newValue) {
-						toast("Currently not supported", 1);
+					public void saveValue(SettingsItem item, Object newValue) {
+						throw new UnsupportedOperationException();
+					}
+
+					@Override
+					public Object restoreValue(SettingsItem item) {
+						throw new UnsupportedOperationException();
 					}
 				});
 
@@ -313,7 +318,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void save(@NonNull SettingsItem item, Object newValue) {
+	public void saveValue(@NonNull SettingsItem item, Object newValue) {
 		if(item instanceof CustomSettingsItem custom) {
 			custom.saveValue(newValue);
 			return;
@@ -331,5 +336,19 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			default -> throw new IllegalArgumentException("Unsupported type!");
 		}).saveAsync();
+	}
+
+	@Override
+	public Object restoreValue(SettingsItem item) {
+		if(item instanceof CustomSettingsItem custom) {
+			return custom.getSavedValue();
+		}
+
+		return switch(item.getType()) {
+			case BOOLEAN -> settings.getBoolean(item.getKey(), item.getBooleanValue());
+			case SELECT, STRING -> settings.getString(item.getKey(), item.getStringValue());
+			case SELECT_INTEGER, INTEGER -> settings.getInteger(item.getKey(), item.getIntegerValue());
+			default -> throw new IllegalArgumentException("Unsupported setting type! " + item.getType());
+		};
 	}
 }

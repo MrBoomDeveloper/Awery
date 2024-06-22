@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 
 import java9.util.function.BiConsumer;
 import java9.util.function.BinaryOperator;
@@ -350,6 +349,16 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	}
 
 	public enum State {
-		SELECTED, EXCLUDED, DISABLED, UNSELECTED
+		SELECTED,
+		EXCLUDED,
+		UNSELECTED;
+
+		public State next() {
+			return switch(this) {
+				case UNSELECTED -> SELECTED;
+				case SELECTED -> EXCLUDED;
+				case EXCLUDED -> UNSELECTED;
+			};
+		}
 	}
 }

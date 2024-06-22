@@ -74,7 +74,6 @@ public class JsSettingsItem extends SettingsItem {
 				if(string == null) return null;
 
 				return switch(string) {
-					case "disabled" -> Selection.State.DISABLED;
 					case "excluded" -> Selection.State.EXCLUDED;
 					case "selected" -> Selection.State.SELECTED;
 					case "unselected" -> Selection.State.UNSELECTED;
@@ -140,7 +139,6 @@ public class JsSettingsItem extends SettingsItem {
 		o.put("value", o, switch(setting.getType()) {
 			case EXCLUDABLE -> Objects.requireNonNullElse(returnIfNotNull(
 					setting.getExcludableValue(), state -> switch(state) {
-				case DISABLED -> "disabled";
 				case EXCLUDED -> "excluded";
 				case SELECTED -> "selected";
 				case UNSELECTED -> "unselected";

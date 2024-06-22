@@ -7,6 +7,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -30,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.slider.Slider;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
@@ -133,6 +135,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	}
 
 	public void addItems(@NonNull List<SettingsItem> items) {
+		if(items.isEmpty()) return;
 		int wasSize = this.items.size();
 
 		var filtered = new ArrayList<>(stream(items)
@@ -186,6 +189,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			switch(setting.getType()) {
 				case BOOLEAN -> binding.toggle.performClick();
+				case EXCLUDABLE -> binding.checkbox.performClick();
 				case SCREEN, SCREEN_BOOLEAN -> handler.onScreenLaunchRequest(setting);
 
 				case ACTION -> {
@@ -211,7 +215,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.addView(inputField.getView())
 							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
 							.setPositiveButton(R.string.ok, _dialog -> {
-								handler.save(setting, inputField.getText());
+								handler.saveValue(setting, inputField.getText());
 								setting.setValue(inputField.getText());
 
 								if(setting.isRestartRequired()) {
@@ -271,7 +275,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 											}
 										}
 
-										handler.save(setting, number);
+										handler.saveValue(setting, number);
 										setting.setValue(number);
 									} catch(NumberFormatException e) {
 										inputField.setError(R.string.this_not_number);
@@ -279,7 +283,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									}
 								} else {
 									var slider = (Slider) field;
-									handler.save(setting, (int) slider.getValue());
+									handler.saveValue(setting, (int) slider.getValue());
 									setting.setValue((int) slider.getValue());
 								}
 
@@ -337,10 +341,10 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 									if(setting.getType() == SettingsItemType.SELECT_INTEGER) {
 										var integer = Integer.parseInt(id);
-										handler.save(setting, integer);
+										handler.saveValue(setting, integer);
 										setting.setValue(integer);
 									} else {
-										handler.save(setting, id);
+										handler.saveValue(setting, id);
 										setting.setValue(id);
 									}
 								}
@@ -350,8 +354,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								if(setting.isRestartRequired()) {
 									suggestToRestart(parent);
 								}
-							})
-							.show();
+							}).show();
 
 					if(setting.getBehaviour() != null) {
 						SettingsData.getSelectionList(context, setting.getBehaviour(), (items, e) -> {
@@ -413,7 +416,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									return;
 								}
 
-								handler.save(setting, selection);
+								handler.saveValue(setting, selection);
 								_dialog.dismiss();
 
 								if(setting.isRestartRequired()) {
@@ -461,8 +464,25 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			if(item == null || !holder.didInit()) return;
 
 			item.setValue(isChecked);
-			handler.save(item, isChecked);
+			handler.saveValue(item, isChecked);
 			holder.updateDescription(String.valueOf(isChecked));
+
+			if(item.isRestartRequired()) {
+				suggestToRestart(parent);
+			}
+		});
+
+		binding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			var item = holder.getItem();
+			if(item == null || !holder.didInit()) return;
+
+			var newValue = Objects.requireNonNullElse(
+					item.getExcludableValue(), Selection.State.UNSELECTED).next();
+
+			item.setValue(newValue);
+			handler.saveValue(item, newValue);
+			holder.updateExcludableState(newValue);
+			holder.updateDescription(String.valueOf(newValue));
 
 			if(item.isRestartRequired()) {
 				suggestToRestart(parent);
@@ -532,40 +552,25 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 		@Nullable
 		private String resolveDescription(String payload) {
-			var result = item.getDescription(context);
-			if(result == null) return null;
+			var description = item.getDescription(context);
+			if(description == null) return null;
 
-			if(result.contains("${VALUE_TITLE}")) {
-				var prefs = payload == null ? getPrefs() : null;
+			if(description.contains("${VALUE}")) {
+				var value = payload != null ? payload : handler.restoreValue(item);
 
-				var value = switch(item.getType()) {
-					case STRING -> payload != null ? payload : (item instanceof CustomSettingsItem customSetting
-							? (String) customSetting.getSavedValue() : prefs.getString(item.getKey()));
+				var formattedValue = switch(item.getType()) {
+					case INTEGER, SELECT_INTEGER -> String.valueOf(value);
+					case STRING -> (String) value;
 
-					case BOOLEAN, SCREEN_BOOLEAN -> context.getString((payload != null
-							? Boolean.parseBoolean(payload)
-							: (item instanceof CustomSettingsItem customSetting
-								? (Boolean) customSetting.getSavedValue()
-								: prefs.getBoolean(item.getKey()))) ? R.string.enabled : R.string.disabled);
-
-					case INTEGER -> payload != null ? payload : String.valueOf(prefs.getInteger(item.getKey()));
+					case BOOLEAN, SCREEN_BOOLEAN -> context.getString(
+							isTrue(value) ? R.string.enabled : R.string.disabled);
 
 					case SELECT -> {
-						var selected = payload != null ? payload : (item instanceof CustomSettingsItem customSetting
-								? (String) customSetting.getSavedValue() : prefs.getString(item.getKey()));
-
 						if(item.getItems() == null) {
 							yield "";
 						}
 
-						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
-						yield found.isPresent() ? found.get().getTitle(context) : "";
-					}
-
-					case SELECT_INTEGER -> {
-						var selected = payload != null ? payload : String.valueOf(item instanceof CustomSettingsItem customSetting
-								? customSetting.getSavedValue() : prefs.getInteger(item.getKey()));
-
+						var selected = (String) value;
 						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
 						yield found.isPresent() ? found.get().getTitle(context) : "";
 					}
@@ -573,10 +578,22 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					default -> "";
 				};
 
-				result = result.replaceAll("\\$\\{VALUE_TITLE\\}", value);
+				description = description.replaceAll("\\$\\{VALUE\\}", formattedValue);
 			}
 
-			return result;
+			return description;
+		}
+
+		public void updateExcludableState(Selection.State state) {
+			if(state == null) state = Selection.State.UNSELECTED;
+
+			int result = switch(state) {
+				case SELECTED -> MaterialCheckBox.STATE_CHECKED;
+				case EXCLUDED -> MaterialCheckBox.STATE_INDETERMINATE;
+				case UNSELECTED -> MaterialCheckBox.STATE_UNCHECKED;
+			};
+
+			binding.checkbox.setCheckedState(result);
 		}
 
 		public void bind(@NonNull SettingsItem setting) {
@@ -656,8 +673,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			updateDescription(null);
 
-			binding.divider.setVisibility(setting.getType() == SettingsItemType.DIVIDER ? View.VISIBLE : View.GONE);
-
 			if(setting.getType() == SettingsItemType.CATEGORY) setVerticalMargin(binding.getRoot(), dpPx(-8), dpPx(-12));
 			else if(setting.getType() == SettingsItemType.DIVIDER) setVerticalMargin(binding.getRoot(), dpPx(-12));
 			else setVerticalMargin(binding.getRoot(), 0, dpPx(6));
@@ -665,6 +680,15 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			binding.getRoot().setMinimumHeight(dpPx(isSmall ? 0 : 54));
 			binding.getRoot().setClickable(!isSmall);
 			binding.getRoot().setFocusable(!isSmall);
+
+			binding.divider.setVisibility(setting.getType() == SettingsItemType.DIVIDER ? View.VISIBLE : View.GONE);
+
+			if(setting.getType() == SettingsItemType.EXCLUDABLE) {
+				binding.checkbox.setVisibility(View.VISIBLE);
+				updateExcludableState(setting.getExcludableValue());
+			} else {
+				binding.checkbox.setVisibility(View.GONE);
+			}
 
 			if(setting.getType() == SettingsItemType.BOOLEAN || setting.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);

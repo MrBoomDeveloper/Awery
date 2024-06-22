@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       legacy:
-        description: "Build apks for Android 6>=15"
+        description: "Build legacy apks (Android 6>=15)"
         type: boolean
         required: true
 
       modern:
-        description: "Build apks for Android 6>=15"
+        description: "Build modern apks (Old devices unsupported)"
         type: boolean
         required: true
 

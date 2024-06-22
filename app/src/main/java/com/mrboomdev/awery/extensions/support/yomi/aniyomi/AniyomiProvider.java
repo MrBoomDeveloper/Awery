@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -97,60 +98,72 @@ public class AniyomiProvider extends YomiProvider {
 
 	@Nullable
 	private static SettingsItem mapAnimeFilter(Object filter) {
-		if(filter instanceof AnimeFilter.CheckBox selectFilter) {
+		if(filter instanceof AnimeFilter.CheckBox checkboxFilter) {
 			return new SettingsItem.Builder(SettingsItemType.BOOLEAN)
-					.setTitle(selectFilter.getName())
-					.setKey(selectFilter.getName())
-					.setValue(selectFilter.getState())
-					.build();
+					.setTitle(checkboxFilter.getName())
+					.setKey(checkboxFilter.getName())
+					.setValue(checkboxFilter.getState())
+					.buildCustom();
 		}
 
-		if(filter instanceof AnimeFilter.Select<?> select) {
-			var items = stream(select.getValues())
+		if(filter instanceof AnimeFilter.TriState triState) {
+			var state = returnWith(triState, it -> {
+				if(triState.isIncluded()) return Selection.State.SELECTED;
+				if(triState.isExcluded()) return Selection.State.EXCLUDED;
+				return Selection.State.UNSELECTED;
+			});
+
+			return new SettingsItem.Builder(SettingsItemType.EXCLUDABLE)
+					.setTitle(triState.getName())
+					.setKey(triState.getName())
+					.setValue(state)
+					.buildCustom();
+		}
+
+		if(filter instanceof AnimeFilter.Select<?> selectFilter) {
+			var items = stream(selectFilter.getValues())
 					.map(AniyomiProvider::mapAnimeFilter)
 					.toList();
 
 			return new SettingsItem.Builder(SettingsItemType.SELECT)
-					.setTitle(select.getName())
-					.setKey(select.getName())
-					.setValue(items.get(select.getState()).getKey())
+					.setTitle(selectFilter.getName())
+					.setKey(selectFilter.getName())
+					.setDescription("${VALUE}")
+					.setValue(items.get(selectFilter.getState()).getKey())
 					.setItems(items)
-					.build();
+					.buildCustom();
+		}
+
+		if(filter instanceof AnimeFilter.Sort sort) {
+			String value = null;
+
+			if(sort.getState() != null) {
+				var index = sort.getState().getIndex();
+
+				if(index < sort.getValues().length) {
+					value = sort.getValues()[index];
+				}
+			}
+
+			return new SettingsItem.Builder(SettingsItemType.SELECT)
+					.setTitle(sort.getName())
+					.setKey(sort.getName())
+					.setDescription("${VALUE}")
+					.setValue(value)
+					.setItems(stream(sort.getValues()).map(sortMode -> new SettingsItem.Builder()
+							.setTitle(sortMode)
+							.setKey(sortMode)
+							.buildCustom()).toList())
+					.buildCustom();
 		}
 
 		if(filter instanceof AnimeFilter.Text textFilter) {
 			return new SettingsItem.Builder(SettingsItemType.STRING)
 					.setTitle(textFilter.getName())
 					.setKey(textFilter.getName())
+					.setDescription("${VALUE}")
 					.setValue(textFilter.getState())
-					.build();
-		}
-
-		if(filter instanceof AnimeFilter.Separator) {
-			return new SettingsItem(SettingsItemType.DIVIDER);
-		}
-
-		if(filter instanceof AnimeFilter.Sort sort) {
-			return new SettingsItem.Builder(SettingsItemType.SELECT)
-					.setTitle(sort.getName())
-					.setKey(sort.getName())
-					.setItems(stream(sort.getValues()).map(state -> new SettingsItem.Builder()
-							.setTitle(state)
-							.setKey(state)
-							.build()).toList())
-					.build();
-		}
-
-		if(filter instanceof AnimeFilter.TriState triState) {
-			var state = Selection.State.UNSELECTED;
-			if(triState.isIgnored()) state = Selection.State.EXCLUDED;
-			if(triState.isIncluded()) state = Selection.State.SELECTED;
-
-			return new SettingsItem.Builder(SettingsItemType.EXCLUDABLE)
-					.setTitle(triState.getName())
-					.setKey(triState.getName())
-					.setValue(state)
-					.build();
+					.buildCustom();
 		}
 
 		if(filter instanceof AnimeFilter.Group<?> group) {
@@ -158,20 +171,24 @@ public class AniyomiProvider extends YomiProvider {
 					.setTitle(group.getName())
 					.setKey(group.getName())
 					.setItems(stream(group.getState()).map(AniyomiProvider::mapAnimeFilter).toList())
-					.build();
+					.buildCustom();
 		}
 
 		if(filter instanceof AnimeFilter.Header header) {
 			return new SettingsItem.Builder(SettingsItemType.CATEGORY)
 					.setTitle(header.getName())
-					.build();
+					.buildCustom();
+		}
+
+		if(filter instanceof AnimeFilter.Separator) {
+			return new SettingsItem(SettingsItemType.DIVIDER);
 		}
 
 		if(filter instanceof String string) {
 			return new SettingsItem.Builder(SettingsItemType.ACTION)
 					.setKey(string)
 					.setTitle(string)
-					.build();
+					.buildCustom();
 		}
 
 		toast("Found an unknown filter! " + filter.getClass().getName(), 1);

@@ -38,28 +38,28 @@ public class SettingsItem implements Serializable {
 	@Json(name = "tint_icon")
 	private Boolean tintIcon;
 	@Json(name = "show_if")
-	private String showIf;
-	private boolean restart;
+	protected String showIf;
+	protected boolean restart;
 	private List<? extends SettingsItem> items;
 	@Json(name = "header_items")
-	private List<SettingsItem> headerItems;
+	protected List<SettingsItem> headerItems;
 	@Json(ignore = true)
-	private SettingsItem parent;
+	protected SettingsItem parent;
 	@Json(name = "icon_size")
-	private Float iconSize;
+	protected Float iconSize;
 	@Json(name = "boolean_value")
-	private Boolean booleanValue;
+	protected Boolean booleanValue;
 	@Json(name = "integer_value")
-	private Integer integerValue;
+	protected Integer integerValue;
 	@Json(name = "excludable_value")
-	private Selection.State excludableValue;
+	protected Selection.State excludableValue;
 	@Json(name = "long_value")
-	private Long longValue;
+	protected Long longValue;
 	@Json(name = "string_set_value")
-	private Set<String> stringSetValue;
-	private Float from, to;
+	protected Set<String> stringSetValue;
+	protected Float from, to;
 	@Json(name = "string_value")
-	private String stringValue;
+	protected String stringValue;
 	@Json(ignore = true)
 	private transient Drawable iconDrawable;
 
@@ -209,12 +209,11 @@ public class SettingsItem implements Serializable {
 	 */
 	public void restoreSavedValues() {
 		if(getType() == null) return;
-		var settings = getPrefs();
 
 		switch(getType()) {
-			case BOOLEAN -> booleanValue = settings.getBoolean(getKey(), booleanValue);
-			case INTEGER, SELECT_INTEGER -> integerValue = settings.getInteger(getKey(), integerValue);
-			case SELECT, STRING -> stringValue = settings.getString(getKey(), stringValue);
+			case BOOLEAN -> booleanValue = getPrefs().getBoolean(getKey(), booleanValue);
+			case INTEGER, SELECT_INTEGER -> integerValue = getPrefs().getInteger(getKey(), integerValue);
+			case SELECT, STRING -> stringValue = getPrefs().getString(getKey(), stringValue);
 
 			case SCREEN -> {
 				if(items == null) return;
@@ -281,6 +280,10 @@ public class SettingsItem implements Serializable {
 
 	public String getStringValue() {
 		return stringValue;
+	}
+
+	public void setValue(Selection.State state) {
+		excludableValue = state;
 	}
 
 	public Set<String> getStringSetValue() {
@@ -451,6 +454,10 @@ public class SettingsItem implements Serializable {
 
 		public SettingsItem build() {
 			return item;
+		}
+
+		public CustomSettingsItem buildCustom() {
+			return new CustomSettingsItem(item) {};
 		}
 	}
 

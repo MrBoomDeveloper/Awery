@@ -18,7 +18,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -62,7 +61,6 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			var radio = new MaterialRadioButton(getContext());
 			radio.setText(title);
 			radio.setChecked(item.getValue() == Selection.State.SELECTED);
-			radio.setEnabled(item.getValue() != Selection.State.DISABLED);
 
 			radio.setOnCheckedChangeListener((v, isChecked) -> {
 				items.setState(item.getKey(), isChecked ?
@@ -103,7 +101,6 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			chip.setCheckable(true);
 			chip.setText(title);
 			chip.setChecked(item.getValue() == Selection.State.SELECTED);
-			chip.setEnabled(item.getValue() != Selection.State.DISABLED);
 
 			chip.setOnCheckedChangeListener((_view, isChecked) ->
 					items.setState(item.getKey(), isChecked ?

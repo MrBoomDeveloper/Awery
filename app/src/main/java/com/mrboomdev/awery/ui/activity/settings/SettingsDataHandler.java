@@ -4,5 +4,6 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 
 public interface SettingsDataHandler {
 	void onScreenLaunchRequest(SettingsItem item);
-	void save(SettingsItem item, Object newValue);
+	void saveValue(SettingsItem item, Object newValue);
+	Object restoreValue(SettingsItem item);
 }

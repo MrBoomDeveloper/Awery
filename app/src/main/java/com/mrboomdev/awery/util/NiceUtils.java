@@ -45,6 +45,14 @@ public class NiceUtils {
 		}
 	}
 
+	public static boolean isTrue(Object bool) {
+		if(bool instanceof String s) {
+			return Boolean.TRUE.equals(Boolean.parseBoolean(s));
+		}
+
+		return Boolean.TRUE.equals(bool);
+	}
+
 	@SuppressLint("Range")
 	public static String parseMimeType(Object o) {
 		String fileName;

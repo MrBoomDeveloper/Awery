@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.sheet;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.sdk.util.Callbacks;
@@ -59,6 +61,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 
 		this.filters = new ArrayList<>(stream(filters)
 				.filter(filter -> !HIDDEN_FILTERS.contains(filter.getKey()))
+				.map(item -> new CustomSettingsItem(item) {})
 				.toList());
 	}
 
@@ -141,15 +144,18 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 			provider.getFilters(new ExtensionProvider.ResponseCallback<>() {
 
 				@Override
-				public void onSuccess(List<SettingsItem> filters) {
+				public void onSuccess(List<SettingsItem> fetchedFilters) {
 					if(!isShown()) return;
+
+					var filteredFilters = stream(fetchedFilters)
+							.filter(filter -> find(filters, item -> item.getKey().equals(filter.getKey())) == null)
+							.toList();
+
+					filters.addAll(filteredFilters);
 
 					runOnUiThread(() -> {
 						progressBarAdapter.setEnabled(false);
-
-						screenAdapter.addItems(stream(filters)
-								.filter(filter -> !FiltersSheet.this.filters.contains(filter))
-								.toList());
+						screenAdapter.addItems(filteredFilters);
 					}, recycler);
 				}
 
@@ -170,5 +176,17 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 	}
 
 	@Override
-	public void save(SettingsItem item, Object newValue) {}
+	public void saveValue(SettingsItem item, Object newValue) {}
+
+	@Override
+	public Object restoreValue(@NonNull SettingsItem item) {
+		return switch(item.getType()) {
+			case INTEGER, SELECT_INTEGER -> item.getIntegerValue();
+			case BOOLEAN, SCREEN_BOOLEAN -> item.getBooleanValue();
+			case STRING, SELECT -> item.getStringValue();
+			case DATE -> item.getLongValue();
+			case EXCLUDABLE -> item.getExcludableValue();
+			default -> null;
+		};
+	}
 }

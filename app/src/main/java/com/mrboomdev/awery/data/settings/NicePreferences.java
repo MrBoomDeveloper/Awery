@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class NicePreferences {
 	 * @author MrBoomDev
 	 */
 	public Boolean getBoolean(String key, Boolean defaultValue) {
-		if(!prefs.contains(key)) {
+		if(!contains(key)) {
 			if(defaultValue == null) {
 				return null;
 			}
@@ -437,6 +436,7 @@ public class NicePreferences {
 			return getPrefs().getValue(this);
 		}
 
+		@Nullable
 		default Boolean getValue(Boolean defaultValue) {
 			return getPrefs().getValue(this, defaultValue);
 		}

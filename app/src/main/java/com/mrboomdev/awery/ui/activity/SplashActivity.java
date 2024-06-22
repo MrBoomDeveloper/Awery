@@ -28,10 +28,11 @@ public class SplashActivity extends AppCompatActivity {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		try {
 			ThemeManager.apply(this);
-		} catch(Exception ignored) {}
+		} catch(Exception e) {
+			Log.e(TAG, "Failed to apply an theme!", e);
+		}
 
 		SplashScreen.installSplashScreen(this);
-
 		super.onCreate(savedInstanceState);
 
 		var frame = new LinearLayout(this);

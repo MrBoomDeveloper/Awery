@@ -74,10 +74,20 @@
         android:padding="0dp"
         android:layout_marginTop="-10dp"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
-        tools:visibility="visible" />
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_guideline"
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"/>
 
     <ImageView
         android:id="@+id/options"

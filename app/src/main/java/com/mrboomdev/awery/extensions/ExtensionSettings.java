@@ -23,8 +23,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBRepository;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -233,15 +233,20 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	}
 
 	@Override
-	public void save(@NonNull SettingsItem item, Object newValue) {
+	public void saveValue(@NonNull SettingsItem item, Object newValue) {
 		var isEnabled = (boolean) newValue;
 
-		NicePreferences.getPrefs()
-				.setBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", isEnabled)
-				.saveAsync();
+		getPrefs().setBoolean("ext_" +
+				manager.getId() + "_" + item.getKey() +
+				"_enabled", isEnabled).saveAsync();
 
 		if(isEnabled) manager.loadExtension(activity, item.getKey());
 		else manager.unloadExtension(activity, item.getKey());
+	}
+
+	@Override
+	public Object restoreValue(@NonNull SettingsItem item) {
+		return getPrefs().getBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled");
 	}
 
 	private class RepositorySetting extends CustomSettingsItem {
@@ -323,7 +328,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						response.get().setParent(this);
 						return response.get();
 					}).filter(Objects::nonNull).toList())
-					.setValue(NicePreferences.getPrefs().getBoolean(
+					.setValue(getPrefs().getBoolean(
 							getExtensionKey(extension) + "_enabled", true))
 					.setIcon(extension.getIcon())
 					.setIconSize(1.2f)
@@ -348,6 +353,11 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		}
 
 		@Override
-		public void save(SettingsItem item, Object newValue) {}
+		public void saveValue(SettingsItem item, Object newValue) {}
+
+		@Override
+		public Object restoreValue(SettingsItem item) {
+			return null;
+		}
 	}
 }
