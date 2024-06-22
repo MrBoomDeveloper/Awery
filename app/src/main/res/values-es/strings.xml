@@ -445,4 +445,5 @@
     <string name="restart">Reiniciar</string>
     <string name="clear">Limpiar</string>
     <string name="restart_to_apply_settings">Para aplicar la configuración, debe reiniciar la aplicación</string>
+    <string name="done">Hecho</string>
 </resources>
