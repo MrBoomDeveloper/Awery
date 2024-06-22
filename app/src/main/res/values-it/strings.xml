@@ -447,4 +447,5 @@
     <string name="restart">Riavvia</string>
     <string name="clear">Ripulire</string>
     <string name="restart_to_apply_settings">Per applicare le impostazioni, è necessario riavviare l\'applicazione</string>
+    <string name="done">Fatto</string>
 </resources>
