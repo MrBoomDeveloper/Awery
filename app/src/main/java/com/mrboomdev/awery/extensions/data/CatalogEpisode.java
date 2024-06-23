@@ -1,15 +1,14 @@
 package com.mrboomdev.awery.extensions.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
 
-import org.jetbrains.annotations.Contract;
-
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
-public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
+public class CatalogEpisode implements Serializable, Comparable<CatalogEpisode> {
+	@Serial
+	private static final long serialVersionUID = 1;
 	protected String title, banner, description, url;
 	protected float number;
 	protected final long releaseDate;
@@ -28,31 +27,6 @@ public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 	public CatalogEpisode(float number) {
 		this(null, null, null, null, 0, number);
 	}
-
-	protected CatalogEpisode(@NonNull Parcel in) {
-		title = in.readString();
-		banner = in.readString();
-		description = in.readString();
-		url = in.readString();
-		number = in.readFloat();
-		releaseDate = in.readLong();
-	}
-
-	public static final Creator<CatalogEpisode> CREATOR = new Creator<>() {
-		@NonNull
-		@Contract("_ -> new")
-		@Override
-		public CatalogEpisode createFromParcel(Parcel in) {
-			return new CatalogEpisode(in);
-		}
-
-		@NonNull
-		@Contract(value = "_ -> new", pure = true)
-		@Override
-		public CatalogEpisode[] newArray(int size) {
-			return new CatalogEpisode[size];
-		}
-	};
 
 	public void setVideos(List<CatalogVideo> videos) {
 		this.videos = videos;
@@ -94,27 +68,12 @@ public class CatalogEpisode implements Parcelable, Comparable<CatalogEpisode> {
 		this.number = number;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
 	public long getId() {
 		return id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	@Override
-	public void writeToParcel(@NonNull Parcel dest, int flags) {
-		dest.writeString(title);
-		dest.writeString(banner);
-		dest.writeString(description);
-		dest.writeString(url);
-		dest.writeFloat(number);
-		dest.writeLong(releaseDate);
 	}
 
 	@Override

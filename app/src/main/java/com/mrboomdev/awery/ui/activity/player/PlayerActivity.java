@@ -4,7 +4,6 @@ import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
@@ -47,7 +46,6 @@ import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
@@ -89,7 +87,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected boolean areButtonsClickable;
 	protected boolean isVideoPaused, isVideoBuffering = true, didSelectedVideo;
 	protected int forwardFastClicks, backwardFastClicks;
-	protected ArrayList<CatalogEpisode> episodes;
+	protected List<CatalogEpisode> episodes;
 	protected CatalogEpisode episode;
 	protected CatalogVideo video;
 	protected ExoPlayer player;
@@ -339,6 +337,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		Glide.with(this).load(res).into(binding.pause);
 	}
 
+	// TODO: Replace this lazy temporary long-term solution with something better
 	public static void selectSource(ExtensionProvider source) {
 		PlayerActivity.source = source;
 	}
@@ -429,8 +428,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		onPlaybackStateChanged(Player.STATE_BUFFERING);
 		var intent = getIntent();
 
-		this.episode = intent.getParcelableExtra("episode");
-		this.episodes = intent.getParcelableArrayListExtra("episodes");
+		this.episode = (CatalogEpisode) intent.getSerializableExtra("episode");
+		this.episodes = (List<CatalogEpisode>) intent.getSerializableExtra("episodes");
 
 		if(episode != null) {
 			binding.title.setText(episode.getTitle());

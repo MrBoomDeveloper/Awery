@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
@@ -99,7 +100,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	public interface OnEpisodeSelectedListener {
-		void onEpisodeSelected(@NonNull CatalogEpisode episode, ArrayList<CatalogEpisode> episodes);
+		void onEpisodeSelected(@NonNull CatalogEpisode episode, List<CatalogEpisode> episodes);
 	}
 
 	@Override

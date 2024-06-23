@@ -37,5 +37,10 @@
 	"catalog": {
 		"active": "ic_view_cozy",
 		"names": [ "Catalog" ]
+	},
+
+	"book": {
+		"active": "ic_round_import_contacts_24",
+		"names": [ "Book", "Read", "Manga", "Читать", "Книга", "Манга" ]
 	}
 }

@@ -122,6 +122,121 @@
 						"source_id": "TEMPLATE",
 						"source_feed": "BOOKMARKS",
 						"display_mode": "LIST_HORIZONTAL"
+					}, {
+						"title": "Continue Watching",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"hide_if_empty": true,
+
+						"filters": [
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] },
+							{ "key": "status_in", "string_value": "CURRENT", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Planned Anime",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"hide_if_empty": true,
+
+						"filters": [
+							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] },
+							{ "key": "status_in", "string_value": "PLANNING", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Continue Reading",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"hide_if_empty": true,
+
+						"filters": [
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] },
+							{ "key": "status_in", "string_value": "CURRENT", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Planned Manga",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"hide_if_empty": true,
+
+						"filters": [
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] },
+							{ "key": "status_in", "string_value": "PLANNING", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Recommended",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"source_feed": "recommended",
+						"display_mode": "LIST_HORIZONTAL",
+						"hide_if_empty": true
+					}
+				]
+			}, {
+				"title": "Manga",
+				"id": "manga",
+				"icon": "book",
+				"feeds": [
+					{
+						"title": "Current Season",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "SLIDES",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
+							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Trending Manhwa",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
+							{ "key": "countryOfOrigin", "string_value": "KR", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Trending Novel",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
+							{ "key": "format", "string_value": "NOVEL", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
+					},{
+						"title": "Top rated",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "SCORE_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Most Favourite",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_HORIZONTAL",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
+					}, {
+						"title": "Popular Manga",
+						"source_manager": "AWERY_JS",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
+						"display_mode": "LIST_VERTICAL",
+						"filters": [
+							{ "key": "sort_mode", "string_value": "POPULARITY_DESC", "type": "select", "items": [] },
+							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+						]
 					}
 				]
 			}

@@ -3,12 +3,13 @@ package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.findIndex;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +35,9 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
@@ -49,6 +52,7 @@ import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
 public class AniyomiProvider extends YomiProvider {
+	private static final String TAG = "AniyomiProvider";
 	private static final String FEED_LATEST = "latest";
 	private static final String FEED_POPULAR = "popular";
 	protected final AnimeSource source;
@@ -230,36 +234,36 @@ public class AniyomiProvider extends YomiProvider {
 				return;
 			}
 
-			callback.onSuccess(stream(videos).map(item -> {
-						var headers = item.getHeaders();
+			callback.onSuccess(stream(videos).map(item -> new CatalogVideo(
+					item.getQuality(),
+					item.getVideoUrl(),
 
-						var subtitles = stream(item.getSubtitleTracks()).map(track ->
-								new CatalogSubtitle(track.getLang(), track.getUrl())).toList();
+					item.getHeaders() == null ? null :
+							mapHttpHeaders(item.getHeaders()),
 
-						return new CatalogVideo(
-								item.getQuality(),
-								item.getVideoUrl(),
-								headers != null ? headers.toString() : "",
-								subtitles
-						);
-					}).collect(Collectors.toCollection(ArrayList::new)));
+					stream(item.getSubtitleTracks()).map(track ->
+							new CatalogSubtitle(
+									track.getLang(),
+									track.getUrl()
+							)).toList()
+			)).collect(Collectors.toCollection(ArrayList::new)));
 		})).start();
+	}
+
+	@NonNull
+	private static Map<String, String> mapHttpHeaders(@NonNull Headers headers) {
+		var result = new HashMap<String, String>(headers.size());
+
+		for(var name : headers.names()) {
+			result.put(name, headers.get(name));
+		}
+
+		return result;
 	}
 
 	@Override
 	public Collection<Integer> getFeatures() {
 		return features;
-	}
-
-	@NonNull
-	private Bundle getHeaders(@NonNull Headers headers) {
-		var bundle = new Bundle();
-
-		for(var header : headers) {
-			bundle.putString(header.getFirst(), header.getSecond());
-		}
-
-		return bundle;
 	}
 
 	@Contract("null, _, _ -> false")
@@ -342,17 +346,13 @@ public class AniyomiProvider extends YomiProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			List<SettingsItem> filters,
+			@NonNull List<SettingsItem> filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			if(filters == null) {
-				throw new NullPointerException("params cannot be null!");
-			}
-
-			var query = find(filters, filter -> filter.getKey().equals(FILTER_QUERY));
-			var page = find(filters, filter -> filter.getKey().equals(FILTER_PAGE));
-			var feed = find(filters, filter -> filter.getKey().equals(FILTER_FEED));
+			var query = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_QUERY));
+			var page = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_PAGE));
+			var feed = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_FEED));
 
 			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
 				if(!checkSearchResults(animePage, t, callback)) return;
@@ -362,7 +362,8 @@ public class AniyomiProvider extends YomiProvider {
 						.toList(), animePage.getHasNextPage()));
 			};
 
-			if(feed != null) {
+			// filters.size() <= 2 only if query and page filters are being met.
+			if(feed != null && filters.size() <= 2) {
 				switch(feed.getStringValue()) {
 					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
 							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
@@ -376,13 +377,56 @@ public class AniyomiProvider extends YomiProvider {
 				return;
 			}
 
-			var filter = catalogueSource.getFilterList();
+			var originalFilters = catalogueSource.getFilterList();
+			applyFilters(originalFilters, filters);
 
 			new Thread(() -> AniyomiKotlinBridge.searchAnime(catalogueSource,
 					page != null ? page.getIntegerValue() : 0,
-					query.getStringValue(), filter, searchCallback)).start();
+					query.getStringValue(), originalFilters, searchCallback)).start();
 		} else {
 			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+		}
+	}
+
+	@Contract(pure = true)
+	private static void applyFilters(@NonNull List<AnimeFilter<?>> animeFilters, List<? extends SettingsItem> appliedFilters) {
+		for(var animeFilter : animeFilters) {
+			var found = find(appliedFilters, filter -> Objects.equals(filter.getKey(), animeFilter.getName()));
+			if(found == null) continue;
+
+			if(animeFilter instanceof AnimeFilter.Text textFilter) {
+				textFilter.setState(found.getStringValue());
+			} else if(animeFilter instanceof AnimeFilter.CheckBox booleanFilter) {
+				booleanFilter.setState(found.getBooleanValue());
+			} else if(animeFilter instanceof AnimeFilter.Select<?> selectFilter) {
+				var selected = find(found.getItems(), item -> Objects.equals(item.getKey(), found.getStringValue()));
+				if(selected == null) continue;
+
+				selectFilter.setState(found.getItems().indexOf(selected));
+			} else if(animeFilter instanceof AnimeFilter.Sort sortFilter) {
+				var selected = find(sortFilter.getValues(), value -> value.equals(found.getStringValue()));
+				var index = findIndex(sortFilter.getValues(), value -> value.equals(found.getStringValue()));
+				if(selected == null || index == null) continue;
+
+				sortFilter.setState(new AnimeFilter.Sort.Selection(index, false));
+			} else if(animeFilter instanceof AnimeFilter.TriState triStateFilter) {
+				var value = found.getExcludableValue();
+				if(value == null) continue;
+
+				triStateFilter.setState(switch(value) {
+					case SELECTED -> AnimeFilter.TriState.STATE_INCLUDE;
+					case UNSELECTED -> AnimeFilter.TriState.STATE_IGNORE;
+					case EXCLUDED -> AnimeFilter.TriState.STATE_EXCLUDE;
+				});
+			} else if(animeFilter instanceof AnimeFilter.Group<?> group) {
+				try {
+					@SuppressWarnings("unchecked") var animeFiltersGroup = (List<AnimeFilter<?>>) group.getState();
+					applyFilters(animeFiltersGroup, found.getItems());
+				} catch(ClassCastException e) {
+					toast("Unknown type of the filter group.");
+					Log.e(TAG, "Unknown type of the filter group.", e);
+				}
+			}
 		}
 	}
 

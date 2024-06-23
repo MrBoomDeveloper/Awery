@@ -190,6 +190,27 @@ public class NiceUtils {
 		return find(Arrays.asList(array), checker);
 	}
 
+	@Nullable
+	public static <A> Integer findIndex(A[] array, @NonNull Callbacks.Result1<Boolean, A> checker) {
+		return findIndex(Arrays.asList(array), checker);
+	}
+
+	@Contract(pure = true)
+	@Nullable
+	public static <A> Integer findIndex(@NonNull Collection<A> collection, @NonNull Callbacks.Result1<Boolean, A> checker) {
+		int index = -1;
+
+		for(var item : collection) {
+			index++;
+
+			if(checker.run(item)) {
+				return index;
+			}
+		}
+
+		return null;
+	}
+
 	public static <A> A find(Collection<A> collection, @NonNull Callbacks.Result1<Boolean, A> checker) {
 		return stream(collection)
 				.filter(checker::run)

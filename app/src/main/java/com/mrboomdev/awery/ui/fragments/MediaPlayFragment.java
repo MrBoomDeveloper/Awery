@@ -37,7 +37,6 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
-import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -61,6 +60,7 @@ import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -121,12 +121,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	@Override
-	public void onEpisodeSelected(@NonNull CatalogEpisode episode, @NonNull ArrayList<CatalogEpisode> episodes) {
+	public void onEpisodeSelected(@NonNull CatalogEpisode episode, @NonNull List<CatalogEpisode> episodes) {
 		PlayerActivity.selectSource(selectedSource);
 
 		var intent = new Intent(requireContext(), PlayerActivity.class);
 		intent.putExtra("episode", episode);
-		intent.putParcelableArrayListExtra("episodes", episodes);
+		intent.putExtra("episodes", (Serializable) episodes);
 		startActivity(intent);
 
 		new Thread(() -> {

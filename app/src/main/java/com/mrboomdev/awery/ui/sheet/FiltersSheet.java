@@ -38,6 +38,7 @@ import com.mrboomdev.awery.util.ui.dialog.SheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 	private static final List<String> HIDDEN_FILTERS = List.of(
@@ -148,7 +149,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 					if(!isShown()) return;
 
 					var filteredFilters = stream(fetchedFilters)
-							.filter(filter -> find(filters, item -> item.getKey().equals(filter.getKey())) == null)
+							.filter(filter -> find(filters, item -> Objects.equals(item.getKey(), filter.getKey())) == null)
 							.toList();
 
 					filters.addAll(filteredFilters);
