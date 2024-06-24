@@ -68,10 +68,20 @@ public class AniyomiManager extends YomiManager {
 	@Override
 	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeSource source) {
-			return List.of(new AniyomiProvider(this, extension, source));
+			return List.of(new AniyomiProvider(extension, source) {
+				@Override
+				public YomiManager getManager() {
+					return AniyomiManager.this;
+				}
+			});
 		} else if(main instanceof AnimeSourceFactory factory) {
 			return stream(factory.createSources())
-					.map(source -> new AniyomiProvider(this, extension, source, true))
+					.map(source -> new AniyomiProvider(extension, source, true) {
+						@Override
+						public YomiManager getManager() {
+							return AniyomiManager.this;
+						}
+					})
 					.toList();
 		}
 

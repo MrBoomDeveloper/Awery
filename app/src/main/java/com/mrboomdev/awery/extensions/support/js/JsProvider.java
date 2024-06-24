@@ -31,6 +31,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
@@ -87,7 +88,7 @@ public class JsProvider extends ExtensionProvider {
 			@NonNull Context rhinoContext,
 			@NonNull String script
 	) {
-		super(manager, null);
+		super(null);
 
 		this.manager = manager;
 		this.context = rhinoContext;
@@ -108,6 +109,11 @@ public class JsProvider extends ExtensionProvider {
 	@Override
 	public Extension getExtension() {
 		return extension;
+	}
+
+	@Override
+	public ExtensionsManager getManager() {
+		return manager;
 	}
 
 	protected void finishInit(JsBridge bridge, @NonNull NativeObject obj) {
@@ -182,7 +188,7 @@ public class JsProvider extends ExtensionProvider {
 	public void getSettings(android.content.Context context, @NonNull ResponseCallback<SettingsItem> callback) {
 		var root = new Settings();
 
-		if(hasFeature(FEATURE_LOGIN)) {
+		if(hasFeatures(FEATURE_LOGIN)) {
 			var isLoggedIn = new AtomicReference<Boolean>();
 
 			Runnable reload = () -> isLoggedIn(new ResponseCallback<>() {

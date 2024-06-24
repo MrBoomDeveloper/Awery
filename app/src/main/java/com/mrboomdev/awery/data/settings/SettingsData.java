@@ -19,7 +19,6 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.extensions.support.anilist.query.AnilistTagsQuery;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.miru.MiruManager;
@@ -29,6 +28,7 @@ import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -78,7 +78,7 @@ public class SettingsData {
 			}}), null);
 
 			case "excluded_tags" -> {
-				var flags = switch(AwerySettings.ADULT_MODE.getValue()) {
+				/*var flags = switch(AwerySettings.ADULT_MODE.getValue()) {
 					case DISABLED -> AnilistTagsQuery.SAFE;
 					case ENABLED -> AnilistTagsQuery.ALL;
 					case ONLY -> AnilistTagsQuery.ADULT;
@@ -94,7 +94,9 @@ public class SettingsData {
 
 						return new Selection.Selectable<>(tag.getName(), tag.getName(), state);
 					}).collect(Selection.collect()), null);
-				}).catchExceptions(e -> callback.onResult(null, e));
+				}).catchExceptions(e -> callback.onResult(null, e));*/
+
+				callback.onError(new UnimplementedException("Will be available later..."));
 			}
 
 			default -> callback.onResult(null, new IllegalArgumentException("Failed to load tags list"));

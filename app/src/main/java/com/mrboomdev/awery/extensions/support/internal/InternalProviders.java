@@ -11,9 +11,9 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import java.util.Collection;
@@ -23,6 +23,11 @@ public class InternalProviders {
 
 	public static class Lists extends ExtensionProvider {
 		private final List<Integer> FEATURES = List.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
+
+		@Override
+		public ExtensionsManager getManager() {
+			return null;
+		}
 
 		@Override
 		public void searchMedia(

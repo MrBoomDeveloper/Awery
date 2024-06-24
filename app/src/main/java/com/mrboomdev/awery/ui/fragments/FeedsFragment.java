@@ -1,18 +1,11 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,9 +28,6 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.activity.SearchActivity;
-import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -45,6 +35,7 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +43,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class FeedsFragment extends Fragment {
+public abstract class FeedsFragment extends Fragment {
 	private static final String TAG = "FeedsFragment";
 	private static final int MAX_LOADING_FEEDS_AT_TIME = 5;
 	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>();
@@ -96,17 +87,16 @@ public class FeedsFragment extends Fragment {
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void loadData(boolean isReload) {
+	public void startLoading(boolean isReload) {
 		scrollToTop();
 		var currentLoadId = ++loadId;
 
-		emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
-			binding.startLoading();
+		binding.swipeRefresher.setRefreshing(false);
+		emptyStateAdapter.getBinding(EmptyView::startLoading);
+
+		runOnUiThread(() -> {
 			rowsAdapter.setCategories(Collections.emptyList());
 			failedRowsAdapter.setCategories(Collections.emptyList());
-
-			this.binding.swipeRefresher.setRefreshing(false);
-			emptyStateAdapter.notifyDataSetChanged();
 
 			new Thread(() -> {
 				var processedFeeds = new ArrayList<>(CatalogFeed.processFeeds(feeds));
@@ -125,18 +115,16 @@ public class FeedsFragment extends Fragment {
 					loadFeed(loadingFeed, currentLoadId);
 				}
 			}).start();
-		}, this.binding.recycler));
+		}, this.binding.recycler);
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
-		var requiredFeatures = List.of(ExtensionProvider.FEATURE_MEDIA_SEARCH);
-
 		var extensions = ExtensionsFactory.getManager(feed.sourceManager)
 				.getExtensions(Extension.FLAG_WORKING);
 
 		var provider = stream(extensions)
 				.flatMap(NiceUtils::stream)
-				.map(ext -> ext.getProviders(requiredFeatures))
+				.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_MEDIA_SEARCH))
 				.flatMap(NiceUtils::stream)
 				.filter(extProvider -> extProvider.getId().equals(feed.sourceId))
 				.findAny().orElse(null);
@@ -145,14 +133,26 @@ public class FeedsFragment extends Fragment {
 			var context = getContext();
 			if(context == null) return;
 
-			var filters = List.of(
-					new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
-					new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed)
-			);
+			var filters = new ArrayList<>(getFilters());
 
-			if(feed.filters != null && !feed.filters.isEmpty()) {
-				filters = new ArrayList<>(filters);
+			if(feed.filters != null) {
 				filters.addAll(feed.filters);
+			}
+
+			if(feed.sourceFeed != null) {
+				filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed));
+			}
+
+			var queryFilter = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+
+			if(queryFilter != null) {
+				if(feed.filters == null) {
+					feed.filters = new ArrayList<>(Collections.singletonList(queryFilter));
+				} else {
+					var found = find(feed.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+					if(found != null) feed.filters.remove(found);
+					feed.filters.add(queryFilter);
+				}
 			}
 
 			provider.searchMedia(context, filters, new ExtensionProvider.ResponseCallback<>() {
@@ -220,7 +220,7 @@ public class FeedsFragment extends Fragment {
 		if(nextFeed != null) {
 			loadingFeeds.add(nextFeed);
 			loadFeed(nextFeed, currentLoadId);
-		} else if(pendingFeeds.isEmpty()) {
+		} else if(pendingFeeds.isEmpty() && loadingFeeds.isEmpty()) {
 			emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
 				binding.setInfo(R.string.you_reached_end, R.string.you_reached_end_description);
 				emptyStateAdapter.notifyDataSetChanged();
@@ -236,8 +236,8 @@ public class FeedsFragment extends Fragment {
 			@Nullable Bundle savedInstanceState
 	) {
 		binding = ScreenFeedBinding.inflate(inflater, container, false);
-		binding.swipeRefresher.setOnRefreshListener(() -> loadData(true));
-		setupHeader();
+		binding.swipeRefresher.setOnRefreshListener(() -> startLoading(true));
+		binding.headerWrapper.addView(getHeader(binding.headerWrapper));
 
 		binding.headerWrapper.addOnOffsetChangedListener((v, offset) ->
 				binding.swipeRefresher.setEnabled(offset == 0));
@@ -246,36 +246,22 @@ public class FeedsFragment extends Fragment {
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
 				rowsAdapter, emptyStateAdapter, failedRowsAdapter));
 
-		loadData(false);
+		if(loadOnStartup()) {
+			startLoading(false);
+		} else {
+			emptyStateAdapter.getBinding(binding ->
+					binding.setInfo(null, null));
+		}
+
 		return binding.getRoot();
 	}
 
-	private void setupHeader() {
-		binding.search.setOnClickListener(v -> {
-			var intent = new Intent(requireActivity(), SearchActivity.class);
-			startActivity(intent);
-		});
+	protected abstract List<SettingsItem> getFilters();
 
-		binding.settingsWrapper.setOnClickListener(v -> {
-			var intent = new Intent(requireActivity(), SettingsActivity.class);
-			startActivity(intent);
-		});
+	protected abstract boolean loadOnStartup();
 
-		setOnApplyUiInsetsListener(binding.header, insets -> {
-			setTopPadding(binding.header, insets.top + dpPx(16));
-			setRightPadding(binding.header, insets.right + dpPx(16));
+	protected abstract View getHeader(ViewGroup parent);
 
-			if(isLandscape()) {
-				if(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL) {
-					setLeftPadding(binding.header, dpPx(16));
-				} else {
-					setLeftPadding(binding.header, dpPx(16) + insets.left);
-				}
-			} else {
-				setLeftPadding(binding.header, dpPx(16));
-			}
-
-			return false;
-		});
-	}
+	@Nullable
+	protected abstract File getCacheFile();
 }

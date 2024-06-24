@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
+import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
@@ -8,9 +9,6 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -59,7 +57,6 @@ import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -406,11 +403,8 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 							dialog.dismiss();
 							finish();
 						})
-						.setNeutralButton(R.string.copy, dialog -> {
-							var clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-							var clipData = ClipData.newRawUri(url, uri);
-							clipboard.setPrimaryClip(clipData);
-						})
+						.setNeutralButton(R.string.copy, dialog ->
+								copyToClipboard(url, uri))
 						.show();
 			}
 
@@ -424,6 +418,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		didSelectedVideo = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadData() {
 		onPlaybackStateChanged(Player.STATE_BUFFERING);
 		var intent = getIntent();
@@ -512,27 +507,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	private void setupButton(@NonNull View view, Runnable clickListener) {
-		setupButton(view, clickListener, null);
-	}
-
-	@SuppressLint("ClickableViewAccessibility")
-	private void setupButton(@NonNull View view, Runnable clickListener, Runnable longClickListener) {
 		buttons.add(view);
-
-		view.setOnLongClickListener(v -> {
-			if(!areButtonsClickable) {
-				return false;
-			}
-
-			controller.showUiTemporarily();
-
-			if(longClickListener != null) {
-				longClickListener.run();
-				return true;
-			}
-
-			return false;
-		});
 
 		view.setOnClickListener(v -> {
 			if(!areButtonsClickable) {

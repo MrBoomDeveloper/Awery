@@ -1,0 +1,9 @@
+{
+	"tags": [ "Tags", "Genres", "Genre", "Теги", "Жанр", "Generos", "Generi", "Selecionar Gêneros", "Gêneros" ],
+	"type": [ "Categories", "Type", "Tipo", "Формат" ],
+	"status": [ "Status", "Stato", "Статус тайтла" ],
+	"year": [ "Year", "Date", "Anno di Uscita", "Ano" ],
+	"authors": [ "Brands", "Producer", "Studios", "Studio", "Estudio", "Estúdios" ],
+	"sort": [ "Sort by", "Sort", "Order", "Order by", "Ordenar por", "Сортировать по" ],
+	"none": [ "<selecionar>", "<seleccionar>" ]
+}

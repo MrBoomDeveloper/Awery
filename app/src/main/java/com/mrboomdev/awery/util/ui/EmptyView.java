@@ -24,7 +24,6 @@ public class EmptyView implements ViewBinding {
 
 	public EmptyView(Context context) {
 		binding = LayoutLoadingBinding.inflate(LayoutInflater.from(context));
-
 		title = binding.title;
 		message = binding.message;
 		progressBar = binding.progressBar;
@@ -34,7 +33,6 @@ public class EmptyView implements ViewBinding {
 
 	public EmptyView(ViewGroup parent, boolean attachToParent) {
 		binding = LayoutLoadingBinding.inflate(LayoutInflater.from(parent.getContext()), parent, attachToParent);
-
 		title = binding.title;
 		message = binding.message;
 		progressBar = binding.progressBar;
@@ -56,6 +54,11 @@ public class EmptyView implements ViewBinding {
 		} else {
 			button.setVisibility(View.GONE);
 		}
+	}
+
+	public void hideAll() {
+		progressBar.setVisibility(View.GONE);
+		info.setVisibility(View.GONE);
 	}
 
 	public void setInfo(String title, String message) {

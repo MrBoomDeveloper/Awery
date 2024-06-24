@@ -41,7 +41,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
-import com.mrboomdev.awery.ui.activity.SearchActivity;
+import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -53,6 +53,7 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -401,7 +402,7 @@ public class TrackingSheet {
 
 					var intent = new Intent(context, SearchActivity.class);
 					intent.putExtra("source", selectedSource.getId());
-					intent.putExtra("query", queryFilter.getStringValue());
+					intent.putExtra("filters", (Serializable) filters);
 					intent.putExtra("select", true);
 
 					startActivityForResult(context, intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {

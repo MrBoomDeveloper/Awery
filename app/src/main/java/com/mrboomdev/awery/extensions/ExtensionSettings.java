@@ -98,7 +98,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				}
 
 				for(var source : extension.getProviders()) {
-					if(source.hasFeature(ExtensionProvider.FEATURE_CHANGELOG)) {
+					if(source.hasFeatures(ExtensionProvider.FEATURE_CHANGELOG)) {
 						source.getChangelog(new ExtensionProvider.ResponseCallback<>() {
 							@Override
 							public void onSuccess(String s) {

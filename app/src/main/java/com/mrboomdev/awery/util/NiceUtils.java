@@ -217,6 +217,13 @@ public class NiceUtils {
 				.findAny().orElse(null);
 	}
 
+	public static <A, B> B findMap(Collection<A> collection, @NonNull Callbacks.Result1<B, A> checker) {
+		return stream(collection)
+				.map(checker::run)
+				.filter(Objects::nonNull)
+				.findAny().orElse(null);
+	}
+
 	public static <A> boolean hasAny(Collection<A> collection, Callbacks.Result1<Boolean, A> checker) {
 		return find(collection, checker) != null;
 	}

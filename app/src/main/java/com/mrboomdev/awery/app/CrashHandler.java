@@ -1,27 +1,19 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.AweryApp.getString;
+import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.exitApp;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
-import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.Parser;
@@ -35,7 +27,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
 
 import xcrash.Errno;
 import xcrash.XCrash;
@@ -173,12 +164,8 @@ public class CrashHandler {
 						dismissCallback.run();
 					}
 				})
-				.setNeutralButton(R.string.copy, dialog -> {
-					var clipboard = context.getSystemService(ClipboardManager.class);
-					var clip = ClipData.newPlainText(context.getString(R.string.crash_report), message);
-					clipboard.setPrimaryClip(clip);
-					toast(R.string.copied_to_clipboard);
-				})
+				.setNeutralButton(R.string.copy, dialog ->
+						copyToClipboard(context.getString(R.string.crash_report), message))
 				.setNegativeButton(R.string.share, dialog -> {
 					var newFile = new File(context.getFilesDir(), "crash_report.txt");
 					var intent = new Intent(Intent.ACTION_SEND);

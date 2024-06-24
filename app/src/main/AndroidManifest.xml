@@ -123,11 +123,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.SearchActivity"
+            android:name=".ui.activity.search.SearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
-        <activity android:name=".ui.activity.MultiSearchActivity"
+        <activity android:name=".ui.activity.search.MultiSearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 

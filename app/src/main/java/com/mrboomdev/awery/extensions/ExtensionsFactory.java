@@ -10,12 +10,10 @@ import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
-import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiProvider;
 import com.mrboomdev.awery.util.NiceUtils;
 
 import java.util.Collection;
@@ -86,11 +84,6 @@ public class ExtensionsFactory {
 	public static ExtensionProvider getExtensionProvider(int extensionFlags, @NonNull String id) {
 		if(id.contains(";;;")) {
 			var parts = id.split(";;;");
-
-			// TODO: When js extensions will be fully done remove this shit from the code
-			if(parts[0].equals(JsManager.MANAGER_ID) && parts[1].equals(Constants.ANILIST_EXTENSION_ID)) {
-				return AnilistProvider.getInstance();
-			}
 
 			return stream(getManager(parts[0]).getExtensions(extensionFlags))
 					.map(Extension::getProviders)

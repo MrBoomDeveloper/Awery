@@ -17,6 +17,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -107,6 +109,25 @@ public class AweryApp extends Application {
 				.usePlugin(SpoilerPlugin.create())
 				.usePlugin(HtmlPlugin.create())
 				.build();
+	}
+
+	public static void copyToClipboard(String label, @NonNull String content) {
+		copyToClipboard(ClipData.newPlainText(label, content));
+	}
+
+	public static void copyToClipboard(String label, @NonNull Uri content) {
+		copyToClipboard(ClipData.newRawUri(label, content));
+	}
+
+	public static void copyToClipboard(ClipData clipData) {
+		var clipboard = getAnyContext().getSystemService(ClipboardManager.class);
+		clipboard.setPrimaryClip(clipData);
+
+		// Android 13 and higher shows a visual confirmation of copied contents
+		// https://developer.android.com/about/versions/13/features/copy-paste
+		if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+			toast(R.string.copied_to_clipboard);
+		}
 	}
 
 	/**

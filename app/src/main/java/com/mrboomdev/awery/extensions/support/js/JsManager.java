@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.data.Constants.SUPPRESS_IGNORED_THROWABLE;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -67,7 +69,7 @@ public class JsManager extends ExtensionsManager {
 				}
 
 				@Override
-				@SuppressWarnings(Constants.SUPPRESS_IGNORED_THROWABLE)
+				@SuppressWarnings(SUPPRESS_IGNORED_THROWABLE)
 				public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
 					Log.e("JsManager", lineSource + "\n\"" + message + "\" at " + sourceName + ":" + line);
 					runtimeError(message, sourceName, line, lineSource, lineOffset);

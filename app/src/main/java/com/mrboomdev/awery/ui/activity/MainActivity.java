@@ -5,22 +5,27 @@ import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,10 +40,16 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.activity.search.MultiSearchActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.fragments.FeedsFragment;
 import com.mrboomdev.awery.util.IconStateful;
@@ -48,6 +59,7 @@ import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -301,10 +313,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		if(binding != null) {
-			outState.putInt("nav_index", switch(getNavigationStyle()) {
-				case BUBBLE -> binding.navbarBubble.getSelectedIndex();
-				case MATERIAL -> ((NavigationBarView) binding.navbarMaterial).getSelectedItemId();
-			});
+			outState.putInt("nav_index", binding.pages.getCurrentItem());
 		}
 
 		super.onSaveInstanceState(outState);
@@ -312,13 +321,14 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-		if(binding != null) {
-			/*var index = savedInstanceState.getInt("nav_index");
-			binding.navbarBubble.selectTabAt(index, false);
-			((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);*/
-		}
-
 		super.onRestoreInstanceState(savedInstanceState);
+
+		if(binding != null) {
+			var index = savedInstanceState.getInt("nav_index");
+			binding.navbarBubble.selectTabAt(index, false);
+			((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);
+			binding.pages.setCurrentItem(index);
+		}
 	}
 
 	private static class FeedsAdapter extends FragmentStateAdapter {
@@ -344,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
 			var arguments = new Bundle();
 			arguments.putSerializable("feeds", (Serializable) tabs.get(position).feeds);
 
-			var fragment = new FeedsFragment();
+			var fragment = new HomeFeedsFragment();
 			fragment.setArguments(arguments);
 
 			fragments.set(position, new WeakReference<>(fragment));
@@ -354,6 +364,60 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public int getItemCount() {
 			return tabs.size();
+		}
+	}
+
+	public static class HomeFeedsFragment extends FeedsFragment {
+
+		@Override
+		protected View getHeader(ViewGroup parent) {
+			var binding = LayoutHeaderHomeBinding.inflate(
+					LayoutInflater.from(parent.getContext()), parent, false);
+
+			binding.search.setOnClickListener(v -> {
+				var intent = new Intent(requireActivity(), MultiSearchActivity.class);
+				startActivity(intent);
+			});
+
+			binding.settingsWrapper.setOnClickListener(v -> {
+				var intent = new Intent(requireActivity(), SettingsActivity.class);
+				startActivity(intent);
+			});
+
+			setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+				setTopPadding(binding.getRoot(), insets.top + dpPx(16));
+				setRightPadding(binding.getRoot(), insets.right + dpPx(16));
+
+				if(isLandscape()) {
+					if(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL) {
+						setLeftPadding(binding.getRoot(), dpPx(16));
+					} else {
+						setLeftPadding(binding.getRoot(), dpPx(16) + insets.left);
+					}
+				} else {
+					setLeftPadding(binding.getRoot(), dpPx(16));
+				}
+
+				return false;
+			});
+
+			return binding.getRoot();
+		}
+
+		@Override
+		protected List<SettingsItem> getFilters() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		protected boolean loadOnStartup() {
+			return true;
+		}
+
+		@Nullable
+		@Override
+		protected File getCacheFile() {
+			return new File(requireContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE + "/" + Constants.FILE_FEEDS_NET_CACHE);
 		}
 	}
 }

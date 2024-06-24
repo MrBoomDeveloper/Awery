@@ -2,6 +2,7 @@ package com.mrboomdev.awery.extensions.support.yomi;
 
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,11 @@ public class YomiRepoItem {
 				@Override
 				public String getPreviewUrl() {
 					return source.baseUrl;
+				}
+
+				@Override
+				public ExtensionsManager getManager() {
+					return null;
 				}
 
 				@Override

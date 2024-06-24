@@ -25,7 +25,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.ui.activity.SearchActivity;
+import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 
 import org.jetbrains.annotations.Contract;

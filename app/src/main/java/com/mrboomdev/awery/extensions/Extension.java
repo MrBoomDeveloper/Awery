@@ -93,13 +93,7 @@ public class Extension implements Comparable<Extension> {
 		return error;
 	}
 
-	public Collection<ExtensionProvider> getProviders(int feature) {
-		return stream(getProviders())
-				.filter(provider -> provider.hasFeature(feature))
-				.toList();
-	}
-
-	public Collection<ExtensionProvider> getProviders(List<Integer> features) {
+	public Collection<ExtensionProvider> getProviders(int... features) {
 		return stream(getProviders())
 				.filter(provider -> provider.hasFeatures(features))
 				.toList();

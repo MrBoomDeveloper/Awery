@@ -1,11 +1,10 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity.search;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
-import static com.mrboomdev.awery.util.NiceUtils.returnWith;
-import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
+import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -26,12 +25,10 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -40,14 +37,13 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
-import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+import com.mrboomdev.awery.databinding.ScreenSearchBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.extensions.support.anilist.AnilistProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -60,8 +56,8 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -72,12 +68,10 @@ public class SearchActivity extends AppCompatActivity {
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private final List<CatalogMedia> items = new ArrayList<>();
-	private List<SettingsItem> filters;
+	private final List<SettingsItem> filters = new ArrayList<>();
+	private ScreenSearchBinding binding;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private ExtensionProvider source;
-	private LayoutHeaderSearchBinding header;
-	private SwipeRefreshLayout refresher;
-	private RecyclerView recycler;
 	private boolean didReachedEnd, select;
 	private int searchId, currentPage;
 
@@ -99,84 +93,65 @@ public class SearchActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
+		this.select = getIntent().getBooleanExtra("select", false);
 		var columnsCountLand = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.getValue());
-		var autoColumnsCountLand = columnsCountLand.get() == 0;
-
 		var columnsCountPort = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.getValue());
+
+		var autoColumnsCountLand = columnsCountLand.get() == 0;
 		var autoColumnsCountPort = columnsCountPort.get() == 0;
 
-		this.select = getIntent().getBooleanExtra("select", false);
-		this.queryFilter.setValue(getIntent().getStringExtra("query"));
+		var filters = (List<SettingsItem>) getIntent().getSerializableExtra("filters");
 
-		this.filters = (List<SettingsItem>) getIntent().getSerializableExtra("filters");
-		this.filters = new ArrayList<>(filters != null ? filters : Collections.emptyList());
-		this.filters.addAll(List.of(queryFilter, pageFilter));
+		if(filters != null) {
+			var foundQuery = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+			if(foundQuery != null) queryFilter.setValue(foundQuery.getStringValue());
+		}
 
-		this.source = returnWith(getIntent().getStringExtra("source"), sourceId -> {
-			if(sourceId == null) {
-				return AnilistProvider.getInstance();
-			}
+		applyFilters(filters);
 
-			return ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, sourceId);
-		});
+		this.source = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING,
+				Objects.requireNonNull(getIntent().getStringExtra("source")));
 
-		var linear = new LinearLayoutCompat(this);
-		linear.setOrientation(LinearLayoutCompat.VERTICAL);
-		setContentView(linear);
+		binding = ScreenSearchBinding.inflate(getLayoutInflater());
+		binding.header.edittext.setText(queryFilter.getStringValue());
+		binding.header.edittext.requestFocus();
 
-		header = LayoutHeaderSearchBinding.inflate(getLayoutInflater(), linear, true);
-		header.edittext.setText(queryFilter.getStringValue());
-		header.edittext.requestFocus();
+		binding.header.back.setOnClickListener(v -> finish());
+		binding.header.clear.setOnClickListener(v -> binding.header.edittext.setText(null));
 
-		header.back.setOnClickListener(v -> finish());
-		header.clear.setOnClickListener(v -> header.edittext.setText(null));
-
-		header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, newFilters -> {
-			this.filters.clear();
-
-			this.filters.add(pageFilter);
-			this.filters.add(queryFilter);
-			this.filters.addAll(newFilters);
-
+		binding.header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, newFilters -> {
+			applyFilters(newFilters);
 			didReachedEnd = false;
 			search(0);
 		}).show());
 
 		var inputManager = getSystemService(InputMethodManager.class);
-		inputManager.showSoftInput(header.edittext, 0);
 
-		header.edittext.setOnEditorActionListener((v, action, event) -> {
-			if(action == EditorInfo.IME_ACTION_SEARCH) {
-				inputManager.hideSoftInputFromWindow(
-						header.edittext.getWindowToken(), 0);
-
-				queryFilter.setValue(v.getText().toString());
-				didReachedEnd = false;
-
-				search(0);
-				return true;
+		binding.header.edittext.setOnEditorActionListener((v, action, event) -> {
+			if(action != EditorInfo.IME_ACTION_SEARCH) {
+				return false;
 			}
 
-			return false;
-		});
+			inputManager.hideSoftInputFromWindow(
+					binding.header.edittext.getWindowToken(), 0);
 
-		setOnApplyUiInsetsListener(header.getRoot(), insets -> {
-			setTopMargin(header.getRoot(), insets.top);
-			setHorizontalMargin(header.getRoot(), insets.left, insets.right);
+			queryFilter.setValue(v.getText().toString());
+			didReachedEnd = false;
+
+			search(0);
 			return true;
 		});
 
-		refresher = new SwipeRefreshLayout(this);
-		linear.addView(refresher, createLinearParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT));
+		setOnApplyUiInsetsListener(binding.header.getRoot(), insets -> {
+			setTopMargin(binding.header.getRoot(), insets.top);
+			setHorizontalMargin(binding.header.getRoot(), insets.left, insets.right);
+			return true;
+		});
 
-		refresher.setOnRefreshListener(() -> {
+		binding.swipeRefresher.setOnRefreshListener(() -> {
 			this.didReachedEnd = false;
 			search(0);
 		});
-
-		var refresherContent = new LinearLayoutCompat(this);
-		refresherContent.setOrientation(LinearLayoutCompat.VERTICAL);
-		refresher.addView(refresherContent);
 
 		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var binding = LayoutLoadingBinding.inflate(getLayoutInflater(), parent, false);
@@ -194,23 +169,20 @@ public class SearchActivity extends AppCompatActivity {
 				? (autoColumnsCountLand ? 3 : columnsCountLand.get())
 				: (autoColumnsCountPort ? 5 : columnsCountPort.get()));
 
-		recycler = new RecyclerView(this);
-		recycler.setLayoutManager(layoutManager);
-		recycler.setClipToPadding(false);
-		recycler.setAdapter(concatAdapter);
-		refresherContent.addView(recycler);
+		binding.recycler.setLayoutManager(layoutManager);
+		binding.recycler.setAdapter(concatAdapter);
 
-		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+		binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
 				tryLoadMore();
 			}
 		});
 
-		setOnApplyUiInsetsListener(recycler, insets -> {
+		setOnApplyUiInsetsListener(binding.recycler, insets -> {
 			var padding = dpPx(8);
-			setVerticalPadding(recycler, padding + padding * 2);
-			setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
+			setVerticalPadding(binding.recycler, padding + padding * 2);
+			setHorizontalPadding(binding.recycler, insets.left + padding, insets.right + padding);
 
 			if(isLandscape() && autoColumnsCountLand) {
 				float columnSize = dpPx(110);
@@ -245,13 +217,32 @@ public class SearchActivity extends AppCompatActivity {
 			items.addAll(loadedMedia);
 			adapter.notifyItemRangeInserted(0, items.size());
 		});
+
+		setContentView(binding.getRoot());
+	}
+
+	private void applyFilters(@Nullable List<SettingsItem> newFilters) {
+		this.filters.clear();
+
+		if(newFilters != null) {
+			this.filters.addAll(newFilters);
+
+			var foundQuery = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+			if(foundQuery != null) this.filters.remove(foundQuery);
+
+			var foundPage = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_PAGE));
+			if(foundPage != null) this.filters.remove(foundPage);
+		}
+
+		this.filters.add(queryFilter);
+		this.filters.add(pageFilter);
 	}
 
 	private void tryLoadMore() {
 		if(!isLoading && !didReachedEnd) {
 			var lastIndex = items.size() - 1;
 
-			if(recycler.getLayoutManager() instanceof LinearLayoutManager manager
+			if(binding.recycler.getLayoutManager() instanceof LinearLayoutManager manager
 					&& manager.findLastVisibleItemPosition() >= lastIndex) {
 				search(currentPage + 1);
 			}
@@ -329,7 +320,7 @@ public class SearchActivity extends AppCompatActivity {
 							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
 						}
 
-						runDelayed(() -> tryLoadMore(), 1000, recycler);
+						runDelayed(() -> tryLoadMore(), 1000, binding.recycler);
 					});
 				});
 
@@ -374,7 +365,7 @@ public class SearchActivity extends AppCompatActivity {
 
 			private void onFinally() {
 				if(wasSearchId != searchId) return;
-				refresher.setRefreshing(false);
+				binding.swipeRefresher.setRefreshing(false);
 			}
 		});
 	}
@@ -387,7 +378,7 @@ public class SearchActivity extends AppCompatActivity {
 
 		@Override
 		public long getItemId(int position) {
-			return ids.get(items.get(position));
+			return Objects.requireNonNull(ids.get(items.get(position)));
 		}
 
 		@NonNull

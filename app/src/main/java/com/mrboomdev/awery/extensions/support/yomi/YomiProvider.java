@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,7 +19,6 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +26,11 @@ import java.util.Set;
 
 public abstract class YomiProvider extends ExtensionProvider {
 
-	public YomiProvider(ExtensionsManager manager, Extension extension) {
-		super(manager, extension);
+	public YomiProvider(Extension extension) {
+		super(extension);
 	}
+
+	public abstract YomiManager getManager();
 
 	protected abstract void setupPreferenceScreen(PreferenceScreen screen);
 

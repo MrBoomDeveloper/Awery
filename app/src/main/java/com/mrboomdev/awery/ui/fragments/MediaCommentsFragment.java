@@ -199,7 +199,7 @@ public class MediaCommentsFragment extends Fragment {
 		});
 
 		headerAdapter.getBinding(headerBinding -> {
-			var isVisible = source != null && source.hasFeature(ExtensionProvider.FEATURE_COMMENTS_PER_EPISODE);
+			var isVisible = source != null && source.hasFeatures(ExtensionProvider.FEATURE_COMMENTS_PER_EPISODE);
 			headerBinding.episodeWrapper.setVisibility(isVisible ? View.VISIBLE : View.GONE);
 		});
 

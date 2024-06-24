@@ -7,27 +7,24 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
 import eu.kanade.tachiyomi.source.ConfigurableSource;
 import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.online.HttpSource;
 
-public class TachiyomiProvider extends YomiProvider {
+public abstract class TachiyomiProvider extends YomiProvider {
 	private final List<Integer> features = new ArrayList<>();
 	private final MangaSource source;
 
-	public TachiyomiProvider(YomiManager manager, Extension extension, MangaSource source) {
-		super(manager, extension);
+	public TachiyomiProvider(Extension extension, MangaSource source, boolean isFromSource) {
+		super(extension);
 
-		this.features.addAll(manager.getBaseFeatures());
+		this.features.addAll(getManager().getBaseFeatures());
 
 		if(extension.isNsfw()) {
 			this.features.add(FEATURE_NSFW);

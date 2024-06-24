@@ -5,11 +5,11 @@ import android.content.Context
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.mrboomdev.awery.app.AweryApp.toast
 import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
 import eu.kanade.tachiyomi.network.AndroidCookieJar
 import eu.kanade.tachiyomi.util.system.WebViewClientCompat
 import eu.kanade.tachiyomi.util.system.isOutdated
-import eu.kanade.tachiyomi.util.system.toast
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
@@ -129,7 +129,7 @@ class CloudflareInterceptor(
         if (!cloudflareBypassed) {
             // Prompt user to update WebView if it seems too outdated
             if (isWebViewOutdated) {
-                context.toast("Please update the webview app for better compatibility", Toast.LENGTH_LONG)
+                toast("Please update the webview app for better compatibility", Toast.LENGTH_LONG)
             }
 
             throw CloudflareBypassException()

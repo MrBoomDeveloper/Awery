@@ -4,6 +4,8 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
+import static com.mrboomdev.awery.util.NiceUtils.findMap;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -25,7 +27,6 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -51,7 +52,7 @@ import java9.util.stream.Collectors;
 import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
-public class AniyomiProvider extends YomiProvider {
+public abstract class AniyomiProvider extends YomiProvider {
 	private static final String TAG = "AniyomiProvider";
 	private static final String FEED_LATEST = "latest";
 	private static final String FEED_POPULAR = "popular";
@@ -59,16 +60,16 @@ public class AniyomiProvider extends YomiProvider {
 	private final List<Integer> features = new ArrayList<>();
 	private final boolean isFromSource;
 
-	public AniyomiProvider(YomiManager manager, Extension extension, AnimeSource source) {
-		this(manager, extension, source, false);
+	public AniyomiProvider(Extension extension, AnimeSource source) {
+		this(extension, source, false);
 	}
 
-	public AniyomiProvider(YomiManager manager, Extension extension, AnimeSource source, boolean isFromSource) {
-		super(manager, extension);
+	public AniyomiProvider(Extension extension, AnimeSource source, boolean isFromSource) {
+		super(extension);
 		this.source = source;
 		this.isFromSource = isFromSource;
 
-		this.features.addAll(manager.getBaseFeatures());
+		this.features.addAll(getManager().getBaseFeatures());
 
 		if(extension.isNsfw()) {
 			this.features.add(FEATURE_NSFW);
@@ -350,9 +351,9 @@ public class AniyomiProvider extends YomiProvider {
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			var query = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_QUERY));
-			var page = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_PAGE));
-			var feed = find(filters, filter -> Objects.equals(filter.getKey(), FILTER_FEED));
+			var query = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_QUERY) ? filter.getStringValue() : null);
+			var page = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_PAGE) ? filter.getIntegerValue() : null);
+			var feed = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_FEED) ? filter.getStringValue() : null);
 
 			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
 				if(!checkSearchResults(animePage, t, callback)) return;
@@ -364,12 +365,12 @@ public class AniyomiProvider extends YomiProvider {
 
 			// filters.size() <= 2 only if query and page filters are being met.
 			if(feed != null && filters.size() <= 2) {
-				switch(feed.getStringValue()) {
+				switch(feed) {
 					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
-							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
+							catalogueSource, requireNonNullElse(page, 0), searchCallback)).start();
 
 					case FEED_POPULAR -> new Thread(() -> AniyomiKotlinBridge.getPopularAnime(
-							catalogueSource, page != null ? page.getIntegerValue() : 0, searchCallback)).start();
+							catalogueSource, requireNonNullElse(page, 0), searchCallback)).start();
 
 					default -> callback.onFailure(new IllegalArgumentException("Unknown feed! " + feed));
 				}
@@ -377,12 +378,12 @@ public class AniyomiProvider extends YomiProvider {
 				return;
 			}
 
-			var originalFilters = catalogueSource.getFilterList();
-			applyFilters(originalFilters, filters);
+			var animeFilters = catalogueSource.getFilterList();
+			applyFilters(animeFilters, filters);
 
 			new Thread(() -> AniyomiKotlinBridge.searchAnime(catalogueSource,
-					page != null ? page.getIntegerValue() : 0,
-					query.getStringValue(), originalFilters, searchCallback)).start();
+					requireNonNullElse(page, 0), query,
+					animeFilters, searchCallback)).start();
 		} else {
 			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}

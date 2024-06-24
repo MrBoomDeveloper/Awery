@@ -35,11 +35,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String FILTER_END_DATE = "_AWERY_FILTER_END_DATE_";
 	public static final String FILTER_TAGS = "_AWERY_FILTER_TAGS_";
 
-	public static final int FEATURE_TAGS_SEARCH = 1;
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
 	 */
 	public static final int FEATURE_LOGIN = 2;
+	public static final int FEATURE_TAGS_SEARCH = 1;
 	public static final int FEATURE_MEDIA_WATCH = 3;
 	public static final int FEATURE_MEDIA_READ = 4;
 	public static final int FEATURE_MEDIA_COMMENTS = 5;
@@ -56,16 +56,13 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 */
 	public static final int FEATURE_NSFW = 14;
 	public static final int FEATURE_FEEDS = 15;
-	private final ExtensionsManager manager;
 	private final Extension extension;
 
-	public ExtensionProvider(ExtensionsManager manager, Extension extension) {
-		this.manager = manager;
+	public ExtensionProvider(Extension extension) {
 		this.extension = extension;
 	}
 
 	public ExtensionProvider() {
-		this.manager = null;
 		this.extension = null;
 	}
 
@@ -73,9 +70,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return extension;
 	}
 
-	public ExtensionsManager getManager() {
-		return manager;
-	}
+	public abstract ExtensionsManager getManager();
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {
@@ -162,16 +157,20 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public abstract Collection<Integer> getFeatures();
 
 	/**
-	 * @param feature A constant from {@link ExtensionProvider} representing the feature.
+	 * @param features Constants array from {@link ExtensionProvider} representing new features
 	 * @return Whether the extension supports the feature
 	 * @author MrBoomDev
 	 */
-	public boolean hasFeature(int feature) {
-		return getFeatures().contains(feature);
-	}
+	public boolean hasFeatures(@NonNull int... features) {
+		var has = getFeatures();
 
-	public boolean hasFeatures(Collection<Integer> features) {
-		return getFeatures().containsAll(features);
+		for(var feature : features) {
+			if(!has.contains(feature)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

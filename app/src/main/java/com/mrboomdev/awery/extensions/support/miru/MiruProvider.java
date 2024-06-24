@@ -10,8 +10,13 @@ import java.util.List;
 public class MiruProvider extends ExtensionProvider {
 	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_READ);
 
-	public MiruProvider(ExtensionsManager manager, Extension extension) {
-		super(manager, extension);
+	public MiruProvider(Extension extension) {
+		super(extension);
+	}
+
+	@Override
+	public ExtensionsManager getManager() {
+		return null;
 	}
 
 	@Override

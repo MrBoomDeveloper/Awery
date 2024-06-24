@@ -5,10 +5,10 @@ import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Toast
+import com.mrboomdev.awery.app.AweryApp.toast
 import eu.kanade.tachiyomi.util.system.DeviceUtil
 import eu.kanade.tachiyomi.util.system.WebViewUtil
 import eu.kanade.tachiyomi.util.system.setDefaultSettings
-import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.coroutines.DelicateCoroutinesApi
 import okhttp3.Headers
 import okhttp3.Interceptor
@@ -33,13 +33,13 @@ abstract class WebViewInterceptor(
         // Crashes on some devices. We skip this in some cases since the only impact is slower
         // WebView init in those rare cases.
         // See https://bugs.chromium.org/p/chromium/issues/detail?id=1279562
-        if (DeviceUtil.isMiui || Build.VERSION.SDK_INT == Build.VERSION_CODES.S && DeviceUtil.isSamsung) {
+        if(DeviceUtil.isMiui || Build.VERSION.SDK_INT == Build.VERSION_CODES.S && DeviceUtil.isSamsung) {
             return@lazy
         }
 
         try {
             WebSettings.getDefaultUserAgent(context)
-        } catch (_: Exception) {
+        } catch(_: Exception) {
             // Avoid some crashes like when Chrome/WebView is being updated.
         }
     }
@@ -51,16 +51,19 @@ abstract class WebViewInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-        if (!shouldIntercept(response)) {
+
+        if(!shouldIntercept(response)) {
             return response
         }
 
-        if (!WebViewUtil.supportsWebView(context)) {
+        if(!WebViewUtil.supportsWebView(context)) {
             launchUI {
-                context.toast("Webview is required for dantotsu", Toast.LENGTH_LONG)
+                toast("WebView is required for Awery!", 1)
             }
+
             return response
         }
+
         initWebView
 
         return intercept(chain, request, response)
@@ -93,8 +96,8 @@ abstract class WebViewInterceptor(
 private fun isRequestHeaderSafe(_name: String, _value: String): Boolean {
     val name = _name.lowercase(Locale.ENGLISH)
     val value = _value.lowercase(Locale.ENGLISH)
-    if (name in unsafeHeaderNames || name.startsWith("proxy-")) return false
-    if (name == "connection" && value == "upgrade") return false
+    if(name in unsafeHeaderNames || name.startsWith("proxy-")) return false
+    if(name == "connection" && value == "upgrade") return false
     return true
 }
 private val unsafeHeaderNames = listOf("content-length", "host", "trailer", "te", "upgrade", "cookie2", "keep-alive", "transfer-encoding", "set-cookie")

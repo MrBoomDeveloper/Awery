@@ -46,7 +46,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.sdk.util.StringUtils;
-import com.mrboomdev.awery.ui.activity.SearchActivity;
+import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -383,7 +383,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 					var intent = new Intent(requireContext(), SearchActivity.class);
 					intent.putExtra("source", selectedSource.getId());
-					intent.putExtra("query", queryFilter.getStringValue());
+					intent.putExtra("filters", (Serializable) filters);
 					intent.putExtra("select", true);
 
 					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
