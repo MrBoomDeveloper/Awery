@@ -202,7 +202,7 @@
     <string name="status_not_yet_released">Non ancora pubblicato</string>
     <string name="status_cancelled">Cancellato</string>
     <string name="status_releasing">Rilasciato</string>
-    <string name="status_hiatus">In ritardo</string>
+    <string name="status_hiatus">Rimandato</string>
     <string name="type_adaptation">Adattamento</string>
     <string name="type_character">Personaggio</string>
     <string name="type_parent">Parente</string>
@@ -324,7 +324,7 @@
     <string name="extension_installed_failed">Impossibile installare un\'estensione!</string>
     <string name="most_favourited">Più Amati</string>
     <string name="top_rated">Più Votati</string>
-    <string name="dalayed">In ritardo</string>
+    <string name="dalayed">Rimandato</string>
     <string name="dropped">Abbandonato</string>
     <string name="adult_content">Contenuto per adulti</string>
     <string name="trending">Tendenza</string>
