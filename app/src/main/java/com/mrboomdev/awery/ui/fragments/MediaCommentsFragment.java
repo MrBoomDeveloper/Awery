@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
@@ -76,15 +77,15 @@ import java9.util.Objects;
 public class MediaCommentsFragment extends Fragment {
 	private static final int LAST_PAGE = -1;
 	private static final String TAG = "MediaCommentsFragment";
-	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
-	private final SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
-	private final ArrayListAdapter<ExtensionProvider> sourcesAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
+	private ArrayListAdapter<ExtensionProvider> sourcesAdapter;
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
-	private final ConcatAdapter concatAdapter;
+	private ConcatAdapter concatAdapter;
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
 	private final WeakHashMap<CatalogComment, Integer> pages = new WeakHashMap<>();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
-	private final Runnable backPressCallback;
+	private Runnable backPressCallback;
 	private List<ExtensionProvider> sources;
 	private boolean isLoading;
 	private ExtensionProvider selectedProvider;
@@ -95,83 +96,20 @@ public class MediaCommentsFragment extends Fragment {
 	private CatalogMedia media;
 	private CatalogComment comment, editedComment;
 
+	/**
+	 * DO NOT CALL THIS CONSTRUCTOR!
+	 * @author MrBoomDev
+	 */
 	public MediaCommentsFragment() {
 		this(null);
 	}
 
 	public MediaCommentsFragment(CatalogMedia media) {
-		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var inflater = LayoutInflater.from(parent.getContext());
-			return LayoutLoadingBinding.inflate(inflater, parent, false);
-		});
+		this.media = media;
 
-		sourcesAdapter = new ArrayListAdapter<>((item, recycled, parentView) -> {
-			if(recycled == null) {
-				var inflater = LayoutInflater.from(parentView.getContext());
-
-				recycled = ItemListDropdownBinding.inflate(
-						inflater, parentView, false).getRoot();
-			}
-
-			TextView textView = recycled.findViewById(R.id.title);
-			textView.setText(item.getName());
-
-			ImageView icon = recycled.findViewById(R.id.icon);
-			icon.setVisibility(View.GONE);
-
-			return recycled;
-		});
-
-		headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var inflater = LayoutInflater.from(parent.getContext());
-			var binding = LayoutCommentsHeaderBinding.inflate(inflater, parent, false);
-
-			binding.searchWrapper.setVisibility(View.GONE);
-			binding.seasonWrapper.setVisibility(View.GONE);
-
-			binding.sourceDropdown.setAdapter(sourcesAdapter);
-
-			binding.sourceDropdown.setOnItemClickListener((dropdownParent, _view, position, id) -> {
-				selectedProvider = sources.get(position);
-				setSource(selectedProvider);
-			});
-
-			binding.episodeDropdown.setOnEditorActionListener((v, actionId, event) -> {
-				if(actionId == EditorInfo.IME_ACTION_DONE) {
-					var text = v.getText().toString();
-					setSource(selectedProvider);
-					return true;
-				}
-
-				return false;
-			});
-
-			return binding;
-		});
-
-		concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
-				headerAdapter, commentsAdapter, loadingAdapter);
-
-		backPressCallback = () -> {
-			if(!currentCommentsPath.isEmpty() && !isLoading) {
-				currentCommentsPath.remove(currentCommentsPath.size() - 1);
-			}
-
-			if(currentCommentsPath.isEmpty()) {
-				if(onCloseRequestListener != null) {
-					onCloseRequestListener.run();
-					return;
-				}
-
-				requireActivity().finish();
-				return;
-			}
-
-			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1), null);
-		};
-
-		setMedia(media);
+		var bundle = new Bundle();
+		bundle.putSerializable("media", media);
+		setArguments(bundle);
 	}
 
 	public void setEpisode(CatalogEpisode episode) {
@@ -226,14 +164,6 @@ public class MediaCommentsFragment extends Fragment {
 	public void onPause() {
 		super.onPause();
 		removeOnBackPressedListener(requireActivity(), backPressCallback);
-	}
-
-	public void setMedia(CatalogMedia media) {
-		if(media == null) return;
-		this.media = media;
-
-		if(recycler == null) return;
-		setSource(selectedProvider);
 	}
 
 	private void setComment(@Nullable CatalogComment comment, CatalogComment reloadThis) {
@@ -411,6 +341,82 @@ public class MediaCommentsFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		if(media == null) {
+			media = (CatalogMedia) requireArguments().getSerializable("media");
+			requireArgument(media, "media");
+		}
+
+		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = LayoutInflater.from(parent.getContext());
+			return LayoutLoadingBinding.inflate(inflater, parent, false);
+		});
+
+		sourcesAdapter = new ArrayListAdapter<>((item, recycled, parentView) -> {
+			if(recycled == null) {
+				var inflater = LayoutInflater.from(parentView.getContext());
+
+				recycled = ItemListDropdownBinding.inflate(
+						inflater, parentView, false).getRoot();
+			}
+
+			TextView textView = recycled.findViewById(R.id.title);
+			textView.setText(item.getName());
+
+			ImageView icon = recycled.findViewById(R.id.icon);
+			icon.setVisibility(View.GONE);
+
+			return recycled;
+		});
+
+		headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
+			var inflater = LayoutInflater.from(parent.getContext());
+			var binding = LayoutCommentsHeaderBinding.inflate(inflater, parent, false);
+
+			binding.searchWrapper.setVisibility(View.GONE);
+			binding.seasonWrapper.setVisibility(View.GONE);
+
+			binding.sourceDropdown.setAdapter(sourcesAdapter);
+
+			binding.sourceDropdown.setOnItemClickListener((dropdownParent, _view, position, id) -> {
+				selectedProvider = sources.get(position);
+				setSource(selectedProvider);
+			});
+
+			binding.episodeDropdown.setOnEditorActionListener((v, actionId, event) -> {
+				if(actionId == EditorInfo.IME_ACTION_DONE) {
+					var text = v.getText().toString();
+					setSource(selectedProvider);
+					return true;
+				}
+
+				return false;
+			});
+
+			return binding;
+		});
+
+		concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
+				headerAdapter, commentsAdapter, loadingAdapter);
+
+		backPressCallback = () -> {
+			if(!currentCommentsPath.isEmpty() && !isLoading) {
+				currentCommentsPath.remove(currentCommentsPath.size() - 1);
+			}
+
+			if(currentCommentsPath.isEmpty()) {
+				if(onCloseRequestListener != null) {
+					onCloseRequestListener.run();
+					return;
+				}
+
+				requireActivity().finish();
+				return;
+			}
+
+			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1), null);
+		};
+
 		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
 				.flatMap(NiceUtils::stream)
@@ -433,7 +439,7 @@ public class MediaCommentsFragment extends Fragment {
 			}
 		});
 
-		setMedia(media);
+		setSource(selectedProvider);
 	}
 
 	@Nullable

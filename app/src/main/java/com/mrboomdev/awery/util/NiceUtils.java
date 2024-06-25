@@ -8,6 +8,7 @@ import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
 import com.mrboomdev.awery.sdk.util.Callbacks;
@@ -234,6 +235,51 @@ public class NiceUtils {
 	 */
 	public static <A, B> A returnWith(B object, @NonNull Callbacks.Result1<A, B> callback) {
 		return callback.run(object);
+	}
+
+	public static <A> A returnWith(@NonNull Callbacks.Result<A> callback) {
+		return callback.run();
+	}
+
+	@NonNull
+	@Contract("null, _ -> fail")
+	public static <T> T requireArgument(T o, String name) {
+		if(o == null) {
+			throw new NullPointerException("An required argument \"" + name + "\" was not specified!");
+		}
+
+		return o;
+	}
+
+	@NonNull
+	public static <T> T requireArgument(
+			@NonNull Fragment fragment,
+			String name,
+			@NonNull Class<T> type
+	) throws ClassCastException, NullPointerException {
+		var bareObject = fragment.requireArguments().getSerializable(name);
+		var castedObject = type.cast(bareObject);
+
+		requireArgument(castedObject, name);
+		return castedObject;
+	}
+
+	/**
+	 * @param <T> Target type
+	 * @throws ClassCastException If argument's class doesn't extend an target class
+	 * @throws NullPointerException If argument was not found
+	 * @author MrBoomDev
+	 */
+	@NonNull
+	@SuppressWarnings("unchecked")
+	public static <T> T requireArgument(
+			@NonNull Fragment fragment,
+			String name
+	) throws ClassCastException, NullPointerException {
+		var o = (T) fragment.requireArguments().getSerializable(name);
+
+		requireArgument(o, name);
+		return o;
 	}
 
 	@NonNull

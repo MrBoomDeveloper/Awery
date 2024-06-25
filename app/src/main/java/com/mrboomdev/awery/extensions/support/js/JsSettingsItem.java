@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Selection;
 
 import org.jetbrains.annotations.Contract;
@@ -35,88 +36,47 @@ public class JsSettingsItem extends SettingsItem {
 	@NonNull
 	@Contract(value = "_ -> new", pure = true)
 	public static SettingsItem fromJs(@NonNull NativeObject o) {
-		return new SettingsItem(new SettingsItem(SettingsItemType.valueOf(Objects.requireNonNull(
-				stringFromJs(o.get("type", o))).toUpperCase(Locale.ROOT))) {
+		var type = SettingsItemType.valueOf(Objects.requireNonNull(
+				stringFromJs(o.get("type", o))).toUpperCase(Locale.ROOT));
 
-			@Override
-			public String getTitle(android.content.Context context) {
-				return stringFromJs(o.get("title", o));
-			}
+		return new SettingsItem.Builder(type)
+				.setTitle(stringFromJs(o.get("title", o)))
+				.setDescription(stringFromJs(o.get("description", o)))
+				.setRestartRequired(booleanFromJs(o.get("restartRequired", o)))
+				.setFrom(floatFromJs(o.get("from", o)))
+				.setTo(floatFromJs(o.get("to", o)))
+				.setValue(booleanFromJs(o.get("value", o)))
+				.setValue(intFromJs(o.get("value", o)))
+				.setValue(stringFromJs(o.get("value", o)))
+				.setValue(longFromJs(o.get("value", o)))
+				.setKey(stringFromJs(o.get("key", o)))
+				.setValue(NiceUtils.<Set<String>, List<Scriptable>>returnWith(listFromJs(o.get("items", o), Scriptable.class), list -> {
+					if(list == null) return null;
 
-			@Override
-			public String getDescription(android.content.Context context) {
-				return stringFromJs(o.get("description", o));
-			}
+					return stream(list)
+							.filter(Objects::nonNull)
+							.map(JsBridge::stringFromJs)
+							.collect(Collectors.toSet());
+				}))
+				.setItems(NiceUtils.returnWith(listFromJs(o.get("items", o), NativeObject.class), items -> {
+					if(items == null) return null;
 
-			@Override
-			public boolean isRestartRequired() {
-				return booleanFromJs(o.get("restartRequired", o));
-			}
+					return stream(listFromJs(o.get("items", o), NativeObject.class))
+							.filter(Objects::nonNull)
+							.map(JsSettingsItem::fromJs)
+							.toList();
+				}))
+				.setValue(NiceUtils.<Selection.State, String>returnWith(stringFromJs(o.get("value", o)), string -> {
+					if(string == null) return null;
 
-			@Override
-			public Float getFrom() {
-				return floatFromJs(o.get("from", o));
-			}
-
-			@Override
-			public Float getTo() {
-				return floatFromJs(o.get("to", o));
-			}
-
-			@Override
-			public Boolean getBooleanValue() {
-				return booleanFromJs(o.get("value", o));
-			}
-
-			@Override
-			public Selection.State getExcludableValue() {
-				var string = stringFromJs(o.get("value", o));
-				if(string == null) return null;
-
-				return switch(string) {
-					case "excluded" -> Selection.State.EXCLUDED;
-					case "selected" -> Selection.State.SELECTED;
-					case "unselected" -> Selection.State.UNSELECTED;
-					default -> null;
-				};
-			}
-
-			@Override
-			public String getStringValue() {
-				return stringFromJs(o.get("value", o));
-			}
-
-			@Override
-			public Integer getIntegerValue() {
-				return intFromJs(o.get("value", o));
-			}
-
-			@Override
-			public List<? extends SettingsItem> getItems() {
-				return stream(listFromJs(o.get("items", o), NativeObject.class))
-						.filter(Objects::nonNull)
-						.map(JsSettingsItem::fromJs)
-						.toList();
-			}
-
-			@Override
-			public Long getLongValue() {
-				return longFromJs(o.get("value", o));
-			}
-
-			@Override
-			public String getKey() {
-				return stringFromJs(o.get("key", o));
-			}
-
-			@Override
-			public Set<String> getStringSetValue() {
-				return stream(listFromJs(o.get("items", o), Scriptable.class))
-						.filter(Objects::nonNull)
-						.map(JsBridge::stringFromJs)
-						.collect(Collectors.toSet());
-			}
-		});
+					return switch(string) {
+						case "excluded" -> Selection.State.EXCLUDED;
+						case "selected" -> Selection.State.SELECTED;
+						case "unselected" -> Selection.State.UNSELECTED;
+						default -> null;
+					};
+				}))
+				.buildCustom();
 	}
 
 	@NonNull
@@ -124,7 +84,7 @@ public class JsSettingsItem extends SettingsItem {
 		var o = context.newObject(scope);
 		var ctx = getAnyContext();
 
-    o.put("key", o, setting.getKey());
+		o.put("key", o, setting.getKey());
 		o.put("title", o, setting.getTitle(ctx));
 		o.put("description", o, setting.getDescription(ctx));
 		o.put("from", o, setting.getFrom());

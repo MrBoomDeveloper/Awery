@@ -4,6 +4,8 @@ import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
@@ -98,29 +100,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public enum ViewMode { GRID, LIST }
 
 	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("media", media.toString());
-	}
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		if(savedInstanceState != null) {
-			try {
-				var mediaJson = savedInstanceState.getString("media");
-				if(mediaJson == null) return;
-
-				setMedia(Parser.fromString(CatalogMedia.class, mediaJson));
-			} catch(IOException e) {
-				Log.e(TAG, "Failed to restore media!", e);
-				toast("Failed to restore media!", 1);
-			}
-		}
-	}
-
-	@Override
 	public void onEpisodeSelected(@NonNull CatalogEpisode episode, @NonNull List<CatalogEpisode> episodes) {
 		PlayerActivity.selectSource(selectedSource);
 
@@ -162,81 +141,19 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	}
 
 	public MediaPlayFragment(CatalogMedia media) {
-		setMedia(media);
+		this.media = media;
+
+		var bundle = new Bundle();
+		bundle.putSerializable("media", media);
+		setArguments(bundle);
 	}
 
+	/**
+	 * DO NOT CALL THIS CONSTRUCTOR!
+	 * @author MrBoomDev
+	 */
 	public MediaPlayFragment() {
 		this(null);
-	}
-
-	public void setMedia(CatalogMedia media) {
-		if(media == null) return;
-
-		this.media = media;
-		this.queryFilter.setValue(media.getTitle());
-
-		if(providers == null) {
-			return;
-		}
-
-		if(providers.isEmpty()) {
-			handleExceptionUi(null, new ZeroResultsException("No extensions was found", R.string.no_extensions_found));
-			variantsAdapter.setEnabled(false);
-			return;
-		}
-
-		new Thread(() -> {
-			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
-			var mediaSource = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, media.globalId);
-
-			if(progress != null) {
-				searchId = progress.lastId;
-				searchTitle = progress.lastTitle;
-
-				providers.sort((a, b) -> {
-					if(a.getId().equals(progress.lastWatchSource)) return -1;
-					if(b.getId().equals(progress.lastWatchSource)) return 1;
-
-					if(mediaSource != null) {
-						if(a.getId().equals(mediaSource.getId())) return -1;
-						if(b.getId().equals(mediaSource.getId())) return 1;
-					}
-
-					return 0;
-				});
-
-				sourcesDropdownAdapter.setItems(providers);
-			} else if(mediaSource != null) {
-				providers.sort((a, b) -> {
-					if(a.getId().equals(mediaSource.getId())) return -1;
-					if(b.getId().equals(mediaSource.getId())) return 1;
-					return 0;
-				});
-
-				sourcesDropdownAdapter.setItems(providers);
-			}
-
-			if(mediaSource != null) {
-				mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
-					@Override
-					public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
-						templateEpisodes = catalogEpisodes;
-						currentSourceIndex = 0;
-						runOnUiThread(() -> selectProvider(providers.get(0)));
-					}
-
-					@Override
-					public void onFailure(Throwable e) {
-						// Don't merge any data. Just load original data
-						currentSourceIndex = 0;
-						runOnUiThread(() -> selectProvider(providers.get(0)));
-					}
-				});
-			} else {
-				currentSourceIndex = 0;
-				runOnUiThread(() -> selectProvider(providers.get(0)));
-			}
-		}).start();
 	}
 
 	@Override
@@ -290,8 +207,17 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		if(media == null) {
+			media = requireArgument(this, "media");
+		}
+
+		var type = requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
+
 		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_WATCH))
+				.map(extension -> extension.getProviders(switch(type) {
+					case TV, MOVIE -> ExtensionProvider.FEATURE_MEDIA_WATCH;
+					case BOOK, POST -> ExtensionProvider.FEATURE_MEDIA_READ;
+				}))
 				.flatMap(NiceUtils::stream)
 				.sorted().toList());
 
@@ -335,7 +261,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			return recycled;
 		}, providers);
 
-		var more = "Search manually";
+		var more = getString(R.string.manual_search);
 		var titles = new ArrayList<>(media.titles);
 		titles.add(more);
 
@@ -435,7 +361,66 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			});*/
 		});
 
-		setMedia(media);
+		this.queryFilter.setValue(media.getTitle());
+
+		if(providers.isEmpty()) {
+			handleExceptionUi(null, new ZeroResultsException("No extensions was found", R.string.no_extensions_found));
+			variantsAdapter.setEnabled(false);
+			return;
+		}
+
+		new Thread(() -> {
+			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
+			var mediaSource = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, media.globalId);
+
+			if(progress != null) {
+				searchId = progress.lastId;
+				searchTitle = progress.lastTitle;
+
+				providers.sort((a, b) -> {
+					if(a.getId().equals(progress.lastWatchSource)) return -1;
+					if(b.getId().equals(progress.lastWatchSource)) return 1;
+
+					if(mediaSource != null) {
+						if(a.getId().equals(mediaSource.getId())) return -1;
+						if(b.getId().equals(mediaSource.getId())) return 1;
+					}
+
+					return 0;
+				});
+
+				sourcesDropdownAdapter.setItems(providers);
+			} else if(mediaSource != null) {
+				providers.sort((a, b) -> {
+					if(a.getId().equals(mediaSource.getId())) return -1;
+					if(b.getId().equals(mediaSource.getId())) return 1;
+					return 0;
+				});
+
+				sourcesDropdownAdapter.setItems(providers);
+			}
+
+			if(mediaSource != null) {
+				mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+					@Override
+					public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
+						templateEpisodes = catalogEpisodes;
+						currentSourceIndex = 0;
+						runOnUiThread(() -> selectProvider(providers.get(0)));
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						// Don't merge any data. Just load original data
+						currentSourceIndex = 0;
+						runOnUiThread(() -> selectProvider(providers.get(0)));
+					}
+				});
+			} else {
+				currentSourceIndex = 0;
+				runOnUiThread(() -> selectProvider(providers.get(0)));
+			}
+		}).start();
 	}
 
 	private void selectProvider(@NonNull ExtensionProvider provider) {

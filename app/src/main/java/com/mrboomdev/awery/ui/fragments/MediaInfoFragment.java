@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -8,17 +10,17 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
-import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -32,64 +34,59 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.sheet.TrackingSheet;
 import com.mrboomdev.awery.ui.window.GalleryWindow;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TranslationUtil;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
+import java.util.HashSet;
 
 import java9.util.Objects;
 
 public class MediaInfoFragment extends Fragment {
-	private static final String TAG = "MediaInfoFragment";
 	private WeakReference<Drawable> cachedPoster;
 	private MediaDetailsOverviewLayoutBinding binding;
 	private CatalogMedia media;
 
 	public MediaInfoFragment(CatalogMedia media) {
-		setMedia(media);
+		this.media = media;
+
+		var bundle = new Bundle();
+		bundle.putSerializable("media", media);
+		setArguments(bundle);
 	}
 
+	/**
+	 * DO NOT CALL THIS CONSTRUCTOR DIRECTLY!
+	 * @author MrBoomDev
+	 */
 	public MediaInfoFragment() {
 		this(null);
 	}
 
 	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("media", media.toString());
-	}
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		if(savedInstanceState != null) {
-			try {
-				var mediaJson = savedInstanceState.getString("media");
-				if(mediaJson == null) return;
-
-				setMedia(Parser.fromString(CatalogMedia.class, mediaJson));
-			} catch(IOException e) {
-				Log.e(TAG, "Failed to restore media!", e);
-				AweryApp.toast("Failed to restore media!", 1);
-			}
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		if(media == null) {
+			media = requireArgument(this, "media");
 		}
-	}
 
-	@SuppressLint("SetTextI18n")
-	public void setMedia(CatalogMedia media) {
-		if(media == null) return;
-		this.media = media;
-		if(binding == null) return;
-
+		var type = Objects.requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
 		var title = Objects.requireNonNullElse(media.getTitle(), "No title");
 		var meta = generateGeneralMetaString(media);
+
+		binding.details.play.setText(switch(type) {
+			case TV, MOVIE -> R.string.watch;
+			case BOOK, POST -> R.string.read;
+		});
+
+		binding.details.play.setIcon(ContextCompat.getDrawable(requireContext(), switch(type) {
+			case TV, MOVIE -> R.drawable.ic_play_filled;
+			case BOOK, POST -> R.drawable.ic_round_import_contacts_24;
+		}));
 
 		if(meta.isBlank()) {
 			binding.details.generalMeta.setVisibility(View.GONE);
@@ -120,8 +117,7 @@ public class MediaInfoFragment extends Fragment {
 						cachedPoster = new WeakReference<>(resource);
 						return false;
 					}
-				})
-				.into(binding.poster);
+				}).into(binding.poster);
 
 		binding.posterWrapper.setOnClickListener(v -> {
 			var poster = cachedPoster != null
@@ -165,10 +161,37 @@ public class MediaInfoFragment extends Fragment {
 			binding.details.tagsTitle.setVisibility(View.GONE);
 			binding.details.tags.setVisibility(View.GONE);
 		} else {
+			var spoilers = new HashSet<CatalogTag>();
+
 			for(var tag : media.tags) {
+				if(tag.isSpoiler()) {
+					spoilers.add(tag);
+					continue;
+				}
+
 				var chip = new Chip(requireContext());
 				chip.setText(tag.getName());
 				binding.details.tags.addView(chip);
+			}
+
+			if(!spoilers.isEmpty()) {
+				var spoilerChip = new Chip(requireContext());
+
+				spoilerChip.setChipBackgroundColor(ColorStateList.valueOf(resolveAttrColor(
+						requireContext(), com.google.android.material.R.attr.colorSecondaryContainer)));
+
+				spoilerChip.setText("Show spoilers");
+				binding.details.tags.addView(spoilerChip);
+
+				spoilerChip.setOnClickListener(v -> {
+					binding.details.tags.removeView(spoilerChip);
+
+					for(var tag : spoilers) {
+						var chip = new Chip(requireContext());
+						chip.setText(tag.getName());
+						binding.details.tags.addView(chip);
+					}
+				});
 			}
 		}
 	}
@@ -254,7 +277,6 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
 				requireContext(), getChildFragmentManager(), media).show());
 
-		setMedia(media);
 		return binding.getRoot();
 	}
 }

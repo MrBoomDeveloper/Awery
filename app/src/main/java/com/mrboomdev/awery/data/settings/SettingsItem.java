@@ -376,8 +376,18 @@ public class SettingsItem implements Serializable {
 			item.key = key;
 			return this;
 		}
+		
+		public Builder setValue(Integer value) {
+			item.integerValue = value;
+			return this;
+		}
 
-		public Builder setValue(boolean value) {
+		public Builder setValue(Long value) {
+			item.longValue = value;
+			return this;
+		}
+
+		public Builder setValue(Boolean value) {
 			item.booleanValue = value;
 			return this;
 		}
@@ -419,6 +429,16 @@ public class SettingsItem implements Serializable {
 
 		public Builder setRestartRequired(boolean restart) {
 			item.restart = restart;
+			return this;
+		}
+
+		public Builder setFrom(Float from) {
+			item.from = from;
+			return this;
+		}
+
+		public Builder setTo(Float to) {
+			item.to = to;
 			return this;
 		}
 

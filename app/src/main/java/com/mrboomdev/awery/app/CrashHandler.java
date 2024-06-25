@@ -137,6 +137,10 @@ public class CrashHandler {
 		showErrorDialog(context, title, context.getString(R.string.please_report_bug_app), throwable);
 	}
 
+	/**
+	 * User will not be able to use an app after dismissing this dialog. The app simply will exit itself.
+	 * @author MrBoomDev
+	 */
 	public static void showFatalErrorDialog(Context context, String title, Throwable throwable) {
 		showErrorDialogImpl(
 				context,

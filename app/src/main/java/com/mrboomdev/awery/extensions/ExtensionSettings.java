@@ -30,6 +30,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 import com.squareup.moshi.Json;
@@ -115,6 +116,16 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							}
 						});
 					}
+				}
+			} catch(JsException e) {
+				Log.e(TAG, "Failed to install an extension!", e);
+
+				if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
+					CrashHandler.showErrorDialog(activity,
+							activity.getString(R.string.extension_installed_failed),
+							activity.getString(R.string.please_report_bug_extension), e);
+				} else {
+					CrashHandler.showErrorDialog(activity, e);
 				}
 			} catch(Throwable e) {
 				Log.e(TAG, "Failed to install an extension!", e);

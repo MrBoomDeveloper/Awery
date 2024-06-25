@@ -13,6 +13,7 @@ import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -43,10 +44,8 @@ import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.search.MultiSearchActivity;
@@ -57,7 +56,6 @@ import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,15 +120,14 @@ public class MainActivity extends AppCompatActivity {
 		this.tabs = tabs;
 
 		if(tabs.isEmpty()) {
-			setupEmpty();
+			runOnUiThread(this::setupEmpty);
 			return;
 		}
 
-		setupNavigation();
 		Collections.sort(tabs);
 
 		var savedDefaultTab = AwerySettings.DEFAULT_HOME_TAB.getValue();
-		Map<String, IconStateful> icons = null;
+		Map<String, IconStateful> icons;
 
 		try {
 			var json = readAssets("icons.json");
@@ -138,79 +135,79 @@ public class MainActivity extends AppCompatActivity {
 			icons = Parser.fromString(adapter, json);
 		} catch(IOException e) {
 			Log.e(TAG, "Failed to read an icons atlas!", e);
-			CrashHandler.showErrorDialog(this, "Failed to read an icons list!", e);
+			CrashHandler.showFatalErrorDialog(this, "Failed to read an icons list!", e);
+			return;
 		}
 
-		int selected = 0;
+		runOnUiThread(() -> {
+			setupNavigation();
+			int selected = 0;
 
-		switch(getNavigationStyle()) {
-			case BUBBLE -> {
-				for(int i = 0; i < tabs.size(); i++) {
-					Drawable drawable = null;
-					var tab = tabs.get(i);
+			switch(getNavigationStyle()) {
+				case BUBBLE -> {
+					for(int i = 0; i < tabs.size(); i++) {
+						Drawable drawable = null;
 
-					if(icons != null) {
+						var tab = tabs.get(i);
 						var icon = icons.get(tab.icon);
 
 						if(icon != null) {
 							var id = getResourceId(R.drawable.class, icon.getInActive());
 							drawable = ContextCompat.getDrawable(this, id);
 						}
+
+						if(drawable == null) {
+							drawable = ContextCompat.getDrawable(
+									this, R.drawable.ic_view_cozy);
+						}
+
+						var navbarItem = new AnimatedBottomBar.Tab(
+								Objects.requireNonNull(drawable), tab.title,
+								i, null, true);
+
+						if(tab.id.equals(savedDefaultTab)) {
+							selected = i;
+						}
+
+						binding.navbarBubble.addTab(navbarItem);
 					}
 
-					if(drawable == null) {
-						drawable = ContextCompat.getDrawable(
-								this, R.drawable.ic_view_cozy);
-					}
-
-					var navbarItem = new AnimatedBottomBar.Tab(
-							Objects.requireNonNull(drawable), tab.title,
-							i, null, true);
-
-					if(tab.id.equals(savedDefaultTab)) {
-						selected = i;
-					}
-
-					binding.navbarBubble.addTab(navbarItem);
+					binding.navbarBubble.selectTabAt(selected, false);
+					binding.navbarBubble.setVisibility(View.VISIBLE);
 				}
 
-				binding.navbarBubble.selectTabAt(selected, false);
-				binding.navbarBubble.setVisibility(View.VISIBLE);
-			}
+				case MATERIAL -> {
+					var nav = (NavigationBarView) binding.navbarMaterial;
 
-			case MATERIAL -> {
-				var nav = (NavigationBarView) binding.navbarMaterial;
+					for(int i = 0; i < tabs.size(); i++) {
+						Drawable drawable = null;
 
-				for(int i = 0; i < tabs.size(); i++) {
-					Drawable drawable = null;
-					var tab = tabs.get(i);
-
-					if(icons != null) {
+						var tab = tabs.get(i);
 						var icon = icons.get(tab.icon);
 
 						if(icon != null) {
 							var id = getResourceId(R.drawable.class, icon.getInActive());
 							drawable = ContextCompat.getDrawable(this, id);
 						}
+
+						if(drawable == null) {
+							drawable = ContextCompat.getDrawable(
+									this, R.drawable.ic_view_cozy);
+						}
+
+						if(tab.id.equals(savedDefaultTab)) {
+							selected = i;
+						}
+
+						nav.getMenu().add(0, i, 0, tab.title);
+						nav.getMenu().getItem(i).setIcon(drawable);
 					}
 
-					if(drawable == null) {
-						drawable = ContextCompat.getDrawable(
-								this, R.drawable.ic_view_cozy);
-					}
-
-					if(tab.id.equals(savedDefaultTab)) {
-						selected = i;
-					}
-
-					nav.getMenu().add(0, i, 0, tab.title);
-					nav.getMenu().getItem(i).setIcon(drawable);
+					nav.setSelectedItemId(selected);
+					nav.setVisibility(View.VISIBLE);
 				}
-
-				nav.setSelectedItemId(selected);
-				nav.setVisibility(View.VISIBLE);
 			}
-		}
+		});
 	}
 
 	/**
@@ -248,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 		});
 
 		setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
-			ViewUtil.setBottomMargin(binding.bottomSideBarrier, insets.bottom);
+			setBottomMargin(binding.bottomSideBarrier, insets.bottom);
 			return true;
 		});
 

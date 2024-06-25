@@ -775,8 +775,9 @@ public class JsProvider extends ExtensionProvider {
 										.map(obj -> {
 											var jsTag = (NativeObject) obj;
 											var tag = new CatalogTag();
-
-											tag.setName(jsTag.get("name").toString());
+											tag.setDescription(stringFromJs(jsTag.get("description")));
+											tag.setIsSpoiler(booleanFromJs(jsTag.get("isSpoiler")));
+											tag.setName(stringFromJs(jsTag.get("name")));
 											return tag;
 										})
 										.toList();
