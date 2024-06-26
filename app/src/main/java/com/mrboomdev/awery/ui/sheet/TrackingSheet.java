@@ -260,7 +260,7 @@ public class TrackingSheet {
 						try {
 							trackingOptions.progress = Float.parseFloat(textString);
 						} catch(NumberFormatException e) {
-							binding.progress.setError("Invalid number!");
+							binding.progress.setError(context.getString(R.string.this_not_number));
 							return;
 						}
 					}
@@ -280,7 +280,7 @@ public class TrackingSheet {
 						try {
 							trackingOptions.score = Float.parseFloat(textString);
 						} catch(NumberFormatException e) {
-							binding.score.setError("Invalid number!");
+							binding.score.setError(context.getString(R.string.this_not_number));
 							return;
 						}
 					}

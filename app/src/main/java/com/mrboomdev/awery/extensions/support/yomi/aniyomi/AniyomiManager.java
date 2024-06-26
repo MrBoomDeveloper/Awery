@@ -9,16 +9,16 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import eu.kanade.tachiyomi.animesource.AnimeSource;
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 
 public class AniyomiManager extends YomiManager {
 	public static final String MANAGER_ID = "ANIYOMI_KOTLIN";
-	private static final List<Integer> BASE_FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
+	private static final Set<String> BASE_FEATURES = Set.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
 
 	@Override
 	public String getName() {
@@ -61,7 +61,7 @@ public class AniyomiManager extends YomiManager {
 	}
 
 	@Override
-	public Collection<Integer> getBaseFeatures() {
+	public Set<String> getBaseFeatures() {
 		return BASE_FEATURES;
 	}
 

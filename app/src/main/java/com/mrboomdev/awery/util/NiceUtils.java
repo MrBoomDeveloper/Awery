@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import androidx.media3.common.MimeTypes;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.ScriptableObject;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -249,6 +251,12 @@ public class NiceUtils {
 		}
 
 		return o;
+	}
+
+	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) {
+		var val = fromJs(o.get(name, o), type);
+		requireArgument(val, name);
+		return val;
 	}
 
 	@NonNull

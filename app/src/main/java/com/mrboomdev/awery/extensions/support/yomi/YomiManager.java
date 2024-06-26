@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import dalvik.system.PathClassLoader;
@@ -52,7 +53,7 @@ public abstract class YomiManager extends ExtensionsManager {
 
 	public abstract double getMaxVersion();
 
-	public abstract Collection<Integer> getBaseFeatures();
+	public abstract Set<String> getBaseFeatures();
 
 	public abstract List<? extends ExtensionProvider> createProviders(Extension extension, Object main);
 

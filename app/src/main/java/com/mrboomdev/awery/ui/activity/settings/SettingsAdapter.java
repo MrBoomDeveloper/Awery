@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -571,14 +572,19 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 						}
 
 						var selected = (String) value;
-						var found = stream(item.getItems()).filter(i -> i.getKey().equals(selected)).findFirst();
-						yield found.isPresent() ? found.get().getTitle(context) : "";
+
+						var found = stream(item.getItems())
+								.filter(i -> Objects.equals(i.getKey(), selected))
+								.findFirst();
+
+						yield found.isPresent() ? found.get().getTitle(context) : selected;
 					}
 
 					default -> "";
 				};
 
-				description = description.replaceAll("\\$\\{VALUE\\}", formattedValue);
+				description = description.replaceAll("\\$\\{VALUE\\}",
+						requireNonNullElse(formattedValue, ""));
 			}
 
 			return description;

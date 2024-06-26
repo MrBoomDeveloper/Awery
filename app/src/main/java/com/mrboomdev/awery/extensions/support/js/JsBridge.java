@@ -3,6 +3,8 @@ package com.mrboomdev.awery.extensions.support.js;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Log;
@@ -14,14 +16,12 @@ import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.util.io.HttpClient;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeJavaObject;
@@ -94,11 +94,8 @@ public class JsBridge {
 	}
 
 	public String getAdultMode() {
-		return switch(AwerySettings.ADULT_MODE.getValue()) {
-			case ONLY -> "only";
-			case ENABLED -> "partial";
-			case DISABLED -> "none";
-		};
+		var adultMode = AwerySettings.ADULT_MODE.getValue();
+		return requireNonNullElse(adultMode, AwerySettings.AdultMode_Values.DISABLED).name();
 	}
 
 	public Object fetch(@NonNull ScriptableObject options) {
@@ -123,22 +120,22 @@ public class JsBridge {
 			request.setHeaders(headers);
 		}
 
-		if(options.has("body", options)) {
-			var contentTypeSpecified = options.has("contentType", options)
-					? options.get("contentType").toString() : null;
+		if(!isNullJs(options.get("body", options))) {
+			var body = requireArgument(options, "body", String.class);
+			var contentTypeSpecified = stringFromJs(options, "contentType");
 
 			var contentType = contentTypeSpecified == null ? null
-					: StringUtils.parseEnum(contentTypeSpecified.toUpperCase(Locale.ROOT), MimeTypes.class);
+					: StringUtils.parseEnum(contentTypeSpecified, MimeTypes.class);
 
-			if(contentType == null) request.setBody(options.get("body").toString(), contentTypeSpecified);
-			else request.setBody(options.get("body").toString(), contentType);
+			if(contentType == null) request.setBody(body, contentTypeSpecified);
+			else request.setBody(body, contentType);
 
-			if(!options.has("method", options)) {
+			if(isNullJs(options.get("method", options))) {
 				request.setMethod(HttpClient.Method.POST);
 			}
 		}
 
-		if(options.has("form", options)) {
+		if(!isNullJs(options.get("form", options))) {
 			var obj = (NativeObject) options.get("form");
 
 			for(var entry : obj.entrySet()) {
@@ -151,22 +148,14 @@ public class JsBridge {
 				request.addFormField(entry.getKey().toString(), value.toString());
 			}
 
-			if(!options.has("method", options)) {
+			if(isNullJs(options.get("method", options))) {
 				request.setMethod(HttpClient.Method.POST);
 			}
 		}
 
 		doIfNotNull(stringFromJs(options.get("method")), method -> {
 			method = method.toLowerCase(Locale.ROOT);
-
-			request.setMethod(switch(method) {
-				case "get" -> HttpClient.Method.GET;
-				case "post" -> HttpClient.Method.POST;
-				case "put" -> HttpClient.Method.PUT;
-				case "delete" -> HttpClient.Method.DELETE;
-				case "patch" -> HttpClient.Method.PATCH;
-				default -> throw new IllegalArgumentException("Unsupported method: " + method);
-			});
+			request.setMethod(HttpClient.Method.valueOf(method));
 
 			if(isNullJs(options.get("form")) && isNullJs(options.get("body", options))) {
 				switch(request.getMethod()) {
@@ -225,6 +214,10 @@ public class JsBridge {
 		return object.toString();
 	}
 
+	public static String stringFromJs(@NonNull ScriptableObject scope, String name) {
+		return stringFromJs(scope.get(name, scope));
+	}
+
 	@Nullable
 	@Contract(pure = true)
 	@SuppressWarnings("unchecked")
@@ -251,10 +244,7 @@ public class JsBridge {
 		if(clazz == Integer.class) return clazz.cast(((Number) object).intValue());
 		if(clazz == Float.class) return clazz.cast(((Number) object).floatValue());
 		if(clazz == Long.class) return clazz.cast(((Number) object).longValue());
-
-		if(object instanceof ConsString) {
-			object = object.toString();
-		}
+		if(clazz == String.class) return clazz.cast(object.toString());
 
 		return clazz.cast(object);
 	}

@@ -9,16 +9,15 @@ import androidx.preference.PreferenceScreen;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import eu.kanade.tachiyomi.source.ConfigurableSource;
 import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.online.HttpSource;
 
 public abstract class TachiyomiProvider extends YomiProvider {
-	private final List<Integer> features = new ArrayList<>();
+	private final Set<String> features = new HashSet<>();
 	private final MangaSource source;
 
 	public TachiyomiProvider(Extension extension, MangaSource source, boolean isFromSource) {
@@ -31,6 +30,15 @@ public abstract class TachiyomiProvider extends YomiProvider {
 		}
 
 		this.source = source;
+	}
+
+	@Override
+	public AdultContent getAdultContentMode() {
+		if(getExtension().isNsfw()) {
+			return AdultContent.ONLY;
+		}
+
+		return AdultContent.NONE;
 	}
 
 	@Override
@@ -50,7 +58,7 @@ public abstract class TachiyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public Collection<Integer> getFeatures() {
+	public Set<String> getFeatures() {
 		return features;
 	}
 

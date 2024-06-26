@@ -4,9 +4,9 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class YomiRepoItem {
 	public List<Source> sources;
@@ -22,7 +22,7 @@ public class YomiRepoItem {
 		};
 
 		for(var source : sources) {
-			var features = new ArrayList<>(manager.getBaseFeatures());
+			var features = new HashSet<>(manager.getBaseFeatures());
 
 			if(nsfw == 1) {
 				features.add(ExtensionProvider.FEATURE_NSFW);
@@ -50,13 +50,18 @@ public class YomiRepoItem {
 				}
 
 				@Override
-				public Collection<Integer> getFeatures() {
+				public Set<String> getFeatures() {
 					return features;
 				}
 
 				@Override
 				public String getId() {
 					return source.id;
+				}
+
+				@Override
+				public AdultContent getAdultContentMode() {
+					return nsfw == 1 ? AdultContent.ONLY : AdultContent.NONE;
 				}
 			});
 		}

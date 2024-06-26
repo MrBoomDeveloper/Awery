@@ -19,8 +19,9 @@ import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for all extension providers.
@@ -38,24 +39,24 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
 	 */
-	public static final int FEATURE_LOGIN = 2;
-	public static final int FEATURE_TAGS_SEARCH = 1;
-	public static final int FEATURE_MEDIA_WATCH = 3;
-	public static final int FEATURE_MEDIA_READ = 4;
-	public static final int FEATURE_MEDIA_COMMENTS = 5;
-	public static final int FEATURE_TRACK = 6;
-	public static final int FEATURE_COMMENTS_SORT = 7;
-	public static final int FEATURE_COMMENTS_REPORT = 8;
-	public static final int FEATURE_MEDIA_REPORT = 9;
-	public static final int FEATURE_MEDIA_SEARCH = 10;
-	public static final int FEATURE_COMMENTS_PER_EPISODE = 11;
-	public static final int FEATURE_CHANGELOG = 12;
-	public static final int FEATURE_COMMENTS_OPEN_ACCOUNT = 13;
+	public static final String FEATURE_LOGIN = "ACCOUNT_LOGIN";
+	public static final String FEATURE_TAGS_SEARCH = "SEARCH_TAGS";
+	public static final String FEATURE_MEDIA_WATCH = "MEDIA_WATCH";
+	public static final String FEATURE_MEDIA_READ = "MEDIA_READ";
+	public static final String FEATURE_MEDIA_COMMENTS = "MEDIA_COMMENTS";
+	public static final String FEATURE_TRACK = "ACCOUNT_TRACK";
+	public static final String FEATURE_COMMENTS_FILTERS = "MEDIA_COMMENTS_FILTERS";
+	public static final String FEATURE_COMMENTS_REPORT = "MEDIA_COMMENTS_REPORT";
+	public static final String FEATURE_MEDIA_REPORT = "MEDIA_REPORT";
+	public static final String FEATURE_MEDIA_SEARCH = "SEARCH_MEDIA";
+	public static final String FEATURE_COMMENTS_PER_EPISODE = "MEDIA_COMMENTS_PER_PAGE";
+	public static final String FEATURE_CHANGELOG = "CHANGELOG";
+	public static final String FEATURE_COMMENTS_OPEN_ACCOUNT = "MEDIA_COMMENTS_ACCOUNTS";
 	/**
 	 * It's more not a feature. Just a mark that this provider is nsfw
 	 */
-	public static final int FEATURE_NSFW = 14;
-	public static final int FEATURE_FEEDS = 15;
+	public static final String FEATURE_NSFW = "NSFW";
+	public static final String FEATURE_FEEDS = "FEEDS";
 	private final Extension extension;
 
 	public ExtensionProvider(Extension extension) {
@@ -154,23 +155,15 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 * @return An collection of constants representing features supported by the extension
 	 * @author MrBoomDev
 	 */
-	public abstract Collection<Integer> getFeatures();
+	public abstract Set<String> getFeatures();
 
 	/**
 	 * @param features Constants array from {@link ExtensionProvider} representing new features
 	 * @return Whether the extension supports the feature
 	 * @author MrBoomDev
 	 */
-	public boolean hasFeatures(@NonNull int... features) {
-		var has = getFeatures();
-
-		for(var feature : features) {
-			if(!has.contains(feature)) {
-				return false;
-			}
-		}
-
-		return true;
+	public boolean hasFeatures(@NonNull String... features) {
+		return getFeatures().containsAll(Arrays.asList(features));
 	}
 
 	/**
@@ -182,6 +175,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public abstract String getId();
+
+	public abstract AdultContent getAdultContentMode();
 
 	public String getPreviewUrl() {
 		return null;
@@ -209,5 +204,15 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public interface ResponseCallback<T> {
 		void onSuccess(T t);
 		void onFailure(Throwable e);
+	}
+
+	public enum AdultContent {
+		ONLY,
+		NONE,
+		PARTIAL,
+		/**
+		 * The neutral one.
+		 */
+		HIDDEN
 	}
 }

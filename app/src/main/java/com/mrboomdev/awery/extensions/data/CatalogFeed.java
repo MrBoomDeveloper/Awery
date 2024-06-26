@@ -15,6 +15,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.squareup.moshi.Json;
 
@@ -103,7 +104,33 @@ public class CatalogFeed implements Serializable {
 			case TEMPLATE_AUTO_GENERATE -> stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 					.map(Extension::getProviders)
 					.flatMap(NiceUtils::stream)
-					.filter(provider -> provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS))
+					.filter(provider -> {
+						if(!provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS)) {
+							return false;
+						}
+
+						var adultMode = AwerySettings.ADULT_MODE.getValue();
+
+						if(adultMode != null) {
+							switch(adultMode) {
+								case DISABLED -> {
+									switch(provider.getAdultContentMode()) {
+										case ONLY, PARTIAL -> {
+											return false;
+										}
+									}
+								}
+
+								case ONLY -> {
+									if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
+										return false;
+									}
+								}
+							}
+						}
+
+						return true;
+					})
 					.map(provider -> {
 						var feeds = new AtomicReference<List<CatalogFeed>>();
 

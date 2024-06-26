@@ -119,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
 		binding.header.back.setOnClickListener(v -> finish());
 		binding.header.clear.setOnClickListener(v -> binding.header.edittext.setText(null));
 
-		binding.header.filters.setOnClickListener(v -> new FiltersSheet(this, filters, source, newFilters -> {
+		binding.header.filters.setOnClickListener(v -> new FiltersSheet(this, this.filters, source, newFilters -> {
 			applyFilters(newFilters);
 			didReachedEnd = false;
 			search(0);

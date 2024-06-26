@@ -9,15 +9,15 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
 
 public class TachiyomiManager extends YomiManager {
-	private final List<Integer> BASE_FEATURES = List.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
+	private final Set<String> BASE_FEATURES = Set.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
 
 	@Override
 	public String getName() {
@@ -60,7 +60,7 @@ public class TachiyomiManager extends YomiManager {
 	}
 
 	@Override
-	public Collection<Integer> getBaseFeatures() {
+	public Set<String> getBaseFeatures() {
 		return BASE_FEATURES;
 	}
 

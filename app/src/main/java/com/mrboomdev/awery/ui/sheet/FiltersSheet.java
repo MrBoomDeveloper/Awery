@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.sheet;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -15,6 +16,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -41,6 +43,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
+	private static final String TAG = "FiltersSheet";
 	private static final List<String> HIDDEN_FILTERS = List.of(
 			ExtensionProvider.FILTER_QUERY, ExtensionProvider.FILTER_PAGE);
 
@@ -94,6 +97,10 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 			var progressBar = new CircularProgressIndicator(context);
 			progressBar.setIndeterminate(true);
 			setVerticalPadding(progressBar, dpPx(8));
+
+			var params = new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+			progressBar.setLayoutParams(params);
+
 			return progressBar;
 		});
 
@@ -162,7 +169,10 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 
 				@Override
 				public void onFailure(Throwable e) {
-					progressBarAdapter.setEnabled(false);
+					Log.e(TAG, "Failed to load filters!", e);
+					toast("Failed to load filters");
+
+					runOnUiThread(() -> progressBarAdapter.setEnabled(false), recycler);
 				}
 			});
 		}

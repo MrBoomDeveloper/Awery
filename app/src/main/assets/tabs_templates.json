@@ -58,9 +58,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "SLIDES",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
+							{ "key": "status", "string_value": "RELEASING" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}, {
 						"title": "Recently Updated",
@@ -68,9 +68,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "UPDATED_AT_DESC", "type": "select", "items": [] },
-							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "UPDATED_AT_DESC" },
+							{ "key": "status", "string_value": "RELEASING" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}, {
 						"title": "Trending Movies",
@@ -78,9 +78,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "format", "string_value": "MOVIE", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
+							{ "key": "format", "string_value": "MOVIE" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}, {
 						"title": "Top rated",
@@ -88,8 +88,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "SCORE_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "SCORE_DESC" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}, {
 						"title": "Most Favourite",
@@ -97,8 +97,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}, {
 						"title": "Popular Anime",
@@ -106,8 +106,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_VERTICAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "POPULARITY_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "POPULARITY_DESC" },
+							{ "key": "type", "string_value": "ANIME" }
 						]
 					}
 				]
@@ -130,8 +130,8 @@
 						"hide_if_empty": true,
 
 						"filters": [
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] },
-							{ "key": "status_in", "string_value": "CURRENT", "type": "select", "items": [] }
+							{ "key": "type", "string_value": "ANIME" },
+							{ "key": "status_in", "string_value": "CURRENT" }
 						]
 					}, {
 						"title": "Planned Anime",
@@ -141,8 +141,8 @@
 						"hide_if_empty": true,
 
 						"filters": [
-							{ "key": "type", "string_value": "ANIME", "type": "select", "items": [] },
-							{ "key": "status_in", "string_value": "PLANNING", "type": "select", "items": [] }
+							{ "key": "type", "string_value": "ANIME" },
+							{ "key": "status_in", "string_value": "PLANNING" }
 						]
 					}, {
 						"title": "Continue Reading",
@@ -152,8 +152,8 @@
 						"hide_if_empty": true,
 
 						"filters": [
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] },
-							{ "key": "status_in", "string_value": "CURRENT", "type": "select", "items": [] }
+							{ "key": "type", "string_value": "MANGA" },
+							{ "key": "status_in", "string_value": "CURRENT" }
 						]
 					}, {
 						"title": "Planned Manga",
@@ -163,8 +163,8 @@
 						"hide_if_empty": true,
 
 						"filters": [
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] },
-							{ "key": "status_in", "string_value": "PLANNING", "type": "select", "items": [] }
+							{ "key": "type", "string_value": "MANGA" },
+							{ "key": "status_in", "string_value": "PLANNING" }
 						]
 					}, {
 						"title": "Recommended",
@@ -186,9 +186,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "SLIDES",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "status", "string_value": "RELEASING", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
+							{ "key": "status", "string_value": "RELEASING" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					}, {
 						"title": "Trending Manhwa",
@@ -196,9 +196,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "countryOfOrigin", "string_value": "KR", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
+							{ "key": "countryOfOrigin", "string_value": "KR" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					}, {
 						"title": "Trending Novel",
@@ -206,9 +206,9 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "TRENDING_DESC", "type": "select", "items": [] },
-							{ "key": "format", "string_value": "NOVEL", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
+							{ "key": "format", "string_value": "NOVEL" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					},{
 						"title": "Top rated",
@@ -216,8 +216,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "SCORE_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "SCORE_DESC" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					}, {
 						"title": "Most Favourite",
@@ -225,8 +225,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					}, {
 						"title": "Popular Manga",
@@ -234,8 +234,8 @@
 						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_VERTICAL",
 						"filters": [
-							{ "key": "sort_mode", "string_value": "POPULARITY_DESC", "type": "select", "items": [] },
-							{ "key": "type", "string_value": "MANGA", "type": "select", "items": [] }
+							{ "key": "sort_mode", "string_value": "POPULARITY_DESC" },
+							{ "key": "type", "string_value": "MANGA" }
 						]
 					}
 				]

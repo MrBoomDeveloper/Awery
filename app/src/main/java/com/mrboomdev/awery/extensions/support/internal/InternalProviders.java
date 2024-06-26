@@ -16,13 +16,13 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class InternalProviders {
 
 	public static class Lists extends ExtensionProvider {
-		private final List<Integer> FEATURES = List.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
+		private final Set<String> FEATURES = Set.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
 
 		@Override
 		public ExtensionsManager getManager() {
@@ -58,13 +58,18 @@ public class InternalProviders {
 		}
 
 		@Override
-		public Collection<Integer> getFeatures() {
+		public Set<String> getFeatures() {
 			return FEATURES;
 		}
 
 		@Override
 		public String getId() {
 			return "BOOKMARKS";
+		}
+
+		@Override
+		public AdultContent getAdultContentMode() {
+			return AdultContent.HIDDEN;
 		}
 	}
 }

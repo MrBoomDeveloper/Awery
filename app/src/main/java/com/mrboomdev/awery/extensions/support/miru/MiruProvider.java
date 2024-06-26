@@ -4,11 +4,10 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
-public class MiruProvider extends ExtensionProvider {
-	private final List<Integer> FEATURES = List.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_READ);
+public abstract class MiruProvider extends ExtensionProvider {
+	private final Set<String> FEATURES = Set.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_READ);
 
 	public MiruProvider(Extension extension) {
 		super(extension);
@@ -20,7 +19,7 @@ public class MiruProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public Collection<Integer> getFeatures() {
+	public Set<String> getFeatures() {
 		return FEATURES;
 	}
 

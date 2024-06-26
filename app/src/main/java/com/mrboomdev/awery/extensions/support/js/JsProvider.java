@@ -11,6 +11,9 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
@@ -64,22 +67,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JsProvider extends ExtensionProvider {
-	private static final String TAG = "JsProvider";
-	protected String id, version, script;
 	protected Extension extension;
-	private  List<Integer> FEATURES;
-	private final ScriptableObject scope;
+	protected String id, version, script;
+	private static final String TAG = "JsProvider";
 	private final org.mozilla.javascript.Context context;
-	private android.content.Context androidContext;
-	private String name;
+	private final ScriptableObject scope;
 	private final JsManager manager;
+	private Set<String> features;
+	private android.content.Context androidContext;
+	private AdultContent adultContentMode;
+	private String name;
 	private boolean didInit;
 
 	public JsProvider(
@@ -116,46 +122,19 @@ public class JsProvider extends ExtensionProvider {
 		return manager;
 	}
 
-	protected void finishInit(JsBridge bridge, @NonNull NativeObject obj) {
-		var features = new ArrayList<Integer>();
+	protected void finishInit(@NonNull JsBridge bridge, @NonNull NativeObject o) {
+		this.features = new HashSet<>(listFromJs(o.get("features", o), String.class));
+		this.id = requireArgument(o, "id", String.class);
+		this.name = returnWith(stringFromJs(o, "title"), title -> requireNonNullElse(title, id));
+		this.version = requireArgument(o, "version", String.class);
 
-		this.id = obj.get("id").toString();
-		this.name = obj.has("title", obj) ? obj.get("title").toString() : id;
-
-		this.version = obj.get("version").toString();
-
-		if(id == null) {
-			throw new NullPointerException("id is null!");
-		}
-
-		for(var feature : (NativeArray) obj.get("features")) {
-			features.add(switch((String) feature) {
-				case "media_comments" -> FEATURE_MEDIA_COMMENTS;
-				case "media_comments_sort" -> FEATURE_COMMENTS_SORT;
-				case "media_comments_per_episode" -> FEATURE_COMMENTS_PER_EPISODE;
-
-				case "media_watch" -> FEATURE_MEDIA_WATCH;
-				case "media_read" -> FEATURE_MEDIA_READ;
-				case "media_report" -> FEATURE_MEDIA_REPORT;
-
-				case "search_tags" -> FEATURE_TAGS_SEARCH;
-				case "search_media" -> FEATURE_MEDIA_SEARCH;
-
-				case "account_login" -> FEATURE_LOGIN;
-				case "account_track" -> FEATURE_TRACK;
-
-				case "changelog" -> FEATURE_CHANGELOG;
-				case "feeds" -> FEATURE_FEEDS;
-
-				default -> 0;
-			});
-		}
+		this.adultContentMode = returnWith(stringFromJs(o, "adultContent"),
+				mode -> mode == null ? AdultContent.NONE : AdultContent.valueOf(mode.toUpperCase(Locale.ROOT)));
 
 		var appContext = androidContext.getApplicationContext();
 		bridge.context = new WeakReference<>(appContext);
-		androidContext = null;
 
-		this.FEATURES = Collections.unmodifiableList(features);
+		this.androidContext = null;
 		this.didInit = true;
 	}
 
@@ -691,7 +670,7 @@ public class JsProvider extends ExtensionProvider {
 						}
 
 						callback.onSuccess(stream(o)
-								.map(item -> JsSettingsItem.fromJs((NativeObject) item))
+								.map(item -> JsSettingsItem.fromJs((NativeObject) item, null))
 								.toList());
 					}});
 				} catch(Throwable e) {
@@ -701,6 +680,11 @@ public class JsProvider extends ExtensionProvider {
 				callback.onFailure(new UnimplementedException("\"aweryFilters\" function not found!"));
 			}
 		});
+	}
+
+	@Override
+	public AdultContent getAdultContentMode() {
+		return adultContentMode;
 	}
 
 	@Override
@@ -991,8 +975,8 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public Collection<Integer> getFeatures() {
-		return FEATURES;
+	public Set<String> getFeatures() {
+		return features;
 	}
 
 	@Override

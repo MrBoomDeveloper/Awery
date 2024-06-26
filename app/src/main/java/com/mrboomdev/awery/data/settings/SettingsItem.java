@@ -463,7 +463,7 @@ public class SettingsItem implements Serializable {
 		}
 
 		public Builder setItems(Collection<? extends SettingsItem> items) {
-			item.items = new ArrayList<>(items);
+			item.items = items == null ? null : new ArrayList<>(items);
 			return this;
 		}
 

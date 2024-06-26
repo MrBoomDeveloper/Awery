@@ -35,11 +35,12 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource;
 import eu.kanade.tachiyomi.animesource.AnimeSource;
@@ -57,7 +58,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	private static final String FEED_LATEST = "latest";
 	private static final String FEED_POPULAR = "popular";
 	protected final AnimeSource source;
-	private final List<Integer> features = new ArrayList<>();
+	private final Set<String> features = new HashSet<>();
 	private final boolean isFromSource;
 
 	public AniyomiProvider(Extension extension, AnimeSource source) {
@@ -78,6 +79,15 @@ public abstract class AniyomiProvider extends YomiProvider {
 		if(source instanceof AnimeCatalogueSource) {
 			this.features.add(FEATURE_FEEDS);
 		}
+	}
+
+	@Override
+	public AdultContent getAdultContentMode() {
+		if(getExtension().isNsfw()) {
+			return AdultContent.ONLY;
+		}
+
+		return AdultContent.NONE;
 	}
 
 	@Override
@@ -263,7 +273,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public Collection<Integer> getFeatures() {
+	public Set<String> getFeatures() {
 		return features;
 	}
 

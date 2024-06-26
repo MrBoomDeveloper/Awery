@@ -29,15 +29,15 @@ import java9.util.stream.Collectors;
  * Can be thrown by {@link JsProvider}
  */
 public class JsException extends RuntimeException implements LocalizedException, MaybeNotBadException {
-	public static final String ERROR_NOTHING_FOUND = "nothing_found";
-	public static final String ERROR_ACCOUNT_REQUIRED = "account_required";
-	public static final String OTHER = "other";
-	public static final String MESSAGE = "message";
-	public static final String SERVER_DOWN = "server_down";
-	public static final String SERVER_ERROR = "server_error";
-	public static final String ERROR_RATE_LIMITED = "rate_limited";
-	public static final String ERROR_BANNED = "banned";
-	public static final String ERROR_HTTP = "http_error";
+	public static final String ERROR_NOTHING_FOUND = "NOTHING_FOUND";
+	public static final String ERROR_ACCOUNT_REQUIRED = "ACCOUNT_REQUIRED";
+	public static final String OTHER = "OTHER";
+	public static final String MESSAGE = "MESSAGE";
+	public static final String SERVER_DOWN = "SERVER_DOWN";
+	public static final String SERVER_ERROR = "SERVER_ERROR";
+	public static final String ERROR_RATE_LIMITED = "RATE_LIMITED";
+	public static final String ERROR_BANNED = "BANNED";
+	public static final String ERROR_HTTP = "HTTP_ERROR";
 	private final Collection<Throwable> errors;
 	private final String errorId;
 	private final Object errorExtra;
@@ -94,12 +94,12 @@ public class JsException extends RuntimeException implements LocalizedException,
 			case ERROR_NOTHING_FOUND -> context.getString(R.string.nothing_found);
 			case ERROR_RATE_LIMITED -> context.getString(R.string.too_much_requests);
 			case ERROR_BANNED -> "You are banned!";
-			case SERVER_DOWN -> "Server is down!";
+			case SERVER_DOWN -> context.getString(R.string.server_down);
 			case SERVER_ERROR -> "Server error!";
 			case MESSAGE -> "Extension says:";
 			case OTHER -> "Extension has crashed!";
 
-			default -> "JsEngine has crashed" + (getErrorId() == null ? "" : ": " + getErrorId());
+			default -> "Extension has crashed! " + (getErrorId() == null ? "" : getErrorId());
 		};
 	}
 
@@ -169,11 +169,7 @@ public class JsException extends RuntimeException implements LocalizedException,
 
 	@Override
 	public boolean isBad() {
-		if(getErrorId() != null && getErrorId().equals(MESSAGE)) {
-			return false;
-		}
-
-		return true;
+		return getErrorId() == null || !getErrorId().equals(MESSAGE);
 	}
 
 	@Nullable

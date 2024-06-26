@@ -7,17 +7,18 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.listFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.returnIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Selection;
 
-import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
@@ -34,55 +35,70 @@ public class JsSettingsItem extends SettingsItem {
 	private JsSettingsItem() {}
 
 	@NonNull
-	@Contract(value = "_ -> new", pure = true)
-	public static SettingsItem fromJs(@NonNull NativeObject o) {
-		var type = SettingsItemType.valueOf(Objects.requireNonNull(
-				stringFromJs(o.get("type", o))).toUpperCase(Locale.ROOT));
+	public static SettingsItem fromJs(@NonNull NativeObject o, @Nullable SettingsItemType parent) {
+		var type = (parent == SettingsItemType.SELECT ||
+				parent == SettingsItemType.SELECT_INTEGER ||
+				parent == SettingsItemType.MULTISELECT)
+				? null : SettingsItemType.valueOf(requireArgument(
+						o, "type", String.class).toUpperCase(Locale.ROOT));
 
-		return new SettingsItem.Builder(type)
-				.setTitle(stringFromJs(o.get("title", o)))
-				.setDescription(stringFromJs(o.get("description", o)))
-				.setRestartRequired(booleanFromJs(o.get("restartRequired", o)))
-				.setFrom(floatFromJs(o.get("from", o)))
-				.setTo(floatFromJs(o.get("to", o)))
-				.setValue(booleanFromJs(o.get("value", o)))
-				.setValue(intFromJs(o.get("value", o)))
-				.setValue(stringFromJs(o.get("value", o)))
-				.setValue(longFromJs(o.get("value", o)))
-				.setKey(stringFromJs(o.get("key", o)))
-				.setValue(NiceUtils.<Set<String>, List<Scriptable>>returnWith(listFromJs(o.get("items", o), Scriptable.class), list -> {
-					if(list == null) return null;
-
-					return stream(list)
-							.filter(Objects::nonNull)
-							.map(JsBridge::stringFromJs)
-							.collect(Collectors.toSet());
-				}))
-				.setItems(NiceUtils.returnWith(listFromJs(o.get("items", o), NativeObject.class), items -> {
+		var builder = new SettingsItem.Builder(type)
+				.setTitle(stringFromJs(o.get("title")))
+				.setDescription(stringFromJs(o.get("description")))
+				.setRestartRequired(booleanFromJs(o.get("restartRequired")))
+				.setFrom(floatFromJs(o.get("from")))
+				.setTo(floatFromJs(o.get("to")))
+				.setKey(stringFromJs(o.get("key")))
+				.setItems(NiceUtils.returnWith(listFromJs(o.get("items"), NativeObject.class), items -> {
 					if(items == null) return null;
 
-					return stream(listFromJs(o.get("items", o), NativeObject.class))
+					return stream(listFromJs(o.get("items"), NativeObject.class))
 							.filter(Objects::nonNull)
-							.map(JsSettingsItem::fromJs)
+							.map(item -> JsSettingsItem.fromJs(item, type))
 							.toList();
-				}))
-				.setValue(NiceUtils.<Selection.State, String>returnWith(stringFromJs(o.get("value", o)), string -> {
-					if(string == null) return null;
+				}));
 
-					return switch(string) {
-						case "excluded" -> Selection.State.EXCLUDED;
-						case "selected" -> Selection.State.SELECTED;
-						case "unselected" -> Selection.State.UNSELECTED;
-						default -> null;
-					};
-				}))
-				.buildCustom();
+		if(type != null) {
+			switch(type) {
+				case BOOLEAN, SCREEN_BOOLEAN -> builder.setValue(booleanFromJs(o.get("value", o)));
+				case INTEGER, SELECT_INTEGER -> builder.setValue(intFromJs(o.get("value", o)));
+				case STRING, SELECT -> builder.setValue(stringFromJs(o.get("value", o)));
+				case DATE -> builder.setValue(longFromJs(o.get("value", o)));
+
+				case EXCLUDABLE -> builder.setValue(
+						NiceUtils.<Selection.State, String>returnWith(
+								stringFromJs(o.get("value", o)), string -> {
+									if(string == null) return null;
+
+									return switch(string) {
+										case "EXCLUDED" -> Selection.State.EXCLUDED;
+										case "SELECTED" -> Selection.State.SELECTED;
+										case "UNSELECTED" -> Selection.State.UNSELECTED;
+										default -> null;
+									};
+								}));
+
+				case MULTISELECT -> builder.setValue(
+						NiceUtils.<Set<String>, List<Scriptable>>returnWith(
+								listFromJs(o.get("items", o), Scriptable.class), list -> {
+									if(list == null) return null;
+
+									return stream(list)
+											.filter(Objects::nonNull)
+											.map(JsBridge::stringFromJs)
+											.collect(Collectors.toSet());
+								}));
+			}
+		}
+
+		return builder.buildCustom();
 	}
 
 	@NonNull
 	public static Scriptable toJs(@NonNull SettingsItem setting, @NonNull Context context, Scriptable scope) {
 		var o = context.newObject(scope);
 		var ctx = getAnyContext();
+		var type = setting.getType();
 
 		o.put("key", o, setting.getKey());
 		o.put("title", o, setting.getTitle(ctx));
@@ -91,30 +107,46 @@ public class JsSettingsItem extends SettingsItem {
 		o.put("to", o, setting.getTo());
 		o.put("restartRequired", o, setting.isRestartRequired());
 
-		switch(setting.getType()) {
-			case SCREEN, SELECT, SELECT_INTEGER, MULTISELECT, SCREEN_BOOLEAN -> o.put("items", o,
-					stream(setting.getItems()).map(item -> toJs(item, context, o)));
+		if(type != null) {
+			o.put("type", o, setting.getType()
+					.name().toLowerCase(Locale.ROOT));
 		}
 
-		o.put("value", o, switch(setting.getType()) {
-			case EXCLUDABLE -> Objects.requireNonNullElse(returnIfNotNull(
-					setting.getExcludableValue(), state -> switch(state) {
-				case EXCLUDED -> "excluded";
-				case SELECTED -> "selected";
-				case UNSELECTED -> "unselected";
-			}), Selection.State.UNSELECTED);
+		if(setting.getItems() != null) {
+			o.put("items", o, stream(setting.getItems())
+					.map(item -> toJs(item, context, o))
+					.toList());
+		}
 
-			case BOOLEAN, SCREEN_BOOLEAN -> setting.getBooleanValue();
-			case DATE -> setting.getLongValue();
-			case DIVIDER, CATEGORY, COLOR, SCREEN, ACTION -> null;
-			case INTEGER, SELECT_INTEGER -> setting.getIntegerValue();
-			case STRING, SELECT -> setting.getStringValue();
-			case MULTISELECT -> setting.getStringSetValue();
-		});
+		if(type == null) {
+			type = predictType(setting);
+		}
 
-		o.put("type", o, setting.getType()
-				.name().toLowerCase(Locale.ROOT));
+		if(type != null) {
+			o.put("value", o, switch(type) {
+				case EXCLUDABLE -> Objects.requireNonNullElse(returnIfNotNull(
+						setting.getExcludableValue(), Enum::name), Selection.State.UNSELECTED);
+
+				case BOOLEAN, SCREEN_BOOLEAN -> setting.getBooleanValue();
+				case DATE -> setting.getLongValue();
+				case DIVIDER, CATEGORY, COLOR, SCREEN, ACTION -> null;
+				case INTEGER, SELECT_INTEGER -> setting.getIntegerValue();
+				case STRING, SELECT -> setting.getStringValue();
+				case MULTISELECT -> setting.getStringSetValue();
+			});
+		}
 
 		return o;
+	}
+
+	@Nullable
+	private static SettingsItemType predictType(@NonNull SettingsItem item) {
+		if(item.getStringValue() != null) return SettingsItemType.STRING;
+		if(item.getBooleanValue() != null) return SettingsItemType.BOOLEAN;
+		if(item.getIntegerValue() != null) return SettingsItemType.INTEGER;
+		if(item.getExcludableValue() != null) return SettingsItemType.EXCLUDABLE;
+		if(item.getStringSetValue() != null) return SettingsItemType.MULTISELECT;
+		if(item.getLongValue() != null) return SettingsItemType.DATE;
+		return null;
 	}
 }
