@@ -449,4 +449,15 @@
     <string name="restart_to_apply_settings">Per applicare le impostazioni, è necessario riavviare</string>
     <string name="done">Fatto</string>
     <string name="read_now">Leggi ora</string>
+    <string name="select_title">Seleziona un titolo</string>
+    <string name="havent_selected_source">Non hai selezionato alcuna fonte!</string>
+    <string name="server_error">Errore del server</string>
+    <string name="banned">Sei stato bannato</string>
+    <string name="select_status">Seleziona uno stato</string>
+    <string name="saved_successfully">Salvato con successo</string>
+    <string name="nothing_selected">Non è stato selezionato nulla</string>
+    <string name="connection_failed">Connessione fallita</string>
+    <string name="account_required">Account richiesto</string>
+    <string name="extension_crashed">L\'estensione si è bloccata!</string>
+    <string name="select_tracker">Seleziona un tracker</string>
 </resources>
