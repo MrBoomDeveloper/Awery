@@ -34,7 +34,6 @@ import org.mozilla.javascript.UniqueTag;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Do not ever init this class by yourself!
@@ -154,7 +153,6 @@ public class JsBridge {
 		}
 
 		doIfNotNull(stringFromJs(options.get("method")), method -> {
-			method = method.toLowerCase(Locale.ROOT);
 			request.setMethod(HttpClient.Method.valueOf(method));
 
 			if(isNullJs(options.get("form")) && isNullJs(options.get("body", options))) {

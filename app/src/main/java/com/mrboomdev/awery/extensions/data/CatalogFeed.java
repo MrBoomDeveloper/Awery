@@ -8,7 +8,6 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -17,6 +16,7 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.squareup.moshi.Json;
 
 import java.io.Serial;
@@ -42,7 +42,7 @@ public class CatalogFeed implements Serializable {
 	public int index;
 	public List<SettingsItem> filters;
 	public String tab, title;
-	@Ignore
+	@ColumnInfo(name = "hide_if_empty")
 	@Json(name = "hide_if_empty", ignore = true)
 	public boolean hideIfEmpty;
 	@ColumnInfo(name = "source_manager")
@@ -54,6 +54,9 @@ public class CatalogFeed implements Serializable {
 	@ColumnInfo(name = "source_feed")
 	@Json(name = "source_feed")
 	public String sourceFeed;
+	@ColumnInfo(name = "source_extension")
+	@Json(name = "source_extension")
+	public String extensionId;
 	public List<String> features = new ArrayList<>();
 	@ColumnInfo(name = "display_mode")
 	@Json(name = "display_mode")
@@ -61,6 +64,14 @@ public class CatalogFeed implements Serializable {
 
 	public CatalogFeed() {
 		id = String.valueOf(System.currentTimeMillis());
+	}
+
+	public String getProivderGlobalId() {
+		return sourceManager + ";;;" + sourceId + ":" + extensionId;
+	}
+
+	public ExtensionProvider getSourceProvider() throws ExtensionNotInstalledException {
+		return ExtensionProvider.forGlobalId(sourceManager, extensionId, sourceId);
 	}
 
 	/**
@@ -94,6 +105,7 @@ public class CatalogFeed implements Serializable {
 						var result = new CatalogFeed();
 						result.sourceManager = TEMPLATING_SOURCE_MANAGER;
 						result.sourceId = TEMPLATE_BOOKMARKS;
+						result.extensionId = TEMPLATE_BOOKMARKS;
 						result.sourceFeed = list.getId();
 						result.title = list.getName();
 						result.hideIfEmpty = true;

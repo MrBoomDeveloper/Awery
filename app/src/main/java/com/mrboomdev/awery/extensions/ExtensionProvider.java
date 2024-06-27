@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.util.NiceUtils.stream;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -17,10 +19,13 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
+import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -72,6 +77,45 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public abstract ExtensionsManager getManager();
+
+	public String getGlobalId() {
+		return getManager().getId() + ";;;" + getId() + ":" + getExtension().getId();
+	}
+
+	public static ExtensionProvider forGlobalId(String managerId, String extensionId, String providerId) throws ExtensionNotInstalledException {
+		return forGlobalId(managerId + ";;;" + providerId + ":" + extensionId);
+	}
+
+	/**
+	 * Format of the globalId:
+	 * <p>{@code MANAGER_ID;;;PROVIDER_ID:EXTENSION_ID}</p>
+	 * @param globalId May be CatalogMedia's globalId
+	 * @return May return an irreverent provider if no EXTENSION_ID was specified
+	 */
+	public static ExtensionProvider forGlobalId(@NonNull String globalId) throws ExtensionNotInstalledException {
+		var split = globalId.split(";;;");
+		var split2 = split[1].split(":");
+
+		var managerId = split[0];
+		var providerId = split2[0];
+		var extensionId = split2[1];
+
+		try {
+			return stream(ExtensionsFactory.getManager(managerId)
+					.getExtensions(Extension.FLAG_WORKING))
+					.map(Extension::getProviders)
+					.flatMap(NiceUtils::stream)
+					.filter(provider -> {
+						// In previous versions extension id wasn't been saved
+						if(extensionId != null && !extensionId.isBlank() && !extensionId.equals("null")
+								&& !extensionId.equals(provider.getExtension().getId())) return false;
+
+						return providerId.equals(provider.getId());
+					}).findFirst().orElseThrow();
+		} catch(NoSuchElementException e) {
+			throw new ExtensionNotInstalledException("Extension \"" + extensionId + "\" isn't installed!", e);
+		}
+	}
 
 	@Override
 	public int compareTo(@NonNull ExtensionProvider o) {

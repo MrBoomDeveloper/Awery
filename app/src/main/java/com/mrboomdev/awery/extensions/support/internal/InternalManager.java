@@ -3,21 +3,20 @@ package com.mrboomdev.awery.extensions.support.internal;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class InternalManager extends ExtensionsManager {
 	public static final String MANAGER_ID = "INTERNAL";
-	private final List<Extension> extensions = List.of(createExtension("Lists", new InternalProviders.Lists()));
+	private final List<Extension> extensions = List.of(createExtension(new InternalProviders.Lists()));
 
 	@NonNull
-	private Extension createExtension(String name, ExtensionProvider provider) {
-		var extension = new Extension(name, name, "1.0.0", null);
+	private Extension createExtension(@NonNull InternalProviders.InternalProvider provider) {
+		var extension = new Extension(provider.getName(), provider.getId(), "1.0.0", null);
 		extension.addProvider(provider);
+		provider.setup(this, extension);
 		return extension;
 	}
 

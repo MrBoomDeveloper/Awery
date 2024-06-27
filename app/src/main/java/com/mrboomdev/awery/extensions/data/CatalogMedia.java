@@ -3,8 +3,9 @@ package com.mrboomdev.awery.extensions.data;
 import androidx.annotation.NonNull;
 
 import com.google.common.collect.Lists;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.util.Parser;
-import com.squareup.moshi.Json;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,19 +33,17 @@ public class CatalogMedia implements Serializable {
 	public List<CatalogTag> tags;
 	public List<String> genres;
 	public MediaStatus status;
-	@Json(ignore = true)
-	public long visualId;
 
 	/**
 	 * @param globalId The unique id of the media in the following format:
-	 * <p>{@code MANAGER_ID;;;PROVIDER_ID;;;ITEM_ID}</p>
+	 * <p>{@code MANAGER_ID;;;PROVIDER_ID:EXTENSION_ID;;;ITEM_ID}</p>
 	 */
 	public CatalogMedia(@NonNull String globalId) {
 		this.globalId = globalId;
 	}
 
-	public CatalogMedia(String managerId, String extensionId, String mediaId) {
-		this(managerId + ";;;" + extensionId + ";;;" + mediaId);
+	public CatalogMedia(String managerId, String extensionId, String providerId, String mediaId) {
+		this(managerId + ";;;" + providerId + ":" + extensionId + ";;;" + mediaId);
 	}
 
 	public String getManagerId() {
@@ -52,7 +51,19 @@ public class CatalogMedia implements Serializable {
 	}
 
 	public String getExtensionId() {
-		return globalId.split(";;;")[1];
+		return globalId.split(";;;")[1].split(":")[1];
+	}
+
+	public String getProviderId() {
+		return globalId.split(";;;")[1].split(":")[0];
+	}
+
+	/**
+	 * @throws ExtensionNotInstalledException If the source extension provider was removed or disabled.
+	 * @author MrBoomDev
+	 */
+	public ExtensionProvider getSourceProvider() throws ExtensionNotInstalledException {
+		return ExtensionProvider.forGlobalId(globalId);
 	}
 
 	public String getId() {

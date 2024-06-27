@@ -77,53 +77,61 @@ import java9.util.Objects;
 public class MediaCommentsFragment extends Fragment {
 	private static final int LAST_PAGE = -1;
 	private static final String TAG = "MediaCommentsFragment";
-	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
-	private SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
-	private ArrayListAdapter<ExtensionProvider> sourcesAdapter;
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
-	private ConcatAdapter concatAdapter;
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
 	private final WeakHashMap<CatalogComment, Integer> pages = new WeakHashMap<>();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
+	private ArrayListAdapter<ExtensionProvider> sourcesAdapter;
+	private ConcatAdapter concatAdapter;
 	private Runnable backPressCallback;
 	private List<ExtensionProvider> sources;
-	private boolean isLoading;
 	private ExtensionProvider selectedProvider;
 	private RecyclerView recycler;
 	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
+	private CatalogEpisode episode;
 	private CatalogMedia media;
 	private CatalogComment comment, editedComment;
+	private boolean isLoading;
 
 	/**
 	 * DO NOT CALL THIS CONSTRUCTOR!
 	 * @author MrBoomDev
 	 */
 	public MediaCommentsFragment() {
-		this(null);
+		this(null, null);
 	}
 
-	public MediaCommentsFragment(CatalogMedia media) {
+	public MediaCommentsFragment(CatalogMedia media, CatalogEpisode episode) {
 		this.media = media;
+		this.episode = episode;
 
 		var bundle = new Bundle();
 		bundle.putSerializable("media", media);
+		bundle.putSerializable("episode", episode);
 		setArguments(bundle);
+
+		createAdapters();
 	}
 
 	public void setEpisode(CatalogEpisode episode) {
+		this.episode = episode;
+		if(headerAdapter == null) return;
+
 		headerAdapter.getBinding(binding -> {
 			if(episode != null) {
 				var rounded = Math.round(episode.getNumber());
 
 				binding.episodeDropdown.setText((rounded == episode.getNumber())
 						? String.valueOf(rounded) : String.valueOf(episode.getNumber()));
-
-				setSource(selectedProvider);
 			} else {
 				binding.episodeDropdown.setText(null, false);
 			}
+
+			setSource(selectedProvider);
 		});
 	}
 
@@ -341,11 +349,34 @@ public class MediaCommentsFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		if(media == null) {
-			media = (CatalogMedia) requireArguments().getSerializable("media");
-			requireArgument(media, "media");
+		if(media == null) media = requireArgument(this, "media");
+		if(episode == null) episode = (CatalogEpisode) requireArguments().getSerializable("episode");
+
+		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
+				.flatMap(NiceUtils::stream)
+				.sorted().toList();
+
+		sourcesAdapter.setItems(sources);
+
+		if(!sources.isEmpty()) {
+			selectedProvider = sources.get(0);
+			sourcesAdapter.setItems(sources);
+
+			headerAdapter.getBinding(binding -> binding.sourceDropdown.setText(
+					selectedProvider.getName(), false));
 		}
 
+		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				tryLoadMore();
+			}
+		});
+		setEpisode(episode);
+	}
+
+	private void createAdapters() {
 		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = LayoutInflater.from(parent.getContext());
 			return LayoutLoadingBinding.inflate(inflater, parent, false);
@@ -416,30 +447,6 @@ public class MediaCommentsFragment extends Fragment {
 
 			setComment(currentCommentsPath.get(currentCommentsPath.size() - 1), null);
 		};
-
-		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
-				.flatMap(NiceUtils::stream)
-				.sorted().toList();
-
-		sourcesAdapter.setItems(sources);
-
-		if(!sources.isEmpty()) {
-			selectedProvider = sources.get(0);
-			sourcesAdapter.setItems(sources);
-
-			headerAdapter.getBinding(binding -> binding.sourceDropdown.setText(
-					selectedProvider.getName(), false));
-		}
-
-		recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-				tryLoadMore();
-			}
-		});
-
-		setSource(selectedProvider);
 	}
 
 	@Nullable

@@ -2,15 +2,18 @@ package com.mrboomdev.awery.ui.activity.search;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -37,11 +40,8 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
-import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.ScreenSearchBinding;
-import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -49,19 +49,32 @@ import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.sheet.FiltersSheet;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchActivity extends AppCompatActivity {
+	public static final String ACTION_PICK_MEDIA = "pick_media";
+	public static final String ACTION_SEARCH_BY_TAG = "searchByTag";
+	public static final String EXTRA_TAG = "tag";
+	public static final String EXTRA_FILTERS = "filters";
+	public static final String EXTRA_LOADED_MEDIA = "loadedMedia";
+	/**
+	 * It is meant that the provider can be found by using {@code ExtensionProvider.forGlobalId(String)}
+	 */
+	public static final String EXTRA_GLOBAL_PROVIDER_ID = "source";
+	public static final String RESULT_EXTRA_MEDIA = "media";
 	private static final int LOADING_VIEW_TYPE = 1;
 	private static final String TAG = "SearchActivity";
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
@@ -70,9 +83,9 @@ public class SearchActivity extends AppCompatActivity {
 	private final List<CatalogMedia> items = new ArrayList<>();
 	private final List<SettingsItem> filters = new ArrayList<>();
 	private ScreenSearchBinding binding;
-	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
+	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> loadingAdapter;
 	private ExtensionProvider source;
-	private boolean didReachedEnd, select;
+	private boolean didReachedEnd;
 	private int searchId, currentPage;
 
 	private final SettingsItem queryFilter = new SettingsItem(
@@ -93,14 +106,13 @@ public class SearchActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		this.select = getIntent().getBooleanExtra("select", false);
 		var columnsCountLand = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.getValue());
 		var columnsCountPort = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.getValue());
 
 		var autoColumnsCountLand = columnsCountLand.get() == 0;
 		var autoColumnsCountPort = columnsCountPort.get() == 0;
 
-		var filters = (List<SettingsItem>) getIntent().getSerializableExtra("filters");
+		var filters = (List<SettingsItem>) getIntent().getSerializableExtra(EXTRA_FILTERS);
 
 		if(filters != null) {
 			var foundQuery = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
@@ -109,8 +121,13 @@ public class SearchActivity extends AppCompatActivity {
 
 		applyFilters(filters);
 
-		this.source = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING,
-				Objects.requireNonNull(getIntent().getStringExtra("source")));
+		try {
+			this.source = ExtensionProvider.forGlobalId(Objects.requireNonNull(
+					getIntent().getStringExtra(EXTRA_GLOBAL_PROVIDER_ID)));
+		} catch(ExtensionNotInstalledException e) {
+			toast("Source extension isn't installed!");
+			finish();
+		}
 
 		binding = ScreenSearchBinding.inflate(getLayoutInflater());
 		binding.header.edittext.setText(queryFilter.getStringValue());
@@ -154,7 +171,7 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var binding = LayoutLoadingBinding.inflate(getLayoutInflater(), parent, false);
+			var binding = new EmptyView(parent, false);
 			ViewUtil.useLayoutParams(binding.getRoot(), params -> params.width = ViewUtil.MATCH_PARENT);
 			return binding;
 		}, LOADING_VIEW_TYPE);
@@ -208,7 +225,7 @@ public class SearchActivity extends AppCompatActivity {
 			}
 		});
 
-		doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra("loadedMedia"), loadedMedia -> {
+		doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra(EXTRA_LOADED_MEDIA), loadedMedia -> {
 			for(var item : loadedMedia) {
 				ids.put(item, idGenerator.getLong());
 			}
@@ -219,6 +236,104 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		setContentView(binding.getRoot());
+
+		if(ACTION_SEARCH_BY_TAG.equals(getIntent().getAction())) {
+			var tag = requireNonNull(getIntent().getStringExtra(EXTRA_TAG)).trim();
+			didReachedEnd = true;
+
+			binding.headerWrapper.setVisibility(View.GONE);
+			binding.swipeRefresher.setEnabled(false);
+
+
+			loadingAdapter.setEnabled(true);
+			loadingAdapter.getBinding(EmptyView::startLoading);
+
+			source.getFilters(new ExtensionProvider.ResponseCallback<>() {
+
+				private void done() {
+					SearchActivity.this.binding.headerWrapper.setVisibility(View.VISIBLE);
+					SearchActivity.this.binding.swipeRefresher.setEnabled(true);
+
+					didReachedEnd = false;
+					search(0);
+				}
+
+				@Nullable
+				private SettingsItem findTag(@NonNull List<? extends SettingsItem> items) {
+					for(var item : items) {
+						if(item.getItems() != null) {
+							var found = findTag(item.getItems());
+
+							if(found != null) {
+								return found;
+							}
+						}
+
+						var title = item.getTitle(SearchActivity.this);
+						if(title == null) continue;
+
+						if(requireNonNull(tag).equalsIgnoreCase(title.trim())) {
+							return item;
+						}
+					}
+
+					return null;
+				}
+
+				private void activate(@NonNull SettingsItem item, SettingsItem parent) {
+					if(item.getType() != null) {
+						switch(item.getType()) {
+							case BOOLEAN, SCREEN_BOOLEAN -> item.setValue(true);
+							case EXCLUDABLE -> item.setValue(Selection.State.SELECTED);
+						}
+					} else if(parent != null) {
+						switch(parent.getType()) {
+							case SELECT, SELECT_INTEGER -> parent.setValue(item.getKey());
+							case MULTISELECT -> parent.setValue(Set.of(item.getKey()));
+						}
+					} else {
+						onFailure(null);
+					}
+				}
+
+				@Override
+				public void onSuccess(List<SettingsItem> items) {
+					for(var item : items) {
+						item.setAsParentForChildren();
+					}
+
+					var found = findTag(items);
+
+					if(found == null) {
+						onFailure(null);
+					} else {
+						SettingsItem parent = found, root = parent;
+
+						while((parent = parent.getParent()) != null) {
+							root = parent;
+						}
+
+						activate(found, found.getParent());
+						applyFilters(List.of(root));
+						AweryLifecycle.runOnUiThread(this::done, SearchActivity.this.binding.recycler);
+					}
+				}
+
+				@Override
+				public void onFailure(@Nullable Throwable e) {
+					if(e != null) {
+						Log.e(TAG, "Failed to fetch filters!", e);
+					}
+
+					queryFilter.setValue(tag);
+
+					AweryLifecycle.runOnUiThread(() -> {
+						SearchActivity.this.binding.header.edittext.setText(tag);
+						done();
+					}, SearchActivity.this.binding.recycler);
+				}
+			});
+		}
 	}
 
 	private void applyFilters(@Nullable List<SettingsItem> newFilters) {
@@ -388,19 +503,14 @@ public class SearchActivity extends AppCompatActivity {
 			var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
 			var viewHolder = new ViewHolder(binding);
 
-			var params = binding.getRoot().getLayoutParams();
-			params.width = ViewUtil.MATCH_PARENT;
-
-			if(!setHorizontalMargin(params, dpPx(6))) {
-				throw new IllegalStateException("Failed to set horizontal margin for GridMediaCatalogBinding!");
-			}
-
-			binding.getRoot().setLayoutParams(params);
+			useLayoutParams(binding.getRoot(), params -> {
+				params.width = ViewUtil.MATCH_PARENT;
+				setHorizontalMargin(params, dpPx(6));
+			}, RecyclerView.LayoutParams.class);
 
 			binding.getRoot().setOnClickListener(view -> {
-				if(select) {
-					var json = Parser.toString(CatalogMedia.class, viewHolder.getItem());
-					setResult(0, new Intent().putExtra("media", json));
+				if(ACTION_PICK_MEDIA.equals(getIntent().getAction())) {
+					setResult(0, new Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.getItem()));
 					finish();
 					return;
 				}

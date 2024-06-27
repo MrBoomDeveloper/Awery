@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 
@@ -251,6 +252,19 @@ public class NiceUtils {
 		}
 
 		return o;
+	}
+
+	public static <T> T requireArgument(Intent intent, String name, Class<T> clazz) {
+		Object result;
+
+		if(clazz == String.class) result = intent.getStringExtra(name);
+		else if(clazz == Integer.class) result = intent.getIntExtra(name, 0);
+		else if(clazz == Boolean.class) result = intent.getBooleanExtra(name, false);
+		else if(clazz == Long.class) result = intent.getLongExtra(name, 0);
+		else if(clazz == Float.class) result = intent.getFloatExtra(name, 0);
+		else result = intent.getSerializableExtra("name");
+
+		return clazz.cast(requireArgument(result, name));
 	}
 
 	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) {

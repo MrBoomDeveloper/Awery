@@ -6,7 +6,6 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
@@ -78,25 +77,6 @@ public class ExtensionsFactory {
 			case InternalManager.MANAGER_ID -> InternalManager.class;
 			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
 		});
-	}
-
-	@Nullable
-	public static ExtensionProvider getExtensionProvider(int extensionFlags, @NonNull String id) {
-		if(id.contains(";;;")) {
-			var parts = id.split(";;;");
-
-			return stream(getManager(parts[0]).getExtensions(extensionFlags))
-					.map(Extension::getProviders)
-					.flatMap(NiceUtils::stream)
-					.filter(provider -> provider.getId().equals(parts[1]))
-					.findAny().orElse(null);
-		}
-
-		return stream(getExtensions(extensionFlags))
-				.map(Extension::getProviders)
-				.flatMap(NiceUtils::stream)
-				.filter(provider -> id.equals(provider.getId()))
-				.findAny().orElse(null);
 	}
 
 	@NonNull

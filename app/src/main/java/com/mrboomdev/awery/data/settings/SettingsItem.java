@@ -302,6 +302,10 @@ public class SettingsItem implements Serializable {
 		stringValue = value;
 	}
 
+	public void setValue(Set<String> set) {
+		this.stringSetValue = set;
+	}
+
 	public void clearValue() {
 		stringValue = null;
 		integerValue = null;

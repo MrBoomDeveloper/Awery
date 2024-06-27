@@ -8,12 +8,9 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -170,13 +167,7 @@ public class MediaActivity extends AppCompatActivity {
 				case 0 -> new MediaInfoFragment(media);
 				case 1 -> new MediaPlayFragment(media);
 				case 3 -> new MediaRelationsFragment();
-
-				case 2 -> {
-					commentsFragment = new MediaCommentsFragment(media);
-					commentsFragment.setEpisode((CatalogEpisode) pendingExtra);
-					yield commentsFragment;
-				}
-
+				case 2 -> commentsFragment = new MediaCommentsFragment(media, (CatalogEpisode) pendingExtra);
 				default -> throw new IllegalArgumentException("Invalid position: " + position);
 			};
 		}

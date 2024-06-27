@@ -18,7 +18,6 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
@@ -64,8 +63,6 @@ import org.mozilla.javascript.ScriptableObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -250,13 +247,11 @@ public class JsProvider extends ExtensionProvider {
 									});
 
 									var intent = new Intent(context, LoginActivity.class);
-									var extras = new Bundle();
 
 									for(var entry : stringStringMap.entrySet()) {
-										extras.putString(entry.getKey(), entry.getValue());
+										intent.putExtra(entry.getKey(), entry.getValue());
 									}
 
-									intent.putExtras(extras);
 									settingsActivity.getActivityResultLauncher().launch(intent);
 								} else {
 									throw new IllegalArgumentException("Activity is not a SettingsActivity!");
@@ -719,7 +714,7 @@ public class JsProvider extends ExtensionProvider {
 							if(JsBridge.isNullJs(arrayItem)) continue;
 							var item = (NativeObject) arrayItem;
 
-							var result = new CatalogMedia(manager.getId(), id, item.get("id").toString());
+							var result = new CatalogMedia(manager.getId(), id, id, stringFromJs(item, "id"));
 							result.url = stringFromJs(item.get("url"));
 							result.banner = stringFromJs(item.get("banner"));
 							result.country = stringFromJs(item.get("country"));

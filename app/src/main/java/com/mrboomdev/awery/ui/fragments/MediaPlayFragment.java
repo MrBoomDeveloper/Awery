@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -48,20 +47,19 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.sdk.util.StringUtils;
-import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
+import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -308,38 +306,33 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					binding.searchDropdown.setText(queryFilter.getStringValue(), false);
 
 					var intent = new Intent(requireContext(), SearchActivity.class);
-					intent.putExtra("source", selectedSource.getId());
-					intent.putExtra("filters", (Serializable) filters);
-					intent.putExtra("select", true);
+					intent.setAction(SearchActivity.ACTION_PICK_MEDIA);
+					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getId());
+					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) filters);
 
 					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
 
-						var mediaJson = result.getStringExtra("media");
-						if(mediaJson == null) return;
+						var media = (CatalogMedia) result.getSerializableExtra(SearchActivity.RESULT_EXTRA_MEDIA);
+						if(media == null) return;
 
-						try {
-							searchId = null;
-							searchTitle = null;
+						searchId = null;
+						searchTitle = null;
 
-							var media = Parser.fromString(CatalogMedia.class, mediaJson);
-							binding.searchDropdown.setText(media.getTitle(), false);
-							queryFilter.setValue(media.getTitle());
+						binding.searchDropdown.setText(media.getTitle(), false);
+						queryFilter.setValue(media.getTitle());
 
-							placeholderAdapter.getBinding(placeholder -> {
-								placeholder.startLoading();
-								placeholderAdapter.setEnabled(true);
-								episodesAdapter.setItems(media, Collections.emptyList());
+						placeholderAdapter.getBinding(placeholder -> {
+							placeholder.startLoading();
+							placeholderAdapter.setEnabled(true);
+							episodesAdapter.setItems(media, Collections.emptyList());
 
-								autoChangeSource = false;
-								autoChangeTitle = false;
+							autoChangeSource = false;
+							autoChangeTitle = false;
 
-								episodesAdapter.setItems(null, null);
-								loadEpisodesFromSource(selectedSource, media);
-							});
-						} catch(IOException e) {
-							CrashHandler.showErrorDialog(requireContext(), e);
-						}
+							episodesAdapter.setItems(null, null);
+							loadEpisodesFromSource(selectedSource, media);
+						});
 					});
 				} else {
 					searchId = null;
@@ -371,7 +364,15 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		new Thread(() -> {
 			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
-			var mediaSource = ExtensionsFactory.getExtensionProvider(Extension.FLAG_WORKING, media.globalId);
+
+			var mediaSource = NiceUtils.returnWith(() -> {
+				try {
+					return ExtensionProvider.forGlobalId(media.globalId);
+				} catch(ExtensionNotInstalledException e) {
+					Log.e(TAG, "Source extension isn't installed!", e);
+					return null;
+				}
+			});
 
 			if(progress != null) {
 				searchId = progress.lastId;

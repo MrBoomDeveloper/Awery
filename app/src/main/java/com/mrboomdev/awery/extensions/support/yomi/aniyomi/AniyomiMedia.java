@@ -18,9 +18,7 @@ public class AniyomiMedia extends CatalogMedia {
 	private final SAnime anime;
 
 	public AniyomiMedia(@NonNull AniyomiProvider provider, @NonNull SAnime anime) {
-		super(AniyomiManager.MANAGER_ID + ";;;"
-				+ provider.getId() + ";;;"
-				+ anime.getUrl());
+		super(AniyomiManager.MANAGER_ID, provider.getExtension().getId(), provider.getId(), anime.getUrl());
 
 		this.setTitle(anime.getTitle());
 		this.setPoster(anime.getThumbnail_url());

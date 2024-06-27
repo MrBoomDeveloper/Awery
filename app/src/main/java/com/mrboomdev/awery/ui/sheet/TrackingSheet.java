@@ -42,17 +42,15 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
-import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
-import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
+import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
+import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -401,24 +399,19 @@ public class TrackingSheet {
 					binding.title.input.setText(queryFilter.getStringValue(), false);
 
 					var intent = new Intent(context, SearchActivity.class);
-					intent.putExtra("source", selectedSource.getId());
-					intent.putExtra("filters", (Serializable) filters);
-					intent.putExtra("select", true);
+					intent.setAction(SearchActivity.ACTION_PICK_MEDIA);
+					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getGlobalId());
+					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) filters);
 
 					startActivityForResult(context, intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
 
-						var mediaJson = result.getStringExtra("media");
-						if(mediaJson == null) return;
+						var media = (CatalogMedia) result.getSerializableExtra(SearchActivity.RESULT_EXTRA_MEDIA);
+						if(media == null) return;
 
-						try {
-							var media = Parser.fromString(CatalogMedia.class, mediaJson);
-							binding.title.input.setText(media.getTitle(), false);
-							binding.searchStatus.setText("Found \"" + media.getTitle() + "\"");
-							loadDataFromTracker(media);
-						} catch(IOException e) {
-							CrashHandler.showErrorDialog(context, e);
-						}
+						binding.title.input.setText(media.getTitle(), false);
+						binding.searchStatus.setText("Found \"" + media.getTitle() + "\"");
+						loadDataFromTracker(media);
 					});
 				} else {
 					updateTrackingDialogState(null, null);

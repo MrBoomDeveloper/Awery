@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "47c74aa0b8f443d9c3bab41ea2f0e657",
+    "identityHash": "addfb5b607e8b3d011406e78b1f235e6",
     "entities": [
       {
         "tableName": "media",
@@ -249,7 +249,7 @@
       },
       {
         "tableName": "feed",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `index` INTEGER NOT NULL, `filters` TEXT, `tab` TEXT, `title` TEXT, `source_manager` TEXT, `source_id` TEXT, `source_feed` TEXT, `features` TEXT, `display_mode` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `index` INTEGER NOT NULL, `filters` TEXT, `tab` TEXT, `title` TEXT, `hide_if_empty` INTEGER NOT NULL, `source_manager` TEXT, `source_id` TEXT, `source_feed` TEXT, `source_extension` TEXT, `features` TEXT, `display_mode` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -282,6 +282,12 @@
             "notNull": false
           },
           {
+            "fieldPath": "hideIfEmpty",
+            "columnName": "hide_if_empty",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "sourceManager",
             "columnName": "source_manager",
             "affinity": "TEXT",
@@ -296,6 +302,12 @@
           {
             "fieldPath": "sourceFeed",
             "columnName": "source_feed",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "extensionId",
+            "columnName": "source_extension",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -411,7 +423,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '47c74aa0b8f443d9c3bab41ea2f0e657')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'addfb5b607e8b3d011406e78b1f235e6')"
     ]
   }
 }

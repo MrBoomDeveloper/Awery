@@ -165,9 +165,9 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 				binding.expand.setOnClickListener(v -> {
 					var intent = new Intent(getContext(v), SearchActivity.class);
-					intent.putExtra("source", category.sourceFeed.sourceId);
-					intent.putExtra("filters", (Serializable) category.sourceFeed.filters);
-					intent.putExtra("loadedMedia", (Serializable) category.items);
+					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, category.sourceFeed.getProivderGlobalId());
+					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) category.sourceFeed.filters);
+					intent.putExtra(SearchActivity.EXTRA_LOADED_MEDIA, (Serializable) category.items);
 					getContext(v).startActivity(intent);
 				});
 			} else {

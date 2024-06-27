@@ -2,7 +2,6 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,15 +21,13 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
-import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -119,17 +116,9 @@ public abstract class FeedsFragment extends Fragment {
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
-		var extensions = ExtensionsFactory.getManager(feed.sourceManager)
-				.getExtensions(Extension.FLAG_WORKING);
+		try {
+			var provider = ExtensionProvider.forGlobalId(feed.sourceManager, feed.extensionId, feed.sourceId);
 
-		var provider = stream(extensions)
-				.flatMap(NiceUtils::stream)
-				.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_MEDIA_SEARCH))
-				.flatMap(NiceUtils::stream)
-				.filter(extProvider -> extProvider.getId().equals(feed.sourceId))
-				.findAny().orElse(null);
-
-		if(provider != null) {
 			var context = getContext();
 			if(context == null) return;
 
@@ -188,20 +177,22 @@ public abstract class FeedsFragment extends Fragment {
 					tryToLoadNextFeed(feed, currentLoadId);
 				}
 			});
-		} else {
+		} catch(ExtensionNotInstalledException e) {
+			Log.e(TAG, "Extension isn't installed, can't load the feed!", e);
+
 			runOnUiThread(() -> failedRowsAdapter.addCategory(
 					new MediaCategoriesAdapter.Category(feed,
 							new ZeroResultsException("No extension provider was found!", 0) {
-						@Override
-						public String getTitle(@NonNull Context context) {
-							return "Extension was not found!";
-						}
+								@Override
+								public String getTitle(@NonNull Context context) {
+									return "Extension was not found!";
+								}
 
-						@Override
-						public String getDescription(@NonNull Context context) {
-							return "Please check your filters again. Maybe used extension was removed.";
-						}
-					})), binding.recycler);
+								@Override
+								public String getDescription(@NonNull Context context) {
+									return "Please check your filters again. Maybe used extension was removed.";
+								}
+							})), binding.recycler);
 
 			tryToLoadNextFeed(feed, currentLoadId);
 		}

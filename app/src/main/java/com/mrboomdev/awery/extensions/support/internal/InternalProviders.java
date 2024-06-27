@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -21,13 +22,28 @@ import java.util.Set;
 
 public class InternalProviders {
 
-	public static class Lists extends ExtensionProvider {
-		private final Set<String> FEATURES = Set.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
+	protected static abstract class InternalProvider extends ExtensionProvider {
+		private InternalManager manager;
+		private Extension extension;
 
 		@Override
 		public ExtensionsManager getManager() {
-			return null;
+			return manager;
 		}
+
+		@Override
+		public Extension getExtension() {
+			return extension;
+		}
+
+		protected void setup(InternalManager manager, Extension extension) {
+			this.manager = manager;
+			this.extension = extension;
+		}
+	}
+
+	public static class Lists extends InternalProvider {
+		private final Set<String> FEATURES = Set.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
 
 		@Override
 		public void searchMedia(

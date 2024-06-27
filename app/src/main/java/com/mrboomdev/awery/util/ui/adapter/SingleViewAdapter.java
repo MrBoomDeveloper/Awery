@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +15,9 @@ import com.mrboomdev.awery.util.ui.ViewUtil;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final List<PendingViewOperation<View>> pendingViewOperations = new ArrayList<>();
@@ -58,7 +58,7 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 	}
 
 	public static abstract class BindingSingleViewAdapter<T extends ViewBinding> extends SingleViewAdapter {
-		private final List<PendingViewOperation<T>> pendingViewOperations = new ArrayList<>();
+		private final Queue<PendingViewOperation<T>> pendingViewOperations = new LinkedList<>();
 		private T binding;
 
 		public abstract T onCreateBinding(ViewGroup parent);
@@ -81,11 +81,9 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		public View onCreateView(@NonNull ViewGroup parent) {
 			this.binding = onCreateBinding(parent);
 
-			var iterator = pendingViewOperations.iterator();
-			while(iterator.hasNext()) {
-				var next = iterator.next();
-				next.onGotView(binding);
-				iterator.remove();
+			PendingViewOperation<T> operation;
+			while((operation = pendingViewOperations.poll()) != null) {
+				operation.onGotView(binding);
 			}
 
 			return binding.getRoot();

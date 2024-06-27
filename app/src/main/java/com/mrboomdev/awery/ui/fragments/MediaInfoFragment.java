@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
@@ -10,6 +11,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -36,6 +38,7 @@ import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
+import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.sheet.TrackingSheet;
 import com.mrboomdev.awery.ui.window.GalleryWindow;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -48,6 +51,7 @@ import java.util.HashSet;
 import java9.util.Objects;
 
 public class MediaInfoFragment extends Fragment {
+	private static final String TAG = "MediaInfoFragment";
 	private WeakReference<Drawable> cachedPoster;
 	private MediaDetailsOverviewLayoutBinding binding;
 	private CatalogMedia media;
@@ -169,9 +173,7 @@ public class MediaInfoFragment extends Fragment {
 					continue;
 				}
 
-				var chip = new Chip(requireContext());
-				chip.setText(tag.getName());
-				binding.details.tags.addView(chip);
+				addTagView(tag);
 			}
 
 			if(!spoilers.isEmpty()) {
@@ -187,13 +189,30 @@ public class MediaInfoFragment extends Fragment {
 					binding.details.tags.removeView(spoilerChip);
 
 					for(var tag : spoilers) {
-						var chip = new Chip(requireContext());
-						chip.setText(tag.getName());
-						binding.details.tags.addView(chip);
+						addTagView(tag);
 					}
 				});
 			}
 		}
+	}
+
+	private void addTagView(@NonNull CatalogTag tag) {
+		var chip = new Chip(requireContext());
+		chip.setText(tag.getName());
+		binding.details.tags.addView(chip);
+
+		chip.setOnClickListener(v -> {
+			var intent = new Intent(requireContext(), SearchActivity.class);
+			intent.setAction(SearchActivity.ACTION_SEARCH_BY_TAG);
+			intent.putExtra(SearchActivity.EXTRA_TAG, tag.getName());
+			intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, media.globalId);
+			startActivity(intent);
+		});
+
+		chip.setOnLongClickListener(v -> {
+			toast("New thing will appear here in future ;)");
+			return true;
+		});
 	}
 
 	@NonNull

@@ -38,7 +38,6 @@ public class AweryLifecycle {
 	private static final UniqueIdGenerator activityRequestCodes = new UniqueIdGenerator();
 	private static final String TAG = "AweryLifecycle";
 	private static AweryApp app;
-	private static Thread mainThread;
 	private static Handler handler;
 
 	static {
@@ -51,8 +50,6 @@ public class AweryLifecycle {
 
 	protected static void init(AweryApp app) {
 		AweryLifecycle.app = app;
-
-		mainThread = Looper.getMainLooper().getThread();
 		handler = new Handler(Looper.getMainLooper());
 	}
 
@@ -295,10 +292,14 @@ public class AweryLifecycle {
 	}
 
 	public static Runnable runOnUiThread(Runnable runnable) {
-		if(Thread.currentThread() != mainThread) handler.post(runnable);
+		if(!isMainThread()) handler.post(runnable);
 		else runnable.run();
 
 		return runnable;
+	}
+
+	public static boolean isMainThread() {
+		return Looper.getMainLooper() == Looper.myLooper();
 	}
 
 	/**
@@ -309,7 +310,7 @@ public class AweryLifecycle {
 	 */
 	@NonNull
 	public static Runnable runOnUiThread(Runnable callback, RecyclerView recycler) {
-		if(Thread.currentThread() != mainThread || recycler.isComputingLayout()) {
+		if(!isMainThread() || recycler.isComputingLayout()) {
 			Runnable runnable = () -> runOnUiThread(callback, recycler);
 			handler.post(runnable);
 			return runnable;

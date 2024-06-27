@@ -333,6 +333,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 					this.id = getId() + "_feed_latest";
 					this.title = "Latest in " + getName();
 					this.sourceManager = AniyomiManager.MANAGER_ID;
+					this.extensionId = getExtension().getId();
 					this.sourceId = getId();
 					this.sourceFeed = FEED_LATEST;
 					this.displayMode = DisplayMode.LIST_HORIZONTAL;
@@ -343,6 +344,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 				this.id = getId() + "_feed_popular";
 				this.title = "Popular in " + getName();
 				this.sourceManager = AniyomiManager.MANAGER_ID;
+				this.extensionId = getExtension().getId();
 				this.sourceId = getId();
 				this.sourceFeed = FEED_POPULAR;
 				this.displayMode = DisplayMode.LIST_HORIZONTAL;
