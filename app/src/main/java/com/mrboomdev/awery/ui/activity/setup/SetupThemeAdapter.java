@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getSettingsMap;
+import static com.mrboomdev.awery.ui.ThemeManager.isDarkModeEnabled;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -65,10 +66,15 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 					setBottomPadding(recycler, dpPx(24));
 					return recycler;
 		}), new SettingsAdapter(new SettingsItem() {
-			private final List<SettingsItem> items = List.of(
-					getSettingsMap().findItem(AwerySettings.USE_DARK_THEME.getKey()),
-					getSettingsMap().findItem(AwerySettings.USE_AMOLED_THEME.getKey())
-			);
+			private final List<SettingsItem> items = new ArrayList<>();
+
+			{
+				items.add(getSettingsMap().findItem(AwerySettings.USE_DARK_THEME.getKey()));
+
+				if(AwerySettings.USE_DARK_THEME.getValue()) {
+					items.add(getSettingsMap().findItem(AwerySettings.USE_AMOLED_THEME.getKey()));
+				}
+			}
 
 			@Override
 			public List<? extends SettingsItem> getItems() {
@@ -89,6 +95,7 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 
 				if(AwerySettings.USE_DARK_THEME.getKey().equals(item.getKey())) {
 					ThemeManager.applyApp(context);
+					return;
 				}
 
 				for(var activity : getActivities(AppCompatActivity.class)) {
@@ -99,7 +106,7 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 			@Override
 			public Object restoreValue(SettingsItem item) {
 				if(AwerySettings.USE_DARK_THEME.getKey().equals(item.getKey())) {
-					return getPrefs().getBoolean(item.getKey(), ThemeManager.isDarkModeEnabled());
+					return getPrefs().getBoolean(item.getKey(), isDarkModeEnabled());
 				}
 
 				// NOTE: There are only boolean settings, so we don't expect other setting types.

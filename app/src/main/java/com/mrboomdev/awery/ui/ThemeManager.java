@@ -77,14 +77,7 @@ public class ThemeManager {
 			return;
 		}
 
-		// In light mode there is no amoled theme so we need to check the current night mode
-		if(useOLED && (activity.getResources().getConfiguration().uiMode
-				& Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
-			activity.setTheme(getThemeRes(palette, false));
-			return;
-		}
-
-		activity.setTheme(getThemeRes(palette, useOLED));
+		activity.setTheme(getThemeRes(palette, useOLED && isDarkModeEnabled()));
 	}
 
 	public static void apply(Activity activity) {
@@ -107,6 +100,9 @@ public class ThemeManager {
 
 	@SuppressLint("PrivateResource")
 	public static int getThemeRes(@NonNull AwerySettings.ThemeColorPalette_Values theme, boolean isAmoled) {
+		// Amoled theme breaks some colors in a light theme.
+		isAmoled = isAmoled && isDarkModeEnabled();
+
 		return switch(theme) {
 			case RED -> isAmoled ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
 			case PINK -> isAmoled ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;

@@ -5,8 +5,11 @@ plugins {
     id "kotlin-android"
 }
 
-// Edit this line every release
 def releaseVersion = "1.0.5"
+
+// Note: Please, don't edit it if you don't know what it does
+def startVersionCode = 2808
+def startMillis = 1719658313080
 
 def gitCommitHash = providers.exec {
     commandLine("git", "rev-parse", "--short", "HEAD")
@@ -20,19 +23,39 @@ android {
         applicationId "com.mrboomdev.awery"
         targetSdk 34
 
-        /* We want to make sure that all build versions across the planet will be in sync */
-        var timezone = TimeZone.getTimeZone("UTC")
-        var calendarCurrent = Calendar.getInstance(timezone)
-
-        /* Just a random date to begin with */
-        var calendarBegin = Calendar.getInstance(timezone)
-        calendarBegin.set(2024, 2, 4)
-
-        /* Only one version can be published per hour or else horrible things will happen */
-        var newVersionCodeTimeout = 60 * 60 * 1000
-
+        /* Only one version can be published per second or else horrible things will happen.
+        *  After 70 years we'll be required to make Awery 2 because of an integer limit,
+        *  Date receiver from the test below:
+        *
+        *   3865053756028  :  2145398250  -  Mon Jun 23 15:02:36 YEKT 2092
+        *   3865747384956  :  2146091879  -  Tue Jul 01 15:43:04 YEKT 2092
+        *   3866441013884  :  2146785508  -  Wed Jul 09 16:23:33 YEKT 2092
+        *   3867134642812  :  2147479137  -  Thu Jul 17 17:04:02 YEKT 2092
+        *   3867828271740  :  -2146794530  -  Fri Jul 25 17:44:31 YEKT 2092
+        *  */
         versionName "$releaseVersion-$gitCommitHash"
-        versionCode (((calendarCurrent.timeInMillis - calendarBegin.timeInMillis) / newVersionCodeTimeout) as int)
+        versionCode ((startVersionCode + ((System.currentTimeMillis() - startMillis) / 1000)) as int)
+
+        /*long i = System.currentTimeMillis()
+        var a = new Date(i)
+        while(true) {
+            i += (1000 * 60 * 60 * 24 * 356)
+            a.setTime(i)
+
+            versionCode ((startVersionCode + ((i - startMillis) / 1000)) as int)
+
+            System.out.println("$i  :  $versionCode  -  ${a}")
+
+            if(versionCode < 0 || versionCode >= Integer.MAX_VALUE) {
+                throw new IllegalStateException("We've reached the end. Now Awery 2 must be released!" +
+                        " Input: $versionCode : ${a}")
+            }
+        }*/
+
+        if(versionCode < 0 || versionCode >= Integer.MAX_VALUE) {
+            throw new IllegalStateException("We've reached the end. " +
+                    "Now Awery 2 must be released! Input int: $versionCode")
+        }
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -167,19 +190,18 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     // UI
+    implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "androidx.recyclerview:recyclerview:1.3.2"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "com.google.android.material:material:1.12.0"
-    implementation "nl.joery.animatedbottombar:library:1.1.0"
-    implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
     implementation "com.github.VipulOG:ebook-reader:0.1.6"
     implementation "com.github.emilaleborn:PageIndicatorView:905cd4e2ab"
-    implementation "androidx.paging:paging-runtime-ktx:3.3.0"
     implementation "com.github.skydoves:colorpickerview:2.3.0"
-    implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "com.github.skydoves:balloon:1.6.4"
-    implementation "nl.dionsegijn:konfetti-xml:2.0.4"
+    implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
     implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.3.0-alpha04"
+    implementation "nl.dionsegijn:konfetti-xml:2.0.4"
+    implementation "nl.joery.animatedbottombar:library:1.1.0"
 
     // Markdown
     for(String module_name : List.of("core", "editor", "ext-strikethrough", "html", "image", "image-glide", "linkify")) {
@@ -214,8 +236,6 @@ dependencies {
     implementation "com.github.inorichi.injekt:injekt-core:65b0440"
     implementation "org.jsoup:jsoup:1.15.4"
     implementation "com.github.gpanther:java-nat-sort:natural-comparator-1.1"
-    implementation "com.github.tachiyomiorg:unifile:17bec43"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlin_serialization_verison"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json-okio:$kotlin_serialization_verison"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$kotlin_serialization_verison"

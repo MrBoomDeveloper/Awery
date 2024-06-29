@@ -94,7 +94,7 @@ public class NicePreferences implements SettingsDataHandler {
 				return null;
 			}
 
-			checkEditorExistence().putBoolean(key, defaultValue);
+			setValue(key, defaultValue);
 			saveSync();
 			return defaultValue;
 		}
