@@ -1,9 +1,11 @@
 package com.mrboomdev.awery.app;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
@@ -24,16 +26,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import android.window.OnBackInvokedCallback;
 
@@ -45,7 +50,9 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -64,6 +71,11 @@ import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.SpoilerPlugin;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.skydoves.balloon.ArrowOrientation;
+import com.skydoves.balloon.Balloon;
+import com.skydoves.balloon.BalloonAlign;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -97,6 +109,36 @@ public class AweryApp extends Application {
 		drawable.draw(canvas);
 
 		return bitmap;
+	}
+
+	/**
+	 * Possible name param syntax:
+	 * <P>{@code my_awesome_icon} - Will return an icon from the drawable directory</p>
+	 * <p>{@code @mipmap/my_awesome_mipmap} - Will return an drawable from the mipmap directory</p>
+	 * <p>{@code @color/my_color} - WIll return an {@link ColorDrawable} instance</p>
+	 * @throws Resources.NotFoundException If no resource with such name was found
+	 * @author MrBoomDev
+	 */
+	@Contract(pure = true)
+	public static Drawable resolveDrawable(Context context, @NonNull String name) throws Resources.NotFoundException {
+		var clazz = name.startsWith("@mipmap/") ? R.mipmap.class
+				: name.startsWith("@color/") ? R.color.class
+				: R.drawable.class;
+
+		var res = name;
+
+		if(name.contains("/")) {
+			res = name.substring(name.indexOf("/") + 1);
+		}
+
+		var id = getResourceId(clazz, res);
+
+		if(clazz == R.color.class) {
+			var color = ContextCompat.getColor(context, id);
+			return new ColorDrawable(color);
+		}
+
+		return ContextCompat.getDrawable(context, id);
 	}
 
 	@NonNull
@@ -271,16 +313,24 @@ public class AweryApp extends Application {
 			dispatcher.registerOnBackInvokedCallback(0, onBackInvokedCallback);
 		} else {
 			if(activity instanceof OnBackPressedDispatcherOwner owner) {
-				owner.getOnBackPressedDispatcher().addCallback(owner, new OnBackPressedCallback(true) {
+				var onBackInvokedCallback = new OnBackPressedCallback(true) {
 					@Override
 					public void handleOnBackPressed() {
 						callback.run();
 					}
-				});
+				};
+
+				owner.getOnBackPressedDispatcher().addCallback(owner, onBackInvokedCallback);
+				backPressedCallbacks.put(callback, onBackInvokedCallback);
 			} else {
 				throw new IllegalArgumentException("Activity must implement OnBackPressedDispatcherOwner!");
 			}
 		}
+	}
+
+	@NonNull
+	public static TypedArray resolveAttrs(@NonNull Context context, @StyleRes int style, int... attrs) {
+		return context.obtainStyledAttributes(style, attrs);
 	}
 
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
@@ -361,6 +411,11 @@ public class AweryApp extends Application {
 		AweryLifecycle.init(this);
 		ThemeManager.applyApp(this);
 		super.onCreate();
+
+		// Note: I'm so sorry. I've just waste the whole day to try fixing THIS SHIT!!!!
+		// And in result in nothing! FUCKIN LIGHT THEME! WHY DOES IT EXIST!?!?!?!?!?!?!?!?!?!?
+		// SYKA BLYYYYYYAAAAAAAT
+		AwerySettings.USE_DARK_THEME.getValue(ThemeManager.isDarkModeEnabled());
 
 		if(AwerySettings.LOG_NETWORK.getValue()) {
 			var logFile = new File(getExternalFilesDir(null), "okhttp3_log.txt");
@@ -462,5 +517,26 @@ public class AweryApp extends Application {
 			snackbar.getView().setOnClickListener(v -> snackbar.dismiss());
 			snackbar.show();
 		});
+	}
+
+	public static void balloon(View view, String text, BalloonAlign align) {
+		runDelayed(() -> new Balloon.Builder(view.getContext())
+				.setText(text)
+				.setTextSize(14)
+				.setPaddingVertical(6)
+				.setPaddingHorizontal(12)
+				.setMaxWidthRatio(.8f)
+				.setMaxWidth(100)
+				.setCornerRadius(8)
+				.setArrowOrientation(switch(align) {
+					case TOP -> ArrowOrientation.BOTTOM;
+					case BOTTOM -> ArrowOrientation.TOP;
+					case START -> ArrowOrientation.END;
+					case END -> ArrowOrientation.START;
+				})
+				.setTextColor(resolveAttrColor(view.getContext(), com.google.android.material.R.attr.colorSurface))
+				.setBackgroundColor(resolveAttrColor(view.getContext(), com.google.android.material.R.attr.colorPrimary))
+				.setLifecycleOwner((AppCompatActivity) getActivity(view.getContext()))
+				.build().showAlign(align, view), 1);
 	}
 }

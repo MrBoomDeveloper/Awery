@@ -75,7 +75,8 @@ import io.noties.markwon.Markwon;
 import java9.util.Objects;
 
 public class MediaCommentsFragment extends Fragment {
-	private static final int LAST_PAGE = -1;
+	private static final int UNSPECIFIED_PAGE = -1;
+	private static final int LAST_PAGE = -2;
 	private static final String TAG = "MediaCommentsFragment";
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
@@ -187,7 +188,7 @@ public class MediaCommentsFragment extends Fragment {
 			loadingAdapter.setEnabled(false);
 
 			headerAdapter.getBinding(binding ->
-					binding.searchStatus.setText("Found " + comment.size() + " comments"));
+					binding.searchStatus.setText("Found " + Math.max(comment.comments, comment.size()) + " comments"));
 
 			if(reloadThis == null) {
 				if(!currentCommentsPath.contains(comment)) {

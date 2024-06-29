@@ -1,9 +1,10 @@
 package com.mrboomdev.awery.ui;
 
 import static android.content.Context.UI_MODE_SERVICE;
-
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.color.DynamicColors;
@@ -19,19 +21,27 @@ import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.generated.AwerySettings;
 
-import java.util.Objects;
-
 public class ThemeManager {
 
-	public static boolean isMaterialYou() {
-		if(!AwerySettings.USE_MATERIAL_YOU.exists()) {
-			boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
+	public static AwerySettings.ThemeColorPalette_Values getCurrentColorPalette() {
+		var current = AwerySettings.THEME_COLOR_PALETTE.getValue();
+		return current != null ? current : resetPalette();
+	}
 
-			getPrefs().setValue(AwerySettings.USE_MATERIAL_YOU, isMaterialYouSupported).saveSync();
-			return isMaterialYouSupported;
-		}
+	private static AwerySettings.ThemeColorPalette_Values resetPalette() {
+		boolean isMaterialYouSupported = DynamicColors.isDynamicColorAvailable();
 
-		return AwerySettings.USE_MATERIAL_YOU.getValue();
+		var value = isMaterialYouSupported
+				? AwerySettings.ThemeColorPalette_Values.MATERIAL_YOU
+				: AwerySettings.ThemeColorPalette_Values.RED;
+
+		getPrefs().setValue(AwerySettings.THEME_COLOR_PALETTE, value).saveSync();
+		return value;
+	}
+
+	public static boolean isDarkModeEnabled() {
+		var config = getAnyContext().getResources().getConfiguration();
+		return (config.uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
 	}
 
 	public static void applyApp(Context context) {
@@ -50,28 +60,31 @@ public class ThemeManager {
 		}
 	}
 
-	public static void apply(Activity activity, Bitmap bitmap) {
-		var useOLED = Boolean.TRUE.equals(AwerySettings.USE_AMOLED_THEME.getValue(null));
-		var useColorsFromPoster = Boolean.TRUE.equals(AwerySettings.EXTRACT_BANNER_COLOR.getValue(null));
-		var useMaterialYou = isMaterialYou();
+	public static void apply(Activity activity, @Nullable Bitmap bitmap) {
+		apply(activity, getCurrentColorPalette(), Boolean.TRUE.equals(AwerySettings.USE_AMOLED_THEME.getValue(null)), bitmap);
+	}
 
-		if(useMaterialYou || (Boolean.TRUE.equals(useColorsFromPoster) && bitmap != null)) {
+	public static void apply(
+			Activity activity,
+			AwerySettings.ThemeColorPalette_Values palette,
+			boolean useOLED,
+			@Nullable Bitmap bitmap
+	) {
+		var useColorsFromPoster = Boolean.TRUE.equals(AwerySettings.EXTRACT_BANNER_COLOR.getValue(null));
+
+		if(palette == AwerySettings.ThemeColorPalette_Values.MATERIAL_YOU || (Boolean.TRUE.equals(useColorsFromPoster) && bitmap != null)) {
 			applyMaterialYou(activity, bitmap, useOLED);
 			return;
 		}
 
-		var savedTheme = Objects.requireNonNullElse(
-				AwerySettings.THEME_COLOR_PALETTE.getValue(),
-				AwerySettings.ThemeColorPalette_Values.RED);
-
 		// In light mode there is no amoled theme so we need to check the current night mode
 		if(useOLED && (activity.getResources().getConfiguration().uiMode
 				& Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_NO) {
-			activity.setTheme(getThemeRes(savedTheme, false));
+			activity.setTheme(getThemeRes(palette, false));
 			return;
 		}
 
-		activity.setTheme(getThemeRes(savedTheme, useOLED));
+		activity.setTheme(getThemeRes(palette, useOLED));
 	}
 
 	public static void apply(Activity activity) {
@@ -92,7 +105,8 @@ public class ThemeManager {
 		DynamicColors.applyToActivityIfAvailable(activity, options.build());
 	}
 
-	private static int getThemeRes(@NonNull AwerySettings.ThemeColorPalette_Values theme, boolean isAmoled) {
+	@SuppressLint("PrivateResource")
+	public static int getThemeRes(@NonNull AwerySettings.ThemeColorPalette_Values theme, boolean isAmoled) {
 		return switch(theme) {
 			case RED -> isAmoled ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
 			case PINK -> isAmoled ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
@@ -100,6 +114,7 @@ public class ThemeManager {
 			case BLUE -> isAmoled ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
 			case GREEN -> isAmoled ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
 			case MONOCHROME -> isAmoled ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
+			case MATERIAL_YOU -> com.google.android.material.R.style.Theme_Material3_DynamicColors_DayNight;
 		};
 	}
 }

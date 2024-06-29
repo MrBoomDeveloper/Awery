@@ -8,9 +8,10 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
+import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.Selection;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.util.Set;
  * An utility class for working with shared preferences.
  * @author MrBoomDev
  */
-public class NicePreferences {
+public class NicePreferences implements SettingsDataHandler {
 	private static final Map<String, SettingsItem> cachedPaths = new HashMap<>();
 	public static final String APP_SETTINGS = "Awery";
 	private static boolean shouldReloadMapValues;
@@ -121,7 +122,7 @@ public class NicePreferences {
 		return getBoolean(key, null);
 	}
 
-	public NicePreferences setBoolean(String key, boolean value) {
+	public NicePreferences setValue(String key, boolean value) {
 		checkEditorExistence().putBoolean(key, value);
 		return this;
 	}
@@ -140,6 +141,34 @@ public class NicePreferences {
 		return prefs.getInt(key, defaultValue != null ? defaultValue : 0);
 	}
 
+	public Long getLong(String key, Long defaultValue) {
+		if(!prefs.contains(key)) {
+			if(defaultValue == null) {
+				return null;
+			}
+
+			checkEditorExistence().putLong(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
+		return prefs.getLong(key, defaultValue != null ? defaultValue : 0);
+	}
+
+	public Float getFloat(String key, Float defaultValue) {
+		if(!prefs.contains(key)) {
+			if(defaultValue == null) {
+				return null;
+			}
+
+			checkEditorExistence().putFloat(key, defaultValue);
+			saveSync();
+			return defaultValue;
+		}
+
+		return prefs.getFloat(key, defaultValue != null ? defaultValue : 0);
+	}
+
 	public Integer getInteger(String key) {
 		if(contains(key)) {
 			return getInteger(key, null);
@@ -155,8 +184,18 @@ public class NicePreferences {
 		return getInteger(key, null);
 	}
 
-	public NicePreferences setInteger(String key, int value) {
+	public NicePreferences setValue(String key, int value) {
 		checkEditorExistence().putInt(key, value);
+		return this;
+	}
+
+	public NicePreferences setValue(String key, float value) {
+		checkEditorExistence().putFloat(key, value);
+		return this;
+	}
+
+	public NicePreferences setValue(String key, long value) {
+		checkEditorExistence().putLong(key, value);
 		return this;
 	}
 
@@ -185,7 +224,7 @@ public class NicePreferences {
 		return getString(key, null);
 	}
 
-	public NicePreferences setString(String key, String value) {
+	public NicePreferences setValue(String key, String value) {
 		checkEditorExistence().putString(key, value);
 		return this;
 	}
@@ -311,19 +350,19 @@ public class NicePreferences {
 	}
 
 	public <T extends Enum<T> & EnumWithKey> NicePreferences setValue(@NonNull EnumSetting<T> setting, T value) {
-		return setString(setting.getKey(), value != null ? value.getKey() : null);
+		return setValue(setting.getKey(), value != null ? value.getKey() : null);
 	}
 
 	public NicePreferences setValue(@NonNull StringSetting setting, String value) {
-		return setString(setting.getKey(), value);
+		return setValue(setting.getKey(), value);
 	}
 
 	public NicePreferences setValue(@NonNull IntegerSetting setting, int value) {
-		return setInteger(setting.getKey(), value);
+		return setValue(setting.getKey(), value);
 	}
 
 	public NicePreferences setValue(@NonNull BooleanSetting setting, boolean value) {
-		return setBoolean(setting.getKey(), value);
+		return setValue(setting.getKey(), value);
 	}
 
 	public String getValue(@NonNull StringSetting setting, String defaultValue) {
@@ -339,6 +378,10 @@ public class NicePreferences {
 	}
 
 	public Boolean getValue(@NonNull BooleanSetting setting, Boolean defaultValue) {
+		return getBoolean(setting.getKey(), defaultValue);
+	}
+
+	public boolean getValue(@NonNull BooleanSetting setting, boolean defaultValue) {
 		return getBoolean(setting.getKey(), defaultValue);
 	}
 
@@ -360,8 +403,6 @@ public class NicePreferences {
 		return result != null ? result : defaultValue;
 	}
 
-	@Contract("null, _ -> null; !null, null -> null")
-	@Nullable
 	private static <T extends Enum<T>> T parseEnum(@Nullable String string, @Nullable Class<T> enumClass) {
 		if(string == null || enumClass == null) return null;
 
@@ -372,8 +413,67 @@ public class NicePreferences {
 		}
 	}
 
+	@Override
+	public void onScreenLaunchRequest(SettingsItem item) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void saveValue(SettingsItem item, Object newValue) {
+		if(item instanceof CustomSettingsItem custom) {
+			custom.saveValue(newValue);
+			return;
+		}
+
+		switch(item.getType()) {
+			case BOOLEAN, SCREEN_BOOLEAN -> setValue(item.getKey(), (boolean) newValue);
+			case SELECT, STRING -> setValue(item.getKey(), (String) newValue);
+			case SELECT_INTEGER, INTEGER, COLOR -> setValue(item.getKey(), (int) newValue);
+			case DATE -> setValue(item.getKey(), (long) newValue);
+
+			case MULTISELECT -> SettingsData.saveSelectionList(item.getBehaviour(),
+					(Selection<Selection.Selectable<String>>) newValue);
+
+			default -> throw new IllegalArgumentException("Unsupported type!");
+		}
+
+		saveAsync();
+	}
+
+	@Override
+	public Object restoreValue(@NonNull SettingsItem item) {
+		if(item instanceof CustomSettingsItem custom) {
+			return custom.getSavedValue();
+		}
+
+		if(item.getType() == null) {
+			if(item.getStringValue() != null) return item.getStringValue();
+			if(item.getIntegerValue() != null) return item.getIntegerValue();
+			if(item.getBooleanValue() != null) return item.getBooleanValue();
+			if(item.getStringSetValue() != null) return item.getStringSetValue();
+			if(item.getExcludableValue() != null) return item.getExcludableValue();
+			if(item.getLongValue() != null) return item.getLongValue();
+			return null;
+		}
+
+		return switch(item.getType()) {
+			case BOOLEAN, SCREEN_BOOLEAN -> getBoolean(item.getKey(), item.getBooleanValue());
+			case DATE -> getLong(item.getKey(), item.getLongValue());
+			case EXCLUDABLE -> item.getExcludableValue();
+			case COLOR, INTEGER, SELECT_INTEGER -> getInteger(item.getKey(), item.getIntegerValue());
+			case SELECT, STRING -> getString(item.getKey(), item.getStringValue());
+			case MULTISELECT -> getStringSet(item.getKey());
+			case DIVIDER, ACTION, SCREEN, CATEGORY -> null;
+		};
+	}
+
 	public interface EnumWithKey {
 		String getKey();
+
+		default SettingsItem findSetting() {
+			return getSettingsMap().findItem(getKey());
+		}
 	}
 
 	public static class EnumSetting<T extends Enum<T> & EnumWithKey> implements BaseSetting {
@@ -428,10 +528,6 @@ public class NicePreferences {
 
 	public interface BooleanSetting extends BaseSetting {
 
-		default boolean exists() {
-			return getPrefs().contains(getKey());
-		}
-
 		default boolean getValue() {
 			return getPrefs().getValue(this);
 		}
@@ -440,9 +536,21 @@ public class NicePreferences {
 		default Boolean getValue(Boolean defaultValue) {
 			return getPrefs().getValue(this, defaultValue);
 		}
+
+		default boolean getValue(boolean defaultValue) {
+			return getPrefs().getValue(this, defaultValue);
+		}
 	}
 
 	public interface BaseSetting {
 		String getKey();
+
+		default SettingsItem findSetting() {
+			return getSettingsMap().findItem(getKey());
+		}
+
+		default boolean exists() {
+			return getPrefs().contains(getKey());
+		}
 	}
 }

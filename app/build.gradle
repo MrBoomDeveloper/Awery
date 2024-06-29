@@ -148,7 +148,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
-    implementation "androidx.fragment:fragment-ktx:1.8.0"
+    implementation "androidx.fragment:fragment-ktx:1.8.1"
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation "com.github.MrBoomDeveloper:AwerySdk:67856bbc66"
 
@@ -258,7 +258,7 @@ static def toCamelCase(String text) {
     return result
 }
 
-static def formatKey(Object o) {
+static def formatKey(Object o, Set<String> usedKeys) {
     var result = "    public static final "
 
     if(o.type == "select" && o.items != null) {
@@ -273,6 +273,12 @@ static def formatKey(Object o) {
 
         while(iterator.hasNext()) {
             var item = iterator.next()
+
+            if(item.key != null && !usedKeys.add(item.key)) {
+                throw new IllegalStateException("Duplicate keys \"${item.key}\" were found in settings.json!" +
+                        "\nYou have to remove one of them for app to work properly.")
+            }
+
             result += item.key.toUpperCase() + "(\"${item.key}\")"
 
             if(iterator.hasNext()) {
@@ -282,7 +288,7 @@ static def formatKey(Object o) {
 
         result += ";\n\n        private final String key;\n\n        ${enumName}(String key) {\n"
         result += "            this.key = key;\n        }\n\n        @Override\n        public String getKey() {\n"
-        result += "            return key;\n        }\n    }\n\n"
+        result += "            return key;\n        }\n    }\n"
 
         return result
     }
@@ -303,7 +309,8 @@ static def formatKey(Object o) {
 
 static def collectKeys(Object from, Set<String> usedKeys) {
     if(from.key != null && !usedKeys.add(from.key)) {
-        throw new IllegalStateException("Duplicate keys were found! ${from.key}")
+        throw new IllegalStateException("Duplicate keys \"${from.key}\" were found in settings.json!" +
+                "\nYou have to remove one of them for app to work properly.")
     }
 
     var builder = new StringBuilder()
@@ -317,7 +324,7 @@ static def collectKeys(Object from, Set<String> usedKeys) {
 
         case [ "string", "integer", "boolean", "action",
                "select", "select_integer", "multiselect"
-        ] : builder.append(formatKey(from)); break
+        ] : builder.append(formatKey(from, usedKeys)); break
     }
 
     return builder.toString()

@@ -22,8 +22,8 @@ public class EmptyView implements ViewBinding {
 	public final LinearLayout info;
 	public final Button button;
 
-	public EmptyView(Context context) {
-		binding = LayoutLoadingBinding.inflate(LayoutInflater.from(context));
+	public EmptyView(@NonNull LayoutLoadingBinding binding) {
+		this.binding = binding;
 		title = binding.title;
 		message = binding.message;
 		progressBar = binding.progressBar;
@@ -31,13 +31,12 @@ public class EmptyView implements ViewBinding {
 		button = binding.button;
 	}
 
+	public EmptyView(Context context) {
+		this(LayoutLoadingBinding.inflate(LayoutInflater.from(context)));
+	}
+
 	public EmptyView(ViewGroup parent, boolean attachToParent) {
-		binding = LayoutLoadingBinding.inflate(LayoutInflater.from(parent.getContext()), parent, attachToParent);
-		title = binding.title;
-		message = binding.message;
-		progressBar = binding.progressBar;
-		info = binding.info;
-		button = binding.button;
+		this(LayoutLoadingBinding.inflate(LayoutInflater.from(parent.getContext()), parent, attachToParent));
 	}
 
 	public void setInfo(String title, String message, String buttonText, Runnable buttonClickListener) {

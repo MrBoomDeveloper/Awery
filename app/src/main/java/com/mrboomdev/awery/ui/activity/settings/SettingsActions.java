@@ -7,7 +7,6 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.requestPermission;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 
 import android.Manifest;
@@ -19,7 +18,6 @@ import android.provider.Settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -48,6 +46,14 @@ public class SettingsActions {
 			case AwerySettings.CLEAR_IMAGE_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE));
 				toast(R.string.cleared_successfully);
+			}
+
+			case AwerySettings.SETUP_THEME -> {
+				var context = getAnyContext();
+				var intent = new Intent(context, SetupActivity.class);
+				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_THEMING);
+				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
+				context.startActivity(intent);
 			}
 
 			case AwerySettings.CLEAR_WEBVIEW_CACHE -> {
@@ -95,11 +101,11 @@ public class SettingsActions {
 								return;
 							}
 
-									var backupIntent = new Intent(context, BackupService.class);
-									backupIntent.setAction(BackupService.ACTION_BACKUP);
-									backupIntent.setData(data.getData());
+							var backupIntent = new Intent(context, BackupService.class);
+							backupIntent.setAction(BackupService.ACTION_BACKUP);
+							backupIntent.setData(data.getData());
 
-									context.startForegroundService(backupIntent);
+							context.startForegroundService(backupIntent);
 						});
 					} else {
 						var backupIntent = new Intent(context, BackupService.class);

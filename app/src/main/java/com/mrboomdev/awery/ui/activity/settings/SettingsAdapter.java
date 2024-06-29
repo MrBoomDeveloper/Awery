@@ -11,7 +11,9 @@ import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
+import static com.mrboomdev.awery.util.ui.ViewUtil.clearImageTint;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
@@ -20,7 +22,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +66,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 	private List<SettingsItem> items;
 	private SettingsItem screen;
 
-	public SettingsAdapter(SettingsItem screen, SettingsDataHandler handler) {
+	public SettingsAdapter(SettingsItem screen, @Nullable SettingsDataHandler handler) {
 		this.handler = handler;
 		setHasStableIds(true);
 		setScreen(screen, false);
@@ -75,9 +76,36 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		return screen;
 	}
 
+	public void onEmptyStateChanged(boolean isEmpty) {}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void setItems(@NonNull List<SettingsItem> items, boolean notify) {
+		this.screen = null;
+
+		for(var item : items) {
+			item.restoreSavedValues(handler != null ? handler : getPrefs());
+		}
+
+		idGenerator.clear();
+
+		this.items = new ArrayList<>(stream(items)
+				.filter(SettingsItem::isVisible)
+				.toList());
+
+		for(var item : items) {
+			var id = idGenerator.getLong();
+			ids.put(item, id);
+		}
+
+		if(notify) {
+			notifyDataSetChanged();
+		}
+	}
+
 	@SuppressLint("NotifyDataSetChanged")
 	public void setScreen(@NonNull SettingsItem screen, boolean notify) {
 		this.screen = screen;
+		screen.restoreSavedValues(handler != null ? handler : getPrefs());
 
 		if(screen.getItems() == null) {
 			this.items = Collections.emptyList();
@@ -106,14 +134,23 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				var id = idGenerator.getLong();
 				ids.put(setting, id);
 
+				var wasSize = items.size();
 				items.add(index, setting);
 				notifyItemInserted(items.indexOf(setting));
+
+				if(wasSize == 0) {
+					onEmptyStateChanged(false);
+				}
 			});
 
 			listenable.addSettingRemovalListener((setting, index) -> {
 				index = items.indexOf(setting);
 				items.remove(setting);
 				notifyItemRemoved(index);
+
+				if(items.isEmpty()) {
+					onEmptyStateChanged(true);
+				}
 			});
 
 			listenable.addSettingChangeListener((setting, index) -> {
@@ -203,8 +240,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 
 				case STRING -> {
-					setting.restoreSavedValues();
-
 					var inputField = new EditTextField(context);
 					inputField.setImeFlags(EditorInfo.IME_ACTION_DONE);
 					inputField.setText(setting.getStringValue());
@@ -377,14 +412,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									? customSetting.getSavedValue()
 									: setting.getIntegerValue());
 						} else {
-							setting.restoreSavedValues();
-
 							selected = setting instanceof CustomSettingsItem customSetting
 									? (String) customSetting.getSavedValue()
 									: setting.getStringValue();
 						}
 
 						dialog.setItems(stream(setting.getItems())
+								.filter(SettingsItem::isVisible)
 								.map(item -> new Selection.Selectable<>(
 										item.getTitle(context),
 										item.getKey(),
@@ -444,6 +478,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								: getPrefs().getStringSet(setting.getKey());
 
 						dialog.setItems(stream(setting.getItems())
+								.filter(SettingsItem::isVisible)
 								.map(item -> new Selection.Selectable<>(
 										item.getTitle(context),
 										item.getKey(),
@@ -668,12 +703,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				setScale(binding.icon, setting.getIconSize());
 
 				if(setting.tintIcon()) {
-					var context = binding.getRoot().getContext();
-					var colorAttr = com.google.android.material.R.attr.colorOnSecondaryContainer;
-					var color = resolveAttrColor(context, colorAttr);
-					binding.icon.setImageTintList(ColorStateList.valueOf(color));
+					setImageTintAttr(binding.icon, com.google.android.material.R.attr.colorOnSecondaryContainer);
 				} else {
-					binding.icon.setImageTintList(null);
+					clearImageTint(binding.icon);
 				}
 			});
 
@@ -698,7 +730,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			if(setting.getType() == SettingsItemType.BOOLEAN || setting.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);
-				binding.toggle.setChecked(setting.getBooleanValue());
+				binding.toggle.setChecked(requireNonNullElse(setting.getBooleanValue(), false));
 			} else {
 				binding.toggle.setVisibility(View.GONE);
 			}

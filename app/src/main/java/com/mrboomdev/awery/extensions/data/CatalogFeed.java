@@ -125,7 +125,7 @@ public class CatalogFeed implements Serializable {
 
 						if(adultMode != null) {
 							switch(adultMode) {
-								case DISABLED -> {
+								case SAFE -> {
 									switch(provider.getAdultContentMode()) {
 										case ONLY, PARTIAL -> {
 											return false;

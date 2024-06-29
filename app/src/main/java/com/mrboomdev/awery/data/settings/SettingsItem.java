@@ -15,6 +15,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryPlatform;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
+import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Selection;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
@@ -168,7 +169,7 @@ public class SettingsItem implements Serializable {
 		return longValue;
 	}
 
-	public void setValue(long value) {
+	public void setValue(Long value) {
 		this.longValue = value;
 	}
 
@@ -203,26 +204,29 @@ public class SettingsItem implements Serializable {
 		}
 	}
 
+	public void restoreSavedValues(SettingsDataHandler handler) {
+		if(getItems() != null) {
+			for(var item : getItems()) {
+				item.restoreSavedValues(handler);
+			}
+		}
+
+		if(getType() == null) return;
+
+		switch(getType()) {
+			case BOOLEAN, SCREEN_BOOLEAN -> setValue((Boolean) handler.restoreValue(this));
+			case INTEGER, SELECT_INTEGER, COLOR -> setValue((Integer) handler.restoreValue(this));
+			case SELECT, STRING -> setValue((String) handler.restoreValue(this));
+			case DATE -> setValue((Long) handler.restoreValue(this));
+		}
+	}
+
 	/**
 	 * Call before showing any data to a user
 	 * @author MrBoomDev
 	 */
 	public void restoreSavedValues() {
-		if(getType() == null) return;
-
-		switch(getType()) {
-			case BOOLEAN -> booleanValue = getPrefs().getBoolean(getKey(), booleanValue);
-			case INTEGER, SELECT_INTEGER -> integerValue = getPrefs().getInteger(getKey(), integerValue);
-			case SELECT, STRING -> stringValue = getPrefs().getString(getKey(), stringValue);
-
-			case SCREEN -> {
-				if(items == null) return;
-
-				for(var item : getItems()) {
-					item.restoreSavedValues();
-				}
-			}
-		}
+		restoreSavedValues(getPrefs());
 	}
 
 	public boolean isRestartRequired() {
@@ -274,7 +278,7 @@ public class SettingsItem implements Serializable {
 		return integerValue;
 	}
 
-	public void setValue(int value) {
+	public void setValue(Integer value) {
 		integerValue = value;
 	}
 
@@ -314,7 +318,7 @@ public class SettingsItem implements Serializable {
 		longValue = null;
 	}
 
-	public void setValue(boolean value) {
+	public void setValue(Boolean value) {
 		booleanValue = value;
 	}
 
@@ -339,32 +343,21 @@ public class SettingsItem implements Serializable {
 	}
 
 	public SettingsItem findItem(@NonNull String query) {
-		return switch(type) {
-			case BOOLEAN, INTEGER, STRING, COLOR, SELECT, SELECT_INTEGER, MULTISELECT, DATE, EXCLUDABLE ->
-					query.equals(getKey()) ? this : null;
+		if(query.equals(getKey())) {
+			return this;
+		}
 
-			case SCREEN, SCREEN_BOOLEAN -> {
-				if(query.equals(getKey())) {
-					yield this;
+		if(getItems() != null) {
+			for(var item : getItems()) {
+				var found = item.findItem(query);
+
+				if(found != null) {
+					return found;
 				}
-
-				if(items == null) {
-					yield null;
-				}
-
-				for(var item : items) {
-					var found = item.findItem(query);
-
-					if(found != null) {
-						yield found;
-					}
-				}
-
-				yield null;
 			}
+		}
 
-			case ACTION, DIVIDER, CATEGORY -> null;
-		};
+		return null;
 	}
 
 	public static class Builder {

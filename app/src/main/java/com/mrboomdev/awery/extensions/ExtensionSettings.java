@@ -247,7 +247,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	public void saveValue(@NonNull SettingsItem item, Object newValue) {
 		var isEnabled = (boolean) newValue;
 
-		getPrefs().setBoolean("ext_" +
+		getPrefs().setValue("ext_" +
 				manager.getId() + "_" + item.getKey() +
 				"_enabled", isEnabled).saveAsync();
 

@@ -57,6 +57,13 @@ public class NiceUtils {
 		return Boolean.TRUE.equals(bool);
 	}
 
+	public static <A> A findRoot(A item, @NonNull Callbacks.Result1<A, A> callback) {
+		var parent = callback.run(item);
+		if(parent == null) return item;
+
+		return findRoot(parent, callback);
+	}
+
 	@SuppressLint("Range")
 	public static String parseMimeType(Object o) {
 		String fileName;

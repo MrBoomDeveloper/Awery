@@ -607,6 +607,10 @@ public class TrackingSheet {
 			binding.progressIncrement.setOnClickListener(v -> {
 				if(trackingOptions == null) return;
 
+				if(trackingOptions.progress == null) {
+					trackingOptions.progress = 0f;
+				}
+
 				trackingOptions.progress++;
 				binding.progress.setText(formatNumber(trackingOptions.progress));
 			});

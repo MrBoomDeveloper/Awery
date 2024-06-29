@@ -94,7 +94,7 @@ public class JsBridge {
 
 	public String getAdultMode() {
 		var adultMode = AwerySettings.ADULT_MODE.getValue();
-		return requireNonNullElse(adultMode, AwerySettings.AdultMode_Values.DISABLED).name();
+		return requireNonNullElse(adultMode, AwerySettings.AdultMode_Values.SAFE).name();
 	}
 
 	public Object fetch(@NonNull ScriptableObject options) {
@@ -189,7 +189,7 @@ public class JsBridge {
 
 	public static boolean booleanFromJs(Object object) {
 		var result = fromJs(object, Boolean.class);
-		return result != null && result;
+		return result != null ? result : false;
 	}
 
 	public static float floatFromJs(Object object) {
@@ -266,7 +266,7 @@ public class JsBridge {
 	public void setSaved(@NonNull Object key, Object value) {
 		var settings = getSettings();
 
-		settings.setString(key.toString(), value != null ? value.toString() : null);
+		settings.setValue(key.toString(), value != null ? value.toString() : null);
 		settings.saveSync();
 	}
 

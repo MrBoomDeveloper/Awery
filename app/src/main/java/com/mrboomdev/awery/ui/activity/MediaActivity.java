@@ -24,7 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.MediaDetailsActivityBinding;
+import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
 import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -42,7 +42,7 @@ import java.util.Objects;
 
 public class MediaActivity extends AppCompatActivity {
 	private static final String TAG = "MediaActivity";
-	private MediaDetailsActivityBinding binding;
+	private ScreenMediaDetailsBinding binding;
 	private MediaCommentsFragment commentsFragment;
 	private CatalogMedia media;
 	private Object pendingExtra;
@@ -54,7 +54,7 @@ public class MediaActivity extends AppCompatActivity {
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		binding = MediaDetailsActivityBinding.inflate(getLayoutInflater());
+		binding = ScreenMediaDetailsBinding.inflate(getLayoutInflater());
 		binding.pager.setUserInputEnabled(false);
 		binding.pager.setPageTransformer(new FadeTransformer());
 
@@ -72,7 +72,7 @@ public class MediaActivity extends AppCompatActivity {
 		if(binding.navigation instanceof NavigationRailView rail) {
 			var style = com.google.android.material.R.attr.floatingActionButtonSmallSecondaryStyle;
 			var header = new FloatingActionButton(this, null, style);
-			header.setImageResource(R.drawable.ic_round_arrow_back_ios_new_24);
+			header.setImageResource(R.drawable.ic_back);
 			header.setOnClickListener(v -> finish());
 			rail.addHeaderView(header);
 		}

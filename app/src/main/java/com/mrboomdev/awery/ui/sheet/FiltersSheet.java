@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.sheet;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
@@ -37,6 +38,8 @@ import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.SheetDialog;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,15 +158,13 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 				public void onSuccess(List<SettingsItem> fetchedFilters) {
 					if(!isShown()) return;
 
-					var filteredFilters = stream(fetchedFilters)
-							.filter(filter -> find(filters, item -> Objects.equals(item.getKey(), filter.getKey())) == null)
-							.toList();
-
-					filters.addAll(filteredFilters);
+					mergeFilters(fetchedFilters, filters);
+					filters.clear();
+					filters.addAll(fetchedFilters);
 
 					runOnUiThread(() -> {
 						progressBarAdapter.setEnabled(false);
-						screenAdapter.addItems(filteredFilters);
+						screenAdapter.setItems(fetchedFilters, true);
 					}, recycler);
 				}
 
@@ -178,6 +179,40 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		}
 
 		return linear;
+	}
+
+	@Contract(pure = true)
+	private void mergeFilters(@NonNull List<? extends SettingsItem> original, List<? extends SettingsItem> values) {
+		for(var originalItem : original) {
+			var found = find(values, value -> Objects.equals(originalItem.getKey(), value.getKey()));
+			if(found == null) continue;
+
+			if(originalItem.getItems() != null && found.getItems() != null) {
+				mergeFilters(originalItem.getItems(), found.getItems());
+			}
+
+			if(originalItem.getType() != null) {
+				switch(originalItem.getType()) {
+					case BOOLEAN, SCREEN_BOOLEAN -> originalItem.setValue(requireNonNullElse(
+							found.getBooleanValue(), originalItem.getBooleanValue()));
+
+					case STRING, SELECT -> originalItem.setValue(requireNonNullElse(
+							found.getStringValue(), originalItem.getStringValue()));
+
+					case INTEGER, SELECT_INTEGER, COLOR -> originalItem.setValue(
+							requireNonNullElse(found.getIntegerValue(), originalItem.getIntegerValue()));
+
+					case EXCLUDABLE -> originalItem.setValue(requireNonNullElse(
+							found.getExcludableValue(), originalItem.getExcludableValue()));
+
+					case MULTISELECT -> originalItem.setValue(requireNonNullElse(
+							found.getStringSetValue(), originalItem.getStringSetValue()));
+
+					case DATE -> originalItem.setValue(requireNonNullElse(
+							found.getLongValue(), originalItem.getLongValue()));
+				}
+			}
+		}
 	}
 
 	@Override

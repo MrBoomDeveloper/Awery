@@ -30,8 +30,7 @@
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="16dp"
+            android:padding="8dp"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             tools:text="My title"
             app:layout_constraintTop_toBottomOf="@id/banner" />

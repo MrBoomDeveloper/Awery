@@ -1,16 +1,21 @@
 package com.mrboomdev.awery.util.ui;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.WindowInsets;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -35,6 +40,19 @@ public class ViewUtil {
 		margins.leftMargin = margin;
 		view.setLayoutParams(margins);
 		return true;
+	}
+
+	public static void setImageTintColor(@NonNull ImageView view, @ColorInt int color) {
+		view.setImageTintList(ColorStateList.valueOf(color));
+	}
+
+	public static void setImageTintAttr(@NonNull ImageView view, @AttrRes int attr) {
+		var color = resolveAttrColor(view.getContext(), attr);
+		view.setImageTintList(ColorStateList.valueOf(color));
+	}
+
+	public static void clearImageTint(@NonNull ImageView view) {
+		view.setImageTintList(null);
 	}
 
 	@NonNull
@@ -374,22 +392,22 @@ public class ViewUtil {
 		return null;
 	}
 
-	public static int dpPx(int dp) {
+	public static int dpPx(float dp) {
 		return dpPx(getAnyContext(), dp);
 	}
 
-	public static int dpPx(@NonNull Context context, int dp) {
+	public static int dpPx(@NonNull Context context, float dp) {
 		var metrics = context.getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
 	}
 
-	public static float spPx(int sp) {
+	public static float spPx(float sp) {
 		return spPx(getAnyContext(), sp);
 	}
 
-	public static float spPx(@NonNull Context context, int sp) {
+	public static float spPx(@NonNull Context context, float sp) {
 		var metrics = context.getResources().getDisplayMetrics();
-		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics));
+		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
 	}
 
 	public interface InsetsUpdateListener<I> {

@@ -2,38 +2,7 @@
 	"type": "screen", "title": "settings",
 	"items": [
 		{
-			"type": "screen", "title": "theme", "icon": "ic_paint_filled",
-			"items": [
-				{
-					"key": "use_material_you", "type": "boolean", "restart": true,
-					"title": "use_material_you", "icon": "ic_round_auto_awesome_24",
-					"description": "material_you_description",
-					"show_if": "material_you"
-				}, {
-					"key": "use_dark_theme", "type": "boolean", "restart": true,
-					"title": "dark_theme", "icon": "ic_dark_mode_filled",
-					"description": "dark_theme_description"
-				}, {
-					"key": "use_amoled_theme", "type": "boolean", "restart": true,
-					"title": "amoled", "icon": "ic_contrast",
-					"description": "amoled_theme_description"
-				}, {
-					"key": "extract_banner_color", "type": "boolean",
-					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
-					"show_if": "never"
-				}, {
-					"key": "theme_color_palette", "type": "select", "restart": true, "string_value": "RED",
-					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE}",
-					"items": [
-						{ "key": "RED", "title": "red" },
-						{ "key": "PINK", "title": "pink" },
-						{ "key": "PURPLE", "title": "purple" },
-						{ "key": "BLUE", "title": "blue" },
-						{ "key": "GREEN", "title": "green" },
-						{ "key": "MONOCHROME", "title": "monochrome" }
-					]
-				}
-			]
+			"type": "action", "title": "theme", "icon": "ic_paint_filled", "key": "setup_theme"
 		}, {
 			"type": "screen", "title": "ui", "icon": "ic_amp_stories_filled",
 			"items": [
@@ -84,10 +53,10 @@
 					"description": "global_tags_exclusion_description",
 					"behaviour": "excluded_tags"
 				}, {
-					"key": "adult_mode", "type": "select", "string_value": "DISABLED",
+					"key": "adult_mode", "type": "select", "string_value": "SAFE", "restart": true,
 					"title": "adult_content", "description": "${VALUE}", "icon": "ic_round_report",
 					"items": [
-						{ "key": "DISABLED", "title": "disabled" },
+						{ "key": "SAFE", "title": "disabled" },
 						{ "key": "ENABLED", "title": "enabled" },
 						{ "key": "ONLY", "title": "show_only_it" }
 					]
@@ -137,7 +106,7 @@
 					"description": "${VALUE}", "show_if": "!tv",
 					"items": [
 						{ "key": "VOLUME_BRIGHTNESS", "title": "volume_and_brightness" },
-						{ "key": "DISABLED", "title": "disabled" }
+						{ "key": "DISABLED_GESTURES", "title": "disabled" }
 					]
 				}, {
 					"key": "player_default_video_quality", "type": "select", "string_value": "select",
@@ -264,10 +233,37 @@
 			"type": "screen", "show_if": "never",
 			"title": "What is that? This is an container for prefs, which aren't present in this schema.",
 			"items": [
+				{ "key": "did_suggest_material_you", "type": "boolean" },
 				{ "key": "default_home_tab", "type": "string" },
 				{ "key": "last_opened_version", "type": "integer", "integer_value": 0 },
 				{ "key": "setup_version_finished", "type": "integer", "integer_value": 0 },
-				{ "key": "tabs_template", "type": "string", "string_value": "awery" }
+				{ "key": "tabs_template", "type": "string", "string_value": "awery" },
+
+				{
+					"key": "theme_color_palette", "type": "select", "restart": true,
+					"title": "color_palette", "icon": "ic_palette_filled", "description": "${VALUE}",
+					"items": [
+						{ "key": "MATERIAL_YOU", "title": "use_material_you", "show_if": "material_you"  },
+						{ "key": "RED", "title": "red" },
+						{ "key": "PINK", "title": "pink" },
+						{ "key": "PURPLE", "title": "purple" },
+						{ "key": "BLUE", "title": "blue" },
+						{ "key": "GREEN", "title": "green" },
+						{ "key": "MONOCHROME", "title": "monochrome" }
+					]
+				}, {
+					"key": "use_dark_theme", "type": "boolean", "restart": true,
+					"title": "dark_theme", "icon": "ic_dark_mode_filled",
+					"description": "dark_theme_description"
+				}, {
+					"key": "use_amoled_theme", "type": "boolean", "restart": true,
+					"title": "amoled", "icon": "ic_contrast",
+					"description": "amoled_theme_description"
+				}, {
+					"key": "extract_banner_color", "type": "boolean",
+					"title": "use_unique_theme_for_each_item", "icon": "ic_round_movie_filter_24",
+					"show_if": "never"
+				}
 			]
 		}
 	]

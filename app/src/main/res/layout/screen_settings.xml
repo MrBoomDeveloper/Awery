@@ -75,11 +75,11 @@
         android:id="@+id/recycler"
         tools:listitem="@layout/item_list_setting" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <include
+        layout="@layout/layout_loading"
         android:id="@+id/progress_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
         android:layout_gravity="center"
         app:layout_constraintLeft_toLeftOf="parent" />
 

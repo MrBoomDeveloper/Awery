@@ -2,6 +2,8 @@
 	{
 		"id": "awery",
 		"title": "Awery",
+		"icon": "@mipmap/ic_launcher",
+		"description": "A lot of content, a feed with a selection of all installed extensions and a bunch of features!",
 		"tabs": [
 			{
 				"title": "Home",
@@ -46,6 +48,8 @@
 	}, {
 		"id": "dantotsu",
 		"title": "Dantotsu",
+		"icon": "logo_dantotsu",
+		"description": "For those who are already accustomed to Dantotsu. Only Anilist content is being shown at the home screen.",
 		"tabs": [
 			{
 				"title": "Anime",

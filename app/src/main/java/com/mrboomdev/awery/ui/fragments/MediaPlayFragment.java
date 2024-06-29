@@ -307,7 +307,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 					var intent = new Intent(requireContext(), SearchActivity.class);
 					intent.setAction(SearchActivity.ACTION_PICK_MEDIA);
-					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getId());
+					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getGlobalId());
 					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) filters);
 
 					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {

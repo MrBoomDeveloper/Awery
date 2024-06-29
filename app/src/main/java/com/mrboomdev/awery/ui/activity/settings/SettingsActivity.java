@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResult;
@@ -34,27 +33,41 @@ import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.ui.EmptyView;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
 	private static final String TAG = "SettingsActivity";
+	private static WeakReference<RecyclerView.RecycledViewPool> viewPool;
 	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
-	private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
 	private ActivityResultLauncher<Intent> activityResultLauncher;
-	private NicePreferences settings;
+	private ScreenSettingsBinding binding;
+	private EmptyView emptyView;
 	private boolean isMain;
+
+	private static RecyclerView.RecycledViewPool getViewPool() {
+		RecyclerView.RecycledViewPool pool;
+
+		if(viewPool == null || viewPool.get() == null) {
+			pool = new RecyclerView.RecycledViewPool();
+			viewPool = new WeakReference<>(pool);
+		} else {
+			pool = viewPool.get();
+		}
+
+		return pool;
+	}
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +82,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			isMain = true;
 		}
 
-		settings = getPrefs();
 		SettingsItem item = null;
 
 		if(path != null) {
@@ -102,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}
 
 		doIfNotNull(createView(item), view -> {
-			setContentView(view);
+			setContentView(view.getRoot());
 
 			activityResultLauncher = registerForActivityResult(
 					new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -124,20 +136,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		viewPool.clear();
 		callbacks.clear();
 
-		viewPool = null;
-		settings = null;
 		activityResultLauncher = null;
 	}
 
-	public void addActivityResultCallback(
-			ActivityResultCallback<ActivityResult> callback
-	) {
+	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
 		callbacks.add(callback);
 	}
 
-	public void removeActivityResultCallback(
-			ActivityResultCallback<ActivityResult> callback
-	) {
+	public void removeActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
 		callbacks.remove(callback);
 	}
 
@@ -239,13 +245,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		binding.recycler.setAdapter(new ConcatAdapter(config, settingsAdapter));
 		setupReordering(binding.recycler, settingsAdapter);
-		binding.progressIndicator.setVisibility(View.GONE);
+		emptyView.hideAll();
 	}
 
 	@Nullable
-	private View createView(@NonNull SettingsItem item) {
-		var binding = ScreenSettingsBinding.inflate(getLayoutInflater());
-		binding.recycler.setRecycledViewPool(viewPool);
+	private ScreenSettingsBinding createView(@NonNull SettingsItem item) {
+		binding = ScreenSettingsBinding.inflate(getLayoutInflater());
+		emptyView = new EmptyView(binding.progressIndicator);
+
+		binding.recycler.setRecycledViewPool(getViewPool());
 		binding.back.setOnClickListener(v -> finish());
 
 		setOnApplyUiInsetsListener(binding.header, insets -> {
@@ -261,7 +269,17 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			}
 
 			var recyclerAdapter = new SettingsAdapter(item,
-					(item instanceof SettingsDataHandler handler) ? handler : this);
+					(item instanceof SettingsDataHandler handler) ? handler : this) {
+
+				@Override
+				public void onEmptyStateChanged(boolean isEmpty) {
+					if(isEmpty) {
+						emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
+					} else {
+						emptyView.hideAll();
+					}
+				}
+			};
 
 			setupHeader(binding, item);
 			finishLoading(binding, recyclerAdapter);
@@ -274,34 +292,31 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					return;
 				}
 
-				var recyclerAdapter = new SettingsAdapter(screen, (screen instanceof SettingsDataHandler handler)
-						? handler : new SettingsDataHandler() {
+				var recyclerAdapter = new SettingsAdapter(screen, (screen instanceof SettingsDataHandler handler) ? handler : this) {
 					@Override
-					public void onScreenLaunchRequest(SettingsItem item) {
-						throw new UnsupportedOperationException();
+					public void onEmptyStateChanged(boolean isEmpty) {
+						if(isEmpty) {
+							emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
+						} else {
+							emptyView.hideAll();
+						}
 					}
-
-					@Override
-					public void saveValue(SettingsItem item, Object newValue) {
-						throw new UnsupportedOperationException();
-					}
-
-					@Override
-					public Object restoreValue(SettingsItem item) {
-						throw new UnsupportedOperationException();
-					}
-				});
+				};
 
 				TransitionManager.beginDelayedTransition(binding.getRoot(), new Fade());
 				setupHeader(binding, screen);
 				finishLoading(binding, recyclerAdapter);
+
+				if(screen.getItems().isEmpty()) {
+					emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
+				}
 			});
 		} else {
 			Log.w(TAG, "Screen has no items, finishing.");
 			finish();
 		}
 
-		return binding.getRoot();
+		return binding;
 	}
 
 	@Override
@@ -317,38 +332,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void saveValue(@NonNull SettingsItem item, Object newValue) {
-		if(item instanceof CustomSettingsItem custom) {
-			custom.saveValue(newValue);
-			return;
-		}
-
-		(switch(item.getType()) {
-			case BOOLEAN -> settings.setBoolean(item.getKey(), (boolean) newValue);
-			case SELECT, STRING -> settings.setString(item.getKey(), (String) newValue);
-			case SELECT_INTEGER, INTEGER -> settings.setInteger(item.getKey(), (int) newValue);
-
-			case MULTISELECT -> {
-				SettingsData.saveSelectionList(item.getBehaviour(), (Selection<Selection.Selectable<String>>) newValue);
-				yield settings;
-			}
-
-			default -> throw new IllegalArgumentException("Unsupported type!");
-		}).saveAsync();
+		getPrefs().saveValue(item, newValue);
 	}
 
 	@Override
 	public Object restoreValue(SettingsItem item) {
-		if(item instanceof CustomSettingsItem custom) {
-			return custom.getSavedValue();
-		}
-
-		return switch(item.getType()) {
-			case BOOLEAN -> settings.getBoolean(item.getKey(), item.getBooleanValue());
-			case SELECT, STRING -> settings.getString(item.getKey(), item.getStringValue());
-			case SELECT_INTEGER, INTEGER -> settings.getInteger(item.getKey(), item.getIntegerValue());
-			default -> throw new IllegalArgumentException("Unsupported setting type! " + item.getType());
-		};
+		return getPrefs().restoreValue(item);
 	}
 }
