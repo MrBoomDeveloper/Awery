@@ -42,31 +42,31 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Modern Alpha APK
-        if: ${{ inputs.modern && inputs.type == "alpha" }}
+        if: ${{ inputs.modern && inputs.type == 'alpha' }}
         run: ./gradlew assembleAlphaModernRelease
 
       - name: Build Modern Beta APK
-        if: ${{ inputs.modern && inputs.type == "beta" }}
+        if: ${{ inputs.modern && inputs.type == 'beta' }}
         run: ./gradlew assembleBetaModernRelease
 
       - name: Build Modern Production APK
-        if: ${{ inputs.modern && inputs.type == "prod" }}
+        if: ${{ inputs.modern && inputs.type == 'prod' }}
         run: ./gradlew assembleProdModernRelease
 
       - name: Build Legacy Beta APK
-        if: ${{ inputs.legacy && inputs.type == "beta" }}
+        if: ${{ inputs.legacy && inputs.type == 'beta' }}
         run: ./gradlew assembleBetaLegacyRelease
 
       - name: Build Legacy Alpha APK
-        if: ${{ inputs.legacy && inputs.type == "alpha" }}
+        if: ${{ inputs.legacy && inputs.type == 'alpha' }}
         run: ./gradlew assembleAlphaLegacyRelease
 
       - name: Build Legacy Production APK
-        if: ${{ inputs.legacy && inputs.type == "prod" }}
+        if: ${{ inputs.legacy && inputs.type == 'prod' }}
         run: ./gradlew assembleProdLegacyRelease
 
       - name: Sign Modern Alpha APK
-        if: ${{ inputs.modern && inputs.type == "alpha" }}
+        if: ${{ inputs.modern && inputs.type == 'alpha' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_alpha
         with:
@@ -79,7 +79,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Sign Modern Beta APK
-        if: ${{ inputs.modern &&inputs.type == "beta" }}
+        if: ${{ inputs.modern &&inputs.type == 'beta' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_beta
         with:
@@ -92,7 +92,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Sign Modern Production APK
-        if: ${{ inputs.modern && inputs.type == "prod" }}
+        if: ${{ inputs.modern && inputs.type == 'prod' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_prod
         with:
@@ -105,7 +105,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Sign Legacy Beta APK
-        if: ${{ inputs.legacy && inputs.type == "beta" }}
+        if: ${{ inputs.legacy && inputs.type == 'beta' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_beta_legacy
         with:
@@ -118,7 +118,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Sign Legacy Alpha APK
-        if: ${{ inputs.legacy && inputs.type == "alpha" }}
+        if: ${{ inputs.legacy && inputs.type == 'alpha' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_alpha_legacy
         with:
@@ -131,7 +131,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Sign Legacy Production APK
-        if: ${{ inputs.legacy && inputs.type == "prod" }}
+        if: ${{ inputs.legacy && inputs.type == 'prod' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_prod_legacy
         with:
@@ -144,7 +144,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload Modern Beta APK
-        if: ${{ inputs.modern && inputs.type == "beta" }}
+        if: ${{ inputs.modern && inputs.type == 'beta' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Beta APK"
@@ -152,7 +152,7 @@ jobs:
           path: "app/build/outputs/apk/betaModern/release/app-beta-modern-release-signed.apk"
 
       - name: Upload Modern Alpha APK
-        if: ${{ inputs.modern && inputs.type == "alpha" }}
+        if: ${{ inputs.modern && inputs.type == 'alpha' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
@@ -160,7 +160,7 @@ jobs:
           path: "app/build/outputs/apk/alphaModern/release/app-alpha-modern-release-signed.apk"
 
       - name: Upload Modern Production APK
-        if: ${{ inputs.modern && inputs.type == "prod" }}
+        if: ${{ inputs.modern && inputs.type == 'prod' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Production APK"
@@ -168,7 +168,7 @@ jobs:
           path: "app/build/outputs/apk/prodModern/release/app-prod-modern-release-signed.apk"
 
       - name: Upload Legacy Beta APK
-        if: ${{ inputs.legacy && inputs.type == "beta" }}
+        if: ${{ inputs.legacy && inputs.type == 'beta' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Legacy Beta APK"
@@ -176,7 +176,7 @@ jobs:
           path: "app/build/outputs/apk/betaLegacy/release/app-beta-legacy-release-signed.apk"
 
       - name: Upload Legacy Alpha APK
-        if: ${{ inputs.legacy && inputs.type == "alpha" }}
+        if: ${{ inputs.legacy && inputs.type == 'alpha' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Legacy Alpha APK"
@@ -184,7 +184,7 @@ jobs:
           path: "app/build/outputs/apk/alphaLegacy/release/app-alpha-legacy-release-signed.apk"
 
       - name: Upload Legacy Production APK
-        if: ${{ inputs.legacy && inputs.type == "prod" }}
+        if: ${{ inputs.legacy && inputs.type == 'prod' }}
         uses: actions/upload-artifact@v4
         with:
           name: "Legacy Production APK"
