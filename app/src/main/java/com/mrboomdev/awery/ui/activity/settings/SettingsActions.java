@@ -7,6 +7,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.requestPermission;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 
 import android.Manifest;
@@ -67,6 +68,9 @@ public class SettingsActions {
 			}
 
 			case AwerySettings.BACKUP -> {
+				toast("Coming soon");
+				if(alwaysTrue()) return;
+
 				var date = Calendar.getInstance();
 
 				var defaultName = date.get(Calendar.YEAR) + "_" +
@@ -119,6 +123,9 @@ public class SettingsActions {
 			}
 
 			case AwerySettings.RESTORE -> {
+				toast("Coming soon");
+				if(alwaysTrue()) return;
+
 				var context = getAnyContext();
 				var intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.setType(MimeTypes.ANY.toString());

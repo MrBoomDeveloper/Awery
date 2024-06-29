@@ -322,9 +322,12 @@ public class MainActivity extends AppCompatActivity {
 
 		if(binding != null) {
 			var index = savedInstanceState.getInt("nav_index");
-			binding.navbarBubble.selectTabAt(index, false);
-			((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);
-			binding.pages.setCurrentItem(index);
+
+			if(tabs.size() > index) {
+				binding.navbarBubble.selectTabAt(index, false);
+				((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);
+				binding.pages.setCurrentItem(index);
+			}
 		}
 	}
 

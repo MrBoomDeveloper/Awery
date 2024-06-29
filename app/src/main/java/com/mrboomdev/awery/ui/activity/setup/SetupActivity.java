@@ -120,14 +120,15 @@ public class SetupActivity extends AppCompatActivity {
 
 				if(template.equals("dantotsu")) {
 					markwon.setMarkdown(binding.message, """
-							Sorry, but Dantotsu template do require some extensions to work.
-							While the beta you can download them in our:
+							The Dantotsu template requires some extensions to work.
+							In this beta version, you cannot install extensions directly through the app :(
+							Currently you can download them on our:
 							Discord server: https://discord.com/invite/yspVzD4Kbm
 							Telegram channel: https://t.me/mrboomdev_awery""");
 				} else {
 					markwon.setMarkdown(binding.message, """
-							Sorry, but while the beta you can't download any extensions directly through the app :(.
-							You can download them in our:
+							In this beta version, you cannot install extensions directly through the app :(
+							Currently you can download them on our:
 							Discord server: https://discord.com/invite/yspVzD4Kbm
 							Telegram channel: https://t.me/mrboomdev_awery""");
 				}
