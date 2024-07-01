@@ -445,4 +445,17 @@
     <string name="restart">Reiniciar</string>
     <string name="clear">Limpiar</string>
     <string name="restart_to_apply_settings">Para aplicar la configuración, debe reiniciar la aplicación</string>
+    <string name="done">Hecho</string>
+    <string name="select_tracker">Seleccionar rastreador</string>
+    <string name="select_title">Seleccionar título</string>
+    <string name="select_status">Seleccionar estado</string>
+    <string name="saved_successfully">Guardado exitosamente</string>
+    <string name="havent_selected_source">¡No has seleccionado ninguna fuente!</string>
+    <string name="nothing_selected">Nada seleccionado</string>
+    <string name="server_error">Error en el servidor</string>
+    <string name="extension_crashed">¡La extensión ha fallado!</string>
+    <string name="banned">Estas baneado</string>
+    <string name="account_required">Cuenta requerida</string>
+    <string name="connection_failed">Conexión fallida</string>
+    <string name="read_now">Leer ahora</string>
 </resources>

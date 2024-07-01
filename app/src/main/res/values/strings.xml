@@ -441,4 +441,16 @@
     <string name="restart_to_apply_settings">To apply the settings, you must restart the application</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
+    <string name="select_tracker">Select a tracker</string>
+    <string name="select_title">Select a title</string>
+    <string name="select_status">Select a status</string>
+    <string name="saved_successfully">Saved successfully</string>
+    <string name="havent_selected_source">You haven\'t selected any source!</string>
+    <string name="nothing_selected">Nothing selected</string>
+    <string name="server_error">Server error</string>
+    <string name="extension_crashed">Extension has crashed!</string>
+    <string name="account_required">Account required</string>
+    <string name="connection_failed">Connection failed</string>
+    <string name="banned">You are banned</string>
+    <string name="read_now">Read now</string>
 </resources>

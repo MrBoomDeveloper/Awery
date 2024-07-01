@@ -448,4 +448,11 @@
     <string name="restart_to_apply_settings">Для применения настроек необходимо перезапустить приложение</string>
     <string name="clear">Очистить</string>
     <string name="done">Завершить</string>
+    <string name="select_title">Выбрать тайтл</string>
+    <string name="select_status">Выбрать статус</string>
+    <string name="saved_successfully">Сохранено успешно</string>
+    <string name="nothing_selected">Ничего не выбрано</string>
+    <string name="select_tracker">Выбрать трекер</string>
+    <string name="havent_selected_source">Вы еще не выбрали источник!</string>
+    <string name="read_now">Читать сейчас</string>
 </resources>

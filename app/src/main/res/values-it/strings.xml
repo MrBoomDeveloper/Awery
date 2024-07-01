@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="logout">Disconnessione</string>
+    <string name="logout">Disconnetti</string>
     <string name="russian">Russo</string>
     <string name="japanese">Giapponese</string>
     <string name="chinese">Cinese</string>
@@ -202,7 +202,7 @@
     <string name="status_not_yet_released">Non ancora pubblicato</string>
     <string name="status_cancelled">Cancellato</string>
     <string name="status_releasing">Rilasciato</string>
-    <string name="status_hiatus">In ritardo</string>
+    <string name="status_hiatus">Rimandato</string>
     <string name="type_adaptation">Adattamento</string>
     <string name="type_character">Personaggio</string>
     <string name="type_parent">Parente</string>
@@ -324,14 +324,14 @@
     <string name="extension_installed_failed">Impossibile installare un\'estensione!</string>
     <string name="most_favourited">Più Amati</string>
     <string name="top_rated">Più Votati</string>
-    <string name="dalayed">In ritardo</string>
+    <string name="dalayed">Rimandato</string>
     <string name="dropped">Abbandonato</string>
     <string name="adult_content">Contenuto per adulti</string>
     <string name="trending">Tendenza</string>
-    <string name="login">Accesso</string>
+    <string name="login">Accedi</string>
     <string name="english">Inglese</string>
     <string name="korean">Coreano</string>
-    <string name="home">Home</string>
+    <string name="home">Pagina iniziale</string>
     <string name="anime">Anime</string>
     <string name="no_episodes_found">Nessun episodio trovato. Prova a cambiare filtro di ricerca.</string>
     <string name="no_subtitles_extensions">Non hai estensioni per i sottotitoli installate. Scaricali per vedere qualcosa di nuovo qui!</string>
@@ -446,5 +446,18 @@
     <string name="continue_action">Continua</string>
     <string name="restart">Riavvia</string>
     <string name="clear">Ripulire</string>
-    <string name="restart_to_apply_settings">Per applicare le impostazioni, è necessario riavviare l\'applicazione</string>
+    <string name="restart_to_apply_settings">Per applicare le impostazioni, è necessario riavviare</string>
+    <string name="done">Fatto</string>
+    <string name="read_now">Leggi ora</string>
+    <string name="select_title">Seleziona un titolo</string>
+    <string name="havent_selected_source">Non hai selezionato alcuna fonte!</string>
+    <string name="server_error">Errore del server</string>
+    <string name="banned">Sei stato bannato</string>
+    <string name="select_status">Seleziona uno stato</string>
+    <string name="saved_successfully">Salvato con successo</string>
+    <string name="nothing_selected">Non è stato selezionato nulla</string>
+    <string name="connection_failed">Connessione fallita</string>
+    <string name="account_required">Account richiesto</string>
+    <string name="extension_crashed">L\'estensione si è bloccata!</string>
+    <string name="select_tracker">Seleziona un tracker</string>
 </resources>
