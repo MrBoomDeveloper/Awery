@@ -31,8 +31,8 @@
     <string name="no_episodes_found">No se encontraron episodios. Intenta cambiar tu búsqueda y filtros.</string>
     <string name="no_extensions_found">No se encontraron extensiones. Intenta cambiar tu búsqueda y filtros.</string>
     <string name="no_comment_extensions">No tienes extensiones de comentarios instaladas. ¡Descárgalas para ver algo nuevo aquí!</string>
-    <string name="material_you_description">Los colores de la aplicación se generarán en función de tu fondo de pantalla.</string>
-    <string name="default_tab_description">Se abrirá cuando se inicie la aplicación.</string>
+    <string name="material_you_description">Los colores de la aplicación se generarán en función de tu fondo de pantalla</string>
+    <string name="default_tab_description">Se abrirá cuando se inicie la aplicación</string>
     <string name="adult_content_description">No apto para niños.</string>
     <string name="no_internet">Sin conexión a internet</string>
     <string name="refresh">Actualizar</string>
@@ -45,9 +45,9 @@
     <string name="continue_reading">Continuar leyendo</string>
     <string name="continue_watching">Continuar viendo</string>
     <string name="recommended">Recomendado</string>
-    <string name="get_recommendations">Mira/lee algún anime o manga para obtener recomendaciones.</string>
+    <string name="get_recommendations">Mira/lee algún anime o manga para obtener recomendaciones</string>
     <string name="hide_library_entries">Ocultar entradas de la biblioteca</string>
-    <string name="hide_library_entries_description">No mostrar estas entradas fuera de la biblioteca.</string>
+    <string name="hide_library_entries_description">No mostrar estas entradas fuera de la biblioteca</string>
     <string name="list_editor">Editor de listas</string>
     <string name="notifications">Notificaciones</string>
     <string name="progress">Progreso</string>
@@ -103,17 +103,17 @@
     <string name="about">Acerca de</string>
     <string name="devs">Desarrolladores</string>
     <string name="disclaimer">Descargo de responsabilidad</string>
-    <string name="full_disclaimer">- Awery por sí solo solo proporciona un rastreador de anime y manga y no proporciona capacidades de transmisión o descarga de anime o manga.
+    <string name="full_disclaimer">- Awery por sí solo proporciona un rastreador de anime y manga y no proporciona ninguna capacidad de transmisión o descarga de anime o manga.
 \n
-\n - Awery o cualquiera de sus desarrolladores/personal no alojan ningún contenido encontrado dentro de Awery. Todas las imágenes e información de anime/manga encontradas en la aplicación se toman de varias API públicas (AniList, MyAnimeList, Kitsu).
+\n - Ni Awery ni ninguno de sus desarrolladores o miembros del personal alojan el contenido que se encuentra dentro de Awery. Todas las imágenes y la información de anime o manga que se encuentran en la aplicación se obtienen de varias API públicas (AniList, MyAnimeList, Kitsu).
 \n
-\n - Además, todos los enlaces de anime/manga encontrados en Awery se toman de varios complementos de terceros y no tienen ninguna afiliación con Awery o su personal.
+\n - Además, todos los enlaces de anime/manga que se encuentran en Awery se toman de varios complementos de terceros y no tienen ninguna afiliación con Awery o su personal.
 \n
-\n - Awery o sus propietarios no son responsables de ningún mal uso de ninguno de los contenidos encontrados dentro o fuera de la aplicación y no pueden ser responsables de la distribución de ninguno de los contenidos encontrados dentro de la aplicación.
+\n - Awery o sus propietarios no son responsables del mal uso de ninguno de los contenidos que se encuentran dentro o fuera de la aplicación y no pueden ser considerados responsables de la distribución de ninguno de los contenidos que se encuentran dentro de la aplicación.
 \n
-\n - Al usar Awery, aceptas el hecho de que el desarrollador de la aplicación no es responsable de ninguno de los contenidos encontrados en la aplicación. También aceptas el hecho de que no puedes usar Awery para descargar o transmitir ningún contenido protegido por derechos de autor.
+\n - Al utilizar Awery, usted acepta que el desarrollador de la aplicación no es responsable de ninguno de los contenidos que se encuentran en la aplicación. También acepta que no puede utilizar Awery para descargar o transmitir ningún contenido protegido por derechos de autor.
 \n
-\n - Si hay problemas de infracción de derechos de autor en Internet, comunícate con el sitio web fuente. El desarrollador no asume ninguna responsabilidad legal.</string>
+\n - Si se trata de problemas de infracciones de Internet, póngase en contacto con el sitio web de origen. El desarrollador no asume ninguna responsabilidad legal.</string>
     <string name="video">Vídeo</string>
     <string name="video_info_info">Muestra la resolución del video actual, útil para servidores de <b>Multi Calidad</b>.</string>
     <string name="default_quality">Selección automática de calidad</string>
@@ -139,14 +139,15 @@
     <string name="ask_update_progress_anime">Preguntar por cada medio individualmente</string>
     <string name="ask_update_progress_info_ep">Si se desactiva, siempre actualizará automáticamente el progreso cuando se vea el episodio.</string>
     <string name="watch_complete_percentage">Porcentaje de actualización de visualización</string>
-    <string name="watch_complete_percentage_info">"El porcentaje en el que se debe actualizar tu progreso de Anilist después de ver un episodio. Esto también establece el  para cuándo precargar enlaces para el siguiente episodio."</string>
+    <string name="watch_complete_percentage_info">"El porcentaje en el que se debe actualizar tu progreso después de ver un episodio.
+\nEsto también establece el  para saber cuándo precargar enlaces para el próximo episodio."</string>
     <string name="behaviour">Comportamiento</string>
     <string name="always_continue">Siempre continuar desde donde lo dejaste</string>
     <string name="pause_video_focus">Pausar cuando no está en foco</string>
     <string name="gestures">Gestos de volumen y brillo</string>
     <string name="double_tap">Doble toque para buscar</string>
     <string name="fast_forward">Avance rápido</string>
-    <string name="double_tap_info">Si se desactiva, mostrará botones de avance rápido y retroceso.</string>
+    <string name="double_tap_info">Si se desactiva, mostrará botones de avance rápido y retroceso</string>
     <string name="seek_time">Tiempo de búsqueda</string>
     <string name="amoled">Tema AMOLED</string>
     <string name="seek_time_info">Cantidad de tiempo en segundos para avance rápido y retroceso.</string>
@@ -154,7 +155,8 @@
     <string name="show_cast_button">Mostrar botón de emisión</string>
     <string name="picture_in_picture">Imagen en imagen</string>
     <string name="always_minimize">Siempre minimizar</string>
-    <string name="always_minimize_info">Requiere que PiP esté habilitado, hace que el reproductor se comporte como el reproductor de Youtube pero mejor. También oculta el botón de PiP.</string>
+    <string name="always_minimize_info">Requiere que PiP esté habilitado y hace que el reproductor se comporte como el reproductor de Youtube, pero mejor.
+\nTambién oculta el botón PiP.</string>
     <string name="immersive_mode">Ocultar barra de estado</string>
     <string name="immersive_mode_info">Requiere reiniciar la aplicación para aplicarse completamente.</string>
     <string name="startUpTab">Pestaña de inicio predeterminada</string>
@@ -176,11 +178,11 @@
     <string name="general">General</string>
     <string name="show_system_bars">Mostrar barras de estado y navegación</string>
     <string name="auto_detect_webtoon">Detectar automáticamente Webtoon</string>
-    <string name="auto_detect_webtoon_info">Si el manga no es de Japón, el lector se configurará automáticamente con la configuración del lector de Webtoon.</string>
+    <string name="auto_detect_webtoon_info">Si el manga no es de Japón, el lector se configurará automáticamente con la configuración del lector de Webtoon</string>
     <string name="default_settings">Configuración predeterminada</string>
     <string name="horizontal_scroll_bar">Barra de desplazamiento horizontal</string>
     <string name="dual_page">Página doble</string>
-    <string name="dual_page_info">Muestra 2 imágenes en 1 página, se verá extraño si las imágenes no tienen el mismo tamaño.</string>
+    <string name="dual_page_info">Muestra 2 imágenes en 1 página, se verá extraño si las imágenes no tienen el mismo tamaño</string>
     <string name="true_colors">Colores verdaderos</string>
     <string name="true_colors_info">(Modo de color de 32 bits) Reduce el banding en las imágenes, puede afectar el rendimiento.</string>
     <string name="image_rotation">Rotación de imágenes</string>
@@ -458,4 +460,8 @@
     <string name="account_required">Cuenta requerida</string>
     <string name="connection_failed">Conexión fallida</string>
     <string name="read_now">Leer ahora</string>
+    <string name="request_invalid_detailed">Error 400. La solicitud no es válida, inténtelo de nuevo más tarde.</string>
+    <string name="not_logged_detailed">Error 401. No has iniciado sesión, por favor inicia sesión y vuelve a intentarlo.</string>
+    <string name="no_access_detailed">Error 403. No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta y vuelve a intentarlo.</string>
+    <string name="rate_limited_detailed">Error 429. Has excedido el límite de velocidad, inténtalo nuevamente más tarde.</string>
 </resources>
