@@ -288,7 +288,7 @@
     <string name="server_down">Server is down!</string>
     <string name="too_much_requests">Too much requests!</string>
     <string name="something_went_wrong">Something just went wrong!</string>
-    <string name="not_found_detailed">Error 404. The resource you requested does not exist!</string>
+    <string name="not_found_detailed">The resource you requested does not exist!</string>
     <string name="content">Content</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -453,4 +453,8 @@
     <string name="connection_failed">Connection failed</string>
     <string name="banned">You are banned</string>
     <string name="read_now">Read now</string>
+    <string name="request_invalid_detailed">Error 400. The request was invalid, please try again later.</string>
+    <string name="not_logged_detailed">Error 401. You are not logged in, please login and try again.</string>
+    <string name="no_access_detailed">Error 403. You have no access to this resource, try logging into your account and try again.</string>
+    <string name="rate_limited_detailed">Error 429. You have exceed the rate limit, please try again later.</string>
 </resources>
