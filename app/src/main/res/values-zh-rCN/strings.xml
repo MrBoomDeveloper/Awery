@@ -292,7 +292,7 @@
     <string name="server_down">服务器已关闭！</string>
     <string name="too_much_requests">请求过多！</string>
     <string name="something_went_wrong">出了些问题！</string>
-    <string name="not_found_detailed">错误 404。您请求的资源不存在！</string>
+    <string name="not_found_detailed">您请求的资源不存在！</string>
     <string name="content">内容</string>
     <string name="yes">是</string>
     <string name="no">否</string>
