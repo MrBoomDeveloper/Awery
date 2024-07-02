@@ -290,7 +290,7 @@
     <string name="server_down">El servidor está fuera de servicio!</string>
     <string name="too_much_requests">Demasiadas solicitudes!</string>
     <string name="something_went_wrong">¡Algo salió mal!</string>
-    <string name="not_found_detailed">Error 404. ¡El recurso que solicitaste no existe!</string>
+    <string name="not_found_detailed">¡El recurso solicitado no existe!</string>
     <string name="content">Contenido</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
