@@ -229,7 +229,7 @@
     <string name="failed_handshake">Connessione al server fallita!</string>
     <string name="server_down">Il server non funziona!</string>
     <string name="something_went_wrong">Qualcosa è andato storto!</string>
-    <string name="not_found_detailed">Errore 404. La risorsa richiesta non esiste!</string>
+    <string name="not_found_detailed">La risorsa richiesta non esiste!</string>
     <string name="yes">Si</string>
     <string name="no">No</string>
     <string name="close">Chiudi</string>
