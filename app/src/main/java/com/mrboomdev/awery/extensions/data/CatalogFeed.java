@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -24,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Entity(tableName = "feed")
@@ -66,7 +68,30 @@ public class CatalogFeed implements Serializable {
 		id = String.valueOf(System.currentTimeMillis());
 	}
 
-	public String getProivderGlobalId() {
+	public CatalogFeed(@NonNull CatalogFeed original) {
+		id = original.id;
+		index = original.index;
+		hideIfEmpty = original.hideIfEmpty;
+		sourceManager = original.sourceManager;
+		sourceId = original.sourceId;
+		sourceFeed = original.sourceFeed;
+		extensionId = original.extensionId;
+		tab = original.tab;
+		title = original.title;
+		displayMode = original.displayMode;
+
+		if(original.features != null) {
+			features = List.copyOf(original.features);
+		}
+
+		if(filters != null) {
+			filters = stream(filters)
+					.map(SettingsItem::new)
+					.toList();
+		}
+	}
+
+	public String getProviderGlobalId() {
 		return sourceManager + ";;;" + sourceId + ":" + extensionId;
 	}
 
@@ -166,6 +191,41 @@ public class CatalogFeed implements Serializable {
 
 			default -> Collections.emptyList();
 		};
+	}
+
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		if(obj instanceof CatalogFeed feed) {
+			return Objects.equals(feed.sourceFeed, sourceFeed) &&
+					Objects.equals(feed.filters, filters) &&
+					Objects.equals(feed.displayMode, displayMode) &&
+					Objects.equals(feed.getProviderGlobalId(), getProviderGlobalId());
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		var hashCode =  getProviderGlobalId().hashCode();
+
+		if(displayMode != null) {
+			hashCode += displayMode.hashCode();
+		}
+
+		if(filters != null) {
+			hashCode += filters.hashCode();
+		}
+
+		if(sourceFeed != null) {
+			hashCode += sourceFeed.hashCode();
+		}
+
+		if(displayMode != null) {
+			hashCode += displayMode.hashCode();
+		}
+
+		return hashCode;
 	}
 
 	public enum DisplayMode {

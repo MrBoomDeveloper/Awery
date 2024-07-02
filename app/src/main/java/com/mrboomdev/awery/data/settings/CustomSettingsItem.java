@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
+import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
@@ -39,6 +40,27 @@ public abstract class CustomSettingsItem extends SettingsItem {
 
 	@Override
 	public void restoreSavedValues() {
+		if(getItems() != null) {
+			for(var item : getItems()) {
+				item.restoreSavedValues();
+			}
+		}
+
+		restoreSavedValuesDefault();
+	}
+
+	@Override
+	public void restoreSavedValues(SettingsDataHandler handler) {
+		if(getItems() != null) {
+			for(var item : getItems()) {
+				item.restoreSavedValues(handler);
+			}
+		}
+
+		restoreSavedValuesDefault();
+	}
+
+	private void restoreSavedValuesDefault() {
 		switch(getType()) {
 			case STRING, SELECT -> stringValue = (String) getSavedValue();
 			case INTEGER, SELECT_INTEGER -> integerValue = (Integer) getSavedValue();

@@ -4,10 +4,13 @@ import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -94,29 +97,30 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 		binding.recycler.setRecycledViewPool(itemsPool);
 		binding.recycler.setAdapter(adapter);
 
-		setOnApplyUiInsetsListener(binding.title, insets -> {
-			if(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL && isLandscape()) {
-				setLeftMargin(binding.title, insets.left + dpPx(16));
+		setOnApplyUiInsetsListener(binding.header, insets -> {
+			if(isLandscape()) {
+				setLeftMargin(binding.header, dpPx(16) +
+						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
+
+				setRightMargin(binding.header, insets.right + dpPx(16));
 			} else {
-				setLeftMargin(binding.title, dpPx(16));
+				setHorizontalMargin(binding.header, 0);
 			}
 
-			return true;
-		}, parent);
-
-		setOnApplyUiInsetsListener(binding.expand, insets -> {
-			setRightMargin(binding.expand, insets.right + dpPx(16));
 			return true;
 		}, parent);
 
 		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			if(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL && isLandscape()) {
-				setHorizontalPadding(binding.recycler, insets.left + dpPx(16), insets.right + dpPx(16));
+			if(isLandscape()) {
+				setLeftPadding(binding.recycler, dpPx(32) +
+						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
+
+				setRightPadding(binding.recycler, insets.right + dpPx(32));
 			} else {
 				setHorizontalPadding(binding.recycler, dpPx(16));
 			}
 
-			return false;
+			return true;
 		}, parent);
 
 		viewHolder.setAdapter(adapter);
@@ -165,7 +169,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<MediaCategories
 
 				binding.expand.setOnClickListener(v -> {
 					var intent = new Intent(getContext(v), SearchActivity.class);
-					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, category.sourceFeed.getProivderGlobalId());
+					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, category.sourceFeed.getProviderGlobalId());
 					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) category.sourceFeed.filters);
 					intent.putExtra(SearchActivity.EXTRA_LOADED_MEDIA, (Serializable) category.items);
 					getContext(v).startActivity(intent);

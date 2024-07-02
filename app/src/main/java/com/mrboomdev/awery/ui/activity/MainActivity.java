@@ -4,9 +4,9 @@ import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
-import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
@@ -15,13 +15,14 @@ import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
@@ -70,9 +72,11 @@ import java.util.Objects;
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 
 public class MainActivity extends AppCompatActivity {
-	public ScreenMainBinding binding;
 	private static final String TAG = "MainActivity";
+	private static final String SAVED_TAB_INDEX = "was_tab";
+	private ScreenMainBinding binding;
 	private List<DBTab> tabs;
+	private int tabIndex = -1;
 
 	private final Runnable backListener = new Runnable() {
 		private boolean doubleBackToExitPressedOnce;
@@ -94,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
 		ThemeManager.apply(this);
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
+
+		if(savedInstanceState != null) {
+			tabIndex = savedInstanceState.getInt(SAVED_TAB_INDEX, -1);
+		}
 
 		var template = AwerySettings.TABS_TEMPLATE.getValue();
 		if(template.equals("custom")) loadCustomTabs(); else loadTemplateTabs(template);
@@ -141,69 +149,52 @@ public class MainActivity extends AppCompatActivity {
 
 		runOnUiThread(() -> {
 			setupNavigation();
-			int selected = 0;
 
 			switch(getNavigationStyle()) {
 				case BUBBLE -> {
 					for(int i = 0; i < tabs.size(); i++) {
-						Drawable drawable = null;
-
 						var tab = tabs.get(i);
 						var icon = icons.get(tab.icon);
 
-						if(icon != null) {
-							var id = getResourceId(R.drawable.class, icon.getInActive());
-							drawable = ContextCompat.getDrawable(this, id);
-						}
-
-						if(drawable == null) {
-							drawable = ContextCompat.getDrawable(
-									this, R.drawable.ic_view_cozy);
-						}
+						var drawable = icon != null ? icon.getDrawable(this) :
+								ContextCompat.getDrawable(this, R.drawable.ic_view_cozy);
 
 						var navbarItem = new AnimatedBottomBar.Tab(
 								Objects.requireNonNull(drawable), tab.title,
 								i, null, true);
 
-						if(tab.id.equals(savedDefaultTab)) {
-							selected = i;
+						if(tabIndex == -1 && tab.id.equals(savedDefaultTab)) {
+							tabIndex = i;
 						}
 
 						binding.navbarBubble.addTab(navbarItem);
 					}
 
-					binding.navbarBubble.selectTabAt(selected, false);
+					binding.navbarBubble.selectTabAt(tabIndex != -1 ? tabIndex : 0, false);
 					binding.navbarBubble.setVisibility(View.VISIBLE);
 				}
 
 				case MATERIAL -> {
 					var nav = (NavigationBarView) binding.navbarMaterial;
+					nav.setBackgroundTintList(ColorStateList.valueOf(SurfaceColors.SURFACE_2.getColor(this)));
+					getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
 
 					for(int i = 0; i < tabs.size(); i++) {
-						Drawable drawable = null;
-
 						var tab = tabs.get(i);
 						var icon = icons.get(tab.icon);
 
-						if(icon != null) {
-							var id = getResourceId(R.drawable.class, icon.getInActive());
-							drawable = ContextCompat.getDrawable(this, id);
-						}
+						var drawable = icon != null ? icon.getDrawable(this) :
+								ContextCompat.getDrawable(this, R.drawable.ic_view_cozy);
 
-						if(drawable == null) {
-							drawable = ContextCompat.getDrawable(
-									this, R.drawable.ic_view_cozy);
-						}
-
-						if(tab.id.equals(savedDefaultTab)) {
-							selected = i;
+						if(tabIndex == -1 && tab.id.equals(savedDefaultTab)) {
+							tabIndex = i;
 						}
 
 						nav.getMenu().add(0, i, 0, tab.title);
 						nav.getMenu().getItem(i).setIcon(drawable);
 					}
 
-					nav.setSelectedItemId(selected);
+					nav.setSelectedItemId(tabIndex != -1 ? tabIndex : 0);
 					nav.setVisibility(View.VISIBLE);
 				}
 			}
@@ -224,12 +215,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * Called after setupTabs()
+	 * Called in middle of setupTabs()
 	 */
 	private void setupNavigation() {
 		binding = ScreenMainBinding.inflate(getLayoutInflater());
 		binding.getRoot().setMotionEventSplittingEnabled(false);
 		setContentView(binding.getRoot());
+		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
 		var pagesAdapter = new FeedsAdapter(tabs, getSupportFragmentManager(), getLifecycle());
 		binding.pages.setAdapter(pagesAdapter);
@@ -310,25 +302,10 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
 		if(binding != null) {
-			outState.putInt("nav_index", binding.pages.getCurrentItem());
+			outState.putInt(SAVED_TAB_INDEX, binding.pages.getCurrentItem());
 		}
 
 		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		if(binding != null) {
-			var index = savedInstanceState.getInt("nav_index");
-
-			if(tabs.size() > index) {
-				binding.navbarBubble.selectTabAt(index, false);
-				((NavigationBarView) binding.navbarMaterial).setSelectedItemId(index);
-				binding.pages.setCurrentItem(index);
-			}
-		}
 	}
 
 	private static class FeedsAdapter extends FragmentStateAdapter {
@@ -374,10 +351,25 @@ public class MainActivity extends AppCompatActivity {
 			var binding = LayoutHeaderHomeBinding.inflate(
 					LayoutInflater.from(parent.getContext()), parent, false);
 
-			binding.search.setOnClickListener(v -> {
-				var intent = new Intent(requireActivity(), MultiSearchActivity.class);
-				startActivity(intent);
-			});
+			// Note: We do this because the string in resources doesn't tell whatever the app is beta or stable
+			binding.title.setText(requireContext().getApplicationInfo().loadLabel(requireContext().getPackageManager()));
+
+			// TODO: Make visible once notifications activity will be done
+			binding.notifications.setVisibility(View.GONE);
+
+			if(binding.search != null) {
+				binding.search.setOnClickListener(v -> {
+					var intent = new Intent(requireActivity(), MultiSearchActivity.class);
+					startActivity(intent);
+				});
+			}
+
+			if(binding.searchBar != null) {
+				binding.searchBar.setOnClickListener(v -> {
+					var intent = new Intent(requireActivity(), MultiSearchActivity.class);
+					startActivity(intent);
+				});
+			}
 
 			binding.settingsWrapper.setOnClickListener(v -> {
 				var intent = new Intent(requireActivity(), SettingsActivity.class);
@@ -386,16 +378,14 @@ public class MainActivity extends AppCompatActivity {
 
 			setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 				setTopPadding(binding.getRoot(), insets.top + dpPx(16));
-				setRightPadding(binding.getRoot(), insets.right + dpPx(16));
 
 				if(isLandscape()) {
-					if(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL) {
-						setLeftPadding(binding.getRoot(), dpPx(16));
-					} else {
-						setLeftPadding(binding.getRoot(), dpPx(16) + insets.left);
-					}
+					setLeftPadding(binding.getRoot(), dpPx(32) +
+							(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL ? 0 : insets.left));
+
+					setRightPadding(binding.getRoot(), dpPx(32) + insets.right);
 				} else {
-					setLeftPadding(binding.getRoot(), dpPx(16));
+					setHorizontalPadding(binding.getRoot(), dpPx(16));
 				}
 
 				return false;

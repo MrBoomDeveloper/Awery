@@ -104,12 +104,12 @@ public class ThemeManager {
 		isAmoled = isAmoled && isDarkModeEnabled();
 
 		return switch(theme) {
-			case RED -> isAmoled ? R.style.Theme_Awery_RedOLED : R.style.Theme_Awery_Red;
-			case PINK -> isAmoled ? R.style.Theme_Awery_PinkOLED : R.style.Theme_Awery_Pink;
-			case PURPLE -> isAmoled ? R.style.Theme_Awery_PurpleOLED : R.style.Theme_Awery_Purple;
-			case BLUE -> isAmoled ? R.style.Theme_Awery_BlueOLED : R.style.Theme_Awery_Blue;
-			case GREEN -> isAmoled ? R.style.Theme_Awery_GreenOLED : R.style.Theme_Awery_Green;
-			case MONOCHROME -> isAmoled ? R.style.Theme_Awery_MonochromeOLED : R.style.Theme_Awery_Monochrome;
+			case RED -> isAmoled ? R.style.Theme_Awery_Red_Amoled : R.style.Theme_Awery_Red;
+			case PINK -> isAmoled ? R.style.Theme_Awery_Pink_Amoled : R.style.Theme_Awery_Pink;
+			case PURPLE -> isAmoled ? R.style.Theme_Awery_Purple_Amoled : R.style.Theme_Awery_Purple;
+			case BLUE -> isAmoled ? R.style.Theme_Awery_Blue_Amoled : R.style.Theme_Awery_Blue;
+			case GREEN -> isAmoled ? R.style.Theme_Awery_Green_Amoled : R.style.Theme_Awery_Green;
+			case MONOCHROME -> isAmoled ? R.style.Theme_Awery_Monochrome_Amoled : R.style.Theme_Awery_Monochrome;
 			case MATERIAL_YOU -> com.google.android.material.R.style.Theme_Material3_DynamicColors_DayNight;
 		};
 	}

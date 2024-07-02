@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,7 @@ public interface CatalogSearchResults<T> extends List<T> {
 
 	boolean hasNextPage();
 
-	abstract class Impl<T> extends ArrayList<T> implements CatalogSearchResults<T> {
+	abstract class Impl<T> extends ArrayList<T> implements CatalogSearchResults<T>, Serializable {
 		public Impl(Collection<T> collection) {
 			super(collection);
 		}

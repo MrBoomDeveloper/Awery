@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.activity.search;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class MultiSearchActivity extends AppCompatActivity {
+	private static final int FRAGMENT_VIEW_ID = View.generateViewId();
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,20 +47,20 @@ public class MultiSearchActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		var fragmentView = new FragmentContainerView(this);
-		fragmentView.setId(View.generateViewId());
+		fragmentView.setId(FRAGMENT_VIEW_ID);
 
-		var arguments = new Bundle();
-		arguments.putSerializable("feeds", (Serializable) getFeeds());
+		if(savedInstanceState == null) {
+			var arguments = new Bundle();
+			arguments.putSerializable("feeds", (Serializable) getFeeds());
 
-		var fragment = new SearchFeedsFragment();
-		fragment.setArguments(arguments);
-
-		getSupportFragmentManager().beginTransaction()
-				.setReorderingAllowed(true)
-				.add(fragmentView, fragment, null)
-				.commit();
+			getSupportFragmentManager().beginTransaction()
+					.setReorderingAllowed(true)
+					.add(fragmentView.getId(), SearchFeedsFragment.class, arguments, "SearchFeedsFragment")
+					.commit();
+		}
 
 		setContentView(fragmentView);
+		fragmentView.setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 	}
 
 	@NonNull
@@ -79,12 +80,23 @@ public class MultiSearchActivity extends AppCompatActivity {
 	}
 
 	public static class SearchFeedsFragment extends FeedsFragment {
-		private EditText editText;
+		private static final String SAVED_QUERY = "query";
+		private LayoutHeaderSearchBinding binding;
+		public String query;
+
+		@Override
+		public void onCreate(@Nullable Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+
+			if(savedInstanceState != null) {
+				query = savedInstanceState.getString(SAVED_QUERY);
+			}
+		}
 
 		@Override
 		protected View getHeader(ViewGroup parent) {
-			var binding = LayoutHeaderSearchBinding.inflate(
-					LayoutInflater.from(parent.getContext()), parent, false);
+			binding = LayoutHeaderSearchBinding.inflate(
+					LayoutInflater.from(getContext()), parent, false);
 
 			setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 				setTopPadding(binding.getRoot(), insets.top + dpPx(4));
@@ -111,6 +123,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 						binding.edittext.getWindowToken(), 0);
 
 				startLoading(true);
+				query = binding.edittext.getText().toString();
 				return true;
 			});
 
@@ -119,19 +132,28 @@ public class MultiSearchActivity extends AppCompatActivity {
 				inputManager.showSoftInput(binding.edittext, 0);
 			});
 
-			editText = binding.edittext;
+			if(query != null) {
+				binding.edittext.setText(query);
+			}
+
 			return binding.getRoot();
 		}
 
 		@Override
+		public void onSaveInstanceState(@NonNull Bundle outState) {
+			outState.putString(SAVED_QUERY, query);
+			super.onSaveInstanceState(outState);
+		}
+
+		@Override
 		protected List<SettingsItem> getFilters() {
-			var text = editText != null ? editText.getText().toString() : null;
+			var text = binding.edittext.getText().toString();
 			return List.of(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY, text));
 		}
 
 		@Override
 		protected boolean loadOnStartup() {
-			return false;
+			return query != null;
 		}
 
 		@Nullable

@@ -46,6 +46,7 @@ import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcherOwner;
+import androidx.activity.SystemBarStyle;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -282,13 +283,33 @@ public class AweryApp extends Application {
 	 * Because of it we have to rerun this method on a next frame.
 	 * @author MrBoomDev
 	 */
-	public static void enableEdgeToEdge(ComponentActivity context) {
+	public static void enableEdgeToEdge(ComponentActivity context, SystemBarStyle statusBar, SystemBarStyle navBar) {
 		try {
-			EdgeToEdge.enable(context);
+			if(statusBar == null) {
+				statusBar = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT);
+			}
+
+			if(navBar == null) {
+				navBar = SystemBarStyle.auto(
+						EdgeToEdge.getDefaultLightScrim(),
+						EdgeToEdge.getDefaultDarkScrim());
+			}
+
+			EdgeToEdge.enable(context, statusBar, navBar);
 		} catch(RuntimeException e) {
 			Log.e(TAG, "Failed to enable EdgeToEdge! Will retry a little bit later.", e);
 			postRunnable(() -> enableEdgeToEdge(context));
 		}
+	}
+
+	/**
+	 * Safely enables the "Edge to edge" experience.
+	 * I really don't know why, but sometimes it just randomly crashes!
+	 * Because of it we have to rerun this method on a next frame.
+	 * @author MrBoomDev
+	 */
+	public static void enableEdgeToEdge(ComponentActivity context) {
+		enableEdgeToEdge(context, null, null);
 	}
 
 	public static void removeOnBackPressedListener(@NonNull Activity activity, Runnable callback) {

@@ -618,11 +618,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					default -> "";
 				};
 
-				description = description.replaceAll("\\$\\{VALUE\\}",
+				return description.replaceAll("\\$\\{VALUE\\}",
 						requireNonNullElse(formattedValue, ""));
 			}
 
-			return description;
+			return item.getDescription(context);
 		}
 
 		public void updateExcludableState(Selection.State state) {

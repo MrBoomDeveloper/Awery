@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.data;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -21,17 +22,29 @@ public class CatalogMedia implements Serializable {
 	private static final long serialVersionUID = 1;
 	@NonNull
 	public String globalId;
-	public List<String> titles = new ArrayList<>();
+	@Nullable
+	public List<String> titles;
+	@NonNull
 	public Map<String, String> ids = new HashMap<>();
-	public Map<String, String> authors = new HashMap<>();
+	@Nullable
+	public Map<String, String> authors;
+	@Nullable
 	public String banner, description, country, ageRating, extra, url;
+	@Nullable
 	public MediaType type;
+	@Nullable
 	public ImageVersions poster = new ImageVersions();
+	@Nullable
 	public Calendar releaseDate;
+	@Nullable
 	public Integer duration, episodesCount, latestEpisode;
+	@Nullable
 	public Float averageScore;
+	@Nullable
 	public List<CatalogTag> tags;
+	@Nullable
 	public List<String> genres;
+	@Nullable
 	public MediaStatus status;
 
 	/**
@@ -44,6 +57,49 @@ public class CatalogMedia implements Serializable {
 
 	public CatalogMedia(String managerId, String extensionId, String providerId, String mediaId) {
 		this(managerId + ";;;" + providerId + ":" + extensionId + ";;;" + mediaId);
+	}
+
+	public CatalogMedia(@NonNull CatalogMedia original) {
+		ageRating = original.ageRating;
+		banner = original.banner;
+		averageScore = original.averageScore;
+		country = original.country;
+		description = original.description;
+		duration = original.duration;
+		episodesCount = original.episodesCount;
+		extra = original.extra;
+		globalId = original.globalId;
+		latestEpisode = original.latestEpisode;
+		status = original.status;
+		type = original.type;
+		url = original.url;
+
+		ids = new HashMap<>(original.ids);
+
+		if(original.releaseDate != null) {
+			releaseDate = Calendar.getInstance();
+			releaseDate.setTimeInMillis(original.releaseDate.getTimeInMillis());
+		}
+
+		if(original.titles != null) {
+			titles = List.copyOf(original.titles);
+		}
+
+		if(original.tags != null) {
+			tags = List.copyOf(original.tags);
+		}
+
+		if(original.genres != null) {
+			genres = List.copyOf(original.genres);
+		}
+
+		if(original.authors != null) {
+			authors = Map.copyOf(original.authors);
+		}
+
+		if(original.poster != null) {
+			poster = new ImageVersions(original.poster);
+		}
 	}
 
 	public String getManagerId() {
@@ -80,8 +136,9 @@ public class CatalogMedia implements Serializable {
 		this.titles = Lists.newArrayList(titles);
 	}
 
+	@Nullable
 	public String getTitle() {
-		if(titles.isEmpty()) return null;
+		if(titles == null || titles.isEmpty()) return null;
 		return titles.get(0);
 	}
 
@@ -94,6 +151,7 @@ public class CatalogMedia implements Serializable {
 		this.titles = List.copyOf(titles);
 	}
 
+	@Nullable
 	public String getBestBanner() {
 		if(banner != null) return banner;
 		return getBestPoster();
@@ -103,11 +161,25 @@ public class CatalogMedia implements Serializable {
 		ids.put(type, id);
 	}
 
+	@Nullable
 	public String getId(String type) {
 		return ids.get(type);
 	}
 
+	public String getLargePoster() {
+		if(poster != null && poster.large != null) {
+			return poster.large;
+		}
+
+		return getBestPoster();
+	}
+
+	@Nullable
 	public String getBestPoster() {
+		if(poster == null) {
+			return banner;
+		}
+
 		if(poster.extraLarge != null) return poster.extraLarge;
 		if(poster.large != null) return poster.large;
 		if(poster.medium != null) return poster.medium;
@@ -115,6 +187,10 @@ public class CatalogMedia implements Serializable {
 	}
 
 	public void setPoster(String poster) {
+		if(this.poster == null) {
+			this.poster = new ImageVersions();
+		}
+
 		this.poster.extraLarge = poster;
 		this.poster.large = poster;
 		this.poster.medium = poster;
@@ -132,5 +208,13 @@ public class CatalogMedia implements Serializable {
 		@Serial
 		private static final long serialVersionUID = 1;
 		public String extraLarge, large, medium;
+
+		public ImageVersions(@NonNull ImageVersions original) {
+			extraLarge = original.extraLarge;
+			large = original.large;
+			medium = original.medium;
+		}
+
+		public ImageVersions() {}
 	}
 }

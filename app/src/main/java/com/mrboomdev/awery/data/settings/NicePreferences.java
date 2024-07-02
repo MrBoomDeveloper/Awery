@@ -83,6 +83,10 @@ public class NicePreferences implements SettingsDataHandler {
 		return prefs.contains(key);
 	}
 
+	public boolean getBoolean(String key, boolean defaultValue) {
+		return getBoolean(key, (Boolean) defaultValue);
+	}
+
 	/**
 	 * @see #getBoolean(String)
 	 * @return the value of the specified key, or the default value if the key does not exist
@@ -107,7 +111,7 @@ public class NicePreferences implements SettingsDataHandler {
 	 * @return the value of the specified key or false if the key does not exist
 	 * @author MrBoomDev
 	 */
-	public boolean getBoolean(String key) {
+	public Boolean getBoolean(String key) {
 		if(contains(key)) {
 			return getBoolean(key, null);
 		}

@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.search;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
@@ -76,23 +77,26 @@ public class SearchActivity extends AppCompatActivity {
 	public static final String EXTRA_GLOBAL_PROVIDER_ID = "source";
 	public static final String RESULT_EXTRA_MEDIA = "media";
 	private static final int LOADING_VIEW_TYPE = 1;
+	private static final String SAVED_FILTERS = "filters";
+	private static final String SAVED_ITEMS = "items";
+	private static final String SAVED_DID_REACHED_END = "did_reached_end";
 	private static final String TAG = "SearchActivity";
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private final List<CatalogMedia> items = new ArrayList<>();
-	private final List<SettingsItem> filters = new ArrayList<>();
+	private ArrayList<SettingsItem> filters = new ArrayList<>();
+	private ArrayList<CatalogMedia> items = new ArrayList<>();
 	private ScreenSearchBinding binding;
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> loadingAdapter;
 	private ExtensionProvider source;
 	private boolean didReachedEnd;
-	private int searchId, currentPage;
+	private int searchId;
 
-	private final SettingsItem queryFilter = new SettingsItem(
+	private SettingsItem queryFilter = new SettingsItem(
 			SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 
-	private final SettingsItem pageFilter = new SettingsItem(
-			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
+	private SettingsItem pageFilter = new SettingsItem(
+			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0);
 
 	/** We initially set this value to "true" so that list won't try
 	 to load anything because we haven't typed anything yet. **/
@@ -105,6 +109,12 @@ public class SearchActivity extends AppCompatActivity {
 		ThemeManager.apply(this);
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
+
+		if(savedInstanceState != null) {
+			filters = (ArrayList<SettingsItem>) savedInstanceState.getSerializable(SAVED_FILTERS);
+			items = (ArrayList<CatalogMedia>) savedInstanceState.getSerializable(SAVED_ITEMS);
+			didReachedEnd = savedInstanceState.getBoolean(SAVED_DID_REACHED_END);
+		}
 
 		var columnsCountLand = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.getValue());
 		var columnsCountPort = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.getValue());
@@ -119,7 +129,8 @@ public class SearchActivity extends AppCompatActivity {
 			if(foundQuery != null) queryFilter.setValue(foundQuery.getStringValue());
 		}
 
-		applyFilters(filters);
+		if(savedInstanceState == null) applyFilters(filters, true);
+		else applyFilters(this.filters, false);
 
 		try {
 			this.source = ExtensionProvider.forGlobalId(Objects.requireNonNull(
@@ -132,12 +143,13 @@ public class SearchActivity extends AppCompatActivity {
 		binding = ScreenSearchBinding.inflate(getLayoutInflater());
 		binding.header.edittext.setText(queryFilter.getStringValue());
 		binding.header.edittext.requestFocus();
+		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
 		binding.header.back.setOnClickListener(v -> finish());
 		binding.header.clear.setOnClickListener(v -> binding.header.edittext.setText(null));
 
 		binding.header.filters.setOnClickListener(v -> new FiltersSheet(this, this.filters, source, newFilters -> {
-			applyFilters(newFilters);
+			applyFilters(newFilters, true);
 			didReachedEnd = false;
 			search(0);
 		}).show());
@@ -225,15 +237,23 @@ public class SearchActivity extends AppCompatActivity {
 			}
 		});
 
-		doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra(EXTRA_LOADED_MEDIA), loadedMedia -> {
-			for(var item : loadedMedia) {
+		if(items.isEmpty()) {
+			doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra(EXTRA_LOADED_MEDIA), loadedMedia -> {
+				for(var item : loadedMedia) {
+					ids.put(item, idGenerator.getLong());
+				}
+
+				isLoading = false;
+				items.addAll(loadedMedia);
+				adapter.notifyItemRangeInserted(0, items.size());
+			});
+		} else {
+			for(var item : items) {
 				ids.put(item, idGenerator.getLong());
 			}
 
 			isLoading = false;
-			items.addAll(loadedMedia);
-			adapter.notifyItemRangeInserted(0, items.size());
-		});
+		}
 
 		setContentView(binding.getRoot());
 
@@ -314,7 +334,7 @@ public class SearchActivity extends AppCompatActivity {
 						}
 
 						activate(found, found.getParent());
-						applyFilters(List.of(root));
+						applyFilters(List.of(root), true);
 						AweryLifecycle.runOnUiThread(this::done, SearchActivity.this.binding.recycler);
 					}
 				}
@@ -336,21 +356,38 @@ public class SearchActivity extends AppCompatActivity {
 		}
 	}
 
-	private void applyFilters(@Nullable List<SettingsItem> newFilters) {
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putSerializable(SAVED_FILTERS, filters);
+		outState.putSerializable(SAVED_ITEMS, items);
+		outState.putBoolean(SAVED_DID_REACHED_END, didReachedEnd);
+		super.onSaveInstanceState(outState);
+	}
+
+	private void applyFilters(@Nullable List<SettingsItem> newFilters, boolean ignoreInternalFilters) {
 		this.filters.clear();
 
 		if(newFilters != null) {
 			this.filters.addAll(newFilters);
 
 			var foundQuery = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
-			if(foundQuery != null) this.filters.remove(foundQuery);
-
 			var foundPage = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_PAGE));
-			if(foundPage != null) this.filters.remove(foundPage);
+
+			if(foundQuery != null) {
+				if(ignoreInternalFilters) this.filters.remove(foundQuery);
+				else queryFilter = foundQuery;
+			}
+
+			if(foundPage != null) {
+				if(ignoreInternalFilters) this.filters.remove(foundPage);
+				else pageFilter = foundPage;
+			}
 		}
 
-		this.filters.add(queryFilter);
-		this.filters.add(pageFilter);
+		if(ignoreInternalFilters) {
+			this.filters.add(queryFilter);
+			this.filters.add(pageFilter);
+		}
 	}
 
 	private void tryLoadMore() {
@@ -359,7 +396,8 @@ public class SearchActivity extends AppCompatActivity {
 
 			if(binding.recycler.getLayoutManager() instanceof LinearLayoutManager manager
 					&& manager.findLastVisibleItemPosition() >= lastIndex) {
-				search(currentPage + 1);
+				pageFilter.setValue(pageFilter.getIntegerValue() + 1);
+				search(pageFilter.getIntegerValue());
 			}
 		}
 	}
@@ -424,7 +462,6 @@ public class SearchActivity extends AppCompatActivity {
 					runOnUiThread(() -> {
 						if(wasSearchId != searchId) return;
 						SearchActivity.this.isLoading = false;
-						SearchActivity.this.currentPage = page;
 
 						if(page == 0) {
 							SearchActivity.this.items.addAll(filteredItems);
@@ -576,7 +613,7 @@ public class SearchActivity extends AppCompatActivity {
 
 			try {
 				Glide.with(binding.getRoot())
-						.load(item.poster.large)
+						.load(item.getLargePoster())
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(binding.mediaItemBanner);
 			} catch(IllegalArgumentException e) {

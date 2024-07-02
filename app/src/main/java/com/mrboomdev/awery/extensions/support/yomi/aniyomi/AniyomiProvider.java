@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
 import static com.mrboomdev.awery.util.NiceUtils.findMap;
@@ -477,6 +476,10 @@ public abstract class AniyomiProvider extends YomiProvider {
 
 	@Override
 	protected SharedPreferences getSharedPreferences() {
-		return getAnyContext().getSharedPreferences("source_" + source.getId(), 0);
+		if(source instanceof ConfigurableAnimeSource configurableAnimeSource) {
+			return configurableAnimeSource.getSourcePreferences();
+		}
+
+		throw new UnsupportedOperationException();
 	}
 }

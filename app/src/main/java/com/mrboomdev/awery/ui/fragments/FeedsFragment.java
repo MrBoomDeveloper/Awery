@@ -116,6 +116,46 @@ public abstract class FeedsFragment extends Fragment {
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
+		var finishCallback = new ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>() {
+
+			@SuppressLint("NotifyDataSetChanged")
+			@Override
+			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
+				if(currentLoadId != loadId) return;
+
+				var filtered = MediaUtils.filterMediaSync(searchResults);
+				var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
+
+				if(filteredResults.isEmpty()) {
+					onFailure(new ZeroResultsException("All results were filtered out.", R.string.no_media_found));
+					return;
+				}
+
+				runOnUiThread(() -> {
+					rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, filteredResults));
+
+					// I hope it'll don't do anything bad
+					if(rowsAdapter.getItemCount() < 2) {
+						Objects.requireNonNull(binding.recycler.getAdapter()).notifyDataSetChanged();
+					}
+				}, binding.recycler);
+
+				tryToLoadNextFeed(feed, currentLoadId);
+			}
+
+			@Override
+			public void onFailure(Throwable e) {
+				Log.e(TAG, "Failed to load an feed!", e);
+
+				if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
+					runOnUiThread(() -> failedRowsAdapter.addCategory(
+							new MediaCategoriesAdapter.Category(feed, e)), binding.recycler);
+				}
+
+				tryToLoadNextFeed(feed, currentLoadId);
+			}
+		};
+
 		try {
 			var provider = ExtensionProvider.forGlobalId(feed.sourceManager, feed.extensionId, feed.sourceId);
 
@@ -144,39 +184,7 @@ public abstract class FeedsFragment extends Fragment {
 				}
 			}
 
-			provider.searchMedia(context, filters, new ExtensionProvider.ResponseCallback<>() {
-				@SuppressLint("NotifyDataSetChanged")
-				@Override
-				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> catalogMedia) {
-					if(currentLoadId != loadId) return;
-
-					var filtered = MediaUtils.filterMediaSync(catalogMedia);
-					var filteredResults = CatalogSearchResults.of(filtered, catalogMedia.hasNextPage());
-
-					runOnUiThread(() -> {
-						rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, filteredResults));
-
-						// I hope it'll don't do anything bad
-						if(rowsAdapter.getItemCount() < 2) {
-							Objects.requireNonNull(binding.recycler.getAdapter()).notifyDataSetChanged();
-						}
-					}, binding.recycler);
-
-					tryToLoadNextFeed(feed, currentLoadId);
-				}
-
-				@Override
-				public void onFailure(Throwable e) {
-					Log.e(TAG, "Failed to load an feed!", e);
-
-					if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
-						runOnUiThread(() -> failedRowsAdapter.addCategory(
-								new MediaCategoriesAdapter.Category(feed, e)), binding.recycler);
-					}
-
-					tryToLoadNextFeed(feed, currentLoadId);
-				}
-			});
+			provider.searchMedia(context, filters, finishCallback);
 		} catch(ExtensionNotInstalledException e) {
 			Log.e(TAG, "Extension isn't installed, can't load the feed!", e);
 

@@ -1,10 +1,13 @@
 package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -57,13 +60,18 @@ public class MediaActivity extends AppCompatActivity {
 		binding = ScreenMediaDetailsBinding.inflate(getLayoutInflater());
 		binding.pager.setUserInputEnabled(false);
 		binding.pager.setPageTransformer(new FadeTransformer());
+		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
 		ViewUtil.setOnApplyUiInsetsListener(binding.navigation, insets -> {
-			if(binding.navigation instanceof NavigationRailView) {
-				binding.navigation.setPadding(insets.left, insets.top, 0, 0);
+			var nav = (NavigationBarView) binding.navigation;
+			nav.setBackgroundTintList(ColorStateList.valueOf(SurfaceColors.SURFACE_2.getColor(this)));
+			getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
+
+			if(nav instanceof NavigationRailView) {
+				nav.setPadding(insets.left, insets.top, 0, 0);
 			} else {
-				setBottomPadding(binding.navigation, insets.bottom, false);
-				getWindow().setNavigationBarColor(SurfaceColors.SURFACE_4.getColor(this));
+				setBottomPadding(nav, insets.bottom, false);
+				getWindow().setNavigationBarColor(SurfaceColors.SURFACE_2.getColor(this));
 			}
 
 			return true;

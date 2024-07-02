@@ -17,6 +17,7 @@ import android.util.Log;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -34,6 +35,8 @@ import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 import com.squareup.moshi.Json;
+
+import org.jetbrains.annotations.Contract;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -257,7 +260,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 	@Override
 	public Object restoreValue(@NonNull SettingsItem item) {
-		return getPrefs().getBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled");
+		return getPrefs().getBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", true);
 	}
 
 	private class RepositorySetting extends CustomSettingsItem {
@@ -366,6 +369,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		@Override
 		public void saveValue(SettingsItem item, Object newValue) {}
 
+		@Nullable
+		@Contract(pure = true)
 		@Override
 		public Object restoreValue(SettingsItem item) {
 			return null;

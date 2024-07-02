@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import androidx.annotation.NonNull;
@@ -8,6 +10,8 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
+
+import java.util.HashMap;
 
 import eu.kanade.tachiyomi.animesource.model.SAnime;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
@@ -39,8 +43,15 @@ public class AniyomiMedia extends CatalogMedia {
 		this.description = anime.getDescription();
 		this.anime = anime;
 
-		this.authors.put("author", anime.getAuthor());
-		this.authors.put("artist", anime.getArtist());
+		if(anime.getAuthor() != null) {
+			if(authors == null) authors = new HashMap<>();
+			authors.put("Author", anime.getAuthor());
+		}
+
+		if(anime.getArtist() != null) {
+			if(authors == null) authors = new HashMap<>();
+			authors.put("Artist", anime.getArtist());
+		}
 
 		doIfNotNull(anime.getGenre(), genre -> {
 			this.genres = stream(genre.split(", "))
@@ -62,20 +73,25 @@ public class AniyomiMedia extends CatalogMedia {
 		}
 
 		var anime = new SAnimeImpl();
-		anime.setTitle(media.getTitle());
+		anime.setTitle(requireNonNullElse(media.getTitle(), "No title"));
 		anime.setDescription(media.description);
-		anime.setThumbnail_url(media.poster.extraLarge);
-		anime.setUrl(media.extra);
-		anime.setAuthor(media.authors.get("author"));
-		anime.setArtist(media.authors.get("artist"));
+		anime.setThumbnail_url(media.getBestPoster());
+		anime.setUrl(requireNonNull(media.extra));
 
-		anime.setStatus(switch(media.status) {
-			case ONGOING -> SAnime.ONGOING;
-			case COMPLETED -> SAnime.COMPLETED;
-			case PAUSED -> SAnime.ON_HIATUS;
-			case CANCELLED -> SAnime.CANCELLED;
-			case UNKNOWN, COMING_SOON -> 0;
-		});
+		if(media.authors != null) {
+			anime.setAuthor(media.authors.get("Author"));
+			anime.setArtist(media.authors.get("Artist"));
+		}
+
+		if(media.status != null) {
+			anime.setStatus(switch(media.status) {
+				case ONGOING -> SAnime.ONGOING;
+				case COMPLETED -> SAnime.COMPLETED;
+				case PAUSED -> SAnime.ON_HIATUS;
+				case CANCELLED -> SAnime.CANCELLED;
+				case UNKNOWN, COMING_SOON -> 0;
+			});
+		}
 
 		anime.setGenre(media.genres == null ? null : stream(media.genres)
 				.map(String::trim)

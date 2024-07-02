@@ -245,6 +245,7 @@ public class ExceptionDescriptor {
 		return getGenericMessage(t);
 	}
 
+	@NonNull
 	private static String getHttpErrorTitle(Context context, int code) {
 		return switch(code) {
 			case 400, 422 -> "Bad request";
@@ -253,22 +254,22 @@ public class ExceptionDescriptor {
 			case 429 -> context.getString(R.string.too_much_requests);
 			case 500, 503 -> context.getString(R.string.server_down);
 			case 504 -> context.getString(R.string.timed_out);
-			default -> "Http error " + code;
+			default -> "Unknown network error";
 		};
 	}
 
+	@NonNull
 	private static String getHttpErrorMessage(Context context, int code) {
-		return switch(code) {
-			case 400 -> "Error 400. The request was invalid, please try again later.";
-			case 401 -> "Error 401. You are not logged in, please log in and try again.";
-			case 403 -> "Error 403. You have no access to this resource, try logging into your account.";
+		return "(" + code + ") " + switch(code) {
+			case 400, 422 -> "The request was invalid, please try again later.";
+			case 401 -> "You are not logged in, please log in and try again.";
+			case 403 -> "You have no access to this resource, try logging into your account.";
 			case 404 -> context.getString(R.string.not_found_detailed);
-			case 422 -> "Error 422. The request was invalid, please try again later.";
-			case 429 -> "Error 429. You have exceeded the rate limit, please try again later.";
-			case 500 -> "Error 500. An internal server error has occurred, please try again later.";
-			case 503 -> "Error 503. The server is currently unavailable, please try again later.";
-			case 504 -> "Error 504. The connection timed out, please try again later.";
-			default -> "(" + code + ") " + context.getString(R.string.unknown_error);
+			case 429 -> "You have exceeded the rate limit, please try again later.";
+			case 500 -> "An internal server error has occurred, please try again later.";
+			case 503 -> "The server is currently unavailable, please try again later.";
+			case 504 -> "The connection timed out, please try again later.";
+			default ->  context.getString(R.string.unknown_error);
 		};
 	}
 

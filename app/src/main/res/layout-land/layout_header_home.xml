@@ -38,17 +38,20 @@
         app:layout_constraintLeft_toRightOf="@id/logo"
         app:layout_constraintTop_toTopOf="@id/logo" />
 
-    <ImageView
-        style="@style/AweryButtonPopupCircle"
-        android:id="@+id/search"
+    <com.google.android.material.search.SearchBar
+        style="SearchBar"
+        android:id="@+id/searchBar"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginHorizontal="32dp"
+        android:hint="Search"
+        app:backgroundTint="#55888888"
+        android:backgroundTint="?attr/colorSecondaryContainer"
+        app:defaultMarginsEnabled="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/notifications"
-        android:layout_marginRight="12dp"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:src="@drawable/ic_search"
-        android:contentDescription="@string/search" />
+        app:layout_constraintLeft_toRightOf="@id/title"
+        app:layout_constraintRight_toLeftOf="@id/notifications" />
 
     <ImageView
         style="@style/AweryButtonPopupCircle"

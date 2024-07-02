@@ -1,7 +1,10 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -54,10 +57,25 @@ public class SetupActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
+		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenSetupBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
+		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+
+		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+			binding.getRoot().setPadding(insets.left, insets.top, insets.right, insets.bottom);
+			return false;
+		});
+
+		setOnApplyUiInsetsListener(binding.recycler, insets -> {
+			if(isLandscape()) {
+
+			}
+
+			return true;
+		});
 
 		binding.continueButton.setOnClickListener(v -> tryToStartNextStep());
 		binding.backButton.setOnClickListener(v -> finish());

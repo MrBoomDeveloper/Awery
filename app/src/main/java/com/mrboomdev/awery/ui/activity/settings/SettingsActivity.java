@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
@@ -115,6 +116,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		doIfNotNull(createView(item), view -> {
 			setContentView(view.getRoot());
+			view.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
 			activityResultLauncher = registerForActivityResult(
 					new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -237,8 +239,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			@NonNull ScreenSettingsBinding binding,
 			@NonNull SettingsAdapter settingsAdapter
 	) {
-		settingsAdapter.getScreen().restoreSavedValues();
-
 		var config = new ConcatAdapter.Config.Builder()
 				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
 				.build();

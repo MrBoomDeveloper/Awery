@@ -113,8 +113,11 @@ public class SettingsItem implements Serializable {
 		this.tintIcon = item.tintIcon;
 		this.iconSize = item.iconSize;
 
-		this.title = item.title != null ? item.title : item.getTitle(getAnyContext());
-		this.description = item.description != null ? item.description : item.getDescription(getAnyContext());
+		this.title = item.title != null ? item.title
+				: item.getTitle(getAnyContext());
+
+		this.description = item.description != null ? item.description
+				: item.getDescription(getAnyContext());
 
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;

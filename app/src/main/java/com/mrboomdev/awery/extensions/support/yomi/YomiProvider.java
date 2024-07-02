@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
+import static com.mrboomdev.awery.util.NiceUtils.find;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,6 +24,7 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class YomiProvider extends ExtensionProvider {
@@ -102,7 +105,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 					var title = entries[index];
 					var value = values[index];
 
-					items.add(new SettingsItem.Builder(SettingsItemType.STRING)
+					items.add(new SettingsItem.Builder()
 							.setTitle(title.toString())
 							.setKey(value.toString())
 							.build());
@@ -116,7 +119,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 					var title = entries[index];
 					var value = values[index];
 
-					items.add(new SettingsItem.Builder(SettingsItemType.STRING)
+					items.add(new SettingsItem.Builder()
 							.setTitle(title.toString())
 							.setKey(value.toString())
 							.build());
@@ -140,27 +143,46 @@ public abstract class YomiProvider extends ExtensionProvider {
 		@Nullable
 		@Override
 		public String getDescription(Context context) {
-			return preference.getSummary() == null ? null : preference.getSummary().toString().trim();
+			if(preference.getSummary() != null) {
+				var description = preference.getSummary().toString().trim();
+
+				if(getType() == SettingsItemType.STRING && Objects.equals(getStringValue(), description)) {
+					return "${VALUE}";
+				}
+
+				if(getType() == SettingsItemType.SELECT && find(getItems(), item -> Objects.equals(item.getTitle(null), description)) != null) {
+					return "${VALUE}";
+				}
+
+				return description;
+			}
+
+			return null;
 		}
 
+		@SuppressLint("ApplySharedPref")
 		@Override
 		@SuppressWarnings("unchecked")
 		public void saveValue(Object value) {
 			var prefs = getSharedPreferences().edit();
 
-			if(preference instanceof TwoStatePreference) {
+			if(preference instanceof TwoStatePreference twoStatePreference) {
+				twoStatePreference.setChecked((boolean) value);
 				prefs.putBoolean(preference.getKey(), (boolean) value);
-			} else if(preference instanceof ListPreference) {
-				prefs.putString(preference.getKey(), value.toString());
-			} else if(preference instanceof MultiSelectListPreference) {
+			} else if(preference instanceof ListPreference listPreference) {
+				listPreference.setValue((String) value);
+				prefs.putString(preference.getKey(), (String) value);
+			} else if(preference instanceof MultiSelectListPreference multiSelectListPreference) {
+				multiSelectListPreference.setValues((Set<String>) value);
 				prefs.putStringSet(preference.getKey(), (Set<String>) value);
-			} else if(preference instanceof EditTextPreference textPref) {
-				prefs.putString(preference.getKey(), value.toString());
+			} else if(preference instanceof EditTextPreference editTextPreference) {
+				editTextPreference.setText((String) value);
+				prefs.putString(preference.getKey(), (String) value);
 			} else {
 				throw new IllegalStateException("Unknown preference type!");
 			}
 
-			prefs.apply();
+			prefs.commit();
 		}
 
 		@NonNull
