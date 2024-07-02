@@ -293,7 +293,7 @@
     <string name="server_down">서버가 다운됨!</string>
     <string name="too_much_requests">요청이 너무 많음!</string>
     <string name="something_went_wrong">문제가 발생했습니다!</string>
-    <string name="not_found_detailed">오류 404. 요청한 리소스를 찾을 수 없습니다!</string>
+    <string name="not_found_detailed">요청한 리소스를 찾을 수 없습니다!</string>
     <string name="content">컨텐츠</string>
     <string name="yes">예</string>
     <string name="no">아니오</string>
