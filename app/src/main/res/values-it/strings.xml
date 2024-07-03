@@ -28,7 +28,7 @@
     <string name="sort_by">Ordina per</string>
     <string name="genre">Genere</string>
     <string name="top_score">Miglior Punteggio</string>
-    <string name="recently_updated">Aggiornato di recente</string>
+    <string name="recently_updated">Aggiornati di recente</string>
     <string name="continue_reading">Continua a Leggere</string>
     <string name="continue_watching">Continua a Guardare</string>
     <string name="recommended">Consigliati</string>
@@ -107,7 +107,7 @@
     <string name="auto_skip_fillers">Salta automaticamente i Fillers</string>
     <string name="auto_skip_fillers_info">Salta gli episodi Filler quando si passa all\'episodio successivo.</string>
     <string name="update_progress">Aggiorna Progressi</string>
-    <string name="ask_update_progress_anime">Richiedi ad ogni Media \"Singolarmente\"</string>
+    <string name="ask_update_progress_anime">Richiedi ad ogni media \"Singolarmente\"</string>
     <string name="watch_complete_percentage">Guarda percentuale di aggiornamento</string>
     <string name="behaviour">Comportamento</string>
     <string name="always_continue">Continua sempre da dove hai lasciato</string>
@@ -307,7 +307,7 @@
     <string name="create_list">Creare una nuova lista</string>
     <string name="list_name">Nome lista</string>
     <string name="no_title">Senza titolo</string>
-    <string name="popular">Popolare</string>
+    <string name="popular">Anime Popolari</string>
     <string name="movies">Film</string>
     <string name="cancelled">Cancellato</string>
     <string name="completed">Completato</string>
@@ -327,7 +327,7 @@
     <string name="dalayed">Rimandato</string>
     <string name="dropped">Abbandonato</string>
     <string name="adult_content">Contenuto per adulti</string>
-    <string name="trending">Tendenza</string>
+    <string name="trending">Anime di Tendenza</string>
     <string name="login">Accedi</string>
     <string name="english">Inglese</string>
     <string name="korean">Coreano</string>
@@ -460,4 +460,8 @@
     <string name="account_required">Account richiesto</string>
     <string name="extension_crashed">L\'estensione si è bloccata!</string>
     <string name="select_tracker">Seleziona un tracker</string>
+    <string name="request_invalid_detailed">Errore 400. La richiesta non era valida, riprova più tardi.</string>
+    <string name="no_access_detailed">Errore 403. Non hai accesso a questa risorsa, prova ad accedere al tuo account e riprova.</string>
+    <string name="rate_limited_detailed">Errore 429. Hai superato il limite di tentativi, riprova più tardi.</string>
+    <string name="not_logged_detailed">Errore 401. Non hai effettuato l\'accesso, effettua il login e riprova.</string>
 </resources>
