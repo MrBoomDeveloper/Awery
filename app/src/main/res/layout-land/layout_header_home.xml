@@ -55,6 +55,20 @@
 
     <ImageView
         style="@style/AweryButtonPopupCircle"
+        android:id="@+id/search"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/notifications"
+        android:layout_marginRight="12dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:src="@drawable/ic_search"
+        android:contentDescription="@string/search" />
+
+    <ImageView
+        style="@style/AweryButtonPopupCircle"
         android:id="@+id/notifications"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

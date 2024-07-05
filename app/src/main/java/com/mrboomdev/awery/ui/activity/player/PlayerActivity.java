@@ -421,6 +421,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@SuppressWarnings("unchecked")
 	private void loadData() {
 		onPlaybackStateChanged(Player.STATE_BUFFERING);
+		binding.loadingStatus.setText("Loading videos list...");
 		var intent = getIntent();
 
 		this.episode = (CatalogEpisode) intent.getSerializableExtra("episode");
@@ -540,13 +541,17 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				binding.slider.setDuration(player.getDuration());
 
 				binding.loadingCircle.setVisibility(View.GONE);
+				binding.loadingStatus.setVisibility(View.GONE);
 				binding.pause.setVisibility(View.VISIBLE);
 			}
 
 			case Player.STATE_BUFFERING -> {
 				isVideoBuffering = true;
 
+				binding.loadingStatus.setText("Buffering video...");
+
 				binding.loadingCircle.setVisibility(View.VISIBLE);
+				binding.loadingStatus.setVisibility(View.VISIBLE);
 				binding.pause.setVisibility(View.INVISIBLE);
 			}
 

@@ -9,7 +9,6 @@ import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -471,15 +470,8 @@ public abstract class AniyomiProvider extends YomiProvider {
 	public void setupPreferenceScreen(PreferenceScreen screen) {
 		if(source instanceof ConfigurableAnimeSource configurableAnimeSource) {
 			configurableAnimeSource.setupPreferenceScreen(screen);
+		} else {
+			throw new UnsupportedOperationException();
 		}
-	}
-
-	@Override
-	protected SharedPreferences getSharedPreferences() {
-		if(source instanceof ConfigurableAnimeSource configurableAnimeSource) {
-			return configurableAnimeSource.getSourcePreferences();
-		}
-
-		throw new UnsupportedOperationException();
 	}
 }

@@ -4,7 +4,6 @@ import static com.mrboomdev.awery.util.NiceUtils.find;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +34,11 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 	public abstract YomiManager getManager();
 
-	protected abstract void setupPreferenceScreen(PreferenceScreen screen);
-
-	protected abstract SharedPreferences getSharedPreferences();
+	/**
+	 * @throws UnsupportedOperationException If the source doesn't implement an Configurable interface
+	 * @author MrBoomDev
+	 */
+	protected abstract void setupPreferenceScreen(PreferenceScreen screen) throws UnsupportedOperationException;
 
 	@NonNull
 	public static String concatLink(@NonNull String domain, String other) {
@@ -56,8 +57,15 @@ public abstract class YomiProvider extends ExtensionProvider {
 	@SuppressLint("RestrictedApi")
 	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {
 		var manager = new PreferenceManager(context);
+		manager.setSharedPreferencesName("source_" + getId());
 		var screen = manager.createPreferenceScreen(context);
-		setupPreferenceScreen(screen);
+
+		try {
+			setupPreferenceScreen(screen);
+		} catch(UnsupportedOperationException e) {
+			callback.onFailure(e);
+			return;
+		}
 
 		if(screen.getPreferenceCount() == 0) {
 			callback.onFailure(new IllegalStateException("Extension doesn't support settings!"));
@@ -89,7 +97,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 		});
 	}
 
-	private class YomiSetting extends CustomSettingsItem {
+	private static class YomiSetting extends CustomSettingsItem {
 		private final List<SettingsItem> items;
 		private final Preference preference;
 
@@ -164,34 +172,24 @@ public abstract class YomiProvider extends ExtensionProvider {
 		@Override
 		@SuppressWarnings("unchecked")
 		public void saveValue(Object value) {
-			var prefs = getSharedPreferences().edit();
-
 			if(preference instanceof TwoStatePreference twoStatePreference) {
 				twoStatePreference.setChecked((boolean) value);
-				prefs.putBoolean(preference.getKey(), (boolean) value);
 			} else if(preference instanceof ListPreference listPreference) {
 				listPreference.setValue((String) value);
-				prefs.putString(preference.getKey(), (String) value);
 			} else if(preference instanceof MultiSelectListPreference multiSelectListPreference) {
 				multiSelectListPreference.setValues((Set<String>) value);
-				prefs.putStringSet(preference.getKey(), (Set<String>) value);
 			} else if(preference instanceof EditTextPreference editTextPreference) {
 				editTextPreference.setText((String) value);
-				prefs.putString(preference.getKey(), (String) value);
 			} else {
 				throw new IllegalStateException("Unknown preference type!");
 			}
-
-			prefs.commit();
 		}
 
 		@NonNull
 		@Override
 		public Boolean getBooleanValue() {
-			var prefs = getSharedPreferences();
-
 			if(preference instanceof TwoStatePreference switchPref) {
-				return prefs.getBoolean(preference.getKey(), switchPref.isChecked());
+				return switchPref.isChecked();
 			}
 
 			throw new IllegalStateException("Unknown preference type!");
@@ -199,12 +197,10 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 		@Override
 		public String getStringValue() {
-			var prefs = getSharedPreferences();
-
 			if(preference instanceof ListPreference listPref) {
-				return prefs.getString(preference.getKey(), listPref.getValue());
+				return listPref.getValue();
 			} else if(preference instanceof EditTextPreference textPref) {
-				return prefs.getString(preference.getKey(), textPref.getText());
+				return textPref.getText();
 			}
 
 			throw new IllegalStateException("Unknown preference type!");
@@ -212,10 +208,8 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 		@Override
 		public Set<String> getStringSetValue() {
-			var prefs = getSharedPreferences();
-
 			if(preference instanceof MultiSelectListPreference multiSelectPref) {
-				return prefs.getStringSet(preference.getKey(), multiSelectPref.getValues());
+				return multiSelectPref.getValues();
 			}
 
 			throw new IllegalStateException("Unknown preference type!");

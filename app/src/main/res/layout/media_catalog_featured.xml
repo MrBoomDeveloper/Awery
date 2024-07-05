@@ -150,7 +150,10 @@
 
     </LinearLayout>
 
+    <!-- Leave some space for page indicators -->
+
     <LinearLayout
+        android:layout_marginBottom="16dp"
         android:id="@+id/actions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

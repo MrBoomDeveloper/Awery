@@ -14,5 +14,3 @@ interface ConfigurableAnimeSource : AnimeSource {
 }
 
 fun ConfigurableAnimeSource.preferenceKey(): String = "source_$id"
-
-fun ConfigurableAnimeSource.sourcePreferences(): SharedPreferences = Injekt.get<Application>().getSharedPreferences(preferenceKey(), 0)

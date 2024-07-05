@@ -52,7 +52,7 @@ import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.search.MultiSearchActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
-import com.mrboomdev.awery.ui.fragments.FeedsFragment;
+import com.mrboomdev.awery.ui.fragments.feeds.FeedsFragment;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
@@ -345,9 +345,15 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public static class HomeFeedsFragment extends FeedsFragment {
+		private LayoutHeaderHomeBinding header;
+		private boolean isHeaderTransparent;
 
 		@Override
 		protected View getHeader(ViewGroup parent) {
+			if(header != null) {
+				return header.getRoot();
+			}
+
 			var binding = LayoutHeaderHomeBinding.inflate(
 					LayoutInflater.from(parent.getContext()), parent, false);
 
@@ -357,18 +363,13 @@ public class MainActivity extends AppCompatActivity {
 			// TODO: Make visible once notifications activity will be done
 			binding.notifications.setVisibility(View.GONE);
 
-			if(binding.search != null) {
-				binding.search.setOnClickListener(v -> {
-					var intent = new Intent(requireActivity(), MultiSearchActivity.class);
-					startActivity(intent);
-				});
-			}
+			binding.search.setOnClickListener(v -> {
+				var intent = new Intent(requireActivity(), MultiSearchActivity.class);
+				startActivity(intent);
+			});
 
 			if(binding.searchBar != null) {
-				binding.searchBar.setOnClickListener(v -> {
-					var intent = new Intent(requireActivity(), MultiSearchActivity.class);
-					startActivity(intent);
-				});
+				binding.searchBar.setOnClickListener(v -> binding.search.performClick());
 			}
 
 			binding.settingsWrapper.setOnClickListener(v -> {
@@ -391,7 +392,48 @@ public class MainActivity extends AppCompatActivity {
 				return false;
 			});
 
+			header = binding;
+
+			if(isHeaderTransparent) {
+				updateHeader(false);
+			}
+
 			return binding.getRoot();
+		}
+
+		@Override
+		public void setContentBehindToolbarEnabled(boolean isEnabled) {
+			super.setContentBehindToolbarEnabled(isEnabled);
+			isHeaderTransparent = isEnabled;
+
+			if(header != null) {
+				updateHeader(isEnabled);
+			}
+		}
+
+		private void updateHeader(boolean isTransparent) {
+			if(isTransparent) {
+				if(header.searchBar != null) {
+					header.logo.setVisibility(View.GONE);
+					header.searchBar.setVisibility(View.GONE);
+				}
+
+				header.title.setVisibility(View.GONE);
+				header.search.setVisibility(View.VISIBLE);
+			} else {
+				header.title.setVisibility(View.VISIBLE);
+				header.logo.setVisibility(View.VISIBLE);
+
+				if(header.searchBar != null) {
+					header.search.setVisibility(View.GONE);
+					header.searchBar.setVisibility(View.VISIBLE);
+				}
+			}
+		}
+
+		@Override
+		protected boolean canHaveOtherViewTypes() {
+			return true;
 		}
 
 		@Override

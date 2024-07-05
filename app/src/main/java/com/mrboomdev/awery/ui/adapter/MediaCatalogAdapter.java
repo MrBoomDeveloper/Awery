@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.MediaUtils.launchMediaActivity;
 import static com.mrboomdev.awery.util.MediaUtils.openMediaActionsMenu;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -20,9 +21,7 @@ import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -97,8 +96,10 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			openMediaActionsMenu(parent.getContext(), media, () -> MediaUtils.isMediaFiltered(media, isFiltered -> {
 				if(!isFiltered) return;
 
-				items.remove(media);
-				notifyItemRemoved(index);
+				runOnUiThread(() -> {
+					items.remove(media);
+					notifyItemRemoved(index);
+				});
 			}));
 			return true;
 		});

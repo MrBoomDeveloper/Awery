@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,7 +11,8 @@
         android:id="@+id/aspect_ratio_frame"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
 
         <SurfaceView
             android:id="@+id/surface_view"
@@ -292,14 +293,33 @@
     </LinearLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/loading_circle"
+        android:id="@+id/loadingCircle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
         tools:visibility="visible"
-        android:layout_gravity="center"
         android:scaleX="1.5"
         android:scaleY="1.5"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
-</FrameLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/loadingStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent=".75"
+        android:textColor="#ffffff"
+        tools:text="@tools:sample/lorem/random"
+        android:gravity="center"
+        android:layout_marginTop="25dp"
+        android:textSize="15sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/loadingCircle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

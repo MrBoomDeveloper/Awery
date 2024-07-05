@@ -29,8 +29,9 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.internal.InternalProviders;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.ui.fragments.FeedsFragment;
+import com.mrboomdev.awery.ui.fragments.feeds.FeedsFragment;
 import com.mrboomdev.awery.util.NiceUtils;
 
 import java.io.File;
@@ -68,7 +69,33 @@ public class MultiSearchActivity extends AppCompatActivity {
 		return stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_MEDIA_SEARCH))
 				.flatMap(NiceUtils::stream)
-				.filter(provider -> !(provider instanceof InternalProviders.Lists))
+				.filter(provider -> {
+					if(provider instanceof InternalProviders.Lists) {
+						return false;
+					}
+
+					var adultMode = AwerySettings.ADULT_MODE.getValue();
+
+					if(adultMode != null) {
+						switch(adultMode) {
+							case SAFE -> {
+								switch(provider.getAdultContentMode()) {
+									case ONLY, PARTIAL -> {
+										return false;
+									}
+								}
+							}
+
+							case ONLY -> {
+								if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
+									return false;
+								}
+							}
+						}
+					}
+
+					return true;
+				})
 				.map(provider -> {
 					var feed = new CatalogFeed();
 					feed.sourceManager = provider.getManager().getId();
@@ -91,6 +118,11 @@ public class MultiSearchActivity extends AppCompatActivity {
 			if(savedInstanceState != null) {
 				query = savedInstanceState.getString(SAVED_QUERY);
 			}
+		}
+
+		@Override
+		protected boolean canHaveOtherViewTypes() {
+			return false;
 		}
 
 		@Override

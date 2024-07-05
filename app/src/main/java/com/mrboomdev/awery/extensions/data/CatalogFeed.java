@@ -62,7 +62,7 @@ public class CatalogFeed implements Serializable {
 	public List<String> features = new ArrayList<>();
 	@ColumnInfo(name = "display_mode")
 	@Json(name = "display_mode")
-	public DisplayMode displayMode;
+	public DisplayMode displayMode = DisplayMode.LIST_HORIZONTAL;
 
 	public CatalogFeed() {
 		id = String.valueOf(System.currentTimeMillis());

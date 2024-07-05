@@ -1,9 +1,5 @@
 package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-
-import android.content.SharedPreferences;
-
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.extensions.Extension;
@@ -70,10 +66,5 @@ public abstract class TachiyomiProvider extends YomiProvider {
 	@Override
 	public String getId() {
 		return String.valueOf(source.getId());
-	}
-
-	@Override
-	protected SharedPreferences getSharedPreferences() {
-		return getAnyContext().getSharedPreferences("source_" + source.getId(), 0);
 	}
 }

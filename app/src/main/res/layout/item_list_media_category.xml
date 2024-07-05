@@ -18,6 +18,8 @@
         android:background="@drawable/ripple_round_you"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="KeyboardInaccessibleWidget">
 

@@ -1,7 +1,8 @@
-package com.mrboomdev.awery.ui.fragments;
+package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,12 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ConcatAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -47,6 +53,7 @@ public abstract class FeedsFragment extends Fragment {
 	private final Queue<CatalogFeed> loadingFeeds = new LinkedBlockingQueue<>();
 	private ScreenFeedBinding binding;
 	private List<CatalogFeed> feeds;
+	private boolean doSlidesExist;
 	private long loadId;
 
 	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
@@ -94,6 +101,7 @@ public abstract class FeedsFragment extends Fragment {
 		runOnUiThread(() -> {
 			rowsAdapter.setCategories(Collections.emptyList());
 			failedRowsAdapter.setCategories(Collections.emptyList());
+			setContentBehindToolbarEnabled(false);
 
 			new Thread(() -> {
 				var processedFeeds = new ArrayList<>(CatalogFeed.processFeeds(feeds));
@@ -132,7 +140,21 @@ public abstract class FeedsFragment extends Fragment {
 				}
 
 				runOnUiThread(() -> {
-					rowsAdapter.addCategory(new MediaCategoriesAdapter.Category(feed, filteredResults));
+					/* Only a single instance with an DisplayMode.SLIDES can be made,
+					*  because else the app will look messy. */
+					var displayMode = !canHaveOtherViewTypes() ? CatalogFeed.DisplayMode.LIST_HORIZONTAL
+							: (rowsAdapter.getItemCount() != 0 ? (
+									feed.displayMode == CatalogFeed.DisplayMode.SLIDES ? (doSlidesExist
+											? CatalogFeed.DisplayMode.SLIDES
+											: CatalogFeed.DisplayMode.LIST_HORIZONTAL) : feed.displayMode
+					) : CatalogFeed.DisplayMode.SLIDES);
+
+					if(displayMode == CatalogFeed.DisplayMode.SLIDES) {
+						setContentBehindToolbarEnabled(true);
+						doSlidesExist = true;
+					}
+
+					rowsAdapter.addCategory(new FeedViewHolder.Feed(feed, filteredResults, displayMode));
 
 					// I hope it'll don't do anything bad
 					if(rowsAdapter.getItemCount() < 2) {
@@ -149,7 +171,7 @@ public abstract class FeedsFragment extends Fragment {
 
 				if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
 					runOnUiThread(() -> failedRowsAdapter.addCategory(
-							new MediaCategoriesAdapter.Category(feed, e)), binding.recycler);
+							new FeedViewHolder.Feed(feed, e)), binding.recycler);
 				}
 
 				tryToLoadNextFeed(feed, currentLoadId);
@@ -189,7 +211,7 @@ public abstract class FeedsFragment extends Fragment {
 			Log.e(TAG, "Extension isn't installed, can't load the feed!", e);
 
 			runOnUiThread(() -> failedRowsAdapter.addCategory(
-					new MediaCategoriesAdapter.Category(feed,
+					new FeedViewHolder.Feed(feed,
 							new ZeroResultsException("No extension provider was found!", 0) {
 								@Override
 								public String getTitle(@NonNull Context context) {
@@ -204,6 +226,14 @@ public abstract class FeedsFragment extends Fragment {
 
 			tryToLoadNextFeed(feed, currentLoadId);
 		}
+	}
+
+	@CallSuper
+	public void setContentBehindToolbarEnabled(boolean isEnabled) {
+		binding.headerWrapper.setBackground(null);
+
+		useLayoutParams(binding.swipeRefresher, params -> params.setBehavior(isEnabled ? null :
+				new AppBarLayout.ScrollingViewBehavior()), CoordinatorLayout.LayoutParams.class);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -242,8 +272,25 @@ public abstract class FeedsFragment extends Fragment {
 				binding.swipeRefresher.setEnabled(offset == 0));
 
 		binding.recycler.setAdapter(new ConcatAdapter(new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS).build(),
-				rowsAdapter, emptyStateAdapter, failedRowsAdapter));
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.setIsolateViewTypes(true)
+				.build(), rowsAdapter, emptyStateAdapter, failedRowsAdapter));
+
+		/* Sometimes user may not be able to expand the toolbar at the top of list,
+		*  so we manually do it for him. */
+		binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+				if(newState != RecyclerView.SCROLL_STATE_IDLE) return;
+
+				var manager = Objects.requireNonNull(
+						(LinearLayoutManager) recyclerView.getLayoutManager());
+
+				if(manager.findFirstCompletelyVisibleItemPosition() == 0) {
+					binding.headerWrapper.setExpanded(true, true);
+				}
+			}
+		});
 
 		if(loadOnStartup()) {
 			startLoading(false);
@@ -254,6 +301,8 @@ public abstract class FeedsFragment extends Fragment {
 
 		return binding.getRoot();
 	}
+
+	protected abstract boolean canHaveOtherViewTypes();
 
 	protected abstract List<SettingsItem> getFilters();
 
