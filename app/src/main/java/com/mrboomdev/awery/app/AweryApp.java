@@ -10,12 +10,14 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -38,6 +40,7 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 import android.window.OnBackInvokedCallback;
@@ -53,12 +56,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.SurfaceColors;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.sidesheet.SideSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
@@ -256,13 +261,9 @@ public class AweryApp extends Application {
 		return db;
 	}
 
-	public static void toast(Context context, Object text, int duration) {
-		var string = text == null ? "null" : text.toString();
-		runOnUiThread(() -> Toast.makeText(context, string, duration).show());
-	}
-
 	public static void toast(Object text, int duration) {
-		toast(getAnyContext(), text, duration);
+		var string = text == null ? "null" : text.toString();
+		runOnUiThread(() -> Toast.makeText(getAnyContext(), string, duration).show());
 	}
 
 	public static void toast(Object text) {
@@ -427,7 +428,7 @@ public class AweryApp extends Application {
 
 	@Override
 	public void onCreate() {
-		AweryNotifications.registerNotificationChannels(this);
+		AweryNotifications.registerNotificationChannels();
 		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
 		ThemeManager.applyApp(this);
@@ -559,5 +560,25 @@ public class AweryApp extends Application {
 				.setBackgroundColor(resolveAttrColor(view.getContext(), com.google.android.material.R.attr.colorPrimary))
 				.setLifecycleOwner((AppCompatActivity) getActivity(view.getContext()))
 				.build().showAlign(align, view), 1);
+	}
+
+	@NonNull
+	public static Dialog showLoadingWindow() {
+		var context = getAnyContext();
+
+		var wrapper = new LinearLayoutCompat(context);
+		wrapper.setGravity(Gravity.CENTER);
+
+		var progress = new CircularProgressIndicator(context);
+		progress.setIndeterminate(true);
+		wrapper.addView(progress);
+
+		var dialog = new AlertDialog.Builder(context)
+				.setCancelable(false)
+				.setView(wrapper)
+				.show();
+
+		requireNonNull(dialog.getWindow()).setBackgroundDrawable(null);
+		return dialog;
 	}
 }

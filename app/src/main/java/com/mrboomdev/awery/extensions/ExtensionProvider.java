@@ -13,6 +13,7 @@ import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
@@ -56,6 +57,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String FEATURE_MEDIA_SEARCH = "SEARCH_MEDIA";
 	public static final String FEATURE_COMMENTS_PER_EPISODE = "MEDIA_COMMENTS_PER_PAGE";
 	public static final String FEATURE_CHANGELOG = "CHANGELOG";
+	public static final String FEATURE_SEARCH_SUBTITLES = "SEARCH_SUBTITLES";
 	public static final String FEATURE_COMMENTS_OPEN_ACCOUNT = "MEDIA_COMMENTS_ACCOUNTS";
 	/**
 	 * It's more not a feature. Just a mark that this provider is nsfw
@@ -136,6 +138,14 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
+	}
+
+	public void searchSubtitles(
+			Context context,
+			List<SettingsItem> filters,
+			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
+	) {
+		callback.onFailure(new UnimplementedException("Subtitles search isn't implemented!"));
 	}
 
 	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {

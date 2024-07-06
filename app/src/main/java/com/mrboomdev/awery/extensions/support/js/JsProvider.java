@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.createObject;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
@@ -683,6 +684,34 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
+	public void searchSubtitles(
+			android.content.Context context,
+			List<SettingsItem> filters,
+			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
+	) {
+		runFunction("awerySearchSubtitles", (Callback<NativeObject>) (o, e) -> {
+			if(e != null) {
+				callback.onFailure(new JsException(e));
+				return;
+			}
+
+			if(((NativeArray)o.get("items", o)).isEmpty()) {
+				callback.onFailure(new ZeroResultsException("Zero results",
+						R.string.no_media_found));
+
+				return;
+			}
+
+			callback.onSuccess(CatalogSearchResults.of(stream(listFromJs(o.get("items", o), NativeObject.class))
+					.filter(item -> !isNullJs(item))
+					.map(item -> new CatalogSubtitle(stringFromJs(item.get("title")), stringFromJs(item.get("url"))))
+					.toList(), booleanFromJs(o.get("hasNextPage"))));
+		}, this.context.newArray(scope, stream(filters)
+				.map(filter -> JsSettingsItem.toJs(filter, this.context, scope))
+				.toArray()));
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public void searchMedia(
 			android.content.Context context,
@@ -705,6 +734,7 @@ public class JsProvider extends ExtensionProvider {
 						if(((NativeArray)o.get("items", o)).isEmpty()) {
 							callback.onFailure(new ZeroResultsException("Zero results",
 									R.string.no_media_found));
+
 							return;
 						}
 
@@ -948,6 +978,30 @@ public class JsProvider extends ExtensionProvider {
 			} else {
 				callback.onFailure(new UnimplementedException(
 						"\"aweryMediaEpisodes\" is not a function or isn't defined!"));
+			}
+		});
+	}
+
+	private <T> void runFunction(String name, Callback<T> callback, Object... args) {
+		manager.postRunnable(() -> {
+			if(scope.get(name) instanceof Function fun) {
+				try {
+					var newArray = new Object[args.length + 1];
+					System.arraycopy(args, 0, newArray, 0, args.length);
+					newArray[args.length] = callback;
+
+					fun.call(this.context, scope, null, newArray);
+				} catch(Throwable e) {
+					callback.reject(createObject(context, scope, Map.of(
+							"id", JsException.OTHER,
+							"extra", e
+					)));
+				}
+			} else {
+				callback.reject(createObject(context, scope, Map.of(
+						"id", JsException.OTHER,
+						"extra", new UnimplementedException("\"" + name + "\" function not found!")
+				)));
 			}
 		});
 	}

@@ -62,7 +62,7 @@ public class CrashHandler {
 		};
 
 		if(result != null) {
-			toast(context, result, Toast.LENGTH_LONG);
+			toast(result, Toast.LENGTH_LONG);
 			Log.e(TAG, result);
 		}
 	}

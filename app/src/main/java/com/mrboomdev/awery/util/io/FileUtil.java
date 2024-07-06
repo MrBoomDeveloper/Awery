@@ -6,7 +6,6 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,10 +19,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -67,46 +69,48 @@ public class FileUtil {
 		return Collections.singletonList(parent);
 	}
 
-	/**
-	 * @param inputDir All files inside this directory will be added into zip file.
-	 */
-	public static void zip(@NonNull File inputDir, File outputFile) throws IOException {
-		zip(inputDir.getPath(), getFiles(inputDir).toArray(new File[0]), outputFile);
-	}
-
-	/**
-	 * @param inputFiles All these files will be added into zip file.
-	 */
-	public static void zip(@NonNull File[] inputFiles, File outputFile) throws IOException {
-		zip(null, inputFiles, outputFile);
-	}
-
-	private static void zip(String relativePath, @NonNull File[] inputFiles, File outputFile) throws IOException {
-		try(var out = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
+	public static void zip(@NonNull Map<File, String> paths, OutputStream into) throws IOException {
+		try(var out = new ZipOutputStream(into)) {
 			var data = new byte[BUFFER_SIZE];
 
-			for(var file : inputFiles) {
-				try(var is = new BufferedInputStream(new FileInputStream(file), BUFFER_SIZE)) {
-					var zipFileName = relativePath == null ? file.getName() :
-							file.getPath().substring(relativePath.length());
-
-					var zipEntry = new ZipEntry(zipFileName);
+			for(var file : paths.entrySet()) {
+				try(var is = new BufferedInputStream(new FileInputStream(file.getKey()), BUFFER_SIZE)) {
+					var zipEntry = new ZipEntry(file.getValue());
 					out.putNextEntry(zipEntry);
 					int read;
 
-					while((read = is.read(data, 0, BUFFER_SIZE)) != -1) {
+					while((read = is.read(data)) != -1) {
 						out.write(data, 0, read);
 					}
+
+					out.closeEntry();
 				}
 			}
 		}
 	}
 
-	public static void unzip(File input, @NonNull File output) throws IOException {
-		var buffer = new byte[BUFFER_SIZE];
+	public static void zip(@NonNull Map<File, String> paths, File into) throws IOException {
+		try(var out = new FileOutputStream(into)) {
+			zip(paths, out);
+		}
+	}
+
+	public static void zip(@NonNull Map<File, String> paths, Uri into) throws IOException {
+		try(var out = getAnyContext().getContentResolver().openOutputStream(into)) {
+			zip(paths, out);
+		}
+	}
+
+	public static void unzip(Uri input, File output) throws IOException {
+		try(var stream = getAnyContext().getContentResolver().openInputStream(input)) {
+			unzip(stream, output);
+		}
+	}
+
+	public static void unzip(InputStream input, @NonNull File output) throws IOException {
 		output.mkdirs();
 
-		try(var zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(input), BUFFER_SIZE))) {
+		try(var zin = new ZipInputStream(new BufferedInputStream(input, BUFFER_SIZE))) {
 			ZipEntry ze;
 
 			while((ze = zin.getNextEntry()) != null) {

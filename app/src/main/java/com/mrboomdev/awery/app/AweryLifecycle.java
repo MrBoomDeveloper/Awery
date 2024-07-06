@@ -4,11 +4,14 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -18,6 +21,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -25,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.NiceUtils;
 
 import org.jetbrains.annotations.Contract;
 
@@ -35,16 +40,18 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AweryLifecycle {
-	private static final UniqueIdGenerator activityRequestCodes = new UniqueIdGenerator();
+	private static final int REQUEST_CODE_NOTIFICATIONS_PERMISSION = getActivityResultCode();
 	private static final String TAG = "AweryLifecycle";
+	private static UniqueIdGenerator activityRequestCodes;
 	private static AweryApp app;
 	private static Handler handler;
 
-	static {
-		activityRequestCodes.getInteger();
-	}
-
 	public static int getActivityResultCode() {
+		if(activityRequestCodes == null) {
+			activityRequestCodes = new UniqueIdGenerator();
+			activityRequestCodes.getInteger();
+		}
+
 		return activityRequestCodes.getInteger();
 	}
 
@@ -54,6 +61,8 @@ public class AweryLifecycle {
 	}
 
 	public static void restartApp() {
+		Log.i(TAG, "restartApp() has been invoked!");
+
 		var context = getAnyContext();
 		var pm = context.getPackageManager();
 
@@ -65,7 +74,15 @@ public class AweryLifecycle {
 		context.startActivity(mainIntent);
 
 		app = null;
-		Runtime.getRuntime().exit(0);
+		System.exit(0);
+	}
+
+	public static <T extends Activity> View getAnyRootView(Class<T> clazz) {
+		return stream(getActivities(clazz))
+				.map(activity -> activity.getWindow().getDecorView())
+				.filter(NiceUtils::nonNull)
+				.map(View::getRootView)
+				.findFirst().orElse(null);
 	}
 
 	public static void exitApp() {
@@ -83,26 +100,54 @@ public class AweryLifecycle {
 	public static class CallbackFragment extends Fragment {
 		private final FragmentManager fragmentManager;
 		private final ActivityResultCallback callback;
+		private final ActivityPermissionsResultCallback permissionsResultCallback;
 		private final int requestCode;
 
-		public CallbackFragment(FragmentManager manager, ActivityResultCallback callback, int requestCode) {
+		public CallbackFragment(
+				FragmentManager manager,
+				ActivityResultCallback callback,
+				ActivityPermissionsResultCallback permissionsResultCallback,
+				int requestCode
+		) {
 			this.fragmentManager = manager;
 			this.callback = callback;
 			this.requestCode = requestCode;
+			this.permissionsResultCallback = permissionsResultCallback;
 		}
 
 		@Override
 		@SuppressWarnings("deprecation")
 		public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
+			if(requestCode != this.requestCode || callback == null) return;
 
-			if(requestCode == this.requestCode) {
-				callback.run(resultCode, data);
-
-				fragmentManager.beginTransaction().remove(this).commit();
-				fragmentManager.executePendingTransactions();
-			}
+			callback.run(resultCode, data);
+			finish();
 		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+			if(requestCode != this.requestCode || permissionsResultCallback == null) return;
+
+			if(permissions.length == 0) {
+				permissionsResultCallback.onPermissionResult(false);
+			} else if(permissions.length == 1) {
+				permissionsResultCallback.onPermissionResult(grantResults[0] == PackageManager.PERMISSION_GRANTED);
+			} else {
+				throw new IllegalStateException("Somehow you've requested multiple permissions at once. This behaviour isn't supported.");
+			}
+
+			finish();
+		}
+
+		private void finish() {
+			fragmentManager.beginTransaction().remove(this).commit();
+			fragmentManager.executePendingTransactions();
+		}
+	}
+
+	public interface ActivityPermissionsResultCallback {
+		void onPermissionResult(boolean didGranted);
 	}
 
 	public interface ActivityResultCallback {
@@ -110,15 +155,15 @@ public class AweryLifecycle {
 	}
 
 	@NonNull
-	@Contract("null, _, _ -> fail")
 	private static Fragment addActivityResultListener(
 			Activity activity,
 			int requestCode,
-			ActivityResultCallback callback
+			ActivityResultCallback callback,
+			ActivityPermissionsResultCallback permissionsResultCallback
 	) {
 		if(activity instanceof FragmentActivity fragmentActivity) {
 			var fragmentManager = fragmentActivity.getSupportFragmentManager();
-			var fragment = new CallbackFragment(fragmentManager, callback, requestCode);
+			var fragment = new CallbackFragment(fragmentManager, callback, permissionsResultCallback, requestCode);
 
 			fragmentManager.beginTransaction().add(fragment, null).commit();
 			fragmentManager.executePendingTransactions();
@@ -144,30 +189,26 @@ public class AweryLifecycle {
 			int requestCode,
 			ActivityResultCallback callback
 	) {
-		var activity = getActivity(context);
-
-		var fragment = addActivityResultListener(activity, requestCode, callback);
-		fragment.startActivityForResult(intent, requestCode);
+		addActivityResultListener(getActivity(context), requestCode, callback, null)
+				.startActivityForResult(intent, requestCode);
 	}
 
 	public static void requestPermission(
 			Context context,
-			String permission,
+			@NonNull Permission permission,
 			int requestCode,
-			ActivityResultCallback callback
+			ActivityPermissionsResultCallback callback
 	) {
-		requestPermissions(context, new String[] { permission }, requestCode, callback);
-	}
+		var constant = permission.getManifestConstants();
 
-	public static void requestPermissions(
-			Context context,
-			String[] permissions,
-			int requestCode,
-			ActivityResultCallback callback
-	) {
+		if(constant == null || ContextCompat.checkSelfPermission(context, constant) == PackageManager.PERMISSION_GRANTED) {
+			callback.onPermissionResult(true);
+			return;
+		}
+
 		var activity = Objects.requireNonNull(getActivity(context));
-		addActivityResultListener(activity, requestCode, callback);
-		ActivityCompat.requestPermissions(activity, permissions, requestCode);
+		addActivityResultListener(activity, requestCode, null, callback);
+		ActivityCompat.requestPermissions(activity, new String[]{ constant }, requestCode);
 	}
 
 	@Nullable
@@ -191,7 +232,7 @@ public class AweryLifecycle {
 					.toList();
 		} catch(Exception e) {
 			Log.e(TAG, "Failed to get activities!", e);
-			toast(getAppContext(), "Your device is not supported :(", 1);
+			toast("Your device is not supported :(", 1);
 			System.exit(0);
 			return null;
 		}
@@ -212,7 +253,7 @@ public class AweryLifecycle {
 					.findFirst().get().activity;
 		} catch(Exception e) {
 			Log.e(TAG, "Failed to get any activity!", e);
-			toast(getAppContext(), "So your device is not supported :(", 1);
+			toast("So your device is not supported :(", 1);
 			System.exit(0);
 			return null;
 		}
@@ -420,6 +461,22 @@ public class AweryLifecycle {
 			} catch(RuntimeException e) {
 				return false;
 			}
+		}
+	}
+
+	public enum Permission {
+		NOTIFICATIONS(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? Manifest.permission.POST_NOTIFICATIONS : null),
+		STORAGE(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? Manifest.permission.MANAGE_EXTERNAL_STORAGE : Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+		private final String manifestConst;
+
+		Permission(String manifestConst) {
+			this.manifestConst = manifestConst;
+		}
+
+		@Nullable
+		public String getManifestConstants() {
+			return manifestConst;
 		}
 	}
 }

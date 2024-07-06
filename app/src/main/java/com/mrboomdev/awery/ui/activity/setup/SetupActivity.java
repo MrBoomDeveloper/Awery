@@ -3,9 +3,7 @@ package com.mrboomdev.awery.ui.activity.setup;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
@@ -20,12 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenSetupBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.SplashActivity;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration;
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class SetupActivity extends AppCompatActivity {
 	public static final int STEP_TEMPLATE = 2;
 	public static final int STEP_THEMING = 3;
 	public static final int STEP_SOURCES = 4;
+	public static final int STEP_ANALYTICS = 5;
 	private ScreenSetupBinding binding;
 
 	@Override
@@ -67,14 +69,6 @@ public class SetupActivity extends AppCompatActivity {
 		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 			binding.getRoot().setPadding(insets.left, insets.top, insets.right, insets.bottom);
 			return false;
-		});
-
-		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			if(isLandscape()) {
-
-			}
-
-			return true;
 		});
 
 		binding.continueButton.setOnClickListener(v -> tryToStartNextStep());
@@ -97,7 +91,7 @@ public class SetupActivity extends AppCompatActivity {
 				binding.continueButton.setText(R.string.lets_begin);
 
 				binding.backButton.setOnClickListener(v ->
-						toast("This functionality isn't done yet."));
+						SettingsActions.run(AwerySettings.RESTORE));
 
 				binding.icon.setImageResource(R.mipmap.ic_launcher_foreground);
 				binding.icon.setVisibility(View.VISIBLE);
@@ -155,6 +149,18 @@ public class SetupActivity extends AppCompatActivity {
 				binding.icon.setVisibility(View.VISIBLE);
 				binding.icon.setImageResource(R.drawable.ic_extension_filled);
 				setImageTintAttr(binding.icon, com.google.android.material.R.attr.colorOnSecondaryContainer);
+			}
+
+			case STEP_ANALYTICS -> {
+				binding.title.setText("Analytics");
+				binding.message.setText("TODO");
+
+				var toggle = new MaterialSwitch(this);
+				toggle.setText("Automatically send crash reports");
+				toggle.setChecked(true);
+
+				binding.recycler.setVisibility(View.VISIBLE);
+				binding.recycler.setAdapter(SingleViewAdapter.fromView(toggle));
 			}
 
 			case STEP_FINISH -> {
@@ -258,6 +264,7 @@ public class SetupActivity extends AppCompatActivity {
 			case STEP_THEMING -> nextStep = STEP_TEMPLATE;
 			case STEP_TEMPLATE -> nextStep = STEP_SOURCES;
 			case STEP_SOURCES -> nextStep = STEP_FINISH;
+			case STEP_ANALYTICS -> nextStep = STEP_FINISH;
 
 			case STEP_FINISH -> {
 				getPrefs().setValue(AwerySettings.SETUP_VERSION_FINISHED, SETUP_VERSION).saveSync();

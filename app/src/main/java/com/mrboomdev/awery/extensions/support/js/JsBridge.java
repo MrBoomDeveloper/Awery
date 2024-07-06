@@ -34,6 +34,7 @@ import org.mozilla.javascript.UniqueTag;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Do not ever init this class by yourself!
@@ -95,6 +96,13 @@ public class JsBridge {
 	public String getAdultMode() {
 		var adultMode = AwerySettings.ADULT_MODE.getValue();
 		return requireNonNullElse(adultMode, AwerySettings.AdultMode_Values.SAFE).name();
+	}
+
+	@NonNull
+	public static NativeObject createObject(@NonNull Context context, Scriptable scope, @NonNull Map<?, ?> map) {
+		var obj = (NativeObject) context.newObject(scope);
+		obj.putAll(map);
+		return obj;
 	}
 
 	public Object fetch(@NonNull ScriptableObject options) {

@@ -89,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			item = NicePreferences.getCached(path);
 
 			if(item == null) {
-				toast(this, "Failed to get settings", 0);
+				toast("Failed to get settings", 0);
 				finish();
 				return;
 			}
@@ -107,7 +107,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					if(item == null) throw new IllegalArgumentException("Failed to parse settings");
 				} catch(IOException e) {
 					Log.e(TAG, "Failed to parse settings", e);
-					toast(this, "Failed to get settings", 0);
+					toast("Failed to get settings", 0);
 					finish();
 					return;
 				}
@@ -287,7 +287,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
-					toast(this, e.getMessage(), 0);
+					toast(e.getMessage(), 0);
 					finish();
 					return;
 				}

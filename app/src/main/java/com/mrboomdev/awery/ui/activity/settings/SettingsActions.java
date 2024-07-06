@@ -2,21 +2,13 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getActivityResultCode;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.requestPermission;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.provider.Settings;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.services.BackupService;
@@ -24,8 +16,6 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
-import com.mrboomdev.awery.util.io.FileUtil;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import org.jetbrains.annotations.Contract;
 
@@ -35,7 +25,6 @@ import java.util.Calendar;
 import xcrash.XCrash;
 
 public class SettingsActions {
-	private static final int REQUEST_CODE_NOTIFICATIONS_PERMISSION = getActivityResultCode();
 
 	@Contract(pure = true)
 	public static void run(String actionName) {
@@ -68,16 +57,13 @@ public class SettingsActions {
 			}
 
 			case AwerySettings.BACKUP -> {
-				toast("Coming soon");
-				if(alwaysTrue()) return;
-
 				var date = Calendar.getInstance();
 
-				var defaultName = date.get(Calendar.YEAR) + "_" +
+				var defaultName = "awery_backup_[" + date.get(Calendar.YEAR) + "_" +
 						date.get(Calendar.MONTH) + "_" +
-						date.get(Calendar.DATE) + "__" +
+						date.get(Calendar.DATE) + "]_[" +
 						date.get(Calendar.HOUR_OF_DAY) + "_" +
-						date.get(Calendar.MINUTE) + ".awerybck";
+						date.get(Calendar.MINUTE) + "].awerybck";
 
 				var context = getAnyContext();
 				var intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -88,44 +74,14 @@ public class SettingsActions {
 				startActivityForResult(context, intent, 0, ((resultCode, data) -> {
 					if(resultCode != Activity.RESULT_OK) return;
 
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-						requestPermission(context, Manifest.permission.POST_NOTIFICATIONS,
-								REQUEST_CODE_NOTIFICATIONS_PERMISSION, (resultCode1, result) -> {
-							if(resultCode1 != Activity.RESULT_OK) {
-								new DialogBuilder(getAnyActivity(AppCompatActivity.class))
-										.setTitle("Missing notifications permission")
-										.setNegativeButton("Dismiss", DialogBuilder::dismiss)
-										.setPositiveButton("Open settings", dialog -> {
-											var settingsIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-											settingsIntent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
-											context.startActivity(settingsIntent);
-											dialog.dismiss();
-										}).show();
-
-								return;
-							}
-
-							var backupIntent = new Intent(context, BackupService.class);
-							backupIntent.setAction(BackupService.ACTION_BACKUP);
-							backupIntent.setData(data.getData());
-
-							context.startForegroundService(backupIntent);
-						});
-					} else {
-						var backupIntent = new Intent(context, BackupService.class);
-						backupIntent.setAction(BackupService.ACTION_BACKUP);
-						backupIntent.setData(data.getData());
-
-						if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) context.startService(backupIntent);
-						else context.startForegroundService(backupIntent);
-					}
+					var backupIntent = new Intent(context, BackupService.class);
+					backupIntent.setAction(BackupService.ACTION_BACKUP);
+					backupIntent.setData(data.getData());
+					context.startService(backupIntent);
 				}));
 			}
 
 			case AwerySettings.RESTORE -> {
-				toast("Coming soon");
-				if(alwaysTrue()) return;
-
 				var context = getAnyContext();
 				var intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.setType(MimeTypes.ANY.toString());
@@ -134,21 +90,10 @@ public class SettingsActions {
 				startActivityForResult(context, chooser, 0, ((resultCode, data) -> {
 					if(resultCode != Activity.RESULT_OK) return;
 
-					var fileName = FileUtil.getUriFileName(data.getData());
-					if(fileName == null) return;
-
-					switch(fileName.substring(fileName.lastIndexOf(".") + 1)) {
-						case "awerybck" -> {
-							var backupIntent = new Intent(context, BackupService.class);
-							backupIntent.setAction(BackupService.ACTION_RESTORE);
-							backupIntent.setData(data.getData());
-
-							if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) context.startService(backupIntent);
-							else context.startForegroundService(backupIntent);
-						}
-
-						default -> toast("Unsupported backup type!");
-					}
+					var restoreIntent = new Intent(context, BackupService.class);
+					restoreIntent.setAction(BackupService.ACTION_RESTORE);
+					restoreIntent.setData(data.getData());
+					context.startService(restoreIntent);
 				}));
 			}
 

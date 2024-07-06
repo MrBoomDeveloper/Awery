@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.app;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
@@ -14,19 +15,36 @@ import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
+import java.lang.ref.WeakReference;
+
 public class AweryNotifications {
-	private static final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
+	private static final UniqueIdGenerator idGenerator;
+	private static WeakReference<NotificationManagerCompat> manager;
 
 	static {
 		// Android only accepts values above 0
+		idGenerator = new UniqueIdGenerator();
 		idGenerator.getInteger();
 	}
 
-	public static boolean registerNotificationChannels(Context context) {
-		var manager = NotificationManagerCompat.from(context);
+	@NonNull
+	private static NotificationManagerCompat getNotificationManager() {
+		var result = manager != null ? manager.get() : null;
+
+		if(result == null) {
+			var context = getAnyContext();
+			result = NotificationManagerCompat.from(context);
+			manager = new WeakReference<>(result);
+		}
+
+		return result;
+	}
+
+	public static void registerNotificationChannels() {
+		var manager = getNotificationManager();
 		
 		if(!manager.areNotificationsEnabled()) {
-			return false;
+			return;
 		}
 		
 		manager.createNotificationChannelGroupsCompat(stream(Group.values())
@@ -36,8 +54,6 @@ public class AweryNotifications {
 		manager.createNotificationChannelsCompat(stream(Channel.values())
 				.map(Channel::toChannel)
 				.toList());
-		
-		return true;
 	}
 
 	public static int getNewNotificationId() {

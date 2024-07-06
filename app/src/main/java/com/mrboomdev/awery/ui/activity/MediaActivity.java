@@ -89,7 +89,7 @@ public class MediaActivity extends AppCompatActivity {
 			var json = getIntent().getStringExtra("media");
 			setMedia(Parser.fromString(CatalogMedia.class, json));
 		} catch(IOException e) {
-			toast(this, "Failed to load media!", 1);
+			toast("Failed to load media!", 1);
 			Log.e(TAG, "Failed to load media!", e);
 			finish();
 		}

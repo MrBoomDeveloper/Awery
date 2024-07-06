@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.getOrientation;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
@@ -33,7 +34,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
@@ -99,7 +99,7 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.title.setText(title);
 		binding.details.generalMeta.setText(meta);
 
-		var banner = AweryApp.getOrientation() == Configuration.ORIENTATION_LANDSCAPE
+		var banner = getOrientation() == Configuration.ORIENTATION_LANDSCAPE
 				? media.getBestBanner() : media.getBestPoster();
 
 		Glide.with(binding.getRoot())
@@ -108,7 +108,7 @@ public class MediaInfoFragment extends Fragment {
 				.into(binding.banner);
 
 		Glide.with(binding.getRoot())
-				.load(media.poster.extraLarge)
+				.load(media.getBestPoster())
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.addListener(new RequestListener<>() {
 					@Override
@@ -257,7 +257,7 @@ public class MediaInfoFragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
 
-		if(AweryApp.getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
+		if(getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
 			setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
 				setTopMargin(binding.posterWrapper, insets.top + dpPx(24));
 				return true;

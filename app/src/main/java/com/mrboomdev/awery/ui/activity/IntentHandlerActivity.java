@@ -4,7 +4,6 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -49,12 +48,10 @@ public class IntentHandlerActivity extends AppCompatActivity {
 					.setPositiveButton(R.string.confirm, dialog -> {
 						dialog.dismiss();
 
-						var backupIntent = new Intent(this, BackupService.class);
-						backupIntent.setAction(BackupService.ACTION_RESTORE);
-						backupIntent.setData(uri);
-
-						if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) startService(backupIntent);
-						else startForegroundService(backupIntent);
+						var restoreIntent = new Intent(this, BackupService.class);
+						restoreIntent.setAction(BackupService.ACTION_RESTORE);
+						restoreIntent.setData(uri);
+						startService(restoreIntent);
 					}).show();
 		} else {
 			toast("Unknown intent!", 1);
