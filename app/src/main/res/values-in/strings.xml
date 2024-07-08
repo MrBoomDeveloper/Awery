@@ -58,9 +58,19 @@
     <string name="global_excluded_tags">Kecualikan Tag Secara Global</string>
     <string name="korean">Korea</string>
     <string name="korea">Korea</string>
-    <string name="anime"></string>
+    <string name="anime">Anime</string>
     <string name="no_episodes_found">Tidak ada episode yang ditemukan. Coba ubah kueri dan filter Anda.</string>
     <string name="no_extensions_found">Tidak ada ekstensi yang ditemukan. Coba ubah kueri dan filter Anda.</string>
     <string name="default_tab_description">Akan dibuka saat aplikasi dimulai</string>
     <string name="characters">Karakter</string>
+    <string name="manga">Manga</string>
+    <string name="advanced">Lanjutan</string>
+    <string name="genre">Genre</string>
+    <string name="username">Namapengguna</string>
+    <string name="list_editor">Daftar Editor</string>
+    <string name="progress">Progress</string>
+    <string name="format">Format</string>
+    <string name="status_title">Status</string>
+    <string name="total_chaps">Jumlah Chapter</string>
+    <string name="season">Musim</string>
 </resources>
