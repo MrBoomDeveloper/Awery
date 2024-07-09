@@ -73,4 +73,23 @@
     <string name="status_title">Status</string>
     <string name="total_chaps">Jumlah Chapter</string>
     <string name="season">Musim</string>
+    <string name="start_date">Mulai Tanggal</string>
+    <string name="end_date">Selesai Tanggal</string>
+    <string name="source">Sumber</string>
+    <string name="main_studio">Studio</string>
+    <string name="reader">Pembaca</string>
+    <string name="disclaimer">Penafian</string>
+    <string name="default_quality">Pemilihan Kualitas Otomatis</string>
+    <string name="full_disclaimer">- Awery sendiri hanya menyediakan pelacak anime dan manga dan tidak menyediakan kemampuan streaming atau pengunduhan anime atau manga apa pun.
+\n
+\n - Awery atau pengembang/stafnya tidak menghosting konten apa pun yang ditemukan di dalam Awery. Setiap dan semua informasi gambar dan anime/manga yang ditemukan di aplikasi diambil dari berbagai API publik (AniList, MyAnimeList, Kitsu).
+\n
+\n - Selanjutnya, semua link anime/manga yang terdapat di Awery diambil dari berbagai plugin pihak ketiga dan tidak memiliki afiliasi dengan Awery atau stafnya.
+\n
+\n - Awery atau pemiliknya tidak bertanggung jawab atas penyalahgunaan konten apa pun yang ditemukan di dalam atau di luar aplikasi dan tidak bertanggung jawab atas distribusi konten apa pun yang ditemukan di dalam aplikasi.
+\n
+\n - Dengan menggunakan Awery, Anda mematuhi fakta bahwa pengembang aplikasi tidak bertanggung jawab atas konten apa pun yang ditemukan di aplikasi. Anda juga menyetujui fakta bahwa Anda tidak boleh menggunakan Awery untuk mengunduh atau mengalirkan konten berhak cipta apa pun.
+\n
+\n - Jika ada masalah pelanggaran internet, silakan hubungi situs web sumber. Pengembang tidak memikul tanggung jawab hukum apa pun.</string>
+    <string name="video_info_info">Menunjukkan Resolusi video yang sedang diputar, berguna untuk server <b>\"Multi Kualitas\"</b>.</string>
 </resources>
