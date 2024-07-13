@@ -11,29 +11,21 @@
 				"id": "home",
 				"feeds": [
 					{
-						"title": "Current Season",
-						"source_manager": "INTERNAL",
-						"source_id": "TEMPLATE",
-						"source_feed": "FEATURED",
-						"display_mode": "SLIDES"
-					}, {
-						"title": "Continue where you stopped",
-						"source_manager": "INTERNAL",
-						"source_id": "TEMPLATE",
-						"source_feed": "CONTINUE",
-						"display_mode": "LIST_HORIZONTAL"
-					}, {
 						"title": "Auto-Generated feeds",
 						"source_manager": "INTERNAL",
 						"source_id": "TEMPLATE",
 						"source_feed": "AUTO_GENERATE",
-						"display_mode": "LIST_HORIZONTAL"
+						"display_mode": "LIST_HORIZONTAL",
+						"filters": [
+							{ "key": "first_large", "boolean_value": true }
+						]
 					}
 				]
 			}, {
 				"title": "Library",
 				"id": "library",
 				"icon": "bookmark",
+				"show_end": false,
 				"feeds": [
 					{
 						"title": "Bookmarks",
@@ -119,6 +111,7 @@
 				"title": "Home",
 				"id": "home",
 				"icon": "home",
+				"show_end": false,
 				"feeds": [
 					{
 						"title": "Bookmarks",

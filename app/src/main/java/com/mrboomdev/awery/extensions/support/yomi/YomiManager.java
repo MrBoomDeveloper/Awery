@@ -10,7 +10,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -18,10 +17,8 @@ import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.io.HttpClient;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -256,30 +253,21 @@ public abstract class YomiManager extends ExtensionsManager {
 
 			@Override
 			public void onResponse(HttpClient.HttpResponse response) {
-				var moshi = new Moshi.Builder().build();
-				var adapter = moshi.<List<YomiRepoItem>>adapter(Types.newParameterizedType(List.class, YomiRepoItem.class));
-
 				try {
-					var list = adapter.fromJson(response.getText());
-
-					if(list == null) {
-						callback.onResult(null, new ZeroResultsException(
-								"No extensions found", R.string.no_extensions_found));
-
-						return;
-					}
+					var list = Parser.<List<YomiRepoItem>>fromString(
+							Parser.getAdapter(List.class, YomiRepoItem.class), response.getText());
 
 					callback.onResult(stream(list)
 							.map(item -> item.toExtension(YomiManager.this))
 							.toList(), null);
 				} catch(IOException e) {
-					callback.onResult(null, e);
+					callback.onError(e);
 				}
 			}
 
 			@Override
 			public void onError(Throwable exception) {
-				callback.onResult(null, exception);
+				callback.onError(exception);
 			}
 		});
 	}

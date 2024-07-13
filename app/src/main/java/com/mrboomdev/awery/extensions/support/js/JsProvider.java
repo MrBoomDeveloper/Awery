@@ -32,11 +32,12 @@ import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -44,7 +45,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
@@ -62,6 +63,7 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -686,7 +688,7 @@ public class JsProvider extends ExtensionProvider {
 	@Override
 	public void searchSubtitles(
 			android.content.Context context,
-			List<SettingsItem> filters,
+			SettingsList filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
 	) {
 		runFunction("awerySearchSubtitles", (Callback<NativeObject>) (o, e) -> {
@@ -711,21 +713,23 @@ public class JsProvider extends ExtensionProvider {
 				.toArray()));
 	}
 
+	private Scriptable filtersToJson(SettingsList filters) {
+		return context.newArray(scope, stream(filters)
+				.map(filter -> JsSettingsItem.toJs(filter, context, scope))
+				.toArray());
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void searchMedia(
 			android.content.Context context,
-			List<SettingsItem> filters,
+			SettingsList filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
-					var jsFilters = this.context.newArray(scope, stream(filters)
-							.map(filter -> JsSettingsItem.toJs(filter, this.context, fun))
-							.toArray());
-
-					fun.call(this.context, scope, null, new Object[] { jsFilters, (Callback<NativeObject>) (o, e) -> {
+					fun.call(this.context, scope, null, new Object[] { filtersToJson(filters), (Callback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -861,7 +865,15 @@ public class JsProvider extends ExtensionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
+	public void getVideoFiles(SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
+		var episode = returnWith(() -> {
+			try {
+				return filters.require(ExtensionProvider.FILTER_EPISODE).parseJsonValue(CatalogVideo.class);
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
 		manager.postRunnable(() -> {
 			if(scope.get("aweryMediaVideos") instanceof Function fun) {
 				try {
@@ -874,7 +886,7 @@ public class JsProvider extends ExtensionProvider {
 								}
 
 								callback.onSuccess(stream(o)
-										.map(videoObject -> new CatalogVideo(
+										.map(videoObject -> new CatalogVideoFile(
 												stringFromJs(videoObject.get("title")),
 												stringFromJs(videoObject.get("url")),
 												null,
@@ -946,11 +958,20 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void getEpisodes(
-			int page,
-			CatalogMedia media,
-			@NonNull ResponseCallback<List<? extends CatalogEpisode>> callback
+	public void getVideos(
+			@NonNull SettingsList filters,
+			@NonNull ResponseCallback<List<? extends CatalogVideo>> callback
 	) {
+		var page = filters.require(ExtensionProvider.FILTER_PAGE).getIntegerValue();
+
+		var media = returnWith(() -> {
+			try {
+				return filters.require(ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
 		manager.postRunnable(() -> {
 			if(scope.get("aweryMediaEpisodes") instanceof Function fun) {
 				try {
@@ -963,7 +984,7 @@ public class JsProvider extends ExtensionProvider {
 								}
 
 								callback.onSuccess(stream(o)
-										.map(item -> new CatalogEpisode(
+										.map(item -> new CatalogVideo(
 												stringFromJs(item.get("title")),
 												stringFromJs(item.get("url")),
 												stringFromJs(item.get("banner")),

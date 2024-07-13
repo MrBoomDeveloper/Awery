@@ -261,9 +261,12 @@ public class AweryApp extends Application {
 		return db;
 	}
 
+	public static void toast(Context context, Object text, int duration) {
+		runOnUiThread(() -> Toast.makeText(context, String.valueOf(text), duration).show());
+	}
+
 	public static void toast(Object text, int duration) {
-		var string = text == null ? "null" : text.toString();
-		runOnUiThread(() -> Toast.makeText(getAnyContext(), string, duration).show());
+		toast(getAnyContext(), text, duration);
 	}
 
 	public static void toast(Object text) {

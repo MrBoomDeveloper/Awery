@@ -6,13 +6,13 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 
-public class JsEpisode extends CatalogEpisode {
+public class JsEpisode extends CatalogVideo {
 	private final NativeObject data;
 
 	public JsEpisode(@NonNull NativeObject data) {
@@ -26,7 +26,7 @@ public class JsEpisode extends CatalogEpisode {
 		this.data = data;
 	}
 
-	public static Scriptable getJsEpisode(Context context, Scriptable scope, CatalogEpisode episode) {
+	public static Scriptable getJsEpisode(Context context, Scriptable scope, CatalogVideo episode) {
 		if(episode == null) return null;
 
 		if(episode instanceof JsEpisode jsEpisode) {

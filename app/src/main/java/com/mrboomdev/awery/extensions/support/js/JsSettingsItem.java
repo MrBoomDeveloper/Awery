@@ -131,7 +131,7 @@ public class JsSettingsItem extends SettingsItem {
 				case DATE -> setting.getLongValue();
 				case DIVIDER, CATEGORY, COLOR, SCREEN, ACTION -> null;
 				case INTEGER, SELECT_INTEGER -> setting.getIntegerValue();
-				case STRING, SELECT -> setting.getStringValue();
+				case STRING, SELECT, JSON -> setting.getStringValue();
 				case MULTISELECT -> setting.getStringSetValue();
 			});
 		}

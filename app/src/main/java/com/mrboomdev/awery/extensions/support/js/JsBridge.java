@@ -36,18 +36,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Do not ever init this class by yourself!
- * @author MrBoomDev
- */
 @SuppressWarnings("unused")
 public class JsBridge {
+	public final String FILTER_VIDEO_CATEGORY = ExtensionProvider.FILTER_VIDEO_CATEGORY;
+	public final String FILTER_SEASON = ExtensionProvider.FILTER_SEASON;
+	public final String FILTER_EPISODE = ExtensionProvider.FILTER_EPISODE;
 	public final String FILTER_FEED = ExtensionProvider.FILTER_FEED;
 	public final String FILTER_PAGE = ExtensionProvider.FILTER_PAGE;
 	public final String FILTER_QUERY = ExtensionProvider.FILTER_QUERY;
-	public final String FILTER_START_DATE = ExtensionProvider.FILTER_START_DATE;
-	public final String FILTER_END_DATE = ExtensionProvider.FILTER_END_DATE;
 	public final String FILTER_TAGS = ExtensionProvider.FILTER_TAGS;
+	public final String FILTER_MEDIA = ExtensionProvider.FILTER_MEDIA;
+
+	public final String VIDEO_CATEGORY_EPISODE = ExtensionProvider.VIDEO_CATEGORY_EPISODE;
+	public final String VIDEO_CATEGORY_TRAILER = ExtensionProvider.VIDEO_CATEGORY_TRAILER;
+	public final String VIDEO_CATEGORY_MUSIC = ExtensionProvider.VIDEO_CATEGORY_MUSIC;
+
 	private static final String TAG = "JsBridge";
 	protected WeakReference<android.content.Context> context;
 	private final JsManager manager;

@@ -74,7 +74,7 @@ public abstract class ExtensionsManager {
 	}
 
 	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {
-		callback.onResult(null, new UnimplementedException("This extension manager do not support repositories!"));
+		callback.onError(new UnimplementedException("This extension manager do not support repositories!"));
 	}
 
 	/**

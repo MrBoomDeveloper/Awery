@@ -16,10 +16,12 @@ import com.mrboomdev.awery.app.AweryPlatform;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 import com.squareup.moshi.Json;
 import com.squareup.moshi.ToJson;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -219,9 +221,17 @@ public class SettingsItem implements Serializable {
 		switch(getType()) {
 			case BOOLEAN, SCREEN_BOOLEAN -> setValue((Boolean) handler.restoreValue(this));
 			case INTEGER, SELECT_INTEGER, COLOR -> setValue((Integer) handler.restoreValue(this));
-			case SELECT, STRING -> setValue((String) handler.restoreValue(this));
+			case SELECT, STRING, JSON -> setValue((String) handler.restoreValue(this));
 			case DATE -> setValue((Long) handler.restoreValue(this));
 		}
+	}
+	
+	public <T> T parseJsonValue(Class<T> clazz) throws IOException {
+		return Parser.fromString(clazz, getStringValue());
+	}
+
+	public <T> T parseJsonValue(Parser.Adapter<T> adapter) throws IOException {
+		return Parser.fromString(adapter, getStringValue());
 	}
 
 	/**

@@ -5,6 +5,8 @@ import com.squareup.moshi.Json;
 public enum SettingsItemType {
 	@Json(name = "boolean")
 	BOOLEAN,
+	@Json(name = "json")
+	JSON,
 	@Json(name = "date")
 	DATE,
 	@Json(name = "excludable")

@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AweryLifecycle {
-	private static final int REQUEST_CODE_NOTIFICATIONS_PERMISSION = getActivityResultCode();
 	private static final String TAG = "AweryLifecycle";
 	private static UniqueIdGenerator activityRequestCodes;
 	private static AweryApp app;

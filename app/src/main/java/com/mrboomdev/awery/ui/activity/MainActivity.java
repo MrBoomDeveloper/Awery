@@ -45,7 +45,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.db.item.DBTab;
-import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -328,8 +328,11 @@ public class MainActivity extends AppCompatActivity {
 		@NonNull
 		@Override
 		public Fragment createFragment(int position) {
+			var tab = tabs.get(position);
 			var arguments = new Bundle();
-			arguments.putSerializable("feeds", (Serializable) tabs.get(position).feeds);
+
+			arguments.putSerializable(FeedsFragment.ARGUMENT_TAB, tab);
+			arguments.putSerializable(FeedsFragment.ARGUMENT_FEEDS, (Serializable) tab.feeds);
 
 			var fragment = new HomeFeedsFragment();
 			fragment.setArguments(arguments);
@@ -432,13 +435,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		protected boolean canHaveOtherViewTypes() {
-			return true;
-		}
-
-		@Override
-		protected List<SettingsItem> getFilters() {
-			return Collections.emptyList();
+		protected SettingsList getFilters() {
+			return new SettingsList();
 		}
 
 		@Override

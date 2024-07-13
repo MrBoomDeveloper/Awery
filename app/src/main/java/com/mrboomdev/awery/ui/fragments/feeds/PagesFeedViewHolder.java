@@ -1,12 +1,11 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static com.mrboomdev.awery.app.AweryApp.getConfiguration;
 import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
@@ -15,33 +14,28 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 
 import android.annotation.SuppressLint;
-import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.MediaUtils;
 
 import org.jetbrains.annotations.Contract;
 
 import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import java9.util.stream.Collectors;
 
@@ -50,6 +44,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final PagerAdapter adapter = new PagerAdapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
+	private final MediaCatalogFeaturedPagerBinding binding;
 	private Feed feed;
 
 	@NonNull
@@ -61,6 +56,8 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 
 	private PagesFeedViewHolder(@NonNull MediaCatalogFeaturedPagerBinding binding, ViewGroup parent) {
 		super(binding.getRoot());
+
+		this.binding = binding;
 		binding.pager.setAdapter(adapter);
 
 		setOnApplyUiInsetsListener(binding.pageIndicator, insets -> {
@@ -86,6 +83,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 			}
 		}
 
+		binding.pager.setCurrentItem(0, false);
 		adapter.notifyDataSetChanged();
 	}
 
@@ -212,23 +210,27 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 				binding.status.setVisibility(View.GONE);
 			}
 
-			var tagsCount = new AtomicInteger(0);
+			var genresStream = returnWith(() -> {
+				if(item.genres != null) {
+					return stream(item.genres);
+				}
 
-			var formattedTags = (item.genres != null ? (
-					stream(item.genres)
-							.filter(tag -> tagsCount.getAndAdd(1) < 3)
-			) : (
-					stream(item.tags)
-							.filter(tag -> tagsCount.getAndAdd(1) < 3)
-							.map(CatalogTag::getName)
-			)).collect(Collectors.joining(", "));
+				if(item.tags != null) {
+					return stream(item.tags).map(CatalogTag::getName);
+				}
 
-			binding.tags.setText(formattedTags);
+				return null;
+			});
+
+			if(genresStream != null) {
+				binding.tags.setText(genresStream.limit(3)
+						.collect(Collectors.joining(", ")));
+			}
 
 			binding.poster.setImageDrawable(null);
 			binding.banner.setImageDrawable(null);
 
-			if((getConfiguration(getContext(binding)).uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+			if(ThemeManager.isDarkModeEnabled()) {
 				binding.metaSeparator.setShadowLayer(1, 0, 0, Color.BLACK);
 				binding.tags.setShadowLayer(1, 0, 0, Color.BLACK);
 				binding.status.setShadowLayer(1, 0, 0, Color.BLACK);
@@ -247,23 +249,11 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 					.transition(withCrossFade())
 					.into(binding.poster);
 
-			/*
-			 Because of some strange bug we have to load banner by our hands
-			 or else it'll in some moment will stretch
-			*/
-
 			Glide.with(binding.getRoot())
 					.load(item.getBestBanner())
-					.into(new CustomTarget<Drawable>() {
-						@Override
-						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-							if(item != PagerViewHolder.this.item) return;
-							binding.banner.setImageDrawable(resource);
-						}
-
-						@Override
-						public void onLoadCleared(@Nullable Drawable placeholder) {}
-					});
+					.transition(withCrossFade())
+					.centerCrop()
+					.into(binding.banner);
 
 			this.item = item;
 		}

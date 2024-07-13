@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.annotation.SuppressLint;
@@ -24,8 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
@@ -39,7 +40,6 @@ import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -47,13 +47,15 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class FeedsFragment extends Fragment {
+	public static final String ARGUMENT_FEEDS = "feeds";
+	public static final String ARGUMENT_TAB = "tab";
 	private static final String TAG = "FeedsFragment";
-	private static final int MAX_LOADING_FEEDS_AT_TIME = 5;
+	private static final int MAX_LOADING_FEEDS_AT_TIME = 1;
 	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>();
 	private final Queue<CatalogFeed> loadingFeeds = new LinkedBlockingQueue<>();
 	private ScreenFeedBinding binding;
+	private DBTab tab;
 	private List<CatalogFeed> feeds;
-	private boolean doSlidesExist;
 	private long loadId;
 
 	private final MediaCategoriesAdapter rowsAdapter = new MediaCategoriesAdapter(),
@@ -66,7 +68,8 @@ public abstract class FeedsFragment extends Fragment {
 	@SuppressWarnings("unchecked")
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.feeds = (List<CatalogFeed>) requireArguments().getSerializable("feeds");
+		this.feeds = (List<CatalogFeed>) requireArguments().getSerializable(ARGUMENT_FEEDS);
+		this.tab = (DBTab) requireArguments().getSerializable(ARGUMENT_TAB);
 	}
 
 	public void scrollToTop() {
@@ -104,8 +107,7 @@ public abstract class FeedsFragment extends Fragment {
 			setContentBehindToolbarEnabled(false);
 
 			new Thread(() -> {
-				var processedFeeds = new ArrayList<>(CatalogFeed.processFeeds(feeds));
-				Collections.shuffle(processedFeeds);
+				var processedFeeds = CatalogFeed.processFeeds(feeds);
 
 				if(processedFeeds.isEmpty()) {
 					tryToLoadNextFeed(null, currentLoadId);
@@ -140,21 +142,11 @@ public abstract class FeedsFragment extends Fragment {
 				}
 
 				runOnUiThread(() -> {
-					/* Only a single instance with an DisplayMode.SLIDES can be made,
-					*  because else the app will look messy. */
-					var displayMode = !canHaveOtherViewTypes() ? CatalogFeed.DisplayMode.LIST_HORIZONTAL
-							: (rowsAdapter.getItemCount() != 0 ? (
-									feed.displayMode == CatalogFeed.DisplayMode.SLIDES ? (doSlidesExist
-											? CatalogFeed.DisplayMode.SLIDES
-											: CatalogFeed.DisplayMode.LIST_HORIZONTAL) : feed.displayMode
-					) : CatalogFeed.DisplayMode.SLIDES);
-
-					if(displayMode == CatalogFeed.DisplayMode.SLIDES) {
+					if(feed.displayMode == CatalogFeed.DisplayMode.SLIDES && rowsAdapter.getItemCount() == 0) {
 						setContentBehindToolbarEnabled(true);
-						doSlidesExist = true;
 					}
 
-					rowsAdapter.addCategory(new FeedViewHolder.Feed(feed, filteredResults, displayMode));
+					rowsAdapter.addCategory(new FeedViewHolder.Feed(feed, filteredResults, feed.displayMode));
 
 					// I hope it'll don't do anything bad
 					if(rowsAdapter.getItemCount() < 2) {
@@ -184,7 +176,7 @@ public abstract class FeedsFragment extends Fragment {
 			var context = getContext();
 			if(context == null) return;
 
-			var filters = new ArrayList<>(getFilters());
+			var filters = new SettingsList(getFilters());
 
 			if(feed.filters != null) {
 				filters.addAll(feed.filters);
@@ -194,18 +186,19 @@ public abstract class FeedsFragment extends Fragment {
 				filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed));
 			}
 
-			var queryFilter = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+			var queryFilter = filters.get(ExtensionProvider.FILTER_QUERY);
 
 			if(queryFilter != null) {
 				if(feed.filters == null) {
-					feed.filters = new ArrayList<>(Collections.singletonList(queryFilter));
+					feed.filters = new SettingsList(queryFilter);
 				} else {
-					var found = find(feed.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+					var found = feed.filters.get(ExtensionProvider.FILTER_QUERY);
 					if(found != null) feed.filters.remove(found);
 					feed.filters.add(queryFilter);
 				}
 			}
 
+			filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 			provider.searchMedia(context, filters, finishCallback);
 		} catch(ExtensionNotInstalledException e) {
 			Log.e(TAG, "Extension isn't installed, can't load the feed!", e);
@@ -249,10 +242,15 @@ public abstract class FeedsFragment extends Fragment {
 		if(nextFeed != null) {
 			loadingFeeds.add(nextFeed);
 			loadFeed(nextFeed, currentLoadId);
-		} else if(pendingFeeds.isEmpty() && loadingFeeds.isEmpty()) {
+		} else {
 			emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
-				binding.setInfo(R.string.you_reached_end, R.string.you_reached_end_description);
-				emptyStateAdapter.notifyDataSetChanged();
+				if(tab == null || tab.showEnd) {
+					binding.setInfo(R.string.you_reached_end, R.string.you_reached_end_description);
+					emptyStateAdapter.setEnabled(true);
+				} else {
+					binding.hideAll();
+					emptyStateAdapter.setEnabled(false);
+				}
 			}, this.binding.recycler));
 		}
 	}
@@ -302,9 +300,7 @@ public abstract class FeedsFragment extends Fragment {
 		return binding.getRoot();
 	}
 
-	protected abstract boolean canHaveOtherViewTypes();
-
-	protected abstract List<SettingsItem> getFilters();
+	protected abstract SettingsList getFilters();
 
 	protected abstract boolean loadOnStartup();
 

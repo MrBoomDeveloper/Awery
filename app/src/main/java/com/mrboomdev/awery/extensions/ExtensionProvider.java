@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -17,6 +17,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
@@ -33,14 +34,21 @@ import java.util.Set;
  * Base class for all extension providers.
  * @author MrBoomDev
  */
+/* TODO: REPLACE ALL METHOD ARGUMENTS WITH A SINGLE SettingsList */
 @SuppressWarnings("unused")
 public abstract class ExtensionProvider implements Comparable<ExtensionProvider> {
-	public static final String FILTER_PAGE = "_AWERY_FILTER_PAGE_";
-	public static final String FILTER_FEED = "_AWERY_FILTER_FEED_";
-	public static final String FILTER_QUERY = "_AWERY_FILTER_QUERY_";
-	public static final String FILTER_START_DATE = "_AWERY_FILTER_START_DATE_";
-	public static final String FILTER_END_DATE = "_AWERY_FILTER_END_DATE_";
-	public static final String FILTER_TAGS = "_AWERY_FILTER_TAGS_";
+	public static final String FILTER_VIDEO_CATEGORY = "FILTER_VIDEO_CATEGORY";
+	public static final String FILTER_PAGE = "FILTER_PAGE";
+	public static final String FILTER_SEASON = "FILTER_SEASON";
+	public static final String FILTER_EPISODE = "FILTER_EPISODE";
+	public static final String FILTER_FEED = "FILTER_FEED";
+	public static final String FILTER_QUERY = "FILTER_QUERY";
+	public static final String FILTER_TAGS = "FILTER_TAGS";
+	public static final String FILTER_MEDIA = "FILTER_MEDIA";
+
+	public static final String VIDEO_CATEGORY_EPISODE = "VIDEO_CATEGORY_EPISODE";
+	public static final String VIDEO_CATEGORY_TRAILER = "VIDEO_CATEGORY_TRAILER";
+	public static final String VIDEO_CATEGORY_MUSIC = "VIDEO_CATEGORY_MUSIC";
 
 	/**
 	 * Isn't used by the application itself, only for the {@link JsProvider}
@@ -134,7 +142,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void searchMedia(
 			Context context,
-			List<SettingsItem> filters,
+			SettingsList filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
@@ -142,7 +150,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void searchSubtitles(
 			Context context,
-			List<SettingsItem> filters,
+			SettingsList filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
 	) {
 		callback.onFailure(new UnimplementedException("Subtitles search isn't implemented!"));
@@ -197,11 +205,11 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Tags search isn't implemented!"));
 	}
 
-	public void getEpisodes(int page, CatalogMedia media, @NonNull ResponseCallback<List<? extends CatalogEpisode>> callback) {
+	public void getVideos(SettingsList filters, @NonNull ResponseCallback<List<? extends CatalogVideo>> callback) {
 		callback.onFailure(new UnimplementedException("Episodes aren't implemented!"));
 	}
 
-	public void getVideos(CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
+	public void getVideoFiles(SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
 		callback.onFailure(new UnimplementedException("Videos aren't implemented!"));
 	}
 
@@ -212,7 +220,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public abstract Set<String> getFeatures();
 
 	/**
-	 * @param features Constants array from {@link ExtensionProvider} representing new features
+	 * @param features Constants array from {@link com.mrboomdev.awery.sdk.extensions.ExtensionProvider} representing new features
 	 * @return Whether the extension supports the feature
 	 * @author MrBoomDev
 	 */

@@ -10,16 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.room.TypeConverter;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.sdk.data.CatalogFilter;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
-import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
 import com.squareup.moshi.Types;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 
@@ -136,30 +134,38 @@ public class ParserAdapter {
 	}
 
 	@TypeConverter
-	public static List<SettingsItem> filtersListFromString(String value) {
+	public static SettingsList filtersListFromString(String value) {
 		if(value == null) {
-			return Collections.emptyList();
+			return new SettingsList();
 		}
 
-		var adapter = new Moshi.Builder().build().<List<SettingsItem>>
-				adapter(Types.newParameterizedType(List.class, SettingsItem.class));
+		var adapter = new Moshi.Builder().build().adapter(SettingsList.class);
 
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
 			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
 			Log.e(TAG, "Failed to parse string to map", e);
-			return Collections.emptyList();
+			return new SettingsList();
 		}
+	}
+
+	@ToJson
+	public static List<SettingsItem> toJson(SettingsList list) {
+		return list;
+	}
+
+	@NonNull
+	@Contract("_ -> new")
+	@FromJson
+	public static SettingsList toJson(List<SettingsItem> list) {
+		return new SettingsList(list);
 	}
 
 	@NonNull
 	@TypeConverter
-	public static String filtersListToString(List<SettingsItem> value) {
-		var adapter = new Moshi.Builder().build().<List<SettingsItem>>
-				adapter(Types.newParameterizedType(List.class, SettingsItem.class));
-
-		return adapter.toJson(value);
+	public static String filtersListToString(SettingsList value) {
+		return new Moshi.Builder().build().adapter(SettingsList.class).toJson(value);
 	}
 
 	@TypeConverter

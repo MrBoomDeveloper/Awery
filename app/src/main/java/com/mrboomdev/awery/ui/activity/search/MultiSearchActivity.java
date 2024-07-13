@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentContainerView;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -121,11 +122,6 @@ public class MultiSearchActivity extends AppCompatActivity {
 		}
 
 		@Override
-		protected boolean canHaveOtherViewTypes() {
-			return false;
-		}
-
-		@Override
 		protected View getHeader(ViewGroup parent) {
 			binding = LayoutHeaderSearchBinding.inflate(
 					LayoutInflater.from(getContext()), parent, false);
@@ -178,9 +174,9 @@ public class MultiSearchActivity extends AppCompatActivity {
 		}
 
 		@Override
-		protected List<SettingsItem> getFilters() {
+		protected SettingsList getFilters() {
 			var text = binding.edittext.getText().toString();
-			return List.of(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY, text));
+			return new SettingsList(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY, text));
 		}
 
 		@Override

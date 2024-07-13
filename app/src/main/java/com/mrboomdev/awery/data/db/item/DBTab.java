@@ -6,16 +6,24 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
+import com.squareup.moshi.Json;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity(tableName = "tab")
-public class DBTab implements Comparable<DBTab> {
+public class DBTab implements Comparable<DBTab>, Serializable {
+	@Serial
+	private static final long serialVersionUID = 1;
 	@PrimaryKey
 	@NonNull
 	public String id;
 	public String icon, title;
 	public int index;
+	@Json(name = "show_end")
+	@Ignore
+	public boolean showEnd = true;
 	@Ignore
 	public List<CatalogFeed> feeds;
 

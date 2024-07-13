@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
+
 import android.annotation.SuppressLint;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,7 +21,6 @@ import java.util.Queue;
 
 public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private final List<PendingViewOperation<View>> pendingViewOperations = new ArrayList<>();
-	private final Handler handler = new Handler(Looper.getMainLooper());
 	private Integer pendingVisibility;
 	private View view;
 	private boolean isEnabled = true;
@@ -182,13 +181,8 @@ public abstract class SingleViewAdapter extends RecyclerView.Adapter<RecyclerVie
 		try {
 			notifyDataSetChanged();
 		} catch(RuntimeException e) {
-			handler.post(() -> setEnabled(isEnabled));
+			postRunnable(() -> setEnabled(isEnabled));
 		}
-	}
-
-	public void setEnabledSuperForce(boolean isEnabled) {
-		setEnabled(isEnabled);
-		setEnabled(isEnabled);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")

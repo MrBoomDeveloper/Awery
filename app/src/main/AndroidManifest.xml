@@ -77,6 +77,7 @@
 
         <activity
             android:name=".ui.activity.IntentHandlerActivity"
+            android:theme="@style/Theme.Awery.Splash"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:exported="true">
@@ -87,8 +88,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https" />
-                <data android:scheme="http" />
                 <data android:scheme="awery" />
                 <data android:host="mrboomdev.ru" />
                 <data android:pathPrefix="/awery/app-login" />
@@ -96,6 +95,17 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="aniyomi" />
+                <data android:host="add-repo" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.OPENABLE" />
@@ -104,6 +114,26 @@
                 <data android:scheme="content" />
                 <data android:host="*" />
                 <data android:pathPattern=".*\\.awerybck" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="mrboomdev.ru" />
+                <data android:pathPrefix="/awery/app-login" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:host="mrboomdev.ru" />
+                <data android:pathPrefix="/awery/app-login" />
             </intent-filter>
         </activity>
 
@@ -127,7 +157,8 @@
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
-        <activity android:name=".ui.activity.search.MultiSearchActivity"
+        <activity
+            android:name=".ui.activity.search.MultiSearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
@@ -190,7 +221,7 @@
                 android:value="true" />
 
         </service>
-        
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${fileProvider}"

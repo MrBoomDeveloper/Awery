@@ -1,10 +1,12 @@
 package com.mrboomdev.awery.extensions;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
+import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -154,7 +156,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
 						.setPositiveButton(R.string.ok, dialog -> {
-							var text = inputField.getText().trim();
+							var text = cleanUrl(inputField.getText());
 
 							if(text.isBlank()) {
 								inputField.setError("Field cannot be empty");
@@ -170,32 +172,35 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							}
 
 							inputField.setError(null);
+							var loadingWindow = showLoadingWindow();
 
 							manager.getRepository(text, (extensions, e) -> {
 								if(e != null) {
 									Log.e(TAG, "Failed to get a repository!", e);
-									inputField.setError(e.getMessage());
+									runOnUiThread(() -> inputField.setError(e.getMessage()));
+									loadingWindow.dismiss();
 									return;
 								}
 
-								new Thread(() -> {
-									var dao = getDatabase().getRepositoryDao();
-									var repos = dao.getRepositories(manager.getId());
+								var dao = getDatabase().getRepositoryDao();
+								var repos = dao.getRepositories(manager.getId());
 
-									if(find(repos, item -> item.url.equals(text)) != null) {
-										toast("Repository already exists!");
-										return;
-									}
+								if(find(repos, item -> Objects.equals(item.url, text)) != null) {
+									toast("Repository already exists!");
+									loadingWindow.dismiss();
+									return;
+								}
 
-									var repo = new DBRepository(text, manager.getId());
-									dao.add(repo);
+								var repo = new DBRepository(text, manager.getId());
+								dao.add(repo);
+
+								runOnUiThread(() -> {
+									onSettingAddition(new RepositorySetting(repo), 0);
 
 									dialog.dismiss();
+									loadingWindow.dismiss();
 									toast("Repository added successfully!");
-
-									runOnUiThread(() -> onSettingAddition(
-											new RepositorySetting(repo), null));
-								}).start();
+								});
 							});
 						}).show();
 			}

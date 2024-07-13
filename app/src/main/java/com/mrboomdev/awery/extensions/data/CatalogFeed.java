@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.data;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.os.Looper;
@@ -12,6 +13,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
@@ -23,6 +25,7 @@ import com.squareup.moshi.Json;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -36,13 +39,16 @@ public class CatalogFeed implements Serializable {
 	public static final String TEMPLATE_AUTO_GENERATE = "AUTO_GENERATE";
 	public static final String TEMPLATING_SOURCE_MANAGER = "INTERNAL";
 	public static final String TEMPLATING_SOURCE_ID = "TEMPLATE";
+
+	public static final String FILTER_FIRST_LARGE = "first_large";
+
 	@Serial
 	private static final long serialVersionUID = 1;
 	@PrimaryKey
 	@NonNull
 	public String id;
 	public int index;
-	public List<SettingsItem> filters;
+	public SettingsList filters;
 	public String tab, title;
 	@ColumnInfo(name = "hide_if_empty")
 	@Json(name = "hide_if_empty", ignore = true)
@@ -85,9 +91,9 @@ public class CatalogFeed implements Serializable {
 		}
 
 		if(filters != null) {
-			filters = stream(filters)
+			filters = new SettingsList(stream(filters)
 					.map(SettingsItem::new)
-					.toList();
+					.toList());
 		}
 	}
 
@@ -106,7 +112,10 @@ public class CatalogFeed implements Serializable {
 	 * @author MrBoomDev
 	 */
 	public static List<CatalogFeed> processFeeds(@NonNull List<CatalogFeed> feeds) {
-		return stream(feeds).map(CatalogFeed::processFeed).flatMap(NiceUtils::stream).toList();
+		return stream(feeds)
+				.map(CatalogFeed::processFeed)
+				.flatMap(NiceUtils::stream)
+				.toList();
 	}
 
 	/**
@@ -138,56 +147,70 @@ public class CatalogFeed implements Serializable {
 					})
 					.toList();
 
-			case TEMPLATE_AUTO_GENERATE -> stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
-					.map(Extension::getProviders)
-					.flatMap(NiceUtils::stream)
-					.filter(provider -> {
-						if(!provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS)) {
-							return false;
-						}
+			case TEMPLATE_AUTO_GENERATE -> {
+				var result = Arrays.asList(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+						.map(Extension::getProviders)
+						.flatMap(NiceUtils::stream)
+						.filter(provider -> {
+							if(!provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS)) {
+								return false;
+							}
 
-						var adultMode = AwerySettings.ADULT_MODE.getValue();
+							var adultMode = AwerySettings.ADULT_MODE.getValue();
 
-						if(adultMode != null) {
-							switch(adultMode) {
-								case SAFE -> {
-									switch(provider.getAdultContentMode()) {
-										case ONLY, PARTIAL -> {
+							if(adultMode != null) {
+								switch(adultMode) {
+									case SAFE -> {
+										switch(provider.getAdultContentMode()) {
+											case ONLY, PARTIAL -> {
+												return false;
+											}
+										}
+									}
+
+									case ONLY -> {
+										if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
 											return false;
 										}
 									}
 								}
+							}
 
-								case ONLY -> {
-									if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
-										return false;
-									}
+							return true;
+						})
+						.map(provider -> {
+							var feeds = new AtomicReference<List<CatalogFeed>>();
+
+							provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
+								@Override
+								public void onSuccess(List<CatalogFeed> catalogFeeds) {
+									feeds.set(catalogFeeds);
 								}
-							}
-						}
 
-						return true;
-					})
-					.map(provider -> {
-						var feeds = new AtomicReference<List<CatalogFeed>>();
+								@Override
+								public void onFailure(Throwable e) {
+									feeds.set(Collections.emptyList());
+								}
+							});
 
-						provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
-							@Override
-							public void onSuccess(List<CatalogFeed> catalogFeeds) {
-								feeds.set(catalogFeeds);
-							}
+							while(feeds.get() == null);
+							return feeds.get();
+						})
+						.flatMap(NiceUtils::stream)
+						.toArray(CatalogFeed[]::new));
 
-							@Override
-							public void onFailure(Throwable e) {
-								feeds.set(Collections.emptyList());
-							}
-						});
+				Collections.shuffle(result);
 
-						while(feeds.get() == null);
-						return feeds.get();
-					})
-					.flatMap(NiceUtils::stream)
-					.toList();
+				if(feed.filters != null) {
+					var firstLarge = feed.filters.get(FILTER_FIRST_LARGE);
+
+					if(isTrue(firstLarge.getBooleanValue()) && !result.isEmpty()) {
+						result.get(0).displayMode = DisplayMode.SLIDES;
+					}
+				}
+
+				yield result;
+			}
 
 			default -> Collections.emptyList();
 		};

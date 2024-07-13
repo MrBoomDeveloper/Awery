@@ -1,11 +1,11 @@
 package com.mrboomdev.awery.extensions.request;
 
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 
 public class PostMediaCommentRequest {
 	private CatalogComment comment, parent;
-	private CatalogEpisode episode;
+	private CatalogVideo episode;
 
 	public PostMediaCommentRequest setComment(CatalogComment comment) {
 		this.comment = comment;
@@ -17,7 +17,7 @@ public class PostMediaCommentRequest {
 		return this;
 	}
 
-	public PostMediaCommentRequest setEpisode(CatalogEpisode episode) {
+	public PostMediaCommentRequest setEpisode(CatalogVideo episode) {
 		this.episode = episode;
 		return this;
 	}
@@ -30,7 +30,7 @@ public class PostMediaCommentRequest {
 		return parent;
 	}
 
-	public CatalogEpisode getEpisode() {
+	public CatalogVideo getEpisode() {
 		return episode;
 	}
 }

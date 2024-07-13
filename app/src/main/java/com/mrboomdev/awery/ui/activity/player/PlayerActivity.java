@@ -44,15 +44,19 @@ import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
-import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -84,9 +88,9 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	protected boolean areButtonsClickable;
 	protected boolean isVideoPaused, isVideoBuffering = true, didSelectedVideo;
 	protected int forwardFastClicks, backwardFastClicks;
-	protected List<CatalogEpisode> episodes;
-	protected CatalogEpisode episode;
-	protected CatalogVideo video;
+	protected List<CatalogVideo> episodes;
+	protected CatalogVideo episode;
+	protected CatalogVideoFile video;
 	protected ExoPlayer player;
 	protected int doubleTapSeek, bigSeek;
 	protected AwerySettings.PlayerGesturesMode_Values gesturesMode;
@@ -382,7 +386,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.play();
 	}
 
-	public void setVideo(@NonNull CatalogVideo video) {
+	public void setVideo(@NonNull CatalogVideoFile video) {
 		var url = video.getUrl();
 
 		// Handle torrents
@@ -424,15 +428,17 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		binding.loadingStatus.setText("Loading videos list...");
 		var intent = getIntent();
 
-		this.episode = (CatalogEpisode) intent.getSerializableExtra("episode");
-		this.episodes = (List<CatalogEpisode>) intent.getSerializableExtra("episodes");
+		this.episode = (CatalogVideo) intent.getSerializableExtra("episode");
+		this.episodes = (List<CatalogVideo>) intent.getSerializableExtra("episodes");
 
 		if(episode != null) {
 			binding.title.setText(episode.getTitle());
 
-			source.getVideos(episode, new ExtensionProvider.ResponseCallback<>() {
+			source.getVideoFiles(new SettingsList(
+					new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_EPISODE, Parser.toString(CatalogVideo.class, episode))
+			), new ExtensionProvider.ResponseCallback<>() {
 				@Override
-				public void onSuccess(List<CatalogVideo> catalogVideos) {
+				public void onSuccess(List<CatalogVideoFile> catalogVideos) {
 					if(isDestroyed()) return;
 
 					runOnUiThread(() -> {

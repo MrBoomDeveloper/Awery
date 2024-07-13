@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
@@ -38,11 +38,11 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
-	private final WeakHashMap<CatalogEpisode, Long> progresses = new WeakHashMap<>();
-	private final WeakHashMap<CatalogEpisode, Long> ids = new WeakHashMap<>();
+	private final WeakHashMap<CatalogVideo, Long> progresses = new WeakHashMap<>();
+	private final WeakHashMap<CatalogVideo, Long> ids = new WeakHashMap<>();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
-	private ArrayList<CatalogEpisode> items = new ArrayList<>();
+	private ArrayList<CatalogVideo> items = new ArrayList<>();
 	private CatalogMedia media;
 
 	public MediaPlayEpisodesAdapter() {
@@ -50,7 +50,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(CatalogMedia media, Collection<? extends CatalogEpisode> items) {
+	public void setItems(CatalogMedia media, Collection<? extends CatalogVideo> items) {
 		this.media = media;
 		idGenerator.clear();
 
@@ -100,7 +100,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	public interface OnEpisodeSelectedListener {
-		void onEpisodeSelected(@NonNull CatalogEpisode episode, List<CatalogEpisode> episodes);
+		void onEpisodeSelected(@NonNull CatalogVideo episode, List<CatalogVideo> episodes);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	}
 
 	private void changeWatchedState(
-			CatalogEpisode episode,
+			CatalogVideo episode,
 			long episodeProgress,
 			@NonNull ViewHolder holder,
 			Runnable callback
@@ -212,14 +212,14 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		private final ItemListEpisodeBinding binding;
-		private CatalogEpisode item;
+		private CatalogVideo item;
 
 		public ViewHolder(@NonNull ItemListEpisodeBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
 
-		public CatalogEpisode getItem() {
+		public CatalogVideo getItem() {
 			return item;
 		}
 
@@ -230,7 +230,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}
 
 		@SuppressLint("SetTextI18n")
-		public void bind(@NonNull CatalogEpisode item) {
+		public void bind(@NonNull CatalogVideo item) {
 			this.item = item;
 
 			binding.title.setText(item.getTitle());

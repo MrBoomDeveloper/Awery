@@ -10,7 +10,6 @@ import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.fragments.feeds.FeedViewHolder;
 import com.mrboomdev.awery.ui.fragments.feeds.ListFeedViewHolder;
 import com.mrboomdev.awery.ui.fragments.feeds.PagesFeedViewHolder;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<FeedViewHolder>
 		return switch(categories.get(position).getDisplayMode()) {
 			case LIST_HORIZONTAL -> VIEW_TYPE_LIST;
 			case SLIDES -> VIEW_TYPE_PAGES;
-			case LIST_VERTICAL, GRID -> throw new UnimplementedException();
+			case LIST_VERTICAL, GRID -> VIEW_TYPE_LIST; // TODO: Handle other display modes
 		};
 	}
 

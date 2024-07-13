@@ -8,8 +8,6 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
-import org.jetbrains.annotations.Contract;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -18,6 +16,11 @@ public class Parser {
 
 	@NonNull
 	public static String toString(Type type, Object object) {
+		return moshi.adapter(type).toJson(object);
+	}
+
+	@NonNull
+	public static <T> String toString(Class<T> type, T object) {
 		return moshi.adapter(type).toJson(object);
 	}
 

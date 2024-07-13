@@ -28,7 +28,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
@@ -146,7 +146,7 @@ public class MediaActivity extends AppCompatActivity {
 
 			case MediaUtils.ACTION_COMMENTS -> {
 				if(commentsFragment != null) {
-					commentsFragment.setEpisode((CatalogEpisode) payload);
+					commentsFragment.setEpisode((CatalogVideo) payload);
 				} else {
 					pendingExtra = payload;
 				}
@@ -175,7 +175,7 @@ public class MediaActivity extends AppCompatActivity {
 				case 0 -> new MediaInfoFragment(media);
 				case 1 -> new MediaPlayFragment(media);
 				case 3 -> new MediaRelationsFragment();
-				case 2 -> commentsFragment = new MediaCommentsFragment(media, (CatalogEpisode) pendingExtra);
+				case 2 -> commentsFragment = new MediaCommentsFragment(media, (CatalogVideo) pendingExtra);
 				default -> throw new IllegalArgumentException("Invalid position: " + position);
 			};
 		}

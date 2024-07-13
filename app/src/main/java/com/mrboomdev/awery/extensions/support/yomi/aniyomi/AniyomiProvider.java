@@ -3,7 +3,6 @@ package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
-import static com.mrboomdev.awery.util.NiceUtils.findMap;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -18,13 +17,15 @@ import androidx.preference.PreferenceScreen;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -32,6 +33,7 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -209,11 +211,18 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void getEpisodes(
-			int page,
-			@NonNull CatalogMedia media,
-			@NonNull ResponseCallback<List<? extends CatalogEpisode>> callback
+	public void getVideos(
+			@NonNull SettingsList filters,
+			@NonNull ResponseCallback<List<? extends CatalogVideo>> callback
 	) {
+		var media = returnWith(filters.require(ExtensionProvider.FILTER_MEDIA), mediaFilter -> {
+			try {
+				return mediaFilter.parseJsonValue(CatalogMedia.class);
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
 		new Thread(() -> AniyomiKotlinBridge.getEpisodesList(source, AniyomiMedia.fromMedia(media), (episodes, e) -> {
 			if(e != null) {
 				callback.onFailure(e);
@@ -231,7 +240,15 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void getVideos(@NonNull CatalogEpisode episode, @NonNull ResponseCallback<List<CatalogVideo>> callback) {
+	public void getVideoFiles(@NonNull SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
+		var episode = returnWith(filters.require(ExtensionProvider.FILTER_EPISODE), mediaFilter -> {
+			try {
+				return mediaFilter.parseJsonValue(CatalogVideo.class);
+			} catch(IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+
 		new Thread(() -> AniyomiKotlinBridge.getVideosList(source, AniyomiEpisode.fromEpisode(episode), (videos, e) -> {
 			if(e != null) {
 				callback.onFailure(e);
@@ -243,7 +260,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 				return;
 			}
 
-			callback.onSuccess(stream(videos).map(item -> new CatalogVideo(
+			callback.onSuccess(stream(videos).map(item -> new CatalogVideoFile(
 					item.getQuality(),
 					item.getVideoUrl(),
 
@@ -357,13 +374,13 @@ public abstract class AniyomiProvider extends YomiProvider {
 	@Override
 	public void searchMedia(
 			Context context,
-			@NonNull List<SettingsItem> filters,
+			@NonNull SettingsList filters,
 			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			var query = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_QUERY) ? filter.getStringValue() : null);
-			var page = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_PAGE) ? filter.getIntegerValue() : null);
-			var feed = findMap(filters, filter -> Objects.equals(filter.getKey(), FILTER_FEED) ? filter.getStringValue() : null);
+			var query = filters.get(FILTER_QUERY);
+			var page = filters.get(FILTER_PAGE);
+			var feed = filters.get(FILTER_FEED);
 
 			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
 				if(!checkSearchResults(animePage, t, callback)) return;
@@ -374,13 +391,13 @@ public abstract class AniyomiProvider extends YomiProvider {
 			};
 
 			// filters.size() <= 2 only if query and page filters are being met.
-			if(feed != null && filters.size() <= 2) {
-				switch(feed) {
+			if(feed != null && feed.getStringValue() != null && filters.size() <= 2) {
+				switch(feed.getStringValue()) {
 					case FEED_LATEST -> new Thread(() -> AniyomiKotlinBridge.getLatestAnime(
-							catalogueSource, requireNonNullElse(page, 0), searchCallback)).start();
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0), searchCallback)).start();
 
 					case FEED_POPULAR -> new Thread(() -> AniyomiKotlinBridge.getPopularAnime(
-							catalogueSource, requireNonNullElse(page, 0), searchCallback)).start();
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0), searchCallback)).start();
 
 					default -> callback.onFailure(new IllegalArgumentException("Unknown feed! " + feed));
 				}
@@ -392,7 +409,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 			applyFilters(animeFilters, filters);
 
 			new Thread(() -> AniyomiKotlinBridge.searchAnime(catalogueSource,
-					requireNonNullElse(page, 0), query,
+					requireNonNullElse(page.getIntegerValue(), 0), query.getStringValue(),
 					animeFilters, searchCallback)).start();
 		} else {
 			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));

@@ -37,12 +37,13 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -52,6 +53,7 @@ import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -77,13 +79,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private static final String TAG = "MediaPlayFragment";
 	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
 	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
-	private final List<SettingsItem> filters = List.of(queryFilter,
+	private final SettingsList filters = new SettingsList(queryFilter,
 			new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
 	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
 	private ConcatAdapter concatAdapter;
-	private List<? extends CatalogEpisode> templateEpisodes;
+	private List<? extends CatalogVideo> templateEpisodes;
 	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private RecyclerView recycler;
@@ -98,7 +100,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	public enum ViewMode { GRID, LIST }
 
 	@Override
-	public void onEpisodeSelected(@NonNull CatalogEpisode episode, @NonNull List<CatalogEpisode> episodes) {
+	public void onEpisodeSelected(@NonNull CatalogVideo episode, @NonNull List<CatalogVideo> episodes) {
 		PlayerActivity.selectSource(selectedSource);
 
 		var intent = new Intent(requireContext(), PlayerActivity.class);
@@ -308,7 +310,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var intent = new Intent(requireContext(), SearchActivity.class);
 					intent.setAction(SearchActivity.ACTION_PICK_MEDIA);
 					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getGlobalId());
-					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) filters);
+					intent.putExtra(SearchActivity.EXTRA_FILTERS, filters);
 
 					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
@@ -402,9 +404,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			}
 
 			if(mediaSource != null) {
-				mediaSource.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+				mediaSource.getVideos(new SettingsList(
+						new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
+						new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
+				), new ExtensionProvider.ResponseCallback<>() {
 					@Override
-					public void onSuccess(List<? extends CatalogEpisode> catalogEpisodes) {
+					public void onSuccess(List<? extends CatalogVideo> catalogEpisodes) {
 						templateEpisodes = catalogEpisodes;
 						currentSourceIndex = 0;
 						runOnUiThread(() -> selectProvider(providers.get(0)));
@@ -440,15 +445,18 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			binding.searchStatus.setOnClickListener(v -> MediaUtils.launchMediaActivity(requireContext(), media));
 		}));
 
-		source.getEpisodes(0, media, new ExtensionProvider.ResponseCallback<>() {
+		source.getVideos(new SettingsList(
+				new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
+				new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
+		), new ExtensionProvider.ResponseCallback<>() {
 			@Override
-			public void onSuccess(List<? extends CatalogEpisode> episodes) {
+			public void onSuccess(List<? extends CatalogVideo> episodes) {
 				if(source != selectedSource || myId != loadId) return;
 
 				sourceStatuses.put(source, ExtensionStatus.OK);
 
 				episodes = new ArrayList<>(episodes);
-				episodes.sort(Comparator.comparing(CatalogEpisode::getNumber));
+				episodes.sort(Comparator.comparing(CatalogVideo::getNumber));
 				var finalEpisodes = episodes;
 
 				if(templateEpisodes != null) {

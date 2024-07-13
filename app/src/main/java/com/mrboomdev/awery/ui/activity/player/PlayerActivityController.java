@@ -31,7 +31,7 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
@@ -368,7 +368,7 @@ public class PlayerActivityController {
 		var videos = activity.episode.getVideos();
 		if(videos == null) return;
 
-		var items = new LinkedHashMap<PopupItem, CatalogVideo>();
+		var items = new LinkedHashMap<PopupItem, CatalogVideoFile>();
 
 		for(var video : videos) {
 			items.put(new PopupItem().setTitle(video.getTitle()), video);

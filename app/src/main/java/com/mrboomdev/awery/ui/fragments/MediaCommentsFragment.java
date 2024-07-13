@@ -51,7 +51,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogEpisode;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
@@ -93,7 +93,7 @@ public class MediaCommentsFragment extends Fragment {
 	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
-	private CatalogEpisode episode;
+	private CatalogVideo episode;
 	private CatalogMedia media;
 	private CatalogComment comment, editedComment;
 	private boolean isLoading;
@@ -106,7 +106,7 @@ public class MediaCommentsFragment extends Fragment {
 		this(null, null);
 	}
 
-	public MediaCommentsFragment(CatalogMedia media, CatalogEpisode episode) {
+	public MediaCommentsFragment(CatalogMedia media, CatalogVideo episode) {
 		this.media = media;
 		this.episode = episode;
 
@@ -118,7 +118,7 @@ public class MediaCommentsFragment extends Fragment {
 		createAdapters();
 	}
 
-	public void setEpisode(CatalogEpisode episode) {
+	public void setEpisode(CatalogVideo episode) {
 		this.episode = episode;
 		if(headerAdapter == null) return;
 
@@ -267,7 +267,7 @@ public class MediaCommentsFragment extends Fragment {
 				if(text.isBlank()) break getEpisodeNumber;
 
 				var number = Float.parseFloat(text);
-				request.setEpisode(new CatalogEpisode(number));
+				request.setEpisode(new CatalogVideo(number));
 			}
 		} catch(NumberFormatException e) {
 			headerAdapter.getBinding().episodeWrapper.setError(e.getMessage());
@@ -351,7 +351,7 @@ public class MediaCommentsFragment extends Fragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		if(media == null) media = requireArgument(this, "media");
-		if(episode == null) episode = (CatalogEpisode) requireArguments().getSerializable("episode");
+		if(episode == null) episode = (CatalogVideo) requireArguments().getSerializable("episode");
 
 		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
@@ -559,7 +559,7 @@ public class MediaCommentsFragment extends Fragment {
 						if(texta.isBlank()) break getEpisodeNumber;
 
 						var number = Float.parseFloat(texta);
-						request.setEpisode(new CatalogEpisode(number));
+						request.setEpisode(new CatalogVideo(number));
 					}
 				} catch(NumberFormatException e) {
 					headerAdapter.getBinding().episodeWrapper.setError(e.getMessage());

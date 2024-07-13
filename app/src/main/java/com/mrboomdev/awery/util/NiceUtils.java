@@ -34,6 +34,7 @@ import java9.util.stream.StreamSupport;
  * @author MrBoomDev
  */
 public class NiceUtils {
+	private static final String[] REMOVE_LAST_URL_CHARS = { "/", "?", "#", "&", " " };
 
 	/**
 	 * @return The result of the callback if the param is not null
@@ -55,6 +56,25 @@ public class NiceUtils {
 		}
 
 		return Boolean.TRUE.equals(bool);
+	}
+
+	@NonNull
+	public static String cleanUrl(String url) {
+		url = requireArgument(url, "url").trim();
+
+		loop:
+		while(true) {
+			for(var character : REMOVE_LAST_URL_CHARS) {
+				if(url.endsWith(character)) {
+					url = url.substring(0, url.length() - 1);
+					continue loop;
+				}
+			}
+
+			break;
+		}
+
+		return url;
 	}
 
 	public static <A> A findRoot(A item, @NonNull Callbacks.Result1<A, A> callback) {

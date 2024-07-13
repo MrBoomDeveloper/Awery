@@ -31,6 +31,7 @@ import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutTrackingOptionsBinding;
 import com.mrboomdev.awery.extensions.Extension;
@@ -104,7 +105,7 @@ public class TrackingSheet {
 		private final List<ExtensionProvider> sources;
 		private Map<String, String> trackedIds;
 		private final CatalogMedia media;
-		private final List<SettingsItem> filters;
+		private final SettingsList filters;
 		private final SettingsItem pageFilter, queryFilter;
 		private final FragmentManager fragmentManager;
 		private final Dialog dialog;
@@ -124,7 +125,7 @@ public class TrackingSheet {
 
 			queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 			pageFilter = new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE);
-			filters = List.of(queryFilter, pageFilter);
+			filters = new SettingsList(queryFilter, pageFilter);
 
 			queryFilter.setValue(media.getTitle());
 
@@ -401,7 +402,7 @@ public class TrackingSheet {
 					var intent = new Intent(context, SearchActivity.class);
 					intent.setAction(SearchActivity.ACTION_PICK_MEDIA);
 					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getGlobalId());
-					intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) filters);
+					intent.putExtra(SearchActivity.EXTRA_FILTERS, filters);
 
 					startActivityForResult(context, intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;

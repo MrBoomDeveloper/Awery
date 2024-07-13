@@ -101,7 +101,7 @@ public class ListFeedViewHolder extends FeedViewHolder {
 			binding.expand.setOnClickListener(v -> {
 				var intent = new Intent(getContext(v), SearchActivity.class);
 				intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, feed.sourceFeed.getProviderGlobalId());
-				intent.putExtra(SearchActivity.EXTRA_FILTERS, (Serializable) feed.sourceFeed.filters);
+				intent.putExtra(SearchActivity.EXTRA_FILTERS, feed.sourceFeed.filters);
 				intent.putExtra(SearchActivity.EXTRA_LOADED_MEDIA, (Serializable) feed.getItems());
 				getContext(v).startActivity(intent);
 			});

@@ -40,6 +40,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.ScreenSearchBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
@@ -84,7 +85,7 @@ public class SearchActivity extends AppCompatActivity {
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final Adapter adapter = new Adapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private ArrayList<SettingsItem> filters = new ArrayList<>();
+	private SettingsList filters = new SettingsList();
 	private ArrayList<CatalogMedia> items = new ArrayList<>();
 	private ScreenSearchBinding binding;
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> loadingAdapter;
@@ -111,7 +112,7 @@ public class SearchActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		if(savedInstanceState != null) {
-			filters = (ArrayList<SettingsItem>) savedInstanceState.getSerializable(SAVED_FILTERS);
+			filters = (SettingsList) savedInstanceState.getSerializable(SAVED_FILTERS);
 			items = (ArrayList<CatalogMedia>) savedInstanceState.getSerializable(SAVED_ITEMS);
 			didReachedEnd = savedInstanceState.getBoolean(SAVED_DID_REACHED_END);
 		}

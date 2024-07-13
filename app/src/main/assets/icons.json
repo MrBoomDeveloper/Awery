@@ -20,7 +20,7 @@
 	},
 
 	"movie": {
-		"active": "ic_movie_outlined",
+		"active": "ic_movie_filled", "inActive": "ic_movie_outlined",
 		"names": [ "Movie", "Video", "Кино", "Видео" ]
 	},
 
@@ -40,7 +40,7 @@
 	},
 
 	"book": {
-		"active": "ic_round_import_contacts_24",
+		"active": "ic_book_filled", "inActive": "ic_book_outlined",
 		"names": [ "Book", "Read", "Manga", "Читать", "Книга", "Манга" ]
 	}
 }
