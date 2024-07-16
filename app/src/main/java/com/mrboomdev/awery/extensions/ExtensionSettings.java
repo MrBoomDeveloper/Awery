@@ -1,11 +1,13 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.checkUrlValidation;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
@@ -32,12 +34,15 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.LazySettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
@@ -46,7 +51,7 @@ import com.squareup.moshi.Json;
 import org.jetbrains.annotations.Contract;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -180,9 +185,13 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							}
 
 							try {
-								new URL(text);
+								checkUrlValidation(text);
 							} catch(MalformedURLException e) {
-								Log.e(TAG, "Invalid URL", e);
+								Log.e(TAG, "Illegal URL!", e);
+								inputField.setError(R.string.invalid_url);
+								return;
+							} catch(URISyntaxException e) {
+								Log.e(TAG, "Invalid URL!", e);
 								inputField.setError(R.string.invalid_url);
 								return;
 							}
@@ -193,7 +202,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							manager.getRepository(text, (extensions, e) -> {
 								if(e != null) {
 									Log.e(TAG, "Failed to get a repository!", e);
-									runOnUiThread(() -> inputField.setError(e.getMessage()));
+									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(e, context)));
 									loadingWindow.dismiss();
 									return;
 								}
@@ -297,11 +306,47 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		return null;
 	}
 
-	private class RepositorySetting extends CustomSettingsItem {
+	private class RepositorySetting extends CustomSettingsItem implements LazySettingsItem {
 		private final DBRepository repository;
 
+		private final List<SettingsItem> actionItems = List.of(
+				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
+						.setTitle("Delete").setIcon("ic_delete_outlined").build()) {
+
+					@Override
+					public void onClick(Context context) {
+						var window = showLoadingWindow();
+
+						thread(() -> {
+							var dao = getDatabase().getRepositoryDao();
+							dao.remove(repository);
+							repos.remove(repository);
+
+							runOnUiThread(() -> {
+								onSettingRemoval(RepositorySetting.this);
+
+								if(repos.isEmpty()) {
+									onSettingRemoval(reposHeader);
+								}
+
+								window.dismiss();
+							});
+						});
+					}
+				},
+
+				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
+						.setTitle("Copy to clipboard").setIcon("ic_share_outlined").build()) {
+
+					@Override
+					public void onClick(Context context) {
+						copyToClipboard(repository.url, repository.url);
+					}
+				}
+		);
+
 		public RepositorySetting(DBRepository repository) {
-			super(SettingsItemType.ACTION);
+			super(SettingsItemType.SCREEN);
 			this.repository = repository;
 		}
 
@@ -311,38 +356,25 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		}
 
 		@Override
-		public void onClick(Context context) {
-			new DialogBuilder(context)
-					.setTitle("Delete repository")
-					.setMessage("Are you sure want to delete the \"" + repository.url + "\" repository? This action cannot be undone.")
-					.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-					.setPositiveButton(R.string.confirm, dialog -> thread(() -> {
-						var dao = getDatabase().getRepositoryDao();
-						dao.remove(repository);
-						repos.remove(repository);
+		public List<SettingsItem> getActionItems() {
+			return actionItems;
+		}
 
-						runOnUiThread(() -> {
-							onSettingRemoval(this);
-
-							if(repos.isEmpty()) {
-								onSettingRemoval(reposHeader);
-							}
-						});
-
-						dialog.dismiss();
-					})).show();
+		@NonNull
+		@Contract(" -> new")
+		@Override
+		public AsyncFuture<SettingsItem> loadLazily() {
+			// TODO: 7/17/2024 Load items
+			return AsyncUtils.futureNow(null);
 		}
 	}
 
 	private class ExtensionSetting extends SettingsItem implements SettingsDataHandler, ObservableSettingsItem {
 		private final Extension extension;
-		@Json(ignore = true)
-		private final Activity activity;
 
 		public ExtensionSetting(Activity activity, @NonNull Extension extension) {
 			setParent(ExtensionSettings.this);
 			this.extension = extension;
-			this.activity = activity;
 
 			var description = extension.getVersion() != null
 					? ("v" + extension.getVersion()) : extension.getErrorTitle();

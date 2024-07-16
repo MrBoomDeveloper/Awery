@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
+import com.google.common.util.concurrent.FutureCallback;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
@@ -131,9 +132,11 @@ public class SettingsData {
 	@Contract(pure = true)
 	public static void getScreen(
 			AppCompatActivity activity,
-			@NonNull String behaviourId,
+			@NonNull SettingsItem item,
 			Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
+		var behaviourId = item.getBehaviour();
+
 		if(behaviourId.startsWith("extensions_")) {
 			var manager = ExtensionsFactory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
 				case "extensions_aweryjs" -> JsManager.class;
@@ -154,15 +157,29 @@ public class SettingsData {
 			return;
 		}
 
-		switch(behaviourId) {
-			case "tabs" -> thread(() -> {
-				var screen = new TabsSettings();
-				screen.loadData();
-				runOnUiThread(() -> callback.onResult(screen, null));
-			});
+		if(item instanceof LazySettingsItem lazySettingsItem) {
+			lazySettingsItem.loadLazily().addCallback(new FutureCallback<>() {
+				@Override
+				public void onSuccess(SettingsItem result) {
+					callback.onSuccess(result);
+				}
 
-			default -> callback.onResult(null,
-					new IllegalArgumentException("Unknown screen: " + behaviourId));
+				@Override
+				public void onFailure(@NonNull Throwable t) {
+					callback.onError(t);
+				}
+			});
+		} else {
+			switch(behaviourId) {
+				case "tabs" -> thread(() -> {
+					var screen = new TabsSettings();
+					screen.loadData();
+					runOnUiThread(() -> callback.onResult(screen, null));
+				});
+
+				default -> callback.onResult(null,
+						new IllegalArgumentException("Unknown screen: " + behaviourId));
+			}
 		}
 	}
 }

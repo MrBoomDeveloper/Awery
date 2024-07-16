@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
@@ -10,9 +9,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
+
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.ui.activity.AboutActivity;
@@ -28,12 +30,11 @@ import xcrash.XCrash;
 public class SettingsActions {
 
 	@Contract(pure = true)
-	public static void run(String actionName) {
+	public static void run(@NonNull SettingsItem item) {
+		var actionName = item.getKey();
 		if(actionName == null) return;
 
 		switch(actionName) {
-			case AwerySettings.APP_VERSION -> {}
-
 			case AwerySettings.CLEAR_IMAGE_CACHE -> {
 				deleteFile(new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE));
 				toast(R.string.cleared_successfully);

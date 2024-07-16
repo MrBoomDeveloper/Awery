@@ -163,6 +163,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.activity.BrowserActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.activity.LoginActivity"
             android:windowSoftInputMode="adjustPan"
             android:launchMode="singleInstance"

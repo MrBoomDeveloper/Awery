@@ -3,7 +3,6 @@ package com.mrboomdev.awery.util.ui.dialog;
 import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
-import static com.mrboomdev.awery.data.Constants.throwIfNot;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -14,24 +13,18 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.Icon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.IconStateful;
-import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;

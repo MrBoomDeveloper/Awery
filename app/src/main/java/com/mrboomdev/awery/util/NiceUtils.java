@@ -21,6 +21,9 @@ import org.mozilla.javascript.ScriptableObject;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -82,6 +85,10 @@ public class NiceUtils {
 		}
 
 		return url;
+	}
+
+	public static void checkUrlValidation(String url) throws MalformedURLException, URISyntaxException {
+		new URL(url).toURI();
 	}
 
 	public static <A> A findRoot(A item, @NonNull Callbacks.Result1<A, A> callback) {

@@ -27,7 +27,7 @@ public class Constants {
 	public static final String DIRECTORY_WEBVIEW_CACHE = "WebView";
 
 	/**
-	 * Should be inside of {@code Constants.DIRECTORY_NET_CACHE}
+	 * Should be inside of {@link #DIRECTORY_NET_CACHE}
 	 */
 	public static final String FILE_FEEDS_NET_CACHE = "feeds.json";
 
@@ -37,12 +37,6 @@ public class Constants {
 	 */
 	public static boolean alwaysTrue() {
 		return true;
-	}
-
-	public static void throwIfNot(boolean is) {
-		if(!is) {
-			throw new IllegalArgumentException("Given value isn't true!");
-		}
 	}
 
 	/**

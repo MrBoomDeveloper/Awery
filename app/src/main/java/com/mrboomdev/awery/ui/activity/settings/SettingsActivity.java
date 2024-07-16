@@ -177,7 +177,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			for(var headerItem : headerItems) {
 				var view = new ImageView(this);
 				view.setOnClickListener(v -> headerItem.onClick(this));
-				setPadding(view, dpPx(10));
+				setPadding(view, dpPx(view, 10));
 
 				view.setForeground(AppCompatResources.getDrawable(this, R.drawable.ripple_circle_white));
 				view.setClickable(true);
@@ -195,8 +195,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					view.setImageTintList(null);
 				}
 
-				binding.actions.addView(view, dpPx(48), dpPx(48));
-				setLeftMargin(view, dpPx(10));
+				binding.actions.addView(view, dpPx(binding.actions, 48), dpPx(binding.actions, 48));
+				setLeftMargin(view, dpPx(view, 10));
 			}
 		}
 
@@ -271,7 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		binding.back.setOnClickListener(v -> finish());
 
 		setOnApplyUiInsetsListener(binding.header, insets -> {
-			setTopPadding(binding.header, insets.top + dpPx(8));
+			setTopPadding(binding.header, insets.top + dpPx(binding.header, 8));
 			setHorizontalPadding(binding.header, insets.left, insets.right);
 			return false;
 		});
@@ -298,7 +298,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			setupHeader(binding, item);
 			finishLoading(binding, recyclerAdapter);
 		} else if(item.getBehaviour() != null) {
-			SettingsData.getScreen(this, item.getBehaviour(), (screen, e) -> {
+			SettingsData.getScreen(this, item, (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
 					toast(e.getMessage(), 0);

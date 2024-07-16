@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
@@ -266,6 +267,12 @@ public abstract class FeedsFragment extends Fragment {
 		binding = ScreenFeedBinding.inflate(inflater, container, false);
 		binding.swipeRefresher.setOnRefreshListener(() -> startLoading(true));
 		binding.headerWrapper.addView(getHeader(binding.headerWrapper));
+
+		binding.swipeRefresher.setColorSchemeColors(resolveAttrColor(
+				inflater.getContext(), android.R.attr.colorPrimary));
+
+		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(resolveAttrColor(
+				inflater.getContext(), com.google.android.material.R.attr.colorSurface));
 
 		binding.headerWrapper.addOnOffsetChangedListener((v, offset) ->
 				binding.swipeRefresher.setEnabled(offset == 0));

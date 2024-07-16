@@ -629,7 +629,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					binding.options.setImageResource(R.drawable.ic_round_dots_vertical_24);
 
 					binding.options.setOnClickListener(v -> {
-						var menu = new PopupMenu(context, binding.getRoot());
+						var menu = new PopupMenu(context, binding.options);
 
 						for(int i = 0; i < items.size(); i++) {
 							menu.getMenu().add(0, i, 0, items.get(i).getTitle(context));

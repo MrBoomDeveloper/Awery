@@ -83,6 +83,7 @@ public class MediaActivity extends AppCompatActivity {
 			var header = new FloatingActionButton(this, null, style);
 			header.setImageResource(R.drawable.ic_back);
 			header.setOnClickListener(v -> finish());
+			header.setBackgroundTintList(ColorStateList.valueOf(0x00000000));
 			rail.addHeaderView(header);
 		}
 

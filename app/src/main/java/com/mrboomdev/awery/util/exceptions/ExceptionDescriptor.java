@@ -44,6 +44,10 @@ public class ExceptionDescriptor {
 			return unwrap(wrappedException.getWrappedException());
 		}
 
+		if(t instanceof JsException jsException && jsException.getErrorExtra() instanceof Throwable throwable) {
+			return unwrap(throwable);
+		}
+
 		if(!isUnknownException(t)) {
 			return t;
 		}
@@ -107,11 +111,12 @@ public class ExceptionDescriptor {
 			return "Parser is broken!";
 		} else if(t instanceof UnknownHostException) {
 			return t.getMessage();
-		} else if(t instanceof InvalidSyntaxException
-				|| t instanceof SerializationException) {
+		} else if(t instanceof SerializationException) {
 			return "Parser has crashed!";
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
 			return "Bad thing has happened...";
+		} else if(t instanceof InvalidSyntaxException) {
+			return "Invalid syntax! " + t.getMessage();
 		}
 
 		if(t.getMessage() != null && t.getMessage().contains(ROOM_EXCEPTION)) {

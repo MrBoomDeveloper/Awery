@@ -28,7 +28,6 @@ abstract class WebViewClientCompat : WebViewClient() {
     ) {
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
     final override fun shouldOverrideUrlLoading(
         view: WebView,
         request: WebResourceRequest,

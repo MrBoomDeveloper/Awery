@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSetupBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -90,8 +91,8 @@ public class SetupActivity extends AppCompatActivity {
 				binding.backButton.setText(R.string.restore_backup);
 				binding.continueButton.setText(R.string.lets_begin);
 
-				binding.backButton.setOnClickListener(v ->
-						SettingsActions.run(AwerySettings.RESTORE));
+				binding.backButton.setOnClickListener(v -> SettingsActions.run(
+						new SettingsItem.Builder().setKey(AwerySettings.RESTORE).build()));
 
 				binding.icon.setImageResource(R.mipmap.ic_launcher_foreground);
 				binding.icon.setVisibility(View.VISIBLE);

@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.fragments;
 
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.app.AweryApp.getOrientation;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
@@ -37,6 +38,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
+import com.mrboomdev.awery.ui.activity.BrowserActivity;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.sheet.TrackingSheet;
@@ -194,6 +196,8 @@ public class MediaInfoFragment extends Fragment {
 				});
 			}
 		}
+
+		binding.details.browser.setVisibility(media.url != null ? View.VISIBLE : View.GONE);
 	}
 
 	private void addTagView(@NonNull CatalogTag tag) {
@@ -259,7 +263,7 @@ public class MediaInfoFragment extends Fragment {
 
 		if(getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
 			setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
-				setTopMargin(binding.posterWrapper, insets.top + dpPx(24));
+				setTopMargin(binding.posterWrapper, insets.top + dpPx(binding.posterWrapper, 24));
 				return true;
 			});
 		}
@@ -268,23 +272,26 @@ public class MediaInfoFragment extends Fragment {
 			binding.back.setOnClickListener(v -> requireActivity().finish());
 
 			setOnApplyUiInsetsListener(binding.back, insets -> {
-				setTopMargin(binding.back, insets.top + dpPx(16));
+				setTopMargin(binding.back, insets.top + dpPx(binding.back, 16));
 				return true;
 			});
 		}
 
-		var options = binding.options != null ? binding.options : binding.details.options;
-		if(options == null) throw new NullPointerException("Options cannot be null!");
-
+		var options = Objects.requireNonNullElse(binding.options, binding.details.options);
 		options.setOnClickListener(v -> MediaActivity.handleOptionsClick(v, media));
 
 		setOnApplyUiInsetsListener(options, insets -> {
-			setTopMargin(options, insets.top + dpPx(16));
+			if(!isLandscape(requireContext())) {
+				setTopMargin(options, insets.top + dpPx(options, 16));
+			} else {
+				setTopMargin(options, 0);
+			}
+
 			return true;
 		});
 
 		if(binding.detailsScroller != null) setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
-			var margin = dpPx(8);
+			var margin = dpPx(binding.detailsScroller, 8);
 
 			setTopPadding(binding.detailsScroller, insets.top + margin);
 			setBottomPadding(binding.detailsScroller, insets.bottom + margin);
@@ -295,6 +302,12 @@ public class MediaInfoFragment extends Fragment {
 
 		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
 				requireContext(), getChildFragmentManager(), media).show());
+
+		binding.details.browser.setOnClickListener(v -> {
+			var intent = new Intent(requireContext(), BrowserActivity.class);
+			intent.putExtra(BrowserActivity.EXTRA_URL, media.url);
+			startActivity(intent);
+		});
 
 		return binding.getRoot();
 	}

@@ -21,6 +21,7 @@ import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
@@ -267,7 +268,7 @@ public abstract class YomiManager extends ExtensionsManager {
 							.map(item -> item.toExtension(YomiManager.this))
 							.toList(), null);
 				} catch(IOException e) {
-					callback.onError(e);
+					callback.onError(new InvalidSyntaxException("This is not an valid repository link!", e));
 				}
 			}
 

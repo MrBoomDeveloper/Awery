@@ -13,6 +13,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
@@ -51,8 +52,8 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.sdk.util.StringUtils;
@@ -61,7 +62,6 @@ import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.JsException;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -456,6 +456,12 @@ public class MediaCommentsFragment extends Fragment {
 		swipeRefresher = new SwipeRefreshLayout(inflater.getContext());
 		swipeRefresher.setOnRefreshListener(() -> loadData(comment, comment, 0));
 
+		swipeRefresher.setColorSchemeColors(resolveAttrColor(
+				inflater.getContext(), android.R.attr.colorPrimary));
+
+		swipeRefresher.setProgressBackgroundColorSchemeColor(resolveAttrColor(
+				inflater.getContext(), com.google.android.material.R.attr.colorSurface));
+
 		var parentLayout = new LinearLayoutCompat(inflater.getContext());
 		parentLayout.setOrientation(LinearLayoutCompat.VERTICAL);
 		swipeRefresher.addView(parentLayout);
@@ -464,8 +470,8 @@ public class MediaCommentsFragment extends Fragment {
 		recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
 		recycler.setClipToPadding(false);
 
-		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
-			var padding = dpPx(8);
+		setOnApplyUiInsetsListener(recycler, insets -> {
+			var padding = dpPx(recycler, 8);
 
 			setTopPadding(recycler, insets.top + padding);
 			setRightPadding(recycler, insets.right);
@@ -605,7 +611,7 @@ public class MediaCommentsFragment extends Fragment {
 			}
 		});
 
-		ViewUtil.setOnApplyUiInsetsListener(sendBinding.getRoot(), insets ->
+		setOnApplyUiInsetsListener(sendBinding.getRoot(), insets ->
 				setRightMargin(sendBinding.getRoot(), insets.right), parentLayout);
 
 		return swipeRefresher;

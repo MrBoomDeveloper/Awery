@@ -23,6 +23,7 @@ import android.app.Application;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -160,11 +161,25 @@ public class AweryApp extends Application {
 				.build();
 	}
 
-	public static void copyToClipboard(String label, @NonNull String content) {
+	/**
+	 * Create a new ClipData holding data of the type
+	 * {@link ClipDescription#MIMETYPE_TEXT_PLAIN}.
+	 *
+	 * @param label User-visible label for the clip data.
+	 * @param content The actual text in the clip.
+	 */
+	public static void copyToClipboard(String label, String content) {
 		copyToClipboard(ClipData.newPlainText(label, content));
 	}
 
-	public static void copyToClipboard(String label, @NonNull Uri content) {
+	/**
+	 * Create a new ClipData holding an URI with MIME type
+	 * {@link ClipDescription#MIMETYPE_TEXT_URILIST}.
+	 *
+	 * @param label User-visible label for the clip data.
+	 * @param content The URI in the clip.
+	 */
+	public static void copyToClipboard(String label, Uri content) {
 		copyToClipboard(ClipData.newRawUri(label, content));
 	}
 

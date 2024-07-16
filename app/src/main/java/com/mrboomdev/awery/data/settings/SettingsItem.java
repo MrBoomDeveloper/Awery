@@ -303,7 +303,7 @@ public class SettingsItem implements Serializable {
 	}
 
 	public void onClick(Context context) {
-		SettingsActions.run(getKey());
+		SettingsActions.run(this);
 	}
 
 	public boolean onDragged(int fromPosition, int toPosition) {

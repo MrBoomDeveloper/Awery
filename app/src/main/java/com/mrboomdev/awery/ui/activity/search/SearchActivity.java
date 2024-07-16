@@ -183,6 +183,12 @@ public class SearchActivity extends AppCompatActivity {
 			search(0);
 		});
 
+		binding.swipeRefresher.setColorSchemeColors(resolveAttrColor(
+				this, android.R.attr.colorPrimary));
+
+		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(resolveAttrColor(
+				this, com.google.android.material.R.attr.colorSurface));
+
 		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var binding = new EmptyView(parent, false);
 			ViewUtil.useLayoutParams(binding.getRoot(), params -> params.width = ViewUtil.MATCH_PARENT);
@@ -210,17 +216,17 @@ public class SearchActivity extends AppCompatActivity {
 		});
 
 		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			var padding = dpPx(8);
+			var padding = dpPx(binding.recycler, 8);
 			setVerticalPadding(binding.recycler, padding + padding * 2);
 			setHorizontalPadding(binding.recycler, insets.left + padding, insets.right + padding);
 
 			if(isLandscape() && autoColumnsCountLand) {
-				float columnSize = dpPx(110);
+				float columnSize = dpPx(binding, 110);
 				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 				columnsCountLand.set((int)(freeSpace / columnSize));
 				layoutManager.setSpanCount(columnsCountLand.get());
 			} else if(!isLandscape() && autoColumnsCountPort) {
-				float columnSize = dpPx(110);
+				float columnSize = dpPx(binding, 110);
 				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 				columnsCountPort.set((int)(freeSpace / columnSize));
 				layoutManager.setSpanCount(columnsCountPort.get());
@@ -543,7 +549,7 @@ public class SearchActivity extends AppCompatActivity {
 
 			useLayoutParams(binding.getRoot(), params -> {
 				params.width = ViewUtil.MATCH_PARENT;
-				setHorizontalMargin(params, dpPx(6));
+				setHorizontalMargin(params, dpPx(binding, 6));
 			}, RecyclerView.LayoutParams.class);
 
 			binding.getRoot().setOnClickListener(view -> {

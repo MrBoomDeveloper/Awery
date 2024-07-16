@@ -41,24 +41,41 @@
 			"type": "screen", "title": "content", "icon": "ic_view_cozy",
 			"items": [
 				{
+					"type": "screen", "title": "extensions", "icon": "ic_extension_filled",
+					"items": [
+						{
+							"type": "screen", "behaviour": "extensions_aweryjs",
+							"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
+							"description": "Watch Movies, TV with Tracking and Comments!"
+						}, {
+							"type": "screen", "behaviour": "extensions_aniyomi",
+							"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
+							"description": "It seems there is only Anime here?"
+						}
+					]
+				}, {
 					"type": "screen", "behaviour": "tabs",
 					"title": "tabs", "icon": "ic_list"
 				}, {
-					"key": "hide_library_entries", "type": "boolean",
-					"title": "hide_library_entries", "icon": "ic_collections_bookmark_outlined",
-					"description": "hide_library_entries_description"
-				}, {
-					"key": "global_excluded_tags", "type": "multiselect",
-					"title": "global_excluded_tags", "icon": "ic_round_block_24",
-					"description": "global_tags_exclusion_description",
-					"behaviour": "excluded_tags"
-				}, {
-					"key": "adult_mode", "type": "select", "string_value": "SAFE", "restart": true,
-					"title": "adult_content", "description": "${VALUE}", "icon": "ic_round_report",
-					"items": [
-						{ "key": "SAFE", "title": "disabled" },
-						{ "key": "ENABLED", "title": "enabled" },
-						{ "key": "ONLY", "title": "show_only_it" }
+					"type": "screen", "title": "Global filters", "icon": "ic_round_block_24", "items": [
+						{
+							"key": "adult_mode", "type": "select", "string_value": "SAFE", "restart": true,
+							"title": "adult_content", "description": "${VALUE}", "icon": "ic_round_report",
+							"items": [
+								{ "key": "SAFE", "title": "disabled" },
+								{ "key": "ENABLED", "title": "enabled" },
+								{ "key": "ONLY", "title": "show_only_it" }
+							]
+						}, {
+							"key": "global_excluded_tags", "type": "multiselect",
+							"title": "global_excluded_tags", "icon": "ic_round_block_24",
+							"description": "global_tags_exclusion_description",
+							"behaviour": "excluded_tags"
+						}, {
+							"key": "hide_library_entries", "type": "boolean",
+							"title": "hide_library_entries", "icon": "ic_collections_bookmark_outlined",
+							"description": "hide_library_entries_description"
+						}
 					]
 				}
 			]
@@ -151,19 +168,6 @@
 					"key": "bruh", "type": "action", "behaviour": "none",
 					"title": "Sorry bro, but you currently can't read those chinese comics.",
 					"description": "Come here later..."
-				}
-			]
-		}, {
-			"type": "screen", "title": "extensions", "icon": "ic_extension_filled",
-			"items": [
-				{
-					"type": "screen", "behaviour": "extensions_aweryjs",
-					"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
-					"description": "Watch Movies, TV with Tracking and Comments!"
-				}, {
-					"type": "screen", "behaviour": "extensions_aniyomi",
-					"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
-					"description": "It seems there is only Anime here?"
 				}
 			]
 		}, {
