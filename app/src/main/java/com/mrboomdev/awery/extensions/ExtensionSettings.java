@@ -3,16 +3,20 @@ package com.mrboomdev.awery.extensions;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
+import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.isTrue;
+import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -23,16 +27,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.common.util.concurrent.FutureCallback;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
@@ -43,8 +48,8 @@ import org.jetbrains.annotations.Contract;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
 
@@ -55,7 +60,15 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
 	private final Activity activity;
+	private List<DBRepository> repos;
+	private List<Extension> extensions;
 	private DialogBuilder currentDialog;
+
+	private final SettingsItem reposHeader = new SettingsItem.Builder(
+			SettingsItemType.CATEGORY).setTitle("Repositories").build();
+
+	private final SettingsItem extensionsHeader = new SettingsItem.Builder(
+			SettingsItemType.CATEGORY).setTitle("Installed").build();
 
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
 		this.activity = activity;
@@ -74,8 +87,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				var hasExisted = manager.hasExtension(extension.getId());
 
 				manager.addExtension(activity, extension);
-				var extensions = List.copyOf(manager.getAllExtensions());
-
+				extensions = List.copyOf(manager.getAllExtensions());
 				var setting = new ExtensionSetting(activity, extension);
 
 				if(hasExisted) {
@@ -97,6 +109,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				} else {
 					toast("Extension installed successfully!");
 					onSettingAddition(setting, extensions.indexOf(extension));
+
+					if(extensions.size() == 1) {
+						onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
+					}
 				}
 
 				if(currentDialog != null) {
@@ -159,7 +175,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							var text = cleanUrl(inputField.getText());
 
 							if(text.isBlank()) {
-								inputField.setError("Field cannot be empty");
+								inputField.setError(R.string.text_cant_empty);
 								return;
 							}
 
@@ -167,7 +183,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								new URL(text);
 							} catch(MalformedURLException e) {
 								Log.e(TAG, "Invalid URL", e);
-								inputField.setError("Invalid URL");
+								inputField.setError(R.string.invalid_url);
 								return;
 							}
 
@@ -182,20 +198,23 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 									return;
 								}
 
-								var dao = getDatabase().getRepositoryDao();
-								var repos = dao.getRepositories(manager.getId());
-
 								if(find(repos, item -> Objects.equals(item.url, text)) != null) {
 									toast("Repository already exists!");
 									loadingWindow.dismiss();
 									return;
 								}
 
+								var dao = getDatabase().getRepositoryDao();
 								var repo = new DBRepository(text, manager.getId());
 								dao.add(repo);
+								repos.add(repo);
 
 								runOnUiThread(() -> {
-									onSettingAddition(new RepositorySetting(repo), 0);
+									if(repos.size() == 1) {
+										onSettingAddition(reposHeader, 0);
+									}
+
+									onSettingAddition(new RepositorySetting(repo), 1);
 
 									dialog.dismiss();
 									loadingWindow.dismiss();
@@ -210,16 +229,27 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	public void loadData() {
 		var items = new ArrayList<SettingsItem>();
 
-		var repositories = getDatabase().getRepositoryDao()
+		repos = getDatabase().getRepositoryDao()
 				.getRepositories(manager.getId());
 
-		items.addAll(stream(repositories)
-				.map(RepositorySetting::new)
-				.toList());
+		if(!repos.isEmpty()) {
+			items.add(reposHeader);
 
-		items.addAll(stream(manager.getExtensions(0)).sorted()
-				.map(extension -> new ExtensionSetting(activity, extension))
-				.toList());
+			items.addAll(stream(repos)
+					.map(RepositorySetting::new)
+					.toList());
+		}
+
+		extensions = List.copyOf(manager.getAllExtensions());
+
+		if(!extensions.isEmpty()) {
+			items.add(extensionsHeader);
+
+			items.addAll(stream(extensions)
+					.sorted()
+					.map(extension -> new ExtensionSetting(activity, extension))
+					.toList());
+		}
 
 		copyFrom(new Builder(SettingsItemType.SCREEN)
 				.setTitle(manager.getName() + " " + activity.getString(R.string.extensions))
@@ -239,33 +269,32 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 	@Override
 	public void onScreenLaunchRequest(@NonNull SettingsItem item) {
-		if(!item.getBooleanValue()) return;
-
-		var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
-		item.restoreSavedValues();
-
-		NicePreferences.cachePath(cachedKey, item);
-
-		var intent = new Intent(activity, SettingsActivity.class);
-		intent.putExtra("path", cachedKey);
-		activity.startActivity(intent);
+		if(item.getType().isBoolean() && !isTrue(item.getBooleanValue())) return;
+		SettingsActivity.start(activity, item);
 	}
 
 	@Override
 	public void saveValue(@NonNull SettingsItem item, Object newValue) {
-		var isEnabled = (boolean) newValue;
+		var isEnabled = isTrue(newValue);
 
-		getPrefs().setValue("ext_" +
-				manager.getId() + "_" + item.getKey() +
-				"_enabled", isEnabled).saveAsync();
-
-		if(isEnabled) manager.loadExtension(activity, item.getKey());
-		else manager.unloadExtension(activity, item.getKey());
+		if(item instanceof ExtensionSetting) {
+			getPrefs().setValue("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", isEnabled).saveAsync();
+			if(isEnabled) manager.loadExtension(activity, item.getKey());
+			else manager.unloadExtension(activity, item.getKey());
+		} else if(item instanceof RepositorySetting repositorySetting) {
+			getPrefs().setValue("repo_" + manager.getId() + "_" + repositorySetting.repository.url + "_enabled", isEnabled).saveAsync();
+		}
 	}
 
 	@Override
 	public Object restoreValue(@NonNull SettingsItem item) {
-		return getPrefs().getBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", true);
+		if(item instanceof ExtensionSetting) {
+			return getPrefs().getBoolean("ext_" + manager.getId() + "_" + item.getKey() + "_enabled", true);
+		} else if(item instanceof RepositorySetting repositorySetting) {
+			return getPrefs().getBoolean("repo_" + manager.getId() + "_" + repositorySetting.repository.url + "_enabled", true);
+		}
+
+		return null;
 	}
 
 	private class RepositorySetting extends CustomSettingsItem {
@@ -287,16 +316,21 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					.setTitle("Delete repository")
 					.setMessage("Are you sure want to delete the \"" + repository.url + "\" repository? This action cannot be undone.")
 					.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-					.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
+					.setPositiveButton(R.string.confirm, dialog -> thread(() -> {
 						var dao = getDatabase().getRepositoryDao();
 						dao.remove(repository);
+						repos.remove(repository);
 
-						runOnUiThread(() -> onSettingRemoval(
-								this, null));
+						runOnUiThread(() -> {
+							onSettingRemoval(this);
+
+							if(repos.isEmpty()) {
+								onSettingRemoval(reposHeader);
+							}
+						});
 
 						dialog.dismiss();
-					}).start())
-					.show();
+					})).show();
 		}
 	}
 
@@ -313,42 +347,82 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			var description = extension.getVersion() != null
 					? ("v" + extension.getVersion()) : extension.getErrorTitle();
 
+			var items = new ArrayList<>(Arrays.asList(stream(extension.getProviders()).map(provider ->
+					returnWith(AsyncUtils.<SettingsItem>awaitResult(breaker ->
+							provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
+								@Override
+								public void onSuccess(SettingsItem item) {
+									breaker.run(item);
+								}
+
+								@Override
+								public void onFailure(Throwable e) {
+									breaker.run(null);
+								}
+							})), settingsScreen -> {
+						if(settingsScreen != null) {
+							settingsScreen.setParent(this);
+						}
+
+						return settingsScreen;
+					})).filter(Objects::nonNull).toArray(SettingsItem[]::new)));
+
+			if(!items.isEmpty()) {
+				items.add(new SettingsItem(SettingsItemType.DIVIDER));
+			}
+
+			items.add(new CustomSettingsItem(SettingsItemType.ACTION) {
+
+				@Override
+				public String getTitle(android.content.Context context) {
+					return context.getString(R.string.uninstall_extension);
+				}
+
+				@Override
+				public void onClick(android.content.Context context) {
+					var window = showLoadingWindow();
+
+					manager.uninstallExtension(context, extension.getId()).addCallback(new FutureCallback<>() {
+						@Override
+						public void onSuccess(Boolean result) {
+							window.dismiss();
+
+							if(result) {
+								toast("Uninstalled successfully");
+
+								doIfNotNull(getActivity(context), activity -> {
+									extensions = List.copyOf(manager.getAllExtensions());
+									activity.finish();
+
+									runOnUiThread(() -> {
+										ExtensionSettings.this.onSettingRemoval(ExtensionSetting.this);
+
+										if(extensions.isEmpty()) {
+											ExtensionSettings.this.onSettingRemoval(extensionsHeader);
+										}
+									});
+								});
+							}
+						}
+
+						@Override
+						public void onFailure(@NonNull Throwable e) {
+							window.dismiss();
+
+							Log.e(TAG, "Failed to uninstall an extension", e);
+							CrashHandler.showErrorDialog(context, "Failed to uninstall an extension", e);
+						}
+					});
+				}
+			});
+
 			copyFrom(new Builder(SettingsItemType.SCREEN_BOOLEAN)
 					.setTitle(extension.getName())
 					.setDescription(description)
 					.setKey(extension.getId())
 					.setParent(ExtensionSettings.this)
-					.setItems(stream(extension.getProviders()).map(provider -> {
-						var response = new AtomicReference<SettingsItem>();
-
-						provider.getSettings(activity, new ExtensionProvider.ResponseCallback<>() {
-							@Override
-							public void onSuccess(SettingsItem item) {
-								if(item != null && item != SettingsItem.INVALID_SETTING) {
-									item.setParent(ExtensionSetting.this);
-								}
-
-								response.set(Objects.requireNonNullElse(item, SettingsItem.INVALID_SETTING));
-							}
-
-							@Override
-							public void onFailure(Throwable e) {
-								response.set(SettingsItem.INVALID_SETTING);
-							}
-						});
-
-						// Wait for response
-						while(response.get() == null);
-
-						if(response.get() == SettingsItem.INVALID_SETTING) {
-							return null;
-						}
-
-						response.get().setParent(this);
-						return response.get();
-					}).filter(Objects::nonNull).toList())
-					.setValue(getPrefs().getBoolean(
-							getExtensionKey(extension) + "_enabled", true))
+					.setItems(items)
+					.setValue(getPrefs().getBoolean(getExtensionKey(extension) + "_enabled", true))
 					.setIcon(extension.getIcon())
 					.setIconSize(1.2f)
 					.setTintIcon(false)
@@ -361,24 +435,19 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		@Override
 		public void onScreenLaunchRequest(@NonNull SettingsItem item) {
-			var cachedKey = "ext_" + manager.getId() + "_" + item.getKey();
-			item.restoreSavedValues();
-
-			NicePreferences.cachePath(cachedKey, item);
-
-			var intent = new Intent(activity, SettingsActivity.class);
-			intent.putExtra("path", cachedKey);
-			activity.startActivity(intent);
+			ExtensionSettings.this.onScreenLaunchRequest(item);
 		}
 
 		@Override
-		public void saveValue(SettingsItem item, Object newValue) {}
+		public void saveValue(SettingsItem item, Object newValue) {
+			ExtensionSettings.this.saveValue(item, newValue);
+		}
 
 		@Nullable
 		@Contract(pure = true)
 		@Override
 		public Object restoreValue(SettingsItem item) {
-			return null;
+			return ExtensionSettings.this.restoreValue(item);
 		}
 	}
 }

@@ -30,11 +30,6 @@ import java.util.Set;
 
 public class SettingsItem implements Serializable {
 	private static final String VAR_PREFIX = "${VAR.";
-	public static final SettingsItem INVALID_SETTING = new Builder(SettingsItemType.BOOLEAN)
-			.setTitle("Invalid!")
-			.setValue(false)
-			.build();
-
 	private String key, title, description, icon, behaviour;
 	protected SettingsItemType type;
 	private String parentKey;

@@ -12,6 +12,8 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.JsException;
 
 import org.jetbrains.annotations.Contract;
@@ -264,13 +266,14 @@ public class JsManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void uninstallExtension(Context context, String id) {
+	public AsyncFuture<Boolean> uninstallExtension(Context context, String id) {
 		unloadExtension(context, id);
 
 		var file = new File(context.getFilesDir(), getId() + "/" + id);
 		file.delete();
 
 		extensions.remove(id);
+		return AsyncUtils.futureNow(true);
 	}
 
 	@Override

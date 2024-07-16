@@ -57,6 +57,8 @@ android {
                     "Now Awery 2 must be released! Input int: $versionCode")
         }
 
+        buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}")
+
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]

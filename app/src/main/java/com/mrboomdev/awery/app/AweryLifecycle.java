@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -154,6 +155,7 @@ public class AweryLifecycle {
 	}
 
 	@NonNull
+	@MainThread
 	private static Fragment addActivityResultListener(
 			Activity activity,
 			int requestCode,
@@ -174,14 +176,12 @@ public class AweryLifecycle {
 	}
 
 	/**
-	 * This method is a little bit hacky so after library update it can break.
-	 * <p></p>
-	 * {@code void run(int requestCode, int resultCode, Intent data);}
-	 * <p></p>
+	 * This method is a little bit hacky so after library update it may break.
 	 * @param context Context from the {@link FragmentActivity}
 	 * @author MrBoomDev
 	 */
 	@SuppressWarnings("deprecation")
+	@MainThread
 	public static void startActivityForResult(
 			Context context,
 			Intent intent,
@@ -190,6 +190,20 @@ public class AweryLifecycle {
 	) {
 		addActivityResultListener(getActivity(context), requestCode, callback, null)
 				.startActivityForResult(intent, requestCode);
+	}
+
+	/**
+	 * This method is a little bit hacky so after library update it may break.
+	 * @param context Context from the {@link FragmentActivity}
+	 * @author MrBoomDev
+	 */
+	@MainThread
+	public static void startActivityForResult(
+			Context context,
+			Intent intent,
+			ActivityResultCallback callback
+	) {
+		startActivityForResult(context, intent, getActivityResultCode(), callback);
 	}
 
 	public static void requestPermission(
@@ -207,7 +221,7 @@ public class AweryLifecycle {
 
 		var activity = Objects.requireNonNull(getActivity(context));
 		addActivityResultListener(activity, requestCode, null, callback);
-		ActivityCompat.requestPermissions(activity, new String[]{ constant }, requestCode);
+		ActivityCompat.requestPermissions(activity, new String[] { constant }, requestCode);
 	}
 
 	@Nullable

@@ -15,9 +15,7 @@ import com.mrboomdev.awery.util.Selection;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,7 +23,6 @@ import java.util.Set;
  * @author MrBoomDev
  */
 public class NicePreferences implements SettingsDataHandler {
-	private static final Map<String, SettingsItem> cachedPaths = new HashMap<>();
 	public static final String APP_SETTINGS = "Awery";
 	private static boolean shouldReloadMapValues;
 	private static SettingsItem settingsMapInstance;
@@ -34,18 +31,6 @@ public class NicePreferences implements SettingsDataHandler {
 
 	private NicePreferences(SharedPreferences prefs) {
 		this.prefs = prefs;
-	}
-
-	public static void cachePath(String path, SettingsItem item) {
-		cachedPaths.put(path, item);
-	}
-
-	public static SettingsItem getCached(String path) {
-		return cachedPaths.get(path);
-	}
-
-	public static void clearCache() {
-		cachedPaths.clear();
 	}
 
 	private static void reloadSettingsMapValues() {

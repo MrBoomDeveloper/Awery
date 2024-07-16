@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 
@@ -20,9 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
@@ -69,7 +70,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		this.items = new ArrayList<>(items);
 		Collections.sort(this.items);
 
-		new Thread(() -> {
+		thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
 			var progress = progressDao.get(media.globalId);
 
@@ -83,7 +84,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			}
 
 			runOnUiThread(this::notifyDataSetChanged);
-		}).start();
+		});
 	}
 
 	public CatalogMedia getMedia() {
@@ -123,7 +124,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		progresses.put(episode, episodeProgress);
 		holder.updateProgress();
 
-		new Thread(() -> {
+		thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
 
 			var progress = progressDao.get(media.globalId);
@@ -135,7 +136,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 			if(callback != null) {
 				callback.run();
 			}
-		}).start();
+		});
 	}
 
 	@NonNull
@@ -143,7 +144,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = ItemListEpisodeBinding.inflate(inflater, parent, false);
-		setTopMargin(binding.getRoot(), dpPx(12));
+		setTopMargin(binding.getRoot(), dpPx(binding, 12));
 		var holder = new ViewHolder(binding);
 
 		binding.options.setOnClickListener(v -> {

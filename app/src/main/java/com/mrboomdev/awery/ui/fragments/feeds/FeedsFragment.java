@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.annotation.SuppressLint;
@@ -106,7 +107,7 @@ public abstract class FeedsFragment extends Fragment {
 			failedRowsAdapter.setCategories(Collections.emptyList());
 			setContentBehindToolbarEnabled(false);
 
-			new Thread(() -> {
+			thread(() -> {
 				var processedFeeds = CatalogFeed.processFeeds(feeds);
 
 				if(processedFeeds.isEmpty()) {
@@ -121,7 +122,7 @@ public abstract class FeedsFragment extends Fragment {
 				for(var loadingFeed : loadingFeeds) {
 					loadFeed(loadingFeed, currentLoadId);
 				}
-			}).start();
+			});
 		}, this.binding.recycler);
 	}
 

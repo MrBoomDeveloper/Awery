@@ -12,6 +12,7 @@ import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
@@ -197,14 +198,14 @@ public class AweryApp extends Application {
 
 		if(dialog instanceof SideSheetDialog) {
 			var sheet = window.findViewById(com.google.android.material.R.id.m3_side_sheet);
-			useLayoutParams(sheet, params -> params.width = dpPx(400));
+			useLayoutParams(sheet, params -> params.width = dpPx(sheet, 400));
 			window.setNavigationBarColor(SurfaceColors.SURFACE_1.getColor(context));
 		} else {
 			/* If we'll try to do this shit with the SideSheetDialog, it will get centered,
 			   so we use different approaches for different dialog types.*/
 
 			if(getConfiguration().screenWidthDp > 400) {
-				window.setLayout(dpPx(400), MATCH_PARENT);
+				window.setLayout(dpPx(context, 400), MATCH_PARENT);
 			}
 		}
 	}
@@ -263,6 +264,10 @@ public class AweryApp extends Application {
 
 	public static void toast(Context context, Object text, int duration) {
 		runOnUiThread(() -> Toast.makeText(context, String.valueOf(text), duration).show());
+	}
+
+	public static void toast(Context context, Object text) {
+		toast(context, text, 0);
 	}
 
 	public static void toast(Object text, int duration) {
@@ -362,8 +367,12 @@ public class AweryApp extends Application {
 		return MaterialColors.getColor(context, res, Color.BLACK);
 	}
 
+	public static boolean isLandscape(@NonNull Context context) {
+		return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+	}
+
 	public static boolean isLandscape() {
-		return getAnyContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+		return isLandscape(getAnyContext());
 	}
 
 	public static boolean isTv() {
@@ -372,9 +381,13 @@ public class AweryApp extends Application {
 	}
 
 	public static void openUrl(String url) {
+		openUrl(getAnyContext(), url);
+	}
+
+	public static void openUrl(@NonNull Context context, String url) {
 		try {
 			var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-			getAnyContext().startActivity(intent);
+			context.startActivity(intent);
 		} catch(ActivityNotFoundException e) {
 			Log.e(TAG, "Cannot open url!", e);
 
@@ -474,7 +487,7 @@ public class AweryApp extends Application {
 		ExtensionsFactory.init(this);
 
 		if(AwerySettings.LAST_OPENED_VERSION.getValue() < 1) {
-			new Thread(() -> {
+			thread(() -> {
 				getDatabase().getListDao().insert(
 						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.currently_watching), "1")),
 						DBCatalogList.fromCatalogList(new CatalogList(getString(R.string.planning_watch), "2")),
@@ -486,7 +499,7 @@ public class AweryApp extends Application {
 						DBCatalogList.fromCatalogList(new CatalogList("History", CATALOG_LIST_HISTORY)));
 
 				getPrefs().setValue(AwerySettings.LAST_OPENED_VERSION, 1).saveSync();
-			}).start();
+			});
 		}
 	}
 

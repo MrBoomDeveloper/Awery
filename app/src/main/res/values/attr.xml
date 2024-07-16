@@ -15,6 +15,17 @@
         <attr name="isVisible" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="SocialView">
+        <attr name="socialLink" format="string" />
+        <attr name="socialName" format="string" />
+        <attr name="socialIcon" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="ContributorView">
+        <attr name="contributorRole" format="string" />
+        <attr name="contributorAvatar" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="TVTabView">
         <attr name="android:text" format="string" />
         <attr name="android:state_selected" format="boolean" />

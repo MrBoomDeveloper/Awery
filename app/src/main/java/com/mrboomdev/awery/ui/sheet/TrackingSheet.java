@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.util.NiceUtils.formatNumber;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -52,7 +53,6 @@ import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -176,7 +176,7 @@ public class TrackingSheet {
 			binding.status.getRoot().setEndIconOnClickListener(v ->
 					binding.status.input.performClick());
 
-			binding.delete.setOnClickListener(v -> new Thread(() -> {
+			binding.delete.setOnClickListener(v -> thread(() -> {
 				if(selectedSource == null) return;
 
 				var dao = getDatabase().getMediaProgressDao();
@@ -188,7 +188,7 @@ public class TrackingSheet {
 				}
 
 				toast("Deleted successfully");
-			}).start());
+			}));
 
 			binding.startDate.setOnTouchListener((e, a) -> {
 				if(a.getAction() == MotionEvent.ACTION_UP) {
@@ -295,7 +295,7 @@ public class TrackingSheet {
 							toast("Saved successfully");
 						});
 
-						new Thread(() -> {
+						thread(() -> {
 							var dao = getDatabase().getMediaProgressDao();
 							var progress = dao.get(media.globalId);
 
@@ -308,7 +308,7 @@ public class TrackingSheet {
 									trackingOptions.id);
 
 							dao.insert(progress);
-						}).start();
+						});
 					}
 
 					@Override
@@ -433,7 +433,7 @@ public class TrackingSheet {
 		private void loadMediaFromDB() {
 			binding.searchStatus.setText("Loading...");
 
-			new Thread(() -> {
+			thread(() -> {
 				var progressDao = getDatabase().getMediaProgressDao();
 
 				var __progress = progressDao.get(media.globalId);
@@ -480,7 +480,7 @@ public class TrackingSheet {
 
 					sourcesAdapter.setItems(mappedIds.keySet());
 				});
-			}).start();
+			});
 		}
 
 		private void loadDataFromTracker(CatalogMedia media) {

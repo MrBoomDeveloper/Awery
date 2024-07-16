@@ -7,8 +7,10 @@ import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
@@ -43,10 +45,10 @@ import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
@@ -108,7 +110,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		intent.putExtra("episodes", (Serializable) episodes);
 		startActivity(intent);
 
-		new Thread(() -> {
+		thread(() -> {
 			var dao = getDatabase().getMediaProgressDao();
 
 			var progress = dao.get(media.globalId);
@@ -121,7 +123,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			progress.lastTitle = foundMedia.getTitle();
 
 			dao.insert(progress);
-		}).start();
+		});
 	}
 
 	private enum ExtensionStatus {
@@ -175,12 +177,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						var columnsCount = new AtomicInteger(3);
 						var layoutManager = new GridLayoutManager(requireContext(), columnsCount.get());
 
-						ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
-							var padding = ViewUtil.dpPx(8);
+						setOnApplyUiInsetsListener(recycler, insets -> {
+							var padding = dpPx(recycler, 8);
 							ViewUtil.setVerticalPadding(recycler, padding + padding * 2);
 							ViewUtil.setHorizontalPadding(recycler, insets.left + padding, insets.right + padding);
 
-							float columnSize = ViewUtil.dpPx(80);
+							float columnSize = dpPx(recycler, 80);
 							float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
 							columnsCount.set((int)(freeSpace / columnSize));
 							layoutManager.setSpanCount(columnsCount.get());
@@ -364,7 +366,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			return;
 		}
 
-		new Thread(() -> {
+		thread(() -> {
 			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
 
 			var mediaSource = NiceUtils.returnWith(() -> {
@@ -426,7 +428,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				currentSourceIndex = 0;
 				runOnUiThread(() -> selectProvider(providers.get(0)));
 			}
-		}).start();
+		});
 	}
 
 	private void selectProvider(@NonNull ExtensionProvider provider) {
@@ -677,9 +679,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		recycler.setAdapter(concatAdapter);
 
 		recycler.setClipToPadding(false);
-		setBottomPadding(recycler, dpPx(12));
+		setBottomPadding(recycler, dpPx(recycler, 12));
 
-		ViewUtil.setOnApplyUiInsetsListener(recycler, insets -> {
+		setOnApplyUiInsetsListener(recycler, insets -> {
 			setTopPadding(recycler, insets.top);
 			setRightPadding(recycler, insets.right);
 			return true;

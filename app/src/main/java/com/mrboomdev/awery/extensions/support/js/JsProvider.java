@@ -272,34 +272,6 @@ public class JsProvider extends ExtensionProvider {
 			});
 		}
 
-		root.addItem(new CustomSettingsItem(SettingsItemType.ACTION) {
-
-			@Override
-			public String getTitle(android.content.Context context) {
-				return context.getString(R.string.uninstall_extension);
-			}
-
-			@Override
-			public void onClick(android.content.Context context) {
-				var activity = getActivity(context);
-
-				manager.uninstallExtension(context, id);
-				toast("Uninstalled successfully");
-
-				if(activity != null) {
-					var settingsScreen = root.getParent().getParent();
-					activity.finish();
-
-					if(settingsScreen instanceof ObservableSettingsItem listenable) {
-						var wasIndex = settingsScreen.getItems().indexOf(root.getParent());
-						runOnUiThread(() -> listenable.onSettingRemoval(root.getParent(), wasIndex));
-					} else {
-						throw new IllegalStateException("Settings screen doesn't implement ObservableSettingsItem!");
-					}
-				}
-			}
-		});
-
 		callback.onSuccess(root);
 	}
 

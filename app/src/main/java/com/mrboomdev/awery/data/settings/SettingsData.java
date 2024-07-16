@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.getFileSize;
 
 import android.content.Context;
@@ -145,20 +146,20 @@ public class SettingsData {
 
 			var screen = new ExtensionSettings(activity, manager);
 
-			new Thread(() -> {
+			thread(() -> {
 				screen.loadData();
 				runOnUiThread(() -> callback.onResult(screen, null));
-			}).start();
+			});
 
 			return;
 		}
 
 		switch(behaviourId) {
-			case "tabs" -> new Thread(() -> {
+			case "tabs" -> thread(() -> {
 				var screen = new TabsSettings();
 				screen.loadData();
 				runOnUiThread(() -> callback.onResult(screen, null));
-			}).start();
+			});
 
 			default -> callback.onResult(null,
 					new IllegalArgumentException("Unknown screen: " + behaviourId));

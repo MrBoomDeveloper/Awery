@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -130,36 +131,41 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		}
 
 		if(screen instanceof ObservableSettingsItem listenable) {
-			listenable.addSettingAdditionListener((setting, index) -> {
-				var id = idGenerator.getLong();
-				ids.put(setting, id);
+			listenable.addSettingsObserver(new ObservableSettingsItem.Observer() {
+				@Override
+				public void onSettingAddition(SettingsItem item, int position) {
+					var id = idGenerator.getLong();
+					ids.put(item, id);
 
-				var wasSize = items.size();
-				items.add(index, setting);
-				notifyItemInserted(items.indexOf(setting));
+					var wasSize = items.size();
+					items.add(position, item);
+					notifyItemInserted(items.indexOf(item));
 
-				if(wasSize == 0) {
-					onEmptyStateChanged(false);
+					if(wasSize == 0) {
+						onEmptyStateChanged(false);
+					}
 				}
-			});
 
-			listenable.addSettingRemovalListener((setting, index) -> {
-				index = items.indexOf(setting);
-				items.remove(setting);
-				notifyItemRemoved(index);
+				@Override
+				public void onSettingRemoval(SettingsItem item) {
+					var index = items.indexOf(item);
+					items.remove(item);
+					notifyItemRemoved(index);
 
-				if(items.isEmpty()) {
-					onEmptyStateChanged(true);
+					if(items.isEmpty()) {
+						onEmptyStateChanged(true);
+					}
 				}
-			});
 
-			listenable.addSettingChangeListener((setting, index) -> {
-				var oldSetting = items.set(index, setting);
+				@Override
+				public void onSettingChange(SettingsItem item, int position) {
+					var oldSetting = items.set(position, item);
 
-				var id = ids.get(oldSetting);
-				ids.put(setting, id);
+					var id = ids.get(oldSetting);
+					ids.put(item, id);
 
-				notifyItemChanged(index);
+					notifyItemChanged(position);
+				}
 			});
 		}
 
@@ -170,24 +176,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	public List<SettingsItem> getItems() {
 		return items;
-	}
-
-	public void addItems(@NonNull List<SettingsItem> items) {
-		if(items.isEmpty()) return;
-		int wasSize = this.items.size();
-
-		var filtered = new ArrayList<>(stream(items)
-				.filter(SettingsItem::isVisible)
-				.toList());
-
-		this.items.addAll(filtered);
-
-		for(var item : filtered) {
-			var id = idGenerator.getLong();
-			ids.put(item, id);
-		}
-
-		notifyItemRangeInserted(wasSize, filtered.size());
 	}
 
 	@Override
@@ -235,7 +223,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					holder.updateDescription(null);
 
 					if(setting.isRestartRequired()) {
-						suggestToRestart(parent);
+						suggestToRestart(context);
 					}
 				}
 
@@ -255,7 +243,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								setting.setValue(inputField.getText());
 
 								if(setting.isRestartRequired()) {
-									suggestToRestart(parent);
+									suggestToRestart(context);
 								}
 
 								_dialog.dismiss();
@@ -326,7 +314,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								_dialog.dismiss();
 
 								if(setting.isRestartRequired()) {
-									suggestToRestart(parent);
+									suggestToRestart(context);
 								}
 							})
 							.show();
@@ -356,7 +344,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									_dialog.dismiss();
 
 									if(setting.isRestartRequired()) {
-										suggestToRestart(parent);
+										suggestToRestart(context);
 									}
 
 									return;
@@ -388,7 +376,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								_dialog.dismiss();
 
 								if(setting.isRestartRequired()) {
-									suggestToRestart(parent);
+									suggestToRestart(context);
 								}
 							}).show();
 
@@ -445,7 +433,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 									_dialog.dismiss();
 
 									if(setting.isRestartRequired()) {
-										suggestToRestart(parent);
+										suggestToRestart(context);
 									}
 
 									return;
@@ -455,7 +443,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 								_dialog.dismiss();
 
 								if(setting.isRestartRequired()) {
-									suggestToRestart(parent);
+									suggestToRestart(context);
 								}
 							})
 							.show();
@@ -475,7 +463,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					} else if(setting.getItems() != null) {
 						var selected = setting instanceof CustomSettingsItem customSetting
 								? (Set<String>) customSetting.getSavedValue()
-								: getPrefs().getStringSet(setting.getKey());
+								: setting.getStringSetValue();
 
 						dialog.setItems(stream(setting.getItems())
 								.filter(SettingsItem::isVisible)
@@ -495,41 +483,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			}
 		});
 
-		binding.toggle.setOnCheckedChangeListener((view, isChecked) -> {
-			var item = holder.getItem();
-			if(item == null || !holder.didInit()) return;
-
-			item.setValue(isChecked);
-			handler.saveValue(item, isChecked);
-			holder.updateDescription(String.valueOf(isChecked));
-
-			if(item.isRestartRequired()) {
-				suggestToRestart(parent);
-			}
-		});
-
-		binding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-			var item = holder.getItem();
-			if(item == null || !holder.didInit()) return;
-
-			var newValue = Objects.requireNonNullElse(
-					item.getExcludableValue(), Selection.State.UNSELECTED).next();
-
-			item.setValue(newValue);
-			handler.saveValue(item, newValue);
-			holder.updateExcludableState(newValue);
-			holder.updateDescription(String.valueOf(newValue));
-
-			if(item.isRestartRequired()) {
-				suggestToRestart(parent);
-			}
-		});
-
 		return holder;
 	}
 
-	private void suggestToRestart(View parent) {
-		snackbar(Objects.requireNonNull(getActivity(getContext(parent))),
+	private static void suggestToRestart(Context context) {
+		snackbar(Objects.requireNonNull(getActivity(context)),
 				R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
 	}
 
@@ -543,17 +501,21 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		return items.size();
 	}
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+	public class ViewHolder extends RecyclerView.ViewHolder implements CompoundButton.OnCheckedChangeListener {
 		private final ItemListSettingBinding binding;
 		private final Context context;
 		private SettingsItem item;
-		private boolean didInit;
+		private boolean checkboxListenersActive = true;
+		private boolean didUpdateExcludableStateCalled;
 
 		public ViewHolder(@NonNull ItemListSettingBinding binding) {
 			super(binding.getRoot());
 
 			this.binding = binding;
 			this.context = getContext(binding);
+
+			binding.toggle.setOnCheckedChangeListener(this);
+			binding.checkbox.setOnCheckedChangeListener(this);
 		}
 
 		public long getId() {
@@ -570,13 +532,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			return item;
 		}
 
-		public boolean didInit() {
-			return didInit;
-		}
-
 		public void updateDescription(String payload) {
 			var description = resolveDescription(payload);
-			setTopMargin(binding.title, dpPx(description == null ? 3 : -5));
+			setTopMargin(binding.title, dpPx(binding.title, description == null ? 3 : -5));
 
 			if(description == null) {
 				binding.description.setVisibility(View.GONE);
@@ -634,11 +592,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case UNSELECTED -> MaterialCheckBox.STATE_UNCHECKED;
 			};
 
+			didUpdateExcludableStateCalled = true;
 			binding.checkbox.setCheckedState(result);
+			didUpdateExcludableStateCalled = false;
 		}
 
 		public void bind(@NonNull SettingsItem setting) {
-			this.didInit = false;
 			this.item = setting;
 
 			var isSmall = setting.getType() == SettingsItemType.CATEGORY
@@ -711,11 +670,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			updateDescription(null);
 
-			if(setting.getType() == SettingsItemType.CATEGORY) setVerticalMargin(binding.getRoot(), dpPx(-8), dpPx(-12));
-			else if(setting.getType() == SettingsItemType.DIVIDER) setVerticalMargin(binding.getRoot(), dpPx(-12));
-			else setVerticalMargin(binding.getRoot(), 0, dpPx(6));
+			if(setting.getType() == SettingsItemType.CATEGORY) setVerticalMargin(binding.getRoot(), dpPx(binding, -8), dpPx(binding, -12));
+			else if(setting.getType() == SettingsItemType.DIVIDER) setVerticalMargin(binding.getRoot(), dpPx(binding, -12));
+			else setVerticalMargin(binding.getRoot(), 0, dpPx(binding, 6));
 
-			binding.getRoot().setMinimumHeight(dpPx(isSmall ? 0 : 54));
+			binding.getRoot().setMinimumHeight(dpPx(binding, isSmall ? 0 : 54));
 			binding.getRoot().setClickable(!isSmall);
 			binding.getRoot().setFocusable(!isSmall);
 
@@ -730,12 +689,48 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 			if(setting.getType() == SettingsItemType.BOOLEAN || setting.getType() == SettingsItemType.SCREEN_BOOLEAN) {
 				binding.toggle.setVisibility(View.VISIBLE);
+
+				checkboxListenersActive = false;
 				binding.toggle.setChecked(requireNonNullElse(setting.getBooleanValue(), false));
+				checkboxListenersActive = true;
 			} else {
 				binding.toggle.setVisibility(View.GONE);
 			}
+		}
 
-			this.didInit = true;
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			if(item == null || !checkboxListenersActive) return;
+
+			switch(item.getType()) {
+				case BOOLEAN, SCREEN_BOOLEAN -> {
+					item.setValue(isChecked);
+					handler.saveValue(item, isChecked);
+					updateDescription(String.valueOf(isChecked));
+
+					if(item.isRestartRequired()) {
+						suggestToRestart(context);
+					}
+				}
+
+				case EXCLUDABLE -> {
+					var newValue = Objects.requireNonNullElse(
+							item.getExcludableValue(), Selection.State.UNSELECTED).next();
+
+					item.setValue(newValue);
+					handler.saveValue(item, newValue);
+
+					if(!didUpdateExcludableStateCalled) {
+						updateExcludableState(newValue);
+					}
+
+					updateDescription(String.valueOf(newValue));
+
+					if(item.isRestartRequired()) {
+						suggestToRestart(context);
+					}
+				}
+			}
 		}
 	}
 }

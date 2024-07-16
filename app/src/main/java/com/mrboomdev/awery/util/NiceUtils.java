@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
@@ -45,8 +46,14 @@ public class NiceUtils {
 	}
 
 	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback) {
+		doIfNotNull(param, callback, null);
+	}
+
+	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback, Runnable ifNull) {
 		if(param != null) {
-			callback.run(param);
+			if(callback != null) callback.run(param);
+		} else if(ifNull != null) {
+			ifNull.run();
 		}
 	}
 
@@ -271,6 +278,8 @@ public class NiceUtils {
 		return callback.run();
 	}
 
+
+
 	@NonNull
 	@Contract("null, _ -> fail")
 	public static <T> T requireArgument(T o, String name) {
@@ -289,9 +298,37 @@ public class NiceUtils {
 		else if(clazz == Boolean.class) result = intent.getBooleanExtra(name, false);
 		else if(clazz == Long.class) result = intent.getLongExtra(name, 0);
 		else if(clazz == Float.class) result = intent.getFloatExtra(name, 0);
-		else result = intent.getSerializableExtra("name");
+		else result = intent.getSerializableExtra(name);
 
 		return clazz.cast(requireArgument(result, name));
+	}
+
+	public static <T> T getArgument(Intent intent, String name, Class<T> clazz) {
+		if(intent == null) return null;
+		Object result;
+
+		if(clazz == String.class) result = intent.getStringExtra(name);
+		else if(clazz == Integer.class) result = intent.getIntExtra(name, 0);
+		else if(clazz == Boolean.class) result = intent.getBooleanExtra(name, false);
+		else if(clazz == Long.class) result = intent.getLongExtra(name, 0);
+		else if(clazz == Float.class) result = intent.getFloatExtra(name, 0);
+		else result = intent.getSerializableExtra(name);
+
+		return clazz.cast(result);
+	}
+
+	public static <T> T getArgument(Bundle bundle, String name, Class<T> clazz) {
+		if(bundle == null) return null;
+		Object result;
+
+		if(clazz == String.class) result = bundle.getString(name);
+		else if(clazz == Integer.class) result = bundle.getInt(name, 0);
+		else if(clazz == Boolean.class) result = bundle.getBoolean(name, false);
+		else if(clazz == Long.class) result = bundle.getLong(name, 0);
+		else if(clazz == Float.class) result = bundle.getFloat(name, 0);
+		else result = bundle.getSerializable(name);
+
+		return clazz.cast(result);
 	}
 
 	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) {

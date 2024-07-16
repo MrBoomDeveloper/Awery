@@ -15,6 +15,7 @@ import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.ui.activity.AboutActivity;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 
 import org.jetbrains.annotations.Contract;
@@ -43,6 +44,12 @@ public class SettingsActions {
 				var intent = new Intent(context, SetupActivity.class);
 				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_THEMING);
 				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
+				context.startActivity(intent);
+			}
+
+			case AwerySettings.ABOUT -> {
+				var context = getAnyContext();
+				var intent = new Intent(context, AboutActivity.class);
 				context.startActivity(intent);
 			}
 
@@ -99,15 +106,6 @@ public class SettingsActions {
 
 			case AwerySettings.PLAYER_SYSTEM_SUBTITLES -> getAnyContext()
 					.startActivity(new Intent(Settings.ACTION_CAPTIONING_SETTINGS));
-
-			case AwerySettings.TELEGRAM_GROUP ->
-					openUrl("https://t.me/mrboomdev_awery");
-
-			case AwerySettings.DISCORD_SERVER ->
-					openUrl("https://discord.com/invite/yspVzD4Kbm");
-
-			case AwerySettings.GITHUB_REPOSITORY ->
-					openUrl("https://github.com/MrBoomDeveloper/Awery");
 
 			case AwerySettings.TRY_CRASH_NATIVE ->
 					XCrash.testNativeCrash(false);

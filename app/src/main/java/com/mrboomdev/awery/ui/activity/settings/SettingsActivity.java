@@ -12,6 +12,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.squareup.moshi.Moshi;
@@ -46,16 +48,21 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
+	public static final String EXTRA_JSON = "item";
+	public static final String EXTRA_PAYLOAD_ID = "payload_id";
 	private static final String TAG = "SettingsActivity";
+	private static final Map<Long, SettingsItem> payloads = new HashMap<>();
+	private static final UniqueIdGenerator payloadIdGenerator = new UniqueIdGenerator();
 	private static WeakReference<RecyclerView.RecycledViewPool> viewPool;
 	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
 	private ActivityResultLauncher<Intent> activityResultLauncher;
 	private ScreenSettingsBinding binding;
 	private EmptyView emptyView;
-	private boolean isMain;
 
 	private static RecyclerView.RecycledViewPool getViewPool() {
 		RecyclerView.RecycledViewPool pool;
@@ -70,26 +77,31 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		return pool;
 	}
 
+	public static void start(Context context, SettingsItem item) {
+		var id = payloadIdGenerator.getLong();
+		payloads.put(id, item);
+
+		var intent = new Intent(context, SettingsActivity.class);
+		intent.putExtra(EXTRA_PAYLOAD_ID, id);
+		context.startActivity(intent);
+	}
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		var itemJson = getIntent().getStringExtra("item");
-		var path = getIntent().getStringExtra("path");
-
-		if(itemJson == null && path == null) {
-			isMain = true;
-		}
+		var itemJson = getIntent().getStringExtra(EXTRA_JSON);
+		var payloadId = getIntent().getLongExtra(EXTRA_PAYLOAD_ID, -1);
 
 		SettingsItem item = null;
 
-		if(path != null) {
-			item = NicePreferences.getCached(path);
+		if(payloadId != -1) {
+			item = payloads.get(payloadId);
 
 			if(item == null) {
-				toast("Failed to get settings", 0);
+				// The system has restarted an app :(
 				finish();
 				return;
 			}
@@ -131,13 +143,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	protected void onDestroy() {
 		super.onDestroy();
 
-		if(isMain) {
-			NicePreferences.clearCache();
+		if(isFinishing()) {
+			var payloadId = getIntent().getLongExtra(EXTRA_PAYLOAD_ID, -1);
+
+			if(payloadId != -1) {
+				payloads.remove(payloadId);
+			}
 		}
 
-		viewPool.clear();
 		callbacks.clear();
-
 		activityResultLauncher = null;
 	}
 

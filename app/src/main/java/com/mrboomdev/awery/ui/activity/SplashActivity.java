@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -44,13 +45,11 @@ public class SplashActivity extends AppCompatActivity {
 		loading.setIndeterminate(true);
 		frame.addView(loading);
 
-		reportIfCrashHappened(this, () -> new Thread(() -> {
-			var db = getDatabase();
-
+		reportIfCrashHappened(this, () -> thread(() -> {
 			try {
-				db.getListDao().getAll();
+				getDatabase().getListDao().getAll();
 			} catch(IllegalStateException e) {
-				Log.e(TAG, "Failed to test the db!", e);
+				Log.e(TAG, "Database is corrupted!", e);
 				CrashHandler.showFatalErrorDialog(this, "Database is corrupted", e);
 				return;
 			}
@@ -64,6 +63,6 @@ public class SplashActivity extends AppCompatActivity {
 
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
-		}).start());
+		}));
 	}
 }

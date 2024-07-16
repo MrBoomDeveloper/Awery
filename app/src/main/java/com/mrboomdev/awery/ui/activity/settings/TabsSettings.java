@@ -11,6 +11,7 @@ import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.Context;
@@ -102,7 +103,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 									return;
 								}
 
-								new Thread(() -> {
+								thread(() -> {
 									var dao = getDatabase().getTabsDao();
 
 									var tab = new DBTab();
@@ -134,7 +135,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 										dialog.dismiss();
 										toast("Tab created successfully!");
 									});
-								}).start();
+								});
 							})
 							.show();
 				}
@@ -232,7 +233,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 						var setting = items.get(i);
 						items.remove(setting);
-						onSettingRemoval(setting, i);
+						onSettingRemoval(setting);
 					}
 
 					snackbar(Objects.requireNonNull(getActivity(context)),
@@ -294,7 +295,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 						.setTitle(R.string.are_you_sure)
 						.setMessage("You won't be able to revert the deletion.")
 						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-						.setPositiveButton(R.string.confirm, dialog -> new Thread(() -> {
+						.setPositiveButton(R.string.confirm, dialog -> thread(() -> {
 							var tabsDao = getDatabase().getTabsDao();
 							var feedsDao = getDatabase().getFeedsDao();
 
@@ -307,15 +308,15 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 							runOnUiThread(() -> {
 								items.remove(TabSetting.this);
 								tabs.remove(tab);
-								onSettingRemoval(TabSetting.this, null);
+								onSettingRemoval(TabSetting.this);
 
 								if(items.size() == 3) {
-									onSettingRemoval(items.remove(2), null);
+									onSettingRemoval(items.remove(2));
 								}
 
 								dialog.dismiss();
 							});
-						}).start()).show();
+						})).show();
 			}
 		});
 
@@ -372,10 +373,10 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 				}
 			}
 
-			new Thread(() -> getDatabase().getTabsDao().insert(stream(items)
+			thread(() -> getDatabase().getTabsDao().insert(stream(items)
 					.filter(item -> item instanceof TabSetting)
 					.map(setting -> ((TabSetting)setting).tab)
-					.toArray(DBTab[]::new))).start();
+					.toArray(DBTab[]::new)));
 
 			return true;
 		}

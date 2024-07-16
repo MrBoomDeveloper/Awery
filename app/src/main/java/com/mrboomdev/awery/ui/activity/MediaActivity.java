@@ -30,6 +30,7 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
 import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
@@ -83,6 +84,10 @@ public class MediaActivity extends AppCompatActivity {
 			header.setImageResource(R.drawable.ic_back);
 			header.setOnClickListener(v -> finish());
 			rail.addHeaderView(header);
+		}
+
+		if(AwerySettings.USE_AMOLED_THEME.getValue()) {
+			binding.navigation.setBackgroundColor(0x00000000);
 		}
 
 		try {

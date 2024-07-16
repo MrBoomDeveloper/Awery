@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.io.IOException;
@@ -69,8 +71,8 @@ public abstract class ExtensionsManager {
 	 */
 	public void unloadExtension(Context context, String id) {}
 
-	public void uninstallExtension(Context context, String id) {
-		unloadExtension(context, id);
+	public AsyncFuture<Boolean> uninstallExtension(Context context, String id) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("This type of extensions cannot be uninstalled currently"));
 	}
 
 	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {

@@ -4,7 +4,21 @@ import com.squareup.moshi.Json;
 
 public enum SettingsItemType {
 	@Json(name = "boolean")
-	BOOLEAN,
+	BOOLEAN {
+		@Override
+		public boolean isBoolean() {
+			return true;
+		}
+	},
+
+	@Json(name = "screen_boolean")
+	SCREEN_BOOLEAN {
+		@Override
+		public boolean isBoolean() {
+			return true;
+		}
+	},
+
 	@Json(name = "json")
 	JSON,
 	@Json(name = "date")
@@ -15,8 +29,6 @@ public enum SettingsItemType {
 	DIVIDER,
 	@Json(name = "category")
 	CATEGORY,
-	@Json(name = "screen_boolean")
-	SCREEN_BOOLEAN,
 	@Json(name = "color")
 	COLOR,
 	@Json(name = "integer")
@@ -32,5 +44,9 @@ public enum SettingsItemType {
 	@Json(name = "multiselect")
 	MULTISELECT,
 	@Json(name = "action")
-	ACTION
+	ACTION;
+
+	public boolean isBoolean() {
+		return false;
+	}
 }

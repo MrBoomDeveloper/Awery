@@ -3,9 +3,11 @@ package com.mrboomdev.awery.ui.activity;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,7 +60,7 @@ public class IntentHandlerActivity extends AppCompatActivity {
 				var repo = cleanUrl(uri.getQueryParameter("url"));
 				var manager = ExtensionsFactory.getManager(AniyomiManager.class);
 
-				new Thread(() -> {
+				thread(() -> {
 					var dao = getDatabase().getRepositoryDao();
 					var repos = dao.getRepositories(manager.getId());
 
@@ -80,17 +82,18 @@ public class IntentHandlerActivity extends AppCompatActivity {
 						loadingWindow.dismiss();
 						finish();
 					});
-				}).start();
+				});
 			} else {
 				finish();
 			}
 		} else if(path != null && path.startsWith("/awery/app-login/")) {
-			LoginActivity.url = uri.toString();
+			for(var activity : getActivities(LoginActivity.class)) {
+				activity.completionUrl = uri.toString();
+			}
 
 			var intent = new Intent(this, LoginActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			startActivity(intent);
-
 			finish();
 		} else if(returnWith(FileUtil.getUriFileName(uri), name -> (name != null && name.endsWith(".awerybck")))) {
 			new DialogBuilder(this)

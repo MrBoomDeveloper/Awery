@@ -23,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.viewbinding.ViewBinding;
 
 import org.jetbrains.annotations.Contract;
 
@@ -129,6 +130,15 @@ public class ViewUtil {
 		if(margins == null) return false;
 
 		margins.setMargins(horizontal, vertical, horizontal, vertical);
+		view.setLayoutParams(margins);
+		return true;
+	}
+
+	public static boolean setMargin(View view, int left, int top, int right, int bottom) {
+		var margins = getMargins(view);
+		if(margins == null) return false;
+
+		margins.setMargins(left, top, right, bottom);
 		view.setLayoutParams(margins);
 		return true;
 	}
@@ -392,6 +402,10 @@ public class ViewUtil {
 		return null;
 	}
 
+	/**
+	 * @deprecated Use {@link #dpPx(Context, float)}
+	 */
+	@Deprecated(forRemoval = true)
 	public static int dpPx(float dp) {
 		return dpPx(getAnyContext(), dp);
 	}
@@ -401,6 +415,18 @@ public class ViewUtil {
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
 	}
 
+	public static int dpPx(@NonNull View view, float dp) {
+		return dpPx(view.getContext(), dp);
+	}
+
+	public static int dpPx(@NonNull ViewBinding view, float dp) {
+		return dpPx(view.getRoot().getContext(), dp);
+	}
+
+	/**
+	 * @deprecated Use {@link #spPx(Context, float)}
+	 */
+	@Deprecated(forRemoval = true)
 	public static float spPx(float sp) {
 		return spPx(getAnyContext(), sp);
 	}

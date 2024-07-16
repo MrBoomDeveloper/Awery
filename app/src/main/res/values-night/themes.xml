@@ -138,8 +138,8 @@
         <item name="colorPrimaryContainer">@color/bg_white</item>
         <item name="colorOnPrimaryContainer">@color/bg_black</item>
         <item name="colorSecondary">@color/bg_white</item>
-        <item name="colorOnSecondary">@color/bg_black</item>
-        <item name="colorSecondaryContainer">#323232</item>
+        <item name="colorOnSecondary">#232323</item>
+        <item name="colorSecondaryContainer">#202020</item>
         <item name="colorOnSecondaryContainer">#FFFFFF</item>
         <item name="colorTertiary">@color/bg_white</item>
         <item name="colorOnTertiary">@color/bg_black</item>

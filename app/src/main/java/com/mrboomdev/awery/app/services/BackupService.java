@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Service;
 import android.content.Intent;
@@ -46,7 +47,7 @@ public class BackupService extends Service {
 	private void startBackup(Uri into) {
 		var popup = showLoadingWindow();
 
-		new Thread(() -> {
+		thread(() -> {
 			try {
 				var map = new HashMap<File, String>();
 				var backupDirs = new String[] { "shared_prefs", "databases" };
@@ -77,13 +78,13 @@ public class BackupService extends Service {
 
 				stopSelf();
 			}
-		}).start();
+		});
 	}
 
 	private void startRestore(Uri uri) {
 		var window = showLoadingWindow();
 
-		new Thread(() -> {
+		thread(() -> {
 			try {
 				FileUtil.unzip(uri, new File(getFilesDir(), ".."));
 				toast("Restored backup successfully!");
@@ -101,7 +102,7 @@ public class BackupService extends Service {
 
 				stopSelf();
 			}
-		}).start();
+		});
 	}
 
 	@Nullable

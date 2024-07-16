@@ -7,6 +7,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.HIDDEN_LISTS;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -81,7 +82,7 @@ public class MediaUtils {
 			@NonNull Collection<? extends CatalogMedia> items,
 			Callbacks.Callback1<Collection<? extends CatalogMedia>> callback
 	) {
-		new Thread(() -> callback.run(filterMediaSync(items))).start();
+		thread(() -> callback.run(filterMediaSync(items)));
 	}
 
 	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
@@ -107,7 +108,7 @@ public class MediaUtils {
 
 	@Contract(pure = true)
 	public static void isMediaFiltered(@NonNull CatalogMedia media, Callbacks.Callback1<Boolean> callback) {
-		new Thread(() -> callback.run(isMediaFilteredSync(media))).start();
+		thread(() -> callback.run(isMediaFilteredSync(media)));
 	}
 
 	public static void openMediaActionsMenu(Context context, @NonNull CatalogMedia media, Runnable updateCallback) {
@@ -150,7 +151,7 @@ public class MediaUtils {
 	}
 
 	public static void blacklistMedia(CatalogMedia media, Runnable callback) {
-		new Thread(() -> {
+		thread(() -> {
 			var listsDao = getDatabase().getMediaProgressDao();
 			var mediaDao = getDatabase().getMediaDao();
 
@@ -162,7 +163,7 @@ public class MediaUtils {
 			listsDao.insert(lists);
 
 			runOnUiThread(callback);
-		}).start();
+		});
 	}
 
 	public static void shareMedia(Context context, @NonNull CatalogMedia media) {
@@ -188,13 +189,13 @@ public class MediaUtils {
 						return;
 					}
 
-					new Thread(() -> {
+					thread(() -> {
 						var list = new CatalogList(text);
 						var dbList = DBCatalogList.fromCatalogList(list);
 						getDatabase().getListDao().insert(dbList);
 
 						runOnUiThread(() -> callback.onListCreated(list));
-					}).start();
+					});
 
 					_dialog.dismiss();
 				}).show();
@@ -208,12 +209,12 @@ public class MediaUtils {
 				.setMessage(R.string.sure_delete_list_description)
 				.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 				.setPositiveButton(R.string.delete, dialog -> {
-					new Thread(() -> {
+					thread(() -> {
 						var dbList = DBCatalogList.fromCatalogList(list);
 						getDatabase().getListDao().delete(dbList);
 
 						runOnUiThread(callback);
-					}).start();
+					});
 
 					callback.run();
 					dialog.dismiss();
@@ -230,7 +231,7 @@ public class MediaUtils {
 	}
 
 	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
-		new Thread(() -> {
+		thread(() -> {
 			var lists = stream(AweryApp.getDatabase().getListDao().getAll())
 					.filter(item -> !HIDDEN_LISTS.contains(item.getId()))
 					.toList();
@@ -259,8 +260,8 @@ public class MediaUtils {
 					var color = resolveAttrColor(context, com.google.android.material.R.attr.colorOnSurface);
 					removeButton.setImageTintList(ColorStateList.valueOf(color));
 					removeButton.setBackgroundResource(R.drawable.ripple_circle_white);
-					linear.addView(removeButton, dpPx(38), dpPx(38));
-					setPadding(removeButton, dpPx(8));
+					linear.addView(removeButton, dpPx(removeButton, 38), dpPx(removeButton, 38));
+					setPadding(removeButton, dpPx(removeButton, 8));
 
 					removeButton.setOnClickListener(v -> requestDeleteList(context, item,
 							() -> binding.lists.removeView(linear)));
@@ -291,7 +292,7 @@ public class MediaUtils {
 						return;
 					}
 
-					new Thread(() -> {
+					thread(() -> {
 						try {
 							progress.clearLists();
 
@@ -311,7 +312,7 @@ public class MediaUtils {
 							AweryApp.toast("Failed to save!");
 							Log.e("MediaUtils", "Failed to save bookmark", e);
 						}
-					}).start();
+					});
 				});
 
 				sheet.setContentView(binding.getRoot());
@@ -319,6 +320,6 @@ public class MediaUtils {
 
 				fixDialog(sheet);
 			});
-		}).start();
+		});
 	}
 }

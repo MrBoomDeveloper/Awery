@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -63,7 +64,6 @@ public class SetupActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		binding = ScreenSetupBinding.inflate(getLayoutInflater());
-		setContentView(binding.getRoot());
 		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
@@ -117,7 +117,7 @@ public class SetupActivity extends AppCompatActivity {
 				binding.message.setText("The content you see through the app. You can select it at any time in Settings.");
 
 				binding.recycler.setLayoutManager(new LinearLayoutManager(this));
-				binding.recycler.addItemDecoration(new RecyclerItemDecoration(dpPx(8)));
+				binding.recycler.addItemDecoration(new RecyclerItemDecoration(dpPx(binding.recycler, 8)));
 				binding.recycler.setAdapter(new SetupTabsAdapter());
 				binding.recycler.setVisibility(View.VISIBLE);
 
@@ -180,6 +180,8 @@ public class SetupActivity extends AppCompatActivity {
 
 			default -> throw new IllegalArgumentException("Unknown step! " + getIntent().getIntExtra("step", -1));
 		}
+
+		setContentView(binding.getRoot());
 	}
 
 	private void tryToStartNextStep() {
@@ -196,7 +198,7 @@ public class SetupActivity extends AppCompatActivity {
 				binding.continueButton.setEnabled(false);
 				binding.backButton.setEnabled(false);
 
-				new Thread(() -> {
+				thread(() -> {
 					var tabsDao = getDatabase().getTabsDao();
 					var feedsDao = getDatabase().getFeedsDao();
 
@@ -219,7 +221,7 @@ public class SetupActivity extends AppCompatActivity {
 									didDeleted.set(true);
 									dialog.dismiss();
 
-									new Thread(() -> {
+									thread(() -> {
 										for(var tab : tabs) {
 											for(var feed : feedsDao.getAllFromTab(tab.id)) {
 												feedsDao.delete(feed);
@@ -229,7 +231,7 @@ public class SetupActivity extends AppCompatActivity {
 										}
 
 										tryToStartNextStep();
-									}).start();
+									});
 								}).show());
 
 						return;
@@ -241,13 +243,11 @@ public class SetupActivity extends AppCompatActivity {
 						binding.continueButton.setEnabled(true);
 						binding.backButton.setEnabled(true);
 					});
-				}).start();
-
-				return;
+				});
 			}
-		}
 
-		startNextStep();
+			default -> startNextStep();
+		}
 	}
 
 	private void startNextStep() {

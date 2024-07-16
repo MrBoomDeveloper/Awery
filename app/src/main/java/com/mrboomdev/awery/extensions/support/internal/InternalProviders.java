@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.content.Context;
 
@@ -52,7 +52,7 @@ public class InternalProviders {
 		) {
 			var feed = filters.require(FILTER_FEED).getStringValue();
 
-			new Thread(() -> {
+			thread(() -> {
 				var progresses = getDatabase().getMediaProgressDao().getAllFromList(feed);
 
 				if(progresses.isEmpty()) {
@@ -64,7 +64,7 @@ public class InternalProviders {
 						.map(progress -> getDatabase().getMediaDao()
 								.get(progress.globalId).toCatalogMedia())
 						.toList(), false));
-			}).start();
+			});
 		}
 
 		@Override

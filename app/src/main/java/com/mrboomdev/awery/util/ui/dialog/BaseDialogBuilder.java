@@ -302,9 +302,13 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		return context;
 	}
 
+	public Dialog getDialog() {
+		return dialog;
+	}
+
 	public Window getWindow() {
-		if(dialog != null) {
-			return dialog.getWindow();
+		if(getDialog() != null) {
+			return getDialog().getWindow();
 		}
 
 		return null;

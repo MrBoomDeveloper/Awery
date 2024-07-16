@@ -11,6 +11,7 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void loadCustomTabs() {
-		new Thread(() -> setupTabs(getDatabase().getTabsDao().getAllTabs())).start();
+		thread(() -> setupTabs(getDatabase().getTabsDao().getAllTabs()));
 	}
 
 	private void loadTemplateTabs(String templateName) {
@@ -219,14 +220,17 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	private void setupNavigation() {
 		binding = ScreenMainBinding.inflate(getLayoutInflater());
-		binding.getRoot().setMotionEventSplittingEnabled(false);
-		setContentView(binding.getRoot());
 		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+		setContentView(binding.getRoot());
 
 		var pagesAdapter = new FeedsAdapter(tabs, getSupportFragmentManager(), getLifecycle());
 		binding.pages.setAdapter(pagesAdapter);
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
+
+		if(AwerySettings.USE_AMOLED_THEME.getValue()) {
+			binding.navbarMaterial.setBackgroundColor(0x00000000);
+		}
 
 		setOnApplyUiInsetsListener(binding.navbarMaterial, insets -> {
 			setTopPadding(binding.navbarMaterial, (binding.navbarMaterial instanceof NavigationRailView) ? insets.top : 0);
@@ -381,15 +385,15 @@ public class MainActivity extends AppCompatActivity {
 			});
 
 			setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-				setTopPadding(binding.getRoot(), insets.top + dpPx(16));
+				setTopPadding(binding.getRoot(), insets.top + dpPx(binding, 16));
 
 				if(isLandscape()) {
-					setLeftPadding(binding.getRoot(), dpPx(32) +
+					setLeftPadding(binding.getRoot(), dpPx(binding, 32) +
 							(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL ? 0 : insets.left));
 
-					setRightPadding(binding.getRoot(), dpPx(32) + insets.right);
+					setRightPadding(binding.getRoot(), dpPx(binding, 32) + insets.right);
 				} else {
-					setHorizontalPadding(binding.getRoot(), dpPx(16));
+					setHorizontalPadding(binding.getRoot(), dpPx(binding, 16));
 				}
 
 				return false;

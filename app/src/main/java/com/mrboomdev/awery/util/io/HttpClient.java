@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.io;
 
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -146,15 +148,7 @@ public class HttpClient {
 		}
 
 		public void callAsync(Context context, HttpCallback callback) {
-			checkFields();
-
-			var thread = new Thread(() -> call(context, callback, false));
-			thread.setName("HttpClient-" + thread.getId());
-
-			thread.setUncaughtExceptionHandler((t, e) ->
-					callback.onError(e));
-
-			thread.start();
+			thread(() -> call(context, callback, false));
 		}
 
 		private void call(Context context, HttpCallback callback, boolean check) {

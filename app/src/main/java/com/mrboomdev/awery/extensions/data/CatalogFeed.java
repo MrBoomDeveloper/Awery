@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.data;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.awaitResult;
 
 import android.os.Looper;
 
@@ -29,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Entity(tableName = "feed")
 public class CatalogFeed implements Serializable {
@@ -148,7 +148,7 @@ public class CatalogFeed implements Serializable {
 					.toList();
 
 			case TEMPLATE_AUTO_GENERATE -> {
-				var result = Arrays.asList(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+				var result = new ArrayList<>(Arrays.asList(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
 						.map(Extension::getProviders)
 						.flatMap(NiceUtils::stream)
 						.filter(provider -> {
@@ -178,26 +178,19 @@ public class CatalogFeed implements Serializable {
 
 							return true;
 						})
-						.map(provider -> {
-							var feeds = new AtomicReference<List<CatalogFeed>>();
+						.map(provider -> awaitResult(breaker -> provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
+							@Override
+							public void onSuccess(List<CatalogFeed> catalogFeeds) {
+								breaker.run(catalogFeeds);
+							}
 
-							provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
-								@Override
-								public void onSuccess(List<CatalogFeed> catalogFeeds) {
-									feeds.set(catalogFeeds);
-								}
-
-								@Override
-								public void onFailure(Throwable e) {
-									feeds.set(Collections.emptyList());
-								}
-							});
-
-							while(feeds.get() == null);
-							return feeds.get();
-						})
+							@Override
+							public void onFailure(Throwable e) {
+								breaker.run(Collections.emptyList());
+							}
+						})))
 						.flatMap(NiceUtils::stream)
-						.toArray(CatalogFeed[]::new));
+						.toArray(CatalogFeed[]::new)));
 
 				Collections.shuffle(result);
 

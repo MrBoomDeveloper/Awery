@@ -1,16 +1,20 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
@@ -18,6 +22,8 @@ import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.io.HttpClient;
 
 import java.io.IOException;
@@ -125,7 +131,7 @@ public abstract class YomiManager extends ExtensionsManager {
 		}
 
 		var key = ExtensionSettings.getExtensionKey(extension) + "_enabled";
-		if(!NicePreferences.getPrefs().getBoolean(key, true)) {
+		if(!getPrefs().getBoolean(key, true)) {
 			return;
 		}
 
@@ -269,6 +275,27 @@ public abstract class YomiManager extends ExtensionsManager {
 			public void onError(Throwable exception) {
 				callback.onError(exception);
 			}
+		});
+	}
+
+	@Override
+	public AsyncFuture<Boolean> uninstallExtension(@NonNull Context context, String id) {
+		return AsyncUtils.controllableFuture(future -> {
+			var intent = new Intent(Intent.ACTION_DELETE);
+			intent.setData(Uri.parse("package:" + id));
+
+			runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, data) -> {
+				//Ignore the resultCode, it always equal to 0
+
+				try {
+					context.getPackageManager().getPackageInfo(id, 0);
+					future.complete(false);
+				} catch(PackageManager.NameNotFoundException e) {
+					//App info is no longer available, so it is uninstalled.
+					extensions.remove(id);
+					future.complete(true);
+				}
+			}));
 		});
 	}
 }

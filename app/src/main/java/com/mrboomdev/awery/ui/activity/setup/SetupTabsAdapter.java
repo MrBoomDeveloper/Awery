@@ -33,6 +33,7 @@ import java.util.Objects;
 
 public class SetupTabsAdapter extends RecyclerView.Adapter<SetupTabsAdapter.ViewHolder> {
 	private final List<TabsTemplate> templates = new ArrayList<>();
+	private Drawable selectedDrawable;
 	private TabsTemplate selected;
 
 	public SetupTabsAdapter() {
@@ -67,7 +68,7 @@ public class SetupTabsAdapter extends RecyclerView.Adapter<SetupTabsAdapter.View
 		var binding = ItemListSettingBinding.inflate(
 				LayoutInflater.from(parent.getContext()), parent, false);
 
-		setTopMargin(binding.title, dpPx(-5));
+		setTopMargin(binding.title, dpPx(binding.title, -5));
 		binding.checkbox.setVisibility(View.GONE);
 		binding.toggle.setVisibility(View.GONE);
 		binding.divider.setVisibility(View.GONE);
@@ -87,7 +88,6 @@ public class SetupTabsAdapter extends RecyclerView.Adapter<SetupTabsAdapter.View
 	}
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
-		private final Drawable selectedDrawable;
 		private final ItemListSettingBinding binding;
 		private TabsTemplate template;
 
@@ -100,10 +100,13 @@ public class SetupTabsAdapter extends RecyclerView.Adapter<SetupTabsAdapter.View
 				notifyItemRangeChanged(0, templates.size());
 			});
 
-			var background = new GradientDrawable();
-			background.setCornerRadius(dpPx(16));
-			background.setColor(resolveAttrColor(getContext(binding), com.google.android.material.R.attr.colorOnSecondary));
-			selectedDrawable = background;
+			/* We need only a single instance so we lazily init an shared object */
+			if(selectedDrawable == null) {
+				var background = new GradientDrawable();
+				background.setCornerRadius(dpPx(binding, 16));
+				background.setColor(resolveAttrColor(getContext(binding), com.google.android.material.R.attr.colorOnSecondary));
+				selectedDrawable = background;
+			}
 		}
 
 		public void bind(@NonNull TabsTemplate template) {

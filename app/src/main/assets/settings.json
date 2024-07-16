@@ -213,22 +213,7 @@
 				}
 			]
 		}, {
-			"type": "screen", "title": "about", "icon": "ic_info_filled",
-			"items": [
-				{
-					"key": "app_version", "title": "App Version", "type": "action", "behaviour": "none",
-					"description": "${VAR.APP_VERSION}"
-				}, {
-					"key": "telegram_group",  "type": "action",
-					"title": "Telegram Group", "icon": "ic_telegram"
-				}, {
-					"key": "discord_server", "type": "action",
-					"title": "Discord Server", "icon": "ic_discord"
-				}, {
-					"key": "github_repository", "type": "action",
-					"title": "GitHub Repository", "icon": "ic_github"
-				}
-			]
+			"type": "action", "title": "about", "icon": "ic_info_filled", "key": "about"
 		}, {
 			"type": "screen", "show_if": "never",
 			"title": "What is that? This is an container for prefs, which aren't present in this schema.",

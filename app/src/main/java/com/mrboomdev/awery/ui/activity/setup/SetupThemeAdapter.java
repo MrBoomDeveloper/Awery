@@ -61,9 +61,9 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 				.build(), SingleViewAdapter.fromViewDynamic(parent -> {
 					var recycler = new RecyclerView(context);
 					recycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-					recycler.addItemDecoration(new RecyclerItemDecoration(dpPx(16)));
+					recycler.addItemDecoration(new RecyclerItemDecoration(dpPx(recycler, 16)));
 					recycler.setAdapter(new SetupThemeAdapter(context));
-					setBottomPadding(recycler, dpPx(24));
+					setBottomPadding(recycler, dpPx(recycler, 24));
 					return recycler;
 		}), new SettingsAdapter(new SettingsItem() {
 			private final List<SettingsItem> items = new ArrayList<>();
@@ -100,6 +100,7 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 
 				for(var activity : getActivities(AppCompatActivity.class)) {
 					activity.recreate();
+					ThemeManager.apply(activity);
 				}
 			}
 
@@ -119,7 +120,10 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 			@Override
 			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 				var view = super.onCreateViewHolder(parent, viewType);
-				setHorizontalMargin(view.itemView, dpPx(-16), dpPx(-16));
+				setHorizontalMargin(view.itemView,
+						dpPx(view.itemView, -16),
+						dpPx(view.itemView, -16));
+
 				return view;
 			}
 		});
@@ -137,7 +141,7 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 
 		selectedDrawable = returnWith(() -> {
 			var drawable = new GradientDrawable();
-			drawable.setCornerRadius(dpPx(16));
+			drawable.setCornerRadius(dpPx(context, 16));
 			drawable.setColor(resolveAttrColor(context, com.google.android.material.R.attr.colorOnSecondary));
 			return drawable;
 		});
@@ -156,9 +160,9 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 					ThemeManager.getThemeRes(AwerySettings.ThemeColorPalette_Values.MATERIAL_YOU, isAmoled)),
 					com.google.android.material.R.attr.colorPrimary));
 
-			var layered = new LayerDrawable(new Drawable[]{ color, icon });
+			var layered = new LayerDrawable(new Drawable[] { color, icon });
 			layered.setLayerGravity(1, Gravity.CENTER);
-			layered.setLayerInset(1, dpPx(8), dpPx(8), dpPx(8), dpPx(8));
+			layered.setLayerInset(1, dpPx(context, 8), dpPx(context, 8), dpPx(context, 8), dpPx(context, 8));
 
 			return layered;
 		});
