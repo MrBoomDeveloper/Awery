@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi;
 
+import androidx.annotation.NonNull;
+
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -9,15 +11,23 @@ import java.util.List;
 import java.util.Set;
 
 public class YomiRepoItem {
+	private static final String FILE_NAME = "index.min.json";
 	public List<Source> sources;
 	public String name, pkg, apk, lang, version;
 	public int nsfw;
 
-	public Extension toExtension(YomiManager manager) {
+	public Extension toExtension(YomiManager manager, @NonNull String baseUrl) {
+		var iconUrl = baseUrl.substring(0, baseUrl.indexOf(FILE_NAME)) + "icon/" + pkg + ".png";
+
 		var ext = new Extension(pkg, name, version, apk) {
 			@Override
 			public boolean isNsfw() {
 				return nsfw == 1;
+			}
+
+			@Override
+			public String getRawIcon() {
+				return iconUrl;
 			}
 		};
 

@@ -4,10 +4,12 @@ import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
+import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.with;
@@ -34,6 +36,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.slider.Slider;
 import com.mrboomdev.awery.R;
@@ -651,22 +655,31 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				binding.options.setVisibility(View.VISIBLE);
 			});
 
-			with(setting.getIcon(context), icon -> {
+			if(isUrlValid(setting.getRawIcon())) {
+				binding.icon.setVisibility(View.VISIBLE);
+				clearImageTint(binding.icon);
+
+				Glide.with(getAnyContext())
+						.load(setting.getRawIcon())
+						.transition(DrawableTransitionOptions.withCrossFade())
+						.into(binding.icon);
+			} else {
+				var icon = setting.getIcon(context);
+
 				if(icon == null) {
 					binding.icon.setVisibility(View.GONE);
-					return;
-				}
-
-				binding.icon.setVisibility(View.VISIBLE);
-				binding.icon.setImageDrawable(icon);
-				setScale(binding.icon, setting.getIconSize());
-
-				if(setting.tintIcon()) {
-					setImageTintAttr(binding.icon, com.google.android.material.R.attr.colorOnSecondaryContainer);
 				} else {
-					clearImageTint(binding.icon);
+					binding.icon.setVisibility(View.VISIBLE);
+					binding.icon.setImageDrawable(icon);
+					setScale(binding.icon, setting.getIconSize());
+
+					if(setting.tintIcon()) {
+						setImageTintAttr(binding.icon, com.google.android.material.R.attr.colorOnSecondaryContainer);
+					} else {
+						clearImageTint(binding.icon);
+					}
 				}
-			});
+			}
 
 			updateDescription(null);
 

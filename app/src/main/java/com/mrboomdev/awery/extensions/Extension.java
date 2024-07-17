@@ -81,6 +81,13 @@ public class Extension implements Comparable<Extension> {
 		return null;
 	}
 
+	/**
+	 * May be an url.
+	 */
+	public String getRawIcon() {
+		return null;
+	}
+
 	public List<ExtensionProvider> getProviders() {
 		return providers;
 	}

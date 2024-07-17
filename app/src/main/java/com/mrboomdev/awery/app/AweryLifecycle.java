@@ -226,12 +226,12 @@ public class AweryLifecycle {
 
 	@Nullable
 	public static Activity getActivity(Context context) {
-		while(context instanceof ContextWrapper wrapper) {
-			if(context instanceof Activity activity) {
-				return activity;
-			}
+		if(context instanceof Activity activity) {
+			return activity;
+		}
 
-			context = wrapper.getBaseContext();
+		if(context instanceof ContextWrapper wrapper) {
+			return getActivity(wrapper.getBaseContext());
 		}
 
 		return null;

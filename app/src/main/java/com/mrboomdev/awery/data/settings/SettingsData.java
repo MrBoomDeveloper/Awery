@@ -10,6 +10,7 @@ import static com.mrboomdev.awery.util.io.FileUtil.getFileSize;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -17,6 +18,7 @@ import androidx.core.os.LocaleListCompat;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.mrboomdev.awery.BuildConfig;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
@@ -31,6 +33,7 @@ import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -133,53 +136,53 @@ public class SettingsData {
 	public static void getScreen(
 			AppCompatActivity activity,
 			@NonNull SettingsItem item,
-			Callbacks.Errorable<SettingsItem, Throwable> callback
+			@MainThread Callbacks.Errorable<SettingsItem, Throwable> callback
 	) {
 		var behaviourId = item.getBehaviour();
 
-		if(behaviourId.startsWith("extensions_")) {
-			var manager = ExtensionsFactory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
-				case "extensions_aweryjs" -> JsManager.class;
-				case "extensions_miru" -> MiruManager.class;
-				case "extensions_cloudstream" -> CloudstreamManager.class;
-				case "extensions_aniyomi" -> AniyomiManager.class;
-				case "extensions_tachiyomi" -> TachiyomiManager.class;
-				default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
-			});
+		if(behaviourId != null) {
+			if(behaviourId.startsWith("extensions_")) {
+				var manager = ExtensionsFactory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
+					case "extensions_aweryjs" -> JsManager.class;
+					case "extensions_miru" -> MiruManager.class;
+					case "extensions_cloudstream" -> CloudstreamManager.class;
+					case "extensions_aniyomi" -> AniyomiManager.class;
+					case "extensions_tachiyomi" -> TachiyomiManager.class;
+					default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
+				});
 
-			var screen = new ExtensionSettings(activity, manager);
+				var screen = new ExtensionSettings(activity, manager);
 
-			thread(() -> {
-				screen.loadData();
-				runOnUiThread(() -> callback.onResult(screen, null));
-			});
+				thread(() -> {
+					screen.loadData();
+					runOnUiThread(() -> callback.onResult(screen, null));
+				});
+			} else {
+				switch(behaviourId) {
+					case "tabs" -> thread(() -> {
+						var screen = new TabsSettings();
+						screen.loadData();
+						runOnUiThread(() -> callback.onResult(screen, null));
+					});
 
-			return;
-		}
-
-		if(item instanceof LazySettingsItem lazySettingsItem) {
+					default -> callback.onResult(null,
+							new IllegalArgumentException("Unknown screen: " + behaviourId));
+				}
+			}
+		} else if(item instanceof LazySettingsItem lazySettingsItem) {
 			lazySettingsItem.loadLazily().addCallback(new FutureCallback<>() {
 				@Override
 				public void onSuccess(SettingsItem result) {
-					callback.onSuccess(result);
+					runOnUiThread(() -> callback.onSuccess(result));
 				}
 
 				@Override
 				public void onFailure(@NonNull Throwable t) {
-					callback.onError(t);
+					runOnUiThread(() -> callback.onError(t));
 				}
 			});
 		} else {
-			switch(behaviourId) {
-				case "tabs" -> thread(() -> {
-					var screen = new TabsSettings();
-					screen.loadData();
-					runOnUiThread(() -> callback.onResult(screen, null));
-				});
-
-				default -> callback.onResult(null,
-						new IllegalArgumentException("Unknown screen: " + behaviourId));
-			}
+			callback.onError(new ZeroResultsException("Can't find any items", R.string.no));
 		}
 	}
 }

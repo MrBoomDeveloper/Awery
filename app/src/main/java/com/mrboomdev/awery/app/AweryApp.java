@@ -10,6 +10,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -61,6 +62,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
+import androidx.viewbinding.ViewBinding;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.color.MaterialColors;
@@ -299,6 +301,32 @@ public class AweryApp extends Application {
 
 	public static void toast(@StringRes int res, int duration) {
 		toast(getAnyContext().getString(res), duration);
+	}
+
+	/**
+	 * There is a bug in an appcompat library which sometimes throws an {@link NullPointerException}.
+	 * This method tries to do it without throwing any exceptions.
+	 */
+	public static void setContentViewCompat(@NonNull Activity activity, @NonNull View view) {
+		requireArgument(activity, "activity");
+		requireArgument(view, "view");
+
+		try {
+			activity.setContentView(view);
+		} catch(NullPointerException e) {
+			Log.e(TAG, "Failed to setContentView!", e);
+
+			// Caused by: java.lang.NullPointerException: Attempt to invoke virtual method
+			//     'void androidx.appcompat.widget.ContentFrameLayout.setDecorPadding(int, int, int, int)' on a null object reference
+
+			// at androidx.appcompat.app.AppCompatDelegateImpl.applyFixedSizeWindow(AppCompatDelegateImpl)
+
+			postRunnable(() -> setContentViewCompat(activity, view));
+		}
+	}
+
+	public static void setContentViewCompat(@NonNull Activity activity, @NonNull ViewBinding view) {
+		setContentViewCompat(activity, view.getRoot());
 	}
 
 	/**

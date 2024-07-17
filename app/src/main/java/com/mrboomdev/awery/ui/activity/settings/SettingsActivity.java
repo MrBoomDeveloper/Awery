@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.setContentViewCompat;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
@@ -41,6 +42,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.squareup.moshi.Moshi;
 
@@ -127,8 +129,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		}
 
 		doIfNotNull(createView(item), view -> {
-			setContentView(view.getRoot());
 			view.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+			setContentViewCompat(this, view);
 
 			activityResultLauncher = registerForActivityResult(
 					new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -297,11 +299,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 			setupHeader(binding, item);
 			finishLoading(binding, recyclerAdapter);
-		} else if(item.getBehaviour() != null) {
+		} else {
 			SettingsData.getScreen(this, item, (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
-					toast(e.getMessage(), 0);
+					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(e), this), 0);
 					finish();
 					return;
 				}
@@ -325,9 +327,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
 				}
 			});
-		} else {
-			Log.w(TAG, "Screen has no items, finishing.");
-			finish();
 		}
 
 		return binding;

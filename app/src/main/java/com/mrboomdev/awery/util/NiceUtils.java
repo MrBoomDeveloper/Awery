@@ -87,8 +87,18 @@ public class NiceUtils {
 		return url;
 	}
 
-	public static void checkUrlValidation(String url) throws MalformedURLException, URISyntaxException {
-		new URL(url).toURI();
+	@Contract("null -> false")
+	public static boolean isUrlValid(String url) {
+		if(url == null || url.isBlank()) {
+			return false;
+		}
+
+		try {
+			new URL(url).toURI();
+			return true;
+		} catch(URISyntaxException | MalformedURLException e) {
+			return false;
+		}
 	}
 
 	public static <A> A findRoot(A item, @NonNull Callbacks.Result1<A, A> callback) {
@@ -289,7 +299,7 @@ public class NiceUtils {
 
 	@NonNull
 	@Contract("null, _ -> fail")
-	public static <T> T requireArgument(T o, String name) {
+	public static <T> T requireArgument(T o, String name) throws NullPointerException {
 		if(o == null) {
 			throw new NullPointerException("An required argument \"" + name + "\" was not specified!");
 		}
@@ -297,7 +307,7 @@ public class NiceUtils {
 		return o;
 	}
 
-	public static <T> T requireArgument(Intent intent, String name, Class<T> clazz) {
+	public static <T> T requireArgument(Intent intent, String name, Class<T> clazz) throws NullPointerException {
 		Object result;
 
 		if(clazz == String.class) result = intent.getStringExtra(name);
@@ -338,7 +348,7 @@ public class NiceUtils {
 		return clazz.cast(result);
 	}
 
-	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) {
+	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) throws NullPointerException {
 		var val = fromJs(o.get(name, o), type);
 		requireArgument(val, name);
 		return val;

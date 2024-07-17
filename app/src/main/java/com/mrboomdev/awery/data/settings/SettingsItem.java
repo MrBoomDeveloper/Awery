@@ -105,7 +105,7 @@ public class SettingsItem implements Serializable {
 		this.restart = item.isRestartRequired();
 		this.showIf = item.showIf;
 
-		this.icon = item.icon;
+		this.icon = item.getRawIcon();
 		this.iconDrawable = item.iconDrawable;
 		this.tintIcon = item.tintIcon;
 		this.iconSize = item.iconSize;
@@ -118,6 +118,10 @@ public class SettingsItem implements Serializable {
 
 		this.parentKey = item.parentKey;
 		this.parent = item.parent;
+	}
+
+	public String getRawIcon() {
+		return icon;
 	}
 
 	public void setAsParentForChildren() {

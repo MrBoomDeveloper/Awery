@@ -265,7 +265,7 @@ public abstract class YomiManager extends ExtensionsManager {
 							Parser.getAdapter(List.class, YomiRepoItem.class), response.getText());
 
 					callback.onResult(stream(list)
-							.map(item -> item.toExtension(YomiManager.this))
+							.map(item -> item.toExtension(YomiManager.this, url))
 							.toList(), null);
 				} catch(IOException e) {
 					callback.onError(new InvalidSyntaxException("This is not an valid repository link!", e));

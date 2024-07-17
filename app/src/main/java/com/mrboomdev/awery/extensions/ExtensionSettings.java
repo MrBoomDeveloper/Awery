@@ -7,12 +7,12 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.util.NiceUtils.checkUrlValidation;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
+import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -50,8 +50,6 @@ import com.squareup.moshi.Json;
 
 import org.jetbrains.annotations.Contract;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -184,14 +182,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								return;
 							}
 
-							try {
-								checkUrlValidation(text);
-							} catch(MalformedURLException e) {
-								Log.e(TAG, "Illegal URL!", e);
-								inputField.setError(R.string.invalid_url);
-								return;
-							} catch(URISyntaxException e) {
-								Log.e(TAG, "Invalid URL!", e);
+							if(!isUrlValid(text)) {
 								inputField.setError(R.string.invalid_url);
 								return;
 							}
@@ -308,6 +299,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 	private class RepositorySetting extends CustomSettingsItem implements LazySettingsItem {
 		private final DBRepository repository;
+		private List<? extends SettingsItem> items;
 
 		private final List<SettingsItem> actionItems = List.of(
 				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
@@ -360,12 +352,68 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			return actionItems;
 		}
 
+		@Override
+		public List<? extends SettingsItem> getItems() {
+			return items;
+		}
+
 		@NonNull
 		@Contract(" -> new")
 		@Override
 		public AsyncFuture<SettingsItem> loadLazily() {
-			// TODO: 7/17/2024 Load items
-			return AsyncUtils.futureNow(null);
+			return AsyncUtils.controllableFuture(future ->
+					manager.getRepository(repository.url, (extensions, throwable) -> {
+						if(throwable != null) {
+							future.fail(throwable);
+							return;
+						}
+
+						items = stream(extensions)
+								.map(RepositoryItem::new)
+								.toList();
+
+						future.complete(this);
+					}));
+		}
+	}
+
+	private static class RepositoryItem extends CustomSettingsItem {
+		private final Extension extension;
+
+		public RepositoryItem(Extension extension) {
+			super(SettingsItemType.ACTION);
+			this.extension = extension;
+		}
+
+		@Override
+		public String getTitle(Context context) {
+			return extension.getName();
+		}
+
+		@Override
+		public String getDescription(Context context) {
+			var result = extension.getVersion();
+
+			if(extension.isNsfw()) {
+				result += " (Nsfw)";
+			}
+
+			return result;
+		}
+
+		@Override
+		public String getRawIcon() {
+			return extension.getRawIcon();
+		}
+
+		@Override
+		public boolean tintIcon() {
+			return false;
+		}
+
+		@Override
+		public void onClick(Context context) {
+			// TODO: 7/17/2024 Download and install an extension
 		}
 	}
 
@@ -378,6 +426,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 			var description = extension.getVersion() != null
 					? ("v" + extension.getVersion()) : extension.getErrorTitle();
+
+			if(extension.isNsfw()) {
+				description += " (Nsfw)";
+			}
 
 			var items = new ArrayList<>(Arrays.asList(stream(extension.getProviders()).map(provider ->
 					returnWith(AsyncUtils.<SettingsItem>awaitResult(breaker ->
