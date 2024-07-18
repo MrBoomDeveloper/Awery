@@ -60,8 +60,8 @@ public class MediaUtils {
 
 	public static void launchMediaActivity(Context context, @NonNull CatalogMedia media, String action) {
 		var intent = new Intent(context, MediaActivity.class);
-		intent.putExtra("media", media.toString());
-		intent.putExtra("action", action);
+		intent.putExtra(MediaActivity.EXTRA_MEDIA, media);
+		intent.putExtra(MediaActivity.EXTRA_ACTION, action);
 		context.startActivity(intent);
 	}
 

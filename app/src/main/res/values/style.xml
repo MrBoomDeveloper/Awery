@@ -27,7 +27,7 @@
         <item name="android:padding">8dp</item>
         <item name="android:tint">?attr/colorOnSecondaryContainer</item>
         <item name="android:backgroundTint">?attr/colorSecondaryContainer</item>
-        <item name="android:background">@drawable/button_popup_background</item>
-        <item name="android:foreground">@drawable/button_popup_foreground</item>
+        <item name="android:background">@drawable/ui_button_popup_background</item>
+        <item name="android:foreground">@drawable/ui_button_popup_foreground</item>
     </style>
 </resources>

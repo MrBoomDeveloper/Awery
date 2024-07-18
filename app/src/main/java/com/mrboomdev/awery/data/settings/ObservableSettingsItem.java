@@ -24,14 +24,18 @@ public interface ObservableSettingsItem {
 		__OBSERVERS.invokeObservers(this, observer -> observer.onSettingRemoval(item));
 	}
 
-	default void onSettingChange(SettingsItem item, int position) {
-		__OBSERVERS.invokeObservers(this, observer -> observer.onSettingChange(item, position));
+	default void onSettingChange(SettingsItem newItem, SettingsItem oldItem) {
+		__OBSERVERS.invokeObservers(this, observer -> observer.onSettingChange(newItem, oldItem));
+	}
+
+	default void onSettingChange(SettingsItem item) {
+		onSettingChange(item, item);
 	}
 
 	interface Observer {
 		default void onSettingAddition(SettingsItem item, int position) {}
 		default void onSettingRemoval(SettingsItem item) {}
-		default void onSettingChange(SettingsItem item, int position) {}
+		default void onSettingChange(SettingsItem newItem, SettingsItem oldItem) {}
 	}
 
 	/**

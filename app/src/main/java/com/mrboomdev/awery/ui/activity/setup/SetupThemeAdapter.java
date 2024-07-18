@@ -231,7 +231,7 @@ public class SetupThemeAdapter extends RecyclerView.Adapter<SetupThemeAdapter.Vi
 			this.theme = theme;
 
 			binding.getRoot().setBackground(this.theme == selected ? selectedDrawable
-					: ContextCompat.getDrawable(context, R.drawable.button_popup_background));
+					: ContextCompat.getDrawable(context, R.drawable.ui_button_popup_background));
 
 			if(theme.palette == AwerySettings.ThemeColorPalette_Values.MATERIAL_YOU) {
 				binding.getRoot().setImageDrawable(materialYouDrawable);

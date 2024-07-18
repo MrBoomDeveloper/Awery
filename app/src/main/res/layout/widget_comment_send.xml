@@ -73,7 +73,7 @@
             app:layout_constraintTop_toTopOf="@id/input"
             app:layout_constraintRight_toRightOf="@id/input"
             app:layout_constraintBottom_toBottomOf="@id/input"
-            android:background="@drawable/widget_comment_send_background" />
+            android:background="@drawable/ui_comment_send_background" />
 
         <EditText
             android:id="@+id/input"
@@ -101,8 +101,8 @@
             android:focusable="true"
             android:src="@drawable/ic_send_outlined"
             android:backgroundTint="?attr/colorSecondaryContainer"
-            android:background="@drawable/button_popup_background"
-            android:foreground="@drawable/button_popup_foreground"
+            android:background="@drawable/ui_button_popup_background"
+            android:foreground="@drawable/ui_button_popup_foreground"
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintHeight_max="38dp"
             android:padding="8dp"

@@ -1,10 +1,14 @@
 package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
@@ -45,7 +49,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class MediaActivity extends AppCompatActivity {
-	private static final String TAG = "MediaActivity";
+	public static final String EXTRA_MEDIA = "media";
+	public static final String EXTRA_ACTION = "action";
 	private ScreenMediaDetailsBinding binding;
 	private MediaCommentsFragment commentsFragment;
 	private CatalogMedia media;
@@ -63,16 +68,19 @@ public class MediaActivity extends AppCompatActivity {
 		binding.pager.setPageTransformer(new FadeTransformer());
 		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.navigation, insets -> {
-			var nav = (NavigationBarView) binding.navigation;
-			nav.setBackgroundTintList(ColorStateList.valueOf(SurfaceColors.SURFACE_2.getColor(this)));
-			getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
-
-			if(nav instanceof NavigationRailView) {
-				nav.setPadding(insets.left, insets.top, 0, 0);
+		setOnApplyUiInsetsListener(binding.navigation, insets -> {
+			if(AwerySettings.USE_AMOLED_THEME.getValue()) {
+				binding.navigation.setBackgroundColor(0xff000000);
+				getWindow().setNavigationBarColor(isLandscape() ? 0 : 0xff000000);
 			} else {
-				setBottomPadding(nav, insets.bottom, false);
-				getWindow().setNavigationBarColor(SurfaceColors.SURFACE_2.getColor(this));
+				binding.navigation.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this));
+				getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
+			}
+
+			if(binding.navigation instanceof NavigationRailView) {
+				binding.navigation.setPadding(insets.left, insets.top, 0, 0);
+			} else {
+				binding.navigation.setPadding(0, 0, 0, insets.bottom);
 			}
 
 			return true;
@@ -91,14 +99,7 @@ public class MediaActivity extends AppCompatActivity {
 			binding.navigation.setBackgroundColor(0x00000000);
 		}
 
-		try {
-			var json = getIntent().getStringExtra("media");
-			setMedia(Parser.fromString(CatalogMedia.class, json));
-		} catch(IOException e) {
-			toast("Failed to load media!", 1);
-			Log.e(TAG, "Failed to load media!", e);
-			finish();
-		}
+		setMedia((CatalogMedia) getIntent().getSerializableExtra(EXTRA_MEDIA));
 	}
 
 	public static void handleOptionsClick(@NonNull View anchor, @NonNull CatalogMedia media) {
@@ -121,7 +122,7 @@ public class MediaActivity extends AppCompatActivity {
 	}
 
 	@SuppressLint("NonConstantResourceId")
-	public void setMedia(CatalogMedia media) {
+	public void setMedia(@NonNull CatalogMedia media) {
 		this.media = media;
 		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
 
@@ -138,7 +139,13 @@ public class MediaActivity extends AppCompatActivity {
 			return true;
 		});
 
-		launchAction(Objects.requireNonNull(getIntent().getStringExtra("action")));
+		if(media.type == CatalogMedia.MediaType.POST || media.type == CatalogMedia.MediaType.BOOK) {
+			var item = navigation.getMenu().findItem(R.id.watch);
+			item.setIcon(R.drawable.ic_book);
+			item.setTitle(R.string.read);
+		}
+
+		launchAction(Objects.requireNonNull(getIntent().getStringExtra(EXTRA_ACTION)));
 		setContentView(binding.getRoot());
 	}
 

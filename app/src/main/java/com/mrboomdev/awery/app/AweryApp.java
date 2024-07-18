@@ -27,7 +27,6 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -60,6 +59,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
@@ -429,8 +429,7 @@ public class AweryApp extends Application {
 
 	public static void openUrl(@NonNull Context context, String url) {
 		try {
-			var intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-			context.startActivity(intent);
+			new CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(url));
 		} catch(ActivityNotFoundException e) {
 			Log.e(TAG, "Cannot open url!", e);
 
@@ -491,6 +490,7 @@ public class AweryApp extends Application {
 		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
 		ThemeManager.applyApp(this);
+		setupStrictMode();
 		super.onCreate();
 
 		// Note: I'm so sorry. I've just waste the whole day to try fixing THIS SHIT!!!!
@@ -526,9 +526,6 @@ public class AweryApp extends Application {
 			}
 		}
 
-		setupStrictMode();
-		ExtensionsFactory.init(this);
-
 		if(AwerySettings.LAST_OPENED_VERSION.getValue() < 1) {
 			thread(() -> {
 				getDatabase().getListDao().insert(
@@ -544,6 +541,8 @@ public class AweryApp extends Application {
 				getPrefs().setValue(AwerySettings.LAST_OPENED_VERSION, 1).saveSync();
 			});
 		}
+
+		ExtensionsFactory.init(this);
 	}
 
 	public static int getOrientation() {

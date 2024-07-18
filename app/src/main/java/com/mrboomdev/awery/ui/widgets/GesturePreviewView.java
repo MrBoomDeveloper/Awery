@@ -46,7 +46,7 @@ public class GesturePreviewView extends FrameLayout {
 		linearView = new LinearLayoutCompat(context);
 		linearView.setOrientation(LinearLayoutCompat.VERTICAL);
 		linearView.setGravity(Gravity.CENTER_HORIZONTAL);
-		linearView.setBackgroundResource(R.drawable.view_gesture_background);
+		linearView.setBackgroundResource(R.drawable.ui_gesture_background);
 		addView(linearView, ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 
 		if(alpha != -1) {
@@ -61,7 +61,7 @@ public class GesturePreviewView extends FrameLayout {
 		progressParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
 
 		progressView = new AppCompatImageView(context);
-		progressView.setImageResource(R.drawable.view_gesture_foreground);
+		progressView.setImageResource(R.drawable.ui_gesture_foreground);
 		progressWrapperView.addView(progressView, progressParams);
 
 		iconView = new AppCompatImageView(context);

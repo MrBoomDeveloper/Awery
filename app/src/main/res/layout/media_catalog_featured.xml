@@ -26,7 +26,7 @@
         android:layout_height="0dp"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
-        android:src="@drawable/linear_gradient_bg"
+        android:src="@drawable/gradient_linear_bg"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

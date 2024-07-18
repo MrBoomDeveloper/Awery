@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Application;
@@ -7,7 +8,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.js.JsManager;
@@ -59,7 +59,7 @@ public class ExtensionsFactory {
 
 			Log.e(TAG, "");
 			Log.e(TAG, text);
-			AweryApp.toast(text);
+			toast(text);
 		}
 	}
 

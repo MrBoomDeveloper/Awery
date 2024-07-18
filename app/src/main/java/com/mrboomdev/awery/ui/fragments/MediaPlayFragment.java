@@ -245,7 +245,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					case BROKEN_PARSER -> R.drawable.ic_round_error_24;
 					case SERVER_DOWN -> R.drawable.ic_round_block_24;
 					case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
-					case NOT_FOUND -> R.drawable.round_exposure_zero_24;
+					case NOT_FOUND -> R.drawable.ic_zero;
 					case NONE -> null;
 				};
 

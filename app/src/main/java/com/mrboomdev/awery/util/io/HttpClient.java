@@ -143,16 +143,12 @@ public class HttpClient {
 			return form;
 		}
 
-		public void call(Context context, HttpCallback callback) {
-			call(context, callback, true);
-		}
-
 		public void callAsync(Context context, HttpCallback callback) {
-			thread(() -> call(context, callback, false));
+			thread(() -> call(context, callback));
 		}
 
-		private void call(Context context, HttpCallback callback, boolean check) {
-			if(check) checkFields();
+		private void call(Context context, HttpCallback callback) {
+			checkFields();
 
 			try {
 				HttpClient.call(context, this, callback);

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.snackbar;
 import static com.mrboomdev.awery.app.AweryApp.toast;
@@ -162,13 +163,17 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				}
 
 				@Override
-				public void onSettingChange(SettingsItem item, int position) {
-					var oldSetting = items.set(position, item);
+				public void onSettingChange(SettingsItem newItem, SettingsItem oldItem) {
+					var index = items.indexOf(oldItem);
 
-					var id = ids.get(oldSetting);
-					ids.put(item, id);
+					if(newItem != oldItem) {
+						items.set(index, newItem);
 
-					notifyItemChanged(position);
+						ids.remove(oldItem);
+						ids.put(newItem, ids.get(oldItem));
+					}
+
+					notifyItemChanged(index);
 				}
 			});
 		}
@@ -209,9 +214,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 		var holder = new ViewHolder(binding);
 
 		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-			setRightPadding(binding.getRoot(), insets.right);
+			setRightPadding(binding.getRoot(), isLandscape(context) ? insets.right : dpPx(binding, 16));
 			return false;
-		});
+		}, parent);
 
 		binding.getRoot().setOnClickListener(view -> {
 			var setting = holder.getItem();
@@ -626,10 +631,12 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			with(setting.getActionItems(), items -> {
 				if(items == null || items.isEmpty()) {
 					binding.options.setVisibility(View.GONE);
+					binding.secondAction.setVisibility(View.GONE);
 					return;
 				}
 
-				if(items.size() > 1) {
+				if(items.size() > 2) {
+					binding.secondAction.setVisibility(View.GONE);
 					binding.options.setImageResource(R.drawable.ic_round_dots_vertical_24);
 
 					binding.options.setOnClickListener(v -> {
@@ -650,6 +657,13 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					var action = items.get(0);
 					binding.options.setImageDrawable(action.getIcon(context));
 					binding.options.setOnClickListener(v -> action.onClick(context));
+
+					if(items.size() == 2) {
+						var secondAction = items.get(1);
+						binding.secondAction.setImageDrawable(secondAction.getIcon(context));
+						binding.secondAction.setOnClickListener(v -> secondAction.onClick(context));
+						binding.secondAction.setVisibility(View.VISIBLE);
+					}
 				}
 
 				binding.options.setVisibility(View.VISIBLE);

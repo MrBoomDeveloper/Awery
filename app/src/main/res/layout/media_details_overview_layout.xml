@@ -34,7 +34,7 @@
             app:layout_constraintBottom_toBottomOf="@id/banner"
             android:scaleType="fitXY"
             android:visibility="visible"
-            android:src="@drawable/linear_gradient_bg"
+            android:src="@drawable/gradient_linear_bg"
             android:importantForAccessibility="no" />
 
         <androidx.cardview.widget.CardView

@@ -91,31 +91,24 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 				manager.addExtension(activity, extension);
 				extensions = List.copyOf(manager.getAllExtensions());
-				var setting = new ExtensionSetting(activity, extension);
+				var newItem = new ExtensionSetting(activity, extension);
 
 				if(hasExisted) {
 					toast("Extension updated successfully!");
 
-					var oldSetting = stream(getItems())
-							.filter(item -> {
-								if(item instanceof ExtensionSetting extensionSetting) {
-									return extensionSetting.getExtension().getId().equals(extension.getId());
-								}
+					var oldItem = find(getItems(), item ->
+							item instanceof ExtensionSetting setting &&
+							setting.getExtension().getId().equals(extension.getId()));
 
-								return false;
-							})
-							.map(item -> (ExtensionSetting) item)
-							.findAny().orElse(null);
-
-					var index = getItems().indexOf(oldSetting);
-					onSettingChange(setting, index);
+					onSettingChange(newItem, oldItem);
 				} else {
 					toast("Extension installed successfully!");
-					onSettingAddition(setting, extensions.indexOf(extension));
 
 					if(extensions.size() == 1) {
 						onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
 					}
+
+					onSettingAddition(newItem, extensions.size() + (repos.isEmpty() ? 0 : repos.size() + 1));
 				}
 
 				if(currentDialog != null) {
@@ -303,7 +296,16 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		private final List<SettingsItem> actionItems = List.of(
 				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
-						.setTitle("Delete").setIcon("ic_delete_outlined").build()) {
+						.setTitle("Copy to clipboard").setIcon(R.drawable.ic_share_filled).build()) {
+
+					@Override
+					public void onClick(Context context) {
+						copyToClipboard(repository.url, repository.url);
+					}
+				},
+
+				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
+						.setTitle(R.string.delete).setIcon(R.drawable.ic_delete_outlined).build()) {
 
 					@Override
 					public void onClick(Context context) {
@@ -324,15 +326,6 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								window.dismiss();
 							});
 						});
-					}
-				},
-
-				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
-						.setTitle("Copy to clipboard").setIcon("ic_share_outlined").build()) {
-
-					@Override
-					public void onClick(Context context) {
-						copyToClipboard(repository.url, repository.url);
 					}
 				}
 		);

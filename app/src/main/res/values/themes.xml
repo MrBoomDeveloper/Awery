@@ -7,6 +7,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="android:popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
+
         <item name="navbarColor">@color/grey_nav</item>
         <item name="android:fontFamily">@font/poppins</item>
 
@@ -27,16 +29,6 @@
     <style name="Theme.Awery.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="DialogTheme" parent="Theme.Awery">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@drawable/shape_corner_16dp</item>
     </style>
 
     <style name="Theme.Awery.Blue" parent="Theme.Base">

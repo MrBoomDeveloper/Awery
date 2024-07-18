@@ -23,7 +23,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -177,8 +176,6 @@ public class MainActivity extends AppCompatActivity {
 
 				case MATERIAL -> {
 					var nav = (NavigationBarView) binding.navbarMaterial;
-					nav.setBackgroundTintList(ColorStateList.valueOf(SurfaceColors.SURFACE_2.getColor(this)));
-					getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
 
 					for(int i = 0; i < tabs.size(); i++) {
 						var tab = tabs.get(i);
@@ -228,17 +225,23 @@ public class MainActivity extends AppCompatActivity {
 		binding.pages.setUserInputEnabled(false);
 		binding.pages.setPageTransformer(new FadeTransformer());
 
-		if(AwerySettings.USE_AMOLED_THEME.getValue()) {
-			binding.navbarMaterial.setBackgroundColor(0x00000000);
+		if(getNavigationStyle() == AwerySettings.NavigationStyle_Values.MATERIAL) {
+			if(AwerySettings.USE_AMOLED_THEME.getValue()) {
+				binding.navbarMaterial.setBackgroundColor(0xff000000);
+				getWindow().setNavigationBarColor(isLandscape() ? 0 : 0xff000000);
+			} else {
+				binding.navbarMaterial.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this));
+				getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
+			}
+
+			setOnApplyUiInsetsListener(binding.navbarMaterial, insets -> {
+				setTopPadding(binding.navbarMaterial, (binding.navbarMaterial instanceof NavigationRailView) ? insets.top : 0);
+
+				setLeftPadding(binding.navbarMaterial, insets.left);
+				setBottomPadding(binding.navbarMaterial, insets.bottom);
+				return true;
+			});
 		}
-
-		setOnApplyUiInsetsListener(binding.navbarMaterial, insets -> {
-			setTopPadding(binding.navbarMaterial, (binding.navbarMaterial instanceof NavigationRailView) ? insets.top : 0);
-
-			setLeftPadding(binding.navbarMaterial, insets.left);
-			setBottomPadding(binding.navbarMaterial, insets.bottom);
-			return true;
-		});
 
 		setOnApplyUiInsetsListener(binding.bottomSideBarrier, insets -> {
 			setBottomMargin(binding.bottomSideBarrier, insets.bottom);

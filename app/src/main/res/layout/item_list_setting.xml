@@ -47,7 +47,7 @@
         android:textSize="16sp"
         android:textColor="?attr/colorOnBackground"
         app:layout_constraintLeft_toRightOf="@id/icon"
-        app:layout_constraintRight_toLeftOf="@id/toggle"
+        app:layout_constraintRight_toLeftOf="@id/actions"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
         app:layout_goneMarginLeft="18dp"
         tools:text="This is an complex multiline setting title" />
@@ -65,46 +65,62 @@
         tools:text="My awesome super puper duper setting description."
         tools:visibility="visible" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/toggle"
-        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+    <LinearLayout
+        android:id="@+id/actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="0dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="-10dp"
-        android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline" />
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline">
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"/>
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/toggle"
+            style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-    <ImageView
-        android:id="@+id/options"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:importantForAccessibility="no"
-        android:padding="10dp"
-        android:layout_marginTop="-10dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="@drawable/ripple_circle_white"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
-        android:visibility="gone"
-        tools:src="@drawable/ic_round_dots_vertical_24"
-        tools:visibility="visible"
-        app:tint="?attr/colorAccent" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/options"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:importantForAccessibility="no"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/ripple_circle_white"
+            android:visibility="gone"
+            tools:src="@drawable/ic_round_dots_vertical_24"
+            tools:visibility="visible"
+            app:tint="?attr/colorAccent" />
+
+        <ImageView
+            android:id="@+id/secondAction"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="8dp"
+            android:importantForAccessibility="no"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/ripple_circle_white"
+            app:tint="?attr/colorAccent"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:src="@drawable/ic_delete_outlined" />
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_guideline"

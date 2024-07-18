@@ -1,9 +1,11 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.setContentViewCompat;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -11,6 +13,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.content.Context;
@@ -20,10 +23,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,10 +47,8 @@ import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
@@ -61,8 +58,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 	private static final Map<Long, SettingsItem> payloads = new HashMap<>();
 	private static final UniqueIdGenerator payloadIdGenerator = new UniqueIdGenerator();
 	private static WeakReference<RecyclerView.RecycledViewPool> viewPool;
-	private final List<ActivityResultCallback<ActivityResult>> callbacks = new ArrayList<>();
-	private ActivityResultLauncher<Intent> activityResultLauncher;
 	private ScreenSettingsBinding binding;
 	private EmptyView emptyView;
 
@@ -131,13 +126,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		doIfNotNull(createView(item), view -> {
 			view.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
 			setContentViewCompat(this, view);
-
-			activityResultLauncher = registerForActivityResult(
-					new ActivityResultContracts.StartActivityForResult(), result -> {
-						for(var callback : callbacks) {
-							callback.onActivityResult(result);
-						}
-					});
 		});
 	}
 
@@ -152,21 +140,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				payloads.remove(payloadId);
 			}
 		}
-
-		callbacks.clear();
-		activityResultLauncher = null;
-	}
-
-	public void addActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
-		callbacks.add(callback);
-	}
-
-	public void removeActivityResultCallback(ActivityResultCallback<ActivityResult> callback) {
-		callbacks.remove(callback);
-	}
-
-	public ActivityResultLauncher<Intent> getActivityResultLauncher() {
-		return activityResultLauncher;
 	}
 
 	private void setupHeader(@NonNull ScreenSettingsBinding binding, @NonNull SettingsItem item) {
@@ -275,7 +248,11 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 		setOnApplyUiInsetsListener(binding.header, insets -> {
 			setTopPadding(binding.header, insets.top + dpPx(binding.header, 8));
 			setHorizontalPadding(binding.header, insets.left, insets.right);
-			return false;
+
+			setRightMargin(binding.actions, isLandscape(getContext(binding))
+					? dpPx(binding.actions, 18) : 0);
+
+			return true;
 		});
 
 		if(item.getItems() != null) {

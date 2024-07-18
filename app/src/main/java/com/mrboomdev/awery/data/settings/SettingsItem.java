@@ -7,6 +7,7 @@ import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -195,11 +196,11 @@ public class SettingsItem implements Serializable {
 
 	public Drawable getIcon(@NonNull Context context) {
 		if(iconDrawable != null) return iconDrawable;
-		if(icon == null) return null;
+		if(getRawIcon() == null) return null;
 
 		try {
 			var clazz = R.drawable.class;
-			var field = clazz.getField(icon);
+			var field = clazz.getField(getRawIcon());
 			var id = field.getInt(null);
 
 			return AppCompatResources.getDrawable(context, id);
@@ -429,6 +430,10 @@ public class SettingsItem implements Serializable {
 		public Builder setIcon(String icon) {
 			item.icon = icon;
 			return this;
+		}
+		
+		public Builder setIcon(@DrawableRes int res) {
+			return setIcon(getAnyContext().getResources().getResourceEntryName(res));
 		}
 
 		public Builder setValue(Set<String> values) {

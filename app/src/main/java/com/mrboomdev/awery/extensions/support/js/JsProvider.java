@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.createObject;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
@@ -16,13 +16,12 @@ import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.await;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -37,7 +36,6 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -45,11 +43,11 @@ import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
-import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -184,7 +182,7 @@ public class JsProvider extends ExtensionProvider {
 			});
 
 			reload.run();
-			while(isLoggedIn.get() == null);
+			await(() -> isLoggedIn.get() != null);
 
 			root.addItem(new CustomSettingsItem(SettingsItemType.ACTION) {
 
@@ -204,7 +202,7 @@ public class JsProvider extends ExtensionProvider {
 							public void onSuccess(Boolean aBoolean) {
 								toast("Logged out successfully");
 								reload.run();
-								runOnUiThread(() -> root.onSettingChange(setting, 0));
+								runOnUiThread(() -> root.onSettingChange(setting));
 							}
 
 							@Override
@@ -218,47 +216,39 @@ public class JsProvider extends ExtensionProvider {
 
 							@Override
 							public void onSuccess(Map<String, String> stringStringMap) {
-								if(getActivity(context) instanceof SettingsActivity settingsActivity) {
-									settingsActivity.addActivityResultCallback(new ActivityResultCallback<>() {
-										@Override
-										public void onActivityResult(ActivityResult result) {
-											settingsActivity.removeActivityResultCallback(this);
-											if(result.getResultCode() != Activity.RESULT_OK) return;
+								var intent = new Intent(context, LoginActivity.class);
 
-											var params = new HashMap<String, String>();
-											var data = Objects.requireNonNull(result.getData()).getExtras();
+								for(var entry : stringStringMap.entrySet()) {
+									intent.putExtra(entry.getKey(), entry.getValue());
+								}
 
-											for(var key : Objects.requireNonNull(data).keySet()) {
-												params.put(key, data.getString(key));
-											}
+								runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, result) -> {
+									if(resultCode != Activity.RESULT_OK) return;
 
-											login(params, new ResponseCallback<>() {
-												@Override
-												public void onSuccess(Boolean aBoolean) {
-													toast("Logged in successfully");
-													reload.run();
-													runOnUiThread(() -> root.onSettingChange(setting, 0));
-												}
+									var params = new HashMap<String, String>();
+									var data = result.getExtras();
 
-												@Override
-												public void onFailure(Throwable e) {
-													Log.e(TAG, "Failed to login", e);
-													toast("Failed to login");
-												}
-											});
-										}
-									});
-
-									var intent = new Intent(context, LoginActivity.class);
-
-									for(var entry : stringStringMap.entrySet()) {
-										intent.putExtra(entry.getKey(), entry.getValue());
+									for(var key : Objects.requireNonNull(data).keySet()) {
+										params.put(key, data.getString(key));
 									}
 
-									settingsActivity.getActivityResultLauncher().launch(intent);
-								} else {
-									throw new IllegalArgumentException("Activity is not a SettingsActivity!");
-								}
+									login(params, new ResponseCallback<>() {
+										@Override
+										public void onSuccess(Boolean aBoolean) {
+											if(!aBoolean) return;
+
+											toast("Logged in successfully");
+											reload.run();
+											runOnUiThread(() -> root.onSettingChange(setting));
+										}
+
+										@Override
+										public void onFailure(Throwable e) {
+											Log.e(TAG, "Failed to login", e);
+											toast("Failed to login");
+										}
+									});
+								}));
 							}
 
 							@Override

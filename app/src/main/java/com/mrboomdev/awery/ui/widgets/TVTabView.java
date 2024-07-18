@@ -28,7 +28,7 @@ public class TVTabView extends FrameLayout {
 		setFocusable(true);
 
 		background = new AppCompatImageView(context);
-		background.setImageResource(R.drawable.view_tv_tab_background);
+		background.setImageResource(R.drawable.ui_tv_tab_background);
 		addView(background, ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 
 		title = new AppCompatTextView(context);
