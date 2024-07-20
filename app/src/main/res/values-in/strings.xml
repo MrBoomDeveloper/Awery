@@ -92,4 +92,14 @@
 \n
 \n - Jika ada masalah pelanggaran internet, silakan hubungi situs web sumber. Pengembang tidak memikul tanggung jawab hukum apa pun.</string>
     <string name="video_info_info">Menunjukkan Resolusi video yang sedang diputar, berguna untuk server <b>\"Multi Kualitas\"</b>.</string>
+    <string name="relations">Relasi</string>
+    <string name="roles">Peran</string>
+    <string name="details">Detil</string>
+    <string name="ep">Episode</string>
+    <string name="chaps">Bab</string>
+    <string name="chap">Bab</string>
+    <string name="filler">Filler</string>
+    <string name="tag">Tag</string>
+    <string name="tags">Tag</string>
+    <string name="synonyms">Sinonim</string>
 </resources>
