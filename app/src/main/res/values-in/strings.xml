@@ -102,4 +102,9 @@
     <string name="tag">Tag</string>
     <string name="tags">Tag</string>
     <string name="synonyms">Sinonim</string>
+    <string name="player_settings">Pengaturan Pemutar</string>
+    <string name="player">Pemutar</string>
+    <string name="download_manager_select">Manajer Download</string>
+    <string name="reader_settings">Pengaturan Pembaca</string>
+    <string name="immersive_mode_info">Membutuhkan restart Aplikasi untuk diterapkan sepenuhnya.</string>
 </resources>
