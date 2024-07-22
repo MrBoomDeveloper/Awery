@@ -107,4 +107,24 @@
     <string name="download_manager_select">Manajer Download</string>
     <string name="reader_settings">Pengaturan Pembaca</string>
     <string name="immersive_mode_info">Membutuhkan restart Aplikasi untuk diterapkan sepenuhnya.</string>
+    <string name="trailer">Cuplikan</string>
+    <string name="opening">Pembukaan</string>
+    <string name="ending">Akhir</string>
+    <string name="prequel">Prekuel</string>
+    <string name="sequel">Sekuel</string>
+    <string name="downloads">Unduh</string>
+    <string name="extensions">Ekstensi</string>
+    <string name="default_source">Sumber Default</string>
+    <string name="about">Tentang</string>
+    <string name="ui">Antarmuka Pengguna</string>
+    <string name="devs">Pengembang</string>
+    <string name="common">Umum</string>
+    <string name="theme">Tema</string>
+    <string name="video">Video</string>
+    <string name="default_quality_info">Secara otomatis menggunakan kualitas terdekat yang disediakan secara default, HANYA diterapkan untuk Server \"Multi Kualitas\". Perubahan otomatis saat memutar video.</string>
+    <string name="default_playback_speed">Kecepatan Pemutaran Default: %1$s</string>
+    <string name="width">Lebar</string>
+    <string name="resize_mode_button">Mode Pengubahan Ukuran Default</string>
+    <string name="subtitles">Takrarir</string>
+    <string name="height">Panjang</string>
 </resources>
