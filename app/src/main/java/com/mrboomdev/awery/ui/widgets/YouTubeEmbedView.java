@@ -1,17 +1,33 @@
 package com.mrboomdev.awery.ui.widgets;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
+
 import android.content.Context;
 import android.graphics.Color;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.AspectRatioFrameLayout;
 
+import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.io.HttpCacheMode;
 import com.mrboomdev.awery.util.io.HttpClient;
-import com.squareup.moshi.Moshi;
+import com.mrboomdev.awery.util.io.HttpRequest;
+import com.mrboomdev.awery.util.io.HttpResponse;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class YouTubeEmbedView extends FrameLayout {
 	private static final String TAG = "YouTubeEmbedView";
@@ -21,51 +37,83 @@ public class YouTubeEmbedView extends FrameLayout {
 	private static final String YOUTUBE_DOMAIN = "youtube.com";
 	private static final String YOUTUBE_MOBILE_SUBDOMAIN = "m.";
 	private static final String WWW = "www.";
+	private static final int CACHE_DURATION = 60 * 60 * 1000;
+	private final ExoPlayer player;
 
-	public YouTubeEmbedView(@NonNull Context context) {
-		super(context);
+	@OptIn(markerClass = UnstableApi.class)
+	public YouTubeEmbedView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		super(context, attrs, defStyleAttr, defStyleRes);
 
 		setBackgroundColor(Color.BLACK);
-		createLoadingUi();
+
+		var ratioView = new AspectRatioFrameLayout(context);
+		addView(ratioView, MATCH_PARENT, MATCH_PARENT);
+
+		var surfaceView = new SurfaceView(context);
+		ratioView.addView(surfaceView);
+
+		player = new ExoPlayer.Builder(context).build();
+		player.setVideoSurfaceView(surfaceView);
+	}
+
+	public YouTubeEmbedView(@NonNull Context context) {
+		this(context, null, 0, 0);
 	}
 
 	public void loadById(String id) {
-		new HttpClient.Request()
-				.setUrl(VIDEO_QUERY_URL + id)
-				.setCache(24 * 60 * 60 * 1000, HttpClient.CacheMode.CACHE_FIRST)
-				.callAsync(getContext(), (HttpClient.SimpleHttpCallback) (response, exception) -> {
-					if(response != null) {
-						var moshi = new Moshi.Builder().build();
-						var adapter = moshi.adapter(PipedResponse.class);
+		var request = new HttpRequest();
+		request.setUrl(VIDEO_QUERY_URL + id);
+		request.setCache(HttpCacheMode.CACHE_FIRST, CACHE_DURATION);
 
-						try {
-							var video = adapter.fromJson(response.getText());
-							Objects.requireNonNull(video);
+		HttpClient.fetch(request).addCallback(new AsyncFuture.Callback<>() {
+			@Override
+			public void onSuccess(HttpResponse result) {
+				try {
+					var video = Parser.fromString(PipedResponse.class, result.getText());
 
-							if(video.error != null) {
-								createErrorUi();
-								return;
-							}
-
-							createInfoUi();
-						} catch(IOException e) {
-							Log.e(TAG, e.getMessage(), e);
-						}
-					} else if(exception != null) {
-						createErrorUi();
-						Log.e(TAG, exception.getMessage(), exception);
+					if(video.error != null) {
+						showError();
+						return;
 					}
-				});
+
+					player.setMediaItem(new MediaItem.Builder().setUri(video.hls).build());
+					player.setPlayWhenReady(true);
+					showInfo();
+				} catch(IOException e) {
+					onFailure(e);
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable t) {
+				Log.e(TAG, "Failed to fetch video info!", t);
+				runOnUiThread(() -> showError());
+			}
+		});
 	}
 
 	public void loadByUrl(@NonNull String url) {
-		if(url.contains("://")) url = url.substring(url.indexOf("://") + 3);
+		url = cleanUrl(url);
 
-		if(url.startsWith(WWW)) url = url.substring(WWW.length());
-		if(url.startsWith(YOUTUBE_MOBILE_SUBDOMAIN)) url = url.substring(YOUTUBE_MOBILE_SUBDOMAIN.length());
+		if(url.contains("://")) {
+			url = url.substring(url.indexOf("://") + 3);
+		}
 
-		if(url.startsWith(YOUTUBE_SHORT_DOMAIN)) url = url.substring(YOUTUBE_SHORT_DOMAIN.length());
-		if(url.startsWith(YOUTUBE_DOMAIN)) url = url.substring(YOUTUBE_DOMAIN.length());
+		if(url.startsWith(WWW)) {
+			url = url.substring(WWW.length());
+		}
+
+		if(url.startsWith(YOUTUBE_MOBILE_SUBDOMAIN)) {
+			url = url.substring(YOUTUBE_MOBILE_SUBDOMAIN.length());
+		}
+
+		if(url.startsWith(YOUTUBE_SHORT_DOMAIN)) {
+			url = url.substring(YOUTUBE_SHORT_DOMAIN.length());
+		}
+
+		if(url.startsWith(YOUTUBE_DOMAIN)) {
+			url = url.substring(YOUTUBE_DOMAIN.length());
+		}
 
 		if(url.startsWith("/")) url = url.substring(1);
 		if(url.contains("?")) url = url.substring(0, url.indexOf("?"));
@@ -73,16 +121,16 @@ public class YouTubeEmbedView extends FrameLayout {
 		loadById(url);
 	}
 
-	private void createLoadingUi() {
-		removeAllViews();
+	private void showPreview() {
+
 	}
 
-	private void createErrorUi() {
-		removeAllViews();
+	private void showError() {
+		toast("Failed to load an YouTube video!");
 	}
 
-	private void createInfoUi() {
-		removeAllViews();
+	private void showInfo() {
+
 	}
 
 	public static class PipedResponse {

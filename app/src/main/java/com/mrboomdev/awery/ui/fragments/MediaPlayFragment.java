@@ -215,7 +215,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		var type = requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
 
-		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(switch(type) {
 					case TV, MOVIE -> ExtensionProvider.FEATURE_MEDIA_WATCH;
 					case BOOK, POST -> ExtensionProvider.FEATURE_MEDIA_READ;

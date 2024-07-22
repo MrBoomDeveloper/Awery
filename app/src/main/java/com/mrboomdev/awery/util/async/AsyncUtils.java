@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.util.exceptions.CancelledException;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Range;
@@ -15,12 +16,10 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,8 +34,17 @@ public class AsyncUtils {
 	 * Run an action asynchronously. Prefer this method to the manual Thread object creation.
 	 * @author MrBoomDev
 	 */
-	public static void thread(Runnable action) {
-		threadsPool.execute(action);
+	@NonNull
+	@Contract("_ -> new")
+	public static EmptyFuture thread(ThreadRunnable action) {
+		return controllableEmptyFuture(future -> {
+			action.run();
+			future.complete();
+		});
+	}
+
+	public interface ThreadRunnable {
+		void run() throws Throwable;
 	}
 
 	@Contract("_, _ -> new")
@@ -56,13 +64,13 @@ public class AsyncUtils {
 	}
 
 	@NonNull
-	public static <T> ControllableAsyncFuture<T> controllableFuture(@NonNull ControllableAsyncFutureCallback<T> callback) {
+	public static <T> ControllableAsyncFuture<T> controllableFuture(@NonNull ControllableAsyncFuture.Callback<T> callback) {
 		// Since we cannot directly access an thread from the queue we should to just patiently wait.
 		var theThread = new AtomicReference<Thread>();
 		var interrupt = new AtomicBoolean();
 
 		var future = new ControllableAsyncFuture<T>() {
-			private final Queue<FutureCallback<T>> callbacks = new ArrayDeque<>();
+			private final Queue<AsyncFuture.Callback<T>> callbacks = new ArrayDeque<>();
 			private T result;
 			private Throwable throwable;
 			private boolean isCancelled;
@@ -71,9 +79,13 @@ public class AsyncUtils {
 			public void complete(T result) {
 				this.result = result;
 
-				FutureCallback<T> nextCallback;
+				AsyncFuture.Callback<T> nextCallback;
 				while((nextCallback = callbacks.poll()) != null) {
-					nextCallback.onSuccess(result);
+					try {
+						nextCallback.onSuccess(result);
+					} catch(Throwable e) {
+						nextCallback.onFailure(e);
+					}
 				}
 			}
 
@@ -81,7 +93,7 @@ public class AsyncUtils {
 			public void fail(Throwable throwable) {
 				this.throwable = throwable;
 
-				FutureCallback<T> nextCallback;
+				AsyncFuture.Callback<T> nextCallback;
 				while((nextCallback = callbacks.poll()) != null) {
 					nextCallback.onFailure(throwable);
 				}
@@ -100,19 +112,35 @@ public class AsyncUtils {
 					}
 				}
 
-				fail(new ExecutionException("Cancelled", null));
+				fail(new CancelledException());
 				return true;
 			}
 
 			@Override
-			public void addCallback(FutureCallback<T> callback) {
+			public void addCallback(AsyncFuture.Callback<T> callback) {
 				if(isDone()) {
-					if(result != null) callback.onSuccess(result);
-					if(throwable != null) callback.onFailure(throwable);
+					if(result != null) {
+						try {
+							callback.onSuccess(result);
+						} catch(Throwable e) {
+							callback.onFailure(e);
+							return;
+						}
+					}
+
+					if(throwable != null) {
+						callback.onFailure(throwable);
+					}
+
 					return;
 				}
 
 				callbacks.add(callback);
+			}
+
+			@Override
+			public T getResult() {
+				return result;
 			}
 
 			@Override
@@ -126,28 +154,130 @@ public class AsyncUtils {
 			}
 
 			@Override
-			public T get() {
-				return get(-1, null);
-			}
-
-			@Override
-			public T get(long timeout, TimeUnit unit) {
-				if(!isDone()) {
-					await(this::isDone, unit != null ? unit.toMillis(timeout) : timeout);
-				}
-
-				return result;
+			public Throwable getThrowable() {
+				return null;
 			}
 		};
 
-		thread(() -> {
+		threadsPool.submit(() -> {
 			theThread.set(Thread.currentThread());
 
 			if(interrupt.get()) {
 				theThread.get().interrupt();
 			}
 
-			callback.start(future);
+			try {
+				callback.start(future);
+			} catch(Throwable t) {
+				future.fail(t);
+			}
+		});
+
+		return future;
+	}
+
+	@NonNull
+	public static ControllableEmptyFuture controllableEmptyFuture(@NonNull ControllableEmptyFuture.Callback callback) {
+		// Since we cannot directly access an thread from the queue we should to just patiently wait.
+		var theThread = new AtomicReference<Thread>();
+		var interrupt = new AtomicBoolean();
+
+		var future = new ControllableEmptyFuture() {
+			private final Queue<EmptyFuture.Callback> callbacks = new ArrayDeque<>();
+			private Throwable throwable;
+			private boolean isCancelled, didDone;
+
+			@Override
+			public void complete() {
+				this.didDone = true;
+
+				EmptyFuture.Callback nextCallback;
+				while((nextCallback = callbacks.poll()) != null) {
+					try {
+						nextCallback.onSuccess();
+					} catch(Throwable e) {
+						nextCallback.onFailure(e);
+					}
+				}
+			}
+
+			@Override
+			public void fail(Throwable throwable) {
+				this.throwable = throwable;
+
+				EmptyFuture.Callback nextCallback;
+				while((nextCallback = callbacks.poll()) != null) {
+					nextCallback.onFailure(throwable);
+				}
+			}
+
+			@Override
+			public boolean cancel(boolean mayInterruptIfRunning) {
+				if(isDone()) return false;
+				isCancelled = true;
+
+				if(mayInterruptIfRunning) {
+					interrupt.set(true);
+
+					if(theThread.get() != null) {
+						theThread.get().interrupt();
+					}
+				}
+
+				fail(new CancelledException());
+				return true;
+			}
+
+			@Override
+			public void addCallback(EmptyFuture.Callback callback) {
+				if(isDone()) {
+					if(didDone) {
+						try {
+							callback.onSuccess();
+						} catch(Throwable e) {
+							callback.onFailure(e);
+							return;
+						}
+					}
+
+					if(throwable != null) {
+						callback.onFailure(throwable);
+					}
+
+					return;
+				}
+
+				callbacks.add(callback);
+			}
+
+			@Override
+			public boolean isCancelled() {
+				return isCancelled;
+			}
+
+			@Override
+			public boolean isDone() {
+				return didDone || throwable != null;
+			}
+
+			@Override
+			public Throwable getThrowable() {
+				return throwable;
+			}
+		};
+
+		threadsPool.submit(() -> {
+			theThread.set(Thread.currentThread());
+
+			if(interrupt.get()) {
+				theThread.get().interrupt();
+			}
+
+			try {
+				callback.start(future);
+			} catch(Throwable t) {
+				future.fail(t);
+			}
 		});
 
 		return future;
@@ -159,12 +289,17 @@ public class AsyncUtils {
 		return new AsyncFutureNow<>() {
 
 			@Override
-			public void addCallback(FutureCallback<T> callback) {
+			public Throwable getThrowable() {
+				return throwable;
+			}
+
+			@Override
+			public void addCallback(AsyncFuture.Callback<T> callback) {
 				callback.onFailure(throwable);
 			}
 
 			@Override
-			public T get() {
+			public T getResult() {
 				return null;
 			}
 		};
@@ -174,14 +309,25 @@ public class AsyncUtils {
 	@Contract("_ -> new")
 	public static <T> AsyncFuture<T> futureNow(T result) {
 		return new AsyncFutureNow<>() {
+			private Throwable throwable;
 
 			@Override
-			public void addCallback(FutureCallback<T> callback) {
-				callback.onSuccess(result);
+			public Throwable getThrowable() {
+				return throwable;
 			}
 
 			@Override
-			public T get() {
+			public void addCallback(AsyncFuture.Callback<T> callback) {
+				try {
+					callback.onSuccess(result);
+				} catch(Throwable e) {
+					this.throwable = e;
+					callback.onFailure(e);
+				}
+			}
+
+			@Override
+			public T getResult() {
 				return result;
 			}
 		};
@@ -193,9 +339,33 @@ public class AsyncUtils {
 		var future = Futures.submit(callable, threadsPool);
 
 		return new AsyncFuture<>() {
+			private Throwable throwable;
+			private T value;
+
 			@Override
-			public void addCallback(FutureCallback<T> callback) {
-				Futures.addCallback(future, callback, threadsPool);
+			public void addCallback(AsyncFuture.Callback<T> callback) {
+				Futures.addCallback(future, new FutureCallback<>() {
+					@Override
+					public void onSuccess(T result) {
+						try {
+							value = result;
+							callback.onSuccess(result);
+						} catch(Throwable e) {
+							onFailure(e);
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Throwable t) {
+						throwable = t;
+						callback.onFailure(t);
+					}
+				}, threadsPool);
+			}
+
+			@Override
+			public T getResult() {
+				return value;
 			}
 
 			@Override
@@ -214,13 +384,8 @@ public class AsyncUtils {
 			}
 
 			@Override
-			public T get() throws ExecutionException, InterruptedException {
-				return future.get();
-			}
-
-			@Override
-			public T get(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-				return future.get(timeout, unit);
+			public Throwable getThrowable() {
+				return throwable;
 			}
 		};
 	}

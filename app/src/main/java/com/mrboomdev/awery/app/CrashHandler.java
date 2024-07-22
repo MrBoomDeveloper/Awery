@@ -2,7 +2,9 @@ package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.mrboomdev.awery.BuildConfig;
@@ -34,7 +37,7 @@ import xcrash.XCrash;
 public class CrashHandler {
 	private static final String TAG = "CrashHandler";
 
-	protected static void setup(Context context) {
+	protected static void setupCrashListener(Context context) {
 		var xCrashParams = new XCrash.InitParameters()
 				.enableNativeCrashHandler()
 				.enableAnrCrashHandler()
@@ -50,8 +53,7 @@ public class CrashHandler {
 				.setNativeDumpMap(false)
 				.setJavaCallback((s, s1) -> handleError(CrashType.JAVA, s))
 				.setNativeCallback((s, s1) -> handleError(CrashType.NATIVE, s))
-				.setAnrCallback((s, s1) -> handleError(CrashType.ANR, s))
-				.setAnrFastCallback((s, s1) -> handleError(CrashType.ANR_FAST, s))
+				.setAnrCallback((s, s1) -> {Log.e(TAG, s + "\n\n" + s1); handleError(CrashType.ANR, s);})
 				.setAppVersion(BuildConfig.VERSION_NAME);
 
 		var result = switch(XCrash.init(context, xCrashParams)) {
@@ -68,17 +70,21 @@ public class CrashHandler {
 	}
 
 	private enum CrashType {
-		ANR, JAVA, NATIVE, ANR_FAST
+		ANR, JAVA, NATIVE
 	}
 
 	private static void handleError(@NonNull CrashType type, String message) {
-		toast(getAnyContext().getString(switch(type) {
-			case ANR, ANR_FAST -> R.string.app_not_responding_restart;
+		toast(getAppContext().getString(switch(type) {
+			case ANR -> {
+				Log.e(TAG, "ANR error has happened. " + message);
+				yield R.string.app_not_responding_restart;
+			}
+
 			case JAVA -> R.string.app_crash;
 			case NATIVE -> R.string.something_terrible_happened;
 		}), 1);
 
-		if(type != CrashType.ANR && type != CrashType.ANR_FAST) {
+		if(type != CrashType.ANR) {
 			var crashFile = new File(getAnyContext().getFilesDir(), "crash.txt");
 
 			try {
@@ -94,6 +100,14 @@ public class CrashHandler {
 		}
 
 		restartApp();
+	}
+
+	public static void showErrorDialog(Throwable throwable) {
+		showErrorDialog(getAnyActivity(AppCompatActivity.class), throwable);
+	}
+
+	public static void showErrorDialog(String title, Throwable throwable) {
+		showErrorDialog(getAnyActivity(AppCompatActivity.class), title, throwable);
 	}
 	
 	public static void showErrorDialog(Context context, Throwable throwable) {
@@ -135,6 +149,10 @@ public class CrashHandler {
 
 	public static void showErrorDialog(Context context, String title, Throwable throwable) {
 		showErrorDialog(context, title, context.getString(R.string.please_report_bug_app), throwable);
+	}
+
+	public static void showErrorDialog(String title, String message, Throwable throwable) {
+		showErrorDialog(getAnyActivity(AppCompatActivity.class), title, message, throwable);
 	}
 
 	/**

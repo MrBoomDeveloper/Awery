@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
@@ -19,7 +18,11 @@ import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.sdk.util.StringUtils;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.io.HttpClient;
+import com.mrboomdev.awery.util.io.HttpMethod;
+import com.mrboomdev.awery.util.io.HttpRequest;
+import com.mrboomdev.awery.util.io.HttpResponse;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.Context;
@@ -111,8 +114,8 @@ public class JsBridge {
 	public Object fetch(@NonNull ScriptableObject options) {
 		var promise = new JsPromise(scriptScope);
 
-		var request = new HttpClient.Request()
-				.setUrl(options.get("url").toString());
+		var request = new HttpRequest();
+		request.setUrl(stringFromJs(options.get("url")));
 
 		if(options.get("headers") instanceof NativeObject o) {
 			var headers = new HashMap<String, String>();
@@ -141,7 +144,7 @@ public class JsBridge {
 			else request.setBody(body, contentType);
 
 			if(isNullJs(options.get("method", options))) {
-				request.setMethod(HttpClient.Method.POST);
+				request.setMethod(HttpMethod.POST);
 			}
 		}
 
@@ -159,12 +162,12 @@ public class JsBridge {
 			}
 
 			if(isNullJs(options.get("method", options))) {
-				request.setMethod(HttpClient.Method.POST);
+				request.setMethod(HttpMethod.POST);
 			}
 		}
 
 		doIfNotNull(stringFromJs(options.get("method")), method -> {
-			request.setMethod(HttpClient.Method.valueOf(method));
+			request.setMethod(HttpMethod.valueOf(method));
 
 			if(isNullJs(options.get("form")) && isNullJs(options.get("body", options))) {
 				switch(request.getMethod()) {
@@ -173,15 +176,16 @@ public class JsBridge {
 			}
 		});
 
-		request.callAsync(getAnyContext(), new HttpClient.HttpCallback() {
+		HttpClient.fetch(request).addCallback(new AsyncFuture.Callback<>() {
+
 			@Override
-			public void onResponse(HttpClient.HttpResponse response) {
+			public void onSuccess(HttpResponse response) {
 				manager.postRunnable(() -> promise.resolve(Context.javaToJS(response, scriptScope)));
 			}
 
 			@Override
-			public void onError(Throwable exception) {
-				manager.postRunnable(() -> promise.reject(Context.javaToJS(exception, scriptScope)));
+			public void onFailure(Throwable t) {
+				manager.postRunnable(() -> promise.reject(Context.javaToJS(t, scriptScope)));
 			}
 		});
 

@@ -43,6 +43,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.app.update.UpdatesManager;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.SettingsList;
@@ -56,6 +57,7 @@ import com.mrboomdev.awery.ui.fragments.feeds.FeedsFragment;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 
@@ -105,6 +107,20 @@ public class MainActivity extends AppCompatActivity {
 
 		var template = AwerySettings.TABS_TEMPLATE.getValue();
 		if(template.equals("custom")) loadCustomTabs(); else loadTemplateTabs(template);
+
+		if(AwerySettings.AUTO_CHECK_APP_UPDATE.getValue()) {
+			UpdatesManager.getAppUpdate().addCallback(new AsyncFuture.Callback<>() {
+				@Override
+				public void onSuccess(UpdatesManager.Update update) {
+					UpdatesManager.showUpdateDialog(update);
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
+					Log.e(TAG, "Failed to check for updates!", t);
+				}
+			});
+		}
 	}
 
 	private void loadCustomTabs() {

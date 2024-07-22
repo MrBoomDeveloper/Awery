@@ -18,12 +18,12 @@ dependencies {
     implementation "com.github.MrBoomDeveloper:AwerySdk:653d1e0396"
 
     // Utils
-    implementation "com.squareup.moshi:moshi:1.15.0"
-    implementation "org.mozilla:rhino:1.7.14"
+    implementation 'com.squareup.moshi:moshi:1.15.1'
+    implementation 'org.mozilla:rhino:1.7.15'
 
     // Networking
-    ext.okhttp_version = "5.0.0-alpha.12"
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    ext.okhttp_version = '5.0.0-alpha.14'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     implementation "com.squareup.okhttp3:okhttp-dnsoverhttps:$okhttp_version"
     implementation "com.squareup.okhttp3:okhttp-brotli:4.12.0"

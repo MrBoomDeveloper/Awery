@@ -3,17 +3,13 @@ package com.mrboomdev.awery.extensions;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.content.Context;
+import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
-import com.mrboomdev.awery.sdk.util.Callbacks;
-import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,22 +41,18 @@ public abstract class ExtensionsManager {
 	 */
 	public abstract String getId();
 
-	public MimeTypes[] getExtensionMimeTypes() {
-		return new MimeTypes[]{ MimeTypes.ANY };
-	}
-
-	public Extension installExtension(Context context, InputStream stream) throws IOException {
-		throw new UnimplementedException("This extension manager doesn't support installing extensions");
-	}
-
-	public void addExtension(Context context, Extension extension) throws IOException {
-		throw new UnimplementedException("This extension manager doesn't support adding extensions");
+	public AsyncFuture<Extension> installExtension(Context context, Uri uri) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("This extension manager doesn't support installing extensions"));
 	}
 
 	public void loadAllExtensions(Context context) {
 		for(var extension : getAllExtensions()) {
 			loadExtension(context, extension.getId());
 		}
+	}
+
+	public Progress getProgress() {
+		return Progress.EMPTY;
 	}
 
 	public void loadExtension(Context context, String id) {}
@@ -75,8 +67,8 @@ public abstract class ExtensionsManager {
 		return AsyncUtils.futureFailNow(new UnimplementedException("This type of extensions cannot be uninstalled currently"));
 	}
 
-	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {
-		callback.onError(new UnimplementedException("This extension manager do not support repositories!"));
+	public AsyncFuture<List<Extension>> getRepository(String url) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("This extension manager do not support repositories!"));
 	}
 
 	/**

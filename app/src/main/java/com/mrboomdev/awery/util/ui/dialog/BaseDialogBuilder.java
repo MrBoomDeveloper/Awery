@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -159,10 +162,19 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		scroller.setVerticalScrollBarEnabled(false);
 
 		var fieldsLinear = new LinearLayoutCompat(context);
-		ViewUtil.setHorizontalPadding(fieldsLinear, ViewUtil.dpPx(24));
+		ViewUtil.setHorizontalPadding(fieldsLinear, dpPx(24));
 		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
 		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
 		fieldsWrapper = fieldsLinear;
+	}
+
+	public void destroy() {
+		if(scroller != null) {
+			scroller.removeAllViews();
+			scroller = null;
+		}
+
+		fieldsWrapper = null;
 	}
 
 	public T create() {
@@ -182,7 +194,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		}
 
 		if(message == null) {
-			ViewUtil.setTopPadding(scroller, ViewUtil.dpPx(8));
+			setTopPadding(scroller, dpPx(scroller, 8));
 		}
 
 		//linear.addView(scroller);
@@ -292,6 +304,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	public T dismiss() {
 		if(dialog != null) {
 			dialog.dismiss();
+			destroy();
 			dialog = null;
 		}
 

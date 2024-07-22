@@ -7,11 +7,13 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -39,8 +41,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
-public class AweryLifecycle {
+public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
+	private static final WeakHashMap<Activity, ActivityInfo<Activity>> infos = new WeakHashMap<>();
 	private static final String TAG = "AweryLifecycle";
 	private static UniqueIdGenerator activityRequestCodes;
 	private static AweryApp app;
@@ -55,8 +59,11 @@ public class AweryLifecycle {
 		return activityRequestCodes.getInteger();
 	}
 
-	protected static void init(AweryApp app) {
+	private AweryLifecycle() {}
+
+	protected static void init(@NonNull AweryApp app) {
 		AweryLifecycle.app = app;
+		app.registerActivityLifecycleCallbacks(new AweryLifecycle());
 		handler = new Handler(Looper.getMainLooper());
 	}
 
@@ -91,6 +98,49 @@ public class AweryLifecycle {
 
 		if(activity != null) activity.finishAffinity();
 		else Runtime.getRuntime().exit(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <A extends Activity> ActivityInfo<A> getActivityInfo(A activity) {
+		return (ActivityInfo<A>) infos.computeIfAbsent(activity, ActivityInfo::new);
+	}
+
+	@Override
+	public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+		var info = infos.get(activity);
+		if(info != null) return;
+
+		info = new ActivityInfo<>(activity);
+		info.lastActiveTime = info.lastActiveTime == 0 ? System.currentTimeMillis() : 1;
+		infos.put(activity, info);
+	}
+
+	@Override
+	public void onActivityStarted(@NonNull Activity activity) {}
+
+	@Override
+	public void onActivityResumed(@NonNull Activity activity) {
+		var info = getActivityInfo(activity);
+		info.isPaused = false;
+		info.lastActiveTime = System.currentTimeMillis();
+	}
+
+	@Override
+	public void onActivityPaused(@NonNull Activity activity) {
+		getActivityInfo(activity).isPaused = true;
+	}
+
+	@Override
+	public void onActivityStopped(@NonNull Activity activity) {
+		getActivityInfo(activity).isPaused = true;
+	}
+
+	@Override
+	public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
+
+	@Override
+	public void onActivityDestroyed(@NonNull Activity activity) {
+		getActivityInfo(activity).isPaused = true;
 	}
 
 	/**
@@ -296,8 +346,7 @@ public class AweryLifecycle {
 					continue;
 				}
 
-				var info = new ActivityInfo<A>();
-				info.activity = (A) activity;
+				var info = new ActivityInfo<>((A) activity);
 				list.add(info);
 
 				var pausedField = recordClass.getDeclaredField("paused");
@@ -416,17 +465,19 @@ public class AweryLifecycle {
 		return context;
 	}
 
-	public static Context getAppContext() {
+	public static Application getAppContext() {
 		if(app != null) {
 			return app;
 		}
 
-		synchronized(AweryLifecycle.class) {
-			if(app != null) {
-				return app;
-			}
+		app = getContextUsingPrivateApi();
 
-			app = getContextUsingPrivateApi();
+		if(app == null) {
+			var activity = getAnyActivity(Activity.class);
+
+			if(activity != null) {
+				app = (AweryApp) activity.getApplicationContext();
+			}
 		}
 
 		return app;
@@ -448,16 +499,42 @@ public class AweryLifecycle {
 	}
 
 	private static class ActivityInfo<A extends Activity> implements Comparable<ActivityInfo<A>> {
-		public A activity;
+		public long lastActiveTime;
+		public final A activity;
 		public boolean isPaused;
 
+		public ActivityInfo(A activity) {
+			this.activity = activity;
+		}
+
 		@Override
-		public int compareTo(ActivityInfo o) {
-			if(hasWindowFocus(activity) && !hasWindowFocus(o.activity)) return 1;
-			if(!hasWindowFocus(activity) && hasWindowFocus(o.activity)) return -1;
+		public int compareTo(@NonNull ActivityInfo o) {
+			var realMe = infos.get(activity);
+			var realHe = infos.get(o.activity);
+
+			if(realMe != null) {
+				isPaused = realMe.isPaused;
+				lastActiveTime = realMe.lastActiveTime;
+			}
+
+			if(realHe != null) {
+				o.isPaused = realHe.isPaused;
+				o.lastActiveTime = realHe.lastActiveTime;
+			}
+
+			if(lastActiveTime != 0 && o.lastActiveTime != 0) {
+				if(lastActiveTime > o.lastActiveTime) return 1;
+				if(lastActiveTime < o.lastActiveTime) return -1;
+			}
 
 			if(isPaused && !o.isPaused) return -1;
 			if(!isPaused && o.isPaused) return 1;
+
+			if(activity.isDestroyed() && !o.activity.isDestroyed()) return -1;
+			if(!activity.isDestroyed() && o.activity.isDestroyed()) return 1;
+
+			if(hasWindowFocus(activity) && !hasWindowFocus(o.activity)) return 1;
+			if(!hasWindowFocus(activity) && hasWindowFocus(o.activity)) return -1;
 
 			return Integer.compare(activity.getTaskId(), o.activity.getTaskId());
 		}

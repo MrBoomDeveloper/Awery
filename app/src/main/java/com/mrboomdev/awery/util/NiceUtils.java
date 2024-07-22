@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
 import com.mrboomdev.awery.sdk.util.Callbacks;
+import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
+import com.mrboomdev.awery.util.io.FileUtil;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.ScriptableObject;
@@ -24,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +41,22 @@ import java9.util.stream.StreamSupport;
  * @author MrBoomDev
  */
 public class NiceUtils {
+	private static final UniqueIdGenerator fileIdGenerator = new UniqueIdGenerator();
 	private static final String[] REMOVE_LAST_URL_CHARS = { "/", "?", "#", "&", " " };
+
+	@NonNull
+	public static File getTempFile() {
+		var root = getAnyContext().getCacheDir();
+		var file = new File(root, "temp/" + fileIdGenerator.getLong());
+
+		if(file.exists()) {
+			FileUtil.deleteFile(file);
+		} else {
+			file.getParentFile().mkdirs();
+		}
+
+		return file;
+	}
 
 	/**
 	 * @return The result of the callback if the param is not null
@@ -58,6 +76,73 @@ public class NiceUtils {
 		} else if(ifNull != null) {
 			ifNull.run();
 		}
+	}
+
+	public static int compareVersions(@NonNull long[] first, @NonNull long[] second) {
+		int i = 0;
+
+		while(true) {
+			long firstArg = first.length > i ? first[i] : -1;
+			long secondArg = second.length > i ? second[i] : -1;
+
+			if(firstArg == -1 && secondArg == -1) {
+				return 0;
+			}
+
+			if(firstArg == -1) firstArg = 0;
+			if(secondArg == -1) secondArg = 0;
+
+			if(firstArg > secondArg) {
+				return 1;
+			}
+
+			if(firstArg < secondArg) {
+				return -1;
+			}
+
+			i++;
+		}
+	}
+
+	@NonNull
+	public static long[] parseVersion(String string) {
+		List<Long> list = new ArrayList<>();
+		string = string.trim();
+
+		StringBuilder builder = null;
+		int nonNumbersCount = 0;
+
+		for(var character : string.toCharArray()) {
+			if(Character.isDigit(character)) {
+				if(builder == null) {
+					builder = new StringBuilder();
+				}
+
+				builder.append(character);
+				nonNumbersCount = 0;
+			} else {
+				if(builder != null) {
+					list.add(Long.valueOf(builder.toString()));
+					builder = null;
+				} else {
+					if(!list.isEmpty() && ++nonNumbersCount > 1) {
+						break;
+					}
+				}
+			}
+		}
+
+		if(builder != null) {
+			list.add(Long.valueOf(builder.toString()));
+		}
+
+		var result = new long[list.size()];
+
+		for(int i = 0; i < list.size(); i++) {
+			result[i] = list.get(i);
+		}
+
+		return result;
 	}
 
 	public static boolean isTrue(Object bool) {
@@ -433,9 +518,9 @@ public class NiceUtils {
 	 */
 	@NonNull
 	@Contract("_ -> new")
-	public static <E> Stream<E> stream(Collection<E> e) {
-		if(e == null) throw new NullPointerException("Collection cannot be null!");
-		return StreamSupport.stream(e);
+	public static <E> Stream<E> stream(Collection<E> collection) {
+		requireArgument(collection, "collection");
+		return StreamSupport.stream(collection);
 	}
 
 	/**
@@ -445,8 +530,9 @@ public class NiceUtils {
 	@SafeVarargs
 	@NonNull
 	@Contract("_ -> new")
-	public static <E> Stream<E> stream(E... e) {
-		return StreamSupport.stream(Arrays.asList(e));
+	public static <E> Stream<E> stream(E... array) {
+		requireArgument(array, "array");
+		return StreamSupport.stream(Arrays.asList(array));
 	}
 
 	/**
@@ -456,6 +542,7 @@ public class NiceUtils {
 	@NonNull
 	@Contract("_ -> new")
 	public static <K, V> Stream<Map.Entry<K,V>> stream(@NonNull Map<K, V> map) {
+		requireArgument(map, "map");
 		return StreamSupport.stream(map.entrySet());
 	}
 }

@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -24,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
 import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -62,7 +64,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 
 		setOnApplyUiInsetsListener(binding.pageIndicator, insets -> {
 			if(isLandscape()) {
-				setRightMargin(binding.pageIndicator, insets.right + dpPx(16));
+				setRightMargin(binding.pageIndicator, insets.right + dpPx(binding.pageIndicator, 16));
 			} else {
 				setRightMargin(binding.pageIndicator, 0);
 			}
@@ -128,7 +130,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 
 			setOnApplyUiInsetsListener(binding.leftSideBarrier, insets -> {
 				if(isLandscape()) {
-					setLeftMargin(binding.leftSideBarrier, dpPx(32) +
+					setLeftMargin(binding.leftSideBarrier, dpPx(binding.leftSideBarrier, 32) +
 							(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
 				} else {
 					setRightMargin(binding.leftSideBarrier, 0);
@@ -200,6 +202,18 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 			}
 
 			binding.description.setText(description);
+
+			switch(requireNonNullElse(item.type, CatalogMedia.MediaType.TV)) {
+				case TV, MOVIE -> {
+					binding.watch.setText(R.string.watch_now);
+					binding.watch.setIconResource(R.drawable.ic_play_filled);
+				}
+
+				case BOOK, POST -> {
+					binding.watch.setText(R.string.read_now);
+					binding.watch.setIconResource(R.drawable.ic_book_filled);
+				}
+			}
 
 			if(item.averageScore != null) {
 				binding.metaSeparator.setVisibility(View.VISIBLE);

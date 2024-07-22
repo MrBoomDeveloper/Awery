@@ -3,7 +3,6 @@ package com.mrboomdev.awery.extensions.data;
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.async.AsyncUtils.awaitResult;
 
 import android.os.Looper;
 
@@ -20,6 +19,7 @@ import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.squareup.moshi.Json;
 
@@ -148,7 +148,7 @@ public class CatalogFeed implements Serializable {
 					.toList();
 
 			case TEMPLATE_AUTO_GENERATE -> {
-				var result = new ArrayList<>(Arrays.asList(stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+				var result = new ArrayList<>(Arrays.asList(stream(ExtensionsFactory.getInstance().await().getExtensions(Extension.FLAG_WORKING))
 						.map(Extension::getProviders)
 						.flatMap(NiceUtils::stream)
 						.filter(provider -> {
@@ -178,7 +178,7 @@ public class CatalogFeed implements Serializable {
 
 							return true;
 						})
-						.map(provider -> awaitResult(breaker -> provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
+						.map(provider -> AsyncUtils.<List<CatalogFeed>>awaitResult(breaker -> provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
 							@Override
 							public void onSuccess(List<CatalogFeed> catalogFeeds) {
 								breaker.run(catalogFeeds);

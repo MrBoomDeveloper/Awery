@@ -129,7 +129,7 @@ public class TrackingSheet {
 
 			queryFilter.setValue(media.getTitle());
 
-			this.sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+			this.sources = stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
 					.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_TRACK))
 					.flatMap(NiceUtils::stream)
 					.toList();

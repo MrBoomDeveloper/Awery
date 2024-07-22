@@ -13,7 +13,6 @@ object YomiHelper {
 
     fun networkHelper(): NetworkHelper = networkHelper ?: throw IllegalStateException("AniyomiHelper not initialized")
 
-    @OptIn(ExperimentalSerializationApi::class)
     @JvmStatic
     fun init(context: Application) {
         val networkHelper = NetworkHelper(context)

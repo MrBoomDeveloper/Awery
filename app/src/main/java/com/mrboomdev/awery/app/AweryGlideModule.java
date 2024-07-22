@@ -32,7 +32,7 @@ public class AweryGlideModule extends AppGlideModule {
 		registry.replace(
 				GlideUrl.class,
 				InputStream.class,
-				new OkHttpUrlLoader.Factory(HttpClient.getClient(context))
+				new OkHttpUrlLoader.Factory(HttpClient.getClient())
         );
 
 		super.registerComponents(context, glide, registry);

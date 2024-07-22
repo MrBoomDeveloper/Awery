@@ -9,10 +9,12 @@ import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
+import static com.mrboomdev.awery.util.NiceUtils.compareVersions;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
+import static com.mrboomdev.awery.util.NiceUtils.parseVersion;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -28,8 +30,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
-import com.google.common.util.concurrent.FutureCallback;
+import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.db.item.DBRepository;
@@ -42,16 +46,21 @@ import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
+import com.mrboomdev.awery.util.exceptions.CancelledException;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.JsException;
+import com.mrboomdev.awery.util.io.HttpClient;
+import com.mrboomdev.awery.util.io.HttpRequest;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 import com.squareup.moshi.Json;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import java9.util.Objects;
@@ -80,74 +89,75 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		this.pickLauncher = activity.registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
 			if(uri == null) return;
 
-			/*if(!MimeTypes.test(uri.getPath(), manager.getExtensionMimeTypes())) {
-				toast("Picked unsupported file type");
-				return;
-			}*/
+			manager.installExtension(activity, uri).addCallback(new AsyncFuture.Callback<>() {
 
-			try(var stream = activity.getContentResolver().openInputStream(uri)) {
-				var extension = manager.installExtension(activity, stream);
-				var hasExisted = manager.hasExtension(extension.getId());
+				@Override
+				public void onSuccess(Extension extension) {
+					var hasExisted = find(extensions, ext -> ext.getId().equals(extension.getId())) != null;
 
-				manager.addExtension(activity, extension);
-				extensions = List.copyOf(manager.getAllExtensions());
-				var newItem = new ExtensionSetting(activity, extension);
+					extensions = List.copyOf(manager.getAllExtensions());
+					var newItem = new ExtensionSetting(activity, extension);
 
-				if(hasExisted) {
-					toast("Extension updated successfully!");
+					if(hasExisted) {
+						toast("Extension updated successfully!");
 
-					var oldItem = find(getItems(), item ->
-							item instanceof ExtensionSetting setting &&
-							setting.getExtension().getId().equals(extension.getId()));
+						var oldItem = find(getItems(), item ->
+								item instanceof ExtensionSetting setting &&
+										setting.getExtension().getId().equals(extension.getId()));
 
-					onSettingChange(newItem, oldItem);
-				} else {
-					toast("Extension installed successfully!");
+						onSettingChange(newItem, oldItem);
+					} else {
+						toast("Extension installed successfully!");
 
-					if(extensions.size() == 1) {
-						onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
+						if(extensions.size() == 1) {
+							onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
+						}
+
+						onSettingAddition(newItem, extensions.size() + (repos.isEmpty() ? 0 : repos.size() + 1));
 					}
 
-					onSettingAddition(newItem, extensions.size() + (repos.isEmpty() ? 0 : repos.size() + 1));
-				}
+					if(currentDialog != null) {
+						currentDialog.dismiss();
+					}
 
-				if(currentDialog != null) {
-					currentDialog.dismiss();
-				}
+					for(var source : extension.getProviders()) {
+						if(source.hasFeatures(ExtensionProvider.FEATURE_CHANGELOG)) {
+							source.getChangelog(new ExtensionProvider.ResponseCallback<>() {
+								@Override
+								public void onSuccess(String s) {
+									runOnUiThread(() -> new DialogBuilder(activity)
+											.setTitle(extension.getVersion() + " Changelog")
+											.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
+											.setMessage(cleanString(s))
+											.show());
+								}
 
-				for(var source : extension.getProviders()) {
-					if(source.hasFeatures(ExtensionProvider.FEATURE_CHANGELOG)) {
-						source.getChangelog(new ExtensionProvider.ResponseCallback<>() {
-							@Override
-							public void onSuccess(String s) {
-								runOnUiThread(() -> new DialogBuilder(activity)
-										.setTitle(extension.getVersion() + " Changelog")
-										.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
-										.setMessage(cleanString(s))
-										.show());
-							}
-
-							@Override
-							public void onFailure(Throwable e) {
-								CrashHandler.showErrorDialog(activity, "Failed ", e);
-							}
-						});
+								@Override
+								public void onFailure(Throwable e) {
+									CrashHandler.showErrorDialog("Failed to get an Changelog", e);
+								}
+							});
+						}
 					}
 				}
-			} catch(JsException e) {
-				Log.e(TAG, "Failed to install an extension!", e);
 
-				if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
-					CrashHandler.showErrorDialog(activity,
-							activity.getString(R.string.extension_installed_failed),
-							activity.getString(R.string.please_report_bug_extension), e);
-				} else {
-					CrashHandler.showErrorDialog(activity, e);
+				@Override
+				public void onFailure(Throwable t) {
+					if(t instanceof JsException e) {
+						Log.e(TAG, "Failed to install an extension!", e);
+
+						if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
+							CrashHandler.showErrorDialog(activity.getString(R.string.extension_installed_failed),
+									activity.getString(R.string.please_report_bug_extension), e);
+						} else {
+							CrashHandler.showErrorDialog(e);
+						}
+					} else {
+						Log.e(TAG, "Failed to install an extension!", t);
+						CrashHandler.showErrorDialog(t);
+					}
 				}
-			} catch(Throwable e) {
-				Log.e(TAG, "Failed to install an extension!", e);
-				CrashHandler.showErrorDialog(activity, e);
-			}
+			});
 		});
 
 		headerItems.add(new SettingsItem() {
@@ -183,36 +193,39 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							inputField.setError(null);
 							var loadingWindow = showLoadingWindow();
 
-							manager.getRepository(text, (extensions, e) -> {
-								if(e != null) {
-									Log.e(TAG, "Failed to get a repository!", e);
-									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(e, context)));
-									loadingWindow.dismiss();
-									return;
-								}
-
-								if(find(repos, item -> Objects.equals(item.url, text)) != null) {
-									toast("Repository already exists!");
-									loadingWindow.dismiss();
-									return;
-								}
-
-								var dao = getDatabase().getRepositoryDao();
-								var repo = new DBRepository(text, manager.getId());
-								dao.add(repo);
-								repos.add(repo);
-
-								runOnUiThread(() -> {
-									if(repos.size() == 1) {
-										onSettingAddition(reposHeader, 0);
+							manager.getRepository(text).addCallback(new AsyncFuture.Callback<>() {
+								@Override
+								public void onSuccess(List<Extension> result) {
+									if(find(repos, item -> Objects.equals(item.url, text)) != null) {
+										toast("Repository already exists!");
+										loadingWindow.dismiss();
+										return;
 									}
 
-									onSettingAddition(new RepositorySetting(repo), 1);
+									var dao = getDatabase().getRepositoryDao();
+									var repo = new DBRepository(text, manager.getId());
+									dao.add(repo);
+									repos.add(repo);
 
-									dialog.dismiss();
+									runOnUiThread(() -> {
+										if(repos.size() == 1) {
+											onSettingAddition(reposHeader, 0);
+										}
+
+										onSettingAddition(new RepositorySetting(repo), 1);
+
+										dialog.dismiss();
+										loadingWindow.dismiss();
+										toast("Repository added successfully!");
+									});
+								}
+
+								@Override
+								public void onFailure(Throwable t) {
+									Log.e(TAG, "Failed to get a repository!", t);
+									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(t, context)));
 									loadingWindow.dismiss();
-									toast("Repository added successfully!");
-								});
+								}
 							});
 						}).show();
 			}
@@ -290,7 +303,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		return null;
 	}
 
-	private class RepositorySetting extends CustomSettingsItem implements LazySettingsItem {
+	private class RepositorySetting extends CustomSettingsItem implements LazySettingsItem, ObservableSettingsItem {
 		private final DBRepository repository;
 		private List<? extends SettingsItem> items;
 
@@ -354,28 +367,131 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		@Contract(" -> new")
 		@Override
 		public AsyncFuture<SettingsItem> loadLazily() {
-			return AsyncUtils.controllableFuture(future ->
-					manager.getRepository(repository.url, (extensions, throwable) -> {
-						if(throwable != null) {
-							future.fail(throwable);
-							return;
-						}
+			return manager.getRepository(repository.url).then(result -> {
+				items = stream(result)
+						.map(ext -> {
+							var item = new RepositoryItem(ext);
+							item.setParent(this);
+							return item;
+						})
+						.toList();
 
-						items = stream(extensions)
-								.map(RepositoryItem::new)
-								.toList();
-
-						future.complete(this);
-					}));
+				return this;
+			});
 		}
 	}
 
-	private static class RepositoryItem extends CustomSettingsItem {
+	private class RepositoryItem extends CustomSettingsItem {
 		private final Extension extension;
+		private final List<SettingsItem> items = List.of(new CustomSettingsItem(SettingsItemType.ACTION) {
+
+			@Override
+			public void onClick(Context context) {
+				var window = showLoadingWindow();
+
+				HttpClient.download(new HttpRequest(extension.getFileUrl()), new File(context.getCacheDir(),
+								"download/extension/" + manager.getId() + "/" + extension.getId())
+				).addCallback(new AsyncFuture.Callback<>() {
+
+					@Override
+					public void onSuccess(File result) {
+						manager.installExtension(context,
+								FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER, result)
+						).addCallback(new AsyncFuture.Callback<>() {
+
+							@Override
+							public void onSuccess(Extension result) {
+								window.dismiss();
+								toast(R.string.extension_installed_successfully);
+								runOnUiThread(() -> ((RepositorySetting) RepositoryItem.this.getParent()).onSettingChange(RepositoryItem.this));
+							}
+
+							@Override
+							public void onFailure(Throwable t) {
+								window.dismiss();
+
+								if(t instanceof CancelledException) {
+									toast(t.getMessage());
+									return;
+								}
+
+								if(t instanceof JsException e) {
+									Log.e(TAG, "Failed to install an extension!", e);
+
+									if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
+										CrashHandler.showErrorDialog(activity.getString(R.string.extension_installed_failed),
+												activity.getString(R.string.please_report_bug_extension), e);
+									} else {
+										CrashHandler.showErrorDialog(e);
+									}
+								} else {
+									Log.e(TAG, "Failed to install an extension!", t);
+									CrashHandler.showErrorDialog(t);
+								}
+							}
+						});
+					}
+
+					@Override
+					public void onFailure(Throwable t) {
+						Log.e(TAG, "Failed to download an extension!", t);
+						window.dismiss();
+						toast(ExceptionDescriptor.getTitle(t, context));
+					}
+				});
+			}
+
+			@Override
+			public Drawable getIcon(@NonNull Context context) {
+				return ContextCompat.getDrawable(context, R.drawable.ic_download);
+			}
+		});
+
+		@NonNull
+		private UpdateAvailability getUpdateStatus() {
+			var found = manager.getExtension(extension.getId());
+			if(found == null) return UpdateAvailability.BRAND_NEW;
+
+			var compared = compareVersions(parseVersion(extension.getVersion()), parseVersion(found.getVersion()));
+			if(compared > 0) return UpdateAvailability.SERVER_NEW;
+			if(compared < 0) return UpdateAvailability.SERVER_OLD;
+			return UpdateAvailability.SAME;
+		}
+
+		private enum UpdateAvailability {
+			SERVER_OLD, SAME,
+
+			SERVER_NEW {
+				@Override
+				public boolean mayDownload() {
+					return true;
+				}
+			},
+
+			BRAND_NEW {
+				@Override
+				public boolean mayDownload() {
+					return true;
+				}
+			};
+
+			public boolean mayDownload() {
+				return false;
+			}
+		}
 
 		public RepositoryItem(Extension extension) {
 			super(SettingsItemType.ACTION);
 			this.extension = extension;
+		}
+
+		@Override
+		public List<SettingsItem> getActionItems() {
+			if(!getUpdateStatus().mayDownload()) {
+				return Collections.emptyList();
+			}
+
+			return items;
 		}
 
 		@Override
@@ -389,6 +505,11 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 			if(extension.isNsfw()) {
 				result += " (Nsfw)";
+			}
+
+			switch(getUpdateStatus()) {
+				case SERVER_NEW -> result += " (Update available)";
+				case SERVER_OLD -> result += " (Older version)";
 			}
 
 			return result;
@@ -406,7 +527,11 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		@Override
 		public void onClick(Context context) {
-			// TODO: 7/17/2024 Download and install an extension
+			if(!getUpdateStatus().mayDownload()) {
+				return;
+			}
+
+			items.get(0).onClick(context);
 		}
 	}
 
@@ -459,7 +584,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				public void onClick(android.content.Context context) {
 					var window = showLoadingWindow();
 
-					manager.uninstallExtension(context, extension.getId()).addCallback(new FutureCallback<>() {
+					manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<Boolean>() {
 						@Override
 						public void onSuccess(Boolean result) {
 							window.dismiss();
@@ -487,7 +612,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							window.dismiss();
 
 							Log.e(TAG, "Failed to uninstall an extension", e);
-							CrashHandler.showErrorDialog(context, "Failed to uninstall an extension", e);
+							CrashHandler.showErrorDialog("Failed to uninstall an extension", e);
 						}
 					});
 				}

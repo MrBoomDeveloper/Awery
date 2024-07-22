@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.Constants;
@@ -32,6 +31,7 @@ import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
@@ -142,7 +142,7 @@ public class SettingsData {
 
 		if(behaviourId != null) {
 			if(behaviourId.startsWith("extensions_")) {
-				var manager = ExtensionsFactory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
+				var manager = ExtensionsFactory.getManager__Deprecated((Class<? extends ExtensionsManager>) switch(behaviourId) {
 					case "extensions_aweryjs" -> JsManager.class;
 					case "extensions_miru" -> MiruManager.class;
 					case "extensions_cloudstream" -> CloudstreamManager.class;
@@ -170,7 +170,7 @@ public class SettingsData {
 				}
 			}
 		} else if(item instanceof LazySettingsItem lazySettingsItem) {
-			lazySettingsItem.loadLazily().addCallback(new FutureCallback<>() {
+			lazySettingsItem.loadLazily().addCallback(new AsyncFuture.Callback<>() {
 				@Override
 				public void onSuccess(SettingsItem result) {
 					runOnUiThread(() -> callback.onSuccess(result));

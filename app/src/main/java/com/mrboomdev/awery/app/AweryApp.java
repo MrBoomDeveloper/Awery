@@ -22,11 +22,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -74,13 +74,13 @@ import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.SpoilerPlugin;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.ui.activity.BrowserActivity;
+import com.mrboomdev.awery.util.markdown.LinkifyPlugin;
+import com.mrboomdev.awery.util.markdown.SpoilerPlugin;
 import com.skydoves.balloon.ArrowOrientation;
 import com.skydoves.balloon.Balloon;
 import com.skydoves.balloon.BalloonAlign;
@@ -99,7 +99,6 @@ import io.noties.markwon.SoftBreakAddsNewLinePlugin;
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin;
 import io.noties.markwon.html.HtmlPlugin;
 import io.noties.markwon.image.glide.GlideImagesPlugin;
-import io.noties.markwon.linkify.LinkifyPlugin;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
@@ -288,7 +287,7 @@ public class AweryApp extends Application {
 	}
 
 	public static void toast(Object text, int duration) {
-		toast(getAnyContext(), text, duration);
+		toast(getAppContext(), text, duration);
 	}
 
 	public static void toast(Object text) {
@@ -428,16 +427,19 @@ public class AweryApp extends Application {
 	}
 
 	public static void openUrl(@NonNull Context context, String url) {
-		try {
-			new CustomTabsIntent.Builder().build().launchUrl(context, Uri.parse(url));
-		} catch(ActivityNotFoundException e) {
-			Log.e(TAG, "Cannot open url!", e);
+		var customTabsIntent = new CustomTabsIntent.Builder().build();
+		customTabsIntent.intent.setData(Uri.parse(url));
 
-			new DialogBuilder(getAnyActivity(AppCompatActivity.class))
-					.setTitle("Here's the link")
-					.setMessage(url)
-					.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
-					.show();
+		var resolvedActivity = customTabsIntent.intent
+				.resolveActivity(context.getPackageManager());
+
+		if(resolvedActivity != null) {
+			context.startActivity(customTabsIntent.intent, customTabsIntent.startAnimationBundle);
+		} else {
+			Log.e(TAG, "No external browser was found, launching a internal one.");
+			var intent = new Intent(context, BrowserActivity.class);
+			intent.putExtra(BrowserActivity.EXTRA_URL, url);
+			context.startActivity(intent);
 		}
 	}
 
@@ -481,7 +483,7 @@ public class AweryApp extends Application {
 	@Override
 	protected void attachBaseContext(@NonNull Context base) {
 		super.attachBaseContext(base);
-		CrashHandler.setup(this);
+		CrashHandler.setupCrashListener(this);
 	}
 
 	@Override
@@ -541,8 +543,6 @@ public class AweryApp extends Application {
 				getPrefs().setValue(AwerySettings.LAST_OPENED_VERSION, 1).saveSync();
 			});
 		}
-
-		ExtensionsFactory.init(this);
 	}
 
 	public static int getOrientation() {

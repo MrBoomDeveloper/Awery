@@ -20,7 +20,6 @@ import androidx.core.splashscreen.SplashScreen;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.data.db.item.DBRepository;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.io.FileUtil;
@@ -58,11 +57,10 @@ public class IntentHandlerActivity extends AppCompatActivity {
 			if(host != null && host.equals("add-repo")) {
 				var loadingWindow = showLoadingWindow();
 				var repo = cleanUrl(uri.getQueryParameter("url"));
-				var manager = ExtensionsFactory.getManager(AniyomiManager.class);
 
 				thread(() -> {
 					var dao = getDatabase().getRepositoryDao();
-					var repos = dao.getRepositories(manager.getId());
+					var repos = dao.getRepositories(AniyomiManager.MANAGER_ID);
 
 					if(find(repos, item -> Objects.equals(item.url, repo)) != null) {
 						runOnUiThread(() -> {
@@ -74,7 +72,7 @@ public class IntentHandlerActivity extends AppCompatActivity {
 						return;
 					}
 
-					var dbRepo = new DBRepository(repo, manager.getId());
+					var dbRepo = new DBRepository(repo, AniyomiManager.MANAGER_ID);
 					dao.add(dbRepo);
 
 					runOnUiThread(() -> {

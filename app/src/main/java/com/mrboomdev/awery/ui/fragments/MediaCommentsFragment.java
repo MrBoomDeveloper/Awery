@@ -353,7 +353,7 @@ public class MediaCommentsFragment extends Fragment {
 		if(media == null) media = requireArgument(this, "media");
 		if(episode == null) episode = (CatalogVideo) requireArguments().getSerializable("episode");
 
-		sources = stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+		sources = stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
 				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
 				.flatMap(NiceUtils::stream)
 				.sorted().toList();

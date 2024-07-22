@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util.markdown;
 
 import android.graphics.Color;
 import android.text.Spannable;

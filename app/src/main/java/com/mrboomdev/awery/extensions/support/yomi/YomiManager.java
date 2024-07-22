@@ -4,13 +4,20 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.getTempFile;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,14 +26,17 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
-import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
+import com.mrboomdev.awery.util.async.ControllableAsyncFuture;
+import com.mrboomdev.awery.util.exceptions.CancelledException;
 import com.mrboomdev.awery.util.io.HttpClient;
+import com.mrboomdev.awery.util.io.HttpRequest;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -44,6 +54,7 @@ public abstract class YomiManager extends ExtensionsManager {
 	private static final int PM_FLAGS = PackageManager.GET_CONFIGURATIONS | PackageManager.GET_META_DATA;
 	private final Map<String, Extension> extensions = new HashMap<>();
 	private static final String TAG = "YomiManager";
+	private Progress progress;
 
 	public abstract String getMainClassMeta();
 
@@ -72,10 +83,16 @@ public abstract class YomiManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void loadAllExtensions(@NonNull Context context) {
-		var pm = context.getPackageManager();
+	public Progress getProgress() {
+		if(progress == null) {
+			return progress = new Progress(getPackages(getAnyContext()).size());
+		}
 
-		var packages = stream(pm.getInstalledPackages(PM_FLAGS))
+		return progress;
+	}
+
+	private List<PackageInfo> getPackages(@NonNull Context context) {
+		return stream(context.getPackageManager().getInstalledPackages(PM_FLAGS))
 				.filter(p -> {
 					if(p.reqFeatures == null) return false;
 
@@ -86,38 +103,48 @@ public abstract class YomiManager extends ExtensionsManager {
 
 					return false;
 				}).toList();
+	}
 
-		for(var pkg : packages) {
-			var label = pkg.applicationInfo.loadLabel(pm).toString();
-
-			if(label.startsWith(getPrefix())) {
-				label = label.substring(getPrefix().length()).trim();
-			}
-
-			var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
-
-			var extension = new Extension(this, pkg.packageName, label, pkg.versionName) {
-				@Override
-				public Drawable getIcon() {
-					return pkg.applicationInfo.loadIcon(pm);
-				}
-			};
-
-			if(isNsfw) {
-				extension.addFlags(Extension.FLAG_NSFW);
-			}
-
-			extensions.put(pkg.packageName, extension);
-
-			try {
-				checkSupportedVersionBounds(pkg.versionName, getMinVersion(), getMaxVersion());
-			} catch(IllegalArgumentException e) {
-				extension.setError("Unsupported version!", e);
-				continue;
-			}
-
-			loadExtension(context, pkg.packageName);
+	@Override
+	public void loadAllExtensions(@NonNull Context context) {
+		for(var pkg : getPackages(context)) {
+			initExtension(pkg, context);
 		}
+
+		progress.setCompleted();
+	}
+
+	private void initExtension(@NonNull PackageInfo pkg, @NonNull Context context) {
+		var pm = context.getPackageManager();
+		var label = pkg.applicationInfo.loadLabel(pm).toString();
+
+		if(label.startsWith(getPrefix())) {
+			label = label.substring(getPrefix().length()).trim();
+		}
+
+		var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
+
+		var extension = new Extension(this, pkg.packageName, label, pkg.versionName) {
+			@Override
+			public Drawable getIcon() {
+				return pkg.applicationInfo.loadIcon(pm);
+			}
+		};
+
+		if(isNsfw) {
+			extension.addFlags(Extension.FLAG_NSFW);
+		}
+
+		extensions.put(pkg.packageName, extension);
+
+		try {
+			checkSupportedVersionBounds(pkg.versionName, getMinVersion(), getMaxVersion());
+		} catch(IllegalArgumentException e) {
+			extension.setError("Unsupported version!", e);
+			return;
+		}
+
+		loadExtension(context, pkg.packageName);
 	}
 
 	@Override
@@ -154,6 +181,7 @@ public abstract class YomiManager extends ExtensionsManager {
 		}
 
 		extension.setIsLoaded(true);
+		getProgress().increment();
 	}
 
 	@Override
@@ -191,11 +219,6 @@ public abstract class YomiManager extends ExtensionsManager {
 				throw new RuntimeException("Unknown exception occurred!", e);
 			}
 		}).toList();
-	}
-
-	@Override
-	public MimeTypes[] getExtensionMimeTypes() {
-		return new MimeTypes[] { MimeTypes.APK };
 	}
 
 	public List<? extends Class<?>> loadClasses(
@@ -255,27 +278,93 @@ public abstract class YomiManager extends ExtensionsManager {
 	}
 
 	@Override
-	public void getRepository(String url, @NonNull Callbacks.Errorable<List<Extension>, Throwable> callback) {
-		HttpClient.get(url).callAsync(getAnyContext(), new HttpClient.HttpCallback() {
+	public AsyncFuture<List<Extension>> getRepository(String url) {
+		return thread(() -> {
+			var response = HttpClient.fetchSync(new HttpRequest(url));
 
-			@Override
-			public void onResponse(HttpClient.HttpResponse response) {
-				try {
-					var list = Parser.<List<YomiRepoItem>>fromString(
-							Parser.getAdapter(List.class, YomiRepoItem.class), response.getText());
+			var list = Parser.<List<YomiRepoItem>>fromString(
+					Parser.getAdapter(List.class, YomiRepoItem.class), response.getText());
 
-					callback.onResult(stream(list)
-							.map(item -> item.toExtension(YomiManager.this, url))
-							.toList(), null);
-				} catch(IOException e) {
-					callback.onError(new InvalidSyntaxException("This is not an valid repository link!", e));
+			return stream(list)
+					.map(item -> item.toExtension(YomiManager.this, url))
+					.toList();
+		});
+	}
+
+	private void installApk(@NonNull Context context, Uri uri, ControllableAsyncFuture<Extension> future) {
+		var tempFile = getTempFile();
+
+		try(var is = context.getContentResolver().openInputStream(uri)) {
+			try(var os = new FileOutputStream(tempFile)) {
+				var buffer = new byte[1024 * 5];
+				int read;
+
+				while((read = requireNonNull(is).read(buffer)) != -1) {
+					os.write(buffer, 0, read);
 				}
+
+				runOnUiThread(() -> {
+					var intent = new Intent(Intent.ACTION_VIEW);
+					intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+					intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+					intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.getPackageName());
+					intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					intent.setDataAndType(uri, MimeTypes.APK.toString());
+
+					var pm = context.getPackageManager();
+					var info = pm.getPackageArchiveInfo(tempFile.getPath(), PM_FLAGS);
+
+					if(info == null) {
+						future.fail(new NullPointerException("Failed to parse an APK!"));
+						return;
+					}
+
+					runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, data) -> {
+						switch(resultCode) {
+							case Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
+								try {
+									var got = pm.getPackageInfo(info.packageName, PM_FLAGS);
+
+									if(info.versionCode != got.versionCode) {
+										future.fail(new IllegalStateException("Failed to install an APK!"));
+										return;
+									}
+
+									initExtension(got, context);
+									future.complete(getExtension(info.packageName));
+								} catch(Throwable e) {
+									future.fail(e);
+								}
+							}
+
+							case Activity.RESULT_CANCELED -> future.fail(new CancelledException("Install cancelled"));
+						}
+					}));
+				});
+			}
+		} catch(IOException e) {
+			future.fail(e);
+		}
+	}
+
+	@Override
+	public AsyncFuture<Extension> installExtension(Context context, Uri uri) {
+		return AsyncUtils.controllableFuture(future -> {
+			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.getPackageManager().canRequestPackageInstalls()) {
+				installApk(context, uri, future);
+				return;
 			}
 
-			@Override
-			public void onError(Throwable exception) {
-				callback.onError(exception);
-			}
+			var settingsIntent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+			settingsIntent.setData(Uri.parse("package:" + context.getPackageName()));
+
+			runOnUiThread(() -> startActivityForResult(context, settingsIntent, (resultCode, data) -> {
+				switch(resultCode) {
+					case Activity.RESULT_OK -> thread(() -> installApk(context, uri, future));
+					case Activity.RESULT_CANCELED -> future.fail(new CancelledException("Permission denied!"));
+					default -> future.fail(new CancelledException("Failed to install an extension"));
+				}
+			}));
 		});
 	}
 
@@ -294,7 +383,14 @@ public abstract class YomiManager extends ExtensionsManager {
 				} catch(PackageManager.NameNotFoundException e) {
 					//App info is no longer available, so it is uninstalled.
 					extensions.remove(id);
-					future.complete(true);
+
+					try {
+						future.complete(true);
+					} catch(Throwable ex) {
+						future.fail(ex);
+					}
+				} catch(Throwable e) {
+					future.fail(e);
 				}
 			}));
 		});

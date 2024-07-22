@@ -171,7 +171,7 @@
             android:layout_marginLeft="24dp"
             android:paddingHorizontal="32dp"
             android:text="@string/watch_now"
-            app:icon="@drawable/ic_round_play_arrow_24"
+            app:icon="@drawable/ic_play_filled"
             app:iconSize="26dp" />
 
         <com.google.android.material.button.MaterialButton

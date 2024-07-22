@@ -102,6 +102,8 @@ public class ExceptionDescriptor {
 			return "Failed to bypass " + e.getBlockerName();
 		} else if(t instanceof SocketException e) {
 			return e.getMessage();
+		} else if(t instanceof CancelledException) {
+			return t.getMessage();
 		} else if(t instanceof SSLHandshakeException) {
 			return context.getString(R.string.failed_handshake);
 		} else if(t instanceof HttpException e) {

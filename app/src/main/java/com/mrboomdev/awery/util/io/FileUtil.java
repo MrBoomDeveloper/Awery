@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,18 @@ public class FileUtil {
 		}
 	}
 
-	public static List<File> getFiles(@NonNull File parent) {
+	@NonNull
+	public static List<File> listFiles(@NonNull File parent) {
+		var children = parent.listFiles();
+
+		if(children == null || children.length == 0) {
+			return Collections.emptyList();
+		}
+
+		return Arrays.asList(children);
+	}
+
+	public static List<File> listFilesRecusrsively(@NonNull File parent) {
 		if(parent.isDirectory()) {
 			var children = parent.listFiles();
 
@@ -60,7 +72,7 @@ public class FileUtil {
 				}
 
 				return stream(children)
-						.map(FileUtil::getFiles)
+						.map(FileUtil::listFilesRecusrsively)
 						.flatMap(NiceUtils::stream)
 						.toList();
 			}

@@ -67,7 +67,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 
 	@NonNull
 	private List<CatalogFeed> getFeeds() {
-		return stream(ExtensionsFactory.getExtensions(Extension.FLAG_WORKING))
+		return stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
 				.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_MEDIA_SEARCH))
 				.flatMap(NiceUtils::stream)
 				.filter(provider -> {

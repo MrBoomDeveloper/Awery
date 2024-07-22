@@ -111,7 +111,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		var extensionId = split2[1];
 
 		try {
-			return stream(ExtensionsFactory.getManager(managerId)
+			return stream(ExtensionsFactory.getManager__Deprecated(managerId)
 					.getExtensions(Extension.FLAG_WORKING))
 					.map(Extension::getProviders)
 					.flatMap(NiceUtils::stream)

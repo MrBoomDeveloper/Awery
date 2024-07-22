@@ -98,7 +98,7 @@
 					]
 				}, {
 					"key": "player_big_seek_length", "type": "select_integer", "integer_value": 60,
-					"title": "quick_rewind", "icon": "outline_fast_forward_24",
+					"title": "quick_rewind", "icon": "ic_fast_forward_outlined",
 					"description": "${VALUE}",
 					"items": [
 						{ "key": "0", "title": "Disabled" },
@@ -111,7 +111,7 @@
 					]
 				}, {
 					"key": "video_aspect_ratio", "type": "select", "string_value": "FIT",
-					"title": "aspect_ratio",
+					"title": "aspect_ratio", "icon": "ic_fullscreen",
 					"items": [
 						{ "key": "FIT", "title": "fit" },
 						{ "key": "FILL", "title": "fill" },
@@ -141,7 +141,7 @@
 					]
 				}, {
 					"key": "player_dim_screen", "type": "boolean", "boolean_value": true,
-					"title": "dim_screen", "icon": "ic_round_brightness_4_24",
+					"title": "dim_screen", "icon": "ic_brightness_medium_outlined",
 					"description": "After clicking on the screen, black overlay will be shown on top of the video."
 				}, {
 					"type": "screen", "show_if": "never",
@@ -199,22 +199,24 @@
 		}, {
 			"type": "screen", "title": "advanced", "icon": "ic_settings_filled",
 			"items": [
+				{ "type": "category", "title": "Updates" },
+
 				{
-					"type": "category",
-					"title": "Warning! These settings aren't meant for typical users. If you don't know what is that, don't touch it."
-				}, {
-					"key": "log_network", "type": "boolean", "restart": true,
-					"title": "Verbose network logging"
-				}, {
-					"key": "try_crash_native", "type": "action",
-					"title": "Run Native Crash"
-				}, {
-					"key": "try_crash_java", "type": "action",
-					"title": "Run Java Crash"
-				}, {
-					"key": "start_onboarding", "type": "action",
-					"title": "Start onboarding"
-				}
+					"key": "auto_check_app_update", "type": "boolean", "boolean_value": true,
+					"title": "Automatically check for app updates"
+				},
+
+				{ "key": "check_app_update", "type": "action", "title": "Check app update" },
+
+				{ "type": "category", "title": "Developers" },
+				{ "key": "log_network", "type": "boolean", "restart": true, "title": "Verbose network logging" },
+				{ "key": "start_onboarding", "type": "action", "title": "Start onboarding" },
+
+				{ "type": "category",  "title": "These buttons are supposed to crash the app. Don't report them!" },
+				{ "key": "try_crash_native", "type": "action", "title": "Throw Native Exception" },
+				{ "key": "try_crash_native_async", "type": "action", "title": "Throw Async Native Exception" },
+				{ "key": "try_crash_java", "type": "action", "title": "Throw Java Exception" },
+				{ "key": "try_crash_java_async", "type": "action", "title": "Throw Async Java Exception" }
 			]
 		}, {
 			"type": "action", "title": "about", "icon": "ic_info_filled", "key": "about"

@@ -16,10 +16,12 @@ public class YomiRepoItem {
 	public String name, pkg, apk, lang, version;
 	public int nsfw;
 
-	public Extension toExtension(YomiManager manager, @NonNull String baseUrl) {
-		var iconUrl = baseUrl.substring(0, baseUrl.indexOf(FILE_NAME)) + "icon/" + pkg + ".png";
+	public Extension toExtension(YomiManager manager, @NonNull String repoUrl) {
+		var baseUrl = repoUrl.substring(0, repoUrl.indexOf(FILE_NAME));
+		var iconUrl = baseUrl + "icon/" + pkg + ".png";
+		var apkUrl = baseUrl + "apk/" + apk;
 
-		var ext = new Extension(pkg, name, version, apk) {
+		var ext = new Extension(pkg, name, version, apkUrl) {
 			@Override
 			public boolean isNsfw() {
 				return nsfw == 1;

@@ -1,24 +1,35 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
+import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.deleteFile;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.app.services.BackupService;
+import com.mrboomdev.awery.app.update.UpdatesManager;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.ui.activity.AboutActivity;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.exceptions.CancelledException;
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 
 import org.jetbrains.annotations.Contract;
 
@@ -28,6 +39,7 @@ import java.util.Calendar;
 import xcrash.XCrash;
 
 public class SettingsActions {
+	private static final String TAG = "SettingsActions";
 
 	@Contract(pure = true)
 	public static void run(@NonNull SettingsItem item) {
@@ -111,8 +123,14 @@ public class SettingsActions {
 			case AwerySettings.TRY_CRASH_NATIVE ->
 					XCrash.testNativeCrash(false);
 
+			case AwerySettings.TRY_CRASH_NATIVE_ASYNC ->
+					thread(() -> XCrash.testNativeCrash(false));
+
 			case AwerySettings.TRY_CRASH_JAVA ->
 					XCrash.testJavaCrash(false);
+
+			case AwerySettings.TRY_CRASH_JAVA_ASYNC ->
+					thread(() -> XCrash.testJavaCrash(false));
 
 			case AwerySettings.START_ONBOARDING -> {
 				var context = getAnyContext();
@@ -120,6 +138,30 @@ public class SettingsActions {
 				var intent = new Intent(context, SetupActivity.class);
 				context.startActivity(intent);
 			}
+
+			case AwerySettings.CHECK_APP_UPDATE -> UpdatesManager.getAppUpdate().addCallback(new AsyncFuture.Callback<>() {
+				private final Dialog window = showLoadingWindow();
+
+				@Override
+				public void onSuccess(UpdatesManager.Update update) {
+					UpdatesManager.showUpdateDialog(update);
+					window.dismiss();
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
+					Log.e(TAG, "Failed to check for updates!", t);
+
+					if(t instanceof CancelledException) {
+						toast(ExceptionDescriptor.getTitle(t, getAnyContext()), 1);
+						window.dismiss();
+						return;
+					}
+
+					CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), t);
+					window.dismiss();
+				}
+			});
 
 			default -> toast("Unknown action: " + actionName);
 		}

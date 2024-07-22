@@ -26,6 +26,7 @@ public class AniyomiMedia extends CatalogMedia {
 
 		this.setTitle(anime.getTitle());
 		this.setPoster(anime.getThumbnail_url());
+		this.type = MediaType.TV;
 
 		this.status = switch(anime.getStatus()) {
 			case SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> CatalogMedia.MediaStatus.COMPLETED;

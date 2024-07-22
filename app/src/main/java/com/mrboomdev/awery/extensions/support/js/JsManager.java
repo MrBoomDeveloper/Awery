@@ -1,8 +1,13 @@
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.Constants.SUPPRESS_IGNORED_THROWABLE;
+import static com.mrboomdev.awery.util.async.AsyncUtils.await;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
+import static com.mrboomdev.awery.util.io.FileUtil.listFiles;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,7 +16,7 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.JsException;
@@ -27,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +50,7 @@ public class JsManager extends ExtensionsManager {
 	private final Map<String, Extension> extensions = new HashMap<>();
 	private final Queue<JsTask> tasks = new ConcurrentLinkedDeque<>();
 	private org.mozilla.javascript.Context context;
+	private Progress progress;
 
 	public JsManager() {
 		Thread jsThread = new Thread(() -> {
@@ -112,6 +117,15 @@ public class JsManager extends ExtensionsManager {
 		jsThread.start();
 	}
 
+	@Override
+	public Progress getProgress() {
+		if(progress == null) {
+			return progress = new Progress(listFiles(new File(getAnyContext().getFilesDir(), getId())).size());
+		}
+
+		return progress;
+	}
+
 	private void processTask(@NonNull JsTask task) {
 		switch(task.getTaskType()) {
 			case JsTask.LOAD_EXTENSION -> {
@@ -127,15 +141,8 @@ public class JsManager extends ExtensionsManager {
 
 			case JsTask.LOAD_ALL_EXTENSIONS -> {
 				var context = (Context) task.getArgs()[0];
-				var dir = new File(context.getFilesDir(), getId());
-				var files = dir.listFiles();
 
-				if(!dir.exists() || files == null) {
-					task.resolve(true);
-					return;
-				}
-
-				for(var file : files) {
+				for(var file : listFiles(new File(context.getFilesDir(), getId()))) {
 					var isEnabledKey = "ext_" + getId() + "_" + file.getName() + "_enabled";
 
 					if(!NicePreferences.getPrefs().getBoolean(isEnabledKey, true)) {
@@ -178,8 +185,11 @@ public class JsManager extends ExtensionsManager {
 						extension.setError("Failed to initialize extension", t);
 						extensions.put(name, extension);
 					}
+
+					getProgress().increment();
 				}
 
+				progress.setCompleted();
 				task.resolve(true);
 			}
 
@@ -217,9 +227,7 @@ public class JsManager extends ExtensionsManager {
 	public void loadAllExtensions(@NonNull Context context) {
 		var result = new AtomicReference<>();
 		addTask(new JsTask(JsTask.LOAD_ALL_EXTENSIONS, result::set, context));
-
-		// Wait for the task to finish
-		while(result.get() == null);
+		await(() -> result.get() != null);
 
 		if(result.get() instanceof Throwable t) {
 			throw new IllegalArgumentException("Failed to load extensions!", t);
@@ -277,32 +285,34 @@ public class JsManager extends ExtensionsManager {
 	}
 
 	@Override
-	public Extension installExtension(Context context, @NonNull InputStream is) throws IOException, JsException {
-		var builder = new StringBuilder();
+	public AsyncFuture<Extension> installExtension(Context context, @NonNull Uri uri) {
+		return thread(() -> {
+			var builder = new StringBuilder();
 
-		try(var stream = new BufferedReader(new InputStreamReader(is))) {
-			for(String line; (line = stream.readLine()) != null;) {
-				builder.append(line).append("\n");
-			}
-		}
-
-		var script = builder.toString();
-		var response = waitForResult(JsTask.LOAD_EXTENSION, script, context);
-
-		if(response instanceof Exception e) {
-			if(e instanceof EvaluatorException ex) {
-				Log.e(TAG, Constants.LOGS_SEPARATOR);
-				throw new JsException(ex, caughtExceptions);
+			try(var stream = new BufferedReader(new InputStreamReader(context.getContentResolver().openInputStream(uri)))) {
+				for(String line; (line = stream.readLine()) != null;) {
+					builder.append(line).append("\n");
+				}
 			}
 
-			throw new IllegalArgumentException("Failed to load extension!", e);
-		}
+			var script = builder.toString();
+			var response = waitForResult(JsTask.LOAD_EXTENSION, script, context);
 
-		return (Extension) response;
+			if(response instanceof Exception e) {
+				if(e instanceof EvaluatorException ex) {
+					Log.e(TAG, Constants.LOGS_SEPARATOR);
+					throw new JsException(ex, caughtExceptions);
+				}
+
+				throw new IllegalArgumentException("Failed to load extension!", e);
+			}
+
+			addExtension(context, (Extension) response);
+			return (Extension) response;
+		});
 	}
 
-	@Override
-	public void addExtension(@NonNull Context context, @NonNull Extension extension) throws IOException {
+	private void addExtension(@NonNull Context context, @NonNull Extension extension) throws IOException {
 		String script;
 
 		if(extension.getProviders().get(0) instanceof JsProvider jsProvider) {
@@ -330,11 +340,6 @@ public class JsManager extends ExtensionsManager {
 	@Override
 	public Collection<Extension> getAllExtensions() {
 		return extensions.values();
-	}
-
-	@Override
-	public MimeTypes[] getExtensionMimeTypes() {
-		return new MimeTypes[]{ MimeTypes.JS };
 	}
 
 	@Override
