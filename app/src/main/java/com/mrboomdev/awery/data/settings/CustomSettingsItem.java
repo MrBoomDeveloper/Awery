@@ -4,7 +4,7 @@ import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
-public abstract class CustomSettingsItem extends SettingsItem {
+public class CustomSettingsItem extends SettingsItem {
 
 	public CustomSettingsItem() {}
 
@@ -61,7 +61,10 @@ public abstract class CustomSettingsItem extends SettingsItem {
 	}
 
 	private void restoreSavedValuesDefault() {
-		switch(getType()) {
+		var type = getType();
+		if(type == null) return;
+
+		switch(type) {
 			case STRING, SELECT -> stringValue = (String) getSavedValue();
 			case INTEGER, SELECT_INTEGER -> integerValue = (Integer) getSavedValue();
 			case BOOLEAN, SCREEN_BOOLEAN -> booleanValue = (Boolean) getSavedValue();

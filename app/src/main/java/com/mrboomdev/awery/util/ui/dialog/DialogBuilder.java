@@ -1,14 +1,21 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
+
 import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public final class DialogBuilder extends BaseDialogBuilder<DialogBuilder> {
 
 	public DialogBuilder(Context context) {
 		super(context);
+	}
+
+	public DialogBuilder() {
+		this(getAnyActivity(AppCompatActivity.class));
 	}
 
 	@Nullable

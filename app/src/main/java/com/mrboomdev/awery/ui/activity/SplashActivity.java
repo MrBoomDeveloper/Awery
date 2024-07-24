@@ -44,6 +44,7 @@ public class SplashActivity extends AppCompatActivity {
 
 		binding = ScreenSplashBinding.inflate(getLayoutInflater());
 		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+		getWindow().setNavigationBarColor(resolveAttrColor(this, android.R.attr.colorBackground));
 		setContentView(binding.getRoot());
 
 		binding.status.setText("Checking the database...");

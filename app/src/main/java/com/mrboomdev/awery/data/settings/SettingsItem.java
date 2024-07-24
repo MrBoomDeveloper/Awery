@@ -491,7 +491,7 @@ public class SettingsItem implements Serializable {
 		}
 
 		public CustomSettingsItem buildCustom() {
-			return new CustomSettingsItem(item) {};
+			return new CustomSettingsItem(item);
 		}
 	}
 

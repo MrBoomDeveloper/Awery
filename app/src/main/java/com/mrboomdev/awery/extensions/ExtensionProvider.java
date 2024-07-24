@@ -22,6 +22,8 @@ import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
@@ -148,16 +150,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
 	}
 
-	public void searchSubtitles(
-			Context context,
-			SettingsList filters,
-			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
-	) {
-		callback.onFailure(new UnimplementedException("Subtitles search isn't implemented!"));
-	}
-
-	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
-		callback.onFailure(new UnimplementedException("Filters aren't implemented!"));
+	public AsyncFuture<SettingsList> getFilters() {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Filters aren't implemented!"));
 	}
 
 	/**
@@ -189,8 +183,8 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Comments deletion isn't implemented!"));
 	}
 
-	public void getChangelog(@NonNull ResponseCallback<String> callback) {
-		callback.onFailure(new UnimplementedException("Changelog isn't implemented!"));
+	public AsyncFuture<String> getChangelog() {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Changelog isn't implemented!"));
 	}
 
 	public void trackMedia(
@@ -211,6 +205,10 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 	public void getVideoFiles(SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
 		callback.onFailure(new UnimplementedException("Videos aren't implemented!"));
+	}
+
+	public AsyncFuture<CatalogSearchResults<CatalogSubtitle>> searchSubtitles(SettingsList filters) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Subtitles search isn't implemented!"));
 	}
 
 	/**

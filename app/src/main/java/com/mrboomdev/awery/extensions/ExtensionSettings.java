@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
 
@@ -105,15 +106,17 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								item instanceof ExtensionSetting setting &&
 										setting.getExtension().getId().equals(extension.getId()));
 
-						onSettingChange(newItem, oldItem);
+						runOnUiThread(() -> onSettingChange(newItem, oldItem));
 					} else {
 						toast("Extension installed successfully!");
 
-						if(extensions.size() == 1) {
-							onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
-						}
+						runOnUiThread(() -> {
+							if(extensions.size() == 1) {
+								onSettingAddition(extensionsHeader, repos.isEmpty() ? 0 : repos.size() + 1);
+							}
 
-						onSettingAddition(newItem, extensions.size() + (repos.isEmpty() ? 0 : repos.size() + 1));
+							onSettingAddition(newItem, extensions.size() + (repos.isEmpty() ? 0 : repos.size() + 1));
+						});
 					}
 
 					if(currentDialog != null) {
@@ -122,7 +125,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 					for(var source : extension.getProviders()) {
 						if(source.hasFeatures(ExtensionProvider.FEATURE_CHANGELOG)) {
-							source.getChangelog(new ExtensionProvider.ResponseCallback<>() {
+							source.getChangelog().addCallback(new AsyncFuture.Callback<>() {
 								@Override
 								public void onSuccess(String s) {
 									runOnUiThread(() -> new DialogBuilder(activity)
@@ -133,8 +136,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								}
 
 								@Override
-								public void onFailure(Throwable e) {
-									CrashHandler.showErrorDialog("Failed to get an Changelog", e);
+								public void onFailure(Throwable t) {
+									CrashHandler.showErrorDialog("Failed to get an Changelog", t);
 								}
 							});
 						}
@@ -388,15 +391,13 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			@Override
 			public void onClick(Context context) {
 				var window = showLoadingWindow();
+				var downloadedCallback = new AtomicReference<AsyncFuture.Callback<File>>();
 
-				HttpClient.download(new HttpRequest(extension.getFileUrl()), new File(context.getCacheDir(),
-								"download/extension/" + manager.getId() + "/" + extension.getId())
-				).addCallback(new AsyncFuture.Callback<>() {
-
+				downloadedCallback.set(new AsyncFuture.Callback<>() {
 					@Override
-					public void onSuccess(File result) {
+					public void onSuccess(File file) {
 						manager.installExtension(context,
-								FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER, result)
+								FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER, file)
 						).addCallback(new AsyncFuture.Callback<>() {
 
 							@Override
@@ -426,7 +427,52 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 									}
 								} else {
 									Log.e(TAG, "Failed to install an extension!", t);
-									CrashHandler.showErrorDialog(t);
+
+									var dialog = new DialogBuilder()
+											.setTitle("Failed to install an extension")
+											.setNeutralButton("Dismiss", DialogBuilder::dismiss)
+											.setPositiveButton(R.string.uninstall_extension, d -> {
+												var window1 = showLoadingWindow();
+
+												manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
+													@Override
+													public void onSuccess(Boolean result) {
+														window1.dismiss();
+														d.dismiss();
+
+														try {
+															downloadedCallback.get().onSuccess(file);
+														} catch(Throwable e) {
+															onFailure(e);
+														}
+													}
+
+													@Override
+													public void onFailure(Throwable t) {
+														Log.e(TAG, "Failed to uninstall an extension!", t);
+														window1.dismiss();
+														d.dismiss();
+
+														if(t instanceof CancelledException) {
+															toast(t.getMessage());
+															return;
+														}
+
+														CrashHandler.showErrorDialog("Failed to uninstall an extension", t);
+													}
+												});
+											});
+
+									switch(getUpdateStatus()) {
+										case DOWNGRADE -> dialog.setMessage("It looks like you're trying to install an older version of an extension. Try uninstalling an old version and retry again."
+												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+
+										case UPDATE -> dialog.setMessage("It look's like you're trying to update an extension from a different repository. Try uninstalling an old version and retry again."
+												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+
+										default -> dialog.setMessage("Something just went wrong. We don't know what, and we don't know why."
+												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+									}
 								}
 							}
 						});
@@ -439,6 +485,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						toast(ExceptionDescriptor.getTitle(t, context));
 					}
 				});
+
+				HttpClient.download(new HttpRequest(extension.getFileUrl()), new File(context.getCacheDir(),
+								"download/extension/" + manager.getId() + "/" + extension.getId())
+				).addCallback(downloadedCallback.get());
 			}
 
 			@Override
@@ -450,25 +500,25 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		@NonNull
 		private UpdateAvailability getUpdateStatus() {
 			var found = manager.getExtension(extension.getId());
-			if(found == null) return UpdateAvailability.BRAND_NEW;
+			if(found == null) return UpdateAvailability.NEW;
 
 			var compared = compareVersions(parseVersion(extension.getVersion()), parseVersion(found.getVersion()));
-			if(compared > 0) return UpdateAvailability.SERVER_NEW;
-			if(compared < 0) return UpdateAvailability.SERVER_OLD;
+			if(compared > 0) return UpdateAvailability.UPDATE;
+			if(compared < 0) return UpdateAvailability.DOWNGRADE;
 			return UpdateAvailability.SAME;
 		}
 
 		private enum UpdateAvailability {
-			SERVER_OLD, SAME,
+			DOWNGRADE, SAME,
 
-			SERVER_NEW {
+			UPDATE {
 				@Override
 				public boolean mayDownload() {
 					return true;
 				}
 			},
 
-			BRAND_NEW {
+			NEW {
 				@Override
 				public boolean mayDownload() {
 					return true;
@@ -508,8 +558,8 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			}
 
 			switch(getUpdateStatus()) {
-				case SERVER_NEW -> result += " (Update available)";
-				case SERVER_OLD -> result += " (Older version)";
+				case UPDATE -> result += " (Update available)";
+				case DOWNGRADE -> result += " (Older version)";
 			}
 
 			return result;

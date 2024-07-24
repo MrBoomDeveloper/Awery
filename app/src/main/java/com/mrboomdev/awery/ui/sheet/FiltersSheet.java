@@ -32,10 +32,12 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.SheetDialog;
 
@@ -87,8 +89,8 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		var recycler = new RecyclerView(context);
 		recycler.setLayoutManager(new LinearLayoutManager(context));
 		recycler.setClipToPadding(false);
-		setTopPadding(recycler, dpPx(8));
-		setHorizontalPadding(recycler, dpPx(8));
+		setTopPadding(recycler, dpPx(recycler, 8));
+		setHorizontalPadding(recycler, dpPx(recycler, 8));
 		linear.addView(recycler);
 
 		useLayoutParams(recycler, params -> {
@@ -99,7 +101,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		var progressBarAdapter = SingleViewAdapter.fromViewDynamic(parent -> {
 			var progressBar = new CircularProgressIndicator(context);
 			progressBar.setIndeterminate(true);
-			setVerticalPadding(progressBar, dpPx(8));
+			setVerticalPadding(progressBar, dpPx(progressBar, 8));
 
 			var params = new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
 			progressBar.setLayoutParams(params);
@@ -121,7 +123,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		recycler.setAdapter(adapter);
 
 		var actions = new LinearLayoutCompat(context);
-		setPadding(actions, dpPx(16), dpPx(8));
+		setPadding(actions, dpPx(actions, 16), dpPx(actions, 8));
 		linear.addView(actions, MATCH_PARENT, WRAP_CONTENT);
 
 		if(applyCallback != null) {
@@ -130,13 +132,13 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 			actions.addView(cancel, 0, WRAP_CONTENT);
 			cancel.setOnClickListener(v -> dismiss());
 			useLayoutParams(cancel, params -> params.weight = 1, LinearLayoutCompat.LayoutParams.class);
-			setRightMargin(cancel, dpPx(6));
+			setRightMargin(cancel, dpPx(cancel, 6));
 
 			var save = new MaterialButton(context);
 			save.setText(R.string.save);
 			actions.addView(save, 0, WRAP_CONTENT);
 			useLayoutParams(save, params -> params.weight = 1, LinearLayoutCompat.LayoutParams.class);
-			setLeftMargin(cancel, dpPx(6));
+			setLeftMargin(cancel, dpPx(cancel, 6));
 
 			save.setOnClickListener(v -> {
 				applyCallback.run(filters);
@@ -152,25 +154,24 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		if(provider == null) {
 			progressBarAdapter.setEnabled(false);
 		} else {
-			provider.getFilters(new ExtensionProvider.ResponseCallback<>() {
-
+			provider.getFilters().addCallback(new AsyncFuture.Callback<>() {
 				@Override
-				public void onSuccess(List<SettingsItem> fetchedFilters) {
+				public void onSuccess(SettingsList result) {
 					if(!isShown()) return;
 
-					mergeFilters(fetchedFilters, filters);
+					mergeFilters(result, filters);
 					filters.clear();
-					filters.addAll(fetchedFilters);
+					filters.addAll(result);
 
 					runOnUiThread(() -> {
 						progressBarAdapter.setEnabled(false);
-						screenAdapter.setItems(fetchedFilters, true);
+						screenAdapter.setItems(result, true);
 					}, recycler);
 				}
 
 				@Override
-				public void onFailure(Throwable e) {
-					Log.e(TAG, "Failed to load filters!", e);
+				public void onFailure(Throwable t) {
+					Log.e(TAG, "Failed to load filters!", t);
 					toast("Failed to load filters");
 
 					runOnUiThread(() -> progressBarAdapter.setEnabled(false), recycler);

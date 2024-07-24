@@ -26,7 +26,6 @@ import com.squareup.moshi.Json;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -148,7 +147,7 @@ public class CatalogFeed implements Serializable {
 					.toList();
 
 			case TEMPLATE_AUTO_GENERATE -> {
-				var result = new ArrayList<>(Arrays.asList(stream(ExtensionsFactory.getInstance().await().getExtensions(Extension.FLAG_WORKING))
+				var result = new ArrayList<>(stream(ExtensionsFactory.getInstance().await().getExtensions(Extension.FLAG_WORKING))
 						.map(Extension::getProviders)
 						.flatMap(NiceUtils::stream)
 						.filter(provider -> {
@@ -190,7 +189,7 @@ public class CatalogFeed implements Serializable {
 							}
 						})))
 						.flatMap(NiceUtils::stream)
-						.toArray(CatalogFeed[]::new)));
+						.toList());
 
 				Collections.shuffle(result);
 

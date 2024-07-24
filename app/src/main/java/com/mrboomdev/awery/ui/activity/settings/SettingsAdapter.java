@@ -168,8 +168,6 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 					if(newItem != oldItem) {
 						items.set(index, newItem);
-
-						ids.remove(oldItem);
 						ids.put(newItem, ids.get(oldItem));
 					}
 

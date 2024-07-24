@@ -4,7 +4,6 @@ import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.createObject;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.isNullJs;
@@ -49,6 +48,8 @@ import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -272,7 +273,7 @@ public class JsProvider extends ExtensionProvider {
 				try {
 					fun.call(context, scope, null, new Object[] {
 							JsComment.createJsComment(context, scope, comment),
-							(Callback<NativeObject>) (o, e) -> {
+							(JsCallback<NativeObject>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -296,7 +297,7 @@ public class JsProvider extends ExtensionProvider {
 			if(scope.get("aweryFeeds") instanceof Function fun) {
 				try {
 					fun.call(context, scope, null, new Object[] {
-							(Callback<NativeArray>) (o, e) -> {
+							(JsCallback<NativeArray>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -324,7 +325,7 @@ public class JsProvider extends ExtensionProvider {
 					fun.call(context, scope, null, new Object[] {
 							JsComment.createJsComment(this.context, this.scope, oldComment),
 							JsComment.createJsComment(this.context, this.scope, newComment),
-							(Callback<NativeObject>) (o, e) -> {
+							(JsCallback<NativeObject>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -348,7 +349,7 @@ public class JsProvider extends ExtensionProvider {
 				try {
 					fun.call(context, scope, null, new Object[] {
 							JsComment.createJsComment(this.context, this.scope, comment),
-							(Callback<Boolean>) (o, e) -> {
+							(JsCallback<Boolean>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -366,27 +367,8 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void getChangelog(@NonNull ResponseCallback<String> callback) {
-		manager.postRunnable(() -> {
-			if(scope.get("aweryChangelog") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[]{
-							(Callback<Object>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
-
-								callback.onSuccess(o.toString());
-							}
-					});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryChangelog\" is not a function or isn't defined!"));
-			}
-		});
+	public AsyncFuture<String> getChangelog() {
+		return runFunction("aweryChangelog").then(JsBridge::stringFromJs);
 	}
 
 	@Override
@@ -430,7 +412,7 @@ public class JsProvider extends ExtensionProvider {
 						}
 					}
 
-					fun.call(context, scope, null, new Object[]{ media, input, (Callback<NativeObject>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ media, input, (JsCallback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -513,7 +495,7 @@ public class JsProvider extends ExtensionProvider {
 						obj.put(entry.getKey(), obj, entry.getValue());
 					}
 
-					fun.call(context, scope, null, new Object[]{ obj, (Callback<Boolean>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ obj, (JsCallback<Boolean>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -567,7 +549,7 @@ public class JsProvider extends ExtensionProvider {
 
 					fun.call(context, scope, null, new Object[] {
 							jsRequest,
-							(Callback<NativeObject>) (o, e) -> {
+							(JsCallback<NativeObject>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -600,7 +582,7 @@ public class JsProvider extends ExtensionProvider {
 					jsRequest.put("parentComment", jsRequest, JsComment.createJsComment(
 							context, scope, request.getParentComment()));
 
-					fun.call(context, scope, null, new Object[] { jsRequest, (Callback<NativeObject>) (o, e) -> {
+					fun.call(context, scope, null, new Object[] { jsRequest, (JsCallback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -619,60 +601,25 @@ public class JsProvider extends ExtensionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
-		manager.postRunnable(() -> {
-			if(scope.get("aweryFilters") instanceof Function fun) {
-				try {
-					fun.call(this.context, scope, null, new Object[] { (Callback<NativeArray>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
-
-						callback.onSuccess(stream(o)
-								.map(item -> JsSettingsItem.fromJs((NativeObject) item, null))
-								.toList());
-					}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryFilters\" function not found!"));
-			}
-		});
+	public AsyncFuture<SettingsList> getFilters() {
+		return this.<NativeArray>runFunction("aweryFilters")
+				.then(array -> new SettingsList(stream(array)
+						.map(item -> JsSettingsItem.fromJs((NativeObject) item, null))
+						.toList()));
 	}
 
 	@Override
-	public AdultContent getAdultContentMode() {
-		return adultContentMode;
-	}
-
-	@Override
-	public void searchSubtitles(
-			android.content.Context context,
-			SettingsList filters,
-			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogSubtitle>> callback
-	) {
-		runFunction("awerySearchSubtitles", (Callback<NativeObject>) (o, e) -> {
-			if(e != null) {
-				callback.onFailure(new JsException(e));
-				return;
+	public AsyncFuture<CatalogSearchResults<CatalogSubtitle>> searchSubtitles(SettingsList filters) {
+		return this.<NativeObject>runFunction("awerySearchSubtitles", filters).then(o -> {
+			if(((NativeArray)o.get("items")).isEmpty()) {
+				throw new ZeroResultsException("Zero results", R.string.no_media_found);
 			}
 
-			if(((NativeArray)o.get("items", o)).isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Zero results",
-						R.string.no_media_found));
-
-				return;
-			}
-
-			callback.onSuccess(CatalogSearchResults.of(stream(listFromJs(o.get("items", o), NativeObject.class))
+			return CatalogSearchResults.of(stream(listFromJs(o.get("items"), NativeObject.class))
 					.filter(item -> !isNullJs(item))
 					.map(item -> new CatalogSubtitle(stringFromJs(item.get("title")), stringFromJs(item.get("url"))))
-					.toList(), booleanFromJs(o.get("hasNextPage"))));
-		}, this.context.newArray(scope, stream(filters)
-				.map(filter -> JsSettingsItem.toJs(filter, this.context, scope))
-				.toArray()));
+					.toList(), booleanFromJs(o.get("hasNextPage")));
+		});
 	}
 
 	private Scriptable filtersToJson(SettingsList filters) {
@@ -691,7 +638,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("awerySearchMedia") instanceof Function fun) {
 				try {
-					fun.call(this.context, scope, null, new Object[] { filtersToJson(filters), (Callback<NativeObject>) (o, e) -> {
+					fun.call(this.context, scope, null, new Object[] { filtersToJson(filters), (JsCallback<NativeObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -841,7 +788,7 @@ public class JsProvider extends ExtensionProvider {
 				try {
 					fun.call(context, scope, null, new Object[] {
 							episode,
-							(Callback<List<ScriptableObject>>) (o, e) -> {
+							(JsCallback<List<ScriptableObject>>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -873,7 +820,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLogOut") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ (Callback<Boolean>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ (JsCallback<Boolean>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -895,7 +842,7 @@ public class JsProvider extends ExtensionProvider {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLoginScreen") instanceof Function fun) {
 				try {
-					fun.call(context, scope, null, new Object[]{ (Callback<ScriptableObject>) (o, e) -> {
+					fun.call(context, scope, null, new Object[]{ (JsCallback<ScriptableObject>) (o, e) -> {
 						if(e != null) {
 							callback.onFailure(new JsException(e));
 							return;
@@ -939,7 +886,7 @@ public class JsProvider extends ExtensionProvider {
 				try {
 					fun.call(context, scope, null, new Object[] {
 							page, media,
-							(Callback<List<ScriptableObject>>) (o, e) -> {
+							(JsCallback<List<ScriptableObject>>) (o, e) -> {
 								if(e != null) {
 									callback.onFailure(new JsException(e));
 									return;
@@ -965,28 +912,47 @@ public class JsProvider extends ExtensionProvider {
 		});
 	}
 
-	private <T> void runFunction(String name, Callback<T> callback, Object... args) {
-		manager.postRunnable(() -> {
+	@NonNull
+	private <T> AsyncFuture<T> runFunction(String name, SettingsList filters) {
+		return runFunction(name, this.context.newArray(scope, stream(filters)
+				.map(filter -> JsSettingsItem.toJs(filter, this.context, scope))
+				.toArray()));
+	}
+
+	@NonNull
+	private <T> AsyncFuture<T> runFunction(String name, Object... args) {
+		return AsyncUtils.controllableFuture(future -> manager.postRunnable(() -> {
 			if(scope.get(name) instanceof Function fun) {
 				try {
 					var newArray = new Object[args.length + 1];
 					System.arraycopy(args, 0, newArray, 0, args.length);
-					newArray[args.length] = callback;
+
+					newArray[args.length] = (JsCallback<T>) (t, e) -> {
+						if(t != null) {
+							try {
+								future.complete(t);
+							} catch(Throwable ex) {
+								future.fail(ex);
+								return;
+							}
+						}
+
+						if(e != null) {
+							future.fail(new JsException(e));
+							return;
+						}
+
+						future.fail(new NullPointerException("No result and no error was provided!"));
+					};
 
 					fun.call(this.context, scope, null, newArray);
 				} catch(Throwable e) {
-					callback.reject(createObject(context, scope, Map.of(
-							"id", JsException.OTHER,
-							"extra", e
-					)));
+					future.fail(e);
 				}
 			} else {
-				callback.reject(createObject(context, scope, Map.of(
-						"id", JsException.OTHER,
-						"extra", new UnimplementedException("\"" + name + "\" function not found!")
-				)));
+				future.fail(new UnimplementedException("\"" + name + "\" function not found!"));
 			}
-		});
+		}));
 	}
 
 	/**
@@ -994,7 +960,7 @@ public class JsProvider extends ExtensionProvider {
 	 * @author MrBoomDev
 	 */
 	@SuppressWarnings("unused")
-	private interface Callback<T> {
+	private interface JsCallback<T> {
 		default void resolve(T t) {
 			onResult(t, null);
 		}
@@ -1009,6 +975,11 @@ public class JsProvider extends ExtensionProvider {
 	@Override
 	public Set<String> getFeatures() {
 		return features;
+	}
+
+	@Override
+	public AdultContent getAdultContentMode() {
+		return adultContentMode;
 	}
 
 	@Override

@@ -29,6 +29,8 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
@@ -101,14 +103,14 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void getFilters(@NonNull ResponseCallback<List<SettingsItem>> callback) {
+	public AsyncFuture<SettingsList> getFilters() {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			callback.onSuccess(stream(catalogueSource.getFilterList())
+			return AsyncUtils.futureNow(new SettingsList(stream(catalogueSource.getFilterList())
 					.map(AniyomiProvider::mapAnimeFilter)
 					.filter(Objects::nonNull)
-					.toList());
+					.toList()));
 		} else {
-			callback.onFailure(new UnimplementedException("Filters aren't supported!"));
+			return AsyncUtils.futureFailNow(new UnimplementedException("Filters aren't supported!"));
 		}
 	}
 

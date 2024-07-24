@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
@@ -162,7 +163,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		scroller.setVerticalScrollBarEnabled(false);
 
 		var fieldsLinear = new LinearLayoutCompat(context);
-		ViewUtil.setHorizontalPadding(fieldsLinear, dpPx(24));
+		ViewUtil.setHorizontalPadding(fieldsLinear, dpPx(fieldsLinear, 24));
 		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
 		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
 		fieldsWrapper = fieldsLinear;
@@ -304,7 +305,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	public T dismiss() {
 		if(dialog != null) {
 			dialog.dismiss();
-			destroy();
+			runOnUiThread(this::destroy);
 			dialog = null;
 		}
 

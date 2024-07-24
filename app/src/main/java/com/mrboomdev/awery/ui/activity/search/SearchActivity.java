@@ -52,6 +52,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.sheet.FiltersSheet;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -275,8 +276,7 @@ public class SearchActivity extends AppCompatActivity {
 			loadingAdapter.setEnabled(true);
 			loadingAdapter.getBinding(EmptyView::startLoading);
 
-			source.getFilters(new ExtensionProvider.ResponseCallback<>() {
-
+			source.getFilters().addCallback(new AsyncFuture.Callback<>() {
 				private void done() {
 					SearchActivity.this.binding.headerWrapper.setVisibility(View.VISIBLE);
 					SearchActivity.this.binding.swipeRefresher.setEnabled(true);
@@ -324,7 +324,7 @@ public class SearchActivity extends AppCompatActivity {
 				}
 
 				@Override
-				public void onSuccess(List<SettingsItem> items) {
+				public void onSuccess(SettingsList items) {
 					for(var item : items) {
 						item.setAsParentForChildren();
 					}
@@ -347,11 +347,7 @@ public class SearchActivity extends AppCompatActivity {
 				}
 
 				@Override
-				public void onFailure(@Nullable Throwable e) {
-					if(e != null) {
-						Log.e(TAG, "Failed to fetch filters!", e);
-					}
-
+				public void onFailure(Throwable t) {
 					queryFilter.setValue(tag);
 
 					AweryLifecycle.runOnUiThread(() -> {

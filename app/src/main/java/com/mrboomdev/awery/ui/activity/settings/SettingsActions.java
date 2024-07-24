@@ -26,6 +26,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 import com.mrboomdev.awery.ui.activity.AboutActivity;
+import com.mrboomdev.awery.ui.activity.ExperimentsActivity;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.CancelledException;
@@ -134,9 +135,12 @@ public class SettingsActions {
 
 			case AwerySettings.START_ONBOARDING -> {
 				var context = getAnyContext();
+				context.startActivity(new Intent(context, SetupActivity.class));
+			}
 
-				var intent = new Intent(context, SetupActivity.class);
-				context.startActivity(intent);
+			case AwerySettings.EXPERIMENTS -> {
+				var context = getAnyContext();
+				context.startActivity(new Intent(context, ExperimentsActivity.class));
 			}
 
 			case AwerySettings.CHECK_APP_UPDATE -> UpdatesManager.getAppUpdate().addCallback(new AsyncFuture.Callback<>() {

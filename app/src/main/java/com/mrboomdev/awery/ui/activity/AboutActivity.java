@@ -67,6 +67,7 @@ public class AboutActivity extends AppCompatActivity {
 		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
 			if(isLandscape(this)) {
 				binding.getRoot().setPadding(insets.left, insets.top, insets.right, insets.bottom);
+				getWindow().setNavigationBarColor(resolveAttrColor(this, android.R.attr.colorBackground));
 			} else {
 				binding.getRoot().setPadding(insets.left, 0, insets.right, insets.bottom);
 				setTopMargin(binding.header, insets.top);
