@@ -127,4 +127,14 @@
     <string name="resize_mode_button">Mode Pengubahan Ukuran Default</string>
     <string name="subtitles">Takrarir</string>
     <string name="height">Panjang</string>
+    <string name="primary_sub_color_select">Warna Takrarir</string>
+    <string name="secondary_sub_color_select">Warna Garis Besar Takrarir</string>
+    <string name="sub_window_color_select">Warna Jendela Takrarir</string>
+    <string name="auto">Otomatis</string>
+    <string name="sub_font_select">Font Takrarir</string>
+    <string name="subtitle_font_size">Ukuran Takrarir</string>
+    <string name="secondary_sub_outline_type_select">Jenis Garis Besar Takrarir</string>
+    <string name="sub_background_color_select">Warna Latar Belakang Takrarir</string>
+    <string name="sub_window_color_info">Jendela Takrarir adalah bagian kiri dan kanannya. (di mana latar belakang tidak ada)</string>
+    <string name="auto_play_next_episode">Putar Otomatis Episode Berikutnya</string>
 </resources>
