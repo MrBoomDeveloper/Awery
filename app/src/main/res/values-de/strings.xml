@@ -292,7 +292,7 @@
     <string name="server_down">Server ist nicht erreichbar!</string>
     <string name="too_much_requests">Zu viele Anfragen!</string>
     <string name="something_went_wrong">Etwas ist schief gelaufen!</string>
-    <string name="not_found_detailed">Fehler 404. Die angeforderte Ressource existiert nicht!</string>
+    <string name="not_found_detailed">Die angeforderte Ressource existiert nicht!</string>
     <string name="content">Inhalt</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
@@ -353,4 +353,6 @@
     <string name="monochrome">Monochrom</string>
     <string name="app_language">App-Sprache</string>
     <string name="dark_theme_description">Ich bin Batman!</string>
+    <string name="add_extension">Erweiterung hinzufügen</string>
+    <string name="uninstall_extension">Erweiterung deinstallieren</string>
 </resources>
