@@ -355,4 +355,5 @@
     <string name="dark_theme_description">Ich bin Batman!</string>
     <string name="add_extension">Erweiterung hinzufügen</string>
     <string name="uninstall_extension">Erweiterung deinstallieren</string>
+    <string name="double_tap_seek">Doppeltippen zum Suchen</string>
 </resources>
