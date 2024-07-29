@@ -22,7 +22,7 @@
             android:paddingBottom="125dp"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_list_media_category" />
+            tools:listitem="@layout/feed_list" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

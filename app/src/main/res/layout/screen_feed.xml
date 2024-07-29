@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_list_media_category" />
+            tools:listitem="@layout/feed_list" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -56,6 +56,7 @@ import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -409,7 +410,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				mediaSource.getVideos(new SettingsList(
 						new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
 						new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
-				), new ExtensionProvider.ResponseCallback<>() {
+				)).addCallback(new AsyncFuture.Callback<>() {
 					@Override
 					public void onSuccess(List<? extends CatalogVideo> catalogEpisodes) {
 						templateEpisodes = catalogEpisodes;
@@ -450,7 +451,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		source.getVideos(new SettingsList(
 				new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
 				new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
-		), new ExtensionProvider.ResponseCallback<>() {
+		)).addCallback(new AsyncFuture.Callback<>() {
 			@Override
 			public void onSuccess(List<? extends CatalogVideo> episodes) {
 				if(source != selectedSource || myId != loadId) return;
@@ -521,13 +522,13 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		var lastUsedTitleIndex = new AtomicInteger(0);
 
 		if(autoChangeSource) {
-			queryFilter.setValue(media.titles.get(0));
+			queryFilter.setValue(media.getTitle());
 		}
 
 		variantsAdapter.getBinding((binding) ->
 				binding.searchDropdown.setText(queryFilter.getStringValue(), false));
 
-		var foundMediaCallback = new ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>() {
+		var foundMediaCallback = new AsyncFuture.Callback<CatalogSearchResults<? extends CatalogMedia>>() {
 
 			@Override
 			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> media) {
@@ -545,10 +546,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var context = getContext();
 					if(context == null) return;
 
-					if(autoChangeTitle && lastUsedTitleIndex.get() < media.titles.size() - 1) {
+					if(autoChangeTitle && media.titles != null && lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
 						queryFilter.setValue(media.titles.get(newIndex));
-						source.searchMedia(context, filters, this);
+						source.searchMedia(filters).addCallback(this);
 
 						variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
 							binding.searchStatus.setText("Searching for \"" + queryFilter.getStringValue() + "\"...");
@@ -575,7 +576,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				binding.searchStatus.setOnClickListener(null);
 			}));
 
-			source.getMedia(requireContext(), searchId, new ExtensionProvider.ResponseCallback<>() {
+			source.getMedia(searchId).addCallback(new AsyncFuture.Callback<>() {
 				@Override
 				public void onSuccess(CatalogMedia media) {
 					if(source != selectedSource || myId != loadId) return;
@@ -594,7 +595,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 						binding.searchStatus.setOnClickListener(null);
 					}));
 
-					source.searchMedia(context, filters, foundMediaCallback);
+					source.searchMedia(filters).addCallback(foundMediaCallback);
 				}
 			});
 		} else {
@@ -603,7 +604,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				binding.searchStatus.setOnClickListener(null);
 			}));
 
-			source.searchMedia(context, filters, foundMediaCallback);
+			source.searchMedia(filters).addCallback(foundMediaCallback);
 		}
 	}
 

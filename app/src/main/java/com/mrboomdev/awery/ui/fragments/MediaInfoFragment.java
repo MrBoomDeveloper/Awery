@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.fragments;
 import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
 import static com.mrboomdev.awery.app.AweryApp.getOrientation;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -38,11 +40,10 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
-import com.mrboomdev.awery.ui.activity.BrowserActivity;
+import com.mrboomdev.awery.ui.activity.GalleryActivity;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.sheet.TrackingSheet;
-import com.mrboomdev.awery.ui.window.GalleryWindow;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.TranslationUtil;
 
@@ -126,19 +127,12 @@ public class MediaInfoFragment extends Fragment {
 				}).into(binding.poster);
 
 		binding.posterWrapper.setOnClickListener(v -> {
-			var poster = cachedPoster != null
-					? cachedPoster.get() : null;
+			binding.poster.setTransitionName("poster");
 
-			if(poster != null) {
-				new GalleryWindow(requireActivity(), poster)
-						.show(binding.getRoot());
-			} else {
-				var bestPoster = media.getBestPoster();
-				if(bestPoster == null) return;
-
-				new GalleryWindow(requireActivity(), bestPoster)
-						.show(binding.getRoot());
-			}
+			var intent = new Intent(requireContext(), GalleryActivity.class);
+			intent.putExtra(GalleryActivity.EXTRA_URLS, new String[] { media.getBestPoster() });
+			startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+					requireActivity(), binding.poster, "poster").toBundle());
 		});
 
 		binding.details.play.setOnClickListener(v -> {
@@ -303,11 +297,8 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
 				requireContext(), getChildFragmentManager(), media).show());
 
-		binding.details.browser.setOnClickListener(v -> {
-			var intent = new Intent(requireContext(), BrowserActivity.class);
-			intent.putExtra(BrowserActivity.EXTRA_URL, media.url);
-			startActivity(intent);
-		});
+		binding.details.browser.setOnClickListener(v ->
+				openUrl(requireContext(), media.url, true));
 
 		return binding.getRoot();
 	}

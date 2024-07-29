@@ -60,6 +60,7 @@ import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
@@ -510,7 +511,7 @@ public class MediaCommentsFragment extends Fragment {
 			sendBinding.sendButton.setVisibility(View.INVISIBLE);
 
 			if(editedComment != null) {
-				selectedProvider.editComment(editedComment, newComment, new ExtensionProvider.ResponseCallback<>() {
+				selectedProvider.editComment(editedComment, newComment).addCallback(new AsyncFuture.Callback<>() {
 					@Override
 					public void onSuccess(CatalogComment comment) {
 						if(getContext() == null) return;
@@ -536,15 +537,18 @@ public class MediaCommentsFragment extends Fragment {
 					}
 
 					@Override
-					public void onFailure(Throwable e) {
+					public void onFailure(Throwable t) {
 						if(getContext() == null) return;
 						if(wasCurrentComment != MediaCommentsFragment.this.comment) return;
 
-						Log.e(TAG, "Failed to post a comment", e);
+						Log.e(TAG, "Failed to post a comment", t);
 
 						runOnUiThread(() -> {
-							CrashHandler.showErrorDialog(requireContext(),
-									"Failed to post a comment! :(", e);
+							CrashHandler.showErrorDialog(requireContext(), new CrashHandler.CrashReport.Builder()
+									.setTitle("Failed to edit an comment")
+									.setThrowable(t)
+									.setPrefix(R.string.please_report_bug_extension)
+									.build());
 
 							sendBinding.loadingIndicator.setVisibility(View.GONE);
 							sendBinding.sendButton.setVisibility(View.VISIBLE);
@@ -599,8 +603,10 @@ public class MediaCommentsFragment extends Fragment {
 						Log.e(TAG, "Failed to post a comment", e);
 
 						runOnUiThread(() -> {
-							CrashHandler.showErrorDialog(requireContext(),
-									"Failed to post a comment! :(", e);
+							CrashHandler.showErrorDialog(requireContext(), new CrashHandler.CrashReport.Builder()
+									.setTitle("Failed to post an comment")
+									.setThrowable(e)
+									.build());
 
 							sendBinding.loadingIndicator.setVisibility(View.GONE);
 							sendBinding.sendButton.setVisibility(View.VISIBLE);
@@ -747,8 +753,7 @@ public class MediaCommentsFragment extends Fragment {
 						.setTitle("Delete the comment?")
 						.setMessage("You'll be unable to undo this action later.")
 						.setPositiveButton(R.string.confirm, dialog -> {
-							selectedProvider.deleteComment(comment, new ExtensionProvider.ResponseCallback<>() {
-
+							selectedProvider.deleteComment(comment).addCallback(new AsyncFuture.Callback<>() {
 								@Override
 								public void onSuccess(Boolean success) {
 									var context = getContext();
@@ -763,11 +768,15 @@ public class MediaCommentsFragment extends Fragment {
 								}
 
 								@Override
-								public void onFailure(Throwable e) {
+								public void onFailure(Throwable t) {
 									var context = getContext();
 									if(context == null) return;
 
-									CrashHandler.showErrorDialog(context, e);
+									CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+											.setTitle("Failed to delete an comment")
+											.setPrefix(R.string.please_report_bug_extension)
+											.setThrowable(t)
+											.build());
 								}
 							});
 
@@ -822,19 +831,22 @@ public class MediaCommentsFragment extends Fragment {
 					: String.valueOf(comment.votes + comment.voteState));
 
 			if(sendRequest) {
-				selectedProvider.voteComment(comment, new ExtensionProvider.ResponseCallback<>() {
+				selectedProvider.voteComment(comment).addCallback(new AsyncFuture.Callback<>() {
 					@Override
-					public void onSuccess(CatalogComment updatedComment) {}
+					public void onSuccess(CatalogComment result) {}
 
 					@Override
-					public void onFailure(Throwable e) {
+					public void onFailure(Throwable t) {
 						var context = getContext();
 						if(context == null) return;
 
-						runOnUiThread(() -> {
-							Log.e(TAG, "Failed to vote comment", e);
-							CrashHandler.showErrorDialog(context, e);
-						});
+						Log.e(TAG, "Failed to vote comment", t);
+
+						CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+								.setTitle("Failed to vote")
+								.setPrefix(R.string.please_report_bug_extension)
+								.setThrowable(t)
+								.build());
 					}
 				});
 			}

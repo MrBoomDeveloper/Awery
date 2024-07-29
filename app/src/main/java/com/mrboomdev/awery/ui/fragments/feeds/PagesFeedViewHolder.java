@@ -26,8 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.MediaCatalogFeaturedBinding;
-import com.mrboomdev.awery.databinding.MediaCatalogFeaturedPagerBinding;
+import com.mrboomdev.awery.databinding.FeedPagesBinding;
+import com.mrboomdev.awery.databinding.FeedPagesItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -46,17 +46,17 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final PagerAdapter adapter = new PagerAdapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private final MediaCatalogFeaturedPagerBinding binding;
+	private final FeedPagesBinding binding;
 	private Feed feed;
 
 	@NonNull
 	@Contract("_ -> new")
 	public static PagesFeedViewHolder create(ViewGroup parent) {
-		return new PagesFeedViewHolder(MediaCatalogFeaturedPagerBinding.inflate(
+		return new PagesFeedViewHolder(FeedPagesBinding.inflate(
 				LayoutInflater.from(parent.getContext()), parent,false), parent);
 	}
 
-	private PagesFeedViewHolder(@NonNull MediaCatalogFeaturedPagerBinding binding, ViewGroup parent) {
+	private PagesFeedViewHolder(@NonNull FeedPagesBinding binding, ViewGroup parent) {
 		super(binding.getRoot());
 
 		this.binding = binding;
@@ -97,7 +97,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 		@Override
 		public PagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
-			var binding = MediaCatalogFeaturedBinding.inflate(inflater, parent, false);
+			var binding = FeedPagesItemBinding.inflate(inflater, parent, false);
 			var holder = new PagerViewHolder(binding);
 
 			binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(
@@ -113,17 +113,16 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 				var media = holder.getItem();
 				var index = feed.getItems().indexOf(media);
 
-				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () -> {
-					MediaUtils.isMediaFiltered(media, isFiltered -> {
-						if(!isFiltered) return;
+				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () ->
+						MediaUtils.isMediaFiltered(media, isFiltered -> {
+							if(!isFiltered) return;
 
-						runOnUiThread(() -> {
-							var was = feed.getItems().remove(index);
-							notifyItemRemoved(index);
-							ids.remove(was);
-						});
-					});
-				});
+							runOnUiThread(() -> {
+								var was = feed.getItems().remove(index);
+								notifyItemRemoved(index);
+								ids.remove(was);
+							});
+						}));
 
 				return true;
 			});
@@ -173,10 +172,10 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	}
 
 	private static class PagerViewHolder extends RecyclerView.ViewHolder {
-		private final MediaCatalogFeaturedBinding binding;
+		private final FeedPagesItemBinding binding;
 		private CatalogMedia item;
 
-		public PagerViewHolder(@NonNull MediaCatalogFeaturedBinding binding) {
+		public PagerViewHolder(@NonNull FeedPagesItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}

@@ -1,12 +1,13 @@
 package com.mrboomdev.awery.ui.widgets
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.GradientDrawable.Orientation.*
+import android.graphics.drawable.GradientDrawable.Orientation.BOTTOM_TOP
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -14,7 +15,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
 import android.util.AttributeSet
 import android.view.MotionEvent
-import androidx.appcompat.widget.AppCompatTextView
+import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.R
 import java.lang.Integer.min
 import kotlin.math.max
@@ -27,8 +28,10 @@ const val ELLIPSIZE_TEXT_LENGTH_MULTIPLIER = 2.0
 
 class ExpandableTextView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet,
-    defStyleAttr: Int = R.attr.expandableTextView) : AppCompatTextView(context, attrs, defStyleAttr
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.expandableTextView
+) : MaterialTextView(
+    context, attrs, defStyleAttr
 ) {
     private var mOriginalText: CharSequence? = ""
     private var mCollapsedLines = 0

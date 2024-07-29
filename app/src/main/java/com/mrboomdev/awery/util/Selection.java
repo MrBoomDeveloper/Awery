@@ -270,8 +270,9 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	}
 
 	public static class Selectable<T> implements Comparable<Selectable<T>> {
+		private final String id;
 		private T item;
-		private String id, title;
+		private String title;
 		private State state;
 
 		public static String getTitle(Object o) {

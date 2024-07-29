@@ -80,9 +80,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 		var inflater = LayoutInflater.from(parent.getContext());
 		var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
 
-		if(!setRightMargin(binding.getRoot(), dpPx(12))) {
-			throw new IllegalStateException("Failed to set right margin!");
-		}
+		setRightMargin(binding.getRoot(), dpPx(binding, 12));
 
 		var viewHolder = new ViewHolder(binding);
 
@@ -144,10 +142,12 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			}
 
 			try {
-				Glide.with(binding.getRoot())
-						.load(item.poster.large)
-						.transition(DrawableTransitionOptions.withCrossFade())
-						.into(binding.mediaItemBanner);
+				if(item.poster != null) {
+					Glide.with(binding.getRoot())
+							.load(item.poster.large)
+							.transition(DrawableTransitionOptions.withCrossFade())
+							.into(binding.mediaItemBanner);
+				}
 			} catch(IllegalArgumentException e) {
 				Log.e(TAG, "Failed to load a poster", e);
 			}

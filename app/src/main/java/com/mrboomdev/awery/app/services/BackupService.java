@@ -2,7 +2,6 @@ package com.mrboomdev.awery.app.services;
 
 import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -14,7 +13,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.util.io.FileUtil;
@@ -72,8 +70,10 @@ public class BackupService extends Service {
 				runOnUiThread(() -> {
 					popup.dismiss();
 
-					CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class),
-							"Failed to create an backup", e);
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setTitle("Failed to create an backup")
+							.setThrowable(e)
+							.build());
 				});
 
 				stopSelf();
@@ -96,8 +96,10 @@ public class BackupService extends Service {
 				runOnUiThread(() -> {
 					window.dismiss();
 
-					CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class),
-							"Failed to restore an backup", e);
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setTitle("Failed to restore an backup")
+							.setThrowable(e)
+							.build());
 				});
 
 				stopSelf();

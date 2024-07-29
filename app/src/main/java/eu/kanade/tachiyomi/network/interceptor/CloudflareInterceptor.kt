@@ -19,7 +19,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
 class CloudflareInterceptor(
-    private val context: Context,
+    context: Context,
     private val cookieManager: AndroidCookieJar,
     defaultUserAgentProvider: () -> String,
 ) : WebViewInterceptor(context, defaultUserAgentProvider) {

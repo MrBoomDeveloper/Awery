@@ -47,6 +47,7 @@ import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
@@ -317,8 +318,13 @@ public class TrackingSheet {
 							binding.confirm.setEnabled(true);
 							binding.delete.setEnabled(true);
 
-							Log.e(TAG, "Failed to save", e);
-							CrashHandler.showErrorDialog(context, e);
+							Log.e(TAG, "Failed to track media!", e);
+
+							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+									.setTitle("Failed to save")
+									.setPrefix(R.string.please_report_bug_extension)
+									.setThrowable(e)
+									.build());
 						});
 					}
 				});
@@ -470,7 +476,7 @@ public class TrackingSheet {
 
 							searchMedia();
 						} else {
-							var title = media.titles.get(0);
+							var title = media.getTitle();
 							binding.title.input.setText(title, false);
 
 							queryFilter.setValue(title);
@@ -525,34 +531,36 @@ public class TrackingSheet {
 		}
 
 		private void searchMedia() {
-			runOnUiThread(() -> binding.searchStatus.setText("Searching \"" + queryFilter.getStringValue() + "\"..."));
-
 			var myId = ++loadId;
 
-			selectedSource.searchMedia(context, filters, new ExtensionProvider.ResponseCallback<>() {
-				@Override
-				public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
-					if(myId != loadId) return;
+			runOnUiThread(() -> {
+				binding.searchStatus.setText("Searching \"" + queryFilter.getStringValue() + "\"...");
 
-					runOnUiThread(() -> {
-						var media = results.get(0);
-						binding.title.input.setText(media.getTitle(), false);
-						loadDataFromTracker(media);
-					});
-				}
+				selectedSource.searchMedia(filters).addCallback(new AsyncFuture.Callback<>() {
+					@Override
+					public void onSuccess(CatalogSearchResults<? extends CatalogMedia> results) {
+						if(myId != loadId) return;
 
-				@Override
-				public void onFailure(Throwable e) {
-					if(myId != loadId) return;
+						runOnUiThread(() -> {
+							var media = results.get(0);
+							binding.title.input.setText(media.getTitle(), false);
+							loadDataFromTracker(media);
+						});
+					}
 
-					runOnUiThread(() -> {
-						Log.e(TAG, "Failed to load items for a tracker", e);
-						updateTrackingDialogState(null, e);
+					@Override
+					public void onFailure(Throwable e) {
+						if(myId != loadId) return;
 
-						binding.searchStatus.setClickable(false);
-						binding.searchStatus.setFocusable(false);
-					});
-				}
+						runOnUiThread(() -> {
+							Log.e(TAG, "Failed to load items for a tracker", e);
+							updateTrackingDialogState(null, e);
+
+							binding.searchStatus.setClickable(false);
+							binding.searchStatus.setFocusable(false);
+						});
+					}
+				});
 			});
 		}
 

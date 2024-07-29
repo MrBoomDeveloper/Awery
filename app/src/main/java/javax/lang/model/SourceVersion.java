@@ -66,11 +66,9 @@ public enum SourceVersion {
 	public static boolean isName(CharSequence name, SourceVersion version) {
 		String id = name.toString();
 		String[] var3 = id.split("\\.", -1);
-		int var4 = var3.length;
 
-		for(int var5 = 0; var5 < var4; ++var5) {
-			String s = var3[var5];
-			if (!isIdentifier(s) || isKeyword(s, version)) {
+		for(String s : var3) {
+			if(!isIdentifier(s) || isKeyword(s, version)) {
 				return false;
 			}
 		}
@@ -83,68 +81,17 @@ public enum SourceVersion {
 	}
 
 	public static boolean isKeyword(CharSequence s, SourceVersion version) {
-		switch (s.toString()) {
-			case "strictfp":
-				return version.compareTo(RELEASE_2) >= 0;
-			case "assert":
-				return version.compareTo(RELEASE_4) >= 0;
-			case "enum":
-				return version.compareTo(RELEASE_5) >= 0;
-			case "_":
-				return version.compareTo(RELEASE_9) >= 0;
-			case "public":
-			case "protected":
-			case "private":
-			case "abstract":
-			case "static":
-			case "final":
-			case "transient":
-			case "volatile":
-			case "synchronized":
-			case "native":
-			case "class":
-			case "interface":
-			case "extends":
-			case "package":
-			case "throws":
-			case "implements":
-			case "boolean":
-			case "byte":
-			case "char":
-			case "short":
-			case "int":
-			case "long":
-			case "float":
-			case "double":
-			case "void":
-			case "if":
-			case "else":
-			case "try":
-			case "catch":
-			case "finally":
-			case "do":
-			case "while":
-			case "for":
-			case "continue":
-			case "switch":
-			case "case":
-			case "default":
-			case "break":
-			case "throw":
-			case "return":
-			case "this":
-			case "new":
-			case "super":
-			case "import":
-			case "instanceof":
-			case "goto":
-			case "const":
-			case "null":
-			case "true":
-			case "false":
-				return true;
-			default:
-				return false;
-		}
+		return switch(s.toString()) {
+			case "strictfp" -> version.compareTo(RELEASE_2) >= 0;
+			case "assert" -> version.compareTo(RELEASE_4) >= 0;
+			case "enum" -> version.compareTo(RELEASE_5) >= 0;
+			case "_" -> version.compareTo(RELEASE_9) >= 0;
+			case "public", "protected", "private", "abstract", "static", "final", "transient", "volatile", "synchronized",
+				 "native", "class", "interface", "extends", "package", "throws", "implements", "boolean", "byte", "char",
+				 "short", "int", "long", "float", "double", "void", "if", "else", "try", "catch", "finally", "do", "while",
+				 "for", "continue", "switch", "case", "default", "break", "throw", "return", "this", "new", "super",
+				 "import", "instanceof", "goto", "const", "null", "true", "false" -> true;
+			default -> false;
+		};
 	}
 }

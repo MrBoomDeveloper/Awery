@@ -7,22 +7,29 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.content.FileProvider;
 
+import com.google.android.material.textview.MaterialTextView;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.LocalizedException;
-import com.mrboomdev.awery.util.exceptions.MaybeNotBadException;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.io.BufferedReader;
@@ -102,116 +109,187 @@ public class CrashHandler {
 		restartApp();
 	}
 
-	public static void showErrorDialog(Throwable throwable) {
-		showErrorDialog(getAnyActivity(AppCompatActivity.class), throwable);
-	}
+	public static class CrashReport {
+		private String title, message, prefix, pohuiStringThrowable;
+		private Throwable throwable;
+		private File file;
+		private Runnable dismissCallback;
 
-	public static void showErrorDialog(String title, Throwable throwable) {
-		showErrorDialog(getAnyActivity(AppCompatActivity.class), title, throwable);
-	}
-	
-	public static void showErrorDialog(Context context, Throwable throwable) {
-		if(throwable instanceof MaybeNotBadException e) {
-			if(!e.isBad()) {
-				if(throwable instanceof LocalizedException ex) {
-					showErrorDialogImpl(context,
-							ex.getTitle(context),
-							ex.getDescription(context),
-							null, null);
-				} else {
-					showErrorDialogImpl(context,
-							"Hmm...",
-							throwable.getMessage(),
-							null, null);
-				}
+		public static class Builder {
+			private final CrashReport report = new CrashReport();
 
-				return;
+			public Builder setMessage(String message) {
+				report.message = message;
+				return this;
+			}
+
+			public Builder setPohuiStringThrowable(String t) {
+				report.pohuiStringThrowable = t;
+				return this;
+			}
+
+			public Builder setMessage(@StringRes int prefix) {
+				report.message = getAnyContext().getString(prefix);
+				return this;
+			}
+
+			public Builder setPrefix(@StringRes int prefix) {
+				report.prefix = getAnyContext().getString(prefix);
+				return this;
+			}
+
+			public Builder setThrowable(Throwable throwable) {
+				report.throwable = throwable;
+				return this;
+			}
+
+			public Builder setDismissCallback(Runnable dismissCallback) {
+				report.dismissCallback = dismissCallback;
+				return this;
+			}
+
+			public Builder setFile(File file) {
+				report.file = file;
+				return this;
+			}
+
+			public Builder setTitle(String title) {
+				report.title = title;
+				return this;
+			}
+
+			public Builder setTitle(@StringRes int title) {
+				report.title = getAnyContext().getString(title);
+				return this;
+			}
+
+			public CrashReport build() {
+				return report;
 			}
 		}
-
-		var descriptor = new ExceptionDescriptor(throwable);
-
-		showErrorDialogImpl(context,
-				descriptor.getTitle(context),
-				context.getString(R.string.please_report_bug_app)
-						+ "\n\n" + descriptor.getMessage(context), null, null);
 	}
 
-	public static void showErrorDialog(Context context, String title, String messagePrefix, Throwable throwable) {
-		if(throwable != null) {
-			var descriptor = new ExceptionDescriptor(throwable);
-			var description = descriptor.getMessage(context);
-			showErrorDialogImpl(context, title, messagePrefix + "\n\n" + description, null, null);
-		} else {
-			showErrorDialogImpl(context, title, messagePrefix, null, null);
-		}
+	public static void showErrorDialog(CrashReport report) {
+		showErrorDialog(requireNonNull(getAnyActivity(AppCompatActivity.class)), report);
 	}
 
-	public static void showErrorDialog(Context context, String title, Throwable throwable) {
-		showErrorDialog(context, title, context.getString(R.string.please_report_bug_app), throwable);
+	@NonNull
+	private static View createExpandable(Context context, String message) {
+		var linear = new LinearLayoutCompat(context);
+		linear.setOrientation(LinearLayoutCompat.VERTICAL);
+
+		var expander = new MaterialTextView(context);
+		expander.setBackgroundResource(R.drawable.ripple_round_you);
+		expander.setText("Click to see the exception");
+		expander.setClickable(true);
+		expander.setFocusable(true);
+		linear.addView(expander);
+
+		setPadding(expander, dpPx(expander, 16));
+		setMargin(expander, dpPx(expander, -16));
+		setBottomMargin(expander, dpPx(expander, 0));
+
+		var content = new MaterialTextView(context);
+		content.setTextIsSelectable(true);
+		content.setText(message);
+		content.setVisibility(View.GONE);
+		linear.addView(content);
+
+		expander.setOnClickListener(v -> {
+			var makeVisible = content.getVisibility() != View.VISIBLE;
+			expander.setText(makeVisible ? "Click to hide the exception" : "Click to see the exception");
+			content.setVisibility(makeVisible ? View.VISIBLE : View.GONE);
+		});
+
+		return linear;
 	}
 
-	public static void showErrorDialog(String title, String message, Throwable throwable) {
-		showErrorDialog(getAnyActivity(AppCompatActivity.class), title, message, throwable);
-	}
+	public static void showErrorDialog(@NonNull Context context, CrashReport report) {
+		runOnUiThread(() -> {
+			View contentView = null;
 
-	/**
-	 * User will not be able to use an app after dismissing this dialog. The app simply will exit itself.
-	 * @author MrBoomDev
-	 */
-	public static void showFatalErrorDialog(Context context, String title, Throwable throwable) {
-		showErrorDialogImpl(
-				context,
-				title,
-				new ExceptionDescriptor(throwable).getMessage(context),
-				null,
-				AweryLifecycle::exitApp);
-	}
+			if(report.throwable != null && report.pohuiStringThrowable != null) {
+				throw new IllegalStateException("You can't use both things!");
+			}
 
-	private static void showErrorDialogImpl(
-			@NonNull Context context,
-			String title,
-			String message,
-			File file,
-			Runnable dismissCallback
-	) {
-		runOnUiThread(() -> new DialogBuilder(context)
-				.setTitle(title.trim())
-				.setMessage(message.trim())
-				.setCancelable(false)
-				.setOnDismissListener(dialog -> {
-					if(file != null) file.delete();
+			if(report.throwable != null) {
+				var unwrapped = ExceptionDescriptor.unwrap(report.throwable);
+				var title = ExceptionDescriptor.getTitle(unwrapped, context);
+				var message = ExceptionDescriptor.getMessage(unwrapped, context);
 
-					if(dismissCallback != null) {
-						dismissCallback.run();
+				if(!ExceptionDescriptor.isUnknownException(unwrapped)) {
+					if(report.title == null) {
+						report.title = title;
 					}
-				})
-				.setNeutralButton(R.string.copy, dialog ->
-						copyToClipboard(context.getString(R.string.crash_report), message))
-				.setNegativeButton(R.string.share, dialog -> {
-					var newFile = new File(context.getFilesDir(), "crash_report.txt");
-					var intent = new Intent(Intent.ACTION_SEND);
-					intent.setType("*/*");
 
-					try {
-						newFile.delete();
-						newFile.createNewFile();
+					if(report.message == null) {
+						report.message = message;
+					}
+				}
 
-						try(var writer = new FileWriter(newFile)) {
-							writer.write(message);
+				contentView = createExpandable(context, message);
+			}
+
+			if(report.pohuiStringThrowable != null) {
+				contentView = createExpandable(context, report.pohuiStringThrowable);
+			}
+
+			if(report.prefix != null) {
+				report.message = report.message == null ? report.prefix
+						: report.message + "\n\n" + report.prefix;
+			}
+
+			var builder = new DialogBuilder(context)
+					.setCancelable(false)
+					.setOnDismissListener(dialog -> {
+						if(report.file != null) {
+							report.file.delete();
 						}
 
-						intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-								context, BuildConfig.FILE_PROVIDER, newFile));
-					} catch(IOException e) {
-						Log.e(TAG, "Failed to write a file!", e);
-						intent.putExtra(Intent.EXTRA_TEXT, message);
-					}
+						if(report.dismissCallback != null) {
+							report.dismissCallback.run();
+						}
+					})
+					.setNeutralButton(R.string.copy, dialog ->
+							copyToClipboard(context.getString(R.string.crash_report), report.message))
+					.setNegativeButton(R.string.share, dialog -> {
+						var newFile = new File(context.getFilesDir(), "crash_report.txt");
+						var intent = new Intent(Intent.ACTION_SEND);
+						intent.setType("*/*");
 
-					context.startActivity(Intent.createChooser(intent, "Share crash report"));
-				})
-				.setPositiveButton("OK", DialogBuilder::dismiss)
-				.show());
+						try {
+							newFile.delete();
+							newFile.createNewFile();
+
+							try(var writer = new FileWriter(newFile)) {
+								writer.write(report.message);
+							}
+
+							intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+									context, BuildConfig.FILE_PROVIDER, newFile));
+						} catch(IOException e) {
+							Log.e(TAG, "Failed to write a file!", e);
+							intent.putExtra(Intent.EXTRA_TEXT, report.message);
+						}
+
+						context.startActivity(Intent.createChooser(intent, "Share crash report"));
+					})
+					.setPositiveButton("OK", DialogBuilder::dismiss);
+
+			if(contentView != null) {
+				builder.addView(contentView);
+			}
+
+			if(report.title != null) {
+				builder.setTitle(report.title.trim());
+			}
+
+			if(report.message != null) {
+				builder.setMessage(report.message.trim());
+			}
+
+			builder.show();
+		});
 	}
 
 	public static void reportIfCrashHappened(@NonNull Context context, Runnable dismissCallback) {
@@ -228,15 +306,16 @@ public class CrashHandler {
 
 			try(var reader = new BufferedReader(new FileReader(crashFile))) {
 				StringBuilder result = new StringBuilder();
-				String nextLine, message;
+				ExceptionDescriptor descriptor = null;
+				String nextLine, message = null;
 
 				while((nextLine = reader.readLine()) != null) {
 					result.append(nextLine).append("\n");
 				}
 
 				try {
-					message = Parser.fromString(ExceptionDescriptor.class, result.toString()).toString();
-				} catch(Exception e) {
+					descriptor = Parser.fromString(ExceptionDescriptor.class, result.toString());
+				} catch(IOException e) {
 					try {
 						var file = new File(result.toString().trim());
 
@@ -256,8 +335,22 @@ public class CrashHandler {
 					}
 				}
 
-				var content = context.getString(R.string.please_report_bug_app) + "\n\n" + message.trim();
-				showErrorDialogImpl(context, context.getString(R.string.app_crash), content, crashFile, dismissCallback);
+				var report = new CrashReport.Builder()
+						.setTitle(R.string.app_crash)
+						.setDismissCallback(dismissCallback)
+						.setFile(crashFile);
+
+				if(descriptor != null) {
+					report.setPrefix(R.string.please_report_bug_app);
+					report.setThrowable(descriptor.getThrowable());
+				}
+
+				if(message != null) {
+					report.setPrefix(R.string.please_report_bug_app);
+					report.setPohuiStringThrowable(message);
+				}
+
+				showErrorDialog(report.build());
 			}
 		} catch(Throwable e) {
 			Log.e(TAG, "Failed to read a crash file!", e);

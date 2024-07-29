@@ -137,7 +137,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 								@Override
 								public void onFailure(Throwable t) {
-									CrashHandler.showErrorDialog("Failed to get an Changelog", t);
+									CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+											.setTitle("Failed to get an Changelog")
+											.setThrowable(t)
+											.build());
 								}
 							});
 						}
@@ -150,14 +153,24 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						Log.e(TAG, "Failed to install an extension!", e);
 
 						if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
-							CrashHandler.showErrorDialog(activity.getString(R.string.extension_installed_failed),
-									activity.getString(R.string.please_report_bug_extension), e);
+							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+									.setTitle(R.string.extension_installed_failed)
+									.setPrefix(R.string.please_report_bug_extension)
+									.setThrowable(t)
+									.build());
 						} else {
-							CrashHandler.showErrorDialog(e);
+							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+									.setTitle(R.string.extension_installed_failed)
+									.setThrowable(t)
+									.build());
 						}
 					} else {
 						Log.e(TAG, "Failed to install an extension!", t);
-						CrashHandler.showErrorDialog(t);
+
+						CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+								.setTitle(R.string.extension_installed_failed)
+								.setThrowable(t)
+								.build());
 					}
 				}
 			});
@@ -420,10 +433,16 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 									Log.e(TAG, "Failed to install an extension!", e);
 
 									if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
-										CrashHandler.showErrorDialog(activity.getString(R.string.extension_installed_failed),
-												activity.getString(R.string.please_report_bug_extension), e);
+										CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+												.setTitle(R.string.extension_installed_failed)
+												.setPrefix(R.string.please_report_bug_extension)
+												.setThrowable(t)
+												.build());
 									} else {
-										CrashHandler.showErrorDialog(e);
+										CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+												.setTitle(R.string.extension_installed_failed)
+												.setThrowable(t)
+												.build());
 									}
 								} else {
 									Log.e(TAG, "Failed to install an extension!", t);
@@ -458,7 +477,10 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 															return;
 														}
 
-														CrashHandler.showErrorDialog("Failed to uninstall an extension", t);
+														CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+																.setTitle("Failed to uninstall an extension")
+																.setThrowable(t)
+																.build());
 													}
 												});
 											});
@@ -634,7 +656,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				public void onClick(android.content.Context context) {
 					var window = showLoadingWindow();
 
-					manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<Boolean>() {
+					manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
 						@Override
 						public void onSuccess(Boolean result) {
 							window.dismiss();
@@ -659,10 +681,14 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 						@Override
 						public void onFailure(@NonNull Throwable e) {
+							Log.e(TAG, "Failed to uninstall an extension", e);
 							window.dismiss();
 
-							Log.e(TAG, "Failed to uninstall an extension", e);
-							CrashHandler.showErrorDialog("Failed to uninstall an extension", e);
+							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+									.setTitle("Failed to uninstall an extension")
+									.setPrefix(R.string.please_report_bug_app)
+									.setThrowable(e)
+									.build());
 						}
 					});
 				}

@@ -60,6 +60,8 @@ public class SettingsItem implements Serializable {
 	@Json(name = "string_value")
 	protected String stringValue;
 	@Json(ignore = true)
+	protected Serializable serializable;
+	@Json(ignore = true)
 	private transient Drawable iconDrawable;
 
 	public SettingsItem(@NonNull SettingsItem item) {
@@ -83,6 +85,12 @@ public class SettingsItem implements Serializable {
 		this.integerValue = intValue;
 	}
 
+	public SettingsItem(String key, Serializable serializable) {
+		this.type = SettingsItemType.SERIALIZABLE;
+		this.key = key;
+		this.serializable = serializable;
+	}
+
 	public SettingsItem(SettingsItemType type, String key, String stringValue) {
 		this.type = type;
 		this.key = key;
@@ -99,6 +107,7 @@ public class SettingsItem implements Serializable {
 		this.integerValue = item.getIntegerValue();
 		this.longValue = item.getLongValue();
 		this.excludableValue = item.getExcludableValue();
+		this.serializable = item.getSerializable();
 
 		this.from = item.getFrom();
 		this.to = item.getTo();
@@ -132,6 +141,14 @@ public class SettingsItem implements Serializable {
 			item.setParent(this);
 			item.setAsParentForChildren();
 		}
+	}
+
+	public Serializable getSerializable() {
+		return serializable;
+	}
+	
+	public void setSerializable(Serializable serializable) {
+		this.serializable = serializable;
 	}
 
 	public boolean isFromToAvailable() {
@@ -221,7 +238,7 @@ public class SettingsItem implements Serializable {
 		switch(getType()) {
 			case BOOLEAN, SCREEN_BOOLEAN -> setValue((Boolean) handler.restoreValue(this));
 			case INTEGER, SELECT_INTEGER, COLOR -> setValue((Integer) handler.restoreValue(this));
-			case SELECT, STRING, JSON -> setValue((String) handler.restoreValue(this));
+			case SELECT, STRING, JSON, SERIALIZABLE -> setValue((String) handler.restoreValue(this));
 			case DATE -> setValue((Long) handler.restoreValue(this));
 		}
 	}

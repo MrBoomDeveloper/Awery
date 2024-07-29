@@ -44,7 +44,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			contentView.addView(radioGroup);
 		} else if(mode == Mode.MULTI) {
 			chipGroup = new ChipGroup(context);
-			chipGroup.setChipSpacingVertical(dpPx(-4));
+			chipGroup.setChipSpacingVertical(dpPx(chipGroup, -4));
 
 			var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
 			contentView.addView(chipGroup, chipsParams);

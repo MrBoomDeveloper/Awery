@@ -6,7 +6,6 @@ import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +35,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
@@ -47,12 +47,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class FeedsFragment extends Fragment {
 	public static final String ARGUMENT_FEEDS = "feeds";
 	public static final String ARGUMENT_TAB = "tab";
 	private static final String TAG = "FeedsFragment";
-	private static final int MAX_LOADING_FEEDS_AT_TIME = 1;
 	private final Queue<CatalogFeed> pendingFeeds = new LinkedBlockingQueue<>();
 	private final Queue<CatalogFeed> loadingFeeds = new LinkedBlockingQueue<>();
 	private ScreenFeedBinding binding;
@@ -104,8 +104,8 @@ public abstract class FeedsFragment extends Fragment {
 		emptyStateAdapter.getBinding(EmptyView::startLoading);
 
 		runOnUiThread(() -> {
-			rowsAdapter.setCategories(Collections.emptyList());
-			failedRowsAdapter.setCategories(Collections.emptyList());
+			rowsAdapter.setFeeds(Collections.emptyList());
+			failedRowsAdapter.setFeeds(Collections.emptyList());
 			setContentBehindToolbarEnabled(false);
 
 			thread(() -> {
@@ -113,11 +113,11 @@ public abstract class FeedsFragment extends Fragment {
 
 				if(processedFeeds.isEmpty()) {
 					tryToLoadNextFeed(null, currentLoadId);
-				} else if(processedFeeds.size() <= MAX_LOADING_FEEDS_AT_TIME) {
+				} else if(processedFeeds.size() <= getMaxLoadsAtSameTime()) {
 					loadingFeeds.addAll(processedFeeds);
 				} else {
-					loadingFeeds.addAll(processedFeeds.subList(0, MAX_LOADING_FEEDS_AT_TIME));
-					pendingFeeds.addAll(processedFeeds.subList(MAX_LOADING_FEEDS_AT_TIME, processedFeeds.size()));
+					loadingFeeds.addAll(processedFeeds.subList(0, getMaxLoadsAtSameTime()));
+					pendingFeeds.addAll(processedFeeds.subList(getMaxLoadsAtSameTime(), processedFeeds.size()));
 				}
 
 				for(var loadingFeed : loadingFeeds) {
@@ -128,8 +128,7 @@ public abstract class FeedsFragment extends Fragment {
 	}
 
 	private void loadFeed(@NonNull CatalogFeed feed, long currentLoadId) {
-		var finishCallback = new ExtensionProvider.ResponseCallback<CatalogSearchResults<? extends CatalogMedia>>() {
-
+		loadFeed(feed, new AsyncFuture.Callback<>() {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
@@ -139,16 +138,17 @@ public abstract class FeedsFragment extends Fragment {
 				var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
 
 				if(filteredResults.isEmpty()) {
-					onFailure(new ZeroResultsException("All results were filtered out.", R.string.no_media_found));
-					return;
+					throw new ZeroResultsException("All results were filtered out.", R.string.no_media_found);
 				}
 
 				runOnUiThread(() -> {
+					if(currentLoadId != loadId) return;
+
 					if(feed.displayMode == CatalogFeed.DisplayMode.SLIDES && rowsAdapter.getItemCount() == 0) {
 						setContentBehindToolbarEnabled(true);
 					}
 
-					rowsAdapter.addCategory(new FeedViewHolder.Feed(feed, filteredResults, feed.displayMode));
+					rowsAdapter.addFeed(new FeedViewHolder.Feed(feed, filteredResults, feed.displayMode));
 
 					// I hope it'll don't do anything bad
 					if(rowsAdapter.getItemCount() < 2) {
@@ -161,23 +161,84 @@ public abstract class FeedsFragment extends Fragment {
 
 			@Override
 			public void onFailure(Throwable e) {
+				if(currentLoadId != loadId) return;
 				Log.e(TAG, "Failed to load an feed!", e);
 
 				if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
-					runOnUiThread(() -> failedRowsAdapter.addCategory(
-							new FeedViewHolder.Feed(feed, e)), binding.recycler);
+					var theRowFeed = new AtomicReference<FeedViewHolder.Feed>();
+					var reloadCallback = new AtomicReference<Runnable>();
+
+					reloadCallback.set(() -> {
+						theRowFeed.get().isLoading = true;
+
+						runOnUiThread(() -> {
+							failedRowsAdapter.updateFeed(theRowFeed.get());
+
+							loadFeed(feed, new AsyncFuture.Callback<>() {
+								@SuppressLint("NotifyDataSetChanged")
+								@Override
+								public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
+									if(currentLoadId != loadId) return;
+
+									var filtered = MediaUtils.filterMediaSync(searchResults);
+									var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
+
+									if(filteredResults.isEmpty()) {
+										throw new ZeroResultsException("All results were filtered out.", R.string.no_media_found);
+									}
+
+									runOnUiThread(() -> {
+										if(currentLoadId != loadId) return;
+
+										if(feed.displayMode == CatalogFeed.DisplayMode.SLIDES && rowsAdapter.getItemCount() == 0) {
+											setContentBehindToolbarEnabled(true);
+										}
+
+										failedRowsAdapter.removeFeed(theRowFeed.get());
+
+										rowsAdapter.addFeed(new FeedViewHolder.Feed(
+												feed, filteredResults, feed.displayMode));
+
+										binding.recycler.scrollToPosition(rowsAdapter.getItemCount() - 1);
+									}, binding.recycler);
+								}
+
+								@Override
+								public void onFailure(Throwable t) {
+									if(currentLoadId != loadId) return;
+									Log.e(TAG, "Failed to reload an feed!", e);
+
+									var rowFeed = new FeedViewHolder.Feed(feed, e, () ->
+											runOnUiThread(() -> reloadCallback.get().run(), binding.recycler));
+
+									runOnUiThread(() -> {
+										failedRowsAdapter.updateFeed(theRowFeed.get(), rowFeed);
+										theRowFeed.set(rowFeed);
+									});
+								}
+							});
+						});
+					});
+
+					var rowFeed = new FeedViewHolder.Feed(feed, e, reloadCallback.get());
+					theRowFeed.set(rowFeed);
+					runOnUiThread(() -> failedRowsAdapter.addFeed(rowFeed), binding.recycler);
 				}
 
 				tryToLoadNextFeed(feed, currentLoadId);
 			}
-		};
+		});
+	}
+
+	private void loadFeed(
+			@NonNull CatalogFeed feed,
+			AsyncFuture.Callback<CatalogSearchResults<? extends CatalogMedia>> callback
+	) {
+		var context = getContext();
+		if(context == null) return;
 
 		try {
 			var provider = ExtensionProvider.forGlobalId(feed.sourceManager, feed.extensionId, feed.sourceId);
-
-			var context = getContext();
-			if(context == null) return;
-
 			var filters = new SettingsList(getFilters());
 
 			if(feed.filters != null) {
@@ -201,25 +262,9 @@ public abstract class FeedsFragment extends Fragment {
 			}
 
 			filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
-			provider.searchMedia(context, filters, finishCallback);
+			provider.searchMedia(filters).addCallback(callback);
 		} catch(ExtensionNotInstalledException e) {
-			Log.e(TAG, "Extension isn't installed, can't load the feed!", e);
-
-			runOnUiThread(() -> failedRowsAdapter.addCategory(
-					new FeedViewHolder.Feed(feed,
-							new ZeroResultsException("No extension provider was found!", 0) {
-								@Override
-								public String getTitle(@NonNull Context context) {
-									return "Extension was not found!";
-								}
-
-								@Override
-								public String getDescription(@NonNull Context context) {
-									return "Please check your filters again. Maybe used extension was removed.";
-								}
-							})), binding.recycler);
-
-			tryToLoadNextFeed(feed, currentLoadId);
+			callback.onFailure(e);
 		}
 	}
 
@@ -309,6 +354,8 @@ public abstract class FeedsFragment extends Fragment {
 	}
 
 	protected abstract SettingsList getFilters();
+
+	protected abstract int getMaxLoadsAtSameTime();
 
 	protected abstract boolean loadOnStartup();
 

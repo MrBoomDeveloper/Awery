@@ -14,7 +14,7 @@ public class TranslationUtil {
 			case "china", "cn", "ch", "chinese", "zh" -> context.getString(R.string.china);
 			case "ja", "jp", "japan", "jpn", "jap" -> context.getString(R.string.japan);
 			case "ru", "russia", "rus" -> context.getString(R.string.russia);
-			case "ko", "korea", "kor" -> context.getString(R.string.korea);
+			case "ko", "korea", "kor", "kr" -> context.getString(R.string.korea);
 			default -> input;
 		};
 	}

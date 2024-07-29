@@ -13,6 +13,7 @@
         <item name="android:fontFamily">@font/poppins</item>
 
         <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowActivityTransitions">true</item>
     </style>
 
     <style name="Theme.Awery" parent="Theme.Base">

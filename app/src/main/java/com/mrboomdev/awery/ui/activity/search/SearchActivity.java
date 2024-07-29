@@ -443,8 +443,7 @@ public class SearchActivity extends AppCompatActivity {
 		loadingAdapter.setEnabled(true);
 		pageFilter.setValue(page);
 
-		source.searchMedia(this, filters, new ExtensionProvider.ResponseCallback<>() {
-			@SuppressLint("NotifyDataSetChanged")
+		source.searchMedia(filters).addCallback(new AsyncFuture.Callback<>() {
 			@Override
 			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> items) {
 				if(wasSearchId != searchId) return;
@@ -482,7 +481,6 @@ public class SearchActivity extends AppCompatActivity {
 				onFinally();
 			}
 
-			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onFailure(Throwable e) {
 				if(wasSearchId != searchId) return;

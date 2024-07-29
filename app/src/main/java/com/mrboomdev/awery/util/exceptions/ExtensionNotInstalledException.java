@@ -1,20 +1,19 @@
 package com.mrboomdev.awery.util.exceptions;
 
 public class ExtensionNotInstalledException extends Exception {
+	private final String extensionName;
 
-	public ExtensionNotInstalledException() {
-		super();
+	public ExtensionNotInstalledException(String extensionName) {
+		super("Extension not installed! " + extensionName);
+		this.extensionName = extensionName;
 	}
 
-	public ExtensionNotInstalledException(String message) {
-		super(message);
+	public ExtensionNotInstalledException(String extensionName, Throwable cause) {
+		super("Extension not installed! " + extensionName, cause);
+		this.extensionName = extensionName;
 	}
 
-	public ExtensionNotInstalledException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ExtensionNotInstalledException(Throwable cause) {
-		super(cause);
+	public String getExtensionName() {
+		return extensionName;
 	}
 }

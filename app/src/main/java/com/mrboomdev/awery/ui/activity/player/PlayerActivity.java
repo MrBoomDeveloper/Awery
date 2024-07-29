@@ -5,6 +5,9 @@ import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyInsetsListener;
 
 import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
@@ -45,20 +48,18 @@ import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.HashSet;
@@ -358,7 +359,14 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				mimeType = NiceUtils.parseMimeType(subtitles.getUri());
 			} catch(IllegalArgumentException e) {
 				Log.e(TAG, "Unknown subtitles mime type! " + subtitles.getUri(), e);
-				CrashHandler.showErrorDialog(this, getString(R.string.unknown_file_type), getString(R.string.unknown_file_type_description), e);
+
+				CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
+						.setTitle(R.string.unknown_file_type)
+						.setMessage(R.string.unknown_file_type_description)
+						.setPrefix(R.string.please_report_bug_app)
+						.setThrowable(e)
+						.build());
+
 				return;
 			}
 
@@ -435,13 +443,18 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			binding.title.setText(episode.getTitle());
 
 			source.getVideoFiles(new SettingsList(
-					new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_EPISODE, Parser.toString(CatalogVideo.class, episode))
-			), new ExtensionProvider.ResponseCallback<>() {
+					new SettingsItem(ExtensionProvider.FILTER_EPISODE, episode)
+			)).addCallback(new AsyncFuture.Callback<>() {
 				@Override
 				public void onSuccess(List<CatalogVideoFile> catalogVideos) {
 					if(isDestroyed()) return;
 
 					runOnUiThread(() -> {
+						if(catalogVideos.size() == 1) {
+							setVideo(catalogVideos.get(0));
+							return;
+						}
+
 						episode.setVideos(catalogVideos);
 						controller.openQualityDialog(true);
 					});
@@ -585,7 +598,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			default -> getString(R.string.unknown_error);
 		}, 1);
 
-		controller.openQualityDialog(true);
+		finish();
 	}
 
 	@Override
@@ -635,13 +648,13 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
 		controller.hide(UI_INSETS);
 
-		ViewUtil.setOnApplyInsetsListener(getWindow().getDecorView(), insets -> {
+		setOnApplyInsetsListener(getWindow().getDecorView(), insets -> {
 			var systemInsets = insets.getInsets(UI_INSETS);
 
-			ViewUtil.setLeftMargin(binding.exit, systemInsets.left);
-			ViewUtil.setLeftMargin(binding.slider, systemInsets.left);
-			ViewUtil.setLeftMargin(binding.bottomControls, systemInsets.left);
-			ViewUtil.setBottomMargin(binding.slider, systemInsets.bottom);
+			setLeftMargin(binding.exit, systemInsets.left);
+			setLeftMargin(binding.slider, systemInsets.left);
+			setLeftMargin(binding.bottomControls, systemInsets.left);
+			setBottomMargin(binding.slider, systemInsets.bottom);
 
 			return false;
 		});

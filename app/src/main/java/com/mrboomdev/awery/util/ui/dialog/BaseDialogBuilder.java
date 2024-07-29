@@ -1,8 +1,12 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static com.mrboomdev.awery.app.AweryApp.resolveAttr;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.spPx;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,6 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -155,15 +160,14 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		if(didCreateRoot) return;
 		didCreateRoot = true;
 
-		/*var linear = new LinearLayoutCompat(context);
-		linear.setOrientation(LinearLayoutCompat.VERTICAL);
-		linear.setBackgroundResource(R.drawable.dialog_background);*/
-
 		scroller = new ScrollView(context);
 		scroller.setVerticalScrollBarEnabled(false);
 
+		var padding = (int) resolveAttr(getContext(), android.R.attr.dialogPreferredPadding)
+				.getDimension(getContext().getResources().getDisplayMetrics());
+
 		var fieldsLinear = new LinearLayoutCompat(context);
-		ViewUtil.setHorizontalPadding(fieldsLinear, dpPx(fieldsLinear, 24));
+		setHorizontalPadding(fieldsLinear, padding);
 		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
 		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
 		fieldsWrapper = fieldsLinear;
@@ -185,20 +189,27 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 
 		createRoot();
 
-		if(title != null) {
-			/*var text = new AppCompatTextView(context);
-			text.setTextSize(ViewUtil.spPx(18));
-			text.setText(title);
+		var builder = new MaterialAlertDialogBuilder(context);
+		builder.setCancelable(isCancelable);
 
-			ViewUtil.setPadding(text, ViewUtil.dpPx(16));
-			linear.addView(text, 0);*/
+		if(title != null) {
+			var titleView = new MaterialTextView(getContext());
+			titleView.setTextSize(spPx(titleView, 20));
+			titleView.setText(title);
+			titleView.setTextColor(resolveAttrColor(getContext(), com.google.android.material.R.attr.colorOnBackground));
+			builder.setCustomTitle(titleView);
+
+			var paddingTop = dpPx(titleView, 18);
+
+			var padding = (int) resolveAttr(getContext(), android.R.attr.dialogPreferredPadding)
+					.getDimension(getContext().getResources().getDisplayMetrics());
+
+			titleView.setPadding(padding, paddingTop, padding, 0);
 		}
 
 		if(message == null) {
 			setTopPadding(scroller, dpPx(scroller, 8));
 		}
-
-		//linear.addView(scroller);
 
 		var contentView = getContentView(fieldsWrapper);
 
@@ -209,47 +220,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		for(var field : fields) {
 			addField(field, -1);
 		}
-
-		/*var actionsLinear = new LinearLayoutCompat(context);
-		actionsLinear.setOrientation(LinearLayoutCompat.HORIZONTAL);
-		linear.addView(actionsLinear);*/
-
-		/*if(cancel != null) {
-			var button = new AppCompatTextView(context);
-			button.setBackgroundResource(R.drawable.ripple_round_you);
-			ViewUtil.setPadding(button, ViewUtil.dpPx(16));
-			button.setText(cancel);
-			actionsLinear.addView(button);
-
-			button.setOnClickListener(v -> {
-				if(cancelListener == null) {
-					dialog.dismiss();
-					return;
-				}
-
-				cancelListener.clicked(this);
-			});
-		}
-
-		if(ok != null) {
-			var button = new AppCompatTextView(context);
-			button.setBackgroundResource(R.drawable.ripple_round_you);
-			ViewUtil.setPadding(button, ViewUtil.dpPx(16));
-			button.setText(ok);
-			actionsLinear.addView(button);
-
-			button.setOnClickListener(v -> {
-				if(okListener == null) {
-					dialog.dismiss();
-					return;
-				}
-
-				okListener.clicked(this);
-			});
-		}*/
-
-		var builder = new MaterialAlertDialogBuilder(context);
-		builder.setCancelable(isCancelable);
 
 		if(fieldsWrapper.getChildCount() > 0) {
 			builder.setView(scroller);
@@ -282,10 +252,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		if(neutralButtonLabel != null) alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
 				.setOnClickListener(v -> neutralListener.clicked((T) this));
 
-		/*dialog = new Dialog(context);
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dialog.setContentView(linear);
-		getWindow().setBackgroundDrawable(null);*/
 		return (T) this;
 	}
 

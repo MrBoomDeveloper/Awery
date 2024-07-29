@@ -2,15 +2,14 @@ package eu.kanade.tachiyomi.network
 
 import android.content.Context
 import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.generated.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UserAgentInterceptor
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.brotli.BrotliInterceptor
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -73,5 +72,5 @@ class NetworkHelper(
     @Suppress("UNUSED")
     val cloudflareClient: OkHttpClient = client
 
-    fun defaultUserAgentProvider() = /*PrefManager.getVal<String>(PrefName.DefaultUserAgent)*/ Constants.DEFAULT_UA
+    fun defaultUserAgentProvider(): String = /*PrefManager.getVal<String>(PrefName.DefaultUserAgent)*/ Constants.DEFAULT_UA
 }

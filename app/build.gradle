@@ -178,7 +178,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
-    implementation "androidx.fragment:fragment-ktx:1.8.1"
+    implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation "com.github.MrBoomDeveloper:AwerySdk:67856bbc66"
 
@@ -196,18 +196,20 @@ dependencies {
     implementation "com.github.emilaleborn:PageIndicatorView:905cd4e2ab"
     implementation "com.github.skydoves:colorpickerview:2.3.0"
     implementation 'com.github.skydoves:balloon:1.6.5'
-    implementation "com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0"
+    implementation "com.github.piasy:BigImageViewer:1.8.1"
+    implementation "com.github.piasy:GlideImageLoader:1.8.1"
+    implementation "com.github.piasy:GlideImageViewFactory:1.8.1"
     implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.3.0-rc02'
     implementation "nl.dionsegijn:konfetti-xml:2.0.4"
     implementation "nl.joery.animatedbottombar:library:1.1.0"
 
     // Markdown
-    for(var moduleName : List.of("core", "editor", "ext-strikethrough", "html", "image", "image-glide", "linkify")) {
+    for(var moduleName : ["core", "editor", "ext-strikethrough", "html", "image", "image-glide", "linkify"]) {
         implementation "io.noties.markwon:$moduleName:4.6.2"
     }
 
     // Exoplayer
-    for(var moduleName : List.of("exoplayer", "exoplayer-hls", "exoplayer-dash", "datasource-okhttp", "session", "ui")) {
+    for(var moduleName : ["exoplayer", "exoplayer-hls", "exoplayer-dash", "datasource-okhttp", "session", "ui"]) {
         implementation "androidx.media3:media3-$moduleName:1.3.1"
     }
 

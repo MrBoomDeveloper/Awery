@@ -54,7 +54,13 @@ public class SplashActivity extends AppCompatActivity {
 				getDatabase().getListDao().getAll();
 			} catch(IllegalStateException e) {
 				Log.e(TAG, "Database is corrupted!", e);
-				CrashHandler.showFatalErrorDialog(this, "Database is corrupted", e);
+
+				CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
+						.setTitle("Database is corrupted!")
+						.setThrowable(e)
+						.setDismissCallback(AweryLifecycle::exitApp)
+						.build());
+
 				return;
 			}
 
@@ -75,7 +81,12 @@ public class SplashActivity extends AppCompatActivity {
 				@Override
 				public void onFailure(Throwable t) {
 					Log.e(TAG, "Failed to load an ExtensionsFactory!", t);
-					CrashHandler.showFatalErrorDialog(SplashActivity.this, "Failed to load an ExtensionsFactory", t);
+
+					CrashHandler.showErrorDialog(SplashActivity.this, new CrashHandler.CrashReport.Builder()
+							.setTitle("Failed to load an ExtensionsFactory")
+							.setThrowable(t)
+							.setDismissCallback(AweryLifecycle::exitApp)
+							.build());
 				}
 			});
 

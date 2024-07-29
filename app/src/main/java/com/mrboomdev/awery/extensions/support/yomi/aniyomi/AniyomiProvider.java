@@ -8,7 +8,6 @@ import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -36,7 +35,6 @@ import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -214,69 +212,49 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void getVideos(
-			@NonNull SettingsList filters,
-			@NonNull ResponseCallback<List<? extends CatalogVideo>> callback
-	) {
-		var media = returnWith(filters.require(ExtensionProvider.FILTER_MEDIA), mediaFilter -> {
-			try {
-				return mediaFilter.parseJsonValue(CatalogMedia.class);
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
+	public AsyncFuture<List<? extends CatalogVideo>> getVideos(@NonNull SettingsList filters) {
+		return thread(() -> {
+			var media = filters.require(
+					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
 
-		thread(() -> AniyomiKotlinBridge.getEpisodesList(source, AniyomiMedia.fromMedia(media), (episodes, e) -> {
-			if(e != null) {
-				callback.onFailure(e);
-				return;
-			}
+			var episodes = AniyomiKotlinBridge.getEpisodesList(
+					source, AniyomiMedia.fromMedia(media)).await();
 
 			if(episodes == null || episodes.isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Aniyomi: No episodes found", R.string.no_episodes_found));
-				return;
+				throw new ZeroResultsException("Aniyomi: No episodes found", R.string.no_episodes_found);
 			}
 
-			callback.onSuccess(stream(episodes)
-					.map(AniyomiEpisode::new).toList());
-		}));
+			return stream(episodes)
+					.map(ep -> new AniyomiEpisode(this, ep))
+					.toList();
+		});
 	}
 
 	@Override
-	public void getVideoFiles(@NonNull SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
-		var episode = returnWith(filters.require(ExtensionProvider.FILTER_EPISODE), mediaFilter -> {
-			try {
-				return mediaFilter.parseJsonValue(CatalogVideo.class);
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
+	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(@NonNull SettingsList filters) {
+		return thread(() -> {
+			var episode = (CatalogVideo) filters.require(
+					ExtensionProvider.FILTER_EPISODE).getSerializable();
 
-		thread(() -> AniyomiKotlinBridge.getVideosList(source, AniyomiEpisode.fromEpisode(episode), (videos, e) -> {
-			if(e != null) {
-				callback.onFailure(e);
-				return;
-			}
+			var videos = AniyomiKotlinBridge.getVideosList(
+					source, AniyomiEpisode.fromEpisode(episode)).await();
 
 			if(videos == null || videos.isEmpty()) {
-				callback.onFailure(new ZeroResultsException("Aniyomi: No videos found", R.string.nothing_found));
-				return;
+				throw new ZeroResultsException("Aniyomi: No videos found", R.string.nothing_found);
 			}
 
-			callback.onSuccess(stream(videos).map(item -> new CatalogVideoFile(
+			return stream(videos).map(item -> new CatalogVideoFile(
 					item.getQuality(),
 					item.getVideoUrl(),
 
 					item.getHeaders() == null ? null :
 							mapHttpHeaders(item.getHeaders()),
 
-					stream(item.getSubtitleTracks()).map(track ->
-							new CatalogSubtitle(
-									track.getLang(),
-									track.getUrl()
-							)).toList()
-			)).collect(Collectors.toCollection(ArrayList::new)));
-		}));
+					stream(item.getSubtitleTracks())
+							.map(track -> new CatalogSubtitle(track.getLang(), track.getUrl()))
+							.toList()
+				)).collect(Collectors.toCollection(ArrayList::new));
+		});
 	}
 
 	@NonNull
@@ -295,49 +273,30 @@ public abstract class AniyomiProvider extends YomiProvider {
 		return features;
 	}
 
-	@Contract("null, _, _ -> false")
-	private boolean checkSearchResults(
-			AnimesPage page,
-			Throwable t,
-			ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
-	) {
-		if(t != null) {
-			callback.onFailure(t);
-			return false;
-		}
-
+	private void checkSearchResults(AnimesPage page) {
 		if(page == null) {
-			callback.onFailure(new NullPointerException("page is null!"));
-			return false;
+			throw new NullPointerException("page is null!");
 		}
 
 		if(page.getAnimes().isEmpty()) {
-			callback.onFailure(new ZeroResultsException("No media was found", R.string.no_media_found));
-			return false;
+			throw new ZeroResultsException("No media was found", R.string.no_media_found);
 		}
-
-		return true;
 	}
 
 	@Override
-	public void getMedia(Context context, String id, @NonNull ResponseCallback<CatalogMedia> callback) {
-		AniyomiKotlinBridge.getAnimeDetails(source, new SAnimeImpl() {{
+	public AsyncFuture<CatalogMedia> getMedia(String id) {
+		return AniyomiKotlinBridge.getAnimeDetails(source, new SAnimeImpl() {{
 			setUrl(id);
-		}}, (anime, e) -> {
-			if(e != null) {
-				callback.onFailure(e);
-				return;
-			}
-
+		}}).then(anime -> {
 			if(anime == null) {
-				callback.onFailure(new ZeroResultsException("Anime not found", R.string.no_media_found));
-				return;
+				throw new ZeroResultsException("Anime not found", R.string.no_media_found);
 			}
 
+			// Manually set values if they wasn't been by an extension
 			try { anime.getUrl(); } catch(UninitializedPropertyAccessException ex) { anime.setUrl(id); }
 			try { anime.getTitle(); } catch(UninitializedPropertyAccessException ex) { anime.setTitle(id); }
 
-			callback.onSuccess(new AniyomiMedia(this, anime));
+			return new AniyomiMedia(this, anime);
 		});
 	}
 
@@ -375,47 +334,44 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public void searchMedia(
-			Context context,
-			@NonNull SettingsList filters,
-			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
-	) {
+	public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(@NonNull SettingsList filters) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
 			var query = filters.get(FILTER_QUERY);
 			var page = filters.get(FILTER_PAGE);
 			var feed = filters.get(FILTER_FEED);
 
-			AniyomiKotlinBridge.ResponseCallback<AnimesPage> searchCallback = (animePage, t) -> {
-				if(!checkSearchResults(animePage, t, callback)) return;
-
-				callback.onSuccess(CatalogSearchResults.of(stream(animePage.getAnimes())
-						.map(item -> new AniyomiMedia(this, item))
-						.toList(), animePage.getHasNextPage()));
-			};
+			AsyncFuture<AnimesPage> future;
 
 			// filters.size() <= 2 only if query and page filters are being met.
 			if(feed != null && feed.getStringValue() != null && filters.size() <= 2) {
 				switch(feed.getStringValue()) {
-					case FEED_LATEST -> thread(() -> AniyomiKotlinBridge.getLatestAnime(
-							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0), searchCallback));
+					case FEED_LATEST -> future = AniyomiKotlinBridge.getLatestAnime(
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0));
 
-					case FEED_POPULAR -> thread(() -> AniyomiKotlinBridge.getPopularAnime(
-							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0), searchCallback));
+					case FEED_POPULAR -> future = AniyomiKotlinBridge.getPopularAnime(
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0));
 
-					default -> callback.onFailure(new IllegalArgumentException("Unknown feed! " + feed));
+					default -> {
+						return AsyncUtils.futureFailNow(new IllegalArgumentException("Unknown feed! " + feed));
+					}
 				}
+			} else {
+				var animeFilters = catalogueSource.getFilterList();
+				applyFilters(animeFilters, filters);
 
-				return;
+				future = AniyomiKotlinBridge.searchAnime(catalogueSource,
+						requireNonNullElse(page.getIntegerValue(), 0), query.getStringValue(), animeFilters);
 			}
 
-			var animeFilters = catalogueSource.getFilterList();
-			applyFilters(animeFilters, filters);
+			return future.then(animePage -> {
+				checkSearchResults(animePage);
 
-			thread(() -> AniyomiKotlinBridge.searchAnime(catalogueSource,
-					requireNonNullElse(page.getIntegerValue(), 0), query.getStringValue(),
-					animeFilters, searchCallback));
+				return CatalogSearchResults.of(stream(animePage.getAnimes())
+						.map(item -> new AniyomiMedia(this, item))
+						.toList(), animePage.getHasNextPage());
+			});
 		} else {
-			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+			return AsyncUtils.futureFailNow(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}
 	}
 

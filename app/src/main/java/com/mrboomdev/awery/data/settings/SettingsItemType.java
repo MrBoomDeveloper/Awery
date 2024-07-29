@@ -21,6 +21,8 @@ public enum SettingsItemType {
 
 	@Json(name = "json")
 	JSON,
+	@Json(name = "serializable")
+	SERIALIZABLE,
 	@Json(name = "date")
 	DATE,
 	@Json(name = "excludable")

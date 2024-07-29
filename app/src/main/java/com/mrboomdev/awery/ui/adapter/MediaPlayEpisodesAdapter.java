@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
 import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
+import static com.mrboomdev.awery.app.AweryApp.share;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -159,8 +161,9 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 			menu.getMenu().add(0, 1, 0, "See comments");
 //			menu.getMenu().add(0, 2, 0, "Download");
-//			menu.getMenu().add(0, 3, 0, "Share");
-//			menu.getMenu().add(0, 4, 0, "Hide");
+			menu.getMenu().add(0, 3, 0, "Share");
+			menu.getMenu().add(0, 4, 0, "Open in browser");
+//			menu.getMenu().add(0, 5, 0, "Hide");
 
 			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
 				case 0 -> {
@@ -181,8 +184,18 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 				}
 
 				case 2 -> throw new UnimplementedException("Download not implemented");
-				case 3 -> throw new UnimplementedException("Share not implemented");
-				case 4 -> throw new UnimplementedException("Hide not implemented");
+
+				case 3 -> {
+					share(holder.getItem().getUrl());
+					yield true;
+				}
+
+				case 4 -> {
+					openUrl(parent.getContext(), holder.getItem().getUrl(), true);
+					yield true;
+				}
+
+				case 5 -> throw new UnimplementedException("Hide not implemented");
 				default -> throw new IllegalStateException("Unexpected value: " + item.getItemId());
 			});
 

@@ -1,19 +1,14 @@
 package com.mrboomdev.awery.ui.activity;
 
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
 import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
+import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
 
 import android.annotation.SuppressLint;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -21,6 +16,7 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
@@ -32,8 +28,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
@@ -41,11 +37,8 @@ import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class MediaActivity extends AppCompatActivity {
@@ -91,7 +84,7 @@ public class MediaActivity extends AppCompatActivity {
 			var header = new FloatingActionButton(this, null, style);
 			header.setImageResource(R.drawable.ic_back);
 			header.setOnClickListener(v -> finish());
-			header.setBackgroundTintList(ColorStateList.valueOf(0x00000000));
+			header.setBackground(ContextCompat.getDrawable(this, R.drawable.ripple_circle_white));
 			rail.addHeaderView(header);
 		}
 
@@ -99,7 +92,7 @@ public class MediaActivity extends AppCompatActivity {
 			binding.navigation.setBackgroundColor(0x00000000);
 		}
 
-		setMedia((CatalogMedia) getIntent().getSerializableExtra(EXTRA_MEDIA));
+		setMedia(requireArgument(this, EXTRA_MEDIA, CatalogMedia.class));
 	}
 
 	public static void handleOptionsClick(@NonNull View anchor, @NonNull CatalogMedia media) {

@@ -3,14 +3,15 @@ package com.mrboomdev.awery.ui.activity;
 import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
 import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.openUrl;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -93,7 +94,16 @@ public class BrowserActivity extends AppCompatActivity {
 				}
 
 				case 1 -> {
-					openUrl(this, binding.webview.getUrl());
+					var intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse(binding.webview.getUrl()));
+					var resolved = intent.resolveActivity(getPackageManager());
+
+					if(resolved == null) {
+						toast("No external browser was found :(", 1);
+						yield true;
+					}
+
+					startActivity(intent);
 					yield true;
 				}
 
@@ -103,8 +113,13 @@ public class BrowserActivity extends AppCompatActivity {
 			menu.show();
 		});
 
-		setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
+		setOnApplyUiInsetsListener(binding.header, insets -> {
 			binding.header.setPadding(insets.left, insets.top, insets.right, 0);
+			return true;
+		});
+
+		setOnApplyUiInsetsListener(binding.swipeRefresher, insets -> {
+			setHorizontalMargin(binding.swipeRefresher, insets.left, insets.right);
 			return true;
 		});
 

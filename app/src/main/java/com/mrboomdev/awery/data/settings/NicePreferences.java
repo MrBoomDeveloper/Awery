@@ -417,7 +417,7 @@ public class NicePreferences implements SettingsDataHandler {
 
 		switch(item.getType()) {
 			case BOOLEAN, SCREEN_BOOLEAN -> setValue(item.getKey(), (boolean) newValue);
-			case SELECT, STRING, JSON -> setValue(item.getKey(), (String) newValue);
+			case SELECT, STRING, JSON, SERIALIZABLE -> setValue(item.getKey(), (String) newValue);
 			case SELECT_INTEGER, INTEGER, COLOR -> setValue(item.getKey(), (int) newValue);
 			case DATE -> setValue(item.getKey(), (long) newValue);
 
@@ -451,7 +451,7 @@ public class NicePreferences implements SettingsDataHandler {
 			case DATE -> getLong(item.getKey(), item.getLongValue());
 			case EXCLUDABLE -> item.getExcludableValue();
 			case COLOR, INTEGER, SELECT_INTEGER -> getInteger(item.getKey(), item.getIntegerValue());
-			case SELECT, STRING, JSON -> getString(item.getKey(), item.getStringValue());
+			case SELECT, STRING, JSON, SERIALIZABLE -> getString(item.getKey(), item.getStringValue());
 			case MULTISELECT -> getStringSet(item.getKey());
 			case DIVIDER, ACTION, SCREEN, CATEGORY -> null;
 		};

@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
@@ -18,6 +17,7 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -42,6 +41,7 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.os.strictmode.InstanceCountViolation;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
@@ -56,18 +56,21 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
 
+import com.github.piasy.biv.BigImageViewer;
+import com.github.piasy.biv.loader.glide.GlideCustomImageLoader;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.resources.MaterialAttributes;
 import com.google.android.material.sidesheet.SideSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.mrboomdev.awery.BuildConfig;
@@ -193,6 +196,13 @@ public class AweryApp extends Application {
 		if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
 			toast(R.string.copied_to_clipboard);
 		}
+	}
+
+	public static void share(String text) {
+		new ShareCompat.IntentBuilder(getAnyContext())
+				.setType("text/plain")
+				.setText(text)
+				.startChooser();
 	}
 
 	/**
@@ -400,13 +410,13 @@ public class AweryApp extends Application {
 		}
 	}
 
-	@NonNull
-	public static TypedArray resolveAttrs(@NonNull Context context, @StyleRes int style, int... attrs) {
-		return context.obtainStyledAttributes(style, attrs);
-	}
-
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		return MaterialColors.getColor(context, res, Color.BLACK);
+	}
+
+	@SuppressLint("RestrictedApi")
+	public static TypedValue resolveAttr(Context context, @AttrRes int res) {
+		return MaterialAttributes.resolve(context, res);
 	}
 
 	public static boolean isLandscape(@NonNull Context context) {
@@ -422,12 +432,24 @@ public class AweryApp extends Application {
 		return pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK);
 	}
 
-	public static void openUrl(String url) {
-		openUrl(getAnyContext(), url);
+	public static void openUrl(@NonNull Context context, String url) {
+		openUrl(context, url, false);
 	}
 
-	public static void openUrl(@NonNull Context context, String url) {
-		var customTabsIntent = new CustomTabsIntent.Builder().build();
+	public static void openUrl(@NonNull Context context, String url, boolean forceInternal) {
+		if(forceInternal) {
+			var intent = new Intent(context, BrowserActivity.class);
+			intent.putExtra(BrowserActivity.EXTRA_URL, url);
+			context.startActivity(intent);
+			return;
+		}
+
+		var customTabsIntent = new CustomTabsIntent.Builder()
+				.setColorScheme(ThemeManager.isDarkModeEnabled()
+						? CustomTabsIntent.COLOR_SCHEME_DARK
+						: CustomTabsIntent.COLOR_SCHEME_LIGHT)
+				.build();
+
 		customTabsIntent.intent.setData(Uri.parse(url));
 
 		var resolvedActivity = customTabsIntent.intent
@@ -463,15 +485,19 @@ public class AweryApp extends Application {
 				if(BuildConfig.DEBUG) {
 					if(v instanceof InstanceCountViolation) return;
 
-					var activity = getAnyActivity(AppCompatActivity.class);
-					CrashHandler.showErrorDialog(activity, v);
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setPrefix(R.string.please_report_bug_app)
+							.setThrowable(v)
+							.build());
 				}
 			});
 
 			threadPolicy.penaltyListener(Runnable::run, v -> {
 				if(BuildConfig.DEBUG) {
-					var activity = getAnyActivity(AppCompatActivity.class);
-					CrashHandler.showErrorDialog(activity, v);
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setPrefix(R.string.please_report_bug_app)
+							.setThrowable(v)
+							.build());
 				}
 			});
 		}
@@ -493,7 +519,9 @@ public class AweryApp extends Application {
 		AweryLifecycle.init(this);
 		ThemeManager.applyApp(this);
 		setupStrictMode();
+
 		super.onCreate();
+		BigImageViewer.initialize(GlideCustomImageLoader.with(this));
 
 		// Note: I'm so sorry. I've just waste the whole day to try fixing THIS SHIT!!!!
 		// And in result in nothing! FUCKIN LIGHT THEME! WHY DOES IT EXIST!?!?!?!?!?!?!?!?!?!?

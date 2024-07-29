@@ -197,7 +197,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 					case BOOLEAN, SCREEN_BOOLEAN -> originalItem.setValue(requireNonNullElse(
 							found.getBooleanValue(), originalItem.getBooleanValue()));
 
-					case STRING, SELECT, JSON -> originalItem.setValue(requireNonNullElse(
+					case STRING, SELECT, JSON, SERIALIZABLE -> originalItem.setValue(requireNonNullElse(
 							found.getStringValue(), originalItem.getStringValue()));
 
 					case INTEGER, SELECT_INTEGER, COLOR -> originalItem.setValue(

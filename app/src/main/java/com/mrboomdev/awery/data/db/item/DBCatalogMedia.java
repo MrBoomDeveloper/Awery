@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 import java9.util.stream.Collectors;
 
@@ -110,9 +111,11 @@ public class DBCatalogMedia {
 			dbMedia.status = media.status.name();
 		}
 
-		dbMedia.extraLargePoster = media.getBestPoster();
-		dbMedia.largePoster = media.poster.large;
-		dbMedia.mediumPoster = media.poster.medium;
+		if(media.poster != null) {
+			dbMedia.extraLargePoster = media.getBestPoster();
+			dbMedia.largePoster = media.poster.large;
+			dbMedia.mediumPoster = media.poster.medium;
+		}
 
 		if(media.genres != null) {
 			dbMedia.genres = StringUtils.listToUniqueString(media.genres);
@@ -124,7 +127,10 @@ public class DBCatalogMedia {
 					.collect(Collectors.joining(";;;")) + ";;;";
 		}
 
-		dbMedia.titles = StringUtils.listToUniqueString(media.titles);
+		if(media.titles != null) {
+			dbMedia.titles = StringUtils.listToUniqueString(media.titles);
+		}
+
 		return dbMedia;
 	}
 
@@ -141,7 +147,7 @@ public class DBCatalogMedia {
 			var moshi = new Moshi.Builder().build();
 			var type = Types.newParameterizedType(Map.class, String.class, String.class);
 			JsonAdapter<Map<String, String>> adapter = moshi.adapter(type);
-			media.ids = adapter.fromJson(ids);
+			media.ids = Objects.requireNonNull(adapter.fromJson(ids));
 		} catch(IOException e) {
 			throw new RuntimeException("Failed to parse ids: " + ids);
 		}
@@ -174,9 +180,12 @@ public class DBCatalogMedia {
 		media.type = StringUtils.parseEnum(type, CatalogMedia.MediaType.class);
 		media.status = StringUtils.parseEnum(status, CatalogMedia.MediaStatus.class);
 
-		media.poster.extraLarge = extraLargePoster;
-		media.poster.large = largePoster;
-		media.poster.medium = mediumPoster;
+		if(extraLargePoster != null || largePoster != null || mediumPoster != null) {
+			media.poster = new CatalogMedia.ImageVersions();
+			media.poster.extraLarge = extraLargePoster;
+			media.poster.large = largePoster;
+			media.poster.medium = mediumPoster;
+		}
 
 		if(genres != null) media.genres = StringUtils.uniqueStringToList(genres);
 		if(titles != null) media.titles = StringUtils.uniqueStringToList(titles);

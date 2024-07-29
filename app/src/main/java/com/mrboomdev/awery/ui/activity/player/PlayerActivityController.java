@@ -253,7 +253,10 @@ public class PlayerActivityController {
 		enum Action { QUALITY, ASPECT }
 
 		var items = new LinkedHashMap<PopupItem, Action>() {{
-			put(new PopupItem(R.string.video_quality, R.drawable.ic_round_high_quality_24), Action.QUALITY);
+			if(activity.episode != null && activity.episode.getVideos() != null && activity.episode.getVideos().size() > 1) {
+				put(new PopupItem(R.string.video_quality, R.drawable.ic_round_high_quality_24), Action.QUALITY);
+			}
+
 			put(new PopupItem(R.string.aspect_ratio, R.drawable.ic_fullscreen), Action.ASPECT);
 		}};
 

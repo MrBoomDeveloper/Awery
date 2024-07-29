@@ -1,9 +1,13 @@
 package com.mrboomdev.awery.ui.widgets;
 
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_CONSTRAINT;
+import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setWeight;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
@@ -19,7 +23,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -34,12 +37,12 @@ public class GesturePreviewView extends FrameLayout {
 		super(context, attrs, defStyleAttr);
 		createViews(context);
 
-		var attributes = context.obtainStyledAttributes(attrs, R.styleable.GesturePreviewView);
-		setIcon(attributes.getDrawable(R.styleable.GesturePreviewView_icon));
-		setMaxProgress(attributes.getInteger(R.styleable.GesturePreviewView_maxProgress, 100));
-		setProgress(attributes.getInteger(R.styleable.GesturePreviewView_progress, 0));
-		setIsVisible(attributes.getBoolean(R.styleable.GesturePreviewView_isVisible, true), false);
-		attributes.recycle();
+		try(var attributes = context.obtainStyledAttributes(attrs, R.styleable.GesturePreviewView)) {
+			setIcon(attributes.getDrawable(R.styleable.GesturePreviewView_icon));
+			setMaxProgress(attributes.getInteger(R.styleable.GesturePreviewView_maxProgress, 100));
+			setProgress(attributes.getInteger(R.styleable.GesturePreviewView_progress, 0));
+			setIsVisible(attributes.getBoolean(R.styleable.GesturePreviewView_isVisible, true), false);
+		}
 	}
 
 	private void createViews(Context context) {
@@ -47,17 +50,17 @@ public class GesturePreviewView extends FrameLayout {
 		linearView.setOrientation(LinearLayoutCompat.VERTICAL);
 		linearView.setGravity(Gravity.CENTER_HORIZONTAL);
 		linearView.setBackgroundResource(R.drawable.ui_gesture_background);
-		addView(linearView, ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
+		addView(linearView, MATCH_PARENT, MATCH_PARENT);
 
 		if(alpha != -1) {
 			linearView.setAlpha(alpha);
 		}
 
 		progressWrapperView = new ConstraintLayout(context);
-		linearView.addView(progressWrapperView, ViewUtil.MATCH_PARENT, 0);
-		ViewUtil.setWeight(progressWrapperView, 1);
+		linearView.addView(progressWrapperView, MATCH_PARENT, 0);
+		setWeight(progressWrapperView, 1);
 
-		var progressParams = new ConstraintLayout.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_CONSTRAINT);
+		var progressParams = new ConstraintLayout.LayoutParams(MATCH_PARENT, MATCH_CONSTRAINT);
 		progressParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
 
 		progressView = new AppCompatImageView(context);
@@ -65,12 +68,11 @@ public class GesturePreviewView extends FrameLayout {
 		progressWrapperView.addView(progressView, progressParams);
 
 		iconView = new AppCompatImageView(context);
-		var primaryColor = AweryApp.resolveAttrColor(context, android.R.attr.colorPrimary);
-		iconView.setImageTintList(ColorStateList.valueOf(primaryColor));
-		linearView.addView(iconView, dpPx(32), dpPx(32));
+		setImageTintAttr(iconView, android.R.attr.colorPrimary);
+		linearView.addView(iconView, dpPx(iconView, 32), dpPx(iconView, 32));
 
-		ViewUtil.setVerticalMargin(iconView, dpPx(8));
-		ViewUtil.setPadding(iconView, dpPx(4));
+		setVerticalMargin(iconView, dpPx(iconView, 8));
+		ViewUtil.setPadding(iconView, dpPx(iconView, 4));
 	}
 
 	public GesturePreviewView(Context context, @Nullable AttributeSet attrs) {

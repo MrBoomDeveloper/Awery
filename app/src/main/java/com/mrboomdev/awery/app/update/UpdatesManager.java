@@ -82,8 +82,12 @@ public class UpdatesManager {
 						@Override
 						public void onFailure(Throwable t) {
 							Log.e(TAG, "Failed to download an update!", t);
-							CrashHandler.showErrorDialog(context, "Failed to download an update", t);
 							window.dismiss();
+
+							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+									.setTitle("Failed to download an update")
+									.setThrowable(t)
+									.build());
 						}
 					});
 				}).show());

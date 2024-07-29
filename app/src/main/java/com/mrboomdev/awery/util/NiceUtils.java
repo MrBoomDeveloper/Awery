@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,7 +53,7 @@ public class NiceUtils {
 		if(file.exists()) {
 			FileUtil.deleteFile(file);
 		} else {
-			file.getParentFile().mkdirs();
+			requireNonNull(file.getParentFile()).mkdirs();
 		}
 
 		return file;
@@ -392,17 +393,12 @@ public class NiceUtils {
 		return o;
 	}
 
-	public static <T> T requireArgument(Intent intent, String name, Class<T> clazz) throws NullPointerException {
-		Object result;
+	public static <T> T requireArgument(@NonNull Activity activity, String name, Class<T> clazz) throws NullPointerException {
+		return requireArgument(activity.getIntent(), name, clazz);
+	}
 
-		if(clazz == String.class) result = intent.getStringExtra(name);
-		else if(clazz == Integer.class) result = intent.getIntExtra(name, 0);
-		else if(clazz == Boolean.class) result = intent.getBooleanExtra(name, false);
-		else if(clazz == Long.class) result = intent.getLongExtra(name, 0);
-		else if(clazz == Float.class) result = intent.getFloatExtra(name, 0);
-		else result = intent.getSerializableExtra(name);
-
-		return clazz.cast(requireArgument(result, name));
+	public static <T> T requireArgument(Intent intent, String name, @NonNull Class<T> clazz) throws NullPointerException {
+		return clazz.cast(requireArgument(getArgument(intent, name, clazz), name));
 	}
 
 	public static <T> T getArgument(Intent intent, String name, Class<T> clazz) {

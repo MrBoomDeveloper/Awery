@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
-import com.mrboomdev.awery.util.graphql.GraphQLException;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.WrappedException;
@@ -100,6 +99,8 @@ public class ExceptionDescriptor {
 			return context.getString(R.string.timed_out);
 		} else if(t instanceof BotSecurityBypassException e) {
 			return "Failed to bypass " + e.getBlockerName();
+		} else if(t instanceof ExtensionNotInstalledException) {
+			return "Extension not installed";
 		} else if(t instanceof SocketException e) {
 			return e.getMessage();
 		} else if(t instanceof CancelledException) {
@@ -108,8 +109,7 @@ public class ExceptionDescriptor {
 			return context.getString(R.string.failed_handshake);
 		} else if(t instanceof HttpException e) {
 			return getHttpErrorTitle(context, e.getCode());
-		} else if(t instanceof GraphQLException
-				| t instanceof NullPointerException) {
+		} else if(t instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(t instanceof UnknownHostException) {
 			return t.getMessage();
@@ -173,6 +173,7 @@ public class ExceptionDescriptor {
 		return !(t instanceof ZeroResultsException ||
 				t instanceof UnimplementedException ||
 				t instanceof SocketTimeoutException ||
+				t instanceof ExtensionNotInstalledException ||
 				t instanceof SocketException ||
 				t instanceof InvalidSyntaxException ||
 				t instanceof JsException ||
@@ -180,8 +181,7 @@ public class ExceptionDescriptor {
 				t instanceof HttpException ||
 				t instanceof UnsupportedOperationException ||
 				t instanceof SerializationException ||
-				t instanceof UnknownHostException ||
-				t instanceof GraphQLException);
+				t instanceof UnknownHostException);
 	}
 
 	@NonNull
@@ -204,7 +204,9 @@ public class ExceptionDescriptor {
 			return e.getDescription(context);
 		} else if(t instanceof UnimplementedException) {
 			return t.getMessage();
-		} if(t instanceof BotSecurityBypassException) {
+		} else if(t instanceof ExtensionNotInstalledException e) {
+			return "Please check your filters again. Maybe used extension was removed. It's id: " + e.getExtensionName();
+		} else if(t instanceof BotSecurityBypassException) {
 			return "Try opening the website and completing their bot check.";
 		} else if(t instanceof SocketTimeoutException) {
 			return context.getString(R.string.connection_timeout);
@@ -214,22 +216,7 @@ public class ExceptionDescriptor {
 			return getHttpErrorMessage(context, e.getCode());
 		} else if(t instanceof UnknownHostException e) {
 			return e.getMessage();
-		} else if(t instanceof GraphQLException e) {
-			var errors = e.getGraphQLErrors();
-			var builder = new StringBuilder();
-
-			var iterator = errors.iterator();
-			while(iterator.hasNext()) {
-				var error = iterator.next();
-				builder.append(error.toUserReadableString());
-
-				if(iterator.hasNext()) {
-					builder.append("\n");
-				}
-			}
-
-			return builder.toString();
-		} if(t instanceof SerializationException ||
+		} else if(t instanceof SerializationException ||
 				t instanceof InvalidSyntaxException) {
 			return "An error has occurred while parsing the response. " + t.getMessage();
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
@@ -337,11 +324,7 @@ public class ExceptionDescriptor {
 		UNIMPLEMENTED {
 			@Override
 			protected boolean isMeImpl(Throwable t) {
-				if(t instanceof UnsupportedOperationException || t instanceof UnimplementedException) {
-					return true;
-				}
-
-				return false;
+				return t instanceof UnsupportedOperationException || t instanceof UnimplementedException;
 			}
 		},
 		OTHER {

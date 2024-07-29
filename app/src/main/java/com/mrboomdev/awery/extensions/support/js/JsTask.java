@@ -1,10 +1,6 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
-
 import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.sdk.util.Callbacks;
@@ -30,8 +26,12 @@ public class JsTask {
 
 		this.callback = o -> {
 			if(o instanceof Throwable t) {
-				CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), t);
 				Log.e(TAG, "Returned exception, ignoring the response.", t);
+
+				CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+						.setThrowable(t)
+						.build());
+
 				return;
 			}
 

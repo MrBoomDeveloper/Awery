@@ -127,8 +127,8 @@ public class MultiSearchActivity extends AppCompatActivity {
 					LayoutInflater.from(getContext()), parent, false);
 
 			setOnApplyUiInsetsListener(binding.getRoot(), insets -> {
-				setTopPadding(binding.getRoot(), insets.top + dpPx(4));
-				setHorizontalPadding(binding.getRoot(), insets.left + dpPx(4), insets.right + dpPx(4));
+				setTopPadding(binding.getRoot(), insets.top + dpPx(binding, 4));
+				setHorizontalPadding(binding.getRoot(), insets.left + dpPx(binding, 4), insets.right + dpPx(binding, 4));
 				return true;
 			});
 
@@ -177,6 +177,11 @@ public class MultiSearchActivity extends AppCompatActivity {
 		protected SettingsList getFilters() {
 			var text = binding.edittext.getText().toString();
 			return new SettingsList(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY, text));
+		}
+
+		@Override
+		protected int getMaxLoadsAtSameTime() {
+			return 6;
 		}
 
 		@Override

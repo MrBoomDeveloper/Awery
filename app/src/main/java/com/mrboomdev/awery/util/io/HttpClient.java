@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util.io;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -61,7 +63,7 @@ public class HttpClient {
 
 		return AsyncUtils.controllableFuture(future -> {
 			try {
-				targetFile.getParentFile().mkdirs();
+				requireNonNull(targetFile.getParentFile()).mkdirs();
 				targetFile.delete();
 				targetFile.createNewFile();
 

@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.exitApp;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -42,6 +43,7 @@ import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.app.update.UpdatesManager;
 import com.mrboomdev.awery.data.Constants;
@@ -159,7 +161,13 @@ public class MainActivity extends AppCompatActivity {
 			icons = Parser.fromString(adapter, json);
 		} catch(IOException e) {
 			Log.e(TAG, "Failed to read an icons atlas!", e);
-			CrashHandler.showFatalErrorDialog(this, "Failed to read an icons list!", e);
+
+			CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
+					.setTitle("Failed to read an icons list")
+					.setThrowable(e)
+					.setDismissCallback(AweryLifecycle::exitApp)
+					.build());
+
 			return;
 		}
 
@@ -460,6 +468,11 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		protected SettingsList getFilters() {
 			return new SettingsList();
+		}
+
+		@Override
+		protected int getMaxLoadsAtSameTime() {
+			return 1;
 		}
 
 		@Override

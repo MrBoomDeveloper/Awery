@@ -423,12 +423,8 @@ public class ViewUtil {
 		return dpPx(view.getRoot().getContext(), dp);
 	}
 
-	/**
-	 * @deprecated Use {@link #spPx(Context, float)}
-	 */
-	@Deprecated(forRemoval = true)
-	public static float spPx(float sp) {
-		return spPx(getAnyContext(), sp);
+	public static float spPx(@NonNull View view, float sp) {
+		return spPx(view.getContext(), sp);
 	}
 
 	public static float spPx(@NonNull Context context, float sp) {

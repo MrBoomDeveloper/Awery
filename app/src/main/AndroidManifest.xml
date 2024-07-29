@@ -189,6 +189,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.activity.GalleryActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.activity.AboutActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />

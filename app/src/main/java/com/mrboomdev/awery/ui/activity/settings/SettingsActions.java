@@ -2,7 +2,6 @@ package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -15,7 +14,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
@@ -155,15 +153,18 @@ public class SettingsActions {
 				@Override
 				public void onFailure(Throwable t) {
 					Log.e(TAG, "Failed to check for updates!", t);
+					window.dismiss();
 
 					if(t instanceof CancelledException) {
 						toast(ExceptionDescriptor.getTitle(t, getAnyContext()), 1);
-						window.dismiss();
 						return;
 					}
 
-					CrashHandler.showErrorDialog(getAnyActivity(AppCompatActivity.class), t);
-					window.dismiss();
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setTitle("Failed to check for updates")
+							.setPrefix(R.string.please_report_bug_app)
+							.setThrowable(t)
+							.build());
 				}
 			});
 

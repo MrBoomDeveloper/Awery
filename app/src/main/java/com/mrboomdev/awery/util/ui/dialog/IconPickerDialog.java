@@ -4,11 +4,8 @@ import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -33,7 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialog<T>> {
 	private final Callbacks.Result1<IconStateful, T> iconExtractor;
-	private final int iconSize = dpPx(38), iconSpacing = dpPx(16);
 	private Callbacks.Callback1<T> selectCallback;
 	private RecyclerView recycler;
 	private List<T> items;
@@ -80,7 +76,7 @@ public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialo
 
 		postRunnable(() -> {
 			setOnApplyUiInsetsListener(recycler, insets -> {
-				columnsCount.set(recycler.getMeasuredWidth() / (iconSize + iconSpacing));
+				columnsCount.set(recycler.getMeasuredWidth() / (dpPx(recycler, 38) + dpPx(recycler, 16)));
 				layoutManager.setSpanCount(columnsCount.get());
 				return true;
 			}, parentView);
@@ -134,11 +130,11 @@ public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialo
 			});
 
 			view.setBackgroundResource(R.drawable.ripple_circle_white);
-			setPadding(view, iconSpacing / 2);
+			setPadding(view, dpPx(view, 16) / 2);
 
 			view.setLayoutParams(new RecyclerView.LayoutParams(
-					iconSize + (iconSpacing / 2),
-					iconSize + (iconSpacing / 2)));
+					dpPx(view, 38) + (dpPx(view, 16) / 2),
+					dpPx(view, 38) + (dpPx(view, 16) / 2)));
 
 			this.view = view;
 		}

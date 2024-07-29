@@ -88,11 +88,10 @@ public class MediaUtils {
 	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
 		var prefs = NicePreferences.getPrefs();
 		var badTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS);
-		var excludeMediaEntries = AwerySettings.HIDE_LIBRARY_ENTRIES.getValue();
 		var saved = AweryApp.getDatabase().getMediaProgressDao().get(media.globalId);
 
 		if(saved != null) {
-			if(excludeMediaEntries && saved.getListsCount() > 0) {
+			if(AwerySettings.HIDE_LIBRARY_ENTRIES.getValue() && saved.getListsCount() > 0) {
 				return true;
 			}
 

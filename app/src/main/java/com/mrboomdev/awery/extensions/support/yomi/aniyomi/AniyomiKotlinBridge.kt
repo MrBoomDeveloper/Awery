@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
+import com.mrboomdev.awery.util.async.AsyncFuture
+import com.mrboomdev.awery.util.async.AsyncUtils
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
@@ -7,7 +9,6 @@ import eu.kanade.tachiyomi.animesource.model.AnimesPage
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.SEpisode
 import eu.kanade.tachiyomi.animesource.model.Video
-import eu.kanade.tachiyomi.util.lang.awaitSingle
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -19,73 +20,62 @@ import kotlinx.coroutines.launch
  */
 object AniyomiKotlinBridge {
 
-    interface ResponseCallback<T> {
-        fun onResponse(data: T?, e: Throwable?)
-    }
-
     @JvmStatic
     fun searchAnime(
         source: AnimeCatalogueSource,
         page: Int,
         query: String,
-        filters: AnimeFilterList,
-        callback: ResponseCallback<AnimesPage>
-    ) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getSearchAnime(page + 1, query, filters), null)
+        filters: AnimeFilterList
+    ): AsyncFuture<AnimesPage> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getSearchAnime(page + 1, query, filters))
+            }
         }
     }
 
     @JvmStatic
-    fun getPopularAnime(source: AnimeCatalogueSource, page: Int, callback: ResponseCallback<AnimesPage>) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getPopularAnime(page + 1), null)
+    fun getPopularAnime(source: AnimeCatalogueSource, page: Int): AsyncFuture<AnimesPage> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getPopularAnime(page + 1))
+            }
         }
     }
 
     @JvmStatic
-    fun getLatestAnime(source: AnimeCatalogueSource, page: Int, callback: ResponseCallback<AnimesPage>) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getLatestUpdates(page + 1), null)
+    fun getLatestAnime(source: AnimeCatalogueSource, page: Int): AsyncFuture<AnimesPage> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getLatestUpdates(page + 1))
+            }
         }
     }
 
     @JvmStatic
-    fun getAnimeDetails(source: AnimeSource, anime: SAnime, callback: ResponseCallback<SAnime>) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getAnimeDetails(anime), null)
+    fun getAnimeDetails(source: AnimeSource, anime: SAnime): AsyncFuture<SAnime> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getAnimeDetails(anime))
+            }
         }
     }
 
     @JvmStatic
-    fun getEpisodesList(source: AnimeSource, anime: SAnime, callback: ResponseCallback<List<SEpisode>>) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getEpisodeList(anime), null)
+    fun getEpisodesList(source: AnimeSource, anime: SAnime): AsyncFuture<List<SEpisode>> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getEpisodeList(anime))
+            }
         }
     }
 
     @JvmStatic
-    fun getVideosList(source: AnimeSource, episode: SEpisode, callback: ResponseCallback<List<Video>>) {
-        val exceptionHandler = CoroutineExceptionHandler { _, e -> callback.onResponse(null, e) }
-        val scope = CoroutineScope(Job())
-
-        scope.launch(exceptionHandler) {
-            callback.onResponse(source.getVideoList(episode), null)
+    fun getVideosList(source: AnimeSource, episode: SEpisode): AsyncFuture<List<Video>> {
+        return AsyncUtils.controllableFuture {
+            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+                it.complete(source.getVideoList(episode))
+            }
         }
     }
 }

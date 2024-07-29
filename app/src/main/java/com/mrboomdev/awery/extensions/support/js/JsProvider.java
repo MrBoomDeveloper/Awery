@@ -16,6 +16,7 @@ import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.await;
+import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -62,7 +63,6 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -267,27 +267,9 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
-		manager.postRunnable(() -> {
-			if(scope.get("aweryVoteComment") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[] {
-							JsComment.createJsComment(context, scope, comment),
-							(JsCallback<NativeObject>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
-
-								callback.onSuccess(new JsComment(o));
-							}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryVoteComment\" is not a function or isn't defined!"));
-			}
-		});
+	public AsyncFuture<CatalogComment> voteComment(CatalogComment comment) {
+		return this.<NativeObject>runFunction("aweryVoteComment",
+				JsComment.createJsComment(context, scope, comment)).then(JsComment::new);
 	}
 
 	@Override
@@ -318,52 +300,15 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void editComment(CatalogComment oldComment, CatalogComment newComment, @NonNull ResponseCallback<CatalogComment> callback) {
-		manager.postRunnable(() -> {
-			if(scope.get("aweryEditComment") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[] {
-							JsComment.createJsComment(this.context, this.scope, oldComment),
-							JsComment.createJsComment(this.context, this.scope, newComment),
-							(JsCallback<NativeObject>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
-
-								callback.onSuccess(new JsComment(o));
-							}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryEditComment\" is not a function or isn't defined!"));
-			}
-		});
+	public AsyncFuture<CatalogComment> editComment(CatalogComment oldComment, CatalogComment newComment) {
+		return this.<NativeObject>runFunction("aweryEditComment",
+				JsComment.createJsComment(this.context, this.scope, oldComment),
+				JsComment.createJsComment(this.context, this.scope, newComment)).then(JsComment::new);
 	}
 
 	@Override
-	public void deleteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
-		manager.postRunnable(() -> {
-			if(scope.get("aweryDeleteComment") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[] {
-							JsComment.createJsComment(this.context, this.scope, comment),
-							(JsCallback<Boolean>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
-
-								callback.onSuccess(o);
-							}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryDeleteComment\" is not a function or isn't defined!"));
-			}
-		});
+	public AsyncFuture<Boolean> deleteComment(CatalogComment comment) {
+		return this.<Boolean>runFunction("aweryDeleteComment", JsComment.createJsComment(context, scope, comment)).then(result -> result);
 	}
 
 	@Override
@@ -630,189 +575,147 @@ public class JsProvider extends ExtensionProvider {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void searchMedia(
-			android.content.Context context,
-			SettingsList filters,
-			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
-	) {
-		manager.postRunnable(() -> {
-			if(scope.get("awerySearchMedia") instanceof Function fun) {
-				try {
-					fun.call(this.context, scope, null, new Object[] { filtersToJson(filters), (JsCallback<NativeObject>) (o, e) -> {
-						if(e != null) {
-							callback.onFailure(new JsException(e));
-							return;
-						}
-
-						if(((NativeArray)o.get("items", o)).isEmpty()) {
-							callback.onFailure(new ZeroResultsException("Zero results",
-									R.string.no_media_found));
-
-							return;
-						}
-
-						var results = new ArrayList<CatalogMedia>();
-
-						for(var arrayItem : (NativeArray) o.get("items", o)) {
-							if(JsBridge.isNullJs(arrayItem)) continue;
-							var item = (NativeObject) arrayItem;
-
-							var result = new CatalogMedia(manager.getId(), id, id, stringFromJs(item, "id"));
-							result.url = stringFromJs(item.get("url"));
-							result.banner = stringFromJs(item.get("banner"));
-							result.country = stringFromJs(item.get("country"));
-							result.ageRating = stringFromJs(item.get("ageRating"));
-							result.extra = stringFromJs(("extra"));
-							result.description = stringFromJs(item.get("description"));
-
-							result.averageScore = fromJs(item.get("averageScore"), Float.class);
-							result.duration = fromJs(item.get("duration"), Integer.class);
-							result.episodesCount = fromJs(item.get("episodesCount"), Integer.class);
-							result.latestEpisode = fromJs(item.get("latestEpisode"), Integer.class);
-
-							result.releaseDate = returnIfNotNullJs(item.get("endDate", item), date -> {
-								if(date instanceof Number releaseDateNumber) {
-									return ParserAdapter.calendarFromNumber(releaseDateNumber);
-								} else {
-									return ParserAdapter.calendarFromString(date.toString());
-								}
-							});
-
-							if(!isNullJs(item.get("poster", item))) {
-								var poster = item.get("poster");
-
-								if(poster instanceof NativeObject posterObject) {
-									result.poster = new CatalogMedia.ImageVersions();
-									result.poster.extraLarge = stringFromJs(posterObject.get("extraLarge"));
-									result.poster.large = stringFromJs(posterObject.get("large"));
-									result.poster.medium = stringFromJs(posterObject.get("medium"));
-								} else {
-									result.setPoster(stringFromJs(poster));
-								}
-							}
-
-							if(item.get("tags", item) instanceof NativeArray array) {
-								result.tags = stream(array)
-										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
-										.map(obj -> {
-											var jsTag = (NativeObject) obj;
-											var tag = new CatalogTag();
-											tag.setDescription(stringFromJs(jsTag.get("description")));
-											tag.setIsSpoiler(booleanFromJs(jsTag.get("isSpoiler")));
-											tag.setName(stringFromJs(jsTag.get("name")));
-											return tag;
-										})
-										.toList();
-							}
-
-							if(item.get("genres", item) instanceof NativeArray array) {
-								result.genres = stream(array)
-										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
-										.map(Object::toString)
-										.toList();
-							}
-
-							if(!JsBridge.isNullJs(item.get("status"))) {
-								result.status = switch(item.get("status").toString().toLowerCase(Locale.ROOT)) {
-									case "cancelled" -> CatalogMedia.MediaStatus.CANCELLED;
-									case "coming_soon" -> CatalogMedia.MediaStatus.COMING_SOON;
-									case "ongoing" -> CatalogMedia.MediaStatus.ONGOING;
-									case "paused" -> CatalogMedia.MediaStatus.PAUSED;
-									case "completed" -> CatalogMedia.MediaStatus.COMPLETED;
-									default -> CatalogMedia.MediaStatus.UNKNOWN;
-								};
-							}
-
-							if(!JsBridge.isNullJs(item.get("type"))) {
-								result.type = switch(item.get("type").toString().toLowerCase(Locale.ROOT)) {
-									case "movie" -> CatalogMedia.MediaType.MOVIE;
-									case "book" -> CatalogMedia.MediaType.BOOK;
-									case "tv" -> CatalogMedia.MediaType.TV;
-									case "post" -> CatalogMedia.MediaType.POST;
-									default -> null;
-								};
-							}
-
-							if(item.has("title", item)) {
-								var title = item.get("title");
-
-								if(!JsBridge.isNullJs(title)) {
-									result.setTitle(title.toString());
-								}
-							}
-
-							if(item.get("ids") instanceof NativeObject ids) {
-								for(var entry : ids.entrySet()) {
-									if(JsBridge.isNullJs(entry.getKey())) continue;
-									if(JsBridge.isNullJs(entry.getValue())) continue;
-
-									result.setId(entry.getKey().toString(), entry.getValue().toString());
-								}
-							}
-
-							if(item.get("titles") instanceof NativeArray titles) {
-								result.setTitles(stream(titles)
-										.filter(jsTag -> !JsBridge.isNullJs(jsTag))
-										.map(Object::toString)
-										.toList());
-							}
-
-							results.add(result);
-						}
-
-						callback.onSuccess(CatalogSearchResults.of(
-								results, booleanFromJs(o.get("hasNextPage"))));
-					}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException("\"aweryMediaSearch\" function not found!"));
+	public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(SettingsList filters) {
+		return this.<NativeObject>runFunction("awerySearchMedia", filtersToJson(filters)).then(o -> {
+			if(((NativeArray)o.get("items", o)).isEmpty()) {
+				throw new ZeroResultsException("Zero results",
+						R.string.no_media_found);
 			}
+
+			var results = new ArrayList<CatalogMedia>();
+
+			for(var arrayItem : (NativeArray) o.get("items", o)) {
+				if(JsBridge.isNullJs(arrayItem)) continue;
+				var item = (NativeObject) arrayItem;
+
+				var result = new CatalogMedia(manager.getId(), id, id, stringFromJs(item, "id"));
+				result.url = stringFromJs(item.get("url"));
+				result.banner = stringFromJs(item.get("banner"));
+				result.country = stringFromJs(item.get("country"));
+				result.ageRating = stringFromJs(item.get("ageRating"));
+				result.extra = stringFromJs(("extra"));
+				result.description = stringFromJs(item.get("description"));
+
+				result.averageScore = fromJs(item.get("averageScore"), Float.class);
+				result.duration = fromJs(item.get("duration"), Integer.class);
+				result.episodesCount = fromJs(item.get("episodesCount"), Integer.class);
+				result.latestEpisode = fromJs(item.get("latestEpisode"), Integer.class);
+
+				result.releaseDate = returnIfNotNullJs(item.get("endDate", item), date -> {
+					if(date instanceof Number releaseDateNumber) {
+						return ParserAdapter.calendarFromNumber(releaseDateNumber);
+					} else {
+						return ParserAdapter.calendarFromString(date.toString());
+					}
+				});
+
+				if(!isNullJs(item.get("poster", item))) {
+					var poster = item.get("poster");
+
+					if(poster instanceof NativeObject posterObject) {
+						result.poster = new CatalogMedia.ImageVersions();
+						result.poster.extraLarge = stringFromJs(posterObject.get("extraLarge"));
+						result.poster.large = stringFromJs(posterObject.get("large"));
+						result.poster.medium = stringFromJs(posterObject.get("medium"));
+					} else {
+						result.setPoster(stringFromJs(poster));
+					}
+				}
+
+				if(item.get("tags", item) instanceof NativeArray array) {
+					result.tags = stream(array)
+							.filter(jsTag -> !JsBridge.isNullJs(jsTag))
+							.map(obj -> {
+								var jsTag = (NativeObject) obj;
+								var tag = new CatalogTag();
+								tag.setDescription(stringFromJs(jsTag.get("description")));
+								tag.setIsSpoiler(booleanFromJs(jsTag.get("isSpoiler")));
+								tag.setName(stringFromJs(jsTag.get("name")));
+								return tag;
+							})
+							.toList();
+				}
+
+				if(item.get("genres", item) instanceof NativeArray array) {
+					result.genres = stream(array)
+							.filter(jsTag -> !JsBridge.isNullJs(jsTag))
+							.map(Object::toString)
+							.toList();
+				}
+
+				if(!JsBridge.isNullJs(item.get("status"))) {
+					result.status = switch(item.get("status").toString().toLowerCase(Locale.ROOT)) {
+						case "cancelled" -> CatalogMedia.MediaStatus.CANCELLED;
+						case "coming_soon" -> CatalogMedia.MediaStatus.COMING_SOON;
+						case "ongoing" -> CatalogMedia.MediaStatus.ONGOING;
+						case "paused" -> CatalogMedia.MediaStatus.PAUSED;
+						case "completed" -> CatalogMedia.MediaStatus.COMPLETED;
+						default -> CatalogMedia.MediaStatus.UNKNOWN;
+					};
+				}
+
+				if(!JsBridge.isNullJs(item.get("type"))) {
+					result.type = switch(item.get("type").toString().toLowerCase(Locale.ROOT)) {
+						case "movie" -> CatalogMedia.MediaType.MOVIE;
+						case "book" -> CatalogMedia.MediaType.BOOK;
+						case "tv" -> CatalogMedia.MediaType.TV;
+						case "post" -> CatalogMedia.MediaType.POST;
+						default -> null;
+					};
+				}
+
+				if(item.has("title", item)) {
+					var title = item.get("title");
+
+					if(!JsBridge.isNullJs(title)) {
+						result.setTitle(title.toString());
+					}
+				}
+
+				if(item.get("ids") instanceof NativeObject ids) {
+					for(var entry : ids.entrySet()) {
+						if(JsBridge.isNullJs(entry.getKey())) continue;
+						if(JsBridge.isNullJs(entry.getValue())) continue;
+
+						result.setId(entry.getKey().toString(), entry.getValue().toString());
+					}
+				}
+
+				if(item.get("titles") instanceof NativeArray titles) {
+					result.setTitles(stream(titles)
+							.filter(jsTag -> !JsBridge.isNullJs(jsTag))
+							.map(Object::toString)
+							.toList());
+				}
+
+				results.add(result);
+			}
+
+			return CatalogSearchResults.of(results, booleanFromJs(o.get("hasNextPage")));
 		});
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void getVideoFiles(SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
-		var episode = returnWith(() -> {
-			try {
-				return filters.require(ExtensionProvider.FILTER_EPISODE).parseJsonValue(CatalogVideo.class);
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
+	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(SettingsList filters) {
+		return thread(() -> {
+			var episode = filters.require(
+					ExtensionProvider.FILTER_EPISODE).parseJsonValue(CatalogVideo.class);
 
-		manager.postRunnable(() -> {
-			if(scope.get("aweryMediaVideos") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[] {
-							episode,
-							(JsCallback<List<ScriptableObject>>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
+			var o = this.<List<ScriptableObject>>
+					runFunction("aweryMediaVideos", episode).await();
 
-								callback.onSuccess(stream(o)
-										.map(videoObject -> new CatalogVideoFile(
-												stringFromJs(videoObject.get("title")),
-												stringFromJs(videoObject.get("url")),
-												null,
-												stream((List<ScriptableObject>) videoObject.get("subtitles"))
-														.map(subtitleObject -> new CatalogSubtitle(
-																stringFromJs(subtitleObject.get("title")),
-																stringFromJs(subtitleObject.get("url"))))
-														.toList()))
-										.toList());
-							}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException(
-						"\"aweryMediaVideos\" is not a function or isn't defined!"));
-			}
+			return stream(o)
+					.map(videoObject -> new CatalogVideoFile(
+							stringFromJs(videoObject.get("title")),
+							stringFromJs(videoObject.get("url")),
+							null,
+							stream((List<ScriptableObject>) videoObject.get("subtitles"))
+									.map(subtitleObject -> new CatalogSubtitle(
+											stringFromJs(subtitleObject.get("title")),
+											stringFromJs(subtitleObject.get("url"))))
+									.toList()))
+					.toList();
 		});
 	}
 
@@ -867,48 +770,25 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public void getVideos(
-			@NonNull SettingsList filters,
-			@NonNull ResponseCallback<List<? extends CatalogVideo>> callback
-	) {
-		var page = filters.require(ExtensionProvider.FILTER_PAGE).getIntegerValue();
+	public AsyncFuture<List<? extends CatalogVideo>> getVideos(@NonNull SettingsList filters) {
+		return thread(() -> {
+			var page = filters.require(ExtensionProvider.FILTER_PAGE).getIntegerValue();
 
-		var media = returnWith(() -> {
-			try {
-				return filters.require(ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
-			} catch(IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
+			var media = filters.require(
+					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
 
-		manager.postRunnable(() -> {
-			if(scope.get("aweryMediaEpisodes") instanceof Function fun) {
-				try {
-					fun.call(context, scope, null, new Object[] {
-							page, media,
-							(JsCallback<List<ScriptableObject>>) (o, e) -> {
-								if(e != null) {
-									callback.onFailure(new JsException(e));
-									return;
-								}
+			var o = this.<List<ScriptableObject>>
+					runFunction("aweryMediaEpisodes", page, media).await();
 
-								callback.onSuccess(stream(o)
-										.map(item -> new CatalogVideo(
-												stringFromJs(item.get("title")),
-												stringFromJs(item.get("url")),
-												stringFromJs(item.get("banner")),
-												stringFromJs(item.get("description")),
-												longFromJs(item.get("releaseDate")),
-												floatFromJs(item.get("number"))
-										)).toList());
-							}});
-				} catch(Throwable e) {
-					callback.onFailure(e);
-				}
-			} else {
-				callback.onFailure(new UnimplementedException(
-						"\"aweryMediaEpisodes\" is not a function or isn't defined!"));
-			}
+			return stream(o)
+					.map(item -> new CatalogVideo(
+							stringFromJs(item.get("title")),
+							stringFromJs(item.get("url")),
+							stringFromJs(item.get("banner")),
+							stringFromJs(item.get("description")),
+							longFromJs(item.get("releaseDate")),
+							floatFromJs(item.get("number"))
+					)).toList();
 		});
 	}
 

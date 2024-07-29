@@ -125,7 +125,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 						return providerId.equals(provider.getId());
 					}).findFirst().orElseThrow();
 		} catch(NoSuchElementException e) {
-			throw new ExtensionNotInstalledException("Extension \"" + extensionId + "\" isn't installed!", e);
+			throw new ExtensionNotInstalledException(extensionId, e);
 		}
 	}
 
@@ -138,16 +138,12 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		return getName().compareToIgnoreCase(o.getName());
 	}
 
-	public void getMedia(Context context, String id, @NonNull ResponseCallback<CatalogMedia> callback) {
-		callback.onFailure(new UnimplementedException("Media obtain isn't implemented!"));
+	public AsyncFuture<CatalogMedia> getMedia(String id) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Media obtain isn't implemented!"));
 	}
 
-	public void searchMedia(
-			Context context,
-			SettingsList filters,
-			@NonNull ResponseCallback<CatalogSearchResults<? extends CatalogMedia>> callback
-	) {
-		callback.onFailure(new UnimplementedException("Media searching isn't implemented!"));
+	public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(SettingsList filters) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Media searching isn't implemented!"));
 	}
 
 	public AsyncFuture<SettingsList> getFilters() {
@@ -171,16 +167,16 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Comments posting isn't implemented!"));
 	}
 
-	public void voteComment(CatalogComment comment, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments voting isn't implemented!"));
+	public AsyncFuture<CatalogComment> voteComment(CatalogComment comment) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Comments voting isn't implemented!"));
 	}
 
-	public void editComment(CatalogComment oldComment, CatalogComment newComment, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments editing isn't implemented!"));
+	public AsyncFuture<CatalogComment> editComment(CatalogComment oldComment, CatalogComment newComment) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Comments editing isn't implemented!"));
 	}
 
-	public void deleteComment(CatalogComment comment, @NonNull ResponseCallback<Boolean> callback) {
-		callback.onFailure(new UnimplementedException("Comments deletion isn't implemented!"));
+	public AsyncFuture<Boolean> deleteComment(CatalogComment comment) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Comments deletion isn't implemented!"));
 	}
 
 	public AsyncFuture<String> getChangelog() {
@@ -199,12 +195,12 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 		callback.onFailure(new UnimplementedException("Tags search isn't implemented!"));
 	}
 
-	public void getVideos(SettingsList filters, @NonNull ResponseCallback<List<? extends CatalogVideo>> callback) {
-		callback.onFailure(new UnimplementedException("Episodes aren't implemented!"));
+	public AsyncFuture<List<? extends CatalogVideo>> getVideos(SettingsList filters) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Episodes aren't implemented!"));
 	}
 
-	public void getVideoFiles(SettingsList filters, @NonNull ResponseCallback<List<CatalogVideoFile>> callback) {
-		callback.onFailure(new UnimplementedException("Videos aren't implemented!"));
+	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(SettingsList filters) {
+		return AsyncUtils.futureFailNow(new UnimplementedException("Videos aren't implemented!"));
 	}
 
 	public AsyncFuture<CatalogSearchResults<CatalogSubtitle>> searchSubtitles(SettingsList filters) {

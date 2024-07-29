@@ -20,13 +20,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.ItemListMediaCategoryBinding;
+import com.mrboomdev.awery.databinding.FeedListBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.adapter.MediaCatalogAdapter;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 
 import org.jetbrains.annotations.Contract;
 
@@ -35,17 +33,17 @@ import java.lang.ref.WeakReference;
 
 public class ListFeedViewHolder extends FeedViewHolder {
 	private static WeakReference<RecyclerView.RecycledViewPool> itemsPool;
-	private final ItemListMediaCategoryBinding binding;
+	private final FeedListBinding binding;
 	private final MediaCatalogAdapter adapter;
 
 	@NonNull
 	@Contract("_ -> new")
 	public static ListFeedViewHolder create(ViewGroup parent) {
-		return new ListFeedViewHolder(ItemListMediaCategoryBinding.inflate(
+		return new ListFeedViewHolder(FeedListBinding.inflate(
 				LayoutInflater.from(parent.getContext()), parent, false), parent);
 	}
 
-	private ListFeedViewHolder(@NonNull ItemListMediaCategoryBinding binding, ViewGroup parent) {
+	private ListFeedViewHolder(@NonNull FeedListBinding binding, ViewGroup parent) {
 		super(binding.getRoot());
 		this.binding = binding;
 
@@ -64,10 +62,10 @@ public class ListFeedViewHolder extends FeedViewHolder {
 
 		setOnApplyUiInsetsListener(binding.header, insets -> {
 			if(isLandscape()) {
-				setLeftMargin(binding.header, dpPx(16) +
+				setLeftMargin(binding.header, dpPx(binding.header, 16) +
 						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
 
-				setRightMargin(binding.header, insets.right + dpPx(16));
+				setRightMargin(binding.header, insets.right + dpPx(binding.header, 16));
 			} else {
 				setHorizontalMargin(binding.header, 0);
 			}
@@ -77,12 +75,12 @@ public class ListFeedViewHolder extends FeedViewHolder {
 
 		setOnApplyUiInsetsListener(binding.recycler, insets -> {
 			if(isLandscape()) {
-				setLeftPadding(binding.recycler, dpPx(32) +
+				setLeftPadding(binding.recycler, dpPx(binding.recycler, 32) +
 						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
 
-				setRightPadding(binding.recycler, insets.right + dpPx(32));
+				setRightPadding(binding.recycler, insets.right + dpPx(binding.recycler, 32));
 			} else {
-				setHorizontalPadding(binding.recycler, dpPx(16));
+				setHorizontalPadding(binding.recycler, dpPx(binding.recycler, 16));
 			}
 
 			return true;
@@ -108,21 +106,7 @@ public class ListFeedViewHolder extends FeedViewHolder {
 		} else {
 			binding.header.setClickable(false);
 			binding.expand.setVisibility(View.GONE);
-		}
-
-		if(feed.getItems() == null || feed.getItems().isEmpty()) {
-			if(feed.getThrowable() != null) {
-				binding.errorMessage.setText(ExceptionDescriptor.print(
-						ExceptionDescriptor.unwrap(feed.getThrowable()), getContext(binding)));
-			} else {
-				binding.errorMessage.setText(getContext(binding).getString(R.string.nothing_found));
-			}
-
-			binding.errorMessage.setVisibility(View.VISIBLE);
-			binding.recycler.setVisibility(View.GONE);
-		} else {
-			binding.errorMessage.setVisibility(View.GONE);
-			binding.recycler.setVisibility(View.VISIBLE);
+			binding.expand.setOnClickListener(null);
 		}
 	}
 }

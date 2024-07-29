@@ -50,7 +50,7 @@ public interface EmptyFuture extends BaseFuture {
 		return AsyncUtils.controllableFuture(future -> addCallback(new Callback() {
 			@Override
 			public void onSuccess() {
-				AsyncUtils.controllableFuture(callback).addCallback(new AsyncFuture.Callback<E>() {
+				AsyncUtils.controllableFuture(callback).addCallback(new AsyncFuture.Callback<>() {
 					@Override
 					public void onSuccess(E result) throws Throwable {
 						future.complete(result);
