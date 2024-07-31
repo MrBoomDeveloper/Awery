@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
@@ -21,13 +22,13 @@ import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -48,6 +49,7 @@ import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.CancelledException;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.mrboomdev.awery.util.io.HttpRequest;
@@ -68,7 +70,6 @@ import java9.util.Objects;
 
 public class ExtensionSettings extends SettingsItem implements SettingsDataHandler, ObservableSettingsItem {
 	private static final String TAG = "ExtensionSettings";
-	private final ActivityResultLauncher<String> pickLauncher;
 	private final List<SettingsItem> headerItems = new ArrayList<>();
 	private final ExtensionsManager manager;
 	@Json(ignore = true)
@@ -83,12 +84,93 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	private final SettingsItem extensionsHeader = new SettingsItem.Builder(
 			SettingsItemType.CATEGORY).setTitle("Installed").build();
 
+	@UiThread
 	public ExtensionSettings(@NonNull AppCompatActivity activity, @NonNull ExtensionsManager manager) {
 		this.activity = activity;
 		this.manager = manager;
 
-		this.pickLauncher = activity.registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-			if(uri == null) return;
+		headerItems.add(new SettingsItem() {
+			@Override
+			public Drawable getIcon(@NonNull Context context) {
+				return AppCompatResources.getDrawable(context, R.drawable.ic_add);
+			}
+
+			@Override
+			public void onClick(Context context) {
+				var inputField = new EditTextField(context, R.string.repository_url);
+				inputField.setLinesCount(1);
+
+				currentDialog = new DialogBuilder(context)
+						.setTitle(R.string.add_extension)
+						.addView(inputField.getView())
+						.setOnDismissListener(dialog -> currentDialog = dialog)
+						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNeutralButton(R.string.pick_from_storage, dialog -> pickExtension())
+						.setPositiveButton(R.string.ok, dialog -> {
+							var text = cleanUrl(inputField.getText());
+
+							if(text.isBlank()) {
+								inputField.setError(R.string.text_cant_empty);
+								return;
+							}
+
+							if(!isUrlValid(text)) {
+								inputField.setError(R.string.invalid_url);
+								return;
+							}
+
+							inputField.setError(null);
+							var loadingWindow = showLoadingWindow();
+
+							manager.getRepository(text).addCallback(new AsyncFuture.Callback<>() {
+								@Override
+								public void onSuccess(List<Extension> result) {
+									if(find(repos, item -> Objects.equals(item.url, text)) != null) {
+										toast("Repository already exists!");
+										loadingWindow.dismiss();
+										return;
+									}
+
+									var dao = getDatabase().getRepositoryDao();
+									var repo = new DBRepository(text, manager.getId());
+									dao.add(repo);
+									repos.add(repo);
+
+									runOnUiThread(() -> {
+										if(repos.size() == 1) {
+											onSettingAddition(reposHeader, 0);
+										}
+
+										onSettingAddition(new RepositorySetting(repo), 1);
+
+										dialog.dismiss();
+										loadingWindow.dismiss();
+										toast("Repository added successfully!");
+									});
+								}
+
+								@Override
+								public void onFailure(Throwable t) {
+									Log.e(TAG, "Failed to get a repository!", t);
+									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(t, context)));
+									loadingWindow.dismiss();
+								}
+							});
+						}).show();
+			}
+		});
+
+		loadData();
+	}
+
+	private void pickExtension() {
+		var intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		intent.setType("*/*");
+
+		startActivityForResult(activity, intent, (resultCode, result) -> {
+			if(result == null || resultCode != Activity.RESULT_OK || result.getData() == null) return;
+			var uri = result.getData();
 
 			manager.installExtension(activity, uri).addCallback(new AsyncFuture.Callback<>() {
 
@@ -175,80 +257,9 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				}
 			});
 		});
-
-		headerItems.add(new SettingsItem() {
-			@Override
-			public Drawable getIcon(@NonNull Context context) {
-				return AppCompatResources.getDrawable(context, R.drawable.ic_add);
-			}
-
-			@Override
-			public void onClick(Context context) {
-				var inputField = new EditTextField(context, R.string.repository_url);
-				inputField.setLinesCount(1);
-
-				currentDialog = new DialogBuilder(context)
-						.setTitle(R.string.add_extension)
-						.addView(inputField.getView())
-						.setOnDismissListener(dialog -> currentDialog = dialog)
-						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
-						.setPositiveButton(R.string.ok, dialog -> {
-							var text = cleanUrl(inputField.getText());
-
-							if(text.isBlank()) {
-								inputField.setError(R.string.text_cant_empty);
-								return;
-							}
-
-							if(!isUrlValid(text)) {
-								inputField.setError(R.string.invalid_url);
-								return;
-							}
-
-							inputField.setError(null);
-							var loadingWindow = showLoadingWindow();
-
-							manager.getRepository(text).addCallback(new AsyncFuture.Callback<>() {
-								@Override
-								public void onSuccess(List<Extension> result) {
-									if(find(repos, item -> Objects.equals(item.url, text)) != null) {
-										toast("Repository already exists!");
-										loadingWindow.dismiss();
-										return;
-									}
-
-									var dao = getDatabase().getRepositoryDao();
-									var repo = new DBRepository(text, manager.getId());
-									dao.add(repo);
-									repos.add(repo);
-
-									runOnUiThread(() -> {
-										if(repos.size() == 1) {
-											onSettingAddition(reposHeader, 0);
-										}
-
-										onSettingAddition(new RepositorySetting(repo), 1);
-
-										dialog.dismiss();
-										loadingWindow.dismiss();
-										toast("Repository added successfully!");
-									});
-								}
-
-								@Override
-								public void onFailure(Throwable t) {
-									Log.e(TAG, "Failed to get a repository!", t);
-									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(t, context)));
-									loadingWindow.dismiss();
-								}
-							});
-						}).show();
-			}
-		});
 	}
 
-	public void loadData() {
+	private void loadData() {
 		var items = new ArrayList<SettingsItem>();
 
 		repos = getDatabase().getRepositoryDao()
@@ -521,8 +532,13 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 		@NonNull
 		private UpdateAvailability getUpdateStatus() {
-			var found = manager.getExtension(extension.getId());
-			if(found == null) return UpdateAvailability.NEW;
+			Extension found;
+
+			try {
+				found = manager.getExtension(extension.getId());
+			} catch(ExtensionNotInstalledException e) {
+				return UpdateAvailability.NEW;
+			}
 
 			var compared = compareVersions(parseVersion(extension.getVersion()), parseVersion(found.getVersion()));
 			if(compared > 0) return UpdateAvailability.UPDATE;

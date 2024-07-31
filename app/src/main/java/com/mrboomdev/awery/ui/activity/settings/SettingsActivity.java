@@ -41,6 +41,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.squareup.moshi.Moshi;
@@ -277,31 +278,40 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			setupHeader(binding, item);
 			finishLoading(binding, recyclerAdapter);
 		} else {
-			SettingsData.getScreen(this, item, (screen, e) -> {
-				if(e != null) {
-					Log.e(TAG, "Failed to get settings", e);
-					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(e), this), 0);
-					finish();
-					return;
+			SettingsData.getScreen(this, item).addCallback(new AsyncFuture.Callback<>() {
+				@Override
+				public void onSuccess(SettingsItem screen) {
+					runOnUiThread(() -> {
+						var handler = screen instanceof SettingsDataHandler settingsDataHandler
+								? settingsDataHandler : SettingsActivity.this;
+
+						var recyclerAdapter = new SettingsAdapter(screen, handler) {
+							@Override
+							public void onEmptyStateChanged(boolean isEmpty) {
+								if(isEmpty) {
+									emptyView.setInfo("Here's nothing",
+											"Yup, this screen is completely empty. You won't see anything here.");
+								} else {
+									emptyView.hideAll();
+								}
+							}
+						};
+
+						TransitionManager.beginDelayedTransition(binding.getRoot(), new Fade());
+						setupHeader(binding, screen);
+						finishLoading(binding, recyclerAdapter);
+
+						if(screen.getItems().isEmpty()) {
+							emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
+						}
+					});
 				}
 
-				var recyclerAdapter = new SettingsAdapter(screen, (screen instanceof SettingsDataHandler handler) ? handler : this) {
-					@Override
-					public void onEmptyStateChanged(boolean isEmpty) {
-						if(isEmpty) {
-							emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
-						} else {
-							emptyView.hideAll();
-						}
-					}
-				};
-
-				TransitionManager.beginDelayedTransition(binding.getRoot(), new Fade());
-				setupHeader(binding, screen);
-				finishLoading(binding, recyclerAdapter);
-
-				if(screen.getItems().isEmpty()) {
-					emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
+				@Override
+				public void onFailure(Throwable t) {
+					Log.e(TAG, "Failed to get settings", t);
+					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(t), SettingsActivity.this), 1);
+					finish();
 				}
 			});
 		}

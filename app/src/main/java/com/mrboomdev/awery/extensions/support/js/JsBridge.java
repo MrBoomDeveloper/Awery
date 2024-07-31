@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated(forRemoval = true)
 @SuppressWarnings("unused")
 public class JsBridge {
 	public final String FILTER_VIDEO_CATEGORY = ExtensionProvider.FILTER_VIDEO_CATEGORY;

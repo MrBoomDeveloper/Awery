@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util.io;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
@@ -23,7 +24,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,14 +52,15 @@ public class FileUtil {
 	}
 
 	@NonNull
-	public static List<File> listFiles(@NonNull File parent) {
+	public static String[] listFileNames(@NonNull File parent) {
+		var children = parent.list();
+		return requireNonNullElse(children, new String[0]);
+	}
+
+	@NonNull
+	public static File[] listFiles(@NonNull File parent) {
 		var children = parent.listFiles();
-
-		if(children == null || children.length == 0) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.asList(children);
+		return requireNonNullElse(children, new File[0]);
 	}
 
 	public static List<File> listFilesRecusrsively(@NonNull File parent) {
@@ -147,6 +148,17 @@ public class FileUtil {
 		}
 	}
 
+	public static void createFile(@NonNull File file) throws IOException {
+		var parent = file.getParentFile();
+
+		if(parent != null) {
+			parent.mkdirs();
+		}
+
+		FileUtil.deleteFile(file);
+		file.createNewFile();
+	}
+
 	public static boolean deleteFile(File file) {
 		if(file == null) return false;
 
@@ -186,18 +198,27 @@ public class FileUtil {
 	}
 
 	@NonNull
-	public static String readAssets(String path) throws IOException {
-		try(var reader = new BufferedReader(new InputStreamReader(
-				getAnyContext().getAssets().open(path), StandardCharsets.UTF_8))
-		) {
+	public static String readStream(InputStream is) throws IOException {
+		try(var reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 			var builder = new StringBuilder();
 			String line;
 
 			while((line = reader.readLine()) != null) {
-				builder.append(line);
+				builder.append(line).append("\n");
 			}
 
 			return builder.toString();
 		}
+	}
+
+	public static void writeStream(OutputStream os, byte[] bytes) throws IOException {
+		try(var output = new BufferedOutputStream(os)) {
+			output.write(bytes);
+		}
+	}
+
+	@NonNull
+	public static String readAssets(String path) throws IOException {
+		return readStream(getAnyContext().getAssets().open(path));
 	}
 }

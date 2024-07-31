@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,7 @@ public class JsFeed {
 		feed.title = stringFromJs(o.get("title", o));
 		feed.sourceFeed = stringFromJs(o.get("sourceFeed", o));
 		feed.sourceManager = JsManager.MANAGER_ID;
-		feed.sourceId = provider.id;
+		feed.providerId = provider.id;
 		return feed;
 	}
 }

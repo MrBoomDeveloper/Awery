@@ -20,7 +20,6 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.squareup.moshi.Json;
 
 import java.io.Serial;
@@ -56,13 +55,13 @@ public class CatalogFeed implements Serializable {
 	@Json(name = "source_manager")
 	public String sourceManager;
 	@ColumnInfo(name = "source_id")
-	@Json(name = "source_id")
-	public String sourceId;
+	@Json(name = "provider_id")
+	public String providerId;
 	@ColumnInfo(name = "source_feed")
 	@Json(name = "source_feed")
 	public String sourceFeed;
 	@ColumnInfo(name = "source_extension")
-	@Json(name = "source_extension")
+	@Json(name = "extension_id")
 	public String extensionId;
 	public List<String> features = new ArrayList<>();
 	@ColumnInfo(name = "display_mode")
@@ -78,7 +77,7 @@ public class CatalogFeed implements Serializable {
 		index = original.index;
 		hideIfEmpty = original.hideIfEmpty;
 		sourceManager = original.sourceManager;
-		sourceId = original.sourceId;
+		providerId = original.providerId;
 		sourceFeed = original.sourceFeed;
 		extensionId = original.extensionId;
 		tab = original.tab;
@@ -97,11 +96,7 @@ public class CatalogFeed implements Serializable {
 	}
 
 	public String getProviderGlobalId() {
-		return sourceManager + ";;;" + sourceId + ":" + extensionId;
-	}
-
-	public ExtensionProvider getSourceProvider() throws ExtensionNotInstalledException {
-		return ExtensionProvider.forGlobalId(sourceManager, extensionId, sourceId);
+		return sourceManager + ";;;" + (providerId == null ? "" : providerId) + ":" + extensionId;
 	}
 
 	/**
@@ -137,7 +132,7 @@ public class CatalogFeed implements Serializable {
 					.map(list -> {
 						var result = new CatalogFeed();
 						result.sourceManager = TEMPLATING_SOURCE_MANAGER;
-						result.sourceId = TEMPLATE_BOOKMARKS;
+						result.providerId = TEMPLATE_BOOKMARKS;
 						result.extensionId = TEMPLATE_BOOKMARKS;
 						result.sourceFeed = list.getId();
 						result.title = list.getName();

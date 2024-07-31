@@ -74,6 +74,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Deprecated(forRemoval = true)
 public class JsProvider extends ExtensionProvider {
 	protected Extension extension;
 	protected String id, version, script;

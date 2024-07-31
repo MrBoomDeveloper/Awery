@@ -30,13 +30,13 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -234,38 +234,48 @@ public abstract class FeedsFragment extends Fragment {
 			@NonNull CatalogFeed feed,
 			AsyncFuture.Callback<CatalogSearchResults<? extends CatalogMedia>> callback
 	) {
-		var context = getContext();
-		if(context == null) return;
+		if(getContext() == null) return;
 
-		try {
-			var provider = ExtensionProvider.forGlobalId(feed.sourceManager, feed.extensionId, feed.sourceId);
-			var filters = new SettingsList(getFilters());
+		ExtensionsFactory.getInstance().addCallback(new AsyncFuture.Callback<>() {
+			@Override
+			public void onSuccess(ExtensionsFactory factory) throws Throwable {
+				if(getContext() == null) return;
 
-			if(feed.filters != null) {
-				filters.addAll(feed.filters);
-			}
+				var provider = factory.getManager(feed.sourceManager)
+						.getExtension(feed.extensionId).getProvider(feed.providerId);
 
-			if(feed.sourceFeed != null) {
-				filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed));
-			}
+				var filters = new SettingsList(getFilters());
 
-			var queryFilter = filters.get(ExtensionProvider.FILTER_QUERY);
-
-			if(queryFilter != null) {
-				if(feed.filters == null) {
-					feed.filters = new SettingsList(queryFilter);
-				} else {
-					var found = feed.filters.get(ExtensionProvider.FILTER_QUERY);
-					if(found != null) feed.filters.remove(found);
-					feed.filters.add(queryFilter);
+				if(feed.filters != null) {
+					filters.addAll(feed.filters);
 				}
+
+				if(feed.sourceFeed != null) {
+					filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed));
+				}
+
+				var queryFilter = filters.get(ExtensionProvider.FILTER_QUERY);
+
+				if(queryFilter != null) {
+					if(feed.filters == null) {
+						feed.filters = new SettingsList(queryFilter);
+					} else {
+						var found = feed.filters.get(ExtensionProvider.FILTER_QUERY);
+						if(found != null) feed.filters.remove(found);
+						feed.filters.add(queryFilter);
+					}
+				}
+
+				filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
+				provider.searchMedia(filters).addCallback(callback);
 			}
 
-			filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
-			provider.searchMedia(filters).addCallback(callback);
-		} catch(ExtensionNotInstalledException e) {
-			callback.onFailure(e);
-		}
+			@Override
+			public void onFailure(Throwable t) {
+				if(getContext() == null) return;
+				callback.onFailure(t);
+			}
+		});
 	}
 
 	@CallSuper

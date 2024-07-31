@@ -6,11 +6,13 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.util.exceptions.ExtensionComponentMissingException;
 import com.squareup.moshi.Json;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class Extension implements Comparable<Extension> {
 	public static final String DISABLED_ERROR = "Disabled";
@@ -26,6 +28,33 @@ public class Extension implements Comparable<Extension> {
 	private final List<ExtensionProvider> providers = new ArrayList<>();
 	@Json(ignore = true)
 	private final ExtensionsManager manager;
+
+	public Extension(ExtensionsManager manager, String id, String error) {
+		this.name = id;
+		this.version = null;
+		this.id = id;
+		this.manager = manager;
+		this.fileUrl = null;
+		setError(error);
+	}
+
+	public Extension(ExtensionsManager manager, String id, Throwable t) {
+		this.name = id;
+		this.version = null;
+		this.id = id;
+		this.manager = manager;
+		this.fileUrl = null;
+		setError(t);
+	}
+
+	public Extension(ExtensionsManager manager, String id, String name, String version, Throwable t) {
+		this.name = name;
+		this.version = version;
+		this.id = id;
+		this.manager = manager;
+		this.fileUrl = null;
+		setError(t);
+	}
 
 	public Extension(ExtensionsManager manager, String id, String name, String version) {
 		this.name = name;
@@ -90,6 +119,26 @@ public class Extension implements Comparable<Extension> {
 
 	public List<ExtensionProvider> getProviders() {
 		return providers;
+	}
+
+	public ExtensionProvider getProvider(String id) throws ExtensionComponentMissingException {
+		ExtensionProvider mainProvider = null;
+
+		for(var provider : getProviders()) {
+			if(Objects.equals(id, provider.getId())) {
+				return provider;
+			}
+
+			if(id == null && Objects.equals(getId(), provider.getId())) {
+				mainProvider = provider;
+			}
+		}
+
+		if(mainProvider == null) {
+			throw new ExtensionComponentMissingException(getName(), id);
+		}
+
+		return mainProvider;
 	}
 
 	public void addProvider(ExtensionProvider provider) {

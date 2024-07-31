@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.util.async;
 
+import static com.mrboomdev.awery.app.AweryLifecycle.isMainThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -153,6 +156,8 @@ public class AsyncUtils {
 				return result != null || throwable != null;
 			}
 
+			@Nullable
+			@Contract(pure = true)
 			@Override
 			public Throwable getThrowable() {
 				return null;
@@ -423,6 +428,31 @@ public class AsyncUtils {
 		} while(result == null);
 
 		return result;
+	}
+
+	public static <T> T awaitFromUiThread(Callable<T> callable) throws Exception {
+		if(isMainThread()) {
+			return callable.call();
+		}
+
+		var result = new AtomicReference<T>();
+		var throwable = new AtomicReference<Exception>();
+
+		runOnUiThread(() -> {
+			try {
+				result.set(callable.call());
+			} catch(Exception t) {
+				throwable.set(t);
+			}
+		});
+
+		while(result.get() == null && throwable.get() == null);
+
+		if(throwable.get() != null) {
+			throw throwable.get();
+		}
+
+		return result.get();
 	}
 
 	/**

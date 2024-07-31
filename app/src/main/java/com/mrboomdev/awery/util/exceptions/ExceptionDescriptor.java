@@ -101,6 +101,9 @@ public class ExceptionDescriptor {
 			return "Failed to bypass " + e.getBlockerName();
 		} else if(t instanceof ExtensionNotInstalledException) {
 			return "Extension not installed";
+		} else if(t instanceof ExtensionComponentMissingException e) {
+			return "Component \"" + e.getComponentName() + "\" was not found! Check if you have the latest version of an extension." +
+					"\nExtension name: " + e.getExtensionName();
 		} else if(t instanceof SocketException e) {
 			return e.getMessage();
 		} else if(t instanceof CancelledException) {

@@ -64,6 +64,7 @@ import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 import androidx.viewbinding.ViewBinding;
 
+import com.caoccao.javet.exceptions.JavetException;
 import com.github.piasy.biv.BigImageViewer;
 import com.github.piasy.biv.loader.glide.GlideCustomImageLoader;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -77,7 +78,9 @@ import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
+import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogList;
+import com.mrboomdev.awery.extensions.support.aweryjs.AweryJsManager;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -510,6 +513,27 @@ public class AweryApp extends Application {
 	protected void attachBaseContext(@NonNull Context base) {
 		super.attachBaseContext(base);
 		CrashHandler.setupCrashListener(this);
+	}
+
+	@Override
+	public void onLowMemory() {
+		super.onLowMemory();
+
+		var extensionsFactory = ExtensionsFactory.getInstanceNow();
+
+		if(extensionsFactory != null) {
+			var manager = extensionsFactory.getManager(AweryJsManager.class);
+
+			if(manager != null) {
+				try {
+					var runtime = manager.getJsRuntime(false);
+
+					if(runtime != null) {
+						runtime.lowMemoryNotification();
+					}
+				} catch(JavetException ignored) {}
+			}
+		}
 	}
 
 	@Override
