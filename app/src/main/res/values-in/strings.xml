@@ -137,4 +137,15 @@
     <string name="sub_background_color_select">Warna Latar Belakang Takrarir</string>
     <string name="sub_window_color_info">Jendela Takrarir adalah bagian kiri dan kanannya. (di mana latar belakang tidak ada)</string>
     <string name="auto_play_next_episode">Putar Otomatis Episode Berikutnya</string>
+    <string name="auto_skip_fillers">Lewati Filler Otomatis</string>
+    <string name="auto_skip_fillers_info">Melompati episode pengisi saat melanjutkan ke episode berikutnya.</string>
+    <string name="update_progress">Perbarui Kemajuan</string>
+    <string name="ask_update_progress_info_ep">Mematikan akan selalu secara otomatis memperbarui kemajuan saat episode ditonton.</string>
+    <string name="watch_complete_percentage">Persentase Pembaruan Tontonan</string>
+    <string name="behaviour">Perilaku</string>
+    <string name="always_continue">Selalu Lanjutkan dari bagian terakhir yang Anda tinggalkan</string>
+    <string name="ask_update_progress_anime">Tanyakan untuk setiap Media \"Secara Individual\"</string>
+    <string name="watch_complete_percentage_info">Persentase di mana kemajuan Anda harus diperbarui setelah menonton sebuah episode. 
+\nIni juga mengatur kapan tautan pramuat untuk episode berikutnya.</string>
+    <string name="pause_video_focus">Jeda saat tidak dalam Fokus</string>
 </resources>
