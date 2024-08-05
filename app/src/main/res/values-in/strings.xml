@@ -148,4 +148,14 @@
     <string name="watch_complete_percentage_info">Persentase di mana kemajuan Anda harus diperbarui setelah menonton sebuah episode. 
 \nIni juga mengatur kapan tautan pramuat untuk episode berikutnya.</string>
     <string name="pause_video_focus">Jeda saat tidak dalam Fokus</string>
+    <string name="gestures">Gerakan Volume &amp; Kecerahan</string>
+    <string name="double_tap">Ketuk dua kali untuk Mencari</string>
+    <string name="fast_forward">Percepat</string>
+    <string name="double_tap_info">Mematikan akan menampilkan tombol percepat &amp; mundur</string>
+    <string name="seek_time">Waktu Cari</string>
+    <string name="amoled">Tema Amoled</string>
+    <string name="seek_time_info">Jumlah waktu dalam detik untuk percepat &amp; mundur.</string>
+    <string name="skip_time">Waktu Lewati</string>
+    <string name="picture_in_picture">Gambar dalam Gambar</string>
+    <string name="show_cast_button">Tampilkan Tombol Cast</string>
 </resources>
