@@ -308,7 +308,7 @@
     <string name="server_down">Сервер упал!</string>
     <string name="too_much_requests">Слишком много запросов!</string>
     <string name="something_went_wrong">Что-то пошло не так!</string>
-    <string name="not_found_detailed">Ошибка 404. Запрошеный ресурс не найден!</string>
+    <string name="not_found_detailed">Запрошеный ресурс не найден!</string>
     <string name="male">Мужчина</string>
     <string name="female">Женщина</string>
     <string name="subscribed_notification">Subscribed! Receiving notifications, when new episodes are released on %1$s.</string>
