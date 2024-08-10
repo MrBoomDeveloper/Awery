@@ -106,7 +106,7 @@ jobs:
           name: "Production APK"
           retention-days: 90
           path: "app/build/outputs/apk/prod/release/app-prod-release-signed.apk"
-          
+
       - name: Send Alpha APK to Telegram
         if: always()
         run: |
@@ -114,6 +114,7 @@ jobs:
           COMMIT_LOG=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
           curl -F document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk \
           -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -F message_thread_id=174 \
           -F caption="Alpha Release $COMMIT_LOG" \
           https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
                
