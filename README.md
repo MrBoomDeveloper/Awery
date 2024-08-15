@@ -44,7 +44,7 @@
 
 <h2>Contribution 🤝</h2>
 
-We would be very grateful if you could contribute to the development of this application.  Everything from simple string translation to the implementation of new features is accepted. If you have any questions, please visit our <a href="https://discord.com/invite/yepfCz4pvW">Discord</a> server or <a href="https://t.me/c/2206819738/1">Telegram</a> group.
+We would be very grateful if you could contribute to the development of this application.  Everything from simple string translation to the implementation of new features is accepted. If you have any questions, please visit our <a href="https://discord.com/invite/yepfCz4pvW">Discord</a> server or <a href="https://t.me/mrboomdev_awery">Telegram</a> group.
 
 <a href="https://hosted.weblate.org/engage/awery"><img src="https://hosted.weblate.org/widget/awery/multi-auto.svg" alt="Translation status" /></a>
 
