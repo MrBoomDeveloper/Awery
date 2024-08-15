@@ -103,17 +103,7 @@
     <string name="about">À propos</string>
     <string name="devs">Développeurs</string>
     <string name="disclaimer">Avertissement</string>
-    <string name="full_disclaimer">- Awery en lui-même ne fournit qu\'un suivi des anime et des mangas et ne propose aucune fonction de streaming ou de téléchargement d\'anime ou de manga.
-\n
-\n - Awery ou l\'un de ses développeurs/personnels n\'héberge aucun des contenus trouvés dans Awery. Toutes les images et informations sur les anime/mangas trouvées dans l\'application proviennent de diverses API publiques (AniList, MyAnimeList, Kitsu).
-\n
-\n - De plus, tous les liens d\'anime/manga trouvés dans Awery proviennent de divers plugins tiers et n\'ont aucune affiliation avec Awery ou son personnel.
-\n
-\n - Awery ou ses propriétaires ne sont pas responsables de tout usage abusif de l\'un des contenus trouvés à l\'intérieur ou à l\'extérieur de l\'application et ne peuvent être tenus responsables de la distribution de l\'un des contenus trouvés dans l\'application.
-\n
-\n - En utilisant Awery, vous acceptez le fait que le développeur de l\'application n\'est pas responsable de tout contenu trouvé dans l\'application. Vous acceptez également le fait que vous ne pouvez pas utiliser Awery pour télécharger ou diffuser du contenu protégé par des droits d\'auteur.
-\n
-\n - En cas de problèmes d\'infraction à Internet, veuillez contacter le site source. Le développeur n\'assume aucune responsabilité légale.</string>
+    <string name="full_disclaimer">- Awery en lui-même ne fournit qu\'un suivi des anime et des mangas et ne propose aucune fonction de streaming ou de téléchargement d\'anime ou de manga.\n\n - Awery ou l\'un de ses développeurs/personnels n\'héberge aucun des contenus trouvés dans Awery. Toutes les images et informations sur les anime/mangas trouvées dans l\'application proviennent de diverses API publiques (AniList, MyAnimeList, Kitsu).\n\n - De plus, tous les liens d\'anime/manga trouvés dans Awery proviennent de divers plugins tiers et n\'ont aucune affiliation avec Awery ou son personnel.\n\n - Awery ou ses propriétaires ne sont pas responsables de tout usage abusif de l\'un des contenus trouvés à l\'intérieur ou à l\'extérieur de l\'application et ne peuvent être tenus responsables de la distribution de l\'un des contenus trouvés dans l\'application.\n\n - En utilisant Awery, vous acceptez le fait que le développeur de l\'application n\'est pas responsable de tout contenu trouvé dans l\'application. Vous acceptez également le fait que vous ne pouvez pas utiliser Awery pour télécharger ou diffuser du contenu protégé par des droits d\'auteur.\n\n - En cas de problèmes d\'infraction à Internet, veuillez contacter le site source. Le développeur n\'assume aucune responsabilité légale.</string>
     <string name="video">Vidéo</string>
     <string name="video_info_info">Affiche la résolution de la vidéo en cours de lecture, utile pour les serveurs <b>Multi Quality</b>.</string>
     <string name="default_quality">Sélection automatique de la qualité</string>
@@ -139,8 +129,7 @@
     <string name="ask_update_progress_anime">Demander pour chaque média \"Individuellement\"</string>
     <string name="ask_update_progress_info_ep">Désactiver mettra toujours automatiquement à jour les progrès lorsque l\'épisode est regardé.</string>
     <string name="watch_complete_percentage">Pourcentage de mise à jour de la visualisation</string>
-    <string name="watch_complete_percentage_info">Le pourcentage auquel vos progrès doivent être mis à jour après avoir regardé un épisode.
-\nCela définit également le % pour précharger les liens pour le prochain épisode.</string>
+    <string name="watch_complete_percentage_info">Le pourcentage auquel vos progrès doivent être mis à jour après avoir regardé un épisode.\nCela définit également le % pour précharger les liens pour le prochain épisode.</string>
     <string name="behaviour">Comportement</string>
     <string name="always_continue">Continuer toujours depuis où vous vous êtes arrêté</string>
     <string name="pause_video_focus">Mettre en pause lorsqu\'il n\'est pas en focus</string>
@@ -155,8 +144,7 @@
     <string name="show_cast_button">Afficher le bouton de distribution</string>
     <string name="picture_in_picture">Image dans l\'image</string>
     <string name="always_minimize">Toujours minimiser</string>
-    <string name="always_minimize_info">Nécessite que PiP soit activé, fait en sorte que le lecteur se comporte comme le lecteur Youtube mais en mieux.
-\nCache également le bouton PiP.</string>
+    <string name="always_minimize_info">Nécessite que PiP soit activé, fait en sorte que le lecteur se comporte comme le lecteur Youtube mais en mieux.\nCache également le bouton PiP.</string>
     <string name="immersive_mode">Masquer la barre d\'état</string>
     <string name="immersive_mode_info">Nécessite un redémarrage de l\'application pour appliquer complètement.</string>
     <string name="startUpTab">Onglet de démarrage par défaut</string>
@@ -216,14 +204,12 @@
     <string name="check_app_updates">Vérifier Automatiquement les Mises à Jour de l\'Application</string>
     <string name="author">Auteur</string>
     <string name="account">Compte</string>
-    <string name="subscriptions_info">Durée pour Awery de vérifier périodiquement les Nouveaux Épisodes/Chapitres
-\n(Moins de temps entraînera une consommation de batterie plus élevée)</string>
+    <string name="subscriptions_info">Durée pour Awery de vérifier périodiquement les Nouveaux Épisodes/Chapitres\n(Moins de temps entraînera une consommation de batterie plus élevée)</string>
     <string name="grid">Grille</string>
     <string name="sort_by_release_date">Trier par Date de Sortie</string>
     <string name="crop_borders">Rogner les Bordures</string>
     <string name="error_loading_data">Erreur de chargement des données %1$s</string>
-    <string name="saved_to_path">Enregistré à :
-\n%s</string>
+    <string name="saved_to_path">Enregistré à :\n%s</string>
     <string name="setting_progress">Définir la progression à %1$d</string>
     <string name="back_to_exit">Veuillez revenir en arrière pour quitter</string>
     <string name="no_internet_connection">Pas de Connexion Internet</string>
@@ -243,8 +229,7 @@
     <string name="no_update_found">Aucune Mise à Jour Trouvée</string>
     <string name="downloading_update">Téléchargement de la Mise à Jour %1$s</string>
     <string name="permission_required">Veuillez accorder l\'accès aux Fichiers &amp; Dossiers depuis les Paramètres, et réessayez.</string>
-    <string name="started_downloading">Début du Téléchargement
-\n%1$s</string>
+    <string name="started_downloading">Début du Téléchargement\n%1$s</string>
     <string name="loading_image_failed">Échec du Chargement de l\'Image</string>
     <string name="failed_to_load_data">Échec du chargement des données sauvegardées de %1$d</string>
     <string name="access_not_available">Impossible d\'obtenir l\'accès</string>
