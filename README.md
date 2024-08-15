@@ -43,3 +43,9 @@ We will be very grateful if you make your contribution to the development of thi
 <p>
    <img src="https://count.getloli.com/get/@:awerymrboomdev" alt="Viewers count" />
 </p>
+
+<H2>Credits 😍</h2>
+Thank you to all the people who have contributed!
+<a href="https://github.com/mrboomdeveloper/awery/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=mrboomdeveloper/awery" />
+</a>
