@@ -38,14 +38,14 @@ We will be very grateful if you make your contribution to the development of thi
 
 <a href="https://hosted.weblate.org/engage/awery"><img src="https://hosted.weblate.org/widget/awery/multi-auto.svg" alt="Translation status" /></a>
 
----
-
-<p>
-   <img src="https://count.getloli.com/get/@:awerymrboomdev" alt="Viewers count" />
-</p>
-
 <H2>Credits 😍</h2>
 Thank you to all the people who have contributed!
 <a href="https://github.com/mrboomdeveloper/awery/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=mrboomdeveloper/awery" />
 </a>
+
+---
+
+<p>
+   <img src="https://count.getloli.com/get/@:awerymrboomdev" alt="Viewers count" />
+</p>
