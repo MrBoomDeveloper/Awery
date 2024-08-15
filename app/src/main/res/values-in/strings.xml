@@ -80,17 +80,7 @@
     <string name="reader">Pembaca</string>
     <string name="disclaimer">Penafian</string>
     <string name="default_quality">Pemilihan Kualitas Otomatis</string>
-    <string name="full_disclaimer">- Awery sendiri hanya menyediakan pelacak anime dan manga dan tidak menyediakan kemampuan streaming atau mengunduh anime atau manga.
-\n
-\n - Awery atau pengembang/staff-nya tidak menyimpan konten apa pun yang ditemukan di dalam Awery. Semua gambar dan informasi anime/manga yang ditemukan dalam aplikasi diambil dari berbagai API publik (AniList, MyAnimeList, Kitsu).
-\n
-\n - Selanjutnya, semua tautan anime/manga yang ditemukan di Awery diambil dari berbagai plugin pihak ketiga dan tidak memiliki afiliasi dengan Awery atau stafnya.
-\n
-\n - Awery atau pemiliknya tidak bertanggung jawab atas penyalahgunaan konten apa pun yang ditemukan di dalam atau di luar aplikasi dan tidak dapat dipegang bertanggung jawab atas distribusi konten apa pun yang ditemukan di dalam aplikasi.
-\n
-\n - Dengan menggunakan Awery, Anda menyetujui fakta bahwa pengembang aplikasi tidak bertanggung jawab atas konten apa pun yang ditemukan dalam aplikasi. Anda juga setuju dengan fakta bahwa Anda tidak boleh menggunakan Awery untuk mengunduh atau streaming konten berhak cipta.
-\n
-\n - Jika masalah pelanggaran internet terlibat, harap hubungi situs sumber. Pengembang tidak menganggap tanggung jawab hukum apa pun.</string>
+    <string name="full_disclaimer">- Awery sendiri hanya menyediakan pelacak anime dan manga dan tidak menyediakan kemampuan streaming atau mengunduh anime atau manga.\n\n - Awery atau pengembang/staff-nya tidak menyimpan konten apa pun yang ditemukan di dalam Awery. Semua gambar dan informasi anime/manga yang ditemukan dalam aplikasi diambil dari berbagai API publik (AniList, MyAnimeList, Kitsu).\n\n - Selanjutnya, semua tautan anime/manga yang ditemukan di Awery diambil dari berbagai plugin pihak ketiga dan tidak memiliki afiliasi dengan Awery atau stafnya.\n\n - Awery atau pemiliknya tidak bertanggung jawab atas penyalahgunaan konten apa pun yang ditemukan di dalam atau di luar aplikasi dan tidak dapat dipegang bertanggung jawab atas distribusi konten apa pun yang ditemukan di dalam aplikasi.\n\n - Dengan menggunakan Awery, Anda menyetujui fakta bahwa pengembang aplikasi tidak bertanggung jawab atas konten apa pun yang ditemukan dalam aplikasi. Anda juga setuju dengan fakta bahwa Anda tidak boleh menggunakan Awery untuk mengunduh atau streaming konten berhak cipta.\n\n - Jika masalah pelanggaran internet terlibat, harap hubungi situs sumber. Pengembang tidak menganggap tanggung jawab hukum apa pun.</string>
     <string name="video_info_info">Menunjukkan resolusi video yang sedang diputar, berguna untuk server <b>Multi Quality</b>.</string>
     <string name="relations">Hubungan</string>
     <string name="roles">Peran</string>
@@ -145,8 +135,7 @@
     <string name="behaviour">Perilaku</string>
     <string name="always_continue">Selalu Lanjutkan dari tempat Anda berhenti</string>
     <string name="ask_update_progress_anime">Tanya untuk setiap Media Secara Individu</string>
-    <string name="watch_complete_percentage_info">"Persentase di mana kemajuan Anda harus diperbarui setelah menonton episode.
-\nIni juga mengatur  untuk saat memuat tautan untuk episode berikutnya."</string>
+    <string name="watch_complete_percentage_info">"Persentase di mana kemajuan Anda harus diperbarui setelah menonton episode.\n\nIni juga mengatur  untuk saat memuat tautan untuk episode berikutnya."</string>
     <string name="pause_video_focus">Jeda saat tidak dalam Fokus</string>
     <string name="gestures">Gerakan Volume &amp; Kecerahan</string>
     <string name="double_tap">Ketuk Dua Kali untuk Mencari</string>
@@ -230,8 +219,7 @@
     <string name="no_access_detailed">Kesalahan 403. Anda tidak memiliki akses ke sumber daya ini, coba masuk ke akun Anda dan coba lagi.</string>
     <string name="rate_limited_detailed">Kesalahan 429. Anda telah melebihi batas laju, silakan coba lagi nanti.</string>
     <string name="always_minimize">Selalu Minimalkan</string>
-    <string name="always_minimize_info">Memerlukan PiP untuk diaktifkan, membuat pemutar berperilaku seperti Pemutar Youtube tetapi lebih baik.
-\nJuga menyembunyikan tombol PiP.</string>
+    <string name="always_minimize_info">Memerlukan PiP untuk diaktifkan, membuat pemutar berperilaku seperti Pemutar Youtube tetapi lebih baik.\nJuga menyembunyikan tombol PiP.</string>
     <string name="immersive_mode">Sembunyikan Bar Status</string>
     <string name="current_page">Halaman Saat Ini</string>
     <string name="dubbed">Dubbed</string>
@@ -285,15 +273,13 @@
     <string name="always_continue_shows">Selalu Lanjutkan Tayangan</string>
     <string name="check_app_updates">Periksa Pembaruan Aplikasi Secara Otomatis</string>
     <string name="account">Akun</string>
-    <string name="subscriptions_info">Jumlah waktu untuk Awery memeriksa episode/bab baru secara berkala
-\n(Waktu yang lebih sedikit akan menyebabkan konsumsi baterai lebih banyak)</string>
+    <string name="subscriptions_info">Jumlah waktu untuk Awery memeriksa episode/bab baru secara berkala\n(Waktu yang lebih sedikit akan menyebabkan konsumsi baterai lebih banyak)</string>
     <string name="grid">Grid</string>
     <string name="sort_by_release_date">Urutkan Berdasarkan Tanggal Rilis</string>
     <string name="crop_borders">Potong Batas</string>
     <string name="error_loading_data">Terjadi kesalahan saat memuat data %1$s</string>
     <string name="setting_progress">Mengatur kemajuan ke %1$d</string>
-    <string name="saved_to_path">Disimpan ke:
-\n%s</string>
+    <string name="saved_to_path">Disimpan ke:\n%s</string>
     <string name="first_episode">Ini adalah Episode Pertama!</string>
     <string name="auto_select_server_error">Gagal memilih server secara otomatis, coba lagi!</string>
     <string name="no_next_episode">Episode Berikutnya Tidak Ditemukan!</string>
@@ -307,8 +293,7 @@
     <string name="deleted_from_list">Dihapus dari Daftar</string>
     <string name="downloading_update">Mengunduh Pembaruan %1$s</string>
     <string name="permission_required">Harap beri izin untuk mengakses File &amp; Folder dari Pengaturan, &amp; Coba lagi.</string>
-    <string name="started_downloading">Mulai Mengunduh
-\n%1$s</string>
+    <string name="started_downloading">Mulai Mengunduh\n%1$s</string>
     <string name="loading_image_failed">Gagal Memuat Gambar</string>
     <string name="access_not_available">Tidak dapat mendapatkan akses</string>
     <string name="episode_release_countdown">Episode %1$d akan dirilis dalam</string>
