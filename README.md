@@ -16,25 +16,35 @@
 <h2>Features 🚀</h2>
 <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot1.jpg" alt="Screenshot" />
 
-- Use any Aniyomi extension
-- Sync progress with your AniList, MyAnimeList, Shikimori and etc.
-- Leave and read other comments
-- Translation into many languages
-- Filter out tags like mecha from the whole app!
-- Blacklist unwanted media
+<details>
+<summary>Check Features</summary>
+<ul>
+  <li>Use any Aniyomi extension</li>
+  <li>Sync progress with your AniList, MyAnimeList, Shikimori, etc.</li>
+  <li>Leave and read other comments</li>
+  <li>Translation into many languages</li>
+  <li>Filter out tags like mecha from the whole app!</li>
+  <li>Blacklist unwanted media</li>
+</ul>
+</details>
 
 <h2>Planned Features 👀</h2>
 
-- Android TV support
-- News reader
-- More extensions support (Tachiyomi, Cloudstream, Miru and LNReader)
-- Torrents support
-- Offline playback
-- Update notifications
+<details>
+<summary>Checkout Planned Stuffs</summary>
+<ul>
+  <li>Android TV support</li>
+  <li>Newsreader</li>
+  <li>More extensions support (Tachiyomi, Cloudstream, Miru and LNReader)</li>
+  <li>Torrents support</li>
+  <li>Offline playback</li>
+  <li>Update notifications</li>
+</ul>
+</details>
 
 <h2>Contribution 🤝</h2>
 
-We will be very grateful if you make your contribution to the development of this application.  Everything from simple string translation to the implementation of new features is accepted. For any questions, visit our Discord server or Telegram group.
+We would be very grateful if you could contribute to the development of this application.  Everything from simple string translation to the implementation of new features is accepted. If you have any questions, please visit our <a href="https://discord.com/invite/yepfCz4pvW">Discord</a> server or <a href="https://t.me/c/2206819738/1">Telegram</a> group.
 
 <a href="https://hosted.weblate.org/engage/awery"><img src="https://hosted.weblate.org/widget/awery/multi-auto.svg" alt="Translation status" /></a>
 
