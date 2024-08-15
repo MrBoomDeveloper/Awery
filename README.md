@@ -12,6 +12,11 @@
       <img alt="Weblate project translated" src="https://img.shields.io/weblate/progress/awery?style=for-the-badge">
    </a>
 </p>
+<h2 align="center">Downloads</h2>
+<p align="center">
+   <a href="https://github.com/mrboomdeveloper/awery/releases/latest"><img src="https://img.shields.io/github/v/release/mrboomdeveloper/awery?display_name=tag&style=flat-square&logoColor=06599d&label=Stable&labelColor=06599d&color=043b69" alt="Latest Stable Release"/></a>
+   <a href="https://github.com/mrboomdeveloper/awery/releases"><img src="https://img.shields.io/github/v/release/mrboomdeveloper/awery?include_prereleases&display_name=tag&style=flat-square&logoColor=2c2c47&label=Beta&color=818cf8" alt="Latest Pre-release"/></a>
+</p>
 
 <h2>Features 🚀</h2>
 <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot1.jpg" alt="Screenshot" />
