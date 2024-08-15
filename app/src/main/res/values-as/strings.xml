@@ -103,17 +103,7 @@
     <string name="about">সম্পৰ্কে</string>
     <string name="devs">ডেভেলপাৰস</string>
     <string name="disclaimer">অস্বীকাৰ</string>
-    <string name="full_disclaimer">- Awery কেৱল এটা এনিমে আৰু মাংগা ট্ৰেকাৰহিছাপে কাম কৰে, এনিমে বা মাংগা ষ্ট্ৰিমিং বা ডাউনলোডিংৰ সুবিধা প্ৰদান নকৰে।
-\n
-\n - Awery বা তাৰ ডেভেলপাৰ/কৰ্মচাৰীসকলে Awery ৰ ভিতৰত থকা কন্টেণ্টৰ হ\'ষ্টিং নকৰে। এপৰ ভিতৰত পোৱা সকলো ছবি আৰু এনিমে/মাংগাৰ তথ্যবিলাক বিভিন্ন জনপ্ৰিয় API (AniList, MyAnimeList, Kitsu) ৰ পৰা লোৱা হৈছে।
-\n
-\n - তদুপৰি, Awery ৰ ভিতৰত পোৱা এনিমে/মাংগাৰ সকলো লিংক বিভিন্ন তৃতীয় পক্ষৰ প্লাগিনৰ পৰা লোৱা হৈছে আৰু Awery বা তাৰ কৰ্মচাৰীসকলৰ সৈতে কোনো সংযোগ নাই।
-\n
-\n - Awery বা তাৰ গৰাকীসকলক Awery ৰ ভিতৰত বা বাহিৰত থকা কন্টেণ্টৰ অপব্যৱহাৰৰ বাবে দায়ী নকৰা যাব আৰু এপৰ ভিতৰত থকা কন্টেণ্টৰ বিতৰণৰ বাবে দায়বদ্ধ নকৰা যাব।
-\n
-\n - Awery ব্যৱহাৰ কৰি, আপুনি একমত যে এপৰ ডেভেলপাৰ Awery ৰ ভিতৰত থকা কোনো কন্টেণ্টৰ বাবে দায়ী নহয়। আপুনি ইয়াতো একমত যে আপুনি Awery ব্যৱহাৰ কৰি কোনো কপিৰাইটেড কন্টেণ্ট ডাউনলোড বা ষ্ট্ৰিম নকৰিব।
-\n
-\n - যদি ইণ্টাৰনেট উলংঘনৰ সমস্যা থাকে, মুল উৎসৰ ৱেবচাইটৰ লগত যোগাযোগ কৰক। ডেভেলপাৰে কোনো আইনী দায়িত্ব গ্ৰহণ নকৰে।</string>
+    <string name="full_disclaimer">- Awery কেৱল এটা এনিমে আৰু মাংগা ট্ৰেকাৰহিছাপে কাম কৰে, এনিমে বা মাংগা ষ্ট্ৰিমিং বা ডাউনলোডিংৰ সুবিধা প্ৰদান নকৰে।\n\n - Awery বা তাৰ ডেভেলপাৰ/কৰ্মচাৰীসকলে Awery ৰ ভিতৰত থকা কন্টেণ্টৰ হ\'ষ্টিং নকৰে। এপৰ ভিতৰত পোৱা সকলো ছবি আৰু এনিমে/মাংগাৰ তথ্যবিলাক বিভিন্ন জনপ্ৰিয় API (AniList, MyAnimeList, Kitsu) ৰ পৰা লোৱা হৈছে।\n\n - তদুপৰি, Awery ৰ ভিতৰত পোৱা এনিমে/মাংগাৰ সকলো লিংক বিভিন্ন তৃতীয় পক্ষৰ প্লাগিনৰ পৰা লোৱা হৈছে আৰু Awery বা তাৰ কৰ্মচাৰীসকলৰ সৈতে কোনো সংযোগ নাই।\n\n - Awery বা তাৰ গৰাকীসকলক Awery ৰ ভিতৰত বা বাহিৰত থকা কন্টেণ্টৰ অপব্যৱহাৰৰ বাবে দায়ী নকৰা যাব আৰু এপৰ ভিতৰত থকা কন্টেণ্টৰ বিতৰণৰ বাবে দায়বদ্ধ নকৰা যাব।\n\n - Awery ব্যৱহাৰ কৰি, আপুনি একমত যে এপৰ ডেভেলপাৰ Awery ৰ ভিতৰত থকা কোনো কন্টেণ্টৰ বাবে দায়ী নহয়। আপুনি ইয়াতো একমত যে আপুনি Awery ব্যৱহাৰ কৰি কোনো কপিৰাইটেড কন্টেণ্ট ডাউনলোড বা ষ্ট্ৰিম নকৰিব।\n\n - যদি ইণ্টাৰনেট উলংঘনৰ সমস্যা থাকে, মুল উৎসৰ ৱেবচাইটৰ লগত যোগাযোগ কৰক। ডেভেলপাৰে কোনো আইনী দায়িত্ব গ্ৰহণ নকৰে।</string>
     <string name="video">ভিডিঅ\'</string>
     <string name="video_info_info">বৰ্তমান চালোৱা ভিডিঅ\'ৰ ৰিজলিউশ্যন দেখুৱায়, <b>\"মাল্টি কোৱালিটী\"</b> ছাৰ্ভাৰবিলাকৰ বাবে সহায়ক।</string>
     <string name="default_quality">স্বয়ংক্ৰিয় গুণমান নিৰ্বাচন</string>
@@ -139,8 +129,7 @@
     <string name="ask_update_progress_anime">প্ৰত্যেক মিডিয়াৰ বাবে \"বিচাৰা\"</string>
     <string name="ask_update_progress_info_ep">বন্ধ কৰি ললে এপিচ\'ড চাওঁতে স্বয়ংক্ৰিয়ভাৱে প্ৰগ্ৰেছ আপডেট হব।</string>
     <string name="watch_complete_percentage">চাবলৈ নিৰ্দিষ্ট শতাংশ</string>
-    <string name="watch_complete_percentage_info">এপিচ\'ড চাওঁতে কোন সময়ত আপডেট কৰিব লাগিব তাৰ শতাংশ নিৰ্ধাৰণ কৰক।
-\nএইয়া পৰবৰ্তী এপিচ\'ডৰ লিংক প্ৰিল\'ড কৰাৰ সময়টোও নিৰ্ধাৰণ কৰে।</string>
+    <string name="watch_complete_percentage_info">এপিচ\'ড চাওঁতে কোন সময়ত আপডেট কৰিব লাগিব তাৰ শতাংশ নিৰ্ধাৰণ কৰক।\nএইয়া পৰবৰ্তী এপিচ\'ডৰ লিংক প্ৰিল\'ড কৰাৰ সময়টোও নিৰ্ধাৰণ কৰে।</string>
     <string name="behaviour">আচৰণ</string>
     <string name="always_continue">য\'ৰ পৰা এৰি থৈছিলা তাতৰ পৰা পুনৰ আৰম্ভ কৰক</string>
     <string name="pause_video_focus">পত্ৰলত নহ\'লে ভিডিঅ\' ৰখাওক</string>
@@ -155,8 +144,7 @@
     <string name="show_cast_button">কাষ্ট বুটাম দেখুওৱা</string>
     <string name="picture_in_picture">পিকচাৰ ইন পিকচাৰ</string>
     <string name="always_minimize">সদায় সৰু কৰি ৰাখক</string>
-    <string name="always_minimize_info">PiP সক্ৰিয়কৰণৰ প্ৰয়োজন, প্লেয়াৰক ইউটিউব প্লেয়াৰৰ দৰে কাম কৰায় কিন্তু বেছি ভাল।
-\nPiP বুটামো লুকুৱায়।</string>
+    <string name="always_minimize_info">PiP সক্ৰিয়কৰণৰ প্ৰয়োজন, প্লেয়াৰক ইউটিউব প্লেয়াৰৰ দৰে কাম কৰায় কিন্তু বেছি ভাল।\nPiP বুটামো লুকুৱায়।</string>
     <string name="immersive_mode">ষ্টেটাছ বাৰ লুকুৱাওক</string>
     <string name="immersive_mode_info">সম্পূৰ্ণৰূপে প্ৰয়োগ কৰিবলৈ এপ পুনৰ আৰম্ভ কৰা প্ৰয়োজন।</string>
     <string name="startUpTab">স্বয়ংক্ৰিয় আৰম্ভ টেব</string>
@@ -216,14 +204,12 @@
     <string name="check_app_updates">অ\'টো এপ্‌ৰ ভৰষা পৰীক্ষা কৰক</string>
     <string name="author">লেখক</string>
     <string name="account">অ্যাকাউণ্ট</string>
-    <string name="subscriptions_info">Awery য়ে নতুন এপিসোড/অধ্যায়ৰ বাবে নিয়মীয়াকৈ পৰীক্ষা কৰিব লগীয়া সময়ৰ পৰিমাণ
-\n(কম সময়ৰ বাবে অধিক বেটাৰী ক্ষয় হ\'ব পাৰে)</string>
+    <string name="subscriptions_info">Awery য়ে নতুন এপিসোড/অধ্যায়ৰ বাবে নিয়মীয়াকৈ পৰীক্ষা কৰিব লগীয়া সময়ৰ পৰিমাণ\n(কম সময়ৰ বাবে অধিক বেটাৰী ক্ষয় হ\'ব পাৰে)</string>
     <string name="grid">গ্ৰিড</string>
     <string name="sort_by_release_date">মুক্তিৰ তাৰিখ অনুসৰি বাচনি কৰক</string>
     <string name="crop_borders">ক্ৰপ ব\'ৰ্ডাৰ</string>
     <string name="error_loading_data">ডেটা ল\'ড কৰাত ত্ৰুটি %1$s</string>
-    <string name="saved_to_path">সংৰক্ষণ কৰা হৈছে:
-\n%s</string>
+    <string name="saved_to_path">সংৰক্ষণ কৰা হৈছে:\n%s</string>
     <string name="setting_progress">প্ৰগতি স্থাপন কৰা হৈছে %1$d</string>
     <string name="back_to_exit">বাহিৰ হবলৈ আকৌ পিছলৈ যাওক</string>
     <string name="no_internet_connection">ইন্টাৰনেট সংযোগ নাই</string>
@@ -243,8 +229,7 @@
     <string name="no_update_found">আপডেট পোৱা নগল</string>
     <string name="downloading_update">আপডেট ডাউনলোড কৰি আছে %1$s</string>
     <string name="permission_required">ছেটিংচৰ পৰা ফাইল আৰু ফোল্ডাৰলৈ প্ৰৱেশৰ অনুমতি দিয়ক, আৰু পুনৰ চেষ্টা কৰক।</string>
-    <string name="started_downloading">ডাউনলোড আৰম্ভ কৰা হৈছে
-\n%1$s</string>
+    <string name="started_downloading">ডাউনলোড আৰম্ভ কৰা হৈছে\n%1$s</string>
     <string name="loading_image_failed">ছবি ল\'ড কৰাত ব্যৰ্থ</string>
     <string name="failed_to_load_data">সংৰক্ষিত ডেটা ল\'ড কৰাত ব্যৰ্থ %1$d</string>
     <string name="access_not_available">প্ৰৱেশ লাভ কৰিব পৰা নগল</string>
