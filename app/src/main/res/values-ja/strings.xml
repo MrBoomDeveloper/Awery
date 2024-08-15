@@ -103,17 +103,7 @@
     <string name="about">アプリについて</string>
     <string name="devs">開発者</string>
     <string name="disclaimer">免責事項</string>
-    <string name="full_disclaimer">- Awery はアニメとマンガのトラッカーのみを提供し、アニメやマンガのストリーミングやダウンロード機能は提供していません。
-\n
-\n - Awery またはその開発者/スタッフは、Awery 内のコンテンツをホストしていません。アプリ内で見つかるすべての画像やアニメ/マンガ情報は、さまざまな公開 API（AniList、MyAnimeList、Kitsu）から取得されています。
-\n
-\n - さらに、Awery 内で見つかるすべてのアニメ/マンガのリンクは、さまざまなサードパーティのプラグインから取得されており、Awery やそのスタッフとは関連がありません。
-\n
-\n - Awery またはその所有者は、アプリ内外のコンテンツの誤用について責任を負わず、アプリ内のコンテンツの配布についても責任を負いません。
-\n
-\n - Awery を使用することで、アプリの開発者がアプリ内のコンテンツについて責任を負わないことに同意したことになります。また、Awery を使用して著作権で保護されたコンテンツをダウンロードまたはストリーミングしないことに同意します。
-\n
-\n - インターネット侵害の問題が関与する場合は、ソースウェブサイトに連絡してください。開発者は法的責任を負いません。</string>
+    <string name="full_disclaimer">- Awery はアニメとマンガのトラッカーのみを提供し、アニメやマンガのストリーミングやダウンロード機能は提供していません。\n\n - Awery またはその開発者/スタッフは、Awery 内のコンテンツをホストしていません。アプリ内で見つかるすべての画像やアニメ/マンガ情報は、さまざまな公開 API（AniList、MyAnimeList、Kitsu）から取得されています。\n\n - さらに、Awery 内で見つかるすべてのアニメ/マンガのリンクは、さまざまなサードパーティのプラグインから取得されており、Awery やそのスタッフとは関連がありません。\n\n - Awery またはその所有者は、アプリ内外のコンテンツの誤用について責任を負わず、アプリ内のコンテンツの配布についても責任を負いません。\n\n - Awery を使用することで、アプリの開発者がアプリ内のコンテンツについて責任を負わないことに同意したことになります。また、Awery を使用して著作権で保護されたコンテンツをダウンロードまたはストリーミングしないことに同意します。\n\n - インターネット侵害の問題が関与する場合は、ソースウェブサイトに連絡してください。開発者は法的責任を負いません。</string>
     <string name="video">ビデオ</string>
     <string name="video_info_info">現在再生中のビデオの解像度を表示します。<b>「マルチクオリティ」</b> サーバーに便利です。</string>
     <string name="default_quality">自動品質選択</string>
@@ -139,8 +129,7 @@
     <string name="ask_update_progress_anime">各メディアを「個別に」更新</string>
     <string name="ask_update_progress_info_ep">これをオフにすると、エピソードが視聴されたときに自動的に進捗が更新されます。</string>
     <string name="watch_complete_percentage">視聴完了パーセンテージ</string>
-    <string name="watch_complete_percentage_info">エピソードを視聴後に進捗を更新するパーセンテージです。
-\nこれにより、次のエピソードのリンクをプリロードするための%も設定されます。</string>
+    <string name="watch_complete_percentage_info">エピソードを視聴後に進捗を更新するパーセンテージです。\nこれにより、次のエピソードのリンクをプリロードするための%も設定されます。</string>
     <string name="behaviour">動作</string>
     <string name="always_continue">中断した場所から常に続ける</string>
     <string name="pause_video_focus">フォーカス外で一時停止</string>
@@ -155,8 +144,7 @@
     <string name="show_cast_button">キャストボタンを表示</string>
     <string name="picture_in_picture">ピクチャーインピクチャー</string>
     <string name="always_minimize">常に最小化</string>
-    <string name="always_minimize_info">PiPが有効である必要があります。YouTubeプレーヤーのように動作しますが、より優れています。
-\nまた、PiPボタンも隠します。</string>
+    <string name="always_minimize_info">PiPが有効である必要があります。YouTubeプレーヤーのように動作しますが、より優れています。\nまた、PiPボタンも隠します。</string>
     <string name="immersive_mode">ステータスバーを隠す</string>
     <string name="immersive_mode_info">完全に適用するにはアプリの再起動が必要です。</string>
     <string name="startUpTab">デフォルトのスタートアップタブ</string>
@@ -216,8 +204,7 @@
     <string name="check_app_updates">アプリの更新を自動で確認</string>
     <string name="author">著者</string>
     <string name="account">アカウント</string>
-    <string name="subscriptions_info">Aweryが定期的に新しいエピソード/チャプターを確認する時間
-\n（短い時間だとバッテリーの消耗が多くなります）</string>
+    <string name="subscriptions_info">Aweryが定期的に新しいエピソード/チャプターを確認する時間\n（短い時間だとバッテリーの消耗が多くなります）</string>
     <string name="grid">グリッド</string>
     <string name="sort_by_release_date">リリース日で並べ替え</string>
     <string name="crop_borders">境界線を切り取る</string>
