@@ -20,30 +20,28 @@
 
 <h2>Features 🚀</h2>
 <img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/master/docs/screenshot1.jpg" alt="Screenshot" />
-
 <details>
-<summary>Check Features</summary>
+<summary>Explore Our Key Features</summary>
 <ul>
-  <li>Use any Aniyomi extension</li>
-  <li>Sync progress with your AniList, MyAnimeList, Shikimori, etc.</li>
-  <li>Leave and read other comments</li>
-  <li>Translation into many languages</li>
-  <li>Filter out tags like mecha from the whole app!</li>
-  <li>Blacklist unwanted media</li>
+  <li>Integration with Aniyomi extensions for enhanced functionality.</li>
+  <li>Seamless synchronization of progress with AniList, MyAnimeList, Shikimori, and more.</li>
+  <li>Engage with and contribute to community comments.</li>
+  <li>Support for multiple languages, making it accessible worldwide.</li>
+  <li>Advanced tag filtering, including options to exclude genres like mecha.</li>
+  <li>Blacklist and manage unwanted media content effectively.</li>
 </ul>
 </details>
 
 <h2>Planned Features 👀</h2>
-
 <details>
-<summary>Checkout Planned Stuffs</summary>
+<summary>Upcoming Enhancements</summary>
 <ul>
-  <li>Android TV support</li>
-  <li>Newsreader</li>
-  <li>More extensions support (Tachiyomi, Cloudstream, Miru and LNReader)</li>
-  <li>Torrents support</li>
-  <li>Offline playback</li>
-  <li>Update notifications</li>
+  <li>Support for Android TV, bringing the app to larger screens.</li>
+  <li>Integrated newsreader to keep you updated on the latest trends.</li>
+  <li>Expanded extension compatibility, including Tachiyomi, Cloudstream, Miru, and LNReader.</li>
+  <li>Torrent support for more flexible media acquisition.</li>
+  <li>Offline playback capabilities for uninterrupted access.</li>
+  <li>Real-time update notifications to keep you informed.</li>
 </ul>
 </details>
 
