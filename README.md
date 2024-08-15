@@ -7,7 +7,6 @@
    <a href="https://discord.com/invite/yspVzD4Kbm"><img src="https://dcbadge.limes.pink/api/server/https://discord.com/invite/yspVzD4Kbm" alt="Discord Server"></a>
    <a href="https://t.me/mrboomdev_awery"><img src="https://img.shields.io/endpoint?label=Telegram&labelColor=0e91e3&color=545454&logo=telegram&style=for-the-badge&url=https%3A%2F%2Fmogyo.ro%2Fquart-apis%2Ftgmembercount%3Fchat_id%3Dmrboomdev_awery" alt="Telegram Channel"></a>
    <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?style=for-the-badge" alt="GitHub Downloads"></a>
-   <img alt="GitHub Release" src="https://img.shields.io/github/v/release/MrBoomDeveloper/Awery?include_prereleases&display_name=tag&style=for-the-badge">
    <a href="https://hosted.weblate.org/engage/awery">
       <img alt="Weblate project translated" src="https://img.shields.io/weblate/progress/awery?style=for-the-badge">
    </a>
