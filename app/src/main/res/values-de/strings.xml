@@ -103,17 +103,7 @@
     <string name="about">Über</string>
     <string name="devs">Entwickler</string>
     <string name="disclaimer">Haftungsausschluss</string>
-    <string name="full_disclaimer">- Awery bietet von sich aus nur einen Anime- und Manga-Tracker an und bietet keine Streaming- oder Download-Funktionen für Anime oder Manga.
-\n
-\n - Awery oder irgendeiner seiner Entwickler/mitarbeiter hostet keine der in Awery gefundenen Inhalte. Alle Bilder und Anime/Manga-Informationen, die in der App gefunden werden, stammen aus verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).
-\n
-\n - Darüber hinaus stammen alle Anime/Manga-Links, die in Awery gefunden werden, aus verschiedenen Drittanbieter-Plugins und haben keine Verbindung zu Awery oder seinen Mitarbeitern.
-\n
-\n - Awery oder seine Besitzer haften nicht für den Missbrauch der Inhalte, die innerhalb oder außerhalb der App gefunden werden, und können nicht für die Verbreitung der in der App gefundenen Inhalte verantwortlich gemacht werden.
-\n
-\n - Durch die Nutzung von Awery stimmen Sie der Tatsache zu, dass der Entwickler der App nicht für die in der App gefundenen Inhalte verantwortlich ist. Sie stimmen auch der Tatsache zu, dass Sie Awery nicht verwenden dürfen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.
-\n
-\n - Bei Fragen zu Urheberrechtsverletzungen wenden Sie sich bitte an die Quellwebsite. Der Entwickler übernimmt keine rechtliche Verantwortung.</string>
+    <string name="full_disclaimer">- Awery bietet von sich aus nur einen Anime- und Manga-Tracker an und bietet keine Streaming- oder Download-Funktionen für Anime oder Manga.\n\n - Awery oder irgendeiner seiner Entwickler/mitarbeiter hostet keine der in Awery gefundenen Inhalte. Alle Bilder und Anime/Manga-Informationen, die in der App gefunden werden, stammen aus verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).\n\n - Darüber hinaus stammen alle Anime/Manga-Links, die in Awery gefunden werden, aus verschiedenen Drittanbieter-Plugins und haben keine Verbindung zu Awery oder seinen Mitarbeitern.\n\n - Awery oder seine Besitzer haften nicht für den Missbrauch der Inhalte, die innerhalb oder außerhalb der App gefunden werden, und können nicht für die Verbreitung der in der App gefundenen Inhalte verantwortlich gemacht werden.\n\n - Durch die Nutzung von Awery stimmen Sie der Tatsache zu, dass der Entwickler der App nicht für die in der App gefundenen Inhalte verantwortlich ist. Sie stimmen auch der Tatsache zu, dass Sie Awery nicht verwenden dürfen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.\n\n - Bei Fragen zu Urheberrechtsverletzungen wenden Sie sich bitte an die Quellwebsite. Der Entwickler übernimmt keine rechtliche Verantwortung.</string>
     <string name="video">Video</string>
     <string name="video_info_info">Zeigt die Auflösung des aktuell wiedergegebenen Videos an, nützlich für <b>„Multi Quality“</b> Server.</string>
     <string name="default_quality">Automatische Qualitätseinstellung</string>
@@ -139,8 +129,7 @@
     <string name="ask_update_progress_anime">Für jedes Medium „Einzeln“ fragen</string>
     <string name="ask_update_progress_info_ep">Wenn deaktiviert, wird der Fortschritt immer automatisch aktualisiert, wenn die Episode angesehen wird.</string>
     <string name="watch_complete_percentage">Wiedergabe-Update-Prozentsatz</string>
-    <string name="watch_complete_percentage_info">"Der Prozentsatz, bei dem Ihr Fortschritt nach dem Anschauen einer Episode aktualisiert werden soll.
-\nDies legt auch den  fest, wann Links für die nächste Episode vorgeladen werden sollen."</string>
+    <string name="watch_complete_percentage_info">"Der Prozentsatz, bei dem Ihr Fortschritt nach dem Anschauen einer Episode aktualisiert werden soll.\n\nDies legt auch den  fest, wann Links für die nächste Episode vorgeladen werden sollen."</string>
     <string name="behaviour">Verhalten</string>
     <string name="always_continue">Immer fortsetzen, wo Sie aufgehört haben</string>
     <string name="pause_video_focus">Pause bei Nicht-Fokus</string>
@@ -155,8 +144,7 @@
     <string name="show_cast_button">Cast-Button anzeigen</string>
     <string name="picture_in_picture">Bild-in-Bild</string>
     <string name="always_minimize">Immer minimieren</string>
-    <string name="always_minimize_info">Erfordert, dass PiP aktiviert ist, macht den Player wie den YouTube-Player, aber besser.
-\nBlendet auch die PiP-Schaltfläche aus.</string>
+    <string name="always_minimize_info">Erfordert, dass PiP aktiviert ist, macht den Player wie den YouTube-Player, aber besser.\nBlendet auch die PiP-Schaltfläche aus.</string>
     <string name="immersive_mode">Statusleiste ausblenden</string>
     <string name="immersive_mode_info">Erfordert einen Neustart der App, um vollständig angewendet zu werden.</string>
     <string name="startUpTab">Standard-Start-Tab</string>
@@ -216,14 +204,12 @@
     <string name="check_app_updates">Automatisch nach App-Updates suchen</string>
     <string name="author">Autor</string>
     <string name="account">Konto</string>
-    <string name="subscriptions_info">Zeitraum für Awery, um regelmäßig nach neuen Episoden/Kapiteln zu suchen
-\n(Kürzere Zeit kann mehr Batterieverbrauch verursachen)</string>
+    <string name="subscriptions_info">Zeitraum für Awery, um regelmäßig nach neuen Episoden/Kapiteln zu suchen\n(Kürzere Zeit kann mehr Batterieverbrauch verursachen)</string>
     <string name="grid">Gitter</string>
     <string name="sort_by_release_date">Nach Veröffentlichungsdatum sortieren</string>
     <string name="crop_borders">Ränder zuschneiden</string>
     <string name="error_loading_data">Fehler beim Laden der Daten %1$s</string>
-    <string name="saved_to_path">Gespeichert unter:
-\n%s</string>
+    <string name="saved_to_path">Gespeichert unter:\n%s</string>
     <string name="setting_progress">Fortschritt auf %1$d setzen</string>
     <string name="back_to_exit">Bitte zurückgehen, um zu beenden</string>
     <string name="no_internet_connection">Keine Internetverbindung</string>
