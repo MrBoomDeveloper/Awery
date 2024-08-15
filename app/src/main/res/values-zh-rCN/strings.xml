@@ -103,17 +103,7 @@
     <string name="about">关于</string>
     <string name="devs">开发者</string>
     <string name="disclaimer">免责声明</string>
-    <string name="full_disclaimer">- Awery 本身仅提供动漫和漫画追踪功能，不提供任何动漫或漫画的流媒体播放或下载功能。
-\n
-\n - Awery 或其任何开发者/工作人员不托管 Awery 内的任何内容。应用程序中的所有图片和动漫/漫画信息均来自各种公共 API（AniList、MyAnimeList、Kitsu）。
-\n
-\n - 此外，Awery 中找到的所有动漫/漫画链接均来自各种第三方插件，与 Awery 或其工作人员没有任何关联。
-\n
-\n - Awery 或其所有者对应用程序内部或外部的任何内容的误用不承担任何责任，也不对应用程序内任何内容的分发负责。
-\n
-\n - 使用 Awery 即表示您同意应用程序的开发者对应用程序中的任何内容不负责任。您还同意您不得使用 Awery 下载或流媒体播放任何受版权保护的内容。
-\n
-\n - 如果涉及互联网侵权问题，请联系源网站。开发者不承担任何法律责任。</string>
+    <string name="full_disclaimer">- Awery 本身仅提供动漫和漫画追踪功能，不提供任何动漫或漫画的流媒体播放或下载功能。\n\n - Awery 或其任何开发者/工作人员不托管 Awery 内的任何内容。应用程序中的所有图片和动漫/漫画信息均来自各种公共 API（AniList、MyAnimeList、Kitsu）。\n\n - 此外，Awery 中找到的所有动漫/漫画链接均来自各种第三方插件，与 Awery 或其工作人员没有任何关联。\n\n - Awery 或其所有者对应用程序内部或外部的任何内容的误用不承担任何责任，也不对应用程序内任何内容的分发负责。\n\n - 使用 Awery 即表示您同意应用程序的开发者对应用程序中的任何内容不负责任。您还同意您不得使用 Awery 下载或流媒体播放任何受版权保护的内容。\n\n - 如果涉及互联网侵权问题，请联系源网站。开发者不承担任何法律责任。</string>
     <string name="video">视频</string>
     <string name="video_info_info">显示当前视频的分辨率，对于 <b>“多质量”</b> 服务器非常有用。</string>
     <string name="default_quality">自动质量选择</string>
@@ -139,8 +129,7 @@
     <string name="ask_update_progress_anime">每个媒体“单独”询问</string>
     <string name="ask_update_progress_info_ep">关闭时，在观看剧集时会始终自动更新进度。</string>
     <string name="watch_complete_percentage">观看更新百分比</string>
-    <string name="watch_complete_percentage_info">观看剧集后进度应更新的百分比。
-\n这也设置了预加载下一集链接的百分比。</string>
+    <string name="watch_complete_percentage_info">观看剧集后进度应更新的百分比。\n这也设置了预加载下一集链接的百分比。</string>
     <string name="behaviour">行为</string>
     <string name="always_continue">始终从上次停止的地方继续</string>
     <string name="pause_video_focus">不在焦点时暂停</string>
@@ -155,8 +144,7 @@
     <string name="show_cast_button">显示演员按钮</string>
     <string name="picture_in_picture">画中画</string>
     <string name="always_minimize">始终最小化</string>
-    <string name="always_minimize_info">需要启用 PiP，使播放器行为类似于 YouTube 播放器但更好。
-\n还会隐藏 PiP 按钮。</string>
+    <string name="always_minimize_info">需要启用 PiP，使播放器行为类似于 YouTube 播放器但更好。\n还会隐藏 PiP 按钮。</string>
     <string name="immersive_mode">隐藏状态栏</string>
     <string name="immersive_mode_info">需要重新启动应用程序以完全应用。</string>
     <string name="startUpTab">默认启动标签</string>
@@ -216,8 +204,7 @@
     <string name="check_app_updates">自动检查应用更新</string>
     <string name="author">作者</string>
     <string name="account">账户</string>
-    <string name="subscriptions_info">Awery 定期检查新剧集/章节的时间
-\n（较短的时间会消耗更多电池）</string>
+    <string name="subscriptions_info">Awery 定期检查新剧集/章节的时间\n（较短的时间会消耗更多电池）</string>
     <string name="grid">网格</string>
     <string name="sort_by_release_date">按发布日期排序</string>
     <string name="crop_borders">裁剪边框</string>
