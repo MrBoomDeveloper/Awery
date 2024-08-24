@@ -47,13 +47,20 @@
 <h2>Contribution 🤝</h2>
 
 We would be very grateful if you could contribute to the development of this application.  Everything from simple string translation to the implementation of new features is accepted. If you have any questions, please visit our <a href="https://discord.com/invite/yepfCz4pvW">Discord</a> server or <a href="https://t.me/mrboomdev_awery">Telegram</a> group.
-
+<details>
+<summary>Weblate Translation Graph</summary>
 <a href="https://hosted.weblate.org/engage/awery"><img src="https://hosted.weblate.org/widget/awery/multi-auto.svg" alt="Translation status" /></a>
+</details>
 
 <H2>Credits 😍</h2>
-Thank you to all the people who have contributed!
+Thank you to all the people who have contributed!<br>
+<br>
 <a href="https://github.com/mrboomdeveloper/awery/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=mrboomdeveloper/awery" />
+  <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/mrboomdeveloper/awery?style=flat-square&label=Contributors%20%3A&labelColor=%230f1318&color=%230f1318" align="left">
+</a>
+<br>
+<a href="https://github.com/mrboomdeveloper/awery/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=mrboomdeveloper/awery" alt="Contributors">
 </a>
 
 ---
