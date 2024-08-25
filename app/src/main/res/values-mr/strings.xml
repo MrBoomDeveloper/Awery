@@ -98,17 +98,7 @@
     <string name="about">विषयी</string>
     <string name="devs">विकसक</string>
     <string name="disclaimer">अस्वीकृती</string>
-    <string name="full_disclaimer">- Awery फक्त एक अॅनिमे आणि मांगा ट्रॅकर प्रदान करते आणि अॅनिमे किंवा मांगा स्ट्रीमिंग किंवा डाउनलोडिंग क्षमतांचा प्रदान करत नाही.
-\n
-\n - Awery किंवा त्यातील कोणताही विकासक/स्टाफ Awery मध्ये सापडलेल्या कोणत्याही सामग्रीचा होस्ट करत नाही. अॅपमध्ये सापडलेल्या सर्व चित्रे आणि अॅनिमे/मांगा माहिती विविध सार्वजनिक API (AniList, MyAnimeList, Kitsu) कडून घेतली आहे.
-\n
-\n - याशिवाय, Awery मध्ये सापडलेल्या अॅनिमे/मांगा लिंक्स विविध 3rd पार्टी प्लगिन्सकडून घेतले जातात आणि Awery किंवा त्याच्या स्टाफसह कोणत्याही प्रकारचे संबंध नाहीत.
-\n
-\n - Awery किंवा त्याचे मालक अॅपच्या आत किंवा बाहेर सापडलेल्या सामग्रीच्या कोणत्याही दुरुपयोगासाठी जबाबदार नाहीत आणि अॅपमध्ये सापडलेल्या सामग्रीच्या वितरणासाठी जबाबदार ठरवता येत नाहीत.
-\n
-\n - Awery वापरून, आपण मान्य करता की अॅपचा विकासक अॅपमध्ये सापडलेल्या कोणत्याही सामग्रीसाठी जबाबदार नाही. आपण हेही मान्य करता की Awery वापरून आपण कोणतीही कॉपीराइट सामग्री डाउनलोड किंवा स्ट्रीम करू शकत नाही.
-\n
-\n - इंटरनेट उल्लंघनाच्या समस्यांसाठी कृपया स्रोत वेबसाइटशी संपर्क साधा. विकासक कायदेशीर जबाबदारी स्वीकारत नाही.</string>
+    <string name="full_disclaimer">- Awery फक्त एक अॅनिमे आणि मांगा ट्रॅकर प्रदान करते आणि अॅनिमे किंवा मांगा स्ट्रीमिंग किंवा डाउनलोडिंग क्षमतांचा प्रदान करत नाही.\n\n - Awery किंवा त्यातील कोणताही विकासक/स्टाफ Awery मध्ये सापडलेल्या कोणत्याही सामग्रीचा होस्ट करत नाही. अॅपमध्ये सापडलेल्या सर्व चित्रे आणि अॅनिमे/मांगा माहिती विविध सार्वजनिक API (AniList, MyAnimeList, Kitsu) कडून घेतली आहे.\n\n - याशिवाय, Awery मध्ये सापडलेल्या अॅनिमे/मांगा लिंक्स विविध 3rd पार्टी प्लगिन्सकडून घेतले जातात आणि Awery किंवा त्याच्या स्टाफसह कोणत्याही प्रकारचे संबंध नाहीत.\n\n - Awery किंवा त्याचे मालक अॅपच्या आत किंवा बाहेर सापडलेल्या सामग्रीच्या कोणत्याही दुरुपयोगासाठी जबाबदार नाहीत आणि अॅपमध्ये सापडलेल्या सामग्रीच्या वितरणासाठी जबाबदार ठरवता येत नाहीत.\n\n - Awery वापरून, आपण मान्य करता की अॅपचा विकासक अॅपमध्ये सापडलेल्या कोणत्याही सामग्रीसाठी जबाबदार नाही. आपण हेही मान्य करता की Awery वापरून आपण कोणतीही कॉपीराइट सामग्री डाउनलोड किंवा स्ट्रीम करू शकत नाही.\n\n - इंटरनेट उल्लंघनाच्या समस्यांसाठी कृपया स्रोत वेबसाइटशी संपर्क साधा. विकासक कायदेशीर जबाबदारी स्वीकारत नाही.</string>
     <string name="default_quality_info">सर्वात जवळची गुणवत्ता स्वयंचलितपणे वापरते, फक्त \"मल्टी क्वालिटी\" सर्व्हर्ससाठी लागू. व्हिडिओ प्ले करताना आपोआप बदलते.</string>
     <string name="default_playback_speed">डीफॉल्ट प्लेबॅक स्पीड : %1$s</string>
     <string name="resize_mode_button">डीफॉल्ट रीसाइज मोड</string>
@@ -127,8 +117,7 @@
     <string name="auto_skip_fillers_info">पुढील भागावर जाताना फिलर एपिसोड्स वगळते.</string>
     <string name="ask_update_progress_anime">प्रत्येक मीडिया वैयक्तिक विचारण्यासाठी</string>
     <string name="watch_complete_percentage">पाहा अद्ययावत टक्केवारी</string>
-    <string name="watch_complete_percentage_info">एपीसोड पाहिल्यावर प्रगती अद्ययावत केली जाणारी टक्केवारी.
-\nहे पुढील एपीसोडसाठी लिंक प्रीलोड करण्यासाठी % सेट करते.</string>
+    <string name="watch_complete_percentage_info">एपीसोड पाहिल्यावर प्रगती अद्ययावत केली जाणारी टक्केवारी.\nहे पुढील एपीसोडसाठी लिंक प्रीलोड करण्यासाठी % सेट करते.</string>
     <string name="behaviour">वर्तन</string>
     <string name="ask_update_progress_info_ep">आणल्यास, एपीसोड पाहिल्यावर प्रगती आपोआप अद्ययावत होईल.</string>
     <string name="always_continue">सर्व वेळ थांबलेल्या ठिकाणाहून सुरू ठेवा</string>
@@ -144,8 +133,7 @@
     <string name="show_cast_button">कास्ट बटण दर्शवा</string>
     <string name="picture_in_picture">पिक्चर इन पिक्चर</string>
     <string name="always_minimize">सर्व वेळ कमी करा</string>
-    <string name="always_minimize_info">PiP सक्षम असणे आवश्यक आहे, प्लेयरला यूट्यूब प्लेयरसारखे वागवते परंतु चांगले.
-\nPiP बटण देखील लपवते.</string>
+    <string name="always_minimize_info">PiP सक्षम असणे आवश्यक आहे, प्लेयरला यूट्यूब प्लेयरसारखे वागवते परंतु चांगले.\nPiP बटण देखील लपवते.</string>
     <string name="immersive_mode">स्टेटस बार लपवा</string>
     <string name="immersive_mode_info">पूर्णपणे लागू करण्यासाठी अॅप पुनरारंभ आवश्यक आहे.</string>
     <string name="startUpTab">डीफॉल्ट प्रारंभ तप</string>
@@ -195,14 +183,12 @@
     <string name="check_app_updates">अ‍ॅप अपडेटसाठी स्वयंचलितपणे तपासा</string>
     <string name="author">लेखक</string>
     <string name="account">खाते</string>
-    <string name="subscriptions_info">अवेरिला नवीन एपिसोड/अध्याय तपासण्यासाठी वेळ
-\n(कमी वेळ अधिक बॅटरी वापरते)</string>
+    <string name="subscriptions_info">अवेरिला नवीन एपिसोड/अध्याय तपासण्यासाठी वेळ\n(कमी वेळ अधिक बॅटरी वापरते)</string>
     <string name="grid">ग्रिड</string>
     <string name="sort_by_release_date">रिलीज डेटेनुसार क्रमित करा</string>
     <string name="crop_borders">बॉर्डर कापून टाका</string>
     <string name="error_loading_data">डेटा लोड करताना त्रुटी %1$s</string>
-    <string name="saved_to_path">साठवले आहे:
-\n%s</string>
+    <string name="saved_to_path">साठवले आहे:\n%s</string>
     <string name="setting_progress">प्रगती %1$d वर सेट करीत आहे</string>
     <string name="back_to_exit">बाहेर पडण्यासाठी कृपया पुन्हा परत जा</string>
     <string name="auto_select_server_error">सर्व्हर स्वयंचलितपणे निवडता आले नाही, कृपया पुन्हा प्रयत्न करा!</string>
@@ -217,8 +203,7 @@
     <string name="no_update_found">कोणतेही अद्यतन सापडले नाही</string>
     <string name="downloading_update">अद्यतन डाउनलोड करत आहे %1$s</string>
     <string name="permission_required">फायलींना आणि फोल्डरला प्रवेश देण्यासाठी कृपया परवानगी द्या, आणि पुन्हा प्रयत्न करा.</string>
-    <string name="started_downloading">डाउनलोड सुरू केला
-\n%1$s</string>
+    <string name="started_downloading">डाउनलोड सुरू केला\n%1$s</string>
     <string name="loading_image_failed">इमेज लोड करण्यात अयशस्वी</string>
     <string name="failed_to_load_data">साठवलेल्या डेटाची लोडिंग अयशस्वी झाली %1$d</string>
     <string name="access_not_available">प्रवेश मिळवता आले नाही</string>
