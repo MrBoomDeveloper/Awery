@@ -449,5 +449,5 @@
     <string name="auto_skip">स्वयंचलित OP &amp; ED वगळणे</string>
     <string name="copied_to_clipboard">क्लिपबोर्डवर कॉपी केले</string>
     <string name="first_episode">हे १ला एपिसोड आहे!</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
