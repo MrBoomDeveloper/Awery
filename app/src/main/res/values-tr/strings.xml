@@ -147,23 +147,12 @@
     <string name="theme">Tema</string>
     <string name="default_quality_info">Varsayılan olarak en yakın kalitede otomatik kullanır, SADECE \"Çoklu Kalite\" Sunucuları için uygulanır. Video oynatıldığında otomatik olarak değişir.</string>
     <string name="secondary_sub_outline_type_select">Altyazı Kenar Türü</string>
-    <string name="full_disclaimer">- Awery sadece bir anime ve manga takip aracı sağlar ve herhangi bir anime veya manga akışı veya indirme yeteneği sunmaz.
-\n
-\n - Awery veya herhangi bir geliştiricisi/personeli, Awery içindeki içerikleri barındırmaz. Uygulamada bulunan tüm görseller ve anime/manga bilgileri çeşitli kamu API\'lerinden (AniList, MyAnimeList, Kitsu) alınmıştır.
-\n
-\n - Ayrıca, Awery\'de bulunan tüm anime/manga bağlantıları çeşitli 3. parti eklentilerden alınmıştır ve Awery veya personeli ile hiçbir bağı yoktur.
-\n
-\n - Awery veya sahipleri, uygulama içindeki veya dışındaki içeriklerin kötüye kullanımı nedeniyle sorumlu tutulamaz ve uygulama içindeki içeriklerin dağıtımı konusunda sorumlu tutulamaz.
-\n
-\n - Awery\'i kullanarak, uygulamanın geliştiricisinin uygulamada bulunan içeriklerden sorumlu olmadığını kabul edersiniz. Ayrıca, Awery\'yi herhangi bir telif hakkıyla korunan içeriği indirmek veya yayınlamak için kullanamayacağınızı kabul edersiniz.
-\n
-\n - İnternet ihlalleri söz konusu olduğunda, lütfen kaynak web sitesiyle iletişime geçin. Geliştirici, herhangi bir yasal sorumluluk üstlenmez.</string>
+    <string name="full_disclaimer">- Awery sadece bir anime ve manga takip aracı sağlar ve herhangi bir anime veya manga akışı veya indirme yeteneği sunmaz.\n\n - Awery veya herhangi bir geliştiricisi/personeli, Awery içindeki içerikleri barındırmaz. Uygulamada bulunan tüm görseller ve anime/manga bilgileri çeşitli kamu API\'lerinden (AniList, MyAnimeList, Kitsu) alınmıştır.\n\n - Ayrıca, Awery\'de bulunan tüm anime/manga bağlantıları çeşitli 3. parti eklentilerden alınmıştır ve Awery veya personeli ile hiçbir bağı yoktur.\n\n - Awery veya sahipleri, uygulama içindeki veya dışındaki içeriklerin kötüye kullanımı nedeniyle sorumlu tutulamaz ve uygulama içindeki içeriklerin dağıtımı konusunda sorumlu tutulamaz.\n\n - Awery\'i kullanarak, uygulamanın geliştiricisinin uygulamada bulunan içeriklerden sorumlu olmadığını kabul edersiniz. Ayrıca, Awery\'yi herhangi bir telif hakkıyla korunan içeriği indirmek veya yayınlamak için kullanamayacağınızı kabul edersiniz.\n\n - İnternet ihlalleri söz konusu olduğunda, lütfen kaynak web sitesiyle iletişime geçin. Geliştirici, herhangi bir yasal sorumluluk üstlenmez.</string>
     <string name="sub_background_color_select">Altyazı Arka Plan Rengi</string>
     <string name="sub_window_color_select">Altyazı Pencere Rengi</string>
     <string name="sub_window_color_info">Altyazı penceresi, altyazıların sol ve sağındaki bölgedir. (arka planın olmadığı yer)</string>
     <string name="sub_font_select">Altyazı Fontu</string>
-    <string name="watch_complete_percentage_info">Bir bölüm izlendikten sonra ilerlemenizin güncellenmesi gereken yüzde.
-\nBu aynı zamanda bir sonraki bölümün bağlantılarını önyüklemek için yüzdeyi ayarlar.</string>
+    <string name="watch_complete_percentage_info">Bir bölüm izlendikten sonra ilerlemenizin güncellenmesi gereken yüzde.\nBu aynı zamanda bir sonraki bölümün bağlantılarını önyüklemek için yüzdeyi ayarlar.</string>
     <string name="behaviour">Davranış</string>
     <string name="always_continue">Her Zaman Kaldığınız Yerden Devam Edin</string>
     <string name="pause_video_focus">Odaklanmadığında Videoyu Durdur</string>
@@ -186,8 +175,7 @@
     <string name="show_cast_button">Yayınla Düğmesini Göster</string>
     <string name="picture_in_picture">Resim İçinde Resim</string>
     <string name="always_minimize">Her Zaman Küçült</string>
-    <string name="always_minimize_info">PiP\'in etkinleştirilmesini gerektirir, oynatıcıyı Youtube Oynatıcı gibi ancak daha iyi bir şekilde davranır.
-\nAyrıca PiP düğmesini gizler.</string>
+    <string name="always_minimize_info">PiP\'in etkinleştirilmesini gerektirir, oynatıcıyı Youtube Oynatıcı gibi ancak daha iyi bir şekilde davranır.\nAyrıca PiP düğmesini gizler.</string>
     <string name="immersive_mode">Durum Çubuğunu Gizle</string>
     <string name="immersive_mode_info">Tam olarak uygulamak için uygulamanın yeniden başlatılmasını gerektirir.</string>
     <string name="startUpTab">Varsayılan Başlangıç Sekmesi</string>
@@ -247,14 +235,12 @@
     <string name="check_app_updates">Uygulama Güncellemelerini Otomatik Kontrol Et</string>
     <string name="author">Yazar</string>
     <string name="account">Hesap</string>
-    <string name="subscriptions_info">Awery\'nin yeni Bölüm/ bölüm olup olmadığını düzenli olarak kontrol etmek için geçen süre
-\n(Daha kısa süre daha fazla pil tüketimine neden olur)</string>
+    <string name="subscriptions_info">Awery\'nin yeni Bölüm/ bölüm olup olmadığını düzenli olarak kontrol etmek için geçen süre\n(Daha kısa süre daha fazla pil tüketimine neden olur)</string>
     <string name="grid">Izgara</string>
     <string name="sort_by_release_date">Yayın Tarihine Göre Sırala</string>
     <string name="crop_borders">Kenarları Kırp</string>
     <string name="error_loading_data">Veri Yükleme Hatası %1$s</string>
-    <string name="saved_to_path">Kaydedildi:
-\n%s</string>
+    <string name="saved_to_path">Kaydedildi:\n%s</string>
     <string name="setting_progress">İlerlemeyi %1$d olarak ayarlıyor</string>
     <string name="back_to_exit">Çıkmak için lütfen tekrar geri dönün</string>
     <string name="no_internet_connection">İnternet Bağlantısı Yok</string>
@@ -274,8 +260,7 @@
     <string name="no_update_found">Güncelleme Bulunamadı</string>
     <string name="downloading_update">Güncelleme İndiriliyor %1$s</string>
     <string name="permission_required">Dosyalara ve Klasörlere erişim izni verin ve tekrar deneyin.</string>
-    <string name="started_downloading">İndirmeye Başladı
-\n%1$s</string>
+    <string name="started_downloading">İndirmeye Başladı\n%1$s</string>
     <string name="time_format">%1$d gün %2$d saat %3$d dakika %4$d saniye</string>
     <string name="main_role">Ana</string>
     <string name="supporting_role">Yan Rol</string>
