@@ -449,5 +449,5 @@
     <string name="extension_crashed">Η επέκταση κατέρρευσε!</string>
     <string name="account_required">Απαιτείται λογαριασμός</string>
     <string name="connection_failed">Η σύνδεση απέτυχε</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
