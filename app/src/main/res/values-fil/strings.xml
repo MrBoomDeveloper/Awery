@@ -158,17 +158,7 @@
     <string name="common">Pangkalahatan</string>
     <string name="theme">Tema</string>
     <string name="about">Tungkol</string>
-    <string name="full_disclaimer">- Ang Awery ay naglalaan lamang ng anime at manga tracker at hindi nagbibigay ng anumang kakayahan sa pag-stream o pag-download ng anime o manga.
-\n
-\n - Ang Awery o alinman sa mga developer/staff nito ay hindi nagho-host ng anumang nilalaman na matatagpuan sa loob ng Awery. Ang lahat ng mga larawan at impormasyon ng anime/manga na matatagpuan sa app ay kinuha mula sa iba\'t ibang pampublikong API (AniList, MyAnimeList, Kitsu).
-\n
-\n - Bukod dito, ang lahat ng mga link ng anime/manga na matatagpuan sa Awery ay kinuha mula sa iba\'t ibang 3rd party plugins at walang kaugnayan sa Awery o sa mga staff nito.
-\n
-\n - Ang Awery o ang mga may-ari nito ay hindi mananagot para sa anumang maling paggamit ng anumang nilalaman na matatagpuan sa loob o labas ng app at hindi maaaring panagutin para sa pamamahagi ng anumang nilalaman na matatagpuan sa loob ng app.
-\n
-\n - Sa paggamit ng Awery, sumasang-ayon ka na ang developer ng app ay hindi responsable para sa anumang nilalaman na matatagpuan sa app. Sumasang-ayon ka rin na hindi mo magagamit ang Awery upang mag-download o mag-stream ng anumang copyrighted na nilalaman.
-\n
-\n - Kung may mga isyu sa paglabag sa internet, mangyaring makipag-ugnayan sa pinagmulan ng website. Ang developer ay hindi tumatanggap ng anumang legal na pananabik.</string>
+    <string name="full_disclaimer">- Ang Awery ay naglalaan lamang ng anime at manga tracker at hindi nagbibigay ng anumang kakayahan sa pag-stream o pag-download ng anime o manga.\n\n - Ang Awery o alinman sa mga developer/staff nito ay hindi nagho-host ng anumang nilalaman na matatagpuan sa loob ng Awery. Ang lahat ng mga larawan at impormasyon ng anime/manga na matatagpuan sa app ay kinuha mula sa iba\'t ibang pampublikong API (AniList, MyAnimeList, Kitsu).\n\n - Bukod dito, ang lahat ng mga link ng anime/manga na matatagpuan sa Awery ay kinuha mula sa iba\'t ibang 3rd party plugins at walang kaugnayan sa Awery o sa mga staff nito.\n\n - Ang Awery o ang mga may-ari nito ay hindi mananagot para sa anumang maling paggamit ng anumang nilalaman na matatagpuan sa loob o labas ng app at hindi maaaring panagutin para sa pamamahagi ng anumang nilalaman na matatagpuan sa loob ng app.\n\n - Sa paggamit ng Awery, sumasang-ayon ka na ang developer ng app ay hindi responsable para sa anumang nilalaman na matatagpuan sa app. Sumasang-ayon ka rin na hindi mo magagamit ang Awery upang mag-download o mag-stream ng anumang copyrighted na nilalaman.\n\n - Kung may mga isyu sa paglabag sa internet, mangyaring makipag-ugnayan sa pinagmulan ng website. Ang developer ay hindi tumatanggap ng anumang legal na pananabik.</string>
     <string name="default_playback_speed">Default Playback Speed : %1$s</string>
     <string name="resize_mode_button">Default Resize Mode</string>
     <string name="sub_window_color_select">Kulay ng Bintana ng Subtitle</string>
@@ -179,8 +169,7 @@
     <string name="auto_play_next_episode">Awtomatikong I-play ang Susunod na Episode</string>
     <string name="auto_skip_fillers">Awtomatikong Laktawan ang Fillers</string>
     <string name="auto_skip_fillers_info">Laktawan ang mga filler episodes kapag pupunta sa susunod na episode.</string>
-    <string name="watch_complete_percentage_info">"Ang porsyento kung saan dapat i-update ang iyong pag-usad pagkatapos manood ng episode.
-\nIse-set din nito ang  para sa pag-preload ng mga link para sa susunod na episode."</string>
+    <string name="watch_complete_percentage_info">"Ang porsyento kung saan dapat i-update ang iyong pag-usad pagkatapos manood ng episode.\n\nIse-set din nito ang  para sa pag-preload ng mga link para sa susunod na episode."</string>
     <string name="always_continue">Palaging Magpatuloy mula sa lugar na iniwan mo</string>
     <string name="pause_video_focus">I-pause kapag wala sa Focus</string>
     <string name="gestures">Mga Gestures ng Volume &amp; Brightness</string>
@@ -194,8 +183,7 @@
     <string name="show_cast_button">Ipakita ang Cast Button</string>
     <string name="picture_in_picture">Picture in Picture</string>
     <string name="always_minimize">Palaging Minimize</string>
-    <string name="always_minimize_info">Kinakailangan ang PiP na maging enabled, ginagawang parang Youtube Player ang player ngunit mas mahusay.
-\nNagtatago rin ng PiP button.</string>
+    <string name="always_minimize_info">Kinakailangan ang PiP na maging enabled, ginagawang parang Youtube Player ang player ngunit mas mahusay.\nNagtatago rin ng PiP button.</string>
     <string name="immersive_mode">Itago ang Status Bar</string>
     <string name="immersive_mode_info">Kinakailangan ang pag-restart ng App upang lubos na mailapat.</string>
     <string name="startUpTab">Default Start Up Tab</string>
@@ -248,13 +236,11 @@
     <string name="author">May-akda</string>
     <string name="account">Account</string>
     <string name="grid">Grid</string>
-    <string name="subscriptions_info">Oras para sa Awery na pana-panahong tingnan ang mga bagong Episode/Chapter
-\n(Mas maikli ang oras ay magdudulot ng mas maraming pagkonsumo ng baterya)</string>
+    <string name="subscriptions_info">Oras para sa Awery na pana-panahong tingnan ang mga bagong Episode/Chapter\n(Mas maikli ang oras ay magdudulot ng mas maraming pagkonsumo ng baterya)</string>
     <string name="sort_by_release_date">Ayusin ayon sa Petsa ng Paglabas</string>
     <string name="crop_borders">I-crop ang mga Hangganan</string>
     <string name="error_loading_data">Error sa paglo-load ng data %1$s</string>
-    <string name="saved_to_path">Nai-save sa:
-\n%s</string>
+    <string name="saved_to_path">Nai-save sa:\n%s</string>
     <string name="setting_progress">Itinatakda ang progreso sa %1$d</string>
     <string name="no_internet_connection">Walang Koneksyon sa Internet</string>
     <string name="back_to_exit">Pakisubukan ulit ang pagbalik upang Lumabas</string>
@@ -272,8 +258,7 @@
     <string name="dont_show_again">Huwag ipakita muli para sa bersyon %1$s</string>
     <string name="downloading_update">Nagi-download ng Update %1$s</string>
     <string name="permission_required">Pakibigay ang permiso upang ma-access ang Mga File &amp; Folder mula sa Mga Setting, at Subukan muli.</string>
-    <string name="started_downloading">Nagsimula ng Pag-download
-\n%1$s</string>
+    <string name="started_downloading">Nagsimula ng Pag-download\n%1$s</string>
     <string name="loading_image_failed">Pag-load ng Imahe Nabigo</string>
     <string name="failed_to_load_data">Nabigo sa paglo-load ng nai-save na data ng %1$d</string>
     <string name="access_not_available">Hindi makuha ang access</string>
