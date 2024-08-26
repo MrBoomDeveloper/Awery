@@ -8,7 +8,6 @@ jobs:
   greeting:
     runs-on: ubuntu-latest
     permissions:
-      issues: write
       pull-requests: write
     steps:
     - name: Check if the PR creator is the repo owner
@@ -26,10 +25,11 @@ jobs:
 
     - name: Send Greeting Message
       if: env.skip != 'true'
-      uses: actions/first-interaction@v1
+      uses: actions/github-script@v6
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        pr-message: |
+        script: |
+          const prNumber = context.payload.pull_request.number;
+          const message = `
           **🎉 Thank you for your contribution!**  
           Your Pull Request has been successfully submitted and is now awaiting review. We truly appreciate your efforts to improve Awery.
 
@@ -39,8 +39,15 @@ jobs:
           - **[Telegram](https://t.me/mrboomdev_awery)**: Connect directly with us for real-time discussions and updates.
 
           **📋 What to Expect Next**  
-          - Your Pull Request will be reviewed by our team as soon as possible.  
+          - Our team will review your pull request as soon as possible.  
           - You'll receive notifications if further information or changes are needed.  
           - Once approved, your changes will be merged into the main project.
 
           We’re excited to collaborate with you. Stay tuned for updates!
+          `;
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            body: message
+          });
