@@ -15,11 +15,28 @@ jobs:
       run: |
         LABELS=$(jq -r '.issue.labels[].name' "$GITHUB_EVENT_PATH")
         if echo "$LABELS" | grep -q 'Bug'; then
-          echo "This issue is labeled as a bug report. Sending greeting message."
-          echo "skip=false" >> $GITHUB_ENV
+          echo "This issue is labeled as a bug report. Checking if the issue creator is the repository owner."
+          echo "skip_label_check=false" >> $GITHUB_ENV
         else
           echo "This issue is not labeled as a bug report. Skipping greeting message."
+          echo "skip_label_check=true" >> $GITHUB_ENV
+        fi
+
+    - name: Check if the issue creator is the repo owner
+      id: check_owner
+      run: |
+        if [ "$skip_label_check" = "true" ]; then
+          echo "Skipping owner check due to label."
+          exit 0
+        fi
+        ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
+        REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
+        if [ "$ISSUE_AUTHOR" = "$REPO_OWNER" ]; then
+          echo "The issue creator is the repository owner. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
+        else
+          echo "The issue creator is not the repository owner. Sending greeting message."
+          echo "skip=false" >> $GITHUB_ENV
         fi
 
     - name: Send Greeting Message
