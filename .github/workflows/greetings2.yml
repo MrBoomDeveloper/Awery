@@ -45,10 +45,9 @@ jobs:
 
           We’re excited to collaborate with you. Stay tuned for updates!
           `;
-          github.pulls.createReview({
+          await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number: prNumber,
-            body: message,
-            event: 'COMMENT'
+            issue_number: prNumber,
+            body: message
           });
