@@ -1,0 +1,51 @@
+name: Bug Report Greeting
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+    - name: Check if the issue is labeled as a Bug Report
+      id: check_bug_label
+      run: |
+        LABELS=$(jq -r '.issue.labels[].name' "$GITHUB_EVENT_PATH")
+        if echo "$LABELS" | grep -q 'Bug'; then
+          echo "This issue is labeled as a bug report. Sending greeting message."
+          echo "skip=false" >> $GITHUB_ENV
+        else
+          echo "This issue is not labeled as a bug report. Skipping greeting message."
+          echo "skip=true" >> $GITHUB_ENV
+        fi
+
+    - name: Send Greeting Message
+      if: env.skip != 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issueNumber = context.payload.issue.number;
+          const message = `
+          **🛠️ Thank you for reporting a bug!**  
+          Your issue has been successfully submitted and is now awaiting review. We appreciate your help in making Awery better.
+
+          **🔍 What Happens Next**  
+          - Our team will investigate the issue and provide updates as soon as possible.  
+          - You may be asked for additional details or clarification if needed.  
+          - Once resolved, we’ll notify you of the fix or provide a workaround.
+
+          **👥 Connect with Us**  
+          - **[Discord](https://discord.com/invite/yspVzD4Kbm)**: Engage with our community and ask questions.  
+          - **[Telegram](https://t.me/mrboomdev_awery)**: Reach out for real-time discussions and updates.
+
+          We’re working hard to resolve the issue and appreciate your patience!
+          `;
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issueNumber,
+            body: message
+          });
