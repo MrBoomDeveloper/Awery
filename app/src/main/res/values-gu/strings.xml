@@ -139,17 +139,7 @@
     <string name="ui">વપરાશકર્તા ઇન્ટરફેસ</string>
     <string name="common">સામાન્ય</string>
     <string name="theme">થેમ</string>
-    <string name="full_disclaimer">- Awery માત્ર એનીમ અને મંગા ટ્રેકર પ્રદાન કરે છે અને કોઈ પણ એનીમ અથવા મંગા સ્ટ્રીમિંગ અથવા ડાઉનલોડિંગ ક્ષમતા પ્રદાન કરતી નથી.
-\n
-\n - Awery અથવા તેના કોઈ પણ વિકાસકર્તા/કર્મચારી Awery માં મળી આવેલા કોઈ પણ સામગ્રીની હોસ્ટિંગ નથી કરે. એપ્લિકેશનમાં મળી આવેલ કોઈ પણ છબી અને એનીમ/મંગા માહિતી વિવિધ જાહેર APIs (AniList, MyAnimeList, Kitsu)માંથી લેવામાં આવી છે.
-\n
-\n - તે ઉપરાંત, Awery માં મળી આવેલ તમામ એનીમ/મંગા લિંક્સ વિવિધ ત્રીજા પક્ષના પ્લગઇન્સમાંથી લેવામાં આવ્યા છે અને Awery અથવા તેના કર્મચારી સાથે કોઈ પણ સંબંધીતા નથી.
-\n
-\n - Awery અથવા તેના માલિકો એપ્લિકેશનની અંદર અથવા બહાર મળી આવેલી સામગ્રીના કોઈ પણ દુવિધારણ માટે જવાબદાર નથી અને એપ્લિકેશનની અંદર મળી આવેલી સામગ્રીના વિતરણ માટે જવાબદાર નહીં હોય.
-\n
-\n - Awery નો ઉપયોગ કરીને, તમે સ્વીકારો છો કે એપ્લિકેશનના વિકાસકર્તા એપ્લિકેશનમાં મળી આવેલી સામગ્રી માટે જવાબદાર નથી. તમે આ પણ સ્વીકારતા છો કે તમે Awery નો ઉપયોગ કરીને કોઈ પણ કૉપિરાઇટેડ સામગ્રીને ડાઉનલોડ અથવા સ્ટ્રીમ નથી કરી શકો.
-\n
-\n - જો ઇન્ટરનેટ ઉલ્લંઘન સમસ્યાઓ સામેલ છે, તો કૃપા કરીને સ્ત્રોત વેબસાઇટનો સંપર્ક કરો. વિકાસકર્તા કાયદાકીય જવાબદારી સ્વીકારે છે.</string>
+    <string name="full_disclaimer">- Awery માત્ર એનીમ અને મંગા ટ્રેકર પ્રદાન કરે છે અને કોઈ પણ એનીમ અથવા મંગા સ્ટ્રીમિંગ અથવા ડાઉનલોડિંગ ક્ષમતા પ્રદાન કરતી નથી.\n\n - Awery અથવા તેના કોઈ પણ વિકાસકર્તા/કર્મચારી Awery માં મળી આવેલા કોઈ પણ સામગ્રીની હોસ્ટિંગ નથી કરે. એપ્લિકેશનમાં મળી આવેલ કોઈ પણ છબી અને એનીમ/મંગા માહિતી વિવિધ જાહેર APIs (AniList, MyAnimeList, Kitsu)માંથી લેવામાં આવી છે.\n\n - તે ઉપરાંત, Awery માં મળી આવેલ તમામ એનીમ/મંગા લિંક્સ વિવિધ ત્રીજા પક્ષના પ્લગઇન્સમાંથી લેવામાં આવ્યા છે અને Awery અથવા તેના કર્મચારી સાથે કોઈ પણ સંબંધીતા નથી.\n\n - Awery અથવા તેના માલિકો એપ્લિકેશનની અંદર અથવા બહાર મળી આવેલી સામગ્રીના કોઈ પણ દુવિધારણ માટે જવાબદાર નથી અને એપ્લિકેશનની અંદર મળી આવેલી સામગ્રીના વિતરણ માટે જવાબદાર નહીં હોય.\n\n - Awery નો ઉપયોગ કરીને, તમે સ્વીકારો છો કે એપ્લિકેશનના વિકાસકર્તા એપ્લિકેશનમાં મળી આવેલી સામગ્રી માટે જવાબદાર નથી. તમે આ પણ સ્વીકારતા છો કે તમે Awery નો ઉપયોગ કરીને કોઈ પણ કૉપિરાઇટેડ સામગ્રીને ડાઉનલોડ અથવા સ્ટ્રીમ નથી કરી શકો.\n\n - જો ઇન્ટરનેટ ઉલ્લંઘન સમસ્યાઓ સામેલ છે, તો કૃપા કરીને સ્ત્રોત વેબસાઇટનો સંપર્ક કરો. વિકાસકર્તા કાયદાકીય જવાબદારી સ્વીકારે છે.</string>
     <string name="video_info_info">વર્તમાન વિડિયોની રીઝોલ્યુશન બતાવે છે, <b>\"મલ્ટી ક્વોલિટી\"</b> સર્વરો માટે ઉપયોગી.</string>
     <string name="default_quality">આટો ક્વોલિટી પસંદગી</string>
     <string name="height">ઉંચાઈ</string>
@@ -162,8 +152,7 @@
     <string name="ask_update_progress_anime">પ્રત્યેક મીડિયા માટે \"વ્યક્તિગત\" માંગો</string>
     <string name="ask_update_progress_info_ep">બંદ કરવાથી એપિસોડ જોતી વખતે સ્વચાલિત રીતે પ્રગતિ સુધારાશે.</string>
     <string name="watch_complete_percentage">વાંચવું પૂર્ણ ટકાવારી</string>
-    <string name="watch_complete_percentage_info">એપિસોડ જોવા પછી તમારી પ્રગતિ ક્યારે સુધારવી તે ટકાવારી.
-\nઆ પણ એ સેટ કરે છે જ્યારે આગળની એપિસોડ માટે લિંક્સ પૂર્વલોડ કરવી છે.</string>
+    <string name="watch_complete_percentage_info">એપિસોડ જોવા પછી તમારી પ્રગતિ ક્યારે સુધારવી તે ટકાવારી.\nઆ પણ એ સેટ કરે છે જ્યારે આગળની એપિસોડ માટે લિંક્સ પૂર્વલોડ કરવી છે.</string>
     <string name="secondary_sub_color_select">ઉપશીર્ષક આઉટલાઇન રંગ</string>
     <string name="secondary_sub_outline_type_select">ઉપશીર્ષક આઉટલાઇન પ્રકાર</string>
     <string name="sub_background_color_select">ઉપશીર્ષક પૃષ્ઠભૂમિ રંગ</string>
@@ -198,8 +187,7 @@
     <string name="next">આગલું</string>
     <string name="previous">પાછળ</string>
     <string name="current_page">વર્તમાન પૃષ્ઠ</string>
-    <string name="always_minimize_info">PiP સક્રિય કરવું જરૂરી છે, પ્લેયરને YouTube પ્લેયરની જેમ બનાવે છે પરંતુ ઉત્તમ.
-\nપિઝિપ બટનને પણ છુપાવે છે.</string>
+    <string name="always_minimize_info">PiP સક્રિય કરવું જરૂરી છે, પ્લેયરને YouTube પ્લેયરની જેમ બનાવે છે પરંતુ ઉત્તમ.\nપિઝિપ બટનને પણ છુપાવે છે.</string>
     <string name="dubbed">ડબડ</string>
     <string name="subbed">સબડ</string>
     <string name="prefer_dub">ડબડ એનીમ પસંદ કરો</string>
@@ -251,14 +239,12 @@
     <string name="check_app_updates">એપ અપડેટ્સ માટે આપોઆપ તપાસો</string>
     <string name="author">લેખક</string>
     <string name="account">ખાતા</string>
-    <string name="subscriptions_info">એવરીને નવા એપિસોડ્સ/અધ્યાયોની નિયમિત તપાસ માટે સમયની જોગવાઇ
-\n(ઘણું સમય બેટરીના વધારે ઉપયોગનો કારણ બને છે)</string>
+    <string name="subscriptions_info">એવરીને નવા એપિસોડ્સ/અધ્યાયોની નિયમિત તપાસ માટે સમયની જોગવાઇ\n(ઘણું સમય બેટરીના વધારે ઉપયોગનો કારણ બને છે)</string>
     <string name="grid">ગ્રિડ</string>
     <string name="sort_by_release_date">રિલીઝ તારીખ દ્વારા સોર્ટ કરો</string>
     <string name="crop_borders">બોર્ડર્સ ક્રોપ કરો</string>
     <string name="error_loading_data">ડેટા લોડ કરતી વખતે ભૂલ %1$s</string>
-    <string name="saved_to_path">સાચવાયેલ છે:
-\n%s</string>
+    <string name="saved_to_path">સાચવાયેલ છે:\n%s</string>
     <string name="setting_progress">પ્રગતિને %1$d પર સેટ કરી રહ્યું છે</string>
     <string name="back_to_exit">કૃપા કરીને બહાર નીકળવા માટે ફરીથી પાછું કરો</string>
     <string name="no_internet_connection">ઇન્ટરનેટ કનેક્શન નથી</string>
@@ -280,8 +266,7 @@
     <string name="no_update_found">કોઈ અપડેટ મળ્યો નથી</string>
     <string name="downloading_update">અપડેટ ડાઉનલોડ થઈ રહ્યું છે %1$s</string>
     <string name="permission_required">ફાઇલો અને ફોલ્ડરો સુધી પહોંચ માટે પરવાનગી આપો, અને ફરી પ્રયાસ કરો.</string>
-    <string name="started_downloading">ડાઉનલોડ શરૂ કર્યું
-\n%1$s</string>
+    <string name="started_downloading">ડાઉનલોડ શરૂ કર્યું\n%1$s</string>
     <string name="loading_image_failed">છબી લોડ કરવામાં નિષ્ફળ</string>
     <string name="failed_to_load_data">સંચિત ડેટા લોડ કરવામાં નિષ્ફળ %1$d</string>
     <string name="access_not_available">પ્રાપ્તિ મેળવવામાં નિષ્ફળ</string>
