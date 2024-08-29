@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="empty_library_title">Library is empty</string>
-    <string name="empty_library_message">Start browsing the catalog and new things will appear here!</string>
-    <string name="login">Login</string>
-    <string name="logout">Logout</string>
-    <string name="english">English</string>
-    <string name="russian">Russian</string>
+    <string name="empty_library_title"></string>
+    <string name="empty_library_message"></string>
+    <string name="login"></string>
+    <string name="logout"></string>
+    <string name="english"></string>
+    <string name="russian"></string>
     <string name="japanese">Japanese</string>
-    <string name="chinese">Chinese</string>
+    <string name="chinese"></string>
     <string name="korean">Korean</string>
-    <string name="us">USA</string>
+    <string name="us"></string>
     <string name="russia">Russia</string>
     <string name="japan">Japan</string>
     <string name="china">China</string>
