@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="empty_library_title"/>
-    <string name="empty_library_message"/>
+    <string name="empty_library_title">Library is empty</string>
+    <string name="empty_library_message">Start browsing the catalog and new things will appear here!</string>
     <string name="login">Login</string>
-    <string name="logout"/>
+    <string name="logout">Logout</string>
     <string name="english">English</string>
     <string name="russian">Russian</string>
     <string name="japanese">Japanese</string>
