@@ -249,7 +249,7 @@
     <string name="failed_to_load_data">সংৰক্ষিত ডেটা ল\'ড কৰাত ব্যৰ্থ %1$d</string>
     <string name="access_not_available">প্ৰৱেশ লাভ কৰিব পৰা নগল</string>
     <string name="episode_release_countdown">এপিসোড %1$d মুক্তি পাব</string>
-    <string name="time_format">%1$d দিন %2$d ঘণ্টা %3%d মিনিট %4$d ছেকেণ্ড</string>
+    <string name="time_format">%1$d দিন %2$d ঘণ্টা %3$d মিনিট %4$d ছেকেণ্ড</string>
     <string name="main_role">মুখ্য</string>
     <string name="supporting_role">সহায়ক</string>
     <string name="status_finished">সমাপ্ত</string>
