@@ -23,12 +23,9 @@ jobs:
         fi
 
     - name: Check if the issue creator is the repo owner
+      if: env.skip_label_check == 'false'
       id: check_owner
       run: |
-        if [ "$skip_label_check" = "true" ]; then
-          echo "Skipping owner check due to label."
-          exit 0
-        fi
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
         if [ "$ISSUE_AUTHOR" = "$REPO_OWNER" ]; then
@@ -40,7 +37,7 @@ jobs:
         fi
 
     - name: Send Greeting Message
-      if: env.skip != 'true'
+      if: env.skip_label_check == 'false' && env.skip != 'true'
       uses: actions/github-script@v6
       with:
         script: |
