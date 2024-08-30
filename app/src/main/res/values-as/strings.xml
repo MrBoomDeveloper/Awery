@@ -2,14 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="as">
     <string name="empty_library_title">লাইব্ৰেৰী খালি</string>
     <string name="empty_library_message">কেটালগত পোহৰ কৰা আৰম্ভ কৰক আৰু নতুন বস্তুবোৰ ইয়াত প্ৰদৰ্শিত হ\'ব!</string>
-    <string name="login"/>
-    <string name="logout"/>
-    <string name="english"/>
-    <string name="russian"/>
+    <string name="login">লগিন</string>
+    <string name="logout">লগআউট</string>
+    <string name="english">ইংৰাজী</string>
+    <string name="russian">ৰাছিয়ান</string>
     <string name="japanese">জাপানী</string>
-    <string name="chinese"/>
+    <string name="chinese">চীন</string>
     <string name="korean">কোৰিয়ান</string>
-    <string name="us"/>
+    <string name="us">আমেৰিকা</string>
     <string name="russia">ৰাছিয়া</string>
     <string name="japan">জাপান</string>
     <string name="china">চীন</string>
