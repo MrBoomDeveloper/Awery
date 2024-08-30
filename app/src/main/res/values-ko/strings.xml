@@ -325,7 +325,7 @@
     <string name="comments">댓글</string>
     <string name="variant">변형</string>
     <string name="select_quality">품질 선택</string>
-    <string name="use_material_you">Material You</string>
+    <string name="use_material_you">당신이 소재</string>
     <string name="oled_theme_variant">OLED 테마 변형</string>
     <string name="custom_theme">사용자 정의 테마</string>
     <string name="use_unique_theme_for_each_item">미디어 포스터와 동일한 색상</string>
