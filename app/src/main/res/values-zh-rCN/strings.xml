@@ -268,7 +268,7 @@
     <string name="read_on_dantotsu">在 Awery 阅读</string>
     <string name="watch_on_dantotsu">在 Awery 观看</string>
     <string name="continue_episode">"“继续：第” "</string>
-    <string name="continue_chapter">“继续：”</string>
+    <string name="continue_chapter">"“继续：” "</string>
     <string name="episode">剧集</string>
     <string name="episodes">剧集</string>
     <string name="duration">时长</string>
@@ -324,7 +324,7 @@
     <string name="comments">评论</string>
     <string name="variant">变体</string>
     <string name="select_quality">选择质量</string>
-    <string name="use_material_you">Material You</string>
+    <string name="use_material_you">材料你</string>
     <string name="oled_theme_variant">OLED 主题变体</string>
     <string name="custom_theme">自定义主题</string>
     <string name="use_unique_theme_for_each_item">颜色与媒体海报相同</string>
