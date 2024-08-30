@@ -449,5 +449,5 @@
     <string name="dalayed">বিলম্বিত</string>
     <string name="fill">ফিল</string>
     <string name="read_now">এতিয়া পঢ়ক</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
