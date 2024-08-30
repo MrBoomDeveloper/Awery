@@ -23,14 +23,12 @@
     <string name="check_app_updates">Automatikus Ellenőrzés Alkalmazás Frissítésekért</string>
     <string name="author">Szerző</string>
     <string name="account">Fiók</string>
-    <string name="subscriptions_info">Az idő, amit az Awery az új Epizódok/Kapitolumok rendszeres ellenőrzésére szán
-\n(Kisebb idő több akkumulátorhasználatot okozhat)</string>
+    <string name="subscriptions_info">Az idő, amit az Awery az új Epizódok/Kapitolumok rendszeres ellenőrzésére szán\n(Kisebb idő több akkumulátorhasználatot okozhat)</string>
     <string name="grid">Rács</string>
     <string name="sort_by_release_date">Kibocsátási Dátum Szerinti Rendezés</string>
     <string name="crop_borders">Szélek Levágása</string>
     <string name="error_loading_data">Hiba az adatok betöltésekor %1$s</string>
-    <string name="saved_to_path">Mentve ide:
-\n%s</string>
+    <string name="saved_to_path">Mentve ide:\n%s</string>
     <string name="setting_progress">Haladás beállítása %1$d-ra</string>
     <string name="red">Piros</string>
     <string name="read_less">Kevesebb olvasás</string>
@@ -158,17 +156,7 @@
     <string name="disclaimer">Jogi nyilatkozat</string>
     <string name="about">Névjegy</string>
     <string name="devs">Fejlesztők</string>
-    <string name="full_disclaimer">- Az Awery önállóan csak egy anime és manga nyomkövetőt biztosít, és nem nyújt anime vagy manga streaming vagy letöltési lehetőségeket.
-\n
-\n - Az Awery vagy annak fejlesztői/stábja nem tárol semmilyen tartalmat az Aweryn belül. Az alkalmazásban található képek és anime/manga információk különböző nyilvános API-kból (AniList, MyAnimeList, Kitsu) származnak.
-\n
-\n - Továbbá, az Awery-ben található minden anime/manga link különböző harmadik fél bővítményekből származik, és nincs kapcsolatban az Awery-vel vagy annak stábjával.
-\n
-\n - Az Awery vagy annak tulajdonosai nem vállalnak felelősséget az alkalmazáson belüli vagy azon kívüli tartalmak bármilyen visszaéléséért, és nem vonhatók felelősségre az alkalmazáson belüli tartalmak terjesztéséért.
-\n
-\n - Az Awery használatával elfogadod, hogy az alkalmazás fejlesztője nem felelős az alkalmazásban található tartalmakért. Azt is elfogadod, hogy az Awery-t nem használhatod szerzői joggal védett tartalom letöltésére vagy streamingelésére.
-\n
-\n - Ha internetes jogsértési problémák merülnek fel, kérjük, lépj kapcsolatba a forráshonlappal. A fejlesztő nem vállal jogi felelősséget.</string>
+    <string name="full_disclaimer">- Az Awery önállóan csak egy anime és manga nyomkövetőt biztosít, és nem nyújt anime vagy manga streaming vagy letöltési lehetőségeket.\n\n - Az Awery vagy annak fejlesztői/stábja nem tárol semmilyen tartalmat az Aweryn belül. Az alkalmazásban található képek és anime/manga információk különböző nyilvános API-kból (AniList, MyAnimeList, Kitsu) származnak.\n\n - Továbbá, az Awery-ben található minden anime/manga link különböző harmadik fél bővítményekből származik, és nincs kapcsolatban az Awery-vel vagy annak stábjával.\n\n - Az Awery vagy annak tulajdonosai nem vállalnak felelősséget az alkalmazáson belüli vagy azon kívüli tartalmak bármilyen visszaéléséért, és nem vonhatók felelősségre az alkalmazáson belüli tartalmak terjesztéséért.\n\n - Az Awery használatával elfogadod, hogy az alkalmazás fejlesztője nem felelős az alkalmazásban található tartalmakért. Azt is elfogadod, hogy az Awery-t nem használhatod szerzői joggal védett tartalom letöltésére vagy streamingelésére.\n\n - Ha internetes jogsértési problémák merülnek fel, kérjük, lépj kapcsolatba a forráshonlappal. A fejlesztő nem vállal jogi felelősséget.</string>
     <string name="video">Videó</string>
     <string name="video_info_info">Megmutatja a jelenleg lejátszott videó felbontását, hasznos a <b>Több Minőség</b> szerverekhez.</string>
     <string name="default_quality">Automatikus Minőség Kiválasztás</string>
@@ -194,8 +182,7 @@
     <string name="ask_update_progress_anime">Kérdezd meg minden Média \"Egyesével\"</string>
     <string name="ask_update_progress_info_ep">A kikapcsolás esetén mindig automatikusan frissíti a haladást, amikor az epizódot megnézted.</string>
     <string name="watch_complete_percentage">Nézési Frissítés Százalék</string>
-    <string name="watch_complete_percentage_info">"A százalék, aminél a haladás frissül az epizód megtekintése után.
-\nEz beállítja a  -ot, amikor az előző linkeket előtölti a következő epizódhoz."</string>
+    <string name="watch_complete_percentage_info">"A százalék, aminél a haladás frissül az epizód megtekintése után.\n\nEz beállítja a  -ot, amikor az előző linkeket előtölti a következő epizódhoz."</string>
     <string name="behaviour">Viselkedés</string>
     <string name="always_continue">Mindig folytatja az előző helyről</string>
     <string name="seek_time">Keresési Idő</string>
@@ -205,8 +192,7 @@
     <string name="show_cast_button">Szereplőgárda Gomb Megjelenítése</string>
     <string name="picture_in_picture">Kép a Képben</string>
     <string name="always_minimize">Mindig Minimalizálás</string>
-    <string name="always_minimize_info">PiP engedélyezése szükséges, az lejátszó úgy viselkedik, mint a Youtube lejátszó, de jobb.
-\nA PiP gombot is elrejti.</string>
+    <string name="always_minimize_info">PiP engedélyezése szükséges, az lejátszó úgy viselkedik, mint a Youtube lejátszó, de jobb.\nA PiP gombot is elrejti.</string>
     <string name="immersive_mode">Állapotsor Elrejtése</string>
     <string name="immersive_mode_info">Az alkalmazás újraindítása szükséges a teljes alkalmazáshoz.</string>
     <string name="startUpTab">Alapértelmezett Indító Lap</string>
@@ -276,8 +262,7 @@
     <string name="no_update_found">Nincs Frissítés</string>
     <string name="downloading_update">Frissítés Letöltése %1$s</string>
     <string name="permission_required">Kérlek, adj engedélyt a Fájlok és Mappák elérésére a Beállításokban, és próbáld újra.</string>
-    <string name="started_downloading">Letöltés Elindítva
-\n%1$s</string>
+    <string name="started_downloading">Letöltés Elindítva\n%1$s</string>
     <string name="loading_image_failed">Kép Betöltése Sikertelen</string>
     <string name="failed_to_load_data">Nem sikerült betölteni a %1$d mentett adatokat</string>
     <string name="access_not_available">Nem sikerült hozzáférést kapni</string>
