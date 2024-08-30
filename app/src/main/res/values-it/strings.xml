@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="logout">Esci</string>
+    <string name="logout">Disconnetiti</string>
     <string name="russian">Russo</string>
     <string name="japanese">Giapponese</string>
     <string name="chinese">Cinese</string>
@@ -15,8 +15,8 @@
     <string name="material_you_description">I colori dell\'app saranno generati in base alla tua sfondo</string>
     <string name="default_tab_description">Sarà aperto all\'avvio dell\'app</string>
     <string name="read">Leggi</string>
-    <string name="empty_library_title">La biblioteca è vuota</string>
-    <string name="empty_library_message">Inizia a sfogliare il catalogo e nuove cose appariranno qui!</string>
+    <string name="empty_library_title">La libreria è vuota</string>
+    <string name="empty_library_message">Inizia a sfogliare il catalogo e le novità appariranno qui!</string>
     <string name="japan">Giappone</string>
     <string name="china">Cina</string>
     <string name="korea">Corea</string>
