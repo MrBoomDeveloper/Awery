@@ -23,13 +23,13 @@ body:
           "The dark mode should automatically activate based on system settings..."
       value: |
         ### Current Behavior
-        - [ ] Describe the current functionality or lack thereof.
+        - Describe the current functionality or lack thereof.
         
         ### Proposed Solution
-        - [ ] Detail how the feature should work and any potential benefits.
+        - Detail how the feature should work and any potential benefits.
         
         ### Considerations
-        - [ ] Mention any potential challenges or alternatives.
+        - Mention any potential challenges or alternatives.
 
   - type: textarea
     id: additional-context
