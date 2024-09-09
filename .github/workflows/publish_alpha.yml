@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
     paths-ignore:
       - "docs/**"
       - "README.md"
@@ -28,14 +27,26 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Get Latest Commit
+      - name: Get Commits Since Last Run
         run: |
-          COMMIT_LOG=$(git log -1 --pretty=format:"● %s ~%an")
-          COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\r'/'%0D'}"
-          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
-          echo "$COMMIT_LOG" > commit_log.txt
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | awk '{printf "%s\\n", $0}')
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//'%'/'%25'}"
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\n'/'%0A'}"
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\r'/'%0D'}"
+          echo "COMMIT_LOG=${FORMATTED_COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          BRANCH=${{ github.ref }}
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          echo $GITHUB_SHA > last_sha.txt
         shell: bash
         env:
           CI: true
@@ -110,7 +121,6 @@ jobs:
       - name: Send Alpha APK to Telegram
         if: always()
         run: |
-          # Read commit log and format it for Telegram
           COMMIT_LOG=$(cat commit_log.txt)
           telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
             message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
@@ -118,8 +128,6 @@ jobs:
             echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
-          
-          # Upload APK to Telegram
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
@@ -127,7 +135,7 @@ jobs:
             -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
             -F "parse_mode=HTML" \
             -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
-               
+
       - name: Send Alpha APK to Discord
         if: always()
         run: |
