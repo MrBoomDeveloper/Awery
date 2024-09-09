@@ -15,6 +15,7 @@
 <p align="center">
    <a href="https://github.com/mrboomdeveloper/awery/releases/latest"><img src="https://img.shields.io/github/v/release/mrboomdeveloper/awery?display_name=tag&style=flat-square&logoColor=06599d&label=Stable&labelColor=06599d&color=043b69" alt="Latest Stable Release"/></a>
    <a href="https://github.com/mrboomdeveloper/awery/releases"><img src="https://img.shields.io/github/v/release/mrboomdeveloper/awery?include_prereleases&display_name=tag&style=flat-square&logoColor=2c2c47&label=Beta&color=818cf8" alt="Latest Pre-release"/></a>
+   <a href="https://github.com/itsmechinmoy/awery-updater/releases/latest"><img src="https://img.shields.io/github/v/release/itsmechinmoy/awery-updater?display_name=tag&style=flat-square&label=Alpha&color=e23629" alt="Latest Alpha release"/></a>
 </p>
 
 <h2>Features 🚀</h2>
@@ -23,7 +24,7 @@
 <summary>Explore Our Key Features</summary>
 <ul>
   <li>Integration with Aniyomi extensions for enhanced functionality.</li>
-  <li>Seamless synchronization of progress with AniList, MyAnimeList, Shikimori, and more.</li>
+  <li>Seamless progress synchronisation with AniList, MyAnimeList, Shikimori, and more.</li>
   <li>Engage with and contribute to community comments.</li>
   <li>Support for multiple languages, making it accessible worldwide.</li>
   <li>Advanced tag filtering, including options to exclude genres like mecha.</li>
