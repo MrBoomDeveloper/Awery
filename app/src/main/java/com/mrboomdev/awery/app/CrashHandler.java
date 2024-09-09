@@ -1,18 +1,20 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyActivity;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.Lifecycle.getAppContext;
+import static com.mrboomdev.awery.app.Lifecycle.restartApp;
+import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setMargin;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+import static java.util.Objects.requireNonNull;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -30,6 +32,7 @@ import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.io.FileUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.io.BufferedReader;
@@ -37,30 +40,47 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 
 import xcrash.Errno;
 import xcrash.XCrash;
 
 public class CrashHandler {
 	private static final String TAG = "CrashHandler";
+	private static final int MAX_MESSAGE_LENGTH = 450;
+
+	private static final String[] BLACKLISTED_KEYWORDS = {
+			"@set_metadata: update dataspace from GM",
+			"Tombstone maker",
+			"ClassLoaderContext parent mismatch.",
+			"ClassLoaderContext classpath size mismatch. expected=",
+			"Unable to match the desired swap behavior.",
+			" GC ",
+			"Compiler allocated ",
+			"Invalid resource ID 0x",
+			"Davey! duration=",
+			"on fling",
+			"requestLayout() improperly called by "
+	};
 
 	protected static void setupCrashListener(Context context) {
 		var xCrashParams = new XCrash.InitParameters()
-				.enableNativeCrashHandler()
-				.enableAnrCrashHandler()
-				.enableJavaCrashHandler()
 				.setJavaDumpNetworkInfo(false)
 				.setJavaDumpAllThreads(false)
+				.setJavaDumpFds(false)
+
 				.setNativeDumpNetwork(false)
 				.setNativeDumpAllThreads(false)
-				.setJavaDumpFds(false)
 				.setNativeDumpElfHash(false)
-				.setAnrDumpFds(false)
 				.setNativeDumpFds(false)
 				.setNativeDumpMap(false)
+
+				.setAnrDumpFds(false)
+				.setAnrCheckProcessState(false)
+
 				.setJavaCallback((s, s1) -> handleError(CrashType.JAVA, s))
 				.setNativeCallback((s, s1) -> handleError(CrashType.NATIVE, s))
-				.setAnrCallback((s, s1) -> {Log.e(TAG, s + "\n\n" + s1); handleError(CrashType.ANR, s);})
+				.setAnrCallback((s, s1) -> handleError(CrashType.ANR, s))
 				.setAppVersion(BuildConfig.VERSION_NAME);
 
 		var result = switch(XCrash.init(context, xCrashParams)) {
@@ -81,6 +101,8 @@ public class CrashHandler {
 	}
 
 	private static void handleError(@NonNull CrashType type, String message) {
+		Log.e(TAG, "Handle error: " + type);
+
 		toast(getAppContext().getString(switch(type) {
 			case ANR -> {
 				Log.e(TAG, "ANR error has happened. " + message);
@@ -92,7 +114,7 @@ public class CrashHandler {
 		}), 1);
 
 		if(type != CrashType.ANR) {
-			var crashFile = new File(getAnyContext().getFilesDir(), "crash.txt");
+			var crashFile = new File(FileUtil.getFilesDir(), "crash.txt");
 
 			try {
 				if(!crashFile.exists()) crashFile.createNewFile();
@@ -179,17 +201,19 @@ public class CrashHandler {
 		linear.setOrientation(LinearLayoutCompat.VERTICAL);
 
 		var expander = new MaterialTextView(context);
+		expander.setTextColor(resolveAttrColor(context, android.R.attr.colorPrimary));
 		expander.setBackgroundResource(R.drawable.ripple_round_you);
-		expander.setText("Click to see the exception");
+		expander.setText("Click to see more...");
 		expander.setClickable(true);
 		expander.setFocusable(true);
 		linear.addView(expander);
 
 		setPadding(expander, dpPx(expander, 16));
-		setMargin(expander, dpPx(expander, -16));
-		setBottomMargin(expander, dpPx(expander, 0));
+		setTopMargin(expander, dpPx(expander, -8));
+		setHorizontalMargin(expander, dpPx(expander, -16));
 
 		var content = new MaterialTextView(context);
+		content.setId(R.id.message);
 		content.setTextIsSelectable(true);
 		content.setText(message);
 		content.setVisibility(View.GONE);
@@ -197,16 +221,17 @@ public class CrashHandler {
 
 		expander.setOnClickListener(v -> {
 			var makeVisible = content.getVisibility() != View.VISIBLE;
-			expander.setText(makeVisible ? "Click to hide the exception" : "Click to see the exception");
+			expander.setText(makeVisible ? "Click to see less..." : "Click to see more...");
 			content.setVisibility(makeVisible ? View.VISIBLE : View.GONE);
 		});
 
 		return linear;
 	}
 
+	@SuppressLint("SetTextI18n")
 	public static void showErrorDialog(@NonNull Context context, CrashReport report) {
 		runOnUiThread(() -> {
-			View contentView = null;
+			View fullMessageWrapper = null;
 
 			if(report.throwable != null && report.pohuiStringThrowable != null) {
 				throw new IllegalStateException("You can't use both things!");
@@ -227,11 +252,24 @@ public class CrashHandler {
 					}
 				}
 
-				contentView = createExpandable(context, message);
+				if(!Objects.equals(message, report.message)) {
+					fullMessageWrapper = createExpandable(context, message);
+				}
 			}
 
 			if(report.pohuiStringThrowable != null) {
-				contentView = createExpandable(context, report.pohuiStringThrowable);
+				fullMessageWrapper = createExpandable(context, report.pohuiStringThrowable.trim());
+			}
+
+			if(report.message != null && report.message.length() > MAX_MESSAGE_LENGTH) {
+				if(fullMessageWrapper == null) {
+					fullMessageWrapper = createExpandable(context, report.message.trim());
+				} else {
+					MaterialTextView content = fullMessageWrapper.findViewById(R.id.message);
+					content.setText(report.message.trim() + "\n\n" + content.getText().toString().trim());
+				}
+
+				report.message = report.message.substring(0, MAX_MESSAGE_LENGTH).trim() + "...";
 			}
 
 			if(report.prefix != null) {
@@ -250,8 +288,6 @@ public class CrashHandler {
 							report.dismissCallback.run();
 						}
 					})
-					.setNeutralButton(R.string.copy, dialog ->
-							copyToClipboard(context.getString(R.string.crash_report), report.message))
 					.setNegativeButton(R.string.share, dialog -> {
 						var newFile = new File(context.getFilesDir(), "crash_report.txt");
 						var intent = new Intent(Intent.ACTION_SEND);
@@ -274,20 +310,28 @@ public class CrashHandler {
 
 						context.startActivity(Intent.createChooser(intent, "Share crash report"));
 					})
-					.setPositiveButton("OK", DialogBuilder::dismiss);
-
-			if(contentView != null) {
-				builder.addView(contentView);
-			}
+					.setPositiveButton(R.string.continue_action, DialogBuilder::dismiss);
 
 			if(report.title != null) {
 				builder.setTitle(report.title.trim());
 			}
 
+			var messageWrapper = new LinearLayoutCompat(context);
+			messageWrapper.setOrientation(LinearLayoutCompat.VERTICAL);
+
 			if(report.message != null) {
-				builder.setMessage(report.message.trim());
+				var shortMessageView = new MaterialTextView(context);
+				shortMessageView.setTextIsSelectable(true);
+				shortMessageView.setText(report.message.trim());
+				messageWrapper.addView(shortMessageView);
+				setBottomMargin(shortMessageView, dpPx(shortMessageView, 8));
 			}
 
+			if(fullMessageWrapper != null) {
+				messageWrapper.addView(fullMessageWrapper);
+			}
+
+			builder.addView(messageWrapper);
 			builder.show();
 		});
 	}
@@ -323,8 +367,14 @@ public class CrashHandler {
 							StringBuilder result1 = new StringBuilder();
 							String nextLine1;
 
+							linesIterator:
 							while((nextLine1 = reader1.readLine()) != null) {
-								if(nextLine1.contains("ClassLoaderContext parent mismatch.")) continue;
+								for(var keyword : BLACKLISTED_KEYWORDS) {
+									if(nextLine1.contains(keyword)) {
+										continue linesIterator;
+									}
+								}
+
 								result1.append(nextLine1).append("\n");
 							}
 

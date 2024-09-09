@@ -1,9 +1,8 @@
 package com.mrboomdev.awery.ui.sheet;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
+import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
@@ -30,13 +29,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.app.CrashHandler;
+import com.mrboomdev.awery.app.data.settings.base.CustomSettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter;
-import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.app.data.settings.base.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.SheetDialog;
@@ -50,18 +51,18 @@ import java.util.Objects;
 public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 	private static final String TAG = "FiltersSheet";
 	private static final List<String> HIDDEN_FILTERS = List.of(
-			ExtensionProvider.FILTER_QUERY, ExtensionProvider.FILTER_PAGE);
+			ExtensionConstants.FILTER_QUERY, ExtensionConstants.FILTER_PAGE);
 
 	private final List<SettingsItem> filters;
 	@Nullable
 	private final Callbacks.Callback1<List<SettingsItem>> applyCallback;
 	@Nullable
-	private final ExtensionProvider provider;
+	private final __ExtensionProvider provider;
 
 	public FiltersSheet(
 			Context context,
 			List<SettingsItem> filters,
-			@NonNull ExtensionProvider provider,
+			@NonNull __ExtensionProvider provider,
 			@NonNull Callbacks.Callback1<List<SettingsItem>> applyCallback
 	) {
 		super(context);
@@ -154,7 +155,7 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 		if(provider == null) {
 			progressBarAdapter.setEnabled(false);
 		} else {
-			provider.getFilters().addCallback(new AsyncFuture.Callback<>() {
+			provider.getMediaSearchFilters().addCallback(new AsyncFuture.Callback<>() {
 				@Override
 				public void onSuccess(SettingsList result) {
 					if(!isShown()) return;
@@ -172,7 +173,12 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 				@Override
 				public void onFailure(Throwable t) {
 					Log.e(TAG, "Failed to load filters!", t);
-					toast("Failed to load filters");
+
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setTitle("Failed to get filters")
+							.setThrowable(t)
+							.setPrefix(R.string.please_report_bug_extension)
+							.build());
 
 					runOnUiThread(() -> progressBarAdapter.setEnabled(false), recycler);
 				}
@@ -194,22 +200,22 @@ public class FiltersSheet extends SheetDialog implements SettingsDataHandler {
 
 			if(originalItem.getType() != null) {
 				switch(originalItem.getType()) {
-					case BOOLEAN, SCREEN_BOOLEAN -> originalItem.setValue(requireNonNullElse(
+					case BOOLEAN, SCREEN_BOOLEAN -> originalItem.setValue(nonNullElse(
 							found.getBooleanValue(), originalItem.getBooleanValue()));
 
-					case STRING, SELECT, JSON, SERIALIZABLE -> originalItem.setValue(requireNonNullElse(
+					case STRING, SELECT, JSON, SERIALIZABLE -> originalItem.setValue(nonNullElse(
 							found.getStringValue(), originalItem.getStringValue()));
 
 					case INTEGER, SELECT_INTEGER, COLOR -> originalItem.setValue(
-							requireNonNullElse(found.getIntegerValue(), originalItem.getIntegerValue()));
+							nonNullElse(found.getIntegerValue(), originalItem.getIntegerValue()));
 
-					case EXCLUDABLE -> originalItem.setValue(requireNonNullElse(
+					case EXCLUDABLE -> originalItem.setValue(nonNullElse(
 							found.getExcludableValue(), originalItem.getExcludableValue()));
 
-					case MULTISELECT -> originalItem.setValue(requireNonNullElse(
+					case MULTISELECT -> originalItem.setValue(nonNullElse(
 							found.getStringSetValue(), originalItem.getStringSetValue()));
 
-					case DATE -> originalItem.setValue(requireNonNullElse(
+					case DATE -> originalItem.setValue(nonNullElse(
 							found.getLongValue(), originalItem.getLongValue()));
 				}
 			}

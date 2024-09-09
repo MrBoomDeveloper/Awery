@@ -2,8 +2,8 @@ package com.mrboomdev.awery.extensions.support.yomi;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.__Extension;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.HashSet;
@@ -16,12 +16,12 @@ public class YomiRepoItem {
 	public String name, pkg, apk, lang, version;
 	public int nsfw;
 
-	public Extension toExtension(YomiManager manager, @NonNull String repoUrl) {
+	public __Extension toExtension(YomiManager manager, @NonNull String repoUrl) {
 		var baseUrl = repoUrl.substring(0, repoUrl.indexOf(FILE_NAME));
 		var iconUrl = baseUrl + "icon/" + pkg + ".png";
 		var apkUrl = baseUrl + "apk/" + apk;
 
-		var ext = new Extension(pkg, name, version, apkUrl) {
+		var ext = new __Extension(pkg, name, version, apkUrl) {
 			@Override
 			public boolean isNsfw() {
 				return nsfw == 1;
@@ -36,11 +36,7 @@ public class YomiRepoItem {
 		for(var source : sources) {
 			var features = new HashSet<>(manager.getBaseFeatures());
 
-			if(nsfw == 1) {
-				features.add(ExtensionProvider.FEATURE_NSFW);
-			}
-
-			ext.addProvider(new ExtensionProvider() {
+			ext.addProvider(new __ExtensionProvider() {
 				@Override
 				public String getName() {
 					return source.name;

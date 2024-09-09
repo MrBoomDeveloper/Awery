@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.desktop;
 
 import com.mrboomdev.awery.desktop.ui.components.Button;
+import com.mrboomdev.awery.ext.data.Image;
 
 import java.awt.Toolkit;
 

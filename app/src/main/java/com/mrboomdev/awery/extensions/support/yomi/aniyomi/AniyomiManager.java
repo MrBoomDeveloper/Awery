@@ -1,13 +1,14 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
-import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_WATCH;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.__Extension;
+import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,15 +19,18 @@ import eu.kanade.tachiyomi.animesource.AnimeSourceFactory;
 
 public class AniyomiManager extends YomiManager {
 	public static final String MANAGER_ID = "ANIYOMI_KOTLIN";
-	private static final Set<String> BASE_FEATURES = Set.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_SEARCH);
+
+	private static final Set<String> BASE_FEATURES = Set.of(
+			ExtensionConstants.FEATURE_MEDIA_WATCH,
+			ExtensionConstants.FEATURE_MEDIA_SEARCH);
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "Aniyomi";
 	}
 
 	@Override
-	public String getId() {
+	public @NotNull String getId() {
 		return MANAGER_ID;
 	}
 
@@ -66,7 +70,7 @@ public class AniyomiManager extends YomiManager {
 	}
 
 	@Override
-	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
+	public List<? extends __ExtensionProvider> createProviders(__Extension extension, Object main) {
 		if(main instanceof AnimeSource source) {
 			return List.of(new AniyomiProvider(extension, source) {
 				@Override

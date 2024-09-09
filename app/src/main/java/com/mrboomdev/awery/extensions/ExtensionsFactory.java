@@ -1,46 +1,33 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.await;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
-import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 
-import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.extensions.support.aweryjs.AweryJsManager;
-import com.mrboomdev.awery.extensions.support.internal.InternalManager;
-import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
+import com.mrboomdev.awery.ext.source.ExtensionsManager;
+import com.mrboomdev.awery.ext.data.Progress;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
-
-import java9.util.Objects;
-import java9.util.stream.StreamSupport;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExtensionsFactory {
-	private static ExtensionsFactory instance;
 	private static final String TAG = "ExtensionsFactory";
+	private static ExtensionsFactory instance;
 	private static AsyncFuture<ExtensionsFactory> pendingFuture;
 	protected static final Progress progress = new Progress();
-	private final List<ExtensionsManager> managers = List.of(
-			new AniyomiManager(),
-			//new TachiyomiManager(), // We doesn't support manga reading at the moment so we can just disable it for now
-			//new CloudstreamManager(),
-			//new MiruManager(),
-			new AweryJsManager(),
-			new InternalManager());
+	private final Set<ExtensionsManager> managers = new HashSet<>();
 
 	/**
 	 * This method will not try load the ExtensionsFactory, so use it only if you know why you want to.
@@ -51,7 +38,7 @@ public class ExtensionsFactory {
 		return instance;
 	}
 
-	public List<ExtensionsManager> getManagers() {
+	public Set<ExtensionsManager> getManagers() {
 		return managers;
 	}
 
@@ -66,42 +53,42 @@ public class ExtensionsFactory {
 		}
 
 		return pendingFuture = thread(() -> {
-			var instance = new ExtensionsFactory(getAppContext());
+			var instance = new ExtensionsFactory();
 			pendingFuture = null;
 			return instance;
 		});
 	}
 
-	private ExtensionsFactory(@NonNull Application context) {
+	private ExtensionsFactory() {
 		Log.d(TAG, "Start loading...");
 		instance = this;
 
-		YomiHelper.init(context);
+		registerManager(new AniyomiManager());
+		//registerManager(new TachiyomiManager()); // We doesn't support manga reading at the moment so we can just disable it for now
+		//registerManager(new CloudstreamManager());
+		//registerManager(new MiruManager());
+		//registerManager(new AweryJsManager());
+		//registerManager(new InternalManager());
+
+		var finishedManagers = new AtomicInteger();
 
 		for(var manager : managers) {
-			manager.loadAllExtensions(context);
+			thread(() -> {
+				manager.loadAllExtensions();
+				finishedManagers.addAndGet(1);
+			});
 		}
 
+		await(() -> finishedManagers.get() == managers.size());
+
 		var failedExtensions = stream(managers)
-				.map(manager -> manager.getExtensions(Extension.FLAG_ERROR))
+				.map(ExtensionsManager::getAllExtensions)
 				.flatMap(NiceUtils::stream)
-				.filter(extension -> !Objects.equals(extension.getErrorTitle(), Extension.DISABLED_ERROR))
+				.filter(ext -> ext.getError() == null)
 				.toList();
 
 		if(!failedExtensions.isEmpty()) {
-			Log.e(TAG, "");
-			Log.e(TAG, Constants.LOGS_SEPARATOR);
-
-			for(var extension : failedExtensions) {
-				if(extension.getError() != null) Log.e(TAG, extension.getErrorTitle(), extension.getError());
-				else Log.e(TAG, extension.getErrorTitle());
-
-				Log.e(TAG, Constants.LOGS_SEPARATOR);
-			}
-
 			var text = "Failed to load " + failedExtensions.size() + " extension(s)";
-
-			Log.e(TAG, "");
 			Log.e(TAG, text);
 			toast(text);
 		}
@@ -109,15 +96,12 @@ public class ExtensionsFactory {
 		Log.d(TAG, "Finished loading");
 	}
 
-	@Deprecated(forRemoval = true)
-	public static ExtensionsManager getManager__Deprecated(@NonNull String name) {
-		return getInstance().await().getManager(name);
+	public void registerManager(ExtensionsManager manager) {
+		managers.add(manager);
 	}
 
-	@NonNull
-	@Deprecated(forRemoval = true)
-	public static Collection<? extends Extension> getExtensions__Deprecated(int flags) {
-		return getInstance().await().getExtensions(flags);
+	public void unregisterManager(ExtensionsManager manager) {
+		managers.remove(manager);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,22 +111,10 @@ public class ExtensionsFactory {
 				.findFirst().orElseThrow();
 	}
 
-	@StringDef({ "ANIYOMI_KOTLIN", "AWERY_JS", "INTERNAL" })
-	public @interface ExtensionName {}
-
-	public ExtensionsManager getManager(@NonNull @ExtensionName String name) {
-		return getManager((Class<? extends ExtensionsManager>) switch(name) {
-			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
-			case AweryJsManager.MANAGER_ID -> AweryJsManager.class;
-			case InternalManager.MANAGER_ID -> InternalManager.class;
-			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
-		});
-	}
-
 	@NonNull
-	public Collection<? extends Extension> getExtensions(int flags) {
+	public ExtensionsManager getManager(@NonNull String name) throws NoSuchElementException {
 		return stream(managers)
-				.map(manager -> manager.getExtensions(flags))
-				.flatMap(StreamSupport::stream).toList();
+				.filter(manager -> manager.getId().equals(name))
+				.findFirst().orElseThrow();
 	}
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/ic_home_filled"
+        android:title="@string/home" />
+
+    <item
+        android:icon="@drawable/ic_round_video_library_24"
+        android:title="@string/library" />
+</menu>

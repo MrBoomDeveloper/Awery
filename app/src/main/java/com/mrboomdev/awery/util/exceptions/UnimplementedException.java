@@ -5,7 +5,12 @@ package com.mrboomdev.awery.util.exceptions;
  * class doesn't support such functionality.
  * @author MrBoomDev
  */
-public class UnimplementedException extends RuntimeException {
+
+/**
+ * Use {@link UnsupportedOperationException} instead!
+ */
+@Deprecated(forRemoval = true)
+public class UnimplementedException extends UnsupportedOperationException {
 
 	public UnimplementedException(String name) {
 		super(name);

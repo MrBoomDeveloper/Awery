@@ -1,11 +1,12 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
+import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -33,7 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.app.data.Constants;
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -70,7 +71,18 @@ public class BrowserActivity extends AppCompatActivity {
 
 		binding.edittext.setOnEditorActionListener((v, actionId, event) -> {
 			if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-				binding.webview.loadUrl(binding.edittext.getText().toString());
+				var url = binding.edittext.getText().toString();
+				var originalText = url;
+
+				if(!isUrlValid(url)) {
+					url = "http://" + url;
+				}
+
+				if(!isUrlValid(url)) {
+					url = "https://www.google.com/search?q=" + originalText;
+				}
+
+				binding.webview.loadUrl(url);
 				binding.edittext.clearFocus();
 
 				inputManager.hideSoftInputFromWindow(

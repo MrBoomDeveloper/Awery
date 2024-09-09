@@ -1,6 +1,7 @@
+/*
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.intFromJs;
@@ -149,4 +150,4 @@ public class JsSettingsItem extends SettingsItem {
 		if(item.getLongValue() != null) return SettingsItemType.DATE;
 		return null;
 	}
-}
+}*/

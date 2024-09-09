@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.io;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
+import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
@@ -51,16 +51,24 @@ public class FileUtil {
 		}
 	}
 
+	public static File getCacheDir() {
+		return getAnyContext().getCacheDir();
+	}
+
+	public static File getFilesDir() {
+		return getAnyContext().getFilesDir();
+	}
+
 	@NonNull
 	public static String[] listFileNames(@NonNull File parent) {
 		var children = parent.list();
-		return requireNonNullElse(children, new String[0]);
+		return nonNullElse(children, new String[0]);
 	}
 
 	@NonNull
 	public static File[] listFiles(@NonNull File parent) {
 		var children = parent.listFiles();
-		return requireNonNullElse(children, new File[0]);
+		return nonNullElse(children, new File[0]);
 	}
 
 	public static List<File> listFilesRecusrsively(@NonNull File parent) {

@@ -1,3 +1,4 @@
+/*
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
@@ -40,4 +41,4 @@ public class JsEpisode extends CatalogVideo {
 		o.put("id", o, episode.getId());
 		return o;
 	}
-}
+}*/

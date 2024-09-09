@@ -1,16 +1,20 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyActivity;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.room.TypeConverter;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.AndroidImage;
+import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.ext.data.Image;
+import com.mrboomdev.awery.ext.data.Setting;
+import com.mrboomdev.awery.ext.data.Settings;
 import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.Moshi;
@@ -39,14 +43,12 @@ public class ParserAdapter {
 	private static final String TAG = "ParserAdapter";
 
 	@NonNull
-	@TypeConverter
 	@FromJson
 	public static List<String> listFromString(String value) {
 		return new ArrayList<>(StringUtils.uniqueStringToList(value));
 	}
 
 	@NonNull
-	@TypeConverter
 	@ToJson
 	public static String listToString(@NonNull List<String> value) {
 		return StringUtils.listToUniqueString(value);
@@ -106,7 +108,6 @@ public class ParserAdapter {
 		return "{" + builder + "}";
 	}
 
-	@TypeConverter
 	@FromJson
 	public static Map<String, String> mapFromString(String value) {
 		if(value == null) {
@@ -125,7 +126,6 @@ public class ParserAdapter {
 		}
 	}
 
-	@TypeConverter
 	@ToJson
 	public static String mapToString(@NonNull Map<String, String> value) {
 		return stream(value.entrySet())
@@ -133,42 +133,23 @@ public class ParserAdapter {
 				.collect(Collectors.joining(",", "{", "}"));
 	}
 
-	@TypeConverter
-	public static SettingsList filtersListFromString(String value) {
-		if(value == null) {
-			return new SettingsList();
-		}
-
-		var adapter = new Moshi.Builder().build().adapter(SettingsList.class);
-
-		try {
-			return adapter.fromJson(value);
-		} catch(IOException e) {
-			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
-			Log.e(TAG, "Failed to parse string to map", e);
-			return new SettingsList();
-		}
-	}
-
 	@ToJson
-	public static List<SettingsItem> toJson(SettingsList list) {
+	public static List<Setting> toJson(Settings list) {
 		return list;
 	}
 
 	@NonNull
 	@Contract("_ -> new")
 	@FromJson
-	public static SettingsList toJson(List<SettingsItem> list) {
-		return new SettingsList(list);
+	public static Settings toJson(List<Setting> list) {
+		return new Settings(list);
 	}
 
 	@NonNull
-	@TypeConverter
 	public static String filtersListToString(SettingsList value) {
 		return new Moshi.Builder().build().adapter(SettingsList.class).toJson(value);
 	}
 
-	@TypeConverter
 	@FromJson
 	public static Map<Float, Long> floatLongMapFromString(String value) {
 		if(value == null) {
@@ -204,7 +185,6 @@ public class ParserAdapter {
 		}
 	}
 
-	@TypeConverter
 	@ToJson
 	public static String floatLongMapToString(@NonNull Map<Float, Long> value) {
 		return stream(value.entrySet())
@@ -213,7 +193,6 @@ public class ParserAdapter {
 	}
 
 	@ToJson
-	@TypeConverter
 	public static long calendarToLong(@NonNull Calendar calendar) {
 		return calendar.getTimeInMillis();
 	}
@@ -232,9 +211,18 @@ public class ParserAdapter {
 		return calendar;
 	}
 
+	@FromJson
+	public Image deserialize(String name) {
+		return new AndroidImage(getAnyActivity(AppCompatActivity.class), name);
+	}
+
+	@ToJson
+	public String serialize(Image image) {
+		return ((AndroidImage)image).getRawRes();
+	}
+
 	@NonNull
 	@FromJson
-	@TypeConverter
 	public static Calendar calendarFromLong(long millis) {
 		var calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(millis);

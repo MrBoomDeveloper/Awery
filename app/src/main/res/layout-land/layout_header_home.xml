@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipToPadding="false"
     android:paddingHorizontal="32dp"
     android:paddingVertical="16dp"
     app:layout_scrollFlags="snap|scroll|enterAlways|exitUntilCollapsed">

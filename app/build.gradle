@@ -5,8 +5,10 @@ plugins {
     id "kotlin-android"
 }
 
-def releaseVersion = "1.0.5.1"
+def releaseVersion = "1.0.5.2"
 def packageName = "com.mrboomdev.awery"
+def targetSdk = 35
+def minSdk = 25
 
 // Note: Please, don't edit it if you don't know what it does
 def startVersionCode = 2808
@@ -18,12 +20,12 @@ def gitCommitHash = providers.exec {
 
 android {
     namespace packageName
-    compileSdk 34
+    compileSdk targetSdk
 
     defaultConfig {
         applicationId packageName
-        minSdk 25
-        targetSdk 34
+        setMinSdk(minSdk)
+        setTargetSdk(targetSdk)
 
         buildConfigField("boolean", "IS_BETA", "CHANNEL != ${packageName}.app.update.UpdatesChannel.STABLE")
 
@@ -160,13 +162,14 @@ android {
 dependencies {
     // Core
     implementation "androidx.core:core-ktx:1.13.1"
-    implementation "androidx.work:work-runtime-ktx:2.9.0"
+    implementation 'androidx.work:work-runtime-ktx:2.9.1'
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.browser:browser:1.8.0"
     implementation "androidx.webkit:webkit:1.11.0"
     implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation "com.github.MrBoomDeveloper:AwerySdk:67856bbc66"
+    implementation(project(":ext"))
 
     // Database
     def room_version = "2.6.1"
@@ -175,14 +178,14 @@ dependencies {
 
     // UI
     implementation "androidx.core:core-splashscreen:1.0.1"
-    implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0-beta01'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "com.google.android.material:material:1.12.0"
     implementation "com.github.VipulOG:ebook-reader:0.1.6"
     implementation "com.github.emilaleborn:PageIndicatorView:905cd4e2ab"
     implementation "com.github.skydoves:colorpickerview:2.3.0"
-    implementation 'com.github.skydoves:balloon:1.6.5'
-    implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.3.0-rc02'
+    implementation 'com.github.skydoves:balloon:1.6.6'
+    implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.3.0'
     implementation "nl.dionsegijn:konfetti-xml:2.0.4"
     implementation "nl.joery.animatedbottombar:library:1.1.0"
 
@@ -223,10 +226,10 @@ dependencies {
     // JS extensions
     implementation "org.mozilla:rhino:1.7.15"
     implementation "com.caoccao.javet:swc4j:0.11.0"
-    implementation "com.caoccao.javet:javet-android-node:3.1.4"
+    implementation 'com.caoccao.javet:javet-android-v8:3.1.5'
 
     // Aniyomi extensions
-    ext.kotlin_serialization_verison = '1.7.1'
+    ext.kotlin_serialization_verison = '1.7.2'
     implementation "app.cash.quickjs:quickjs-android:0.9.2"
     implementation "io.reactivex:rxjava:1.3.8"
     implementation "io.reactivex:rxandroid:1.2.1"
@@ -325,6 +328,10 @@ static def formatKey(Object o, Set<String> usedKeys) {
 }
 
 static def collectKeys(Object from, Set<String> usedKeys) {
+    if(from.key == null) {
+        return ""
+    }
+
     if(from.key != null && !usedKeys.add(from.key)) {
         throw new IllegalStateException("Duplicate keys \"${from.key}\" were found in settings.json!" +
                 "\nYou have to remove one of them for app to work properly.")
@@ -358,7 +365,7 @@ tasks.register("generateClasses") {
 
     builder.append("package com.mrboomdev.awery.generated;\n" +
             "\n" +
-            "import com.mrboomdev.awery.data.settings.NicePreferences.*;\n" +
+            "import com.mrboomdev.awery.app.data.settings.NicePreferences.*;\n" +
             "\n" +
             "/**\n" +
             " * Auto-generated class created during the compilation. Please, do not edit it.\n" +

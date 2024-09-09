@@ -1,11 +1,11 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
+import static com.mrboomdev.awery.app.App.getNavigationStyle;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static java.util.Objects.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -202,7 +202,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 
 			binding.description.setText(description);
 
-			switch(requireNonNullElse(item.type, CatalogMedia.MediaType.TV)) {
+			switch(nonNullElse(item.type, CatalogMedia.MediaType.TV)) {
 				case TV, MOVIE -> {
 					binding.watch.setText(R.string.watch_now);
 					binding.watch.setIconResource(R.drawable.ic_play_filled);

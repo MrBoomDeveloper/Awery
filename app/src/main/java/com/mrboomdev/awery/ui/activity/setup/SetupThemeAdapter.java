@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
-import static com.mrboomdev.awery.app.AweryApp.balloon;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getSettingsMap;
+import static com.mrboomdev.awery.app.App.balloon;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.Lifecycle.getActivities;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getSettingsMap;
 import static com.mrboomdev.awery.ui.ThemeManager.isDarkModeEnabled;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
@@ -33,12 +33,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter;
-import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.app.data.settings.base.SettingsDataHandler;
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.skydoves.balloon.BalloonAlign;

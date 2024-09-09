@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyActivity;
 
 import android.content.Context;
 import android.view.View;

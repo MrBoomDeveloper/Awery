@@ -1,3 +1,4 @@
+/*
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
@@ -19,4 +20,4 @@ public class JsFeed {
 		feed.providerId = provider.id;
 		return feed;
 	}
-}
+}*/

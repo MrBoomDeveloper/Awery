@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated(forRemoval = true)
 public class CatalogVideoFile implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1;

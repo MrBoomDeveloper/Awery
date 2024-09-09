@@ -60,11 +60,6 @@
 			"description": "The behaviour of the setting"
 		},
 
-		"tint_icon": {
-			"type": "boolean",
-			"description": "Whether the icon should be tinted"
-		},
-
 		"icon_size": {
 			"type": "number",
 			"description": "The size of the icon"

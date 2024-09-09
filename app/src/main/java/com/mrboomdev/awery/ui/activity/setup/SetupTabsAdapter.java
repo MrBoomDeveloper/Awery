@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.resolveDrawable;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.resolveDrawable;
+import static com.mrboomdev.awery.app.Lifecycle.getContext;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 import static com.mrboomdev.awery.util.ui.ViewUtil.clearImageTint;

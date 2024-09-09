@@ -9,3 +9,4 @@ dependencyResolutionManagement {
 rootProject.name = "awery"
 include(":app")
 include(":desktop")
+include(":ext")

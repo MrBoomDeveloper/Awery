@@ -1,11 +1,15 @@
 package com.mrboomdev.awery.util.async;
 
-public interface BaseFuture {
-	boolean cancel(boolean mayInterruptIfRunning);
+public abstract class BaseFuture {
+	public abstract boolean cancel(boolean mayInterruptIfRunning);
 
-	boolean isCancelled();
+	public abstract boolean isCancelled();
 
-	boolean isDone();
+	public abstract boolean isDone();
 
-	Throwable getThrowable();
+	protected boolean hasResult() {
+		return isDone();
+	}
+
+	public abstract Throwable getThrowable();
 }

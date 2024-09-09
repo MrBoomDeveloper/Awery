@@ -15,11 +15,13 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.app.data.settings.base.CustomSettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
+import com.mrboomdev.awery.ext.source.ExtensionProvider;
+import com.mrboomdev.awery.extensions.__Extension;
+import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.Set;
 
 public abstract class YomiProvider extends ExtensionProvider {
 
-	public YomiProvider(Extension extension) {
+	public YomiProvider(__Extension extension) {
 		super(extension);
 	}
 
@@ -55,7 +57,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 
 	@Override
 	@SuppressLint("RestrictedApi")
-	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {
+	public AsyncFuture<SettingsItem> getSettings(Context context) {
 		var manager = new PreferenceManager(context);
 		manager.setSharedPreferencesName("source_" + getId());
 		var screen = manager.createPreferenceScreen(context);
@@ -63,13 +65,11 @@ public abstract class YomiProvider extends ExtensionProvider {
 		try {
 			setupPreferenceScreen(screen);
 		} catch(UnsupportedOperationException e) {
-			callback.onFailure(e);
-			return;
+			return AsyncUtils.futureFailNow(e);
 		}
 
 		if(screen.getPreferenceCount() == 0) {
-			callback.onFailure(new IllegalStateException("Extension doesn't support settings!"));
-			return;
+			return AsyncUtils.futureFailNow(new IllegalStateException("Extension doesn't support settings!"));
 		}
 
 		var items = new ArrayList<SettingsItem>();
@@ -79,7 +79,7 @@ public abstract class YomiProvider extends ExtensionProvider {
 			items.add(new YomiSetting(preference));
 		}
 
-		callback.onSuccess(new SettingsItem() {
+		return AsyncUtils.futureNow(new SettingsItem() {
 			@Override
 			public String getTitle(Context context) {
 				return getName();

@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
 import androidx.preference.PreferenceScreen;
 
-import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.__Extension;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 
 import java.util.HashSet;
@@ -16,15 +16,9 @@ public abstract class TachiyomiProvider extends YomiProvider {
 	private final Set<String> features = new HashSet<>();
 	private final MangaSource source;
 
-	public TachiyomiProvider(Extension extension, MangaSource source, boolean isFromSource) {
+	public TachiyomiProvider(__Extension extension, MangaSource source, boolean isFromSource) {
 		super(extension);
-
 		this.features.addAll(getManager().getBaseFeatures());
-
-		if(extension.isNsfw()) {
-			this.features.add(FEATURE_NSFW);
-		}
-
 		this.source = source;
 	}
 

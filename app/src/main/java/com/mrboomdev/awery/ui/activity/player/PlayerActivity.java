@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
-import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.app.Lifecycle.cancelDelayed;
+import static com.mrboomdev.awery.app.Lifecycle.runDelayed;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyInsetsListener;
@@ -45,12 +45,13 @@ import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
@@ -69,11 +70,14 @@ import java.util.Set;
 
 @OptIn(markerClass = UnstableApi.class)
 public class PlayerActivity extends AppCompatActivity implements Player.Listener {
+	public static final String ARGUMENT_EPISODE = "episode";
+	public static final String ARGUMENT_EPISODES = "episodes";
+
 	public static final String PLAYBACK_ACTION = "AWERY_PLAYBACK";
 	public static final int PLAYBACK_ACTION_RESUME = 1;
 	public static final int PLAYBACK_ACTION_PAUSE = 2;
 	private static final String TAG = "PlayerActivity";
-	protected static ExtensionProvider source;
+	protected static __ExtensionProvider source;
 	protected final int SHOW_UI_AFTER_MILLIS = 200;
 	protected final int UI_INSETS = WindowInsetsCompat.Type.displayCutout()
 			| WindowInsetsCompat.Type.systemGestures()
@@ -340,7 +344,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	}
 
 	// TODO: Replace this lazy temporary long-term solution with something better
-	public static void selectSource(ExtensionProvider source) {
+	public static void selectSource(__ExtensionProvider source) {
 		PlayerActivity.source = source;
 	}
 
@@ -443,7 +447,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			binding.title.setText(episode.getTitle());
 
 			source.getVideoFiles(new SettingsList(
-					new SettingsItem(ExtensionProvider.FILTER_EPISODE, episode)
+					new SettingsItem(ExtensionConstants.FILTER_EPISODE, episode)
 			)).addCallback(new AsyncFuture.Callback<>() {
 				@Override
 				public void onSuccess(List<CatalogVideoFile> catalogVideos) {
@@ -492,7 +496,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		var pauseTitle = !isVideoPaused ? "Pause" : "Resume";
 
 		/*pipParams.setActions(List.of(new RemoteAction(
-				Icon.createWithResource(this, pauseIcon), pauseTitle, pauseTitle,
+				Image.createWithResource(this, pauseIcon), pauseTitle, pauseTitle,
 				PendingIntent.getBroadcast(this, 0,
 						new Intent(this, BroadcastReceiver.class).putExtra(PLAYBACK_ACTION, pauseAction),
 						PendingIntent.FLAG_UPDATE_CURRENT))));*/
@@ -607,7 +611,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.prepare();
 		player.play();
 
-		AweryApp.addOnBackPressedListener(this, this::finish);
+		App.addOnBackPressedListener(this, this::finish);
 	}
 
 	@Override

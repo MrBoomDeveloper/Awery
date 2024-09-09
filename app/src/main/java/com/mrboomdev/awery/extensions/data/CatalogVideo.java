@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 public class CatalogVideo implements Serializable, Comparable<CatalogVideo> {
 	@Serial
 	private static final long serialVersionUID = 1;

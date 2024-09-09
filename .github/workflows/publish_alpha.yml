@@ -115,7 +115,8 @@ jobs:
           curl -F document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk \
           -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -F message_thread_id=174 \
-          -F caption="Alpha Release $COMMIT_LOG" \
+          -F caption="Alpha - $COMMIT_LOG" \
+          -F message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
           https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
                
       - name: Send Alpha APK to Discord

@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 
@@ -28,7 +28,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.Media;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -46,7 +46,7 @@ public class MediaActivity extends AppCompatActivity {
 	public static final String EXTRA_ACTION = "action";
 	private ScreenMediaDetailsBinding binding;
 	private MediaCommentsFragment commentsFragment;
-	private CatalogMedia media;
+	private Media media;
 	private Object pendingExtra;
 
 	@SuppressLint("NonConstantResourceId")
@@ -92,14 +92,14 @@ public class MediaActivity extends AppCompatActivity {
 			binding.navigation.setBackgroundColor(0x00000000);
 		}
 
-		setMedia(requireArgument(this, EXTRA_MEDIA, CatalogMedia.class));
+		setMedia(requireArgument(this, EXTRA_MEDIA, Media.class));
 	}
 
-	public static void handleOptionsClick(@NonNull View anchor, @NonNull CatalogMedia media) {
+	public static void handleOptionsClick(@NonNull View anchor, @NonNull Media media) {
 		var context = new ContextThemeWrapper(anchor.getContext(), anchor.getContext().getTheme());
 		var popup = new PopupMenu(context, anchor);
 
-		if(media.url != null) {
+		if(media.getUrl() != null) {
 			popup.getMenu().add(0, 0, 0, R.string.share);
 		}
 
@@ -115,7 +115,7 @@ public class MediaActivity extends AppCompatActivity {
 	}
 
 	@SuppressLint("NonConstantResourceId")
-	public void setMedia(@NonNull CatalogMedia media) {
+	public void setMedia(@NonNull Media media) {
 		this.media = media;
 		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
 
@@ -132,7 +132,7 @@ public class MediaActivity extends AppCompatActivity {
 			return true;
 		});
 
-		if(media.type == CatalogMedia.MediaType.POST || media.type == CatalogMedia.MediaType.BOOK) {
+		if(media.getType().canRead()) {
 			var item = navigation.getMenu().findItem(R.id.watch);
 			item.setIcon(R.drawable.ic_book);
 			item.setTitle(R.string.read);

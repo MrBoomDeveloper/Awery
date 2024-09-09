@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.network
 
 import android.content.Context
-import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.generated.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor

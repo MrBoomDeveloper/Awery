@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.cloudstream;
 
-import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.__Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.Collection;
@@ -9,12 +9,12 @@ import java.util.Collections;
 public class CloudstreamManager extends ExtensionsManager {
 
 	@Override
-	public Extension getExtension(String id) {
+	public __Extension getExtension(String id) {
 		return null;
 	}
 
 	@Override
-	public Collection<Extension> getAllExtensions() {
+	public Collection<__Extension> getAllExtensions() {
 		return Collections.emptyList();
 	}
 

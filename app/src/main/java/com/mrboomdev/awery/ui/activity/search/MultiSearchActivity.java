@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.activity.search;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.Lifecycle.postRunnable;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -21,12 +21,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
+import com.mrboomdev.awery.app.data.settings.base.SettingsList;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.__Extension;
+import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.internal.InternalProviders;
@@ -67,8 +68,8 @@ public class MultiSearchActivity extends AppCompatActivity {
 
 	@NonNull
 	private List<CatalogFeed> getFeeds() {
-		return stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
-				.map(ext -> ext.getProviders(ExtensionProvider.FEATURE_MEDIA_SEARCH))
+		return stream(ExtensionsFactory.getExtensions__Deprecated(__Extension.FLAG_WORKING))
+				.map(ext -> ext.getProviders(ExtensionConstants.FEATURE_MEDIA_SEARCH))
 				.flatMap(NiceUtils::stream)
 				.filter(provider -> {
 					if(provider instanceof InternalProviders.Lists) {
@@ -88,7 +89,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 							}
 
 							case ONLY -> {
-								if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
+								if(provider.getAdultContentMode() == __ExtensionProvider.AdultContent.NONE) {
 									return false;
 								}
 							}
@@ -176,7 +177,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 		@Override
 		protected SettingsList getFilters() {
 			var text = binding.edittext.getText().toString();
-			return new SettingsList(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY, text));
+			return new SettingsList(new SettingsItem(SettingsItemType.STRING, ExtensionConstants.FILTER_QUERY, text));
 		}
 
 		@Override

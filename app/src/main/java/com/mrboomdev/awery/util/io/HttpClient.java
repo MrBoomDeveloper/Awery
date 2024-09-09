@@ -1,24 +1,24 @@
 package com.mrboomdev.awery.util.io;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
+import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
+import static java.util.Objects.requireNonNull;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.app.data.Constants;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 
-import org.mozilla.javascript.annotations.JSGetter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -26,7 +26,6 @@ import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class HttpClient {
@@ -48,6 +47,32 @@ public class HttpClient {
 
 		client = builder.build();
 		return client;
+	}
+
+	@NotNull
+	public static File downloadSync(@NotNull HttpRequest request, @NotNull File targetFile) throws IOException {
+		request.checkFields();
+		var url = new URL(request.getUrl());
+
+		requireNonNull(targetFile.getParentFile()).mkdirs();
+		targetFile.delete();
+		targetFile.createNewFile();
+
+		var connection = url.openConnection();
+
+		if(request.getHeaders() != null) {
+			for(var header : request.getHeaders().entrySet()) {
+				connection.setRequestProperty(header.getKey(), header.getValue());
+			}
+		}
+
+		var httpChannel = Channels.newChannel(connection.getInputStream());
+
+		try(var fos = new FileOutputStream(targetFile)) {
+			fos.getChannel().transferFrom(httpChannel, 0, Long.MAX_VALUE);
+		}
+
+		return targetFile;
 	}
 
 	@NonNull
@@ -133,30 +158,7 @@ public class HttpClient {
 				return executeCall(okRequest.cacheControl(cacheControl), HttpCacheMode.NETWORK_ONLY);
 			}
 
-			return new HttpResponseImpl(response);
-		}
-	}
-
-	private static class HttpResponseImpl extends HttpResponse {
-		private final String text;
-		private final int code;
-
-		public HttpResponseImpl(@NonNull Response response) throws IOException {
-			this.code = response.code();
-			this.text = response.body().string();
-		}
-
-		@NonNull
-		@Override
-		@JSGetter("text")
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		@JSGetter("statusCode")
-		public int getStatusCode() {
-			return code;
+			return new HttpResponse(response);
 		}
 	}
 }

@@ -1,15 +1,18 @@
 package com.mrboomdev.awery.extensions.support.miru;
 
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
+import com.mrboomdev.awery.extensions.__Extension;
+import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.__ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 
 import java.util.Set;
 
-public abstract class MiruProvider extends ExtensionProvider {
-	private final Set<String> FEATURES = Set.of(FEATURE_MEDIA_WATCH, FEATURE_MEDIA_READ);
+public abstract class MiruProvider extends __ExtensionProvider {
+	private static final Set<String> FEATURES = Set.of(
+			ExtensionConstants.FEATURE_MEDIA_WATCH,
+			ExtensionConstants.FEATURE_MEDIA_READ);
 
-	public MiruProvider(Extension extension) {
+	public MiruProvider(__Extension extension) {
 		super(extension);
 	}
 

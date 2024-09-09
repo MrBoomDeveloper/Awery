@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.AweryApp.getString;
+import static com.mrboomdev.awery.app.App.getString;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
 import android.content.Context;
@@ -11,19 +11,18 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.ext.data.Selection;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Objects;
 
-public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<T>> {
+public class SelectionDialog<T, E extends SelectionDialog<T, E>> extends BaseDialogBuilder<E> {
 	private final Mode mode;
 	private final LinearLayoutCompat contentView;
 	private Selection<T> items = Selection.empty();
@@ -31,7 +30,53 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 	private ChipGroup chipGroup;
 	private boolean isChecking;
 
-	public SelectionDialog(Context context, Mode mode) {
+	public static class Single<T> extends SelectionDialog<T, Single<T>> {
+
+		public Single(Context context) {
+			super(context, Mode.SINGLE);
+		}
+
+		public Single<T> setPositiveButton(String label, SelectionListener<T> listener) {
+			return setPositiveButton(label, dialog -> {
+				if(listener != null) listener.onSelected(this, getSelection().get(Selection.State.SELECTED));
+			});
+		}
+
+		public Single<T> setPositiveButton(int label, SelectionListener<T> listener) {
+			return setPositiveButton(label, dialog -> {
+				if(listener != null) listener.onSelected(this, getSelection().get(Selection.State.SELECTED));
+			});
+		}
+
+		public interface SelectionListener<T> {
+			void onSelected(Single<T> dialog, @Nullable T value);
+		}
+	}
+
+	public static class Multi<T> extends SelectionDialog<T, Multi<T>> {
+
+		public Multi(Context context) {
+			super(context, Mode.MULTI);
+		}
+
+		public Multi<T> setPositiveButton(String label, SelectionListener<T> listener) {
+			return setPositiveButton(label, dialog -> {
+				if(listener != null) listener.onSelected(this, getSelection());
+			});
+		}
+
+		public Multi<T> setPositiveButton(int label, SelectionListener<T> listener) {
+			return setPositiveButton(label, dialog -> {
+				if(listener != null) listener.onSelected(this, getSelection());
+			});
+		}
+
+		public interface SelectionListener<T> {
+			void onSelected(Multi<T> dialog, Selection<T> value);
+		}
+	}
+
+	private SelectionDialog(Context context, Mode mode) {
 		super(context);
 		this.mode = mode;
 
@@ -110,7 +155,8 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 		}
 	}
 
-	public SelectionDialog<T> setItems(Selection<T> items) {
+	@SuppressWarnings("unchecked")
+	public E setItems(Selection<T> items) {
 		this.items = items;
 
 		if(mode == Mode.SINGLE) {
@@ -121,19 +167,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			throw new IllegalArgumentException("Unknown mode! " + mode);
 		}
 
-		return this;
-	}
-
-	public SelectionDialog<T> setPositiveButton(String label, SelectionListener<T> listener) {
-		return setPositiveButton(label, dialog -> {
-			if(listener != null) listener.onSelected(this, getSelection());
-		});
-	}
-
-	public SelectionDialog<T> setPositiveButton(@StringRes int label, SelectionListener<T> listener) {
-		return setPositiveButton(label, dialog -> {
-			if(listener != null) listener.onSelected(this, getSelection());
-		});
+		return (E) this;
 	}
 
 	public Selection<T> getSelection() {
@@ -146,11 +180,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 		return contentView;
 	}
 
-	public interface SelectionListener<T> {
-		void onSelected(SelectionDialog<T> dialog, Selection<T> data);
-	}
-
-	public enum Mode {
+	private enum Mode {
 		MULTI, SINGLE
 	}
 }

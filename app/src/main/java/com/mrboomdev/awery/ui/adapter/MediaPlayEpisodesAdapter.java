@@ -1,11 +1,11 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.openUrl;
-import static com.mrboomdev.awery.app.AweryApp.share;
-import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.App.openUrl;
+import static com.mrboomdev.awery.app.App.share;
+import static com.mrboomdev.awery.app.Lifecycle.getActivity;
+import static com.mrboomdev.awery.app.Lifecycle.getContext;
+import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.Media;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
@@ -46,14 +46,14 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
 	private OnEpisodeSelectedListener onEpisodeSelectedListener;
 	private ArrayList<CatalogVideo> items = new ArrayList<>();
-	private CatalogMedia media;
+	private Media media;
 
 	public MediaPlayEpisodesAdapter() {
 		setHasStableIds(true);
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setItems(CatalogMedia media, Collection<? extends CatalogVideo> items) {
+	public void setItems(Media media, Collection<? extends CatalogVideo> items) {
 		this.media = media;
 		idGenerator.clear();
 
@@ -74,7 +74,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 
 		thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
-			var progress = progressDao.get(media.globalId);
+			var progress = progressDao.get(media.getGlobalId());
 
 			if(progress != null) {
 				for(var entry : progress.progresses.entrySet()) {
@@ -89,7 +89,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		});
 	}
 
-	public CatalogMedia getMedia() {
+	public Media getMedia() {
 		return media;
 	}
 
@@ -129,8 +129,8 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		thread(() -> {
 			var progressDao = getDatabase().getMediaProgressDao();
 
-			var progress = progressDao.get(media.globalId);
-			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
+			var progress = progressDao.get(media.getGlobalId());
+			if(progress == null) progress = new CatalogMediaProgress(media.getGlobalId());
 
 			progress.progresses.put(episode.getNumber(), episodeProgress);
 			progressDao.insert(progress);
