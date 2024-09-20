@@ -1,4 +1,4 @@
-name: Telegram Bot Commit Notifier
+name: Send Commit Message to Telegram
 
 on:
   push:
@@ -6,57 +6,61 @@ on:
       - master
 
 jobs:
-  send-commit-message:
+  send_message:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      - name: Get Commit Info
+      - name: Get Commits Since Last Run
         run: |
-          # Get the latest commit message and author
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
-          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
-
-          # Format the commit message for Telegram
-          FORMATTED_COMMIT_MESSAGE="New Commit:\n<b>Message:</b> ${COMMIT_MESSAGE}\n<b>Author:</b> ${COMMIT_AUTHOR}"
-
-          # Encode the message for URL safe characters
-          FORMATTED_COMMIT_MESSAGE=$(echo "$FORMATTED_COMMIT_MESSAGE" | jq -sRr @uri)
-          
-          # Save to environment variable for use in the next step
-          echo "FORMATTED_COMMIT_MESSAGE=${FORMATTED_COMMIT_MESSAGE}" >> $GITHUB_ENV
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$COMMIT_LOGS" > commit_log.txt
+          echo $GITHUB_SHA > last_sha.txt
+        shell: bash
+        env:
+          CI: true
 
       - name: Send Commit Message to Telegram
         run: |
+          # Prepare the commit message
+          commit_message=$(cat commit_log.txt)
+          
           # Send the commit message and capture the message_id
           response=$(curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -F "text=${FORMATTED_COMMIT_MESSAGE}" \
-            -F "parse_mode=HTML" \
-            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}")
+            -F "text=${commit_message}" \
+            -F "parse_mode=HTML")
+
+          # Output the response for debugging
+          echo "Telegram API Response: $response"
 
           # Extract the message_id from the response
           message_id=$(echo "$response" | jq '.result.message_id')
-          
+
           # Unpin the previous message pinned by the bot (if exists)
           if [ -f bot_pinned_message_id.txt ]; then
             previous_message_id=$(cat bot_pinned_message_id.txt)
             curl -sS -f -X POST \
               "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/unpinChatMessage" \
               -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-              -F "message_id=${previous_message_id}" \
-              -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+              -F "message_id=${previous_message_id}"
           fi
           
           # Pin the newly sent message
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/pinChatMessage" \
             -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -F "message_id=${message_id}" \
-            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+            -F "message_id=${message_id}"
           
           # Save the new message_id to a file for future unpinning
           echo "$message_id" > bot_pinned_message_id.txt
