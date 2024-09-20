@@ -168,7 +168,7 @@ dependencies {
     implementation "androidx.webkit:webkit:1.11.0"
     implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation "com.github.mrboomdeveloper:awerysdk:-67856bbc66-1"
+    implementation "com.github.mrboomdeveloper:awerysdk:67856bbc66"
     implementation(project(":ext"))
 
     // Database
