@@ -1,0 +1,62 @@
+name: Telegram Bot Commit Notifier
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  send-commit-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get Commit Info
+        run: |
+          # Get the latest commit message and author
+          COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+
+          # Format the commit message for Telegram
+          FORMATTED_COMMIT_MESSAGE="New Commit:\n<b>Message:</b> ${COMMIT_MESSAGE}\n<b>Author:</b> ${COMMIT_AUTHOR}"
+
+          # Encode the message for URL safe characters
+          FORMATTED_COMMIT_MESSAGE=$(echo "$FORMATTED_COMMIT_MESSAGE" | jq -sRr @uri)
+          
+          # Save to environment variable for use in the next step
+          echo "FORMATTED_COMMIT_MESSAGE=${FORMATTED_COMMIT_MESSAGE}" >> $GITHUB_ENV
+
+      - name: Send Commit Message to Telegram
+        run: |
+          # Send the commit message and capture the message_id
+          response=$(curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -F "text=${FORMATTED_COMMIT_MESSAGE}" \
+            -F "parse_mode=HTML" \
+            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}")
+
+          # Extract the message_id from the response
+          message_id=$(echo "$response" | jq '.result.message_id')
+          
+          # Unpin the previous message pinned by the bot (if exists)
+          if [ -f bot_pinned_message_id.txt ]; then
+            previous_message_id=$(cat bot_pinned_message_id.txt)
+            curl -sS -f -X POST \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/unpinChatMessage" \
+              -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -F "message_id=${previous_message_id}" \
+              -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+          fi
+          
+          # Pin the newly sent message
+          curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/pinChatMessage" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -F "message_id=${message_id}" \
+            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+          
+          # Save the new message_id to a file for future unpinning
+          echo "$message_id" > bot_pinned_message_id.txt
