@@ -360,7 +360,7 @@
     <string name="green">हरा</string>
     <string name="gesture_mode">जेस्चर मोड</string>
     <string name="quick_rewind">त्वरित रिवाइंड</string>
-    <string name="double_tap_seek">सेक करने के लिए डबल टैप करें</string>
+    <string name="double_tap_seek">दोहरा टैप करें और खोजें</string>
     <string name="uninstall_extension">एक्सटेंशन हटाएं</string>
     <string name="pick_from_storage">स्टोरेज से चुनें</string>
     <string name="you_reached_end">आप अंत तक पहुँच चुके हैं</string>
@@ -375,7 +375,7 @@
     <string name="second_short">सेक</string>
     <string name="list_name">सूची का नाम</string>
     <string name="most_favourited">सबसे पसंदीदा</string>
-    <string name="cancelled">रद्द कर दिया गया</string>
+    <string name="cancelled">रद्द</string>
     <string name="completed">पूर्ण</string>
     <string name="planning_watch">देखने की योजना बनाई</string>
     <string name="please_report_bug_app">कृपया निम्नलिखित पाठ को एप्लिकेशन डेवलपर्स को भेजें!</string>
