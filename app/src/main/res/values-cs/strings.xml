@@ -33,17 +33,7 @@
     <string name="description">Popis</string>
     <string name="default_source">Výchozí zdroj</string>
     <string name="ui">Uživatelské rozhraní</string>
-    <string name="full_disclaimer">- Awery sám o sobě poskytuje pouze sledovač anime a mangy a neposkytuje žádné schopnosti streamování nebo stahování anime či mangy.
-\n
-\n - Awery ani žádný z jeho vývojářů/personálu nehostují žádný obsah nalezený v Awery. Veškeré obrázky a informace o anime/mangách v aplikaci jsou převzaty z různých veřejných API (AniList, MyAnimeList, Kitsu).
-\n
-\n - Dále, všechny odkazy na anime/mangu nalezené v Awery jsou převzaty z různých třetích stran pluginů a nejsou nijak spojeny s Awery ani jeho personálem.
-\n
-\n - Awery ani jeho majitelé nejsou odpovědní za jakékoli zneužití obsahu nalezeného uvnitř nebo mimo aplikaci a nelze je pohnat k odpovědnosti za šíření jakéhokoli obsahu nalezeného uvnitř aplikace.
-\n
-\n - Používáním Awery souhlasíte s tím, že vývojář aplikace nenese žádnou odpovědnost za jakýkoli obsah nalezený v aplikaci. Také souhlasíte s tím, že Awery nesmíte používat ke stahování nebo streamování jakéhokoli chráněného obsahu.
-\n
-\n - Pokud se jedná o problémy s porušením autorských práv na internetu, kontaktujte prosím zdrojovou webovou stránku. Vývojář nenese žádnou právní odpovědnost.</string>
+    <string name="full_disclaimer">- Awery sám o sobě poskytuje pouze sledovač anime a mangy a neposkytuje žádné schopnosti streamování nebo stahování anime či mangy.\n\n - Awery ani žádný z jeho vývojářů/personálu nehostují žádný obsah nalezený v Awery. Veškeré obrázky a informace o anime/mangách v aplikaci jsou převzaty z různých veřejných API (AniList, MyAnimeList, Kitsu).\n\n - Dále, všechny odkazy na anime/mangu nalezené v Awery jsou převzaty z různých třetích stran pluginů a nejsou nijak spojeny s Awery ani jeho personálem.\n\n - Awery ani jeho majitelé nejsou odpovědní za jakékoli zneužití obsahu nalezeného uvnitř nebo mimo aplikaci a nelze je pohnat k odpovědnosti za šíření jakéhokoli obsahu nalezeného uvnitř aplikace.\n\n - Používáním Awery souhlasíte s tím, že vývojář aplikace nenese žádnou odpovědnost za jakýkoli obsah nalezený v aplikaci. Také souhlasíte s tím, že Awery nesmíte používat ke stahování nebo streamování jakéhokoli chráněného obsahu.\n\n - Pokud se jedná o problémy s porušením autorských práv na internetu, kontaktujte prosím zdrojovou webovou stránku. Vývojář nenese žádnou právní odpovědnost.</string>
     <string name="default_quality_info">Automaticky použije nejbližší dostupnou kvalitu, platí POUZE pro „Multi Quality“ servery. Automaticky se mění při přehrávání videa.</string>
     <string name="resize_mode_button">Výchozí režim změny velikosti</string>
     <string name="subtitles">Titulky</string>
@@ -51,8 +41,7 @@
     <string name="secondary_sub_color_select">Barva obrysu titulků</string>
     <string name="secondary_sub_outline_type_select">Typ obrysu titulků</string>
     <string name="sub_background_color_select">Barva pozadí titulků</string>
-    <string name="watch_complete_percentage_info">"Procento, při kterém by měl být váš pokrok aktualizován po sledování epizody.
-\nTo také nastavuje  pro načtení odkazů na další epizodu."</string>
+    <string name="watch_complete_percentage_info">"Procento, při kterém by měl být váš pokrok aktualizován po sledování epizody.\n\nTo také nastavuje  pro načtení odkazů na další epizodu."</string>
     <string name="always_continue">Vždy pokračovat tam, kde jste skončili</string>
     <string name="pause_video_focus">Pozastavit, když není v záběru</string>
     <string name="gestures">Gesty pro hlasitost a jas</string>
@@ -64,8 +53,7 @@
     <string name="show_cast_button">Zobrazit tlačítko Cast</string>
     <string name="picture_in_picture">Obraz v obraze</string>
     <string name="always_minimize">Vždy minimalizovat</string>
-    <string name="always_minimize_info">Vyžaduje povolení PiP, chová se jako YouTube Player, ale lepší.
-\nTaké skrývá tlačítko PiP.</string>
+    <string name="always_minimize_info">Vyžaduje povolení PiP, chová se jako YouTube Player, ale lepší.\nTaké skrývá tlačítko PiP.</string>
     <string name="immersive_mode">Skrýt stavový řádek</string>
     <string name="immersive_mode_info">Vyžaduje restart aplikace pro plné použití.</string>
     <string name="startUpTab">Výchozí záložka při spuštění</string>
@@ -85,8 +73,7 @@
     <string name="check_app_updates">Automaticky kontrolovat aktualizace aplikace</string>
     <string name="author">Autor</string>
     <string name="account">Účet</string>
-    <string name="subscriptions_info">Časový interval, kdy bude Awery kontrolovat nové epizody/kapitoly
-\n(Kratší interval zvyšuje spotřebu baterie)</string>
+    <string name="subscriptions_info">Časový interval, kdy bude Awery kontrolovat nové epizody/kapitoly\n(Kratší interval zvyšuje spotřebu baterie)</string>
     <string name="auto_select_server_error">Nepodařilo se automaticky vybrat server, zkuste to prosím znovu!</string>
     <string name="loading_image_failed">Načítání obrázku se nezdařilo</string>
     <string name="type_other">Jiné</string>
@@ -379,8 +366,7 @@
     <string name="sort_by_release_date">Řadit podle data vydání</string>
     <string name="crop_borders">Oříznout okraje</string>
     <string name="error_loading_data">Chyba při načítání dat %1$s</string>
-    <string name="saved_to_path">Uloženo do:
-\n%s</string>
+    <string name="saved_to_path">Uloženo do:\n%s</string>
     <string name="setting_progress">Nastavení pokroku na %1$d</string>
     <string name="back_to_exit">Pro ukončení stiskněte tlačítko Zpět znovu</string>
     <string name="no_internet_connection">Bez připojení k internetu</string>
@@ -399,8 +385,7 @@
     <string name="no_update_found">Nenalezena žádná aktualizace</string>
     <string name="downloading_update">Stahování aktualizace %1$s</string>
     <string name="permission_required">Prosím, udělte oprávnění k přístupu k souborům a složkám v nastavení a zkuste to znovu.</string>
-    <string name="started_downloading">Zahájeno stahování
-\n%1$s</string>
+    <string name="started_downloading">Zahájeno stahování\n%1$s</string>
     <string name="time_format">%1$d dní %2$d hodin %3$d minut %4$d sekund</string>
     <string name="failed_to_load_data">Nepodařilo se načíst uložená data %1$d</string>
     <string name="main_role">Hlavní</string>
