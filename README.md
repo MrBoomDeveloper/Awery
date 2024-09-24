@@ -63,6 +63,9 @@ Thank you to all the people who have contributed!<br>
   <img src="https://contrib.rocks/image?repo=mrboomdeveloper/awery" alt="Contributors">
 </a>
 
+## License 🪪
+Awery is licensed under the Unabandon Public License (UPL). More info can be found [here](LICENSE.md).
+
 ---
 
 <p>
