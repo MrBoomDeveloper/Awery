@@ -412,7 +412,7 @@
     <string name="clear_images_cache">Cancella cache immagini</string>
     <string name="media_columns_count_port">Numero di colonne media in verticale</string>
     <string name="discord_server">Server Discord</string>
-    <string name="dim_screen">Dimi lo schermo</string>
+    <string name="dim_screen">Schermo oscurato</string>
     <string name="storage">Memoria</string>
     <string name="clear_webview_cache">Cancella cache WebView</string>
     <string name="clear_network_cache">Cancella cache di rete</string>
