@@ -40,8 +40,7 @@
     <string name="devs">Developers</string>
     <string name="ask_update_progress_info_ep">Isko off karne par hamesha episode dekhne ke baad progress ko automatically update karega.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">Ye percentage hai jab aapke progress ko episode dekhne ke baad update kiya jana chahiye.
-\nYe agle episode ke links preload karne ke waqt ke liye bhi set karta hai.</string>
+    <string name="watch_complete_percentage_info">Ye percentage hai jab aapke progress ko episode dekhne ke baad update kiya jana chahiye.\nYe agle episode ke links preload karne ke waqt ke liye bhi set karta hai.</string>
     <string name="behaviour">Vyavhar</string>
     <string name="seek_time">Seek Samay</string>
     <string name="amoled">Amoled Theme</string>
@@ -78,8 +77,7 @@
     <string name="no_update_found">Koi Update Nahi Mili</string>
     <string name="downloading_update">Update Download ho raha hai %1$s</string>
     <string name="permission_required">Files &amp; Folders ka access dene ke liye Settings mein permission do, fir dobara try karo.</string>
-    <string name="started_downloading">Downloading shuru hui
-\n%1$s</string>
+    <string name="started_downloading">Downloading shuru hui\n%1$s</string>
     <string name="loading_image_failed">Image Load karne mein Fail hua</string>
     <string name="failed_to_load_data">Saved data load nahi ho paya %1$d</string>
     <string name="time_format">%1$d din %2$d ghante %3$d minute %4$d second</string>
@@ -240,17 +238,7 @@
     <string name="video_info_info">Abhi play ho rahi video ki resolution dikhata hai, jo <b>\"Multi Quality\"</b> servers ke liye upyogi hai.</string>
     <string name="default_quality">Auto Quality Chayan</string>
     <string name="height">Unchai</string>
-    <string name="full_disclaimer">- Awery sirf ek anime aur manga tracker provide karta hai aur streaming ya downloading ki suvidha nahi deta.
-\n
-\n - Awery ya uske developer/staff me se koi bhi Awery ke andar milne wale content ko host nahi karta. Sabhi images aur anime/manga ki jankari alag-alag public APIs (AniList, MyAnimeList, Kitsu) se li gayi hai.
-\n
-\n - Saath hi, Awery me milne wale sabhi anime/manga ke links third-party plugins se liye gaye hai, jo Awery ya uske staff se related nahi hai.
-\n
-\n - Awery ya uske malik kisi bhi content ke misuse ke liye zimmedar nahi hai, na hi app ke andar ya bahar ke content ke prasar ke liye accountable hai.
-\n
-\n - Awery ka istemal karte hue, aap maante hai ki app ke developer kisi bhi content ke liye zimmedar nahi hai. Aap ye bhi maante hai ki aap Awery ka istemal copyright kiye gaye content ko download ya stream karne ke liye nahi karenge.
-\n
-\n - Agar internet infringement se judi samasyaayein ho, to kripya source website se sampark karein. Developer kisi bhi kanuni jimmedari nahi leta.</string>
+    <string name="full_disclaimer">- Awery sirf ek anime aur manga tracker provide karta hai aur streaming ya downloading ki suvidha nahi deta.\n\n - Awery ya uske developer/staff me se koi bhi Awery ke andar milne wale content ko host nahi karta. Sabhi images aur anime/manga ki jankari alag-alag public APIs (AniList, MyAnimeList, Kitsu) se li gayi hai.\n\n - Saath hi, Awery me milne wale sabhi anime/manga ke links third-party plugins se liye gaye hai, jo Awery ya uske staff se related nahi hai.\n\n - Awery ya uske malik kisi bhi content ke misuse ke liye zimmedar nahi hai, na hi app ke andar ya bahar ke content ke prasar ke liye accountable hai.\n\n - Awery ka istemal karte hue, aap maante hai ki app ke developer kisi bhi content ke liye zimmedar nahi hai. Aap ye bhi maante hai ki aap Awery ka istemal copyright kiye gaye content ko download ya stream karne ke liye nahi karenge.\n\n - Agar internet infringement se judi samasyaayein ho, to kripya source website se sampark karein. Developer kisi bhi kanuni jimmedari nahi leta.</string>
     <string name="width">Chaudai</string>
     <string name="default_quality_info">Apne aap sabse kareebi quality use karta hai, jo keval \"Multi Quality\" servers par lagu hota hai. Video play hone par auto change hota hai.</string>
     <string name="default_playback_speed">Default Playback Speed: %1$s</string>
@@ -280,8 +268,7 @@
     <string name="double_tap">Seek karne ke liye Double Tap kare</string>
     <string name="fast_forward">Fast Forward</string>
     <string name="double_tap_info">Isko off karne par fast forward &amp; rewind buttons dikhai denge.</string>
-    <string name="always_minimize_info">PiP ko enable karna zaroori hai, player ko Youtube Player jaisa banata hai, lekin behtar.
-\nPiP button ko bhi chhupa deta hai.</string>
+    <string name="always_minimize_info">PiP ko enable karna zaroori hai, player ko Youtube Player jaisa banata hai, lekin behtar.\nPiP button ko bhi chhupa deta hai.</string>
     <string name="immersive_mode">Status Bar Chhupaye</string>
     <string name="current_page">Current Page</string>
     <string name="dubbed">Dubbed</string>
@@ -314,8 +301,7 @@
     <string name="show_skip_time_stamp_button">Skip Time Stamp Button Dikhayo</string>
     <string name="crop_borders">Borders Crop karo</string>
     <string name="error_loading_data">Data Load karne mein Error %1$s</string>
-    <string name="saved_to_path">Yahan Save kiya gaya:
-\n%s</string>
+    <string name="saved_to_path">Yahan Save kiya gaya:\n%s</string>
     <string name="setting_progress">Progress set kar rahe hain %1$d</string>
     <string name="back_to_exit">Exit karne ke liye dobara Back karo</string>
     <string name="always_load_time_stamps">Hamesha Time Stamps Load karo</string>
@@ -323,8 +309,7 @@
     <string name="other">Anya</string>
     <string name="auto_skip_op_ed">OP / ED ko Auto Skip karo</string>
     <string name="account">Account</string>
-    <string name="subscriptions_info">Awery ko naye Episodes/Chapters ke liye kitni baar check karna hai
-\n(Kam samay zyada battery use karega)</string>
+    <string name="subscriptions_info">Awery ko naye Episodes/Chapters ke liye kitni baar check karna hai\n(Kam samay zyada battery use karega)</string>
     <string name="grid">Grid</string>
     <string name="sort_by_release_date">Release Date ke hisaab se Sort karo</string>
     <string name="no_internet_connection">Internet Connection Nahi Hai</string>
