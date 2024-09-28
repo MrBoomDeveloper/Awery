@@ -1,45 +1,35 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.ArgUtils.requireArgument;
-import static java.util.Objects.requireNonNull;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
-import com.caoccao.javet.exceptions.JavetException;
-import com.caoccao.javet.values.V8Value;
-import com.caoccao.javet.values.reference.IV8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueArray;
-import com.caoccao.javet.values.reference.V8ValueObject;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.io.FileUtil;
 
 import org.jetbrains.annotations.Contract;
+import org.mozilla.javascript.ScriptableObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,50 +42,8 @@ import java9.util.stream.StreamSupport;
  * @author MrBoomDev
  */
 public class NiceUtils {
-	public static final Object EMPTY_OBJECT = new Object();
 	private static final UniqueIdGenerator fileIdGenerator = new UniqueIdGenerator();
 	private static final String[] REMOVE_LAST_URL_CHARS = { "/", "?", "#", "&", " " };
-
-	public interface TryRunnable<T> {
-		T get() throws Throwable;
-	}
-
-	public interface CatchRunnable<T> {
-		T get(Throwable t);
-	}
-
-	public interface ThrowableCreator<T extends Throwable> {
-		T create();
-	}
-
-	@Contract("_ -> fail")
-	public static <T extends Throwable, E> E throwThrowable(@NonNull ThrowableCreator<T> creator) throws T {
-		throw creator.create();
-	}
-
-	public static <T> T returnTryCatch(TryRunnable<T> tryRunnable, CatchRunnable<T> catchRunnable) {
-		try {
-			return tryRunnable.get();
-		} catch(Throwable t) {
-			return catchRunnable.get(t);
-		}
-	}
-
-	public static String serialize(Serializable serializable) throws IOException {
-		try(var byteOs = new ByteArrayOutputStream(); var objectOs = new ObjectOutputStream(byteOs)) {
-			objectOs.writeObject(serializable);
-			return Base64.encodeToString(byteOs.toByteArray(), 0);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends Serializable> T deserialize(String s) throws IOException, ClassNotFoundException {
-		var data = Base64.decode(s, 0);
-
-		try(var objectIs = new ObjectInputStream(new ByteArrayInputStream(data))) {
-			return (T) objectIs.readObject();
-		}
-	}
 
 	@NonNull
 	public static File getTempFile() {
@@ -123,8 +71,8 @@ public class NiceUtils {
 		doIfNotNull(param, callback, null);
 	}
 
-	public static <A> void doIfNotNull(A param, @Nullable Callbacks.Callback1<A> callback, Runnable ifNull) {
-		if(param != null && !(param instanceof V8Value v8Value && v8Value.isNullOrUndefined())) {
+	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback, Runnable ifNull) {
+		if(param != null) {
 			if(callback != null) callback.run(param);
 		} else if(ifNull != null) {
 			ifNull.run();
@@ -204,12 +152,6 @@ public class NiceUtils {
 		}
 
 		return Boolean.TRUE.equals(bool);
-	}
-
-	public static Calendar getCalendar(long millis) {
-		var calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(millis);
-		return calendar;
 	}
 
 	@NonNull
@@ -314,7 +256,6 @@ public class NiceUtils {
 	}
 
 	@Nullable
-	@Deprecated(forRemoval = true)
 	public static Object invokeMethod(String className, String methodName) {
 		try {
 			var clazz = Class.forName(className);
@@ -327,7 +268,6 @@ public class NiceUtils {
 	}
 
 	@Nullable
-	@Deprecated(forRemoval = true)
 	public static Object getField(String className, String fieldName) {
 		try {
 			var clazz = Class.forName(className);
@@ -441,59 +381,89 @@ public class NiceUtils {
 		return callback.run();
 	}
 
-	/**
-	 * Please, just don't do this.
-	 */
-	@Deprecated
-	public static Integer asInteger(Integer o) {
-		return o;
-	}
 
-	/**
-	 * Please, just don't do this.
-	 */
-	@Deprecated
-	public static Float asFloat(Float o) {
-		return o;
-	}
 
-	/**
-	 * Please, just don't do this.
-	 */
-	@Deprecated
-	public static Long asLong(Long o) {
-		return o;
-	}
-
-	public static Integer asInteger(Object o) {
-		return o instanceof Number number ? number.intValue() : null;
-	}
-
-	public static Float asFloat(Object o) {
-		return o instanceof Number number ? number.floatValue() : null;
-	}
-
-	public static RuntimeException asRuntimeException(Throwable t) {
-		return t instanceof RuntimeException e ? e : new RuntimeException(t);
-	}
-
-	public static Long asLong(Object o) {
-		return o instanceof Number number ? number.longValue() : null;
-	}
-
-	public static int getPhraseCount(@NonNull String sentence, String word) {
-		int result = 0;
-
-		while(true) {
-			var index = sentence.indexOf(word);
-
-			if(index == -1) {
-				return result;
-			}
-
-			result++;
-			sentence = sentence.substring(index + word.length());
+	@NonNull
+	@Contract("null, _ -> fail")
+	public static <T> T requireArgument(T o, String name) throws NullPointerException {
+		if(o == null) {
+			throw new NullPointerException("An required argument \"" + name + "\" was not specified!");
 		}
+
+		return o;
+	}
+
+	public static <T> T requireArgument(@NonNull Activity activity, String name, Class<T> clazz) throws NullPointerException {
+		return requireArgument(activity.getIntent(), name, clazz);
+	}
+
+	public static <T> T requireArgument(Intent intent, String name, @NonNull Class<T> clazz) throws NullPointerException {
+		return clazz.cast(requireArgument(getArgument(intent, name, clazz), name));
+	}
+
+	public static <T> T getArgument(Intent intent, String name, Class<T> clazz) {
+		if(intent == null) return null;
+		Object result;
+
+		if(clazz == String.class) result = intent.getStringExtra(name);
+		else if(clazz == Integer.class) result = intent.getIntExtra(name, 0);
+		else if(clazz == Boolean.class) result = intent.getBooleanExtra(name, false);
+		else if(clazz == Long.class) result = intent.getLongExtra(name, 0);
+		else if(clazz == Float.class) result = intent.getFloatExtra(name, 0);
+		else result = intent.getSerializableExtra(name);
+
+		return clazz.cast(result);
+	}
+
+	public static <T> T getArgument(Bundle bundle, String name, Class<T> clazz) {
+		if(bundle == null) return null;
+		Object result;
+
+		if(clazz == String.class) result = bundle.getString(name);
+		else if(clazz == Integer.class) result = bundle.getInt(name, 0);
+		else if(clazz == Boolean.class) result = bundle.getBoolean(name, false);
+		else if(clazz == Long.class) result = bundle.getLong(name, 0);
+		else if(clazz == Float.class) result = bundle.getFloat(name, 0);
+		else result = bundle.getSerializable(name);
+
+		return clazz.cast(result);
+	}
+
+	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) throws NullPointerException {
+		var val = fromJs(o.get(name, o), type);
+		requireArgument(val, name);
+		return val;
+	}
+
+	@NonNull
+	public static <T> T requireArgument(
+			@NonNull Fragment fragment,
+			String name,
+			@NonNull Class<T> type
+	) throws ClassCastException, NullPointerException {
+		var bareObject = fragment.requireArguments().getSerializable(name);
+		var castedObject = type.cast(bareObject);
+
+		requireArgument(castedObject, name);
+		return castedObject;
+	}
+
+	/**
+	 * @param <T> Target type
+	 * @throws ClassCastException If argument's class doesn't extend an target class
+	 * @throws NullPointerException If argument was not found
+	 * @author MrBoomDev
+	 */
+	@NonNull
+	@SuppressWarnings("unchecked")
+	public static <T> T requireArgument(
+			@NonNull Fragment fragment,
+			String name
+	) throws ClassCastException, NullPointerException {
+		var o = (T) fragment.requireArguments().getSerializable(name);
+
+		requireArgument(o, name);
+		return o;
 	}
 
 	@NonNull
@@ -512,11 +482,30 @@ public class NiceUtils {
 	}
 
 	/**
+	 * @throws NullPointerException if object is null
+	 * @return The object itself
+	 * @author MrBoomDev
+	 */
+	@NonNull
+	@Contract("null -> fail; !null -> param1")
+	public static <T> T requireNonNull(T object) {
+		if(object == null) throw new NullPointerException();
+		return object;
+	}
+
+	/**
 	 * @return The first object if it is not null, otherwise the second object
 	 * @author MrBoomDev
 	 */
-	public static <T> T nonNullElse(T firstObject, T secondObject) {
+	public static <T> T requireNonNullElse(T firstObject, T secondObject) {
 		return firstObject != null ? firstObject : secondObject;
+	}
+
+	/**
+	 * @return True if the object is not null
+	 */
+	public static boolean nonNull(Object obj) {
+		return obj != null;
 	}
 
 	/**
@@ -542,57 +531,6 @@ public class NiceUtils {
 		return StreamSupport.stream(Arrays.asList(array));
 	}
 
-	@NonNull
-	@Contract("_ -> new")
-	public static <E> Iterable<E> iterable(Stream<E> stream) {
-		return new Iterable<>() {
-			@NonNull
-			@Override
-			public Iterator<E> iterator() {
-				return stream.iterator();
-			}
-		};
-	}
-
-	@NonNull
-	@Contract("_ -> new")
-	public static Stream<V8Value> stream(V8ValueArray array) throws JavetException {
-		return stream((IV8ValueArray) array);
-	}
-
-	@NonNull
-	@Contract("_ -> new")
-	public static Stream<V8Value> stream(IV8ValueArray array) throws JavetException {
-		requireArgument(array, "array");
-
-		var size = array.getLength();
-		var list = new ArrayList<V8Value>(size);
-
-		for(int i = 0; i < size; i++) {
-			list.set(i, array.get(i));
-		}
-
-		return StreamSupport.stream(list);
-	}
-
-	@NonNull
-	public static <E> Stream<E> stream(Iterator<E> iterator) {
-		requireArgument(iterator, "iterator");
-		var list = new ArrayList<E>();
-
-		while(iterator.hasNext()) {
-			list.add(iterator.next());
-		}
-
-		return stream(list);
-	}
-
-	@NonNull
-	public static <E> Stream<E> stream(Iterable<E> iterable) {
-		requireArgument(iterable, "iterable");
-		return stream(iterable.iterator());
-	}
-
 	/**
 	 * @return A stream from map entries set compatible with old Androids
 	 * @author MrBoomDev
@@ -602,19 +540,5 @@ public class NiceUtils {
 	public static <K, V> Stream<Map.Entry<K,V>> stream(@NonNull Map<K, V> map) {
 		requireArgument(map, "map");
 		return StreamSupport.stream(map.entrySet());
-	}
-
-	@NonNull
-	@Contract("_ -> new")
-	public static Stream<Map.Entry<V8Value, V8Value>> stream(@NonNull V8ValueObject v8valueObject) throws JavetException {
-		requireArgument(v8valueObject, "v8valueObject");
-
-		var list = new ArrayList<Map.Entry<V8Value, V8Value>>();
-
-		for(var key : iterable(stream(v8valueObject.getPropertyNames()))) {
-			list.add(Map.entry(key, v8valueObject.get(key)));
-		}
-
-		return stream(list);
 	}
 }

@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.MediaUtils.launchMediaActivity;
 import static com.mrboomdev.awery.util.MediaUtils.openMediaActionsMenu;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;

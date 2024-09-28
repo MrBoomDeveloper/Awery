@@ -1,10 +1,11 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.data.Constants.alwaysTrue;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -12,8 +13,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
-
-import static java.util.Objects.requireNonNull;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -36,18 +35,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
-import com.mrboomdev.awery.app.data.settings.NicePreferences;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.app.AweryLifecycle;
+import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding;
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding;
-import com.mrboomdev.awery.ext.data.Media;
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
@@ -60,7 +58,6 @@ import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.ExtensionComponentMissingException;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
@@ -78,26 +75,26 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdapter.OnEpisodeSelectedListener {
-	private static final int REQUEST_CODE_PICK_MEDIA = Lifecycle.getActivityResultCode();
+	private static final int REQUEST_CODE_PICK_MEDIA = AweryLifecycle.getActivityResultCode();
 	public static final int VIEW_TYPE_VARIANTS = 1;
 	public static final int VIEW_TYPE_ERROR = 2;
 	public static final int VIEW_TYPE_EPISODE = 3;
 	private static final String TAG = "MediaPlayFragment";
-	private final Map<__ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
-	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionConstants.FILTER_QUERY);
+	private final Map<ExtensionProvider, ExtensionStatus> sourceStatuses = new HashMap<>();
+	private final SettingsItem queryFilter = new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 	private final SettingsList filters = new SettingsList(queryFilter,
-			new SettingsItem(SettingsItemType.INTEGER, ExtensionConstants.FILTER_PAGE, 0));
+			new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
-	private ArrayListAdapter<__ExtensionProvider> sourcesDropdownAdapter;
+	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
 	private ConcatAdapter concatAdapter;
 	private List<? extends CatalogVideo> templateEpisodes;
-	private List<__ExtensionProvider> providers;
+	private List<ExtensionProvider> providers;
 	private MediaPlayEpisodesAdapter episodesAdapter;
 	private RecyclerView recycler;
-	private __ExtensionProvider selectedSource;
+	private ExtensionProvider selectedSource;
 	private ViewMode viewMode;
-	private Media media;
+	private CatalogMedia media;
 	private String searchId, searchTitle;
 	private boolean autoChangeSource = true, autoChangeTitle = true, changeSettings = true;
 	private int currentSourceIndex = 0;
@@ -110,20 +107,20 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		PlayerActivity.selectSource(selectedSource);
 
 		var intent = new Intent(requireContext(), PlayerActivity.class);
-		intent.putExtra(PlayerActivity.ARGUMENT_EPISODE, episode);
-		intent.putExtra(PlayerActivity.ARGUMENT_EPISODES, (Serializable) episodes);
+		intent.putExtra("episode", episode);
+		intent.putExtra("episodes", (Serializable) episodes);
 		startActivity(intent);
 
 		thread(() -> {
 			var dao = getDatabase().getMediaProgressDao();
 
-			var progress = dao.get(media.getGlobalId());
-			if(progress == null) progress = new CatalogMediaProgress(media.getGlobalId());
+			var progress = dao.get(media.globalId);
+			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
 
 			progress.lastWatchSource = selectedSource.getId();
 
 			var foundMedia = episodesAdapter.getMedia();
-			progress.lastId = foundMedia.getGlobalId();
+			progress.lastId = foundMedia.getId();
 			progress.lastTitle = foundMedia.getTitle();
 
 			dao.insert(progress);
@@ -146,7 +143,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 	}
 
-	public MediaPlayFragment(Media media) {
+	public MediaPlayFragment(CatalogMedia media) {
 		this.media = media;
 
 		var bundle = new Bundle();
@@ -217,10 +214,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			media = requireArgument(this, "media");
 		}
 
-		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions__Deprecated(__Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(switch(media.getType()) {
-					case TV, MOVIE -> ExtensionConstants.FEATURE_MEDIA_WATCH;
-					case COMICS, BOOK -> ExtensionConstants.FEATURE_MEDIA_READ;
+		var type = requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
+
+		providers = new ArrayList<>(stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
+				.map(extension -> extension.getProviders(switch(type) {
+					case TV, MOVIE -> ExtensionProvider.FEATURE_MEDIA_WATCH;
+					case BOOK, POST -> ExtensionProvider.FEATURE_MEDIA_READ;
 				}))
 				.flatMap(NiceUtils::stream)
 				.sorted().toList());
@@ -266,7 +265,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}, providers);
 
 		var more = getString(R.string.manual_search);
-		var titles = new ArrayList<>(List.of(media.getTitles()));
+		var titles = new ArrayList<>(media.titles);
 		titles.add(more);
 
 		var titlesAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
@@ -297,7 +296,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			});
 
 			binding.searchDropdown.setOnItemClickListener((parent, _view, position, id) -> {
-				var title = requireNonNull(titles.get(position));
+				var title = titles.get(position);
 
 				if(selectedSource == null) {
 					if(title.equals(more)) {
@@ -316,10 +315,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, selectedSource.getGlobalId());
 					intent.putExtra(SearchActivity.EXTRA_FILTERS, filters);
 
-					Lifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
+					AweryLifecycle.startActivityForResult(requireContext(), intent, REQUEST_CODE_PICK_MEDIA, (resultCode, result) -> {
 						if(result == null) return;
 
-						var media = (Media) result.getSerializableExtra(SearchActivity.RESULT_EXTRA_MEDIA);
+						var media = (CatalogMedia) result.getSerializableExtra(SearchActivity.RESULT_EXTRA_MEDIA);
 						if(media == null) return;
 
 						searchId = null;
@@ -369,12 +368,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}
 
 		thread(() -> {
-			var progress = getDatabase().getMediaProgressDao().get(media.getGlobalId());
+			var progress = getDatabase().getMediaProgressDao().get(media.globalId);
 
 			var mediaSource = NiceUtils.returnWith(() -> {
 				try {
-					return __ExtensionProvider.forGlobalId(media.getGlobalId());
-				} catch(ExtensionNotInstalledException | ExtensionComponentMissingException e) {
+					return ExtensionProvider.forGlobalId(media.globalId);
+				} catch(ExtensionNotInstalledException e) {
 					Log.e(TAG, "Source extension isn't installed!", e);
 					return null;
 				}
@@ -409,8 +408,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 			if(mediaSource != null) {
 				mediaSource.getVideos(new SettingsList(
-						new SettingsItem(SettingsItemType.INTEGER, ExtensionConstants.FILTER_PAGE, 0),
-						new SettingsItem(SettingsItemType.JSON, ExtensionConstants.FILTER_MEDIA, Parser.toString(Media.class, media))
+						new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
+						new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
 				)).addCallback(new AsyncFuture.Callback<>() {
 					@Override
 					public void onSuccess(List<? extends CatalogVideo> catalogEpisodes) {
@@ -433,7 +432,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 	}
 
-	private void selectProvider(@NonNull __ExtensionProvider provider) {
+	private void selectProvider(@NonNull ExtensionProvider provider) {
 		variantsAdapter.getBinding((binding) ->
 				binding.sourceDropdown.setText(provider.getName(), false));
 
@@ -441,7 +440,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		variantsAdapter.getBinding((binding) -> binding.variantWrapper.setVisibility(View.GONE));
 	}
 
-	private void loadEpisodesFromSource(@NonNull __ExtensionProvider source, Media media) {
+	private void loadEpisodesFromSource(@NonNull ExtensionProvider source, CatalogMedia media) {
 		var myId = ++loadId;
 
 		variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
@@ -450,8 +449,8 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		}));
 
 		source.getVideos(new SettingsList(
-				new SettingsItem(SettingsItemType.INTEGER, ExtensionConstants.FILTER_PAGE, 0),
-				new SettingsItem(SettingsItemType.JSON, ExtensionConstants.FILTER_MEDIA, Parser.toString(Media.class, media))
+				new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0),
+				new SettingsItem(SettingsItemType.JSON, ExtensionProvider.FILTER_MEDIA, Parser.toString(CatalogMedia.class, media))
 		)).addCallback(new AsyncFuture.Callback<>() {
 			@Override
 			public void onSuccess(List<? extends CatalogVideo> episodes) {
@@ -505,7 +504,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		});
 	}
 
-	private void loadEpisodesFromSource(@NonNull __ExtensionProvider source) {
+	private void loadEpisodesFromSource(@NonNull ExtensionProvider source) {
 		this.selectedSource = source;
 		var myId = ++loadId;
 
@@ -529,10 +528,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		variantsAdapter.getBinding((binding) ->
 				binding.searchDropdown.setText(queryFilter.getStringValue(), false));
 
-		var foundMediaCallback = new AsyncFuture.Callback<CatalogSearchResults<? extends Media>>() {
+		var foundMediaCallback = new AsyncFuture.Callback<CatalogSearchResults<? extends CatalogMedia>>() {
 
 			@Override
-			public void onSuccess(@NonNull CatalogSearchResults<? extends Media> media) {
+			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> media) {
 				if(source != selectedSource || myId != loadId) return;
 				loadEpisodesFromSource(source, media.get(0));
 			}
@@ -547,9 +546,9 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 					var context = getContext();
 					if(context == null) return;
 
-					if(autoChangeTitle && media.getTitles() != null && lastUsedTitleIndex.get() < media.getTitles().length - 1) {
+					if(autoChangeTitle && media.titles != null && lastUsedTitleIndex.get() < media.titles.size() - 1) {
 						var newIndex = lastUsedTitleIndex.incrementAndGet();
-						queryFilter.setValue(media.getTitles()[newIndex]);
+						queryFilter.setValue(media.titles.get(newIndex));
 						source.searchMedia(filters).addCallback(this);
 
 						variantsAdapter.getBinding(binding -> runOnUiThread(() -> {
@@ -579,13 +578,10 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 			source.getMedia(searchId).addCallback(new AsyncFuture.Callback<>() {
 				@Override
-				public void onSuccess(Media media) {
+				public void onSuccess(CatalogMedia media) {
 					if(source != selectedSource || myId != loadId) return;
 
-					media = new Media.Builder(media)
-							.setTitles(searchTitle)
-							.build();
-
+					media.setTitle(searchTitle);
 					loadEpisodesFromSource(source, media);
 					searchId = null;
 				}
@@ -625,7 +621,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		return true;
 	}
 
-	private void handleExceptionMark(__ExtensionProvider source, Throwable throwable) {
+	private void handleExceptionMark(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource) return;
 		var error = new ExceptionDescriptor(throwable);
 
@@ -639,7 +635,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		else sourceStatuses.put(source, ExtensionStatus.BROKEN_PARSER);
 	}
 
-	private void handleExceptionUi(__ExtensionProvider source, Throwable throwable) {
+	private void handleExceptionUi(ExtensionProvider source, Throwable throwable) {
 		if(source != selectedSource && source != null) return;
 		var error = new ExceptionDescriptor(throwable);
 
@@ -647,15 +643,12 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 		if(context == null) return;
 
 		variantsAdapter.getBinding(binding -> {
+			binding.searchStatus.setText(error.getMessage(context));
 			binding.searchStatus.setOnClickListener(null);
-
-			binding.searchStatus.setText(error.isUnknownException()
-					? "Failed to load episodes list"
-					: error.getMessage(context));
 		});
 
 		placeholderAdapter.getBinding(binding -> runOnUiThread(() -> {
-			binding.setInfo(context, throwable);
+			binding.setInfo(error.getTitle(context), error.getMessage(context));
 			placeholderAdapter.setEnabled(true);
 		}));
 	}

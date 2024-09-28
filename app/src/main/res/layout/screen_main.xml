@@ -32,7 +32,6 @@
         android:paddingVertical="8dp"
         android:paddingHorizontal="16dp"
         android:translationZ="12dp"
-        tools:abb_tabs="@menu/sample_tabs"
         app:abb_animationDuration="300"
         app:abb_animationInterpolator="@anim/over_shoot"
         app:abb_badgeBackgroundColor="#F44336"
@@ -45,20 +44,13 @@
         app:abb_tabColorSelected="?attr/colorPrimary"
         app:abb_textAppearance="@style/NavBarText" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:dividerColor="?attr/colorSurfaceContainer"
-        app:layout_goneMarginBottom="-100dp"
-        app:layout_constraintBottom_toTopOf="@id/navbar_material" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navbar_material"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:menu="@menu/sample_tabs"
+        tools:menu="@menu/manga_menu_detail"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <View

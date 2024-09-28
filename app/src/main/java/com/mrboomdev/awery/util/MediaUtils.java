@@ -1,11 +1,11 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.App.fixDialog;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.data.Constants.CATALOG_LIST_BLACKLIST;
-import static com.mrboomdev.awery.app.data.Constants.HIDDEN_LISTS;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
+import static com.mrboomdev.awery.data.Constants.HIDDEN_LISTS;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;
@@ -30,14 +30,16 @@ import androidx.core.app.ShareCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.db.item.DBCatalogList;
-import com.mrboomdev.awery.app.data.settings.NicePreferences;
+import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.db.item.DBCatalogList;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding;
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding;
-import com.mrboomdev.awery.ext.data.Media;
 import com.mrboomdev.awery.extensions.data.CatalogList;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
@@ -56,20 +58,20 @@ public class MediaUtils {
 	public static final String ACTION_COMMENTS = "comments";
 	public static final String ACTION_RELATIONS = "relations";
 
-	public static void launchMediaActivity(Context context, @NonNull Media media, String action) {
+	public static void launchMediaActivity(Context context, @NonNull CatalogMedia media, String action) {
 		var intent = new Intent(context, MediaActivity.class);
 		intent.putExtra(MediaActivity.EXTRA_MEDIA, media);
 		intent.putExtra(MediaActivity.EXTRA_ACTION, action);
 		context.startActivity(intent);
 	}
 
-	public static void launchMediaActivity(Context context, Media media) {
+	public static void launchMediaActivity(Context context, CatalogMedia media) {
 		launchMediaActivity(context, media, ACTION_INFO);
 	}
 
 	@NonNull
-	public static Collection<? extends Media> filterMediaSync(
-			@NonNull Collection<? extends Media> items
+	public static Collection<? extends CatalogMedia> filterMediaSync(
+			@NonNull Collection<? extends CatalogMedia> items
 	) {
 		return stream(items)
 				.filter(item -> !isMediaFilteredSync(item))
@@ -77,16 +79,16 @@ public class MediaUtils {
 	}
 
 	public static void filterMedia(
-			@NonNull Collection<? extends Media> items,
-			Callbacks.Callback1<Collection<? extends Media>> callback
+			@NonNull Collection<? extends CatalogMedia> items,
+			Callbacks.Callback1<Collection<? extends CatalogMedia>> callback
 	) {
 		thread(() -> callback.run(filterMediaSync(items)));
 	}
 
-	public static boolean isMediaFilteredSync(@NonNull Media media) {
+	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
 		var prefs = NicePreferences.getPrefs();
 		var badTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS);
-		var saved = getDatabase().getMediaProgressDao().get(media.getGlobalId());
+		var saved = AweryApp.getDatabase().getMediaProgressDao().get(media.globalId);
 
 		if(saved != null) {
 			if(AwerySettings.HIDE_LIBRARY_ENTRIES.getValue() && saved.getListsCount() > 0) {
@@ -98,21 +100,22 @@ public class MediaUtils {
 			}
 		}
 
-		return media.getTags() != null && stream(media.getTags())
+		return media.tags != null && stream(media.tags)
+				.map(CatalogTag::getName)
 				.anyMatch(badTags::contains);
 	}
 
 	@Contract(pure = true)
-	public static void isMediaFiltered(@NonNull Media media, Callbacks.Callback1<Boolean> callback) {
+	public static void isMediaFiltered(@NonNull CatalogMedia media, Callbacks.Callback1<Boolean> callback) {
 		thread(() -> callback.run(isMediaFilteredSync(media)));
 	}
 
-	public static void openMediaActionsMenu(Context context, @NonNull Media media, Runnable updateCallback) {
+	public static void openMediaActionsMenu(Context context, @NonNull CatalogMedia media, Runnable updateCallback) {
 		final var dialog = new AtomicReference<Dialog>();
 		var inflater = LayoutInflater.from(context);
 		var binding = PopupMediaActionsBinding.inflate(inflater);
 
-		if(media.getUrl() == null) {
+		if(media.url == null) {
 			binding.share.setVisibility(View.GONE);
 		}
 
@@ -146,26 +149,26 @@ public class MediaUtils {
 		fixDialog(sheet);
 	}
 
-	public static void blacklistMedia(Media media, Runnable callback) {
+	public static void blacklistMedia(CatalogMedia media, Runnable callback) {
 		thread(() -> {
 			var listsDao = getDatabase().getMediaProgressDao();
 			var mediaDao = getDatabase().getMediaDao();
 
-			var lists = listsDao.get(media.getGlobalId());
-			if(lists == null) lists = new CatalogMediaProgress(media.getGlobalId());
+			var lists = listsDao.get(media.globalId);
+			if(lists == null) lists = new CatalogMediaProgress(media.globalId);
 			lists.addToList(CATALOG_LIST_BLACKLIST);
 
-			mediaDao.insert(media);
+			mediaDao.insert(DBCatalogMedia.fromCatalogMedia(media));
 			listsDao.insert(lists);
 
 			runOnUiThread(callback);
 		});
 	}
 
-	public static void shareMedia(Context context, @NonNull Media media) {
+	public static void shareMedia(Context context, @NonNull CatalogMedia media) {
 		new ShareCompat.IntentBuilder(context)
 				.setType("text/plain")
-				.setText(media.getUrl())
+				.setText(media.url)
 				.startChooser();
 	}
 
@@ -226,15 +229,15 @@ public class MediaUtils {
 		void onListCreated(CatalogList list);
 	}
 
-	public static void openMediaBookmarkMenu(Context context, Media media) {
+	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
 		thread(() -> {
-			var lists = stream(getDatabase().getListDao().getAll())
+			var lists = stream(AweryApp.getDatabase().getListDao().getAll())
 					.filter(item -> !HIDDEN_LISTS.contains(item.getId()))
 					.toList();
 
-			var progressDao = getDatabase().getMediaProgressDao();
-			var __progress = progressDao.get(media.getGlobalId());
-			if(__progress == null) __progress = new CatalogMediaProgress(media.getGlobalId());
+			var progressDao = AweryApp.getDatabase().getMediaProgressDao();
+			var __progress = progressDao.get(media.globalId);
+			if(__progress == null) __progress = new CatalogMediaProgress(media.globalId);
 			var progress = __progress;
 
 			runOnUiThread(() -> {
@@ -298,14 +301,14 @@ public class MediaUtils {
 							}
 
 							// Update poster, tags and so on...
-							getDatabase().getMediaDao().insert(media);
+							getDatabase().getMediaDao().insert(DBCatalogMedia.fromCatalogMedia(media));
 
 							progressDao.insert(progress);
 
 							// TODO: Need to replace this with something new
 							//LibraryFragment.notifyDataChanged();
 						} catch(Exception e) {
-							App.toast("Failed to save!");
+							AweryApp.toast("Failed to save!");
 							Log.e("MediaUtils", "Failed to save bookmark", e);
 						}
 					});

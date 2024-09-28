@@ -3,8 +3,6 @@ package com.mrboomdev.awery.util.io;
 import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 
-import androidx.annotation.Nullable;
-
 import com.mrboomdev.awery.sdk.util.MimeTypes;
 
 import java.util.HashMap;
@@ -82,15 +80,11 @@ public class HttpRequest {
 		return this;
 	}
 
-	public HttpRequest setBody(String body, @Nullable MimeTypes contentType) {
+	public HttpRequest setBody(String body, MimeTypes contentType) {
 		return setBody(body, contentType != null ? contentType.toString() : null);
 	}
 
-	public HttpRequest setBody(String body) {
-		return setBody(body, (String) null);
-	}
-
-	public HttpRequest setBody(String body, @Nullable String contentType) {
+	public HttpRequest setBody(String body, String contentType) {
 		if(body == null) {
 			this.body = null;
 			this.mediaType = null;
@@ -98,11 +92,7 @@ public class HttpRequest {
 		}
 
 		this.body = body;
-
-		if(contentType != null) {
-			this.mediaType = MediaType.parse(contentType);
-		}
-
+		this.mediaType = MediaType.parse(contentType);
 		return this;
 	}
 
@@ -149,7 +139,7 @@ public class HttpRequest {
 		}
 
 		if(method == null) {
-			method = (body == null && form == null) ? HttpMethod.GET : HttpMethod.POST;
+			method = (body == null) ? HttpMethod.GET : HttpMethod.POST;
 		}
 
 		if(form == null && body == null && method.doSendData()) {

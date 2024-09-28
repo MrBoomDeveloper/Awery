@@ -1,17 +1,14 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.App.getResourceId;
-import static com.mrboomdev.awery.app.App.i18n;
-import static com.mrboomdev.awery.app.App.snackbar;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.getActivity;
-import static com.mrboomdev.awery.app.Lifecycle.getAnyActivity;
-import static com.mrboomdev.awery.app.Lifecycle.getAppContext;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.Lifecycle.startActivityForResult;
-import static com.mrboomdev.awery.app.data.Constants.alwaysTrue;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getResourceId;
+import static com.mrboomdev.awery.app.AweryApp.snackbar;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.Constants.alwaysTrue;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -24,19 +21,16 @@ import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
-import com.mrboomdev.awery.app.data.AndroidImage;
-import com.mrboomdev.awery.app.data.db.item.DBTab;
-import com.mrboomdev.awery.app.data.settings.base.ParsedSetting;
-import com.mrboomdev.awery.app.data.settings.base.CustomSettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
+import com.mrboomdev.awery.app.AweryLifecycle;
+import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
-import com.mrboomdev.awery.ext.data.Image;
-import com.mrboomdev.awery.ext.data.Setting;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
@@ -54,21 +48,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TabsSettings extends Setting {
-	private static final int REQUEST_CODE_SETUP = Lifecycle.getActivityResultCode();
+public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
+	private static final int REQUEST_CODE_SETUP = AweryLifecycle.getActivityResultCode();
 	private final Map<String, IconStateful> icons;
-	private final List<Setting> items = new ArrayList<>();
+	private final List<SettingsItem> items = new ArrayList<>();
 	private final List<DBTab> tabs = new ArrayList<>();
+	private final List<SettingsItem> headerItems = List.of(
+			new SettingsItem(SettingsItemType.ACTION) {
 
-	private final Setting[] headerItems = {
-			new Setting(Setting.Type.ACTION) {
 				@Override
-				public Image getIcon() {
-					return new AndroidImage(R.drawable.ic_add);
+				public Drawable getIcon(@NonNull Context context) {
+					return ContextCompat.getDrawable(context, R.drawable.ic_add);
 				}
 
 				@Override
-				public void onClick() {
+				public void onClick(Context context) {
 					// TODO: Remove this temp block
 
 					if(alwaysTrue()) {
@@ -76,7 +70,6 @@ public class TabsSettings extends Setting {
 						return;
 					}
 
-					var context = getAnyActivity(AppCompatActivity.class);
 					var binding = new AtomicReference<WidgetIconEdittextBinding>();
 					var icon = new AtomicReference<>("catalog");
 
@@ -106,7 +99,7 @@ public class TabsSettings extends Setting {
 								var text = binding.get().editText.getText();
 
 								if(text == null || text.toString().isBlank()) {
-									binding.get().editText.setError(getAppContext().getString(R.string.tab_name_empty_error));
+									binding.get().editText.setError(context.getString(R.string.tab_name_empty_error));
 									return;
 								}
 
@@ -126,8 +119,8 @@ public class TabsSettings extends Setting {
 
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
-											var title = new Setting.Builder(Setting.Type.CATEGORY)
-													.setTitle(getAppContext().getString(R.string.custom_tabs))
+											var title = new SettingsItem.Builder(SettingsItemType.CATEGORY)
+													.setTitle(R.string.custom_tabs)
 													.build();
 
 											items.add(title);
@@ -147,7 +140,7 @@ public class TabsSettings extends Setting {
 							.show();
 				}
 			}
-	};
+	);
 
 	public TabsSettings() {
 		try {
@@ -160,7 +153,7 @@ public class TabsSettings extends Setting {
 	}
 
 	public void loadData() {
-		items.add(new Setting(Setting.Type.SELECT) {
+		items.add(new SettingsItem(SettingsItemType.SELECT) {
 
 			@Override
 			public String getKey() {
@@ -168,22 +161,22 @@ public class TabsSettings extends Setting {
 			}
 
 			@Override
-			public String getTitle() {
-				return getAppContext().getString(R.string.startUpTab);
+			public String getTitle(Context context) {
+				return context.getString(R.string.startUpTab);
 			}
 
 			@Override
-			public String getDescription() {
-				return getAppContext().getString(R.string.default_tab_description);
+			public String getDescription(Context context) {
+				return context.getString(R.string.default_tab_description);
 			}
 
 			@Override
-			public Image getIcon() {
-				return new AndroidImage(R.drawable.ic_home_filled);
+			public Drawable getIcon(@NonNull Context context) {
+				return ContextCompat.getDrawable(context, R.drawable.ic_home_filled);
 			}
 
 			@Override
-			public Setting[] getItems() {
+			public List<? extends SettingsItem> getItems() {
 				var savedTemplate = AwerySettings.TABS_TEMPLATE.getValue();
 
 				if(!Objects.equals(savedTemplate, "custom")) {
@@ -197,34 +190,37 @@ public class TabsSettings extends Setting {
 						if(selected != null) {
 							return stream(selected.tabs)
 									.map(TabSetting::new)
-									.toArray(Setting[]::new);
+									.toList();
 						}
 					} catch(IOException e) {
 						throw new RuntimeException(e);
 					}
 				}
 
+				if(tabs == null) {
+					return Collections.emptyList();
+				}
+
 				return stream(tabs)
 						.map(TabSetting::new)
-						.toArray(Setting[]::new);
+						.toList();
 			}
 		});
 
-		items.add(new ParsedSetting(Setting.Type.ACTION) {
+		items.add(new CustomSettingsItem(SettingsItemType.ACTION) {
 
 			@Override
-			public String getTitle() {
-				return i18n(R.string.select_template);
+			public String getTitle(Context context) {
+				return context.getString(R.string.select_template);
 			}
 
 			@Override
-			public Image getIcon() {
-				return new AndroidImage(R.drawable.ic_view_cozy);
+			public Drawable getIcon(@NonNull Context context) {
+				return ContextCompat.getDrawable(context, R.drawable.ic_view_cozy);
 			}
 
 			@Override
-			public void onClick() {
-				var context = getAnyActivity(AppCompatActivity.class);
+			public void onClick(Context context) {
 				var intent = new Intent(context, SetupActivity.class);
 				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_TEMPLATE);
 				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
@@ -237,11 +233,11 @@ public class TabsSettings extends Setting {
 
 						var setting = items.get(i);
 						items.remove(setting);
-						//onSettingRemoval(setting);
+						onSettingRemoval(setting);
 					}
 
 					snackbar(Objects.requireNonNull(getActivity(context)),
-							R.string.restart_to_apply_settings, R.string.restart, Lifecycle::restartApp);
+							R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
 				});
 			}
 		});
@@ -253,8 +249,8 @@ public class TabsSettings extends Setting {
 		this.tabs.addAll(tabs);
 
 		if(!tabs.isEmpty()) {
-			items.add(new Setting.Builder(Setting.Type.CATEGORY)
-					.setTitle(i18n(R.string.custom_tabs))
+			items.add(new SettingsItem.Builder(SettingsItemType.CATEGORY)
+					.setTitle(R.string.custom_tabs)
 					.build());
 
 			this.items.addAll(stream(tabs)
@@ -264,24 +260,24 @@ public class TabsSettings extends Setting {
 	}
 
 	@Override
-	public String getTitle() {
-		return getAppContext().getString(R.string.tabs);
+	public String getTitle(@NonNull Context context) {
+		return context.getString(R.string.tabs);
 	}
 
 	@Override
-	public Setting[] getHeaderItems() {
+	public List<SettingsItem> getHeaderItems() {
 		return headerItems;
 	}
 
 	@Override
-	public Setting[] getItems() {
-		return items.toArray(new Setting[0]);
+	public List<SettingsItem> getItems() {
+		return items;
 	}
 
-	private class TabSetting extends Setting {
+	private class TabSetting extends SettingsItem {
 		private final DBTab tab;
 
-		private final Setting[] actions = List.of(new CustomSettingsItem(SettingsItemType.ACTION) {
+		private final List<SettingsItem> actions = List.of(new CustomSettingsItem(SettingsItemType.ACTION) {
 
 			@Override
 			public String getTitle(Context context) {

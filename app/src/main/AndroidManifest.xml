@@ -47,7 +47,7 @@
     </queries>
 
     <application
-        android:name=".app.App"
+        android:name=".app.AweryApp"
         android:allowBackup="true"
         android:label="${appLabel}"
         android:largeHeap="true"

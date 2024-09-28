@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import static java.util.Objects.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 
 import androidx.annotation.NonNull;
 

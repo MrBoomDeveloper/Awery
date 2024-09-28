@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.util.exceptions;
 
-import static com.mrboomdev.awery.app.App.i18n;
-
+import android.content.Context;
 import android.os.Build;
 import android.os.strictmode.InstanceCountViolation;
 import android.os.strictmode.NetworkViolation;
@@ -10,11 +9,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.caoccao.javet.exceptions.JavetCompilationException;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.extensions.support.aweryjs.AweryJsManager;
 import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
-import com.mrboomdev.awery.util.NiceUtils;
 
 import org.jetbrains.annotations.Contract;
 import org.mozilla.javascript.WrappedException;
@@ -79,9 +75,9 @@ public class ExceptionDescriptor {
 		return t;
 	}
 
-	public static String print(Throwable t) {
-		var title = getTitle(t);
-		var message = getMessage(t);
+	public static String print(Throwable t, Context context) {
+		var title = getTitle(t, context);
+		var message = getMessage(t, context);
 
 		if(title == null) return message;
 		if(message == null) return title;
@@ -93,15 +89,14 @@ public class ExceptionDescriptor {
 		return title + "\n" + message;
 	}
 
-	public static String getTitle(Throwable t) {
+	public static String getTitle(Throwable t, Context context) {
 		if(t instanceof LocalizedException e) {
-			return e.getTitle();
-		} else if(t instanceof UnsupportedOperationException) {
-			return i18n(R.string.not_implemented);
+			return e.getTitle(context);
+		} else if(t instanceof UnimplementedException
+				|| t instanceof UnsupportedOperationException) {
+			return context.getString(R.string.not_implemented);
 		} else if(t instanceof SocketTimeoutException) {
-			return i18n(R.string.timed_out);
-		} else if(t instanceof JavetCompilationException) {
-			return "Extension crashed";
+			return context.getString(R.string.timed_out);
 		} else if(t instanceof BotSecurityBypassException e) {
 			return "Failed to bypass " + e.getBlockerName();
 		} else if(t instanceof ExtensionNotInstalledException) {
@@ -114,9 +109,9 @@ public class ExceptionDescriptor {
 		} else if(t instanceof CancelledException) {
 			return t.getMessage();
 		} else if(t instanceof SSLHandshakeException) {
-			return i18n(R.string.failed_handshake);
+			return context.getString(R.string.failed_handshake);
 		} else if(t instanceof HttpException e) {
-			return getHttpErrorTitle(e.getCode());
+			return getHttpErrorTitle(context, e.getCode());
 		} else if(t instanceof NullPointerException) {
 			return "Parser is broken!";
 		} else if(t instanceof UnknownHostException) {
@@ -133,11 +128,11 @@ public class ExceptionDescriptor {
 			return "Database corrupted!";
 		}
 
-		return getGenericTitle();
+		return getGenericTitle(context);
 	}
 
-	public String getTitle() {
-		return getTitle(throwable);
+	public String getTitle(Context context) {
+		return getTitle(throwable, context);
 	}
 
 	public static Reason getReason(Throwable t) {
@@ -170,23 +165,20 @@ public class ExceptionDescriptor {
 		}
 
 		return throwable instanceof ZeroResultsException ||
+				throwable instanceof UnimplementedException ||
 				throwable instanceof SocketTimeoutException ||
 				throwable instanceof SocketException ||
 				throwable instanceof HttpException ||
 				throwable instanceof SSLHandshakeException;
 	}
 
-	public boolean isUnknownException() {
-		return isUnknownException(throwable);
-	}
-
 	public static boolean isUnknownException(Throwable t) {
 		return !(t instanceof ZeroResultsException ||
+				t instanceof UnimplementedException ||
 				t instanceof SocketTimeoutException ||
 				t instanceof ExtensionNotInstalledException ||
 				t instanceof SocketException ||
 				t instanceof InvalidSyntaxException ||
-				t instanceof JavetCompilationException ||
 				t instanceof JsException ||
 				t instanceof SSLHandshakeException ||
 				t instanceof HttpException ||
@@ -197,8 +189,8 @@ public class ExceptionDescriptor {
 
 	@NonNull
 	@Contract(pure = true)
-	private static String getGenericTitle() {
-		return i18n(R.string.something_went_wrong);
+	private static String getGenericTitle(@NonNull Context context) {
+		return context.getString(R.string.something_went_wrong);
 	}
 
 	@NonNull
@@ -206,60 +198,31 @@ public class ExceptionDescriptor {
 		return Log.getStackTraceString(throwable);
 	}
 
-	public String getMessage() {
-		return getMessage(throwable);
+	public String getMessage(Context context) {
+		return getMessage(throwable, context);
 	}
 
-	public static String getMessage(@NonNull Throwable t) {
+	public static String getMessage(@NonNull Throwable t, Context context) {
 		if(t instanceof LocalizedException e) {
-			return e.getLocalizedMessage();
-		}
-
-		if(t instanceof UnsupportedOperationException) {
+			return e.getDescription(context);
+		} else if(t instanceof UnimplementedException) {
 			return t.getMessage();
-		}
-
-		if(t instanceof ExtensionNotInstalledException e) {
+		} else if(t instanceof ExtensionNotInstalledException e) {
 			return "Please check your filters again. Maybe used extension was removed. It's id: " + e.getExtensionName();
-		}
-
-		if(t instanceof BotSecurityBypassException) {
+		} else if(t instanceof BotSecurityBypassException) {
 			return "Try opening the website and completing their bot check.";
-		}
-
-		if(t instanceof SocketTimeoutException) {
-			return i18n(R.string.connection_timeout);
-		}
-
-		if(t instanceof SocketException || t instanceof SSLHandshakeException) {
+		} else if(t instanceof SocketTimeoutException) {
+			return context.getString(R.string.connection_timeout);
+		} else if(t instanceof SocketException || t instanceof SSLHandshakeException) {
 			return "Failed to connect to the server!";
-		}
-
-		if(t instanceof HttpException e) {
-			return getHttpErrorMessage(e.getCode());
-		}
-
-		if(t instanceof UnknownHostException e) {
+		} else if(t instanceof HttpException e) {
+			return getHttpErrorMessage(context, e.getCode());
+		} else if(t instanceof UnknownHostException e) {
 			return e.getMessage();
-		}
-
-		if(t instanceof SerializationException ||
+		} else if(t instanceof SerializationException ||
 				t instanceof InvalidSyntaxException) {
 			return "An error has occurred while parsing the response. " + t.getMessage();
-		}
-
-		if(t instanceof JavetCompilationException exception) {
-			var e = exception.getScriptingError();
-
-			var lineOffset = NiceUtils.getPhraseCount(
-					AweryJsManager.INJECTED_CODE, "\n");
-
-			return e.getDetailedMessage() + "\n\t"
-					+ "in \"" + e.getSourceLine() + "\"\n\t"
-					+ "at (" + (e.getLineNumber() - lineOffset) + ":" + e.getStartColumn() + ")";
-		}
-
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
+		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
 			if(t instanceof InstanceCountViolation) {
 				return "Too much instances of the object was created. " + t.getMessage();
 			} else if(t instanceof NetworkViolation) {
@@ -280,30 +243,30 @@ public class ExceptionDescriptor {
 	}
 
 	@NonNull
-	private static String getHttpErrorTitle(int code) {
+	private static String getHttpErrorTitle(Context context, int code) {
 		return switch(code) {
 			case 400, 422 -> "Bad request";
-			case 403 -> i18n(R.string.access_denied);
-			case 404 -> i18n(R.string.nothing_found);
-			case 429 -> i18n(R.string.too_much_requests);
-			case 500, 503 -> i18n(R.string.server_down);
-			case 504 -> i18n(R.string.timed_out);
+			case 403 -> context.getString(R.string.access_denied);
+			case 404 -> context.getString(R.string.nothing_found);
+			case 429 -> context.getString(R.string.too_much_requests);
+			case 500, 503 -> context.getString(R.string.server_down);
+			case 504 -> context.getString(R.string.timed_out);
 			default -> "Unknown network error";
 		};
 	}
 
 	@NonNull
-	private static String getHttpErrorMessage(int code) {
+	private static String getHttpErrorMessage(Context context, int code) {
 		return "(" + code + ") " + switch(code) {
 			case 400, 422 -> "The request was invalid, please try again later.";
 			case 401 -> "You are not logged in, please log in and try again.";
 			case 403 -> "You have no access to this resource, try logging into your account.";
-			case 404 -> i18n(R.string.not_found_detailed);
+			case 404 -> context.getString(R.string.not_found_detailed);
 			case 429 -> "You have exceeded the rate limit, please try again later.";
 			case 500 -> "An internal server error has occurred, please try again later.";
 			case 503 -> "The server is currently unavailable, please try again later.";
 			case 504 -> "The connection timed out, please try again later.";
-			default -> i18n(R.string.unknown_error);
+			default ->  context.getString(R.string.unknown_error);
 		};
 	}
 
@@ -361,10 +324,10 @@ public class ExceptionDescriptor {
 		RATE_LIMITED {
 
 		},*/
-		UNSUPPORTED {
+		UNIMPLEMENTED {
 			@Override
 			protected boolean isMeImpl(Throwable t) {
-				return t instanceof UnsupportedOperationException;
+				return t instanceof UnsupportedOperationException || t instanceof UnimplementedException;
 			}
 		},
 		OTHER {
@@ -380,7 +343,7 @@ public class ExceptionDescriptor {
 
 		/*
 		if(throwable instanceof JsException js) {
-			return switch(Objects.nonNullElse(js.getErrorId(), "")) {
+			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
 				case JsException.ERROR_RATE_LIMITED -> Reason.RATE_LIMITED;
 				case JsException.SERVER_ERROR, JsException.SERVER_DOWN -> Reason.SERVER_DOWN;
 				case JsException.ERROR_ACCOUNT_REQUIRED -> Reason.NO_ACCESS;

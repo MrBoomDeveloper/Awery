@@ -1,11 +1,10 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.App.fixDialog;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.cancelDelayed;
-import static com.mrboomdev.awery.app.Lifecycle.runDelayed;
-import static com.mrboomdev.awery.app.Lifecycle.startActivityForResult;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
+import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -28,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -50,7 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerActivityController {
-	private static final int REQUEST_CODE_PICK_SUBTITLES = Lifecycle.getActivityResultCode();
+	private static final int REQUEST_CODE_PICK_SUBTITLES = AweryLifecycle.getActivityResultCode();
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;
 	private final Set<String> lockedUiReasons = new HashSet<>();
 	private final PlayerActivity activity;
@@ -300,12 +299,10 @@ public class PlayerActivityController {
 		if(subtitles == null) return;
 
 		var picker = new PopupItem(R.string.pick_from_storage);
-		var search = new PopupItem("Search via extensions");
 
 		var items = new LinkedHashMap<PopupItem, CatalogSubtitle>();
 		items.put(new PopupItem(R.string.none), null);
 		items.put(picker, null);
-		items.put(search, null);
 
 		for(var subtitle : subtitles) {
 			items.put(new PopupItem().setTitle(subtitle.getTitle()), subtitle);
@@ -348,12 +345,6 @@ public class PlayerActivityController {
 				});
 
 				dialog.get().dismiss();
-				return;
-			}
-
-			if(item == search) {
-				// TODO: 8/6/2024 Search via extensions
-				toast("You don't have any subtitle extensions!");
 				return;
 			}
 
@@ -475,10 +466,6 @@ public class PlayerActivityController {
 
 		public PopupItem(@StringRes int title) {
 			this.title = activity.getString(title);
-		}
-
-		public PopupItem(String title) {
-			this.title = title;
 		}
 
 		public PopupItem() {}

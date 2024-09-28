@@ -1,12 +1,10 @@
 package com.mrboomdev.awery.extensions.data;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,14 +12,14 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.squareup.moshi.Json;
 
 import java.io.Serial;
@@ -31,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-@Deprecated(forRemoval = true)
 @Entity(tableName = "feed")
 public class CatalogFeed implements Serializable {
 	public static final String TEMPLATE_BOOKMARKS = "BOOKMARKS";
@@ -43,7 +40,6 @@ public class CatalogFeed implements Serializable {
 
 	public static final String FILTER_FIRST_LARGE = "first_large";
 
-	private static final String TAG = "CatalogFeed";
 	@Serial
 	private static final long serialVersionUID = 1;
 	@PrimaryKey
@@ -111,15 +107,7 @@ public class CatalogFeed implements Serializable {
 	 */
 	public static List<CatalogFeed> processFeeds(@NonNull List<CatalogFeed> feeds) {
 		return stream(feeds)
-				.map(feed -> {
-					try {
-						return processFeed(feed);
-					} catch(Throwable e) {
-						Log.e(TAG, "Failed to process an feed!", e);
-						return null;
-					}
-				})
-				.filter(Objects::nonNull)
+				.map(CatalogFeed::processFeed)
 				.flatMap(NiceUtils::stream)
 				.toList();
 	}
@@ -128,7 +116,7 @@ public class CatalogFeed implements Serializable {
 	 * A heavy task. Run on a separate thread!
 	 */
 	@NonNull
-	private static List<CatalogFeed> processFeed(@NonNull CatalogFeed feed) throws Throwable {
+	private static List<CatalogFeed> processFeed(@NonNull CatalogFeed feed) {
 		if(Looper.myLooper() == Looper.getMainLooper()) {
 			throw new IllegalStateException("processFeed() was called on the ui thread!");
 		}
@@ -154,11 +142,11 @@ public class CatalogFeed implements Serializable {
 					.toList();
 
 			case TEMPLATE_AUTO_GENERATE -> {
-				var result = new ArrayList<>(stream(ExtensionsFactory.getInstance().await().getExtensions(__Extension.FLAG_WORKING))
-						.map(__Extension::getProviders)
+				var result = new ArrayList<>(stream(ExtensionsFactory.getInstance().await().getExtensions(Extension.FLAG_WORKING))
+						.map(Extension::getProviders)
 						.flatMap(NiceUtils::stream)
 						.filter(provider -> {
-							if(!provider.hasFeatures(ExtensionConstants.FEATURE_FEEDS)) {
+							if(!provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS)) {
 								return false;
 							}
 
@@ -175,7 +163,7 @@ public class CatalogFeed implements Serializable {
 									}
 
 									case ONLY -> {
-										if(provider.getAdultContentMode() == __ExtensionProvider.AdultContent.NONE) {
+										if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
 											return false;
 										}
 									}
@@ -184,7 +172,17 @@ public class CatalogFeed implements Serializable {
 
 							return true;
 						})
-						.map(provider -> provider.getFeeds().awaitCatch(Collections::emptyList))
+						.map(provider -> AsyncUtils.<List<CatalogFeed>>awaitResult(breaker -> provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {
+							@Override
+							public void onSuccess(List<CatalogFeed> catalogFeeds) {
+								breaker.run(catalogFeeds);
+							}
+
+							@Override
+							public void onFailure(Throwable e) {
+								breaker.run(Collections.emptyList());
+							}
+						})))
 						.flatMap(NiceUtils::stream)
 						.toList());
 

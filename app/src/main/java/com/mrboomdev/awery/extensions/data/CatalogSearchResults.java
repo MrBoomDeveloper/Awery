@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@Deprecated(forRemoval = true)
 public interface CatalogSearchResults<T> extends List<T> {
 
 	boolean hasNextPage();

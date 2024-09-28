@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getMarkwon;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.openUrl;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.WRAP_CONTENT;

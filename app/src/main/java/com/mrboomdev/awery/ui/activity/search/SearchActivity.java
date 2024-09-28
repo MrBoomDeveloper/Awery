@@ -1,13 +1,13 @@
 package com.mrboomdev.awery.ui.activity.search;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.runDelayed;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -15,7 +15,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
-import static java.util.Objects.requireNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -38,14 +37,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.app.AweryLifecycle;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.databinding.ScreenSearchBinding;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -53,10 +51,9 @@ import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.sheet.FiltersSheet;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.ext.data.Selection;
+import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.ExtensionComponentMissingException;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
@@ -93,15 +90,15 @@ public class SearchActivity extends AppCompatActivity {
 	private ArrayList<CatalogMedia> items = new ArrayList<>();
 	private ScreenSearchBinding binding;
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> loadingAdapter;
-	private __ExtensionProvider source;
+	private ExtensionProvider source;
 	private boolean didReachedEnd;
 	private int searchId;
 
 	private SettingsItem queryFilter = new SettingsItem(
-			SettingsItemType.STRING, ExtensionConstants.FILTER_QUERY);
+			SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
 
 	private SettingsItem pageFilter = new SettingsItem(
-			SettingsItemType.INTEGER, ExtensionConstants.FILTER_PAGE, 0);
+			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0);
 
 	/** We initially set this value to "true" so that list won't try
 	 to load anything because we haven't typed anything yet. **/
@@ -130,7 +127,7 @@ public class SearchActivity extends AppCompatActivity {
 		var filters = (List<SettingsItem>) getIntent().getSerializableExtra(EXTRA_FILTERS);
 
 		if(filters != null) {
-			var foundQuery = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionConstants.FILTER_QUERY));
+			var foundQuery = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
 			if(foundQuery != null) queryFilter.setValue(foundQuery.getStringValue());
 		}
 
@@ -138,9 +135,9 @@ public class SearchActivity extends AppCompatActivity {
 		else applyFilters(this.filters, false);
 
 		try {
-			this.source = __ExtensionProvider.forGlobalId(requireArgument(
-					this, EXTRA_GLOBAL_PROVIDER_ID, String.class));
-		} catch(ExtensionNotInstalledException | ExtensionComponentMissingException e) {
+			this.source = ExtensionProvider.forGlobalId(Objects.requireNonNull(
+					getIntent().getStringExtra(EXTRA_GLOBAL_PROVIDER_ID)));
+		} catch(ExtensionNotInstalledException e) {
 			toast("Source extension isn't installed!");
 			finish();
 		}
@@ -279,7 +276,7 @@ public class SearchActivity extends AppCompatActivity {
 			loadingAdapter.setEnabled(true);
 			loadingAdapter.getBinding(EmptyView::startLoading);
 
-			source.getMediaSearchFilters().addCallback(new AsyncFuture.Callback<>() {
+			source.getFilters().addCallback(new AsyncFuture.Callback<>() {
 				private void done() {
 					SearchActivity.this.binding.headerWrapper.setVisibility(View.VISIBLE);
 					SearchActivity.this.binding.swipeRefresher.setEnabled(true);
@@ -345,7 +342,7 @@ public class SearchActivity extends AppCompatActivity {
 
 						activate(found, found.getParent());
 						applyFilters(List.of(root), true);
-						Lifecycle.runOnUiThread(this::done, SearchActivity.this.binding.recycler);
+						AweryLifecycle.runOnUiThread(this::done, SearchActivity.this.binding.recycler);
 					}
 				}
 
@@ -353,7 +350,7 @@ public class SearchActivity extends AppCompatActivity {
 				public void onFailure(Throwable t) {
 					queryFilter.setValue(tag);
 
-					Lifecycle.runOnUiThread(() -> {
+					AweryLifecycle.runOnUiThread(() -> {
 						SearchActivity.this.binding.header.edittext.setText(tag);
 						done();
 					}, SearchActivity.this.binding.recycler);
@@ -376,8 +373,8 @@ public class SearchActivity extends AppCompatActivity {
 		if(newFilters != null) {
 			this.filters.addAll(newFilters);
 
-			var foundQuery = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionConstants.FILTER_QUERY));
-			var foundPage = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionConstants.FILTER_PAGE));
+			var foundQuery = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
+			var foundPage = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_PAGE));
 
 			if(foundQuery != null) {
 				if(ignoreInternalFilters) this.filters.remove(foundQuery);
@@ -505,7 +502,6 @@ public class SearchActivity extends AppCompatActivity {
 						if(e instanceof ZeroResultsException && page != 0) {
 							reachedEnd(wasSearchId);
 						} else {
-							didReachedEnd = true;
 							binding.title.setText(error.getTitle(SearchActivity.this));
 							binding.message.setText(error.getMessage(SearchActivity.this));
 						}
@@ -520,8 +516,7 @@ public class SearchActivity extends AppCompatActivity {
 				onFinally();
 			}
 
-			@Override
-			public void onFinally() {
+			private void onFinally() {
 				if(wasSearchId != searchId) return;
 				binding.swipeRefresher.setRefreshing(false);
 			}
@@ -569,7 +564,7 @@ public class SearchActivity extends AppCompatActivity {
 						() -> MediaUtils.isMediaFiltered(media, isFiltered -> {
 					if(!isFiltered) return;
 
-					Lifecycle.runOnUiThread(() -> {
+					AweryLifecycle.runOnUiThread(() -> {
 						items.remove(media);
 						notifyItemRemoved(index);
 					});

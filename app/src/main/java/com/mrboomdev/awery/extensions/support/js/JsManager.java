@@ -1,8 +1,7 @@
-/*
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
-import static com.mrboomdev.awery.data.Awery.SUPPRESS_IGNORED_THROWABLE;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.data.Constants.SUPPRESS_IGNORED_THROWABLE;
 import static com.mrboomdev.awery.util.async.AsyncUtils.await;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.listFileNames;
@@ -14,7 +13,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.data.Awery;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
@@ -201,13 +200,11 @@ public class JsManager extends ExtensionsManager {
 		}
 	}
 
-	*/
-/**
+	/**
 	 * We have to add a task to the queue, because we can't call it from the main thread,
 	 * so please do not touch the Context outside of it's thread!
 	 * @author MrBoomDev
-	 *//*
-
+	 */
 	protected void addTask(JsTask task) {
 		tasks.add(task);
 	}
@@ -221,11 +218,9 @@ public class JsManager extends ExtensionsManager {
 		return got;
 	}
 
-	*/
-/**
+	/**
 	 * Run action on the JS Thread
-	 *//*
-
+	 */
 	protected void postRunnable(Runnable action) {
 		addTask(new JsTask(action));
 	}
@@ -307,7 +302,7 @@ public class JsManager extends ExtensionsManager {
 
 			if(response instanceof Exception e) {
 				if(e instanceof EvaluatorException ex) {
-					Log.e(TAG, Awery.LOGS_SEPARATOR);
+					Log.e(TAG, Constants.LOGS_SEPARATOR);
 					throw new JsException(ex, caughtExceptions);
 				}
 
@@ -358,4 +353,4 @@ public class JsManager extends ExtensionsManager {
 	public String getId() {
 		return MANAGER_ID;
 	}
-}*/
+}

@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.showLoadingWindow;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.getActivities;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
@@ -18,8 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.db.item.DBRepository;
 import com.mrboomdev.awery.app.services.BackupService;
+import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.io.FileUtil;

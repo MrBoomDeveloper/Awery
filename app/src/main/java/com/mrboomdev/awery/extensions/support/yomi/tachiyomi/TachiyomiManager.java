@@ -1,14 +1,13 @@
 package com.mrboomdev.awery.extensions.support.yomi.tachiyomi;
 
-import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_READ;
+import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,17 +17,15 @@ import eu.kanade.tachiyomi.source.MangaSource;
 import eu.kanade.tachiyomi.source.SourceFactory;
 
 public class TachiyomiManager extends YomiManager {
-	private static final Set<String> BASE_FEATURES = Set.of(
-			ExtensionConstants.FEATURE_MEDIA_READ,
-			ExtensionConstants.FEATURE_MEDIA_SEARCH);
+	private final Set<String> BASE_FEATURES = Set.of(FEATURE_MEDIA_READ, FEATURE_MEDIA_SEARCH);
 
 	@Override
-	public @NotNull String getName() {
+	public String getName() {
 		return "Tachiyomi";
 	}
 
 	@Override
-	public @NotNull String getId() {
+	public String getId() {
 		return "TACHIYOMI_KOTLIN";
 	}
 
@@ -68,7 +65,7 @@ public class TachiyomiManager extends YomiManager {
 	}
 
 	@Override
-	public List<? extends __ExtensionProvider> createProviders(__Extension extension, Object main) {
+	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof MangaSource source) {
 			return List.of(new TachiyomiProvider(extension, source, false) {
 				@Override

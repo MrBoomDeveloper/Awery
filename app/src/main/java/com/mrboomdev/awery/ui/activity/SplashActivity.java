@@ -1,10 +1,9 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getDatabase;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.annotation.SuppressLint;
@@ -16,8 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.databinding.ScreenSplashBinding;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
@@ -60,7 +58,7 @@ public class SplashActivity extends AppCompatActivity {
 				CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
 						.setTitle("Database is corrupted!")
 						.setThrowable(e)
-						.setDismissCallback(Lifecycle::exitApp)
+						.setDismissCallback(AweryLifecycle::exitApp)
 						.build());
 
 				return;
@@ -85,10 +83,9 @@ public class SplashActivity extends AppCompatActivity {
 					Log.e(TAG, "Failed to load an ExtensionsFactory!", t);
 
 					CrashHandler.showErrorDialog(SplashActivity.this, new CrashHandler.CrashReport.Builder()
-							.setPrefix(R.string.please_report_bug_app)
 							.setTitle("Failed to load an ExtensionsFactory")
 							.setThrowable(t)
-							.setDismissCallback(Lifecycle::exitApp)
+							.setDismissCallback(AweryLifecycle::exitApp)
 							.build());
 				}
 			});
@@ -115,6 +112,6 @@ public class SplashActivity extends AppCompatActivity {
 		}
 
 		binding.status.setText("Loading extensions " + progress + "/" + total);
-		Lifecycle.runDelayed(this::update, 100);
+		AweryLifecycle.runDelayed(this::update, 100);
 	}
 }

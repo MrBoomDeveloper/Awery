@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getDatabase;
-import static com.mrboomdev.awery.app.App.getMarkwon;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
@@ -21,12 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSetupBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.SplashActivity;
-import com.mrboomdev.awery.app.data.settings.SettingsActions;
+import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;

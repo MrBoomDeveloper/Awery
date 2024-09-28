@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.ui.adapter;
 
-import static com.mrboomdev.awery.app.Lifecycle.postRunnable;
+import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 
 import android.annotation.SuppressLint;
 import android.view.View;

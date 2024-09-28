@@ -44,13 +44,6 @@
         app:abb_tabColorSelected="?attr/colorPrimary"
         app:abb_textAppearance="@style/NavBarText" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        app:dividerColor="?attr/colorSurfaceDim"
-        app:layout_constraintLeft_toRightOf="@id/navbar_material"
-        app:layout_goneMarginLeft="-100dp" />
-
     <com.google.android.material.navigationrail.NavigationRailView
         android:id="@+id/navbar_material"
         android:visibility="gone"

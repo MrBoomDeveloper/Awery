@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.ui;
 
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.Lifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -206,14 +206,6 @@ public class ViewUtil {
 			Log.e(TAG, "Failed to cast layout params!", e);
 			return false;
 		}
-	}
-
-	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
-			@NonNull ViewBinding binding,
-			UseLayoutParamsCallback<T> callback,
-			Class<T> paramsType
-	) {
-		return useLayoutParams(binding.getRoot(), callback, paramsType);
 	}
 
 	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(

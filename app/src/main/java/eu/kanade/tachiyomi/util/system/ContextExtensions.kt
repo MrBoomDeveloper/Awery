@@ -10,7 +10,7 @@ import android.os.PowerManager
 import androidx.core.content.PermissionChecker
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
-import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.AweryApp.toast
 
 /**
  * Checks if the give permission is granted.

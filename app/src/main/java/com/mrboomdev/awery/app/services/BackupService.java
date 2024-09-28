@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.app.services;
 
-import static com.mrboomdev.awery.app.App.showLoadingWindow;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.restartApp;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.restartApp;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Service;

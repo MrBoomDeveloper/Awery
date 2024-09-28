@@ -1,6 +1,8 @@
-/*
 package com.mrboomdev.awery.extensions.support.js;
 
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.floatFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
@@ -10,25 +12,31 @@ import static com.mrboomdev.awery.extensions.support.js.JsBridge.longFromJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.returnIfNotNullJs;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.stringFromJs;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.async.AsyncUtils.await;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.Awery;
+import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -37,6 +45,9 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
+import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
+import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
+import com.mrboomdev.awery.ui.activity.LoginActivity;
 import com.mrboomdev.awery.util.ParserAdapter;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
@@ -59,7 +70,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Deprecated(forRemoval = true)
 public class JsProvider extends ExtensionProvider {
@@ -71,7 +84,7 @@ public class JsProvider extends ExtensionProvider {
 	private final JsManager manager;
 	private Set<String> features;
 	private android.content.Context androidContext;
-	private AdultContentMode adultContentMode;
+	private AdultContent adultContentMode;
 	private String name;
 	private boolean didInit;
 
@@ -112,11 +125,11 @@ public class JsProvider extends ExtensionProvider {
 	protected void finishInit(@NonNull JsBridge bridge, @NonNull NativeObject o) {
 		this.features = new HashSet<>(listFromJs(o.get("features", o), String.class));
 		this.id = requireArgument(o, "id", String.class);
-		this.name = returnWith(stringFromJs(o, "title"), title -> nonNullElse(title, id));
+		this.name = returnWith(stringFromJs(o, "title"), title -> requireNonNullElse(title, id));
 		this.version = requireArgument(o, "version", String.class);
 
 		this.adultContentMode = returnWith(stringFromJs(o, "adultContent"),
-				mode -> mode == null ? AdultContentMode.NONE : AdultContentMode.valueOf(mode.toUpperCase(Locale.ROOT)));
+				mode -> mode == null ? AdultContent.NONE : AdultContent.valueOf(mode.toUpperCase(Locale.ROOT)));
 
 		var appContext = androidContext.getApplicationContext();
 		bridge.context = new WeakReference<>(appContext);
@@ -150,8 +163,7 @@ public class JsProvider extends ExtensionProvider {
 		}
 	}
 
-	*/
-/*@Override
+	@Override
 	public void getSettings(android.content.Context context, @NonNull ResponseCallback<SettingsItem> callback) {
 		var root = new Settings();
 
@@ -253,8 +265,7 @@ public class JsProvider extends ExtensionProvider {
 		}
 
 		callback.onSuccess(root);
-	}*//*
-
+	}
 
 	@Override
 	public AsyncFuture<CatalogComment> voteComment(CatalogComment comment) {
@@ -262,8 +273,7 @@ public class JsProvider extends ExtensionProvider {
 				JsComment.createJsComment(context, scope, comment)).then(JsComment::new);
 	}
 
-	*/
-/*@Override
+	@Override
 	@SuppressWarnings("unchecked")
 	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
 		manager.postRunnable(() -> {
@@ -288,8 +298,7 @@ public class JsProvider extends ExtensionProvider {
 				callback.onFailure(new UnimplementedException("\"aweryFeeds\" is not a function or isn't defined!"));
 			}
 		});
-	}*//*
-
+	}
 
 	@Override
 	public AsyncFuture<CatalogComment> editComment(CatalogComment oldComment, CatalogComment newComment) {
@@ -376,8 +385,8 @@ public class JsProvider extends ExtensionProvider {
 						result.isPrivate = booleanFromJs(o.get("isPrivate", o));
 						result.id = stringFromJs(o.get("id", o));
 
-						result.progress = returnIfNotNullJs(fromJs(o.get("progress", o), Float.class), Awery::returnMe);
-						result.score = returnIfNotNullJs(fromJs(o.get("score", o), Float.class), Awery::returnMe);
+						result.progress = returnIfNotNullJs(fromJs(o.get("progress", o), Float.class), Constants::returnMe);
+						result.score = returnIfNotNullJs(fromJs(o.get("score", o), Float.class), Constants::returnMe);
 
 						if(!isNullJs(o.get("currentLists", o))) {
 							result.currentLists = listFromJs(o.get("currentLists", o), String.class);
@@ -465,8 +474,7 @@ public class JsProvider extends ExtensionProvider {
 		});
 	}
 
-	*/
-/*@Override
+	@Override
 	public void postMediaComment(
 			PostMediaCommentRequest request,
 			@NonNull ResponseCallback<CatalogComment> callback
@@ -502,11 +510,9 @@ public class JsProvider extends ExtensionProvider {
 				callback.onFailure(new UnimplementedException("\"aweryPostMediaComment\" is not a function or isn't defined!"));
 			}
 		});
-	}*//*
+	}
 
-
-	*/
-/*@Override
+	@Override
 	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryReadMediaComments") instanceof Function fun) {
@@ -537,12 +543,11 @@ public class JsProvider extends ExtensionProvider {
 				callback.onFailure(new UnimplementedException("\"aweryReadMediaComments\" is not a function or isn't defined!"));
 			}
 		});
-	}*//*
-
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public AsyncFuture<SettingsList> getMediaSearchFilters() {
+	public AsyncFuture<SettingsList> getFilters() {
 		return this.<NativeArray>runFunction("aweryFilters")
 				.then(array -> new SettingsList(stream(array)
 						.map(item -> JsSettingsItem.fromJs((NativeObject) item, null))
@@ -664,7 +669,7 @@ public class JsProvider extends ExtensionProvider {
 					var title = item.get("title");
 
 					if(!JsBridge.isNullJs(title)) {
-						//result.setTitle(title.toString());
+						result.setTitle(title.toString());
 					}
 				}
 
@@ -696,7 +701,7 @@ public class JsProvider extends ExtensionProvider {
 	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(SettingsList filters) {
 		return thread(() -> {
 			var episode = filters.require(
-					ExtensionConstants.FILTER_EPISODE).parseJsonValue(CatalogVideo.class);
+					ExtensionProvider.FILTER_EPISODE).parseJsonValue(CatalogVideo.class);
 
 			var o = this.<List<ScriptableObject>>
 					runFunction("aweryMediaVideos", episode).await();
@@ -737,8 +742,7 @@ public class JsProvider extends ExtensionProvider {
 		});
 	}
 
-	*/
-/*private void getLoginScreen(@NonNull ResponseCallback<Map<String, String>> callback) {
+	private void getLoginScreen(@NonNull ResponseCallback<Map<String, String>> callback) {
 		manager.postRunnable(() -> {
 			if(scope.get("aweryLoginScreen") instanceof Function fun) {
 				try {
@@ -764,16 +768,15 @@ public class JsProvider extends ExtensionProvider {
 						"\"aweryLoginScreen\" is not a function or isn't defined!"));
 			}
 		});
-	}*//*
-
+	}
 
 	@Override
 	public AsyncFuture<List<? extends CatalogVideo>> getVideos(@NonNull SettingsList filters) {
 		return thread(() -> {
-			var page = filters.require(ExtensionConstants.FILTER_PAGE).getIntegerValue();
+			var page = filters.require(ExtensionProvider.FILTER_PAGE).getIntegerValue();
 
 			var media = filters.require(
-					ExtensionConstants.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
+					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
 
 			var o = this.<List<ScriptableObject>>
 					runFunction("aweryMediaEpisodes", page, media).await();
@@ -833,12 +836,10 @@ public class JsProvider extends ExtensionProvider {
 		}));
 	}
 
-	*/
-/**
+	/**
 	 * Bridge callback for JavaScript
 	 * @author MrBoomDev
-	 *//*
-
+	 */
 	@SuppressWarnings("unused")
 	private interface JsCallback<T> {
 		default void resolve(T t) {
@@ -858,7 +859,7 @@ public class JsProvider extends ExtensionProvider {
 	}
 
 	@Override
-	public AdultContentMode getAdultContentMode() {
+	public AdultContent getAdultContentMode() {
 		return adultContentMode;
 	}
 
@@ -871,4 +872,4 @@ public class JsProvider extends ExtensionProvider {
 	public String getName() {
 		return name;
 	}
-}*/
+}

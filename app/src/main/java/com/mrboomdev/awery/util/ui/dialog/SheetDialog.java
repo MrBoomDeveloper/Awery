@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.App.fixDialog;
-import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.fixDialog;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,22 +12,19 @@ import androidx.appcompat.app.AppCompatDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.sidesheet.SideSheetDialog;
 
-/**
- * An adaptive dialog which will stick to the side at landscape orientation
- * and stay at the center if current orientation is portrait.
- * @author MrBoomDev
- */
 public abstract class SheetDialog implements DialogInterface {
 	private final Context context;
 	private AppCompatDialog dialog;
-	private OnDismissListener dismissListener;
-	private boolean cancelOnClickOutside, cancellable;
 
 	public SheetDialog(Context context) {
 		this.context = context;
 	}
 
 	public abstract View getContentView(Context context);
+
+	public AppCompatDialog getDialog() {
+		return dialog;
+	}
 
 	public Context getContext() {
 		return context;
@@ -74,10 +71,6 @@ public abstract class SheetDialog implements DialogInterface {
 			}
 		};
 
-		setCancelable(cancellable);
-		setCanceledOnTouchOutside(cancelOnClickOutside);
-		setOnDismissListener(dismissListener);
-
 		dialog.setContentView(getContentView(context));
 		dialog.show();
 	}
@@ -90,30 +83,6 @@ public abstract class SheetDialog implements DialogInterface {
 		if(dialog != null) {
 			dialog.dismiss();
 			dialog = null;
-		}
-	}
-
-	public void setOnDismissListener(OnDismissListener listener) {
-		this.dismissListener = listener;
-
-		if(dialog != null) {
-			dialog.setOnDismissListener(listener);
-		}
-	}
-
-	public void setCanceledOnTouchOutside(boolean cancel) {
-		this.cancelOnClickOutside = cancel;
-
-		if(dialog != null) {
-			dialog.setCanceledOnTouchOutside(cancel);
-		}
-	}
-
-	public void setCancelable(boolean cancel) {
-		this.cancellable = cancel;
-
-		if(dialog != null) {
-			dialog.setCancelable(cancel);
 		}
 	}
 

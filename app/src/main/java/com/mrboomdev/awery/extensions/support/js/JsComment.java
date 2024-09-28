@@ -1,4 +1,3 @@
-/*
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
@@ -68,4 +67,4 @@ public class JsComment extends CatalogComment {
 
 		return o;
 	}
-}*/
+}

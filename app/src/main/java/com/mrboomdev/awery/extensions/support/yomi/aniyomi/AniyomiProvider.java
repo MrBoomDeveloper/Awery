@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
-import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -15,11 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -27,7 +27,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
-import com.mrboomdev.awery.ext.data.Selection;
+import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
@@ -62,19 +62,23 @@ public abstract class AniyomiProvider extends YomiProvider {
 	private final Set<String> features = new HashSet<>();
 	private final boolean isFromSource;
 
-	public AniyomiProvider(__Extension extension, AnimeSource source) {
+	public AniyomiProvider(Extension extension, AnimeSource source) {
 		this(extension, source, false);
 	}
 
-	public AniyomiProvider(__Extension extension, AnimeSource source, boolean isFromSource) {
+	public AniyomiProvider(Extension extension, AnimeSource source, boolean isFromSource) {
 		super(extension);
 		this.source = source;
 		this.isFromSource = isFromSource;
 
 		this.features.addAll(getManager().getBaseFeatures());
 
+		if(extension.isNsfw()) {
+			this.features.add(FEATURE_NSFW);
+		}
+
 		if(source instanceof AnimeCatalogueSource) {
-			this.features.add(ExtensionConstants.FEATURE_FEEDS);
+			this.features.add(FEATURE_FEEDS);
 		}
 	}
 
@@ -97,7 +101,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public AsyncFuture<SettingsList> getMediaSearchFilters() {
+	public AsyncFuture<SettingsList> getFilters() {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
 			return AsyncUtils.futureNow(new SettingsList(stream(catalogueSource.getFilterList())
 					.map(AniyomiProvider::mapAnimeFilter)
@@ -211,7 +215,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	public AsyncFuture<List<? extends CatalogVideo>> getVideos(@NonNull SettingsList filters) {
 		return thread(() -> {
 			var media = filters.require(
-					ExtensionConstants.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
+					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
 
 			var episodes = AniyomiKotlinBridge.getEpisodesList(
 					source, AniyomiMedia.fromMedia(media)).await();
@@ -230,7 +234,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(@NonNull SettingsList filters) {
 		return thread(() -> {
 			var episode = (CatalogVideo) filters.require(
-					ExtensionConstants.FILTER_EPISODE).getSerializable();
+					ExtensionProvider.FILTER_EPISODE).getSerializable();
 
 			var videos = AniyomiKotlinBridge.getVideosList(
 					source, AniyomiEpisode.fromEpisode(episode)).await();
@@ -297,7 +301,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Override
-	public AsyncFuture<List<CatalogFeed>> getFeeds() {
+	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
 			var feeds = new ArrayList<CatalogFeed>();
 
@@ -323,18 +327,18 @@ public abstract class AniyomiProvider extends YomiProvider {
 				this.displayMode = DisplayMode.LIST_HORIZONTAL;
 			}});
 
-			return AsyncUtils.futureNow(feeds);
+			callback.onSuccess(feeds);
 		} else {
-			return AsyncUtils.futureFailNow(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}
 	}
 
 	@Override
 	public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(@NonNull SettingsList filters) {
 		if(source instanceof AnimeCatalogueSource catalogueSource) {
-			var query = filters.get(ExtensionConstants.FILTER_QUERY);
-			var page = filters.get(ExtensionConstants.FILTER_PAGE);
-			var feed = filters.get(ExtensionConstants.FILTER_FEED);
+			var query = filters.get(FILTER_QUERY);
+			var page = filters.get(FILTER_PAGE);
+			var feed = filters.get(FILTER_FEED);
 
 			AsyncFuture<AnimesPage> future;
 
@@ -342,10 +346,10 @@ public abstract class AniyomiProvider extends YomiProvider {
 			if(feed != null && feed.getStringValue() != null && filters.size() <= 2) {
 				switch(feed.getStringValue()) {
 					case FEED_LATEST -> future = AniyomiKotlinBridge.getLatestAnime(
-							catalogueSource, nonNullElse(page.getIntegerValue(), 0));
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0));
 
 					case FEED_POPULAR -> future = AniyomiKotlinBridge.getPopularAnime(
-							catalogueSource, nonNullElse(page.getIntegerValue(), 0));
+							catalogueSource, requireNonNullElse(page.getIntegerValue(), 0));
 
 					default -> {
 						return AsyncUtils.futureFailNow(new IllegalArgumentException("Unknown feed! " + feed));
@@ -356,7 +360,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 				applyFilters(animeFilters, filters);
 
 				future = AniyomiKotlinBridge.searchAnime(catalogueSource,
-						nonNullElse(page.getIntegerValue(), 0), query.getStringValue(), animeFilters);
+						requireNonNullElse(page.getIntegerValue(), 0), query.getStringValue(), animeFilters);
 			}
 
 			return future.then(animePage -> {

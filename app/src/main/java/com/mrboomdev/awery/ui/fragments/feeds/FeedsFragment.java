@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
@@ -24,12 +24,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.db.item.DBTab;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.base.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
@@ -132,7 +132,7 @@ public abstract class FeedsFragment extends Fragment {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
-				if(currentLoadId != loadId || getContext() == null) return;
+				if(currentLoadId != loadId) return;
 
 				var filtered = MediaUtils.filterMediaSync(searchResults);
 				var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
@@ -161,7 +161,7 @@ public abstract class FeedsFragment extends Fragment {
 
 			@Override
 			public void onFailure(Throwable e) {
-				if(currentLoadId != loadId || getContext() == null) return;
+				if(currentLoadId != loadId) return;
 				Log.e(TAG, "Failed to load an feed!", e);
 
 				if(!(feed.hideIfEmpty && e instanceof ZeroResultsException)) {
@@ -251,22 +251,22 @@ public abstract class FeedsFragment extends Fragment {
 				}
 
 				if(feed.sourceFeed != null) {
-					filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionConstants.FILTER_FEED, feed.sourceFeed));
+					filters.add(new SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_FEED, feed.sourceFeed));
 				}
 
-				var queryFilter = filters.get(ExtensionConstants.FILTER_QUERY);
+				var queryFilter = filters.get(ExtensionProvider.FILTER_QUERY);
 
 				if(queryFilter != null) {
 					if(feed.filters == null) {
 						feed.filters = new SettingsList(queryFilter);
 					} else {
-						var found = feed.filters.get(ExtensionConstants.FILTER_QUERY);
+						var found = feed.filters.get(ExtensionProvider.FILTER_QUERY);
 						if(found != null) feed.filters.remove(found);
 						feed.filters.add(queryFilter);
 					}
 				}
 
-				filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionConstants.FILTER_PAGE, 0));
+				filters.add(new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 				provider.searchMedia(filters).addCallback(callback);
 			}
 
@@ -357,7 +357,7 @@ public abstract class FeedsFragment extends Fragment {
 			startLoading(false);
 		} else {
 			emptyStateAdapter.getBinding(binding ->
-					binding.setInfo((String) null, null));
+					binding.setInfo(null, null));
 		}
 
 		return binding.getRoot();

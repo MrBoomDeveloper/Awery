@@ -1,12 +1,12 @@
 package com.mrboomdev.awery.app.update;
 
-import static com.mrboomdev.awery.app.App.showLoadingWindow;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.getAnyActivity;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.Lifecycle.startActivityForResult;
+import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
-import static java.util.Objects.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Activity;

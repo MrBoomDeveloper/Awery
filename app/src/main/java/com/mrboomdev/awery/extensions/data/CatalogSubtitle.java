@@ -5,7 +5,6 @@ import android.net.Uri;
 import java.io.Serial;
 import java.io.Serializable;
 
-@Deprecated(forRemoval = true)
 public class CatalogSubtitle implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1;

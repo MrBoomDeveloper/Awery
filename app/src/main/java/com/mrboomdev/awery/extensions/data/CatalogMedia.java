@@ -3,9 +3,7 @@ package com.mrboomdev.awery.extensions.data;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.caoccao.javet.annotations.V8Function;
-import com.caoccao.javet.annotations.V8Property;
-import com.mrboomdev.awery.ext.data.Media;
+import com.google.common.collect.Lists;
 import com.mrboomdev.awery.util.Parser;
 
 import java.io.Serial;
@@ -17,10 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @deprecated Use {@link Media}
- */
-@Deprecated(forRemoval = true)
 public class CatalogMedia implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1;
@@ -118,26 +112,26 @@ public class CatalogMedia implements Serializable {
 		return globalId.split(";;;")[1].split(":")[0];
 	}
 
-	@V8Property
 	public String getId() {
 		return globalId.split(";;;")[2];
 	}
 
 	@NonNull
 	@Override
-	@V8Function
 	public String toString() {
 		return Parser.toString(CatalogMedia.class, this);
 	}
 
+	public void setTitle(@NonNull String... titles) {
+		this.titles = Lists.newArrayList(titles);
+	}
+
 	@Nullable
-	@V8Property
 	public String getTitle() {
 		if(titles == null || titles.isEmpty()) return null;
 		return titles.get(0);
 	}
 
-	@V8Property
 	public void setTitles(Collection<String> titles) {
 		if(titles == null) {
 			this.titles = new ArrayList<>();
@@ -153,12 +147,10 @@ public class CatalogMedia implements Serializable {
 		return getBestPoster();
 	}
 
-	@V8Function
 	public void setId(String type, String id) {
 		ids.put(type, id);
 	}
 
-	@V8Function
 	@Nullable
 	public String getId(String type) {
 		return ids.get(type);
@@ -184,7 +176,6 @@ public class CatalogMedia implements Serializable {
 		return banner;
 	}
 
-	@V8Property
 	public void setPoster(String poster) {
 		if(this.poster == null) {
 			this.poster = new ImageVersions();

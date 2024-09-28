@@ -1,28 +1,24 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.setContentViewCompat;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.getContext;
-import static com.mrboomdev.awery.util.ArgUtils.getLongExtra;
-import static com.mrboomdev.awery.util.ArgUtils.getStringExtra;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.setContentViewCompat;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
-import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
-import static java.util.Objects.requireNonNull;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.VectorDrawable;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -38,14 +34,14 @@ import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.AndroidImage;
-import com.mrboomdev.awery.app.data.settings.NicePreferences;
-import com.mrboomdev.awery.app.data.settings.base.LazySetting;
-import com.mrboomdev.awery.app.data.settings.base.ParsedSetting;
+import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsData;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
-import com.mrboomdev.awery.ext.data.Setting;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.squareup.moshi.Moshi;
@@ -56,11 +52,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsAdapter.ScreenLauncher {
+public class SettingsActivity extends AppCompatActivity implements SettingsDataHandler {
 	public static final String EXTRA_JSON = "item";
 	public static final String EXTRA_PAYLOAD_ID = "payload_id";
 	private static final String TAG = "SettingsActivity";
-	private static final Map<Long, Setting> payloads = new HashMap<>();
+	private static final Map<Long, SettingsItem> payloads = new HashMap<>();
 	private static final UniqueIdGenerator payloadIdGenerator = new UniqueIdGenerator();
 	private static WeakReference<RecyclerView.RecycledViewPool> viewPool;
 	private ScreenSettingsBinding binding;
@@ -79,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		return pool;
 	}
 
-	public static void openSettingScreen(Context context, Setting item) {
+	public static void start(Context context, SettingsItem item) {
 		var id = payloadIdGenerator.getLong();
 		payloads.put(id, item);
 
@@ -94,16 +90,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
-		var itemJson = getStringExtra(this, EXTRA_JSON);
-		var payloadId = getLongExtra(this, EXTRA_PAYLOAD_ID);
+		var itemJson = getIntent().getStringExtra(EXTRA_JSON);
+		var payloadId = getIntent().getLongExtra(EXTRA_PAYLOAD_ID, -1);
 
-		Setting item = null;
+		SettingsItem item = null;
 
-		if(payloadId != null) {
+		if(payloadId != -1) {
 			item = payloads.get(payloadId);
 
 			if(item == null) {
-				Log.e(TAG, "Failed to find an setting. Probably the system has restarted an app :(");
+				// The system has restarted an app :(
 				finish();
 				return;
 			}
@@ -113,13 +109,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 			if(itemJson == null) {
 				item = NicePreferences.getSettingsMap();
 			} else {
-				try {
-					var parsed = requireNonNull(new Moshi.Builder().build()
-							.adapter(ParsedSetting.class)
-							.fromJson(itemJson));
+				var moshi = new Moshi.Builder().build();
+				var adapter = moshi.adapter(SettingsItem.class);
 
-					parsed.restoreSavedValues();
-					item = parsed;
+				try {
+					item = adapter.fromJson(itemJson);
+					if(item == null) throw new IllegalArgumentException("Failed to parse settings");
 				} catch(IOException e) {
 					Log.e(TAG, "Failed to parse settings", e);
 					toast("Failed to get settings", 0);
@@ -148,31 +143,32 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 		}
 	}
 
-	private void setupHeader(@NonNull ScreenSettingsBinding binding, @NonNull Setting item) {
-		binding.title.setText(item.getTitle());
+	private void setupHeader(@NonNull ScreenSettingsBinding binding, @NonNull SettingsItem item) {
+		binding.title.setText(item.getTitle(this));
 		binding.actions.removeAllViews();
 
-		if(item.getHeaderItems() != null) {
-			for(var headerItem : item.getHeaderItems()) {
+		var headerItems = item.getHeaderItems();
+
+		if(headerItems != null && !headerItems.isEmpty()) {
+			for(var headerItem : headerItems) {
 				var view = new ImageView(this);
-				view.setOnClickListener(v -> headerItem.onClick());
+				view.setOnClickListener(v -> headerItem.onClick(this));
 				setPadding(view, dpPx(view, 10));
 
 				view.setForeground(AppCompatResources.getDrawable(this, R.drawable.ripple_circle_white));
 				view.setClickable(true);
 				view.setFocusable(true);
 
-				if(headerItem.getIcon() instanceof AndroidImage androidImage) {
-					androidImage.applyTo(view);
-					view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+				view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+				view.setImageDrawable(headerItem.getIcon(this));
 
-					if(view.getDrawable() instanceof VectorDrawable) {
-						setImageTintAttr(view, com.google.android.material.R.attr.colorOnSurface);
-					} else {
-						view.setImageTintList(null);
-					}
+				if(headerItem.tintIcon()) {
+					var context = binding.getRoot().getContext();
+					var colorAttr = com.google.android.material.R.attr.colorOnSurface;
+					var color = AweryApp.resolveAttrColor(context, colorAttr);
+					view.setImageTintList(ColorStateList.valueOf(color));
 				} else {
-					view.setImageDrawable(null);
+					view.setImageTintList(null);
 				}
 
 				binding.actions.addView(view, dpPx(binding.actions, 48), dpPx(binding.actions, 48));
@@ -243,7 +239,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 	}
 
 	@Nullable
-	private ScreenSettingsBinding createView(@NonNull Setting item) {
+	private ScreenSettingsBinding createView(@NonNull SettingsItem item) {
 		binding = ScreenSettingsBinding.inflate(getLayoutInflater());
 		emptyView = new EmptyView(binding.progressIndicator);
 
@@ -266,7 +262,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 				return null;
 			}
 
-			var recyclerAdapter = new SettingsAdapter(item, this) {
+			var recyclerAdapter = new SettingsAdapter(item,
+					(item instanceof SettingsDataHandler handler) ? handler : this) {
+
 				@Override
 				public void onEmptyStateChanged(boolean isEmpty) {
 					if(isEmpty) {
@@ -279,13 +277,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 
 			setupHeader(binding, item);
 			finishLoading(binding, recyclerAdapter);
-		} else if(item instanceof LazySetting lazySetting) {
-			thread(() -> {
-				try {
-					var screen = lazySetting.getLazySetting();
-
+		} else {
+			SettingsData.getScreen(this, item).addCallback(new AsyncFuture.Callback<>() {
+				@Override
+				public void onSuccess(SettingsItem screen) {
 					runOnUiThread(() -> {
-						var recyclerAdapter = new SettingsAdapter(screen, SettingsActivity.this) {
+						var handler = screen instanceof SettingsDataHandler settingsDataHandler
+								? settingsDataHandler : SettingsActivity.this;
+
+						var recyclerAdapter = new SettingsAdapter(screen, handler) {
 							@Override
 							public void onEmptyStateChanged(boolean isEmpty) {
 								if(isEmpty) {
@@ -301,13 +301,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 						setupHeader(binding, screen);
 						finishLoading(binding, recyclerAdapter);
 
-						if(screen.getItems() == null || screen.getItems().isEmpty()) {
+						if(screen.getItems().isEmpty()) {
 							emptyView.setInfo("Here's nothing", "Yup, this screen is completely empty. You won't see anything here.");
 						}
 					});
-				} catch(Throwable t) {
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
 					Log.e(TAG, "Failed to get settings", t);
-					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(t)), 1);
+					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(t), SettingsActivity.this), 1);
 					finish();
 				}
 			});
@@ -317,11 +320,24 @@ public class SettingsActivity extends AppCompatActivity implements SettingsAdapt
 	}
 
 	@Override
-	public void launchScreen(Setting setting) {
-		if(setting instanceof ParsedSetting parsedSetting) {
-			parsedSetting.restoreSavedValues();
-		}
+	public void onScreenLaunchRequest(@NonNull SettingsItem item) {
+		item.restoreSavedValues();
 
-		openSettingScreen(this, setting);
+		var moshi = new Moshi.Builder().add(new SettingsItem.Adapter()).build();
+		var jsonAdapter = moshi.adapter(SettingsItem.class);
+
+		var intent = new Intent(this, SettingsActivity.class);
+		intent.putExtra("item", jsonAdapter.toJson(item));
+		startActivity(intent);
+	}
+
+	@Override
+	public void saveValue(@NonNull SettingsItem item, Object newValue) {
+		getPrefs().saveValue(item, newValue);
+	}
+
+	@Override
+	public Object restoreValue(SettingsItem item) {
+		return getPrefs().restoreValue(item);
 	}
 }

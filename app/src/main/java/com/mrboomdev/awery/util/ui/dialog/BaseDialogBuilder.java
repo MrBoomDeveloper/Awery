@@ -1,10 +1,12 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.App.resolveAttr;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttr;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
+import static com.mrboomdev.awery.util.ui.ViewUtil.spPx;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -20,6 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textview.MaterialTextView;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.ui.ViewUtil;
 
@@ -45,7 +48,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	}
 
 	public T setTitle(String title) {
-		this.title = title != null ? title.trim() : null;
+		this.title = title;
 		return (T) this;
 	}
 
@@ -54,7 +57,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	}
 
 	public T setMessage(String message) {
-		this.message = message != null ? message.trim() : null;
+		this.message = message;
 		return (T) this;
 	}
 
@@ -190,7 +193,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		builder.setCancelable(isCancelable);
 
 		if(title != null) {
-			/*var titleView = new MaterialTextView(getContext());
+			var titleView = new MaterialTextView(getContext());
 			titleView.setTextSize(spPx(titleView, 20));
 			titleView.setText(title);
 			titleView.setTextColor(resolveAttrColor(getContext(), com.google.android.material.R.attr.colorOnBackground));
@@ -201,9 +204,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 			var padding = (int) resolveAttr(getContext(), android.R.attr.dialogPreferredPadding)
 					.getDimension(getContext().getResources().getDisplayMetrics());
 
-			titleView.setPadding(padding, paddingTop, padding, 0);*/
-
-			builder.setTitle(title);
+			titleView.setPadding(padding, paddingTop, padding, 0);
 		}
 
 		if(message == null) {

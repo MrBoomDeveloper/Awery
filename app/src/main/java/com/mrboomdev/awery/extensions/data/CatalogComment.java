@@ -5,8 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.squareup.moshi.Json;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,10 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-@Deprecated(forRemoval = true)
-public class CatalogComment implements CatalogSearchResults<CatalogComment>, Serializable {
-	@Serial
-	private static final long serialVersionUID = 1;
+public class CatalogComment implements CatalogSearchResults<CatalogComment> {
 	public static final int HIDDEN = -1;
 	public static final int DISABLED = -2;
 	public static final int VOTE_STATE_LIKED = 1;

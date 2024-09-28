@@ -1,12 +1,11 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.App.getMarkwon;
-import static com.mrboomdev.awery.app.App.getOrientation;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.openUrl;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.util.NiceUtils.getCalendar;
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.getOrientation;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
@@ -14,7 +13,6 @@ import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
-import static java.util.Objects.requireNonNullElse;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -40,8 +38,8 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.material.chip.Chip;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
-import com.mrboomdev.awery.ext.data.ImageType;
-import com.mrboomdev.awery.ext.data.Media;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.GalleryActivity;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
@@ -59,9 +57,9 @@ public class MediaInfoFragment extends Fragment {
 	private static final String TAG = "MediaInfoFragment";
 	private WeakReference<Drawable> cachedPoster;
 	private MediaDetailsOverviewLayoutBinding binding;
-	private Media media;
+	private CatalogMedia media;
 
-	public MediaInfoFragment(Media media) {
+	public MediaInfoFragment(CatalogMedia media) {
 		this.media = media;
 
 		var bundle = new Bundle();
@@ -83,15 +81,19 @@ public class MediaInfoFragment extends Fragment {
 			media = requireArgument(this, "media");
 		}
 
-		var title = requireNonNullElse(media.getTitle(), "No title");
+		var type = Objects.requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
+		var title = Objects.requireNonNullElse(media.getTitle(), "No title");
 		var meta = generateGeneralMetaString(media);
 
-		binding.details.play.setText(media.getType().canRead()
-				? R.string.read : R.string.watch);
+		binding.details.play.setText(switch(type) {
+			case TV, MOVIE -> R.string.watch;
+			case BOOK, POST -> R.string.read;
+		});
 
-		binding.details.play.setIcon(ContextCompat.getDrawable(requireContext(), media.getType().canRead()
-				? R.drawable.ic_round_import_contacts_24
-				: R.drawable.ic_play_filled));
+		binding.details.play.setIcon(ContextCompat.getDrawable(requireContext(), switch(type) {
+			case TV, MOVIE -> R.drawable.ic_play_filled;
+			case BOOK, POST -> R.drawable.ic_round_import_contacts_24;
+		}));
 
 		if(meta.isBlank()) {
 			binding.details.generalMeta.setVisibility(View.GONE);
@@ -100,11 +102,8 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.title.setText(title);
 		binding.details.generalMeta.setText(meta);
 
-		var thumbnail = media.getImage(ImageType.LARGE_THUMBNAIL_OR_OTHER);
-
 		var banner = getOrientation() == Configuration.ORIENTATION_LANDSCAPE
-				? media.getImage(ImageType.BIGGEST)
-				: media.getImage(ImageType.LARGE_THUMBNAIL_OR_OTHER);
+				? media.getBestBanner() : media.getBestPoster();
 
 		Glide.with(binding.getRoot())
 				.load(banner)
@@ -112,7 +111,7 @@ public class MediaInfoFragment extends Fragment {
 				.into(binding.banner);
 
 		Glide.with(binding.getRoot())
-				.load(thumbnail)
+				.load(media.getBestPoster())
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.addListener(new RequestListener<>() {
 					@Override
@@ -131,7 +130,7 @@ public class MediaInfoFragment extends Fragment {
 			binding.poster.setTransitionName("poster");
 
 			var intent = new Intent(requireContext(), GalleryActivity.class);
-			intent.putExtra(GalleryActivity.EXTRA_URLS, new String[] { thumbnail });
+			intent.putExtra(GalleryActivity.EXTRA_URLS, new String[] { media.getBestPoster() });
 			startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
 					requireActivity(), binding.poster, "poster").toBundle());
 		});
@@ -144,8 +143,8 @@ public class MediaInfoFragment extends Fragment {
 		binding.details.bookmark.setOnClickListener(v ->
 				MediaUtils.openMediaBookmarkMenu(requireContext(), media));
 
-		if(media.getDescription() != null && !media.getDescription().isBlank()) {
-			var description = getMarkwon(requireContext()).toMarkdown(media.getDescription());
+		if(media.description != null && !media.description.isBlank()) {
+			var description = getMarkwon(requireContext()).toMarkdown(media.description);
 
 			if(!description.toString().isBlank()) {
 				binding.details.description.setText(description);
@@ -158,16 +157,14 @@ public class MediaInfoFragment extends Fragment {
 			binding.details.descriptionTitle.setVisibility(View.GONE);
 		}
 
-		if(media.getTags() == null || media.getTags().length == 0) {
+		if(media.tags == null || media.tags.isEmpty()) {
 			binding.details.tagsTitle.setVisibility(View.GONE);
 			binding.details.tags.setVisibility(View.GONE);
 		} else {
-			var spoilers = new HashSet<String>();
+			var spoilers = new HashSet<CatalogTag>();
 
-			for(var tag : media.getTags()) {
-				if(tag == null) continue;
-
-				if(tag.contains(":::SPOILER")) {
+			for(var tag : media.tags) {
+				if(tag.isSpoiler()) {
 					spoilers.add(tag);
 					continue;
 				}
@@ -194,21 +191,19 @@ public class MediaInfoFragment extends Fragment {
 			}
 		}
 
-		binding.details.browser.setVisibility(media.getUrl() != null ? View.VISIBLE : View.GONE);
+		binding.details.browser.setVisibility(media.url != null ? View.VISIBLE : View.GONE);
 	}
 
-	private void addTagView(@NonNull String tag) {
-		var theTag = tag.replaceAll(":::SPOILER:::", "");
-
+	private void addTagView(@NonNull CatalogTag tag) {
 		var chip = new Chip(requireContext());
-		chip.setText(theTag);
+		chip.setText(tag.getName());
 		binding.details.tags.addView(chip);
 
 		chip.setOnClickListener(v -> {
 			var intent = new Intent(requireContext(), SearchActivity.class);
 			intent.setAction(SearchActivity.ACTION_SEARCH_BY_TAG);
-			intent.putExtra(SearchActivity.EXTRA_TAG, theTag);
-			intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, media.getGlobalId());
+			intent.putExtra(SearchActivity.EXTRA_TAG, tag.getName());
+			intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, media.globalId);
 			startActivity(intent);
 		});
 
@@ -219,37 +214,37 @@ public class MediaInfoFragment extends Fragment {
 	}
 
 	@NonNull
-	private String generateGeneralMetaString(@NonNull Media media) {
+	private String generateGeneralMetaString(@NonNull CatalogMedia media) {
 		var builder = new StringBuilder();
 
-		if(media.getEpisodesCount() != null) {
-			builder.append(media.getEpisodesCount()).append(" ");
+		if(media.episodesCount != null) {
+			builder.append(media.episodesCount).append(" ");
 
-			if(media.getEpisodesCount() == 1) builder.append(getString(R.string.episode));
+			if(media.episodesCount == 1) builder.append(getString(R.string.episode));
 			else builder.append(getString(R.string.episodes));
 		}
 
-		if(media.getDuration() != null) {
+		if(media.duration != null) {
 			if(builder.length() > 0) builder.append(" • ");
 
-			if(media.getDuration() < 60) {
-				builder.append(media.getDuration()).append(getString(R.string.minute_short)).append(" ");
+			if(media.duration < 60) {
+				builder.append(media.duration).append(getString(R.string.minute_short)).append(" ");
 			} else {
-				builder.append((media.getDuration() / 60)).append(getString(R.string.hour_short)).append(" ")
-						.append((media.getDuration() % 60)).append(getString(R.string.minute_short)).append(" ");
+				builder.append((media.duration / 60)).append(getString(R.string.hour_short)).append(" ")
+						.append((media.duration % 60)).append(getString(R.string.minute_short)).append(" ");
 			}
 
 			builder.append(getString(R.string.duration));
 		}
 
-		if(media.getReleaseDate() != null) {
+		if(media.releaseDate != null) {
 			if(builder.length() > 0) builder.append(" • ");
-			builder.append(getCalendar(media.getReleaseDate()).get(Calendar.YEAR));
+			builder.append(media.releaseDate.get(Calendar.YEAR));
 		}
 
-		if(media.getCountry() != null) {
+		if(media.country != null) {
 			if(builder.length() > 0) builder.append(" • ");
-			builder.append(TranslationUtil.getTranslatedCountryName(requireContext(), media.getCountry()));
+			builder.append(TranslationUtil.getTranslatedCountryName(requireContext(), media.country));
 		}
 
 		return builder.toString();
@@ -299,11 +294,11 @@ public class MediaInfoFragment extends Fragment {
 			return false;
 		});
 
-		binding.details.tracking.setOnClickListener(v ->
-				new TrackingSheet(requireActivity(), media).show());
+		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
+				requireContext(), getChildFragmentManager(), media).show());
 
 		binding.details.browser.setOnClickListener(v ->
-				openUrl(requireContext(), media.getUrl(), true));
+				openUrl(requireContext(), media.url, true));
 
 		return binding.getRoot();
 	}

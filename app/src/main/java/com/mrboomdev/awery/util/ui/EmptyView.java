@@ -14,7 +14,6 @@ import androidx.viewbinding.ViewBinding;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 
 public class EmptyView implements ViewBinding {
 	private final LayoutLoadingBinding binding;
@@ -54,19 +53,11 @@ public class EmptyView implements ViewBinding {
 		} else {
 			button.setVisibility(View.GONE);
 		}
-
-		getRoot().setVisibility(View.VISIBLE);
 	}
 
 	public void hideAll() {
 		progressBar.setVisibility(View.GONE);
 		info.setVisibility(View.GONE);
-		getRoot().setVisibility(View.GONE);
-	}
-
-	public void setInfo(Context context, Throwable t) {
-		var descriptor = new ExceptionDescriptor(t);
-		setInfo(descriptor.getTitle(context), descriptor.getMessage(context));
 	}
 
 	public void setInfo(String title, String message) {
@@ -84,7 +75,6 @@ public class EmptyView implements ViewBinding {
 	public void startLoading() {
 		progressBar.setVisibility(View.VISIBLE);
 		info.setVisibility(View.GONE);
-		getRoot().setVisibility(View.VISIBLE);
 	}
 
 	@NonNull

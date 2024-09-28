@@ -1,16 +1,15 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
@@ -21,9 +20,9 @@ import java.util.Set;
 
 public class InternalProviders {
 
-	protected static abstract class InternalProvider extends __ExtensionProvider {
+	protected static abstract class InternalProvider extends ExtensionProvider {
 		private InternalManager manager;
-		private __Extension extension;
+		private Extension extension;
 
 		@Override
 		public ExtensionsManager getManager() {
@@ -31,25 +30,23 @@ public class InternalProviders {
 		}
 
 		@Override
-		public __Extension getExtension() {
+		public Extension getExtension() {
 			return extension;
 		}
 
-		protected void setup(InternalManager manager, __Extension extension) {
+		protected void setup(InternalManager manager, Extension extension) {
 			this.manager = manager;
 			this.extension = extension;
 		}
 	}
 
 	public static class Lists extends InternalProvider {
-		private final Set<String> FEATURES = Set.of(
-				ExtensionConstants.FEATURE_MEDIA_SEARCH,
-				ExtensionConstants.FEATURE_FEEDS);
+		private final Set<String> FEATURES = Set.of(ExtensionProvider.FEATURE_MEDIA_SEARCH, FEATURE_FEEDS);
 
 		@Override
 		public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(@NonNull SettingsList filters) {
 			return thread(() -> {
-				var feed = filters.require(ExtensionConstants.FILTER_FEED).getStringValue();
+				var feed = filters.require(FILTER_FEED).getStringValue();
 
 				var progresses = getDatabase().getMediaProgressDao().getAllFromList(feed);
 

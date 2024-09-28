@@ -1,14 +1,13 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.App.getMarkwon;
-import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.data.Constants.alwaysTrue;
+import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
+import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static java.util.Objects.requireNonNull;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
@@ -49,12 +48,11 @@ import com.mrboomdev.awery.databinding.LayoutCommentsHeaderBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentSendBinding;
-import com.mrboomdev.awery.ext.data.Media;
-import com.mrboomdev.awery.extensions.__Extension;
-import com.mrboomdev.awery.extensions.ExtensionConstants;
-import com.mrboomdev.awery.extensions.__ExtensionProvider;
+import com.mrboomdev.awery.extensions.Extension;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
+import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
@@ -87,17 +85,17 @@ public class MediaCommentsFragment extends Fragment {
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
-	private ArrayListAdapter<__ExtensionProvider> sourcesAdapter;
+	private ArrayListAdapter<ExtensionProvider> sourcesAdapter;
 	private ConcatAdapter concatAdapter;
 	private Runnable backPressCallback;
-	private List<__ExtensionProvider> sources;
-	private __ExtensionProvider selectedProvider;
+	private List<ExtensionProvider> sources;
+	private ExtensionProvider selectedProvider;
 	private RecyclerView recycler;
 	private Runnable onCloseRequestListener;
 	private WidgetCommentSendBinding sendBinding;
 	private SwipeRefreshLayout swipeRefresher;
 	private CatalogVideo episode;
-	private Media media;
+	private CatalogMedia media;
 	private CatalogComment comment, editedComment;
 	private boolean isLoading;
 
@@ -109,7 +107,7 @@ public class MediaCommentsFragment extends Fragment {
 		this(null, null);
 	}
 
-	public MediaCommentsFragment(Media media, CatalogVideo episode) {
+	public MediaCommentsFragment(CatalogMedia media, CatalogVideo episode) {
 		this.media = media;
 		this.episode = episode;
 
@@ -139,7 +137,7 @@ public class MediaCommentsFragment extends Fragment {
 		});
 	}
 
-	private void setSource(__ExtensionProvider source) {
+	private void setSource(ExtensionProvider source) {
 		this.selectedProvider = source;
 
 		loadingAdapter.getBinding(loadingBinding -> {
@@ -149,7 +147,7 @@ public class MediaCommentsFragment extends Fragment {
 		});
 
 		headerAdapter.getBinding(headerBinding -> {
-			var isVisible = source != null && source.hasFeatures(ExtensionConstants.FEATURE_COMMENTS_PER_EPISODE);
+			var isVisible = source != null && source.hasFeatures(ExtensionProvider.FEATURE_COMMENTS_PER_EPISODE);
 			headerBinding.episodeWrapper.setVisibility(isVisible ? View.VISIBLE : View.GONE);
 		});
 
@@ -281,12 +279,7 @@ public class MediaCommentsFragment extends Fragment {
 		headerAdapter.getBinding(binding ->
 				binding.searchStatus.setText("Loading comments..."));
 
-		if(alwaysTrue()) {
-			toast("This feature has been disabled temporarily!", 1);
-			return;
-		}
-
-		selectedProvider.readMediaComments(null).addCallback(new AsyncFuture.Callback<>() {
+		selectedProvider.readMediaComments(request, new ExtensionProvider.ResponseCallback<>() {
 			@Override
 			public void onSuccess(CatalogComment newComment) {
 				runOnUiThread(() -> {
@@ -361,8 +354,8 @@ public class MediaCommentsFragment extends Fragment {
 		if(media == null) media = requireArgument(this, "media");
 		if(episode == null) episode = (CatalogVideo) requireArguments().getSerializable("episode");
 
-		sources = stream(ExtensionsFactory.getExtensions__Deprecated(__Extension.FLAG_WORKING))
-				.map(extension -> extension.getProviders(ExtensionConstants.FEATURE_MEDIA_COMMENTS))
+		sources = stream(ExtensionsFactory.getExtensions__Deprecated(Extension.FLAG_WORKING))
+				.map(extension -> extension.getProviders(ExtensionProvider.FEATURE_MEDIA_COMMENTS))
 				.flatMap(NiceUtils::stream)
 				.sorted().toList();
 
@@ -582,7 +575,7 @@ public class MediaCommentsFragment extends Fragment {
 					headerAdapter.getBinding().episodeWrapper.setError(e.getMessage());
 				}
 
-				selectedProvider.postMediaComment(request).addCallback(new AsyncFuture.Callback<CatalogComment>() {
+				selectedProvider.postMediaComment(request, new ExtensionProvider.ResponseCallback<>() {
 					@Override
 					public void onSuccess(CatalogComment comment) {
 						if(getContext() == null) return;

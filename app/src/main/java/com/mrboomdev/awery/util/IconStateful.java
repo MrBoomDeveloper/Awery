@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.App.getResourceId;
+import static com.mrboomdev.awery.app.AweryApp.getResourceId;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

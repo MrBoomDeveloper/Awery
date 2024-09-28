@@ -4,13 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:dividerColor="?attr/colorSurfaceContainer"
-        app:layout_goneMarginBottom="-100dp"
-        app:layout_constraintBottom_toTopOf="@id/navigation" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"

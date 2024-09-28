@@ -1,7 +1,8 @@
 package com.mrboomdev.awery.util.exceptions;
 
-import static com.mrboomdev.awery.app.App.i18n;
+import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.mrboomdev.awery.R;
@@ -32,20 +33,20 @@ public class ZeroResultsException extends RuntimeException implements LocalizedE
 	}
 
 	@Override
-	public String getLocalizedMessage() {
+	public String getDescription(@NonNull Context context) {
 		if(description == -1) {
 			return getLocalizedMessage();
 		}
 
-		return i18n(description);
+		return context.getString(description);
 	}
 
 	@Override
-	public String getTitle() {
+	public String getTitle(@NonNull Context context) {
 		if(title == -1) {
 			return getLocalizedMessage();
 		}
 
-		return i18n(R.string.nothing_found);
+		return context.getString(R.string.nothing_found);
 	}
 }

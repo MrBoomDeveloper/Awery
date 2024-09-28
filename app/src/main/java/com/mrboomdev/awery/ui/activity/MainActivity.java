@@ -1,15 +1,15 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getDatabase;
-import static com.mrboomdev.awery.app.App.getNavigationStyle;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.Lifecycle.runDelayed;
-import static com.mrboomdev.awery.app.data.db.AweryDB.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
+import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
+import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.AweryLifecycle.exitApp;
+import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -36,18 +36,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigationrail.NavigationRailView;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.Lifecycle;
+import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.app.update.UpdatesManager;
-import com.mrboomdev.awery.app.data.Constants;
-import com.mrboomdev.awery.app.data.db.item.DBTab;
-import com.mrboomdev.awery.app.data.settings.base.SettingsList;
+import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding;
 import com.mrboomdev.awery.databinding.ScreenMainBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 			CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
 					.setTitle("Failed to read an icons list")
 					.setThrowable(e)
-					.setDismissCallback(Lifecycle::exitApp)
+					.setDismissCallback(AweryLifecycle::exitApp)
 					.build());
 
 			return;
@@ -345,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 		public FeedsAdapter(
 				@NonNull List<DBTab> tabs,
 				@NonNull FragmentManager fragmentManager,
-				@NonNull androidx.lifecycle.Lifecycle lifecycle
+				@NonNull Lifecycle lifecycle
 		) {
 			super(fragmentManager, lifecycle);
 			this.tabs = tabs;

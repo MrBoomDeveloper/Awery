@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.markdown;
 
-import static com.mrboomdev.awery.app.App.openUrl;
+import static com.mrboomdev.awery.app.AweryApp.openUrl;
 
 import android.os.Parcel;
 import android.text.Spannable;

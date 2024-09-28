@@ -1,10 +1,9 @@
-/*
 package com.mrboomdev.awery.extensions.support.js;
 
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.NiceUtils.nonNullElse;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Log;
@@ -12,8 +11,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.app.AweryApp;
 import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.sdk.util.MimeTypes;
@@ -42,6 +42,19 @@ import java.util.Map;
 @Deprecated(forRemoval = true)
 @SuppressWarnings("unused")
 public class JsBridge {
+	public final String FILTER_VIDEO_CATEGORY = ExtensionProvider.FILTER_VIDEO_CATEGORY;
+	public final String FILTER_SEASON = ExtensionProvider.FILTER_SEASON;
+	public final String FILTER_EPISODE = ExtensionProvider.FILTER_EPISODE;
+	public final String FILTER_FEED = ExtensionProvider.FILTER_FEED;
+	public final String FILTER_PAGE = ExtensionProvider.FILTER_PAGE;
+	public final String FILTER_QUERY = ExtensionProvider.FILTER_QUERY;
+	public final String FILTER_TAGS = ExtensionProvider.FILTER_TAGS;
+	public final String FILTER_MEDIA = ExtensionProvider.FILTER_MEDIA;
+
+	public final String VIDEO_CATEGORY_EPISODE = ExtensionProvider.VIDEO_CATEGORY_EPISODE;
+	public final String VIDEO_CATEGORY_TRAILER = ExtensionProvider.VIDEO_CATEGORY_TRAILER;
+	public final String VIDEO_CATEGORY_MUSIC = ExtensionProvider.VIDEO_CATEGORY_MUSIC;
+
 	private static final String TAG = "JsBridge";
 	protected WeakReference<android.content.Context> context;
 	private final JsManager manager;
@@ -55,18 +68,16 @@ public class JsBridge {
 		this.scriptScope = scope;
 	}
 
-	*/
-/**
+	/**
 	 * Must be called right after script was parsed!
 	 * @author MrBoomDev
-	 *//*
-
+	 */
 	public void setManifest(NativeObject object) {
 		provider.finishInit(this, object);
 	}
 
 	public void toast(Object object) {
-		App.toast(object);
+		AweryApp.toast(object);
 	}
 
 	private static double parseDouble(Object object) {
@@ -91,7 +102,7 @@ public class JsBridge {
 
 	public String getAdultMode() {
 		var adultMode = AwerySettings.ADULT_MODE.getValue();
-		return nonNullElse(adultMode, AwerySettings.AdultMode_Values.SAFE).name();
+		return requireNonNullElse(adultMode, AwerySettings.AdultMode_Values.SAFE).name();
 	}
 
 	@NonNull
@@ -285,4 +296,4 @@ public class JsBridge {
 
 		return getPrefs("JsBridge-" + provider.id);
 	}
-}*/
+}

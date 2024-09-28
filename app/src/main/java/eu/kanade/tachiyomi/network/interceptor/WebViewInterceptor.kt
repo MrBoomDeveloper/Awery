@@ -4,10 +4,12 @@ import android.content.Context
 import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
-import com.mrboomdev.awery.app.App.toast
+import android.widget.Toast
+import com.mrboomdev.awery.app.AweryApp.toast
 import eu.kanade.tachiyomi.util.system.DeviceUtil
 import eu.kanade.tachiyomi.util.system.WebViewUtil
 import eu.kanade.tachiyomi.util.system.setDefaultSettings
+import kotlinx.coroutines.DelicateCoroutinesApi
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Request

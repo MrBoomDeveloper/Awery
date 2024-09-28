@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:paddingHorizontal="32dp"
     android:paddingVertical="16dp"
-    android:clipToPadding="false"
     app:layout_scrollFlags="snap|scroll|enterAlways|exitUntilCollapsed">
 
     <androidx.cardview.widget.CardView
