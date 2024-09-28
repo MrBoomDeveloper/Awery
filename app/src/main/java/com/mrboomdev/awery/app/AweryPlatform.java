@@ -24,6 +24,7 @@ public class AweryPlatform extends PlatformApi {
 			case "material_you" -> DynamicColors.isDynamicColorAvailable();
 			case "tv" -> AweryApp.isTv();
 			case "beta" -> BuildConfig.IS_BETA;
+			case "legacy" -> BuildConfig.IS_LEGACY;
 			case "debug" -> BuildConfig.DEBUG;
 			case "never" -> false;
 			default -> true;

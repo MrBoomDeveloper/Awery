@@ -3,7 +3,6 @@ package com.mrboomdev.awery.extensions;
 import static com.mrboomdev.awery.app.AweryApp.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import android.app.Application;
 import android.util.Log;
@@ -13,8 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.extensions.support.aweryjs.AweryJsManager;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
+import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -24,7 +23,6 @@ import com.mrboomdev.awery.util.async.AsyncUtils;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import java9.util.Objects;
 import java9.util.stream.StreamSupport;
@@ -39,7 +37,7 @@ public class ExtensionsFactory {
 			//new TachiyomiManager(), // We doesn't support manga reading at the moment so we can just disable it for now
 			//new CloudstreamManager(),
 			//new MiruManager(),
-			new AweryJsManager(),
+			new JsManager(),
 			new InternalManager());
 
 	/**
@@ -65,17 +63,16 @@ public class ExtensionsFactory {
 			return pendingFuture;
 		}
 
-		return pendingFuture = thread(() -> {
-			var instance = new ExtensionsFactory(getAppContext());
+		return pendingFuture = AsyncUtils.controllableFuture(future -> {
+			new ExtensionsFactory(getAppContext());
 			pendingFuture = null;
-			return instance;
+			future.complete(instance);
 		});
 	}
 
 	private ExtensionsFactory(@NonNull Application context) {
 		Log.d(TAG, "Start loading...");
 		instance = this;
-
 		YomiHelper.init(context);
 
 		for(var manager : managers) {
@@ -109,19 +106,34 @@ public class ExtensionsFactory {
 		Log.d(TAG, "Finished loading");
 	}
 
+	@SuppressWarnings("unchecked")
+	@Deprecated(forRemoval = true)
+	public static <T extends ExtensionsManager> T getManager__Deprecated(Class<T> clazz) {
+		return (T) stream(getInstance().await().managers)
+				.filter(manager -> manager.getClass() == clazz)
+				.findFirst().orElseThrow();
+	}
+
 	@Deprecated(forRemoval = true)
 	public static ExtensionsManager getManager__Deprecated(@NonNull String name) {
-		return getInstance().await().getManager(name);
+		return getManager__Deprecated((Class<? extends ExtensionsManager>) switch(name) {
+			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
+			case JsManager.MANAGER_ID -> JsManager.class;
+			case InternalManager.MANAGER_ID -> InternalManager.class;
+			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
+		});
 	}
 
 	@NonNull
 	@Deprecated(forRemoval = true)
-	public static Collection<? extends Extension> getExtensions__Deprecated(int flags) {
-		return getInstance().await().getExtensions(flags);
+	public static Collection<Extension> getExtensions__Deprecated(int flags) {
+		return stream(getInstance().await().managers)
+				.map(manager -> manager.getExtensions(flags))
+				.flatMap(StreamSupport::stream).toList();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends ExtensionsManager> T getManager(Class<T> clazz) throws NoSuchElementException {
+	public <T extends ExtensionsManager> T getManager(Class<T> clazz) {
 		return (T) stream(managers)
 				.filter(manager -> manager.getClass() == clazz)
 				.findFirst().orElseThrow();
@@ -133,14 +145,14 @@ public class ExtensionsFactory {
 	public ExtensionsManager getManager(@NonNull @ExtensionName String name) {
 		return getManager((Class<? extends ExtensionsManager>) switch(name) {
 			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
-			case AweryJsManager.MANAGER_ID -> AweryJsManager.class;
+			case JsManager.MANAGER_ID -> JsManager.class;
 			case InternalManager.MANAGER_ID -> InternalManager.class;
 			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
 		});
 	}
 
 	@NonNull
-	public Collection<? extends Extension> getExtensions(int flags) {
+	public Collection<Extension> getExtensions(int flags) {
 		return stream(managers)
 				.map(manager -> manager.getExtensions(flags))
 				.flatMap(StreamSupport::stream).toList();

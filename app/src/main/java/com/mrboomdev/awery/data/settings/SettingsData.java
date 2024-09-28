@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -9,6 +10,7 @@ import static com.mrboomdev.awery.util.io.FileUtil.getFileSize;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -20,8 +22,8 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.extensions.support.aweryjs.AweryJsManager;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
+import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
@@ -130,44 +132,57 @@ public class SettingsData {
 		}
 	}
 
-	@NonNull
 	@Contract(pure = true)
-	public static AsyncFuture<SettingsItem> getScreen(AppCompatActivity activity, @NonNull SettingsItem item) {
-		if(item instanceof LazySettingsItem lazySettingsItem) {
-			return lazySettingsItem.loadLazily();
-		}
+	public static void getScreen(
+			AppCompatActivity activity,
+			@NonNull SettingsItem item,
+			@MainThread Callbacks.Errorable<SettingsItem, Throwable> callback
+	) {
+		var behaviourId = item.getBehaviour();
 
-		return thread(() -> {
-			var behaviourId = item.getBehaviour();
+		if(behaviourId != null) {
+			if(behaviourId.startsWith("extensions_")) {
+				var manager = ExtensionsFactory.getManager__Deprecated((Class<? extends ExtensionsManager>) switch(behaviourId) {
+					case "extensions_aweryjs" -> JsManager.class;
+					case "extensions_miru" -> MiruManager.class;
+					case "extensions_cloudstream" -> CloudstreamManager.class;
+					case "extensions_aniyomi" -> AniyomiManager.class;
+					case "extensions_tachiyomi" -> TachiyomiManager.class;
+					default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
+				});
 
-			if(behaviourId != null) {
-				if(behaviourId.startsWith("extensions_")) {
-					var factory = ExtensionsFactory.getInstance().await();
+				var screen = new ExtensionSettings(activity, manager);
 
-					var manager = factory.getManager((Class<? extends ExtensionsManager>) switch(behaviourId) {
-						case "extensions_aweryjs" -> AweryJsManager.class;
-						case "extensions_miru" -> MiruManager.class;
-						case "extensions_cloudstream" -> CloudstreamManager.class;
-						case "extensions_aniyomi" -> AniyomiManager.class;
-						case "extensions_tachiyomi" -> TachiyomiManager.class;
-						default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);
-					});
-
-					return new ExtensionSettings(activity, manager);
-				}
-
-				return switch(behaviourId) {
-					case "tabs" -> {
+				thread(() -> {
+					screen.loadData();
+					runOnUiThread(() -> callback.onResult(screen, null));
+				});
+			} else {
+				switch(behaviourId) {
+					case "tabs" -> thread(() -> {
 						var screen = new TabsSettings();
 						screen.loadData();
-						yield screen;
-					}
+						runOnUiThread(() -> callback.onResult(screen, null));
+					});
 
-					default -> throw new IllegalArgumentException("Unknown screen: " + behaviourId);
-				};
+					default -> callback.onResult(null,
+							new IllegalArgumentException("Unknown screen: " + behaviourId));
+				}
 			}
+		} else if(item instanceof LazySettingsItem lazySettingsItem) {
+			lazySettingsItem.loadLazily().addCallback(new AsyncFuture.Callback<>() {
+				@Override
+				public void onSuccess(SettingsItem result) {
+					runOnUiThread(() -> callback.onSuccess(result));
+				}
 
-			throw new ZeroResultsException("Can't find any items", R.string.no);
-		});
+				@Override
+				public void onFailure(@NonNull Throwable t) {
+					runOnUiThread(() -> callback.onError(t));
+				}
+			});
+		} else {
+			callback.onError(new ZeroResultsException("Can't find any items", R.string.no));
+		}
 	}
 }

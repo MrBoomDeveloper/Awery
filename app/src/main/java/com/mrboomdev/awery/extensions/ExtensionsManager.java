@@ -8,7 +8,6 @@ import android.net.Uri;
 import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public abstract class ExtensionsManager {
 
-	public Collection<? extends Extension> getExtensions(int flags) {
+	public Collection<Extension> getExtensions(int flags) {
 		return stream(getAllExtensions())
 				.filter(extension -> (extension.getFlags() & flags) == flags)
 				.toList();
@@ -26,16 +25,12 @@ public abstract class ExtensionsManager {
 	 * Find an extension by a unique id
 	 * @author MrBoomDev
 	 */
-	public abstract Extension getExtension(String id) throws ExtensionNotInstalledException;
+	public abstract Extension getExtension(String id);
 
-	public abstract Collection<? extends Extension> getAllExtensions();
+	public abstract Collection<Extension> getAllExtensions();
 
 	public boolean hasExtension(String id) {
-		try {
-			return getExtension(id) != null;
-		} catch(ExtensionNotInstalledException e) {
-			return false;
-		}
+		return getExtension(id) != null;
 	}
 
 	public abstract String getName();
@@ -74,5 +69,15 @@ public abstract class ExtensionsManager {
 
 	public AsyncFuture<List<Extension>> getRepository(String url) {
 		return AsyncUtils.futureFailNow(new UnimplementedException("This extension manager do not support repositories!"));
+	}
+
+	/**
+	 * Usually called once the app is closing
+	 * @author MrBoomDev
+	 */
+	public void unloadAllExtensions(Context context) {
+		for(var extension : getAllExtensions()) {
+			unloadExtension(context, extension.getId());
+		}
 	}
 }

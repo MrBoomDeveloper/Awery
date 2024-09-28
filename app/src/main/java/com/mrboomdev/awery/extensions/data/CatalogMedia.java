@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.util.Parser;
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -110,6 +112,14 @@ public class CatalogMedia implements Serializable {
 
 	public String getProviderId() {
 		return globalId.split(";;;")[1].split(":")[0];
+	}
+
+	/**
+	 * @throws ExtensionNotInstalledException If the source extension provider was removed or disabled.
+	 * @author MrBoomDev
+	 */
+	public ExtensionProvider getSourceProvider() throws ExtensionNotInstalledException {
+		return ExtensionProvider.forGlobalId(globalId);
 	}
 
 	public String getId() {

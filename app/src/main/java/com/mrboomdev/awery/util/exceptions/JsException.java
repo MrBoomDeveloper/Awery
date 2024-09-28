@@ -50,14 +50,6 @@ public class JsException extends RuntimeException implements LocalizedException,
 		this.errors = null;
 	}
 
-	public JsException(String message, Throwable cause) {
-		super(message, cause);
-
-		this.errorId = null;
-		this.errorExtra = null;
-		this.errors = null;
-	}
-
 	public JsException(@NonNull ScriptableObject scope) {
 		super(scope.has("id", scope) ? scope.get("id", scope).toString() : null);
 

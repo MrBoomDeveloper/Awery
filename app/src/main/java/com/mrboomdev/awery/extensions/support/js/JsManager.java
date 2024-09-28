@@ -4,7 +4,6 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.Constants.SUPPRESS_IGNORED_THROWABLE;
 import static com.mrboomdev.awery.util.async.AsyncUtils.await;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
-import static com.mrboomdev.awery.util.io.FileUtil.listFileNames;
 import static com.mrboomdev.awery.util.io.FileUtil.listFiles;
 
 import android.content.Context;
@@ -44,7 +43,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Deprecated(forRemoval = true)
 public class JsManager extends ExtensionsManager {
 	public static final String MANAGER_ID = "AWERY_JS";
 	private static final String TAG = "JsManager";
@@ -122,7 +120,7 @@ public class JsManager extends ExtensionsManager {
 	@Override
 	public Progress getProgress() {
 		if(progress == null) {
-			return progress = new Progress(listFileNames(new File(getAnyContext().getFilesDir(), getId())).length);
+			return progress = new Progress(listFiles(new File(getAnyContext().getFilesDir(), getId())).size());
 		}
 
 		return progress;

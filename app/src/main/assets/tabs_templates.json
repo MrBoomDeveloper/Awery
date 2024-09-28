@@ -13,7 +13,7 @@
 					{
 						"title": "Auto-Generated feeds",
 						"source_manager": "INTERNAL",
-						"extension_id": "TEMPLATE",
+						"source_id": "TEMPLATE",
 						"source_feed": "AUTO_GENERATE",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
@@ -30,7 +30,7 @@
 					{
 						"title": "Bookmarks",
 						"source_manager": "INTERNAL",
-						"extension_id": "TEMPLATE",
+						"source_id": "TEMPLATE",
 						"source_feed": "BOOKMARKS",
 						"display_mode": "LIST_HORIZONTAL"
 					}
@@ -51,7 +51,7 @@
 					{
 						"title": "Current Season",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "SLIDES",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
@@ -61,7 +61,7 @@
 					}, {
 						"title": "Recently Updated",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "UPDATED_AT_DESC" },
@@ -71,7 +71,7 @@
 					}, {
 						"title": "Trending Movies",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
@@ -81,7 +81,7 @@
 					}, {
 						"title": "Top rated",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "SCORE_DESC" },
@@ -90,7 +90,7 @@
 					}, {
 						"title": "Most Favourite",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC" },
@@ -99,7 +99,7 @@
 					}, {
 						"title": "Popular Anime",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_VERTICAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "POPULARITY_DESC" },
@@ -116,13 +116,13 @@
 					{
 						"title": "Bookmarks",
 						"source_manager": "INTERNAL",
-						"extension_id": "TEMPLATE",
+						"source_id": "TEMPLATE",
 						"source_feed": "BOOKMARKS",
 						"display_mode": "LIST_HORIZONTAL"
 					}, {
 						"title": "Continue Watching",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"hide_if_empty": true,
 
@@ -133,7 +133,7 @@
 					}, {
 						"title": "Planned Anime",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"hide_if_empty": true,
 
@@ -144,7 +144,7 @@
 					}, {
 						"title": "Continue Reading",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"hide_if_empty": true,
 
@@ -155,7 +155,7 @@
 					}, {
 						"title": "Planned Manga",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"hide_if_empty": true,
 
@@ -166,7 +166,7 @@
 					}, {
 						"title": "Recommended",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"source_feed": "recommended",
 						"display_mode": "LIST_HORIZONTAL",
 						"hide_if_empty": true
@@ -180,7 +180,7 @@
 					{
 						"title": "Current Season",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "SLIDES",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
@@ -190,7 +190,7 @@
 					}, {
 						"title": "Trending Manhwa",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
@@ -200,7 +200,7 @@
 					}, {
 						"title": "Trending Novel",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "TRENDING_DESC" },
@@ -210,7 +210,7 @@
 					},{
 						"title": "Top rated",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "SCORE_DESC" },
@@ -219,7 +219,7 @@
 					}, {
 						"title": "Most Favourite",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_HORIZONTAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "FAVOURITES_DESC" },
@@ -228,7 +228,7 @@
 					}, {
 						"title": "Popular Manga",
 						"source_manager": "AWERY_JS",
-						"extension_id": "com.mrboomdev.awery.extension.anilist",
+						"source_id": "com.mrboomdev.awery.extension.anilist",
 						"display_mode": "LIST_VERTICAL",
 						"filters": [
 							{ "key": "sort_mode", "string_value": "POPULARITY_DESC" },

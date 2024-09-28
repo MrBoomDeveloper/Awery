@@ -122,19 +122,6 @@ public abstract class YomiManager extends ExtensionsManager {
 			label = label.substring(getPrefix().length()).trim();
 		}
 
-		try {
-			checkSupportedVersionBounds(pkg.versionName, getMinVersion(), getMaxVersion());
-		} catch(IllegalArgumentException e) {
-			extensions.put(pkg.packageName, new Extension(this, pkg.packageName, label, pkg.versionName, e) {
-				@Override
-				public Drawable getIcon() {
-					return pkg.applicationInfo.loadIcon(pm);
-				}
-			});
-
-			return;
-		}
-
 		var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
 
 		var extension = new Extension(this, pkg.packageName, label, pkg.versionName) {
@@ -149,6 +136,14 @@ public abstract class YomiManager extends ExtensionsManager {
 		}
 
 		extensions.put(pkg.packageName, extension);
+
+		try {
+			checkSupportedVersionBounds(pkg.versionName, getMinVersion(), getMaxVersion());
+		} catch(IllegalArgumentException e) {
+			extension.setError("Unsupported version!", e);
+			return;
+		}
+
 		loadExtension(context, pkg.packageName);
 	}
 

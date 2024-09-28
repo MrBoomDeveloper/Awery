@@ -100,7 +100,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 				.map(provider -> {
 					var feed = new CatalogFeed();
 					feed.sourceManager = provider.getManager().getId();
-					feed.providerId = provider.getId();
+					feed.sourceId = provider.getId();
 					feed.title = provider.getName();
 					return feed;
 				})
