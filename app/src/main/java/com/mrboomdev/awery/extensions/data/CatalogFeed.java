@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.data;
 
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
+import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 

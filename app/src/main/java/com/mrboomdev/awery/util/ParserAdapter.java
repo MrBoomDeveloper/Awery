@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.util.Base64;

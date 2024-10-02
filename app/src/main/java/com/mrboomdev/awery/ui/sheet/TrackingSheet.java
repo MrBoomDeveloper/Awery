@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.sheet;
 
-import static com.mrboomdev.awery.app.AweryApp.fixDialog;
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.fixDialog;
+import static com.mrboomdev.awery.app.App.getDatabase;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.util.NiceUtils.formatNumber;

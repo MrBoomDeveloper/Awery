@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -21,6 +21,7 @@ import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,13 +33,7 @@ public class ExtensionsFactory {
 	private static final String TAG = "ExtensionsFactory";
 	private static AsyncFuture<ExtensionsFactory> pendingFuture;
 	protected static final Progress progress = new Progress();
-	private final List<ExtensionsManager> managers = List.of(
-			new AniyomiManager(),
-			//new TachiyomiManager(), // We doesn't support manga reading at the moment so we can just disable it for now
-			//new CloudstreamManager(),
-			//new MiruManager(),
-			new JsManager(),
-			new InternalManager());
+	private final List<ExtensionsManager> managers = new ArrayList<>();
 
 	/**
 	 * This method will not try load the ExtensionsFactory, so use it only if you know why you want to.
@@ -74,6 +69,19 @@ public class ExtensionsFactory {
 		Log.d(TAG, "Start loading...");
 		instance = this;
 		YomiHelper.init(context);
+
+		managers.add(new AniyomiManager());
+		managers.add(new InternalManager());
+
+		//managers.add(new TachiyomiManager()); // We doesn't support manga reading at the moment so we can just disable it for now
+
+		/*List.of(
+				,
+				//
+				//new CloudstreamManager(),
+				//new MiruManager(),
+				//new JsManager(), //J s extensions were a bad decision
+				);*/
 
 		for(var manager : managers) {
 			manager.loadAllExtensions(context);

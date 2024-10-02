@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.AweryApp.getString;
+import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
 import android.content.Context;
@@ -56,7 +56,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 
 		for(var item : items) {
 			var originalTitle = Selection.Selectable.getTitle(item.getKey());
-			var title = Objects.requireNonNullElse(getString(R.string.class, originalTitle), originalTitle);
+			var title = Objects.requireNonNullElse(i18n(R.string.class, originalTitle), originalTitle);
 
 			var radio = new MaterialRadioButton(getContext());
 			radio.setText(title);
@@ -95,7 +95,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			var contextWrapper = new ContextThemeWrapper(getContext(), style);
 
 			var originalTitle = Selection.Selectable.getTitle(item.getKey());
-			var title = Objects.requireNonNullElse(getString(R.string.class, originalTitle), originalTitle);
+			var title = Objects.requireNonNullElse(i18n(R.string.class, originalTitle), originalTitle);
 
 			var chip = new Chip(contextWrapper);
 			chip.setCheckable(true);

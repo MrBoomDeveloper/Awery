@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;

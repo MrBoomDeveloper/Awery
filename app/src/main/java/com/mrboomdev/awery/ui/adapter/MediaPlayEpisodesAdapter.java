@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.openUrl;
-import static com.mrboomdev.awery.app.AweryApp.share;
+import static com.mrboomdev.awery.app.App.getDatabase;
+import static com.mrboomdev.awery.app.App.openUrl;
+import static com.mrboomdev.awery.app.App.share;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -179,7 +179,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 						throw new NullPointerException("No activity was found with type of MediaActivity");
 					}
 
-					activity.launchAction(MediaUtils.ACTION_COMMENTS, episode);
+					activity.launchAction(MediaActivity.EXTRA_ACTION_COMMENTS, episode);
 					yield true;
 				}
 

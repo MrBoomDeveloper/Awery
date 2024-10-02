@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 
@@ -15,6 +15,7 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -37,17 +38,26 @@ import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.extensions.MediaExtensionsKt;
 import com.mrboomdev.awery.util.ui.FadeTransformer;
 
-import java.util.Objects;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class MediaActivity extends AppCompatActivity {
-	public static final String EXTRA_MEDIA = "media";
-	public static final String EXTRA_ACTION = "action";
+	public static final String EXTRA_ACTION_WATCH = "WATCH";
+	public static final String EXTRA_ACTION_INFO = "INFO";
+	public static final String EXTRA_ACTION_COMMENTS = "COMMENTS";
+	public static final String EXTRA_MEDIA = "MEDIA";
+	public static final String EXTRA_ACTION = "ACTION";
 	private ScreenMediaDetailsBinding binding;
 	private MediaCommentsFragment commentsFragment;
 	private CatalogMedia media;
 	private Object pendingExtra;
+
+	@Retention(RetentionPolicy.SOURCE)
+	@StringDef({ EXTRA_ACTION_WATCH, EXTRA_ACTION_INFO, EXTRA_ACTION_COMMENTS })
+	public @interface Action {}
 
 	@SuppressLint("NonConstantResourceId")
 	@Override
@@ -106,7 +116,7 @@ public class MediaActivity extends AppCompatActivity {
 		popup.getMenu().add(0, 1, 0, R.string.blacklist);
 
 		popup.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
-			case 0: MediaUtils.shareMedia(context, media); yield true;
+			case 0: MediaExtensionsKt.share(media, context); yield true;
 			case 1: MediaUtils.blacklistMedia(media, () -> toast("Blacklisted successfully")); yield true;
 			default: yield false;
 		});
@@ -138,7 +148,9 @@ public class MediaActivity extends AppCompatActivity {
 			item.setTitle(R.string.read);
 		}
 
-		launchAction(Objects.requireNonNull(getIntent().getStringExtra(EXTRA_ACTION)));
+		var action = getIntent().getStringExtra(EXTRA_ACTION);
+		if(action != null) launchAction(action);
+
 		setContentView(binding.getRoot());
 	}
 
@@ -146,11 +158,10 @@ public class MediaActivity extends AppCompatActivity {
 		var navigation = (NavigationBarView) binding.navigation;
 
 		navigation.setSelectedItemId(switch(action) {
-			case MediaUtils.ACTION_INFO -> R.id.info;
-			case MediaUtils.ACTION_WATCH -> R.id.watch;
-			case MediaUtils.ACTION_RELATIONS -> R.id.relations;
+			case EXTRA_ACTION_INFO -> R.id.info;
+			case EXTRA_ACTION_WATCH -> R.id.watch;
 
-			case MediaUtils.ACTION_COMMENTS -> {
+			case EXTRA_ACTION_COMMENTS -> {
 				if(commentsFragment != null) {
 					commentsFragment.setEpisode((CatalogVideo) payload);
 				} else {

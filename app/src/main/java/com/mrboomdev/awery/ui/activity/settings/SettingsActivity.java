@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.setContentViewCompat;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.setContentViewCompat;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
@@ -34,7 +34,7 @@ import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
@@ -164,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 				if(headerItem.tintIcon()) {
 					var context = binding.getRoot().getContext();
 					var colorAttr = com.google.android.material.R.attr.colorOnSurface;
-					var color = AweryApp.resolveAttrColor(context, colorAttr);
+					var color = App.resolveAttrColor(context, colorAttr);
 					view.setImageTintList(ColorStateList.valueOf(color));
 				} else {
 					view.setImageTintList(null);

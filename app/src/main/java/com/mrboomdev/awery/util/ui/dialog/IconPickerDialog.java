@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.AweryApp.getResourceId;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.getResourceId;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;

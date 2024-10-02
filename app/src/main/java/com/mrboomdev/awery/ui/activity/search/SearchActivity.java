@@ -1,9 +1,10 @@
 package com.mrboomdev.awery.ui.activity.search;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.NiceUtils.find;
@@ -49,6 +50,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
 import com.mrboomdev.awery.ui.sheet.FiltersSheet;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.Selection;
@@ -66,6 +68,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import kotlin.Unit;
 
 public class SearchActivity extends AppCompatActivity {
 	public static final String ACTION_PICK_MEDIA = "pick_media";
@@ -542,7 +546,7 @@ public class SearchActivity extends AppCompatActivity {
 			var viewHolder = new ViewHolder(binding);
 
 			useLayoutParams(binding.getRoot(), params -> {
-				params.width = ViewUtil.MATCH_PARENT;
+				params.width = MATCH_PARENT;
 				setHorizontalMargin(params, dpPx(binding, 6));
 			}, RecyclerView.LayoutParams.class);
 
@@ -560,15 +564,22 @@ public class SearchActivity extends AppCompatActivity {
 				var media = viewHolder.getItem();
 				var index = items.indexOf(media);
 
-				MediaUtils.openMediaActionsMenu(parent.getContext(), media,
-						() -> MediaUtils.isMediaFiltered(media, isFiltered -> {
-					if(!isFiltered) return;
+				var dialog = new MediaActionsDialog(media);
 
-					AweryLifecycle.runOnUiThread(() -> {
-						items.remove(media);
-						notifyItemRemoved(index);
+				dialog.setUpdateCallback(() -> {
+					MediaUtils.isMediaFiltered(media, isFiltered -> {
+						if(!isFiltered) return;
+
+						runOnUiThread(() -> {
+							items.remove(media);
+							notifyItemRemoved(index);
+						});
 					});
-				}));
+
+					return Unit.INSTANCE;
+				});
+
+				dialog.show(parent.getContext());
 				return true;
 			});
 

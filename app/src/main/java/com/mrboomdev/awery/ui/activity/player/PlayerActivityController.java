@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.AweryApp.fixDialog;
+import static com.mrboomdev.awery.app.App.fixDialog;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;

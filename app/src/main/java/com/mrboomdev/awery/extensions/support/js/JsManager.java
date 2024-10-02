@@ -43,6 +43,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Deprecated(forRemoval = true)
 public class JsManager extends ExtensionsManager {
 	public static final String MANAGER_ID = "AWERY_JS";
 	private static final String TAG = "JsManager";

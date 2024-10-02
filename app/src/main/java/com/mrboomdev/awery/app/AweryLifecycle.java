@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -47,7 +47,7 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 	private static final WeakHashMap<Activity, ActivityInfo<Activity>> infos = new WeakHashMap<>();
 	private static final String TAG = "AweryLifecycle";
 	private static UniqueIdGenerator activityRequestCodes;
-	private static AweryApp app;
+	private static App app;
 	private static Handler handler;
 
 	public static int getActivityResultCode() {
@@ -61,7 +61,7 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 
 	private AweryLifecycle() {}
 
-	protected static void init(@NonNull AweryApp app) {
+	protected static void init(@NonNull App app) {
 		AweryLifecycle.app = app;
 		app.registerActivityLifecycleCallbacks(new AweryLifecycle());
 		handler = new Handler(Looper.getMainLooper());
@@ -451,14 +451,14 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 
 	@Nullable
 	@SuppressLint({"PrivateApi", "DiscouragedPrivateApi" })
-	private static AweryApp getContextUsingPrivateApi() {
-		var context = (AweryApp) invokeMethod(
+	private static App getContextUsingPrivateApi() {
+		var context = (App) invokeMethod(
 				"android.app.ActivityThread",
 				"currentApplication");
 
 		if(context != null) return context;
 
-		context = (AweryApp) invokeMethod(
+		context = (App) invokeMethod(
 				"android.app.AppGlobals",
 				"getInitialApplication");
 
@@ -476,7 +476,7 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 			var activity = getAnyActivity(Activity.class);
 
 			if(activity != null) {
-				app = (AweryApp) activity.getApplicationContext();
+				app = (App) activity.getApplicationContext();
 			}
 		}
 

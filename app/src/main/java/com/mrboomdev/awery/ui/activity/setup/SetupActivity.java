@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.getDatabase;
+import static com.mrboomdev.awery.app.App.getMarkwon;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;

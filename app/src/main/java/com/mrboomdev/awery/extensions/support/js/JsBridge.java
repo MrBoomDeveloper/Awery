@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -76,7 +76,7 @@ public class JsBridge {
 	}
 
 	public void toast(Object object) {
-		AweryApp.toast(object);
+		App.toast(object);
 	}
 
 	private static double parseDouble(Object object) {

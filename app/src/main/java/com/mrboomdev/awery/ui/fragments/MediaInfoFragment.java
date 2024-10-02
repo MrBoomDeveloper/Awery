@@ -1,11 +1,11 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
-import static com.mrboomdev.awery.app.AweryApp.getOrientation;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
-import static com.mrboomdev.awery.app.AweryApp.openUrl;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.getMarkwon;
+import static com.mrboomdev.awery.app.App.getOrientation;
+import static com.mrboomdev.awery.app.App.isLandscape;
+import static com.mrboomdev.awery.app.App.openUrl;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;

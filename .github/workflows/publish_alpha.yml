@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-
     paths-ignore:
       - "docs/**"
       - "README.md"
@@ -28,42 +27,45 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Get Latest Commit
+      - name: Get Commits Since Last Run
         run: |
-          COMMIT_LOG=$(git log -1 --pretty=format:"● %s ~%an")
-          COMMIT_LOG="${COMMIT_LOG//'%'/'%25'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\n'/'%0A'}"
-          COMMIT_LOG="${COMMIT_LOG//$'\r'/'%0D'}"
-          echo "COMMIT_LOG=${COMMIT_LOG}" >> $GITHUB_ENV
-          echo "$COMMIT_LOG" > commit_log.txt
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Commits since $LAST_SHA:"
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | awk '{printf "%s\\n", $0}')
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//'%'/'%25'}"
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\n'/'%0A'}"
+          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\r'/'%0D'}"
+          echo "COMMIT_LOG=${FORMATTED_COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          BRANCH=${{ github.ref }}
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          echo $GITHUB_SHA > last_sha.txt
         shell: bash
         env:
           CI: true
         continue-on-error: true
 
-      - name: Build Modern Alpha APK
-        run: ./gradlew assembleAlphaModernRelease
+      - name: Build Alpha APK
+        run: ./gradlew assembleAlphaRelease
 
-      - name: Build Modern Beta APK
-        run: ./gradlew assembleBetaModernRelease
+      - name: Build Beta APK
+        run: ./gradlew assembleBetaRelease
 
-      - name: Build Modern Production APK
-        run: ./gradlew assembleProdModernRelease
+      - name: Build Production APK
+        run: ./gradlew assembleProdRelease
 
-      - name: Build Legacy Beta APK
-        run: ./gradlew assembleBetaLegacyRelease
-
-      - name: Build Legacy Alpha APK
-        run: ./gradlew assembleAlphaLegacyRelease
-
-      - name: Build Legacy Production APK
-        run: ./gradlew assembleProdLegacyRelease
-
-      - name: Sign Modern Alpha APK
+      - name: Sign Alpha APK
         uses: r0adkll/sign-android-release@v1
         id: sign_alpha
         with:
-          releaseDirectory: "app/build/outputs/apk/alphaModern/release"
+          releaseDirectory: "app/build/outputs/apk/alpha/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -71,11 +73,11 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Sign Modern Beta APK
+      - name: Sign Beta APK
         uses: r0adkll/sign-android-release@v1
         id: sign_beta
         with:
-          releaseDirectory: "app/build/outputs/apk/betaModern/release"
+          releaseDirectory: "app/build/outputs/apk/beta/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -83,11 +85,11 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Sign Modern Production APK
+      - name: Sign Production APK
         uses: r0adkll/sign-android-release@v1
         id: sign_prod
         with:
-          releaseDirectory: "app/build/outputs/apk/prodModern/release"
+          releaseDirectory: "app/build/outputs/apk/prod/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -95,102 +97,46 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Sign Legacy Beta APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_beta_legacy
-        with:
-          releaseDirectory: "app/build/outputs/apk/betaLegacy/release"
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Sign Legacy Alpha APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_alpha_legacy
-        with:
-          releaseDirectory: "app/build/outputs/apk/alphaLegacy/release"
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Sign Legacy Production APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_prod_legacy
-        with:
-          releaseDirectory: "app/build/outputs/apk/prodLegacy/release"
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Upload Modern Beta APK
+      - name: Upload Beta APK
         uses: actions/upload-artifact@v4
         with:
           name: "Beta APK"
           retention-days: 90
-          path: "app/build/outputs/apk/betaModern/release/app-beta-modern-release-signed.apk"
+          path: "app/build/outputs/apk/beta/release/app-beta-release-signed.apk"
 
-      - name: Upload Modern Alpha APK
+      - name: Upload Alpha APK
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
           retention-days: 90
-          path: "app/build/outputs/apk/alphaModern/release/app-alpha-modern-release-signed.apk"
+          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
 
-      - name: Upload Modern Production APK
+      - name: Upload Production APK
         uses: actions/upload-artifact@v4
         with:
           name: "Production APK"
           retention-days: 90
-          path: "app/build/outputs/apk/prodModern/release/app-prod-modern-release-signed.apk"
+          path: "app/build/outputs/apk/prod/release/app-prod-release-signed.apk"
 
-      - name: Upload Legacy Beta APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: "Legacy Beta APK"
-          retention-days: 90
-          path: "app/build/outputs/apk/betaLegacy/release/app-beta-legacy-release-signed.apk"
-
-      - name: Upload Legacy Alpha APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: "Legacy Alpha APK"
-          retention-days: 90
-          path: "app/build/outputs/apk/alphaLegacy/release/app-alpha-legacy-release-signed.apk"
-
-      - name: Upload Legacy Production APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: "Legacy Production APK"
-          retention-days: 90
-          path: "app/build/outputs/apk/prodLegacy/release/app-prod-legacy-release-signed.apk"
-          
-      - name: Send Modern Alpha APK to Telegram
+      - name: Send Alpha APK to Telegram
         if: always()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          COMMIT_LOG=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
-          curl -F document=@app/build/outputs/apk/alphaModern/release/app-alpha-modern-release-signed.apk \
-          -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -F caption="Alpha Release $COMMIT_LOG" \
-          https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
-          
-      - name: Send Legacy Alpha APK to Telegram
-        if: always()
-        run: |
-          curl -F document=@app/build/outputs/apk/alphaLegacy/release/app-alpha-legacy-release-signed.apk \
-               -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-               https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
-               
-      - name: Send Modern Alpha APK to Discord
+          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+            echo "$message"
+          done)
+          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
+          curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
+            -F "parse_mode=HTML" \
+            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+
+      - name: Send Alpha APK to Discord
         if: always()
         run: |
           commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
@@ -200,11 +146,5 @@ jobs:
           **Commit:** [${commit_id}](<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>) by ${author_link} 
           **Message:** $(cat commit_log.txt)" '{content: $content}') 
           curl -F "payload_json=$payload" \
-           -F "file1=@app/build/outputs/apk/alphaModern/release/app-alpha-modern-release-signed.apk" \
+           -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
            ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-      - name: Send Legacy Alpha APK to Discord
-        if: always()
-        run: |
-          curl -F "file1=@app/build/outputs/apk/alphaLegacy/release/app-alpha-legacy-release-signed.apk" \
-               ${{ secrets.DISCORD_WEBHOOK_URL }}

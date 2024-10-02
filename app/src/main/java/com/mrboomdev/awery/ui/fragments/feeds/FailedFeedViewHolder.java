@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
-import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.App.getNavigationStyle;
+import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;

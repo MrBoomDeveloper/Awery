@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.js;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.extensions.support.js.JsBridge.booleanFromJs;
@@ -74,6 +74,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Deprecated(forRemoval = true)
 public class JsProvider extends ExtensionProvider {
 	protected Extension extension;
 	protected String id, version, script;

@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util.ui;
 
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 
 import android.content.Context;
@@ -28,12 +28,17 @@ import androidx.viewbinding.ViewBinding;
 import org.jetbrains.annotations.Contract;
 
 public class ViewUtil {
+	@Deprecated(forRemoval = true)
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+	@Deprecated(forRemoval = true)
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
+	@Deprecated(forRemoval = true)
 	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
+	@Deprecated(forRemoval = true)
 	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
 	private static final String TAG = "ViewUtil";
 
+	@Deprecated(forRemoval = true)
 	public static boolean setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;
@@ -43,36 +48,35 @@ public class ViewUtil {
 		return true;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setImageTintColor(@NonNull ImageView view, @ColorInt int color) {
 		view.setImageTintList(ColorStateList.valueOf(color));
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setImageTintAttr(@NonNull ImageView view, @AttrRes int attr) {
 		var color = resolveAttrColor(view.getContext(), attr);
 		view.setImageTintList(ColorStateList.valueOf(color));
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void clearImageTint(@NonNull ImageView view) {
 		view.setImageTintList(null);
 	}
 
 	@NonNull
 	@Contract("_, _ -> new")
+	@Deprecated(forRemoval = true)
 	public static LinearLayout.LayoutParams createLinearParams(int width, int height) {
 		return new LinearLayout.LayoutParams(width, height);
 	}
 
 	@NonNull
+	@Deprecated(forRemoval = true)
 	public static LinearLayoutCompat.LayoutParams createLinearParams(int width, int height, int weight) {
 		var params = new LinearLayoutCompat.LayoutParams(width, height);
 		params.weight = weight;
 		return params;
-	}
-
-	@NonNull
-	@Contract("_, _ -> new")
-	public static ViewGroup.MarginLayoutParams createMarginParams(int width, int height) {
-		return new ViewGroup.MarginLayoutParams(width, height);
 	}
 
 	public static boolean setWeight(@NonNull View view, float weight) {
@@ -92,10 +96,6 @@ public class ViewUtil {
 		view.setScaleY(scale);
 	}
 
-	public static float getScale(@NonNull View view) {
-		return (view.getScaleX() + view.getScaleY()) / 2;
-	}
-
 	public static boolean setMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;
@@ -105,21 +105,25 @@ public class ViewUtil {
 		return true;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int getTopMargin(View view) {
 		var margins = getMargins(view);
 		return margins == null ? 0 : margins.topMargin;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int getBottomMargin(View view) {
 		var margins = getMargins(view);
 		return margins == null ? 0 : margins.bottomMargin;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int getRightMargin(View view) {
 		var margins = getMargins(view);
 		return margins == null ? 0 : margins.rightMargin;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int getLeftMargin(View view) {
 		var margins = getMargins(view);
 		return margins == null ? 0 : margins.leftMargin;
@@ -151,6 +155,7 @@ public class ViewUtil {
 		view.setPadding(horizontal, vertical, horizontal, vertical);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static boolean setTopMargin(ViewGroup.LayoutParams params, int margin) {
 		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
 			marginLayoutParams.topMargin = margin;
@@ -186,11 +191,13 @@ public class ViewUtil {
 		return false;
 	}
 
+	@Deprecated(forRemoval = true)
 	public interface UseLayoutParamsCallback<T extends ViewGroup.LayoutParams> {
 		void onUse(T params);
 	}
 
 	@SuppressWarnings("unchecked")
+	@Deprecated(forRemoval = true)
 	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
 			@NonNull View view,
 			UseLayoutParamsCallback<T> callback
@@ -208,6 +215,7 @@ public class ViewUtil {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
 			@NonNull View view,
 			UseLayoutParamsCallback<T> callback,
@@ -246,6 +254,7 @@ public class ViewUtil {
 		return true;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static boolean setRightMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;
@@ -253,14 +262,6 @@ public class ViewUtil {
 		margins.rightMargin = margin;
 		view.setLayoutParams(margins);
 		return true;
-	}
-
-	public static void setStartMargin(View view, int margin) {
-		var margins = getMargins(view);
-		if(margins == null) return;
-
-		margins.setMarginStart(margin);
-		view.setLayoutParams(margins);
 	}
 
 	public static boolean setHorizontalMargin(View view, int margin) {
@@ -282,26 +283,32 @@ public class ViewUtil {
 		view.setLayoutParams(margins);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setLeftPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setRightPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), padding, view.getPaddingBottom());
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setTopPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), view.getPaddingBottom());
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setVerticalPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), padding);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setBottomPadding(@NonNull View view, int padding) {
 		setBottomPadding(view, padding, true);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setBottomPadding(@NonNull View view, int padding, boolean getOther) {
 		view.setPadding(
 				getOther ? view.getPaddingLeft() : 0,
@@ -310,22 +317,17 @@ public class ViewUtil {
 				padding);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setHorizontalPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, view.getPaddingTop(), padding, view.getPaddingBottom());
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setHorizontalPadding(@NonNull View view, int left, int right) {
 		view.setPadding(left, view.getPaddingTop(), right, view.getPaddingBottom());
 	}
 
-	public static void setEndMargin(View view, int margin) {
-		var margins = getMargins(view);
-		if(margins == null) return;
-
-		margins.setMarginEnd(margin);
-		view.setLayoutParams(margins);
-	}
-
+	@Deprecated(forRemoval = true)
 	public static void setTopMargin(@NonNull View view, int margin) {
 		var params = view.getLayoutParams();
 		if(params == null) return;
@@ -334,6 +336,7 @@ public class ViewUtil {
 		view.setLayoutParams(params);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setBottomMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return;
@@ -347,6 +350,7 @@ public class ViewUtil {
 	 * Provided insets will be used on the first call.
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static void setOnApplyInsetsListener(View view, InsetsUpdateListener<WindowInsetsCompat> listener) {
 		ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
 			listener.updated(insets);
@@ -354,6 +358,7 @@ public class ViewUtil {
 		});
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setOnApplyUiInsetsListener(
 			View view,
 			InsetsUpdateListener<Insets> listener,
@@ -367,6 +372,7 @@ public class ViewUtil {
 		setOnApplyUiInsetsListener(view, listener, parentView.getRootWindowInsets());
 	}
 
+	@Deprecated(forRemoval = true)
 	private static void setOnApplyUiInsetsListener(
 			View view,
 			InsetsUpdateListener<Insets> listener,
@@ -387,11 +393,13 @@ public class ViewUtil {
 		});
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setOnApplyUiInsetsListener(View view, InsetsUpdateListener<Insets> listener) {
 		setOnApplyUiInsetsListener(view, listener, view.getRootWindowInsets());
 	}
 
 	@Nullable
+	@Deprecated(forRemoval = true)
 	public static ViewGroup.MarginLayoutParams getMargins(@NonNull View view) {
 		var params = view.getLayoutParams();
 
@@ -410,28 +418,34 @@ public class ViewUtil {
 		return dpPx(getAnyContext(), dp);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int dpPx(@NonNull Context context, float dp) {
 		var metrics = context.getResources().getDisplayMetrics();
 		return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int dpPx(@NonNull View view, float dp) {
 		return dpPx(view.getContext(), dp);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int dpPx(@NonNull ViewBinding view, float dp) {
 		return dpPx(view.getRoot().getContext(), dp);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static float spPx(@NonNull View view, float sp) {
 		return spPx(view.getContext(), sp);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static float spPx(@NonNull Context context, float sp) {
 		var metrics = context.getResources().getDisplayMetrics();
 		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
 	}
 
+	@Deprecated(forRemoval = true)
 	public interface InsetsUpdateListener<I> {
 		/**
 		 * @return true if insets were consumed. If false was returned, then children won't get any updates.

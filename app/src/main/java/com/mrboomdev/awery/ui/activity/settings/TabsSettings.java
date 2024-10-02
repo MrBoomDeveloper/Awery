@@ -1,9 +1,9 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.getResourceId;
-import static com.mrboomdev.awery.app.AweryApp.snackbar;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.getDatabase;
+import static com.mrboomdev.awery.app.App.getResourceId;
+import static com.mrboomdev.awery.app.App.snackbar;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;

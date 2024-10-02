@@ -18,7 +18,7 @@
 					"title": "media_columns_count_port", "description": "0 for auto",
 					"show_if": "!tv"
 				}, {
-					"key": "navigation_style", "type": "select", "string_value": "BUBBLE", "restart": true, "show_if": "!tv",
+					"key": "navigation_style", "type": "select", "string_value": "MATERIAL", "restart": true, "show_if": "!tv",
 					"title": "Navigation style", "items": [
 						{ "key": "BUBBLE", "title": "Bubble" },
 						{ "key": "MATERIAL", "title": "Material" }
@@ -44,10 +44,6 @@
 					"type": "screen", "title": "extensions", "icon": "ic_extension_filled",
 					"items": [
 						{
-							"type": "screen", "behaviour": "extensions_aweryjs",
-							"title": "AweryJS", "icon": "logo_aweryjs", "tint_icon": false, "icon_size": 1.2,
-							"description": "Watch Movies, TV with Tracking and Comments!"
-						}, {
 							"type": "screen", "behaviour": "extensions_aniyomi",
 							"title": "Aniyomi", "icon": "logo_aniyomi", "tint_icon": false, "icon_size": 1.2,
 							"description": "It seems there is only Anime here?"

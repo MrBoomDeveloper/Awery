@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.app;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
@@ -13,7 +14,6 @@ import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.returnWith;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 
@@ -87,6 +87,8 @@ import com.mrboomdev.awery.util.markdown.SpoilerPlugin;
 import com.skydoves.balloon.ArrowOrientation;
 import com.skydoves.balloon.Balloon;
 import com.skydoves.balloon.BalloonAlign;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory;
 
 import org.jetbrains.annotations.Contract;
 
@@ -105,10 +107,46 @@ import io.noties.markwon.image.glide.GlideImagesPlugin;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings("StaticFieldLeak")
-public class AweryApp extends Application {
+public class App extends Application {
 	private static final WeakHashMap<Runnable, Object> backPressedCallbacks = new WeakHashMap<>();
-	private static final String TAG = "AweryApp";
+	private static final String TAG = "App";
+	private static Moshi moshi;
 	private static AweryDB db;
+
+	public static Moshi getMoshi() {
+		if(moshi != null) {
+			return moshi;
+		}
+
+		synchronized(App.class) {
+			if(moshi != null) {
+				return moshi;
+			}
+
+			return moshi = getMoshi();
+		}
+	}
+
+	public static Moshi getMoshi(Object... adapters) {
+		if(moshi != null) {
+			return moshi;
+		}
+
+		synchronized(App.class) {
+			if(moshi != null) {
+				return moshi;
+			}
+
+			var builder = new Moshi.Builder()
+					.addLast(new KotlinJsonAdapterFactory());
+
+			for(var adapter : adapters) {
+				builder.add(adapter);
+			}
+
+			return moshi = builder.build();
+		}
+	}
 
 	@NonNull
 	public static Bitmap drawableToBitmap(@NonNull Drawable drawable) {
@@ -131,6 +169,7 @@ public class AweryApp extends Application {
 	 * @throws Resources.NotFoundException If no resource with such name was found
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	@Contract(pure = true)
 	public static Drawable resolveDrawable(Context context, @NonNull String name) throws Resources.NotFoundException {
 		var clazz = name.startsWith("@mipmap/") ? R.mipmap.class
@@ -209,6 +248,7 @@ public class AweryApp extends Application {
 	 * A hacky method to fix the height, width of the dialog and color of the navigation bar.
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static void fixDialog(@NonNull Dialog dialog) {
 		var context = dialog.getContext();
 		var window = dialog.getWindow();
@@ -236,6 +276,7 @@ public class AweryApp extends Application {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int getResourceId(@NonNull Class<?> type, String res) {
 		if(res == null) return 0;
 
@@ -258,16 +299,14 @@ public class AweryApp extends Application {
 		}
 	}
 
-	/**
-	 * @return An resource id or 0 if resource was not found.
-	 * @author MrBoomDev
-	 */
 	@Nullable
-	public static String getString(Class<?> clazz, String string) {
+	public static String i18n(Class<?> clazz, String string) {
 		var id = getResourceId(clazz, string);
-		if(id == 0) return null;
+		return id == 0 ? null : i18n(id);
+	}
 
-		return getAnyContext().getString(id);
+	public static String i18n(@StringRes int res) {
+		return getAppContext().getString(res);
 	}
 
 	public static AweryDB getDatabase() {
@@ -275,7 +314,7 @@ public class AweryApp extends Application {
 			return db;
 		}
 
-		synchronized(AweryApp.class) {
+		synchronized(App.class) {
 			if(db != null) {
 				return db;
 			}
@@ -316,6 +355,7 @@ public class AweryApp extends Application {
 	 * There is a bug in an appcompat library which sometimes throws an {@link NullPointerException}.
 	 * This method tries to do it without throwing any exceptions.
 	 */
+	@Deprecated(forRemoval = true)
 	public static void setContentViewCompat(@NonNull Activity activity, @NonNull View view) {
 		requireArgument(activity, "activity");
 		requireArgument(view, "view");
@@ -334,6 +374,7 @@ public class AweryApp extends Application {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void setContentViewCompat(@NonNull Activity activity, @NonNull ViewBinding view) {
 		setContentViewCompat(activity, view.getRoot());
 	}
@@ -344,6 +385,7 @@ public class AweryApp extends Application {
 	 * Because of it we have to rerun this method on a next frame.
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static void enableEdgeToEdge(ComponentActivity context, SystemBarStyle statusBar, SystemBarStyle navBar) {
 		try {
 			if(statusBar == null) {
@@ -369,10 +411,12 @@ public class AweryApp extends Application {
 	 * Because of it we have to rerun this method on a next frame.
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static void enableEdgeToEdge(ComponentActivity context) {
 		enableEdgeToEdge(context, null, null);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void removeOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
 		var onBackInvokedCallback = backPressedCallbacks.remove(callback);
 		if(onBackInvokedCallback == null) return;
@@ -386,6 +430,7 @@ public class AweryApp extends Application {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static void addOnBackPressedListener(@NonNull Activity activity, Runnable callback) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			var onBackInvokedCallback = (OnBackInvokedCallback) callback::run;
@@ -410,10 +455,12 @@ public class AweryApp extends Application {
 		}
 	}
 
+	@Deprecated(forRemoval = true)
 	public static int resolveAttrColor(@NonNull Context context, @AttrRes int res) {
 		return MaterialColors.getColor(context, res, Color.BLACK);
 	}
 
+	@Deprecated(forRemoval = true)
 	@SuppressLint("RestrictedApi")
 	public static TypedValue resolveAttr(Context context, @AttrRes int res) {
 		return MaterialAttributes.resolve(context, res);

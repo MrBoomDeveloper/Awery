@@ -5,6 +5,7 @@ import android.util.Log;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.sdk.util.Callbacks;
 
+@Deprecated(forRemoval = true)
 public class JsTask {
 	private static final String TAG = "JsTask";
 	protected static final int LOAD_ALL_EXTENSIONS = 1;

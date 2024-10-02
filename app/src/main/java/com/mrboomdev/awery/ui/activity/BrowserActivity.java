@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;

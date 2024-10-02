@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.app.update;
 
-import static com.mrboomdev.awery.app.AweryApp.showLoadingWindow;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.showLoadingWindow;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
@@ -123,7 +123,7 @@ public class UpdatesManager {
 						case STABLE -> "-stable-";
 						case BETA -> "-beta-";
 						case ALPHA -> "-alpha-";
-					}) && me.name.contains(BuildConfig.IS_LEGACY ? "-legacy-" : "-modern-") && me.name.endsWith(".apk"))
+					}) && me.name.endsWith(".apk"))
 					.findAny().orElseThrow(() -> new ZeroResultsException("No valid files was found!"));
 
 			return new Update(release.name, release.body, asset.size, asset.browserDownloadUrl);

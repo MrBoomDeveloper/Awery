@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.fragments.feeds;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static com.mrboomdev.awery.app.AweryApp.getNavigationStyle;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.App.getNavigationStyle;
+import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
@@ -33,6 +33,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
 import com.mrboomdev.awery.util.MediaUtils;
 
 import org.jetbrains.annotations.Contract;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.WeakHashMap;
 
 import java9.util.stream.Collectors;
+import kotlin.Unit;
 
 public class PagesFeedViewHolder extends FeedViewHolder {
 	private static final int MAX_ITEMS = 10;
@@ -112,18 +114,23 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 			binding.getRoot().setOnLongClickListener(v -> {
 				var media = holder.getItem();
 				var index = feed.getItems().indexOf(media);
+				var dialog = new MediaActionsDialog(media);
 
-				MediaUtils.openMediaActionsMenu(parent.getContext(), media, () ->
-						MediaUtils.isMediaFiltered(media, isFiltered -> {
-							if(!isFiltered) return;
+				dialog.setUpdateCallback(() -> {
+					MediaUtils.isMediaFiltered(media, isFiltered -> {
+						if(!isFiltered) return;
 
-							runOnUiThread(() -> {
-								var was = feed.getItems().remove(index);
-								notifyItemRemoved(index);
-								ids.remove(was);
-							});
-						}));
+						runOnUiThread(() -> {
+							var was = feed.getItems().remove(index);
+							notifyItemRemoved(index);
+							ids.remove(was);
+						});
+					});
 
+					return Unit.INSTANCE;
+				});
+
+				dialog.show(parent.getContext());
 				return true;
 			});
 

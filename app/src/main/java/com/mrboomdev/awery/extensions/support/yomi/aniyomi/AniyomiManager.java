@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
 import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_WATCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;

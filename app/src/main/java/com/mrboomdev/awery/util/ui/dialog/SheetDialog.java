@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.AweryApp.fixDialog;
-import static com.mrboomdev.awery.app.AweryApp.isLandscape;
+import static com.mrboomdev.awery.app.App.fixDialog;
+import static com.mrboomdev.awery.app.App.isLandscape;
 
 import android.content.Context;
 import android.content.DialogInterface;

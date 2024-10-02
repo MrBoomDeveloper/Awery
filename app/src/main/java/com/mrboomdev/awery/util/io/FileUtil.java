@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.util.io;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
@@ -188,7 +189,7 @@ public class FileUtil {
 	@NonNull
 	public static String readAssets(String path) throws IOException {
 		try(var reader = new BufferedReader(new InputStreamReader(
-				getAnyContext().getAssets().open(path), StandardCharsets.UTF_8))
+				getAppContext().getAssets().open(path), StandardCharsets.UTF_8))
 		) {
 			var builder = new StringBuilder();
 			String line;

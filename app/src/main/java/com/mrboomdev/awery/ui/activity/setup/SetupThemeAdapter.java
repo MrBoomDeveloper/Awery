@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.activity.setup;
 
-import static com.mrboomdev.awery.app.AweryApp.balloon;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.balloon;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getSettingsMap;

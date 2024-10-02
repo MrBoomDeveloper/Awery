@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.fragments;
 
-import static com.mrboomdev.awery.app.AweryApp.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.AweryApp.getMarkwon;
-import static com.mrboomdev.awery.app.AweryApp.removeOnBackPressedListener;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
+import static com.mrboomdev.awery.app.App.getMarkwon;
+import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;

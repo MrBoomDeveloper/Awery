@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.AweryApp.copyToClipboard;
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.toast;
+import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
@@ -45,7 +45,7 @@ import androidx.media3.ui.TimeBar;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryApp;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsList;
@@ -607,7 +607,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		player.prepare();
 		player.play();
 
-		AweryApp.addOnBackPressedListener(this, this::finish);
+		App.addOnBackPressedListener(this, this::finish);
 	}
 
 	@Override

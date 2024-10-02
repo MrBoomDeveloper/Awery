@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.AweryApp.getString;
+import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
@@ -264,7 +264,7 @@ public class SettingsItem implements Serializable {
 	}
 
 	public String getTitle(Context context) {
-		var got = getString(R.string.class, title);
+		var got = i18n(R.string.class, title);
 		return got != null ? got : title;
 	}
 
@@ -288,7 +288,7 @@ public class SettingsItem implements Serializable {
 					+ description.substring(endIndex + 1);
 		}
 
-		var got = getString(R.string.class, description);
+		var got = i18n(R.string.class, description);
 		return got != null ? got : description;
 	}
 

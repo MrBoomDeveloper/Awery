@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.AweryApp.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.AweryApp.getDatabase;
-import static com.mrboomdev.awery.app.AweryApp.resolveAttrColor;
+import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
+import static com.mrboomdev.awery.app.App.getDatabase;
+import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
