@@ -42,12 +42,11 @@ Explore the powerful features that make Awery the ultimate anime app experience.
 <details>
 <summary>Explore Key Features</summary>
 <ul>
-  <li>Full integration with Aniyomi extensions for enhanced functionality.</li>
-  <li>Sync your progress seamlessly with AniList, MyAnimeList, Shikimori, and more.</li>
-  <li>Engage with community comments and share your thoughts.</li>
-  <li>Global accessibility with multi-language support.</li>
-  <li>Advanced filtering options, including the ability to exclude specific genres.</li>
-  <li>Easily blacklist unwanted content and manage your library.</li>
+  <li>Seamless integration with Aniyomi extensions and third-party sources for enhanced content access.</li>
+  <li>Effortlessly track and sync your progress with AniList, MyAnimeList, Shikimori, and more.</li>
+  <li>Personalize the app and content display with extensive customization options.</li>
+  <li>Advanced filters and blacklisting tools let you control the genres and content you see.</li>
+  <li>Support for multiple languages and community interaction through comments for a global experience.</li>
 </ul>
 </details>
 
