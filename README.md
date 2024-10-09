@@ -24,6 +24,7 @@
 - External repositories can be added via **Settings -> Extensions**. **Third-party repositories** may pose security risks, and Awery is not responsible for their content or safety.
 
 ## ⭐ Support Us
+<a href='https://www.donationalerts.com/r/mrboomdeveloper' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://seeklogo.com/images/D/donationalerts-logo-717DB9DFFF-seeklogo.com.png?v=638394669150000000' border='0' alt='Donate on Donation Alerts' /></a>
 > **Star the repository to support ongoing development!**
 <details>
   <summary>Star History</summary>
