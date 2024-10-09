@@ -1,5 +1,5 @@
 # Awery - The Best Mobile Anime App
-> Customize everything with Awery – tons of features, a <b><i>stylish</i></b> look, and ultimate flexibility at your fingertips.
+> Customize everything with Awery – tons of features, a **stylish** look, and ultimate flexibility at your fingertips.
 
 <p>
   <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/v/release/MrBoomDeveloper/Awery?label=Downloads&style=flat-square" alt="GitHub Downloads"></a>
@@ -18,9 +18,10 @@
 </p>
 
 ## ⚠️ Disclaimer
-- Awery functions as a search engine, displaying links to third-party content. The developer is not responsible for any misuse or legal issues. Legal concerns should be directed to the content hosts, as Awery is not affiliated with them and hosts no content.
-- You can add external repositories by navigating to **Settings -> Extensions** and tapping the GitHub icon. Enter URLs ending with `index.min.json`. Note that third-party repositories or extensions may have full access to the app and could contain malware. Awery does not provide resources for external repositories.
-- This app is for educational and personal use and does not support or condone piracy.
+- Awery is a **tracking tool and search engine** that displays links to third-party content. **We do not host or control any content** and are not liable for its legality.
+- **Users are responsible** for how they interact with third-party content. Legal concerns should be directed to the respective hosts.
+- Awery is for **personal and educational use** only. We do not condone piracy, and users must comply with copyright laws.
+- External repositories can be added via **Settings -> Extensions**. **Third-party repositories** may pose security risks, and Awery is not responsible for their content or safety.
 
 ## ⭐ Support Us
 > **Star the repository to support ongoing development!**
