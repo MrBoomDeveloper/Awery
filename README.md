@@ -2,7 +2,7 @@
 > Customize everything with Awery – tons of features, a **stylish** look, and ultimate flexibility at your fingertips.
 
 <p>
-  <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/v/release/MrBoomDeveloper/Awery?label=Downloads&style=flat-square" alt="GitHub Downloads"></a>
+  <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?label=Downloads&style=flat-square" alt="GitHub Downloads"></a>
   <a href="https://www.codefactor.io/repository/github/MrBoomDeveloper/Awery"><img src="https://img.shields.io/codefactor/grade/github/MrBoomDeveloper/Awery?style=flat-square&label=Codefactor" alt="CodeFactor"/></a>
   <a href="https://hosted.weblate.org/projects/awery/awery-android-client/"><img alt="Weblate project translated" src="https://img.shields.io/weblate/progress/awery?label=Translated&style=flat-square"></a>
   <a href="https://github.com/MrBoomDeveloper/Awery/commits/main">
