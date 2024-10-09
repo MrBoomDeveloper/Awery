@@ -18,9 +18,9 @@
 </p>
 
 ## ⚠️ Disclaimer
-- The developer holds no responsibility for any misuse or legal issues arising from this app. It is not affiliated with any content providers and hosts no content.
-- Awery functions solely as a search engine that displays links to third-party content. Legal concerns should be directed to the content hosts.
-- This app is intended for educational and personal use only and does not endorse piracy.
+- Awery functions as a search engine, displaying links to third-party content. The developer is not responsible for any misuse or legal issues. Legal concerns should be directed to the content hosts, as Awery is not affiliated with them and hosts no content.
+- You can add external repositories by navigating to **Settings -> Extensions** and tapping the GitHub icon. Enter URLs ending with `index.min.json`. Note that third-party repositories or extensions may have full access to the app and could contain malware. Awery does not provide resources for external repositories.
+- This app is for educational and personal use and does not support or condone piracy.
 
 ## ⭐ Support Us
 > **Star the repository to support ongoing development!**
