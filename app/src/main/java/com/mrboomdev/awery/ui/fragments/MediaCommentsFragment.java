@@ -6,11 +6,11 @@ import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.util.NiceUtils.parseDate;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
-import static com.mrboomdev.awery.util.ui.ViewUtil.createLinearParams;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
@@ -27,8 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,14 +55,12 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.sdk.util.StringUtils;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.JsException;
-import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
+import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;
+import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
@@ -73,19 +70,18 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.noties.markwon.Markwon;
-import java9.util.Objects;
 
 public class MediaCommentsFragment extends Fragment {
+	private static final String TAG = "MediaCommentsFragment";
 	private static final int UNSPECIFIED_PAGE = -1;
 	private static final int LAST_PAGE = -2;
-	private static final String TAG = "MediaCommentsFragment";
 	private final CommentsAdapter commentsAdapter = new CommentsAdapter();
 	private final WeakHashMap<CatalogComment, Parcelable> scrollPositions = new WeakHashMap<>();
 	private final WeakHashMap<CatalogComment, Integer> pages = new WeakHashMap<>();
 	private final List<CatalogComment> currentCommentsPath = new ArrayList<>();
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutLoadingBinding> loadingAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutCommentsHeaderBinding> headerAdapter;
-	private ArrayListAdapter<ExtensionProvider> sourcesAdapter;
+	private DropdownAdapter<ExtensionProvider> sourcesAdapter;
 	private ConcatAdapter concatAdapter;
 	private Runnable backPressCallback;
 	private List<ExtensionProvider> sources;
@@ -310,8 +306,7 @@ public class MediaCommentsFragment extends Fragment {
 					swipeRefresher.setRefreshing(false);
 					isLoading = false;
 
-					if(parent != null && (reloadThis == null ||
-							(e instanceof JsException jsE && Objects.equals(jsE.getErrorId(), JsException.ERROR_NOTHING_FOUND)))) {
+					if(parent != null && (reloadThis == null)) {
 						setComment(parent, reloadThis);
 						loadingAdapter.setEnabled(false);
 						return;
@@ -383,23 +378,25 @@ public class MediaCommentsFragment extends Fragment {
 			var inflater = LayoutInflater.from(parent.getContext());
 			return LayoutLoadingBinding.inflate(inflater, parent, false);
 		});
-
-		sourcesAdapter = new ArrayListAdapter<>((item, recycled, parentView) -> {
-			if(recycled == null) {
-				var inflater = LayoutInflater.from(parentView.getContext());
-
-				recycled = ItemListDropdownBinding.inflate(
-						inflater, parentView, false).getRoot();
+		
+		sourcesAdapter = new DropdownBindingAdapter<ExtensionProvider, ItemListDropdownBinding>() {
+			
+			@Override
+			public ItemListDropdownBinding onCreateBinding(ViewGroup parent, int viewType) {
+				return ItemListDropdownBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 			}
-
-			TextView textView = recycled.findViewById(R.id.title);
-			textView.setText(item.getName());
-
-			ImageView icon = recycled.findViewById(R.id.icon);
-			icon.setVisibility(View.GONE);
-
-			return recycled;
-		});
+			
+			@Override
+			public View getView(ItemListDropdownBinding binding) {
+				return binding.getRoot();
+			}
+			
+			@Override
+			public void onBindItem(ExtensionProvider item, ItemListDropdownBinding binding) {
+				binding.title.setText(item.getName());
+				binding.icon.setVisibility(View.GONE);
+			}
+		};
 
 		headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = LayoutInflater.from(parent.getContext());
@@ -482,7 +479,7 @@ public class MediaCommentsFragment extends Fragment {
 		}, container);
 
 		recycler.setAdapter(concatAdapter);
-		parentLayout.addView(recycler, createLinearParams(MATCH_PARENT, 0, 1));
+		parentLayout.addView(recycler, new LinearLayout.LayoutParams(MATCH_PARENT, 0, 1));
 
 		var isSending = new AtomicBoolean();
 		sendBinding = WidgetCommentSendBinding.inflate(inflater, parentLayout, true);
@@ -653,7 +650,7 @@ public class MediaCommentsFragment extends Fragment {
 		@SuppressLint("NotifyDataSetChanged")
 		public void setData(@Nullable CatalogComment root) {
 			this.root = root;
-			idGenerator.clear();
+			idGenerator.reset();
 
 			if(root != null) {
 				root.visualId = idGenerator.getLong();
@@ -868,12 +865,12 @@ public class MediaCommentsFragment extends Fragment {
 
 			if(comment.date != null) {
 				try {
-					var time = StringUtils.parseDate(comment.date).getTime();
+					var time = parseDate(comment.date).getTime();
 					var now = System.currentTimeMillis();
 
 					date = DateUtils.getRelativeTimeSpanString(
 							time, now, DateUtils.SECOND_IN_MILLIS).toString();
-				} catch(InvalidSyntaxException e) {
+				} catch(IllegalArgumentException e) {
 					Log.e("MediaCommentsFragment", "Failed to parse comment date!", e);
 					date = comment.date;
 				}

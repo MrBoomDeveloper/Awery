@@ -10,10 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.WrappedException;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -39,14 +37,6 @@ public class ExceptionDescriptor {
 	}
 
 	public static Throwable unwrap(Throwable t) {
-		if(t instanceof WrappedException wrappedException) {
-			return unwrap(wrappedException.getWrappedException());
-		}
-
-		if(t instanceof JsException jsException && jsException.getErrorExtra() instanceof Throwable throwable) {
-			return unwrap(throwable);
-		}
-
 		if(!isUnknownException(t)) {
 			return t;
 		}
@@ -117,8 +107,6 @@ public class ExceptionDescriptor {
 			return "Parser has crashed!";
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
 			return "Bad thing has happened...";
-		} else if(t instanceof InvalidSyntaxException) {
-			return "Invalid syntax! " + t.getMessage();
 		}
 
 		if(t.getMessage() != null && t.getMessage().contains(ROOM_EXCEPTION)) {
@@ -151,16 +139,6 @@ public class ExceptionDescriptor {
 	}
 
 	public boolean isNetworkException() {
-		if(throwable instanceof JsException js) {
-			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-				case JsException.ERROR_RATE_LIMITED,
-						JsException.ERROR_HTTP,
-						JsException.SERVER_ERROR,
-						JsException.SERVER_DOWN -> true;
-				default -> false;
-			};
-		}
-
 		return throwable instanceof ZeroResultsException ||
 				throwable instanceof UnimplementedException ||
 				throwable instanceof SocketTimeoutException ||
@@ -175,8 +153,6 @@ public class ExceptionDescriptor {
 				t instanceof SocketTimeoutException ||
 				t instanceof ExtensionNotInstalledException ||
 				t instanceof SocketException ||
-				t instanceof InvalidSyntaxException ||
-				t instanceof JsException ||
 				t instanceof SSLHandshakeException ||
 				t instanceof HttpException ||
 				t instanceof UnsupportedOperationException ||
@@ -216,8 +192,7 @@ public class ExceptionDescriptor {
 			return getHttpErrorMessage(context, e.getCode());
 		} else if(t instanceof UnknownHostException e) {
 			return e.getMessage();
-		} else if(t instanceof SerializationException ||
-				t instanceof InvalidSyntaxException) {
+		} else if(t instanceof SerializationException) {
 			return "An error has occurred while parsing the response. " + t.getMessage();
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
 			if(t instanceof InstanceCountViolation) {
@@ -277,13 +252,6 @@ public class ExceptionDescriptor {
 		SERVER_DOWN {
 			@Override
 			protected boolean isMeImpl(Throwable t) {
-				if(t instanceof JsException js) {
-					return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-						case JsException.SERVER_DOWN, JsException.SERVER_ERROR -> true;
-						default -> false;
-					};
-				}
-
 				if(t instanceof HttpException e) {
 					return switch(e.getCode()) {
 						case 500, 503 -> true;

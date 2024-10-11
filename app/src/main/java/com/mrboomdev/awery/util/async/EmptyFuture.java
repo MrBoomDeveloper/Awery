@@ -2,6 +2,7 @@ package com.mrboomdev.awery.util.async;
 
 import java.util.concurrent.Callable;
 
+@Deprecated(forRemoval = true)
 public interface EmptyFuture extends BaseFuture {
 	void addCallback(Callback callback);
 

@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.data.settings;
 
-import com.mrboomdev.awery.sdk.util.Callbacks;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -45,7 +43,11 @@ public interface ObservableSettingsItem {
 	class __OBSERVERS {
 		private static final WeakHashMap<ObservableSettingsItem, Set<Observer>> observers = new WeakHashMap<>();
 
-		private static void invokeObservers(ObservableSettingsItem parent, Callbacks.Callback1<Observer> callback) {
+		private interface Callback1<T> {
+			void run(T arg);
+		}
+		
+		private static void invokeObservers(ObservableSettingsItem parent, Callback1<Observer> callback) {
 			var set = observers.get(parent);
 			if(set == null) return;
 

@@ -18,9 +18,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.List;
 import java.util.WeakHashMap;
@@ -61,7 +61,7 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(List<? extends CatalogMedia> items) {
-		idGenerator.clear();
+		idGenerator.reset();
 
 		if(items == null) {
 			this.items = null;

@@ -61,7 +61,7 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 	}
 
 	private Stream<T> find(State state) {
-		return NiceUtils.stream(items)
+		return NiceUtils.stream(items.entrySet())
 				.filter(entry -> entry.getValue() == state)
 				.map(Map.Entry::getKey);
 	}

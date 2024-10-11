@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
@@ -56,7 +55,7 @@ public class NicePreferences implements SettingsDataHandler {
 			reloadSettingsMapValues();
 			return settingsMapInstance;
 		} catch(IOException e) {
-			throw new InvalidSyntaxException("Failed to parse settings", e);
+			throw new IllegalStateException("Failed to parse settings", e);
 		}
 	}
 

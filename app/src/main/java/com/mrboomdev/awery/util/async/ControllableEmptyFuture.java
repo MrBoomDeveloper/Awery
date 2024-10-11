@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.async;
 
+@Deprecated(forRemoval = true)
 public interface ControllableEmptyFuture extends EmptyFuture {
 	void complete() throws Throwable;
 

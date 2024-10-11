@@ -27,18 +27,14 @@ import androidx.viewbinding.ViewBinding;
 
 import org.jetbrains.annotations.Contract;
 
+@Deprecated(forRemoval = true)
 public class ViewUtil {
-	@Deprecated(forRemoval = true)
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
-	@Deprecated(forRemoval = true)
 	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
-	@Deprecated(forRemoval = true)
 	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
-	@Deprecated(forRemoval = true)
 	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
 	private static final String TAG = "ViewUtil";
-
-	@Deprecated(forRemoval = true)
+	
 	public static boolean setLeftMargin(View view, int margin) {
 		var margins = getMargins(view);
 		if(margins == null) return false;

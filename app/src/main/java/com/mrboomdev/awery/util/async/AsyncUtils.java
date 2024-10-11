@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.exceptions.CancelledException;
 
 import org.jetbrains.annotations.Contract;
@@ -23,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Deprecated(forRemoval = true)
 public class AsyncUtils {
 	private static final Object EMPTY_OBJECT = new Object();
 	private static final Timer timer = new Timer();
@@ -153,6 +153,8 @@ public class AsyncUtils {
 				return result != null || throwable != null;
 			}
 
+			@Nullable
+			@Contract(pure = true)
 			@Override
 			public Throwable getThrowable() {
 				return null;
@@ -394,35 +396,16 @@ public class AsyncUtils {
 	 * Waits until the callback returns true
 	 * @author MrBoomDev
 	 */
-	public static void await(@NonNull Callbacks.Result<Boolean> callback) {
+	public static void await(@NonNull Result<Boolean> callback) {
 		while(!callback.run());
 	}
 
-	public static void await(@NonNull Callbacks.Result<Boolean> callback, long maxDurationMs) {
-		if(maxDurationMs == -1) {
-			await(callback);
-			return;
-		}
-
-		var isCancelled = new AtomicBoolean(false);
-		var timer = runDelayed(() -> isCancelled.set(true), maxDurationMs);
-
-		while(!callback.run() && !isCancelled.get());
-		timer.cancel();
+	public interface Result<T> {
+		T run();
 	}
 
-	/**
-	 * Waits until the callback returns non null
-	 * @author MrBoomDev
-	 */
-	public static <T> T awaitNonNull(@NonNull Callbacks.Result<T> callback) {
-		T result;
-
-		do {
-			result = callback.run();
-		} while(result == null);
-
-		return result;
+	public interface Callback1<T> {
+		void run(T arg);
 	}
 
 	/**
@@ -432,7 +415,7 @@ public class AsyncUtils {
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public static <T> T awaitResult(@NonNull Callbacks.Callback1<Callbacks.Callback1<T>> breaker) {
+	public static <T> T awaitResult(@NonNull Callback1<Callback1<T>> breaker) {
 		var resultWrapper = new AtomicReference<>();
 		var result = EMPTY_OBJECT;
 

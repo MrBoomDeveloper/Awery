@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.util.NiceUtils.invokeMethod;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.Manifest;
@@ -31,11 +30,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -456,13 +456,27 @@ public class AweryLifecycle implements Application.ActivityLifecycleCallbacks {
 				"android.app.ActivityThread",
 				"currentApplication");
 
-		if(context != null) return context;
+		if(context != null) {
+			return context;
+		}
 
 		context = (App) invokeMethod(
 				"android.app.AppGlobals",
 				"getInitialApplication");
 
 		return context;
+	}
+
+	@Nullable
+	private static Object invokeMethod(String className, String methodName) {
+		try {
+			var clazz = Class.forName(className);
+			var method = clazz.getMethod(methodName);
+			method.setAccessible(true);
+			return method.invoke(null);
+		} catch(ClassNotFoundException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			return null;
+		}
 	}
 
 	public static Application getAppContext() {

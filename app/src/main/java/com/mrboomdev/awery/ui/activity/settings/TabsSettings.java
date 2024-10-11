@@ -32,7 +32,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
+import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.TabsTemplate;
@@ -81,7 +81,12 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 										parent, false));
 
 								binding.get().icon.setOnClickListener(v ->
-										new IconPickerDialog<Map.Entry<String, IconStateful>>(context, Map.Entry::getValue)
+										new IconPickerDialog<Map.Entry<String, IconStateful>>(context) {
+											@Override
+											public IconStateful getIcon(Map.Entry<String, IconStateful> item) {
+												return item.getValue();
+											}
+										}
 												.setTitle(R.string.select_icon)
 												.setItems(icons.entrySet())
 												.setSelectionListener(item -> {

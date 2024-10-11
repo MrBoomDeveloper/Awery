@@ -20,7 +20,6 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
-import com.mrboomdev.awery.extensions.support.js.JsProvider;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
@@ -51,10 +50,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String VIDEO_CATEGORY_EPISODE = "VIDEO_CATEGORY_EPISODE";
 	public static final String VIDEO_CATEGORY_TRAILER = "VIDEO_CATEGORY_TRAILER";
 	public static final String VIDEO_CATEGORY_MUSIC = "VIDEO_CATEGORY_MUSIC";
-
-	/**
-	 * Isn't used by the application itself, only for the {@link JsProvider}
-	 */
+	
 	public static final String FEATURE_LOGIN = "ACCOUNT_LOGIN";
 	public static final String FEATURE_TAGS_SEARCH = "SEARCH_TAGS";
 	public static final String FEATURE_MEDIA_WATCH = "MEDIA_WATCH";

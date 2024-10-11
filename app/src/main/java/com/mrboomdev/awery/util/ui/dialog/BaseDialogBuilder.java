@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.mrboomdev.awery.app.App.resolveAttr;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -23,8 +25,6 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
-import com.mrboomdev.awery.sdk.util.Callbacks;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	private ScrollView scroller;
 	private ViewGroup fieldsWrapper;
 	private Dialog dialog;
-	private Callbacks.Callback1<T> dismissListener;
+	private Callback1<T> dismissListener;
 	private OnButtonClickListener<T> okListener, cancelListener, neutralListener;
 	private String title, message, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
 	private boolean isCancelable = true, didCreateRoot;
@@ -69,6 +69,10 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		this.okListener = listener;
 		this.okButtonLabel = label;
 		return (T) this;
+	}
+	
+	public interface Callback1<T> {
+		void run(T arg);
 	}
 
 	public T setPositiveButton(@StringRes int label, OnButtonClickListener<T> listener) {
@@ -118,7 +122,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		return setNegativeButton(context.getString(label), listener);
 	}
 
-	public T setOnDismissListener(Callbacks.Callback1<T> listener) {
+	public T setOnDismissListener(Callback1<T> listener) {
 		this.dismissListener = listener;
 		return (T) this;
 	}
@@ -146,8 +150,12 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		addView(view, fields.size());
 		return (T) this;
 	}
+	
+	public interface Result1<T, A> {
+		T run(A arg);
+	}
 
-	public T addView(@NonNull Callbacks.Result1<View, ViewGroup> callback) {
+	public T addView(@NonNull Result1<View, ViewGroup> callback) {
 		createRoot();
 		addView(callback.run(fieldsWrapper));
 		return (T) this;
@@ -169,7 +177,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		var fieldsLinear = new LinearLayoutCompat(context);
 		setHorizontalPadding(fieldsLinear, padding);
 		fieldsLinear.setOrientation(LinearLayoutCompat.VERTICAL);
-		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT));
+		scroller.addView(fieldsLinear, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 		fieldsWrapper = fieldsLinear;
 	}
 

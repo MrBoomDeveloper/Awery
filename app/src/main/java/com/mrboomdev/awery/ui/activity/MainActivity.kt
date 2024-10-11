@@ -3,24 +3,22 @@ package com.mrboomdev.awery.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.Insets
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.elevation.SurfaceColors
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.getDatabase
 import com.mrboomdev.awery.app.App.getMoshi
+import com.mrboomdev.awery.app.App.isLandscape
 import com.mrboomdev.awery.app.App.toast
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.runDelayed
@@ -38,10 +36,7 @@ import com.mrboomdev.awery.ui.activity.search.MultiSearchActivity
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity
 import com.mrboomdev.awery.ui.fragments.feeds.FeedsFragment
 import com.mrboomdev.awery.util.IconStateful
-import com.mrboomdev.awery.util.NiceUtils
-import com.mrboomdev.awery.util.Parser
 import com.mrboomdev.awery.util.TabsTemplate
-import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -57,13 +52,13 @@ import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.rightPadding
 import com.mrboomdev.awery.util.extensions.setContentViewCompat
 import com.mrboomdev.awery.util.extensions.setHorizontalPadding
+import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.util.io.FileUtil.readAssets
 import com.mrboomdev.awery.util.ui.EmptyView
 import com.mrboomdev.awery.util.ui.FadeTransformer
-import com.mrboomdev.awery.util.ui.ViewUtil
 import com.squareup.moshi.adapter
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -104,20 +99,17 @@ class MainActivity : AppCompatActivity() {
         if(template == "custom") loadCustomTabs() else loadTemplateTabs(template)
 
         if(AwerySettings.AUTO_CHECK_APP_UPDATE.value) {
-            UpdatesManager.getAppUpdate().addCallback(object : AsyncFuture.Callback<UpdatesManager.Update?> {
-                override fun onSuccess(update: UpdatesManager.Update?) {
-                    UpdatesManager.showUpdateDialog(update)
-                }
-
-                override fun onFailure(t: Throwable) {
-                    Log.e(TAG, "Failed to check for updates!", t)
-                }
-            })
+            lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+                Log.e(TAG, "Failed to check for updates!", t)
+            }) {
+                val update = UpdatesManager.fetchLatestAppUpdate()
+                UpdatesManager.showUpdateDialog(this@MainActivity, update)
+            }
         }
     }
 
     private fun loadCustomTabs() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             setupTabs(getDatabase().tabsDao.allTabs)
         }
     }
@@ -148,12 +140,9 @@ class MainActivity : AppCompatActivity() {
         val icons: Map<String, IconStateful>
 
         try {
-            val json = readAssets("icons.json")
-            val adapter = Parser.getAdapter<Map<String, IconStateful>>(
-                MutableMap::class.java, String::class.java, IconStateful::class.java
-            )
-            icons = Parser.fromString(adapter, json)
-        } catch (e: IOException) {
+            icons = getMoshi().adapter<Map<String, IconStateful>>()
+                .fromJson(readAssets("icons.json"))!!
+        } catch(e: IOException) {
             Log.e(TAG, "Failed to read an icons atlas!", e)
 
             CrashHandler.showErrorDialog(
@@ -168,6 +157,7 @@ class MainActivity : AppCompatActivity() {
 
         runOnUiThread {
             setupNavigation()
+
             when(App.getNavigationStyle()!!) {
                 NavigationStyle_Values.BUBBLE -> {
                     for(i in tabs.indices) {
@@ -221,7 +211,7 @@ class MainActivity : AppCompatActivity() {
             "No tabs found",
             "Please selecting an template or either create your own tabs to see anything here.",
             "Go to settings"
-        ) { startActivity(Intent(this, SettingsActivity::class.java)) }
+        ) { startActivity(clazz = SettingsActivity::class) }
 
         setContentViewCompat(binding.root)
     }
@@ -242,10 +232,12 @@ class MainActivity : AppCompatActivity() {
         if(App.getNavigationStyle() == NavigationStyle_Values.MATERIAL) {
             if(AwerySettings.USE_AMOLED_THEME.value) {
                 binding!!.navbarMaterial.setBackgroundColor(-0x1000000)
-                window.navigationBarColor = if(App.isLandscape()) 0 else -0x1000000
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = if(isLandscape()) 0 else -0x1000000
             } else {
                 binding!!.navbarMaterial.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
-                window.navigationBarColor = if(App.isLandscape()) 0 else SurfaceColors.SURFACE_2.getColor(this)
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = if(isLandscape()) 0 else SurfaceColors.SURFACE_2.getColor(this)
             }
 
             binding!!.navbarMaterial.applyInsets(UI_INSETS, { view, insets ->
@@ -261,25 +253,20 @@ class MainActivity : AppCompatActivity() {
             true
         })
 
-        binding!!.navbarMaterial.setOnItemSelectedListener { item: MenuItem ->
-            binding!!.pages.setCurrentItem(item.itemId, false)
+        binding!!.navbarMaterial.setOnItemSelectedListener { tab ->
+            binding!!.pages.setCurrentItem(tab.itemId, false)
             true
-        }
-
-        binding!!.navbarMaterial.setOnItemReselectedListener { item: MenuItem ->
-            val adapter = binding!!.pages.adapter as FeedsAdapter? ?: return@setOnItemReselectedListener
-            val ref = adapter.fragments[item.itemId] ?: return@setOnItemReselectedListener
-
-            val fragment = ref.get() ?: return@setOnItemReselectedListener
-            fragment.scrollToTop()
         }
 
         binding!!.navbarBubble.onTabSelected = { tab ->
             binding!!.pages.setCurrentItem(tab.id, false)
         }
 
-        binding!!.navbarBubble.onTabReselected = { tab ->
-            (binding!!.pages.adapter as FeedsAdapter).fragments[tab.id]?.get()?.scrollToTop()
+        (fun(tabId: Int) {
+            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(tabId)?.get()?.scrollToTop()
+        }).let {
+            binding!!.navbarMaterial.setOnItemReselectedListener { it(it.itemId) }
+            binding!!.navbarBubble.onTabReselected = { it(it.id) }
         }
     }
 

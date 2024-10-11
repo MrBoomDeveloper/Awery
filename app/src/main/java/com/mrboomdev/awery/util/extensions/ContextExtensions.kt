@@ -1,25 +1,72 @@
 package com.mrboomdev.awery.util.extensions
 
 import android.app.Activity
+import android.app.Service
+import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import com.mrboomdev.awery.R
 import org.jetbrains.annotations.Contract
 import java.io.File
+import kotlin.reflect.KClass
 
 private const val TAG = "ContextExtensions"
+
+inline fun <reified T : Service> Context.startService(
+    action: String? = null,
+    extras: Map<String, Any>? = null,
+    data: Uri? = null
+) {
+    val intent = Intent(this, T::class.java)
+    intent.action = action
+    intent.data = data
+
+    if(extras != null) {
+        for(extra in extras) {
+            intent.put(extra.key, extra.value)
+        }
+    }
+
+    startService(intent)
+}
+
+fun Context.startActivity(
+    clazz: KClass<*>? = null,
+    action: String? = null,
+    extras: Map<String, Any>? = null,
+    data: Uri? = null
+) {
+    val intent = Intent()
+    intent.action = action
+    intent.data = data
+
+    if(clazz != null) {
+        intent.component = ComponentName(this, clazz.java)
+    }
+
+    if(extras != null) {
+        for((key, value) in extras) {
+            intent.put(key, value)
+        }
+    }
+
+    startActivity(intent)
+}
+
+val Context.screenWidth: Int
+    get() = resources.displayMetrics.widthPixels
 
 fun Context.getCacheFile(path: String): File {
     return File(cacheDir, path)

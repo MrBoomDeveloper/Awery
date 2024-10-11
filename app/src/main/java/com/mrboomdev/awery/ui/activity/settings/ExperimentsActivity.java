@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity.settings;
 
 import static com.mrboomdev.awery.app.App.toast;
 

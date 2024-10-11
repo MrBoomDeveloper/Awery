@@ -1,162 +1,209 @@
-package com.mrboomdev.awery.util.io;
+package com.mrboomdev.awery.util.io
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
+import com.mrboomdev.awery.app.AweryLifecycle
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.util.async.AsyncFuture
+import com.mrboomdev.awery.util.async.AsyncUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Cache
+import okhttp3.CacheControl
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
+import java.nio.channels.Channels
+import java.util.concurrent.TimeUnit
 
-import androidx.annotation.NonNull;
+object HttpClient {
+	@JvmStatic
+	val client: OkHttpClient by lazy {
+		val builder = OkHttpClient.Builder()
 
-import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.async.AsyncUtils;
+		val cacheDir = File(AweryLifecycle.getAppContext().cacheDir, Constants.DIRECTORY_NET_CACHE)
+		val cache = Cache(cacheDir, 10 * 1024 * 1024  /* 10mb */)
+		builder.cache(cache)
 
-import org.mozilla.javascript.annotations.JSGetter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Cache;
-import okhttp3.CacheControl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-
-public class HttpClient {
-	private static OkHttpClient client;
-
-	public static OkHttpClient getClient() {
-		if(client != null) return client;
-		var builder = new OkHttpClient.Builder();
-
-		var cacheDir = new File(getAnyContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE);
-		var cache = new Cache(cacheDir, /* 10mb */ 10 * 1024 * 1024);
-		builder.cache(cache);
-
-		if(AwerySettings.LOG_NETWORK.getValue()) {
-			var httpLoggingInterceptor = new HttpLoggingInterceptor();
-			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-			builder.addNetworkInterceptor(httpLoggingInterceptor);
+		if(AwerySettings.LOG_NETWORK.value) {
+			val httpLoggingInterceptor = HttpLoggingInterceptor()
+			httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+			builder.addNetworkInterceptor(httpLoggingInterceptor)
 		}
 
-		client = builder.build();
-		return client;
+		builder.build()
 	}
 
-	@NonNull
-	public static AsyncFuture<File> download(@NonNull HttpRequest request, @NonNull File targetFile) {
-		URL url;
+	suspend fun HttpRequest.download(targetFile: File): File {
+		checkFields()
+		val url = URL(url)
+
+		return withContext(Dispatchers.IO) {
+			targetFile.parentFile!!.mkdirs()
+			targetFile.delete()
+			targetFile.createNewFile()
+
+			val connection = url.openConnection()
+
+			if(headers != null) {
+				for((key, value) in headers) {
+					connection.setRequestProperty(key, value)
+				}
+			}
+
+			val httpChannel = Channels.newChannel(connection.getInputStream())
+
+			FileOutputStream(targetFile).use {
+				it.channel.transferFrom(httpChannel, 0, Long.MAX_VALUE)
+			}
+
+			targetFile
+		}
+	}
+
+	@JvmStatic
+	@Deprecated(message = "Will be removed after full migration to Kotlin")
+	fun download(request: HttpRequest, targetFile: File): AsyncFuture<File> {
+		val url: URL
 
 		try {
-			request.checkFields();
-			url = new URL(request.getUrl());
-		} catch(Throwable t) {
-			return AsyncUtils.futureFailNow(t);
+			request.checkFields()
+			url = URL(request.url)
+		} catch(t: Throwable) {
+			return AsyncUtils.futureFailNow(t)
 		}
 
-		return AsyncUtils.controllableFuture(future -> {
+		return AsyncUtils.controllableFuture { future ->
 			try {
-				requireNonNull(targetFile.getParentFile()).mkdirs();
-				targetFile.delete();
-				targetFile.createNewFile();
+				targetFile.parentFile!!.mkdirs()
+				targetFile.delete()
+				targetFile.createNewFile()
 
-				var connection = url.openConnection();
+				val connection = url.openConnection()
 
-				if(request.getHeaders() != null) {
-					for(var header : request.getHeaders().entrySet()) {
-						connection.setRequestProperty(header.getKey(), header.getValue());
+				if(request.headers != null) {
+					for((key, value) in request.headers) {
+						connection.setRequestProperty(key, value)
 					}
 				}
 
-				var httpChannel = Channels.newChannel(connection.getInputStream());
+				val httpChannel = Channels.newChannel(connection.getInputStream())
 
-				try(var fos = new FileOutputStream(targetFile)) {
-					fos.getChannel().transferFrom(httpChannel, 0, Long.MAX_VALUE);
+				FileOutputStream(targetFile).use { fos ->
+					fos.channel.transferFrom(httpChannel, 0, Long.MAX_VALUE)
 				}
 
-				future.complete(targetFile);
-			} catch(IOException e) {
-				future.fail(e);
+				future.complete(targetFile)
+			} catch(e: IOException) {
+				future.fail(e)
 			}
-		});
+		}
 	}
 
-	@NonNull
-	public static HttpResponse fetchSync(@NonNull HttpRequest request) throws IOException {
-		request.checkFields();
+	@JvmStatic
+	@Throws(IOException::class)
+	@Deprecated(message = "Will be removed after full migration to Kotlin")
+	fun fetchSync(request: HttpRequest): HttpResponse {
+		request.checkFields()
 
-		var okRequest = new okhttp3.Request.Builder();
-		okRequest.url(request.getUrl());
+		val okRequest = Request.Builder()
+		okRequest.url(request.url)
 
-		if(request.getHeaders() != null) {
-			for(var entry : request.getHeaders().entrySet()) {
-				okRequest.addHeader(entry.getKey(), entry.getValue());
+		if(request.headers != null) {
+			for((key, value) in request.headers) {
+				okRequest.addHeader(key, value)
 			}
 		}
 
-		switch(request.getMethod()) {
-			case GET -> okRequest.get();
-			case HEAD -> okRequest.head();
-			case DELETE -> okRequest.delete();
-
-			default -> okRequest.method(request.getMethod().name(), request.getForm() != null ? request.getForm().build()
-					: RequestBody.create(request.getBody(), request.getMediaType()));
+		when(request.method) {
+			HttpMethod.GET -> okRequest.get()
+			HttpMethod.HEAD -> okRequest.head()
+			HttpMethod.DELETE -> okRequest.delete()
+			else -> okRequest.method(
+				request.method.name, if(request.form != null) request.form.build()
+				else request.body.toRequestBody(request.mediaType)
+			)
 		}
-
-		if(request.getCacheMode() != null && request.getCacheMode().doCache()) {
-			okRequest.cacheControl(new CacheControl.Builder()
+		if(request.cacheMode != null && request.cacheMode.doCache()) {
+			okRequest.cacheControl(
+				CacheControl.Builder()
 					.onlyIfCached()
-					.maxAge(request.getCacheDuration(), TimeUnit.MILLISECONDS)
-					.build());
+					.maxAge(request.cacheDuration, TimeUnit.MILLISECONDS)
+					.build()
+			)
 		}
 
-		return executeCall(okRequest, request.getCacheMode());
+		return executeCall(okRequest, request.cacheMode)
 	}
 
-	@NonNull
-	public static AsyncFuture<HttpResponse> fetch(@NonNull HttpRequest request) {
-		return thread(() -> fetchSync(request));
+	@JvmStatic
+	@Deprecated(message = "Will be removed after full migration to Kotlin")
+	fun fetch(request: HttpRequest): AsyncFuture<HttpResponse> {
+		return AsyncUtils.thread<HttpResponse> { fetchSync(request) }
 	}
 
-	@NonNull
-	private static HttpResponse executeCall(Request.Builder okRequest, HttpCacheMode mode) throws IOException {
-		try(var response = getClient().newCall(okRequest.build()).execute()) {
-			if(mode != null && mode.doCache() && response.code() == 504) {
-				var cacheControl = new CacheControl.Builder().noCache().build();
-				return executeCall(okRequest.cacheControl(cacheControl), HttpCacheMode.NETWORK_ONLY);
+	suspend fun HttpRequest.fetch(): HttpResponse {
+		return withContext(Dispatchers.IO) {
+			checkFields()
+
+			val okRequest = Request.Builder()
+			okRequest.url(url)
+
+			if(headers != null) {
+				for((key, value) in headers) {
+					okRequest.addHeader(key, value)
+				}
 			}
 
-			return new HttpResponseImpl(response);
+			when(method) {
+				HttpMethod.GET -> okRequest.get()
+				HttpMethod.HEAD -> okRequest.head()
+				HttpMethod.DELETE -> okRequest.delete()
+				else -> okRequest.method(
+					method.name, if(form != null) form.build()
+					else body.toRequestBody(mediaType)
+				)
+			}
+			if(cacheMode != null && cacheMode.doCache()) {
+				okRequest.cacheControl(
+					CacheControl.Builder()
+						.onlyIfCached()
+						.maxAge(cacheDuration, TimeUnit.MILLISECONDS)
+						.build()
+				)
+			}
+
+			executeCall(okRequest, cacheMode)
 		}
 	}
 
-	private static class HttpResponseImpl extends HttpResponse {
-		private final String text;
-		private final int code;
+	@Throws(IOException::class)
+	private fun executeCall(okRequest: Request.Builder, mode: HttpCacheMode?): HttpResponse {
+		client.newCall(okRequest.build()).execute().use { response ->
+			if(mode != null && mode.doCache() && response.code == 504) {
+				val cacheControl = CacheControl.Builder().noCache().build()
+				return executeCall(okRequest.cacheControl(cacheControl), HttpCacheMode.NETWORK_ONLY)
+			}
 
-		public HttpResponseImpl(@NonNull Response response) throws IOException {
-			this.code = response.code();
-			this.text = response.body().string();
+			return HttpResponseImpl(response)
+		}
+	}
+
+	private class HttpResponseImpl(response: Response) : HttpResponse() {
+		private val text = response.body.string()
+		private val code = response.code
+
+		override fun getText(): String {
+			return text
 		}
 
-		@NonNull
-		@Override
-		@JSGetter("text")
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		@JSGetter("statusCode")
-		public int getStatusCode() {
-			return code;
+		override fun getStatusCode(): Int {
+			return code
 		}
 	}
 }

@@ -1,112 +1,104 @@
-package com.mrboomdev.awery.ui.fragments.feeds;
+package com.mrboomdev.awery.ui.fragments.feeds
 
-import static com.mrboomdev.awery.app.App.getNavigationStyle;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
+import com.mrboomdev.awery.app.App
+import com.mrboomdev.awery.app.App.isLandscape
+import com.mrboomdev.awery.databinding.FeedListBinding
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.activity.search.SearchActivity
+import com.mrboomdev.awery.ui.adapter.MediaCatalogAdapter
+import com.mrboomdev.awery.util.WeakLazy
+import com.mrboomdev.awery.util.extensions.UI_INSETS
+import com.mrboomdev.awery.util.extensions.applyInsets
+import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.inflater
+import com.mrboomdev.awery.util.extensions.leftMargin
+import com.mrboomdev.awery.util.extensions.leftPadding
+import com.mrboomdev.awery.util.extensions.rightMargin
+import com.mrboomdev.awery.util.extensions.rightPadding
+import com.mrboomdev.awery.util.extensions.setHorizontalMargin
+import com.mrboomdev.awery.util.extensions.setHorizontalPadding
+import com.mrboomdev.awery.util.extensions.startActivity
+import org.jetbrains.annotations.Contract
 
-import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class ListFeedViewHolder private constructor(
+	private val binding: FeedListBinding,
+	parent: ViewGroup
+) : FeedViewHolder(binding.root) {
+	private val adapter = MediaCatalogAdapter()
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+	init {
+		binding.header.setOnClickListener { binding.expand.performClick() }
+		binding.recycler.setRecycledViewPool(itemsPool)
+		binding.recycler.adapter = adapter
 
-import com.mrboomdev.awery.databinding.FeedListBinding;
-import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.activity.search.SearchActivity;
-import com.mrboomdev.awery.ui.adapter.MediaCatalogAdapter;
+		binding.header.applyInsets(UI_INSETS, { view, insets ->
+			if(isLandscape()) {
+				view.leftMargin = view.dpPx(16f) + (if(
+					App.getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL
+				) insets.left else 0)
 
-import org.jetbrains.annotations.Contract;
+				binding.header.rightMargin = insets.right + view.dpPx(16f)
+			} else {
+				binding.header.setHorizontalMargin(0)
+			}
 
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
+			true
+		}, parent)
 
-public class ListFeedViewHolder extends FeedViewHolder {
-	private static WeakReference<RecyclerView.RecycledViewPool> itemsPool;
-	private final FeedListBinding binding;
-	private final MediaCatalogAdapter adapter;
+		binding.recycler.applyInsets(UI_INSETS, { view, insets ->
+			if(isLandscape()) {
+				view.leftPadding = view.dpPx(32f) + (if(
+					App.getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL
+				) insets.left else 0)
 
-	@NonNull
-	@Contract("_ -> new")
-	public static ListFeedViewHolder create(ViewGroup parent) {
-		return new ListFeedViewHolder(FeedListBinding.inflate(
-				LayoutInflater.from(parent.getContext()), parent, false), parent);
+				view.rightPadding = insets.right + view.dpPx(32f)
+			} else {
+				view.setHorizontalPadding(view.dpPx(16f))
+			}
+
+			true
+		}, parent)
 	}
 
-	private ListFeedViewHolder(@NonNull FeedListBinding binding, ViewGroup parent) {
-		super(binding.getRoot());
-		this.binding = binding;
+	override fun bind(feed: Feed) {
+		binding.title.text = feed.sourceFeed.title
+		adapter.setItems(feed.items)
 
-		adapter = new MediaCatalogAdapter();
+		feed.items.let { items ->
+			if(items is CatalogSearchResults<*> && items.hasNextPage()) {
+				binding.expand.visibility = View.VISIBLE
+				binding.header.isClickable = true
 
-		var pool = itemsPool == null ? null : itemsPool.get();
+				binding.expand.setOnClickListener { v ->
+					v.context.startActivity(SearchActivity::class, extras = mapOf(
+						SearchActivity.EXTRA_GLOBAL_PROVIDER_ID to feed.sourceFeed.providerGlobalId,
+						SearchActivity.EXTRA_FILTERS to feed.sourceFeed.filters,
+						SearchActivity.EXTRA_LOADED_MEDIA to feed.items
+					))
+				}
+			} else {
+				binding.header.isClickable = false
+				binding.expand.visibility = View.GONE
+				binding.expand.setOnClickListener(null)
+			}
+		}
+	}
 
-		if(pool == null) {
-			pool = new RecyclerView.RecycledViewPool();
-			itemsPool = new WeakReference<>(pool);
+	companion object {
+		private val itemsPool: RecycledViewPool by WeakLazy {
+			RecycledViewPool()
 		}
 
-		binding.header.setOnClickListener(v -> binding.expand.performClick());
-		binding.recycler.setRecycledViewPool(pool);
-		binding.recycler.setAdapter(adapter);
-
-		setOnApplyUiInsetsListener(binding.header, insets -> {
-			if(isLandscape()) {
-				setLeftMargin(binding.header, dpPx(binding.header, 16) +
-						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
-
-				setRightMargin(binding.header, insets.right + dpPx(binding.header, 16));
-			} else {
-				setHorizontalMargin(binding.header, 0);
-			}
-
-			return true;
-		}, parent);
-
-		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			if(isLandscape()) {
-				setLeftPadding(binding.recycler, dpPx(binding.recycler, 32) +
-						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
-
-				setRightPadding(binding.recycler, insets.right + dpPx(binding.recycler, 32));
-			} else {
-				setHorizontalPadding(binding.recycler, dpPx(binding.recycler, 16));
-			}
-
-			return true;
-		}, parent);
-	}
-
-	@Override
-	public void bind(@NonNull Feed feed) {
-		binding.title.setText(feed.sourceFeed.title);
-		adapter.setItems(feed.getItems());
-
-		if(feed.getItems() instanceof CatalogSearchResults<?> searchResults && searchResults.hasNextPage()) {
-			binding.expand.setVisibility(View.VISIBLE);
-			binding.header.setClickable(true);
-
-			binding.expand.setOnClickListener(v -> {
-				var intent = new Intent(getContext(v), SearchActivity.class);
-				intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, feed.sourceFeed.getProviderGlobalId());
-				intent.putExtra(SearchActivity.EXTRA_FILTERS, feed.sourceFeed.filters);
-				intent.putExtra(SearchActivity.EXTRA_LOADED_MEDIA, (Serializable) feed.getItems());
-				getContext(v).startActivity(intent);
-			});
-		} else {
-			binding.header.setClickable(false);
-			binding.expand.setVisibility(View.GONE);
-			binding.expand.setOnClickListener(null);
+		@JvmStatic
+		@Contract("_ -> new")
+		fun create(parent: ViewGroup): ListFeedViewHolder {
+			return ListFeedViewHolder(FeedListBinding.inflate(
+				parent.context.inflater, parent, false
+			), parent)
 		}
 	}
 }

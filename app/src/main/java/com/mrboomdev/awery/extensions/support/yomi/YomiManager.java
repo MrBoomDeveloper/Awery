@@ -26,7 +26,7 @@ import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.sdk.util.MimeTypes;
+import com.mrboomdev.awery.util.ContentType;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -309,7 +309,7 @@ public abstract class YomiManager extends ExtensionsManager {
 					intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
 					intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.getPackageName());
 					intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-					intent.setDataAndType(uri, MimeTypes.APK.toString());
+					intent.setDataAndType(uri, ContentType.APK.getMimeType());
 
 					var pm = context.getPackageManager();
 					var info = pm.getPackageArchiveInfo(tempFile.getPath(), PM_FLAGS);

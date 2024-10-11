@@ -11,6 +11,7 @@ import com.squareup.moshi.Types;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+@Deprecated(forRemoval = true)
 public class Parser {
 	private static final Moshi moshi = new Moshi.Builder().add(new ParserAdapter()).build();
 

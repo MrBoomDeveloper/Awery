@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
+import static com.mrboomdev.awery.util.NiceUtils.formatTimer;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyInsetsListener;
@@ -55,7 +56,6 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -289,7 +289,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 		setupButton(binding.subtitles, controller::openSubtitlesDialog);
 
 		if(bigSeek > 0) {
-			var time = StringUtils.formatTimer(bigSeek * 1000L);
+			var time = formatTimer(bigSeek * 1000L);
 			binding.quickSkip.setText(getString(R.string.skip) + " " + time);
 
 			setupButton(binding.quickSkip, () -> {

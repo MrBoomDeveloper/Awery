@@ -48,7 +48,6 @@ import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.CancelledException;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.JsException;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.mrboomdev.awery.util.io.HttpRequest;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -93,7 +92,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 			manager.installExtension(activity, uri).addCallback(new AsyncFuture.Callback<>() {
 
 				@Override
-				public void onSuccess(Extension extension) {
+				public void onSuccess(@NonNull Extension extension) {
 					var hasExisted = find(extensions, ext -> ext.getId().equals(extension.getId())) != null;
 
 					extensions = List.copyOf(manager.getAllExtensions());
@@ -127,7 +126,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						if(source.hasFeatures(ExtensionProvider.FEATURE_CHANGELOG)) {
 							source.getChangelog().addCallback(new AsyncFuture.Callback<>() {
 								@Override
-								public void onSuccess(String s) {
+								public void onSuccess(@NonNull String s) {
 									runOnUiThread(() -> new DialogBuilder(activity)
 											.setTitle(extension.getVersion() + " Changelog")
 											.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
@@ -136,7 +135,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								}
 
 								@Override
-								public void onFailure(Throwable t) {
+								public void onFailure(@NonNull Throwable t) {
 									CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
 											.setTitle("Failed to get an Changelog")
 											.setThrowable(t)
@@ -148,30 +147,13 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				}
 
 				@Override
-				public void onFailure(Throwable t) {
-					if(t instanceof JsException e) {
-						Log.e(TAG, "Failed to install an extension!", e);
-
-						if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
-							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-									.setTitle(R.string.extension_installed_failed)
-									.setPrefix(R.string.please_report_bug_extension)
-									.setThrowable(t)
-									.build());
-						} else {
-							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-									.setTitle(R.string.extension_installed_failed)
-									.setThrowable(t)
-									.build());
-						}
-					} else {
-						Log.e(TAG, "Failed to install an extension!", t);
-
-						CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-								.setTitle(R.string.extension_installed_failed)
-								.setThrowable(t)
-								.build());
-					}
+				public void onFailure(@NonNull Throwable t) {
+					Log.e(TAG, "Failed to install an extension!", t);
+					
+					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+							.setTitle(R.string.extension_installed_failed)
+							.setThrowable(t)
+							.build());
 				}
 			});
 		});
@@ -211,7 +193,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 							manager.getRepository(text).addCallback(new AsyncFuture.Callback<>() {
 								@Override
-								public void onSuccess(List<Extension> result) {
+								public void onSuccess(@NonNull List<Extension> result) {
 									if(find(repos, item -> Objects.equals(item.url, text)) != null) {
 										toast("Repository already exists!");
 										loadingWindow.dismiss();
@@ -408,7 +390,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 				downloadedCallback.set(new AsyncFuture.Callback<>() {
 					@Override
-					public void onSuccess(File file) {
+					public void onSuccess(@NonNull File file) {
 						manager.installExtension(context,
 								FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER, file)
 						).addCallback(new AsyncFuture.Callback<>() {
@@ -421,87 +403,70 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							}
 
 							@Override
-							public void onFailure(Throwable t) {
+							public void onFailure(@NonNull Throwable t) {
 								window.dismiss();
 
 								if(t instanceof CancelledException) {
 									toast(t.getMessage());
 									return;
 								}
+								
+								Log.e(TAG, "Failed to install an extension!", t);
+								
+								var dialog = new DialogBuilder()
+										.setTitle("Failed to install an extension")
+										.setNeutralButton("Dismiss", DialogBuilder::dismiss)
+										.setPositiveButton(R.string.uninstall_extension, d -> {
+											var window1 = showLoadingWindow();
 
-								if(t instanceof JsException e) {
-									Log.e(TAG, "Failed to install an extension!", e);
+											manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
+												@Override
+												public void onSuccess(Boolean result) {
+													window1.dismiss();
+													d.dismiss();
 
-									if(e.getErrorId() == null || JsException.OTHER.equals(e.getErrorId())) {
-										CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-												.setTitle(R.string.extension_installed_failed)
-												.setPrefix(R.string.please_report_bug_extension)
-												.setThrowable(t)
-												.build());
-									} else {
-										CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-												.setTitle(R.string.extension_installed_failed)
-												.setThrowable(t)
-												.build());
-									}
-								} else {
-									Log.e(TAG, "Failed to install an extension!", t);
+													try {
+														downloadedCallback.get().onSuccess(file);
+													} catch(Throwable e) {
+														onFailure(e);
+													}
+												}
 
-									var dialog = new DialogBuilder()
-											.setTitle("Failed to install an extension")
-											.setNeutralButton("Dismiss", DialogBuilder::dismiss)
-											.setPositiveButton(R.string.uninstall_extension, d -> {
-												var window1 = showLoadingWindow();
+												@Override
+												public void onFailure(@NonNull Throwable t) {
+													Log.e(TAG, "Failed to uninstall an extension!", t);
+													window1.dismiss();
+													d.dismiss();
 
-												manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
-													@Override
-													public void onSuccess(Boolean result) {
-														window1.dismiss();
-														d.dismiss();
-
-														try {
-															downloadedCallback.get().onSuccess(file);
-														} catch(Throwable e) {
-															onFailure(e);
-														}
+													if(t instanceof CancelledException) {
+														toast(t.getMessage());
+														return;
 													}
 
-													@Override
-													public void onFailure(Throwable t) {
-														Log.e(TAG, "Failed to uninstall an extension!", t);
-														window1.dismiss();
-														d.dismiss();
-
-														if(t instanceof CancelledException) {
-															toast(t.getMessage());
-															return;
-														}
-
-														CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-																.setTitle("Failed to uninstall an extension")
-																.setThrowable(t)
-																.build());
-													}
-												});
+													CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
+															.setTitle("Failed to uninstall an extension")
+															.setThrowable(t)
+															.build());
+												}
 											});
+										});
+								
+								switch(getUpdateStatus()) {
+									case DOWNGRADE -> dialog.setMessage("It looks like you're trying to install an older version of an extension. Try uninstalling an old version and retry again."
+											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
 
-									switch(getUpdateStatus()) {
-										case DOWNGRADE -> dialog.setMessage("It looks like you're trying to install an older version of an extension. Try uninstalling an old version and retry again."
-												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+									case UPDATE -> dialog.setMessage("It look's like you're trying to update an extension from a different repository. Try uninstalling an old version and retry again."
+											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
 
-										case UPDATE -> dialog.setMessage("It look's like you're trying to update an extension from a different repository. Try uninstalling an old version and retry again."
-												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
-
-										default -> dialog.setMessage("Something just went wrong. We don't know what, and we don't know why."
-												+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
-									}
+									default -> dialog.setMessage("Something just went wrong. We don't know what, and we don't know why."
+											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
 								}
 							}
 						});
 					}
 
 					@Override
-					public void onFailure(Throwable t) {
+					public void onFailure(@NonNull Throwable t) {
 						Log.e(TAG, "Failed to download an extension!", t);
 						window.dismiss();
 						toast(ExceptionDescriptor.getTitle(t, context));
@@ -658,7 +623,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 					manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
 						@Override
-						public void onSuccess(Boolean result) {
+						public void onSuccess(@NonNull Boolean result) {
 							window.dismiss();
 
 							if(result) {

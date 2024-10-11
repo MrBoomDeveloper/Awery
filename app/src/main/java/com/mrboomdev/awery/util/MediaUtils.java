@@ -18,9 +18,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog;
 
 import org.jetbrains.annotations.Contract;
 
@@ -52,7 +50,7 @@ public class MediaUtils {
 
 	public static void filterMedia(
 			@NonNull Collection<? extends CatalogMedia> items,
-			Callbacks.Callback1<Collection<? extends CatalogMedia>> callback
+			Callback1<Collection<? extends CatalogMedia>> callback
 	) {
 		thread(() -> callback.run(filterMediaSync(items)));
 	}
@@ -76,9 +74,13 @@ public class MediaUtils {
 				.map(CatalogTag::getName)
 				.anyMatch(badTags::contains);
 	}
+	
+	public interface Callback1<T> {
+		void run(T arg);
+	}
 
 	@Contract(pure = true)
-	public static void isMediaFiltered(@NonNull CatalogMedia media, Callbacks.Callback1<Boolean> callback) {
+	public static void isMediaFiltered(@NonNull CatalogMedia media, Callback1<Boolean> callback) {
 		thread(() -> callback.run(isMediaFilteredSync(media)));
 	}
 
@@ -96,10 +98,5 @@ public class MediaUtils {
 
 			runOnUiThread(callback);
 		});
-	}
-
-	@Deprecated(forRemoval = true)
-	public static void openMediaBookmarkMenu(Context context, CatalogMedia media) {
-		new MediaBookmarkDialog(media).show(context);
 	}
 }

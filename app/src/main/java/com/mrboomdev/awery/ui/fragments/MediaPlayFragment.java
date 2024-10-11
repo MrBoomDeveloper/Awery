@@ -22,8 +22,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +32,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.elevation.SurfaceColors;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.NicePreferences;
@@ -49,7 +48,6 @@ import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.mrboomdev.awery.ui.activity.player.PlayerActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
 import com.mrboomdev.awery.ui.adapter.MediaPlayEpisodesAdapter;
@@ -62,7 +60,8 @@ import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.util.ui.EmptyView;
 import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.adapter.ArrayListAdapter;
+import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;
+import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
 import java.io.Serializable;
@@ -86,7 +85,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 			new SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0));
 	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> placeholderAdapter;
 	private SingleViewAdapter.BindingSingleViewAdapter<LayoutWatchVariantsBinding> variantsAdapter;
-	private ArrayListAdapter<ExtensionProvider> sourcesDropdownAdapter;
+	private DropdownAdapter<ExtensionProvider> sourcesDropdownAdapter;
 	private ConcatAdapter concatAdapter;
 	private List<? extends CatalogVideo> templateEpisodes;
 	private List<ExtensionProvider> providers;
@@ -130,14 +129,6 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 	private enum ExtensionStatus {
 		OK, OFFLINE, SERVER_DOWN, BROKEN_PARSER, NOT_FOUND, NONE;
 
-		public boolean isGood() {
-			return this == OK;
-		}
-
-		public boolean isBad() {
-			return this == OFFLINE || this == SERVER_DOWN || this == BROKEN_PARSER || this == NOT_FOUND;
-		}
-
 		public boolean isUnknown() {
 			return this == NONE;
 		}
@@ -166,7 +157,7 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 
 		if(changeSettings) {
 			var prefs = NicePreferences.getPrefs();
-			var viewMode = StringUtils.parseEnum(prefs.getString("settings_ui_episodes_mode"), ViewMode.LIST);
+			var viewMode = NiceUtils.parseEnum(prefs.getString("settings_ui_episodes_mode"), ViewMode.LIST);
 
 			if(viewMode != this.viewMode) {
 				this.viewMode = viewMode;
@@ -224,62 +215,72 @@ public class MediaPlayFragment extends Fragment implements MediaPlayEpisodesAdap
 				.flatMap(NiceUtils::stream)
 				.sorted().toList());
 
-		sourcesDropdownAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
-			if(recycled == null) {
-				var inflater = LayoutInflater.from(parent.getContext());
-				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
-				recycled = binding.getRoot();
+		sourcesDropdownAdapter = new DropdownBindingAdapter<ExtensionProvider, ItemListDropdownBinding>(providers) {
+			@Override
+			public ItemListDropdownBinding onCreateBinding(ViewGroup parent, int viewType) {
+				return ItemListDropdownBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 			}
 
-			TextView title = recycled.findViewById(R.id.title);
-			ImageView icon = recycled.findViewById(R.id.icon);
+			@Override
+			public View getView(ItemListDropdownBinding binding) {
+				return binding.getRoot();
+			}
 
-			title.setText(item.getName());
+			@Override
+			public void onBindItem(ExtensionProvider item, ItemListDropdownBinding binding) {
+				binding.getRoot().setBackgroundColor(item != selectedSource ? 0
+						: SurfaceColors.SURFACE_3.getColor(requireContext()));
 
-			var status = sourceStatuses.get(item);
+				binding.title.setText(item.getName());
+				var status = sourceStatuses.get(item);
 
-			if(status != null) {
-				var statusColor = status == ExtensionStatus.OK ? Color.GREEN : Color.RED;
+				if(status != null) {
+					var statusColor = status == ExtensionStatus.OK ? Color.GREEN : Color.RED;
 
-				var iconRes = switch(status) {
-					case OK -> R.drawable.ic_check;
-					case BROKEN_PARSER -> R.drawable.ic_round_error_24;
-					case SERVER_DOWN -> R.drawable.ic_round_block_24;
-					case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
-					case NOT_FOUND -> R.drawable.ic_zero;
-					case NONE -> null;
-				};
+					var iconRes = switch(status) {
+						case OK -> R.drawable.ic_check;
+						case BROKEN_PARSER -> R.drawable.ic_round_error_24;
+						case SERVER_DOWN -> R.drawable.ic_round_block_24;
+						case OFFLINE -> R.drawable.ic_round_signal_no_internet_24;
+						case NOT_FOUND -> R.drawable.ic_zero;
+						case NONE -> null;
+					};
 
-				if(iconRes != null) {
-					icon.setImageResource(iconRes);
-					icon.setVisibility(View.VISIBLE);
-					ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(statusColor));
+					if(iconRes != null) {
+						binding.icon.setImageResource(iconRes);
+						binding.icon.setVisibility(View.VISIBLE);
+						ImageViewCompat.setImageTintList(binding.icon, ColorStateList.valueOf(statusColor));
+					} else {
+						binding.icon.setVisibility(View.GONE);
+					}
 				} else {
-					icon.setVisibility(View.GONE);
+					binding.icon.setVisibility(View.GONE);
 				}
-			} else {
-				icon.setVisibility(View.GONE);
 			}
-
-			return recycled;
-		}, providers);
+		};
 
 		var more = getString(R.string.manual_search);
 		var titles = new ArrayList<>(media.titles);
 		titles.add(more);
 
-		var titlesAdapter = new ArrayListAdapter<>((item, recycled, parent) -> {
-			if(recycled == null) {
-				var inflater = LayoutInflater.from(parent.getContext());
-				var binding = ItemListDropdownBinding.inflate(inflater, parent, false);
-				recycled = binding.getRoot();
+		var titlesAdapter = new DropdownBindingAdapter<String, ItemListDropdownBinding>(titles) {
+			@NonNull
+			@Override
+			public ItemListDropdownBinding onCreateBinding(ViewGroup parent, int viewType) {
+				return ItemListDropdownBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 			}
 
-			TextView title = recycled.findViewById(R.id.title);
-			title.setText(item);
+			@NonNull
+			@Override
+			public View getView(@NonNull ItemListDropdownBinding binding) {
+				return binding.getRoot();
+			}
 
-			return recycled;
-		}, titles);
+			@Override
+			public void onBindItem(String item, @NonNull ItemListDropdownBinding binding) {
+				binding.title.setText(item);
+			}
+		};
 
 		variantsAdapter.getBinding((binding) -> {
 			binding.sourceDropdown.setAdapter(sourcesDropdownAdapter);

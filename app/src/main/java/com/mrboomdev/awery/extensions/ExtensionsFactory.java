@@ -9,11 +9,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
-import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.util.NiceUtils;
@@ -126,7 +124,6 @@ public class ExtensionsFactory {
 	public static ExtensionsManager getManager__Deprecated(@NonNull String name) {
 		return getManager__Deprecated((Class<? extends ExtensionsManager>) switch(name) {
 			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
-			case JsManager.MANAGER_ID -> JsManager.class;
 			case InternalManager.MANAGER_ID -> InternalManager.class;
 			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
 		});
@@ -147,16 +144,10 @@ public class ExtensionsFactory {
 				.findFirst().orElseThrow();
 	}
 
-	@StringDef({ "ANIYOMI_KOTLIN", "AWERY_JS", "INTERNAL" })
-	public @interface ExtensionName {}
-
-	public ExtensionsManager getManager(@NonNull @ExtensionName String name) {
-		return getManager((Class<? extends ExtensionsManager>) switch(name) {
-			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
-			case JsManager.MANAGER_ID -> JsManager.class;
-			case InternalManager.MANAGER_ID -> InternalManager.class;
-			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
-		});
+	public ExtensionsManager getManager(@NonNull String name) {
+		return stream(managers)
+				.filter(manager -> manager.getId().equals(name))
+				.findFirst().orElseThrow();
 	}
 
 	@NonNull

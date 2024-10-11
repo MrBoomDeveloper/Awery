@@ -49,8 +49,8 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
@@ -92,7 +92,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			item.restoreSavedValues(handler != null ? handler : getPrefs());
 		}
 
-		idGenerator.clear();
+		idGenerator.reset();
 
 		this.items = new ArrayList<>(stream(items)
 				.filter(SettingsItem::isVisible)
@@ -115,7 +115,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 		if(screen.getItems() == null) {
 			this.items = Collections.emptyList();
-			idGenerator.clear();
+			idGenerator.reset();
 
 			if(notify) {
 				notifyDataSetChanged();
@@ -124,7 +124,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			return;
 		}
 
-		idGenerator.clear();
+		idGenerator.reset();
 
 		this.items = new ArrayList<>(stream(screen.getItems())
 				.filter(SettingsItem::isVisible)

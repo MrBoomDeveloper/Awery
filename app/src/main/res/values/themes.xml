@@ -33,7 +33,7 @@
     </style>
 
     <style name="Theme.Awery.Blue" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_theme_light_1_primary</item>
+        <item name="colorPrimary">#2078E3</item>
         <item name="colorOnPrimary">@color/md_theme_light_1_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_1_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_1_onPrimaryContainer</item>
@@ -62,7 +62,7 @@
     </style>
 
     <style name="Theme.Awery.Green" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_theme_light_2_primary</item>
+        <item name="colorPrimary">#5EBF18</item>
         <item name="colorOnPrimary">@color/md_theme_light_2_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_2_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_2_onPrimaryContainer</item>
@@ -91,7 +91,7 @@
     </style>
 
     <style name="Theme.Awery.Purple" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_theme_light_3_primary</item>
+        <item name="colorPrimary">#9A5BBC</item>
         <item name="colorOnPrimary">@color/md_theme_light_3_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_3_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_3_onPrimaryContainer</item>
@@ -120,7 +120,7 @@
     </style>
 
     <style name="Theme.Awery.Pink" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_theme_light_4_primary</item>
+        <item name="colorPrimary">#DB44F6</item>
         <item name="colorOnPrimary">@color/md_theme_light_4_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_4_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_4_onPrimaryContainer</item>
@@ -180,7 +180,7 @@
     </style>
 
     <style name="Theme.Awery.Red" parent="Theme.Base">
-        <item name="colorPrimary">@color/md_0_theme_light_primary</item>
+        <item name="colorPrimary">#EC4435</item>
         <item name="colorOnPrimary">@color/md_0_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_0_theme_light_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_0_theme_light_onPrimaryContainer</item>

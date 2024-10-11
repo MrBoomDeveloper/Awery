@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.util.IconStateful;
 
 import java.util.ArrayList;
@@ -28,22 +27,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialog<T>> {
-	private final Callbacks.Result1<IconStateful, T> iconExtractor;
-	private Callbacks.Callback1<T> selectCallback;
+public abstract class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialog<T>> {
+	private SelectionListener<T> selectCallback;
 	private RecyclerView recycler;
 	private List<T> items;
+	
+	public abstract IconStateful getIcon(T item);
 
-	public IconPickerDialog(Context context, Callbacks.Result1<IconStateful, T> iconExtractor) {
+	public IconPickerDialog(Context context) {
 		super(context);
-		this.iconExtractor = iconExtractor;
 
 		setNegativeButton(R.string.cancel, IconPickerDialog::dismiss);
 	}
 
-	public IconPickerDialog<T> setSelectionListener(Callbacks.Callback1<T> selectCallback) {
+	public IconPickerDialog<T> setSelectionListener(SelectionListener<T> selectCallback) {
 		this.selectCallback = selectCallback;
 		return this;
+	}
+	
+	public interface SelectionListener<T> {
+		void onSelected(T data);
 	}
 
 	public IconPickerDialog<T> setItems(Collection<T> items) {
@@ -123,7 +126,7 @@ public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialo
 
 			view.setOnClickListener(v -> {
 				if(selectCallback != null) {
-					selectCallback.run(item);
+					selectCallback.onSelected(item);
 				}
 
 				dismiss();
@@ -142,7 +145,7 @@ public final class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDialo
 		@SuppressLint("DiscouragedApi")
 		public void bind(T item) {
 			this.item = item;
-			var icon = iconExtractor.run(item);
+			var icon = getIcon(item);
 
 			var id = getResourceId(R.drawable.class, icon.getActive());
 			view.setImageResource(id);

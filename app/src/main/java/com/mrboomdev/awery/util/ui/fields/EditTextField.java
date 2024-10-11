@@ -14,13 +14,12 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.mrboomdev.awery.databinding.WidgetEdittextOutlinedBinding;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 
 public class EditTextField extends FancyField<TextInputLayout> {
 	private final Context context;
 	private TextInputLayout layout;
 	private TextInputEditText editText;
-	private Callbacks.Callback1<String> editListener;
+	private EditListener editListener;
 	private Runnable completionListener;
 	private String hint, error, text;
 	private int imeFlags = EditorInfo.IME_FLAG_NO_FULLSCREEN;
@@ -61,7 +60,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 		}
 	}
 
-	public void setEditListener(Callbacks.Callback1<String> editListener) {
+	public void setEditListener(EditListener editListener) {
 		this.editListener = editListener;
 
 		if(editText != null && editListener != null) {
@@ -71,7 +70,7 @@ public class EditTextField extends FancyField<TextInputLayout> {
 
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					editListener.run(s.toString());
+					editListener.onEditText(s.toString());
 				}
 
 				@Override
@@ -167,5 +166,9 @@ public class EditTextField extends FancyField<TextInputLayout> {
 		setEditListener(editListener);
 
 		return binding.getRoot();
+	}
+	
+	public interface EditListener {
+		void onEditText(String text);
 	}
 }

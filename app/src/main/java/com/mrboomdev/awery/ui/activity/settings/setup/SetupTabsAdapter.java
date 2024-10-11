@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.activity.setup;
+package com.mrboomdev.awery.ui.activity.settings.setup;
 
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.resolveDrawable;

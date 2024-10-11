@@ -1,9 +1,6 @@
 package com.mrboomdev.awery.util.io;
 
 import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
-import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-
-import com.mrboomdev.awery.sdk.util.MimeTypes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,10 +77,6 @@ public class HttpRequest {
 		return this;
 	}
 
-	public HttpRequest setBody(String body, MimeTypes contentType) {
-		return setBody(body, contentType != null ? contentType.toString() : null);
-	}
-
 	public HttpRequest setBody(String body, String contentType) {
 		if(body == null) {
 			this.body = null;
@@ -132,7 +125,9 @@ public class HttpRequest {
 	 * This method will be ran before any requests to check if all params are valid.
 	 */
 	protected void checkFields() {
-		requireArgument(url, "url");
+		if(url == null) {
+			throw new IllegalArgumentException("Url must be set!");
+		}
 
 		if(!isUrlValid(url)) {
 			throw new IllegalArgumentException("Invalid url! " + url);

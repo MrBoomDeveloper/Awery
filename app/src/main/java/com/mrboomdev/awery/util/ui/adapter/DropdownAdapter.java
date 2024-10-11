@@ -11,29 +11,38 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-public class ArrayListAdapter<T> extends BaseAdapter implements Filterable {
-	private final OnCreateView<T> onCreate;
+public abstract class DropdownAdapter<T> extends BaseAdapter implements Filterable {
 	private final Object lock = new Object();
 	private CustomFilter filter;
 	private List<T> items, filteredItems;
 
-	public ArrayListAdapter(OnCreateView<T> onCreate, Collection<T> items) {
-		this.onCreate = onCreate;
+	public DropdownAdapter(Collection<T> items) {
 		this.items = new ArrayList<>(items);
 	}
 
-	public ArrayListAdapter(OnCreateView<T> onCreate) {
-		this(onCreate, new ArrayList<>());
+	public DropdownAdapter() {
+		this.items = Collections.emptyList();
 	}
 
 	@NonNull
 	@Override
-	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+	public final View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		var item = getItem(position);
-		return onCreate.createView(item, convertView, parent);
+
+		if(convertView == null) {
+			convertView = onCreateView(parent, getItemViewType(position));
+		}
+
+		onBindItem(item, convertView);
+		return convertView;
 	}
+
+	public abstract View onCreateView(ViewGroup parent, int viewType);
+
+	public abstract void onBindItem(T item, View view);
 
 	public void setItems(Collection<T> items) {
 		this.items.clear();
@@ -71,15 +80,12 @@ public class ArrayListAdapter<T> extends BaseAdapter implements Filterable {
 		return filter;
 	}
 
-	public interface OnCreateView<T> {
-		View createView(T item, View recycledView, ViewGroup parent);
-	}
-
 	private class CustomFilter extends Filter {
+
 		@NonNull
 		@Override
 		protected FilterResults performFiltering(CharSequence prefix) {
-			final FilterResults results = new FilterResults();
+			var results = new FilterResults();
 
 			if(filteredItems == null) {
 				synchronized(lock) {
@@ -96,40 +102,46 @@ public class ArrayListAdapter<T> extends BaseAdapter implements Filterable {
 
 				results.values = list;
 				results.count = list.size();
-			} else {
-				final String prefixString = prefix.toString().toLowerCase();
+				return results;
+			}
 
-				final ArrayList<T> values;
-				synchronized(lock) {
-					values = new ArrayList<>(filteredItems);
-				}
+			var prefixString = prefix.toString().toLowerCase();
+			var newValues = findResults(prefixString);
 
-				final int count = values.size();
-				final ArrayList<T> newValues = new ArrayList<>();
+			results.values = newValues;
+			results.count = newValues.size();
+			return results;
+		}
 
-				for (int i = 0; i < count; i++) {
-					final T value = values.get(i);
-					final String valueText = value.toString().toLowerCase();
+		private @NonNull List<Object> findResults(String prefixString) {
+			final ArrayList<T> values;
+			synchronized(lock) {
+				values = new ArrayList<>(filteredItems);
+			}
 
-					// First match against the whole, non-splitted value
-					if (valueText.startsWith(prefixString)) {
-						newValues.add(value);
-					} else {
-						final String[] words = valueText.split(" ");
-						for (String word : words) {
-							if (word.startsWith(prefixString)) {
-								newValues.add(value);
-								break;
-							}
+			var count = values.size();
+			var newValues = new ArrayList<>();
+
+			for(int i = 0; i < count; i++) {
+				var value = values.get(i);
+				var valueText = value.toString().toLowerCase();
+
+				// First match against the whole, non-splitted value
+				if(valueText.startsWith(prefixString)) {
+					newValues.add(value);
+				} else {
+					var words = valueText.split(" ");
+
+					for(var word : words) {
+						if(word.startsWith(prefixString)) {
+							newValues.add(value);
+							break;
 						}
 					}
 				}
-
-				results.values = newValues;
-				results.count = newValues.size();
 			}
 
-			return results;
+			return newValues;
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.util.async;
 
+@Deprecated(forRemoval = true)
 public abstract class AsyncFutureNow<T> implements AsyncFuture<T> {
 
 	@Override

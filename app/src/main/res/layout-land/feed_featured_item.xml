@@ -130,6 +130,8 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/meta_separator"
+        app:layout_constraintBottom_toBottomOf="@id/tags"
         android:layout_marginRight="@dimen/normal_margin"
         android:layout_marginLeft="10dp"
         android:shadowColor="#000000"
@@ -137,53 +139,47 @@
         tools:text="Ongoing"
         android:textColor="?attr/colorOnTertiaryContainer"
         android:textSize="15sp"
-        app:layout_constraintLeft_toRightOf="@id/meta_separator"
-        app:layout_constraintBottom_toBottomOf="@id/tags"
         tools:ignore="RtlHardcoded,TextContrastCheck" />
 
     <com.google.android.material.button.MaterialButton
-        app:icon="@drawable/ic_round_play_arrow_24"
-        app:iconSize="26dp"
         android:id="@+id/watch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="MaterialButton"
-        android:text="@string/watch_now"
         app:layout_constraintLeft_toRightOf="@id/poster_holder"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginLeft="24dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        app:icon="@drawable/ic_round_play_arrow_24"
+        app:iconSize="26dp"
+        android:text="@string/watch_now" />
 
     <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3.Button.IconButton.Filled"
         android:id="@+id/bookmark"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintDimensionRatio="1"
-        style="@style/Widget.Material3.Button.IconButton.Filled"
-        android:layout_marginLeft="6dp"
-        app:icon="@drawable/ic_bookmark_filled"
         app:layout_constraintBottom_toBottomOf="@id/watch"
         app:layout_constraintLeft_toRightOf="@id/watch"
+        app:layout_constraintDimensionRatio="1"
+        android:layout_marginLeft="6dp"
+        app:icon="@drawable/ic_bookmark_filled"
         android:importantForAccessibility="no" />
 
-    <View
-        android:id="@+id/right_side_barrier"
+    <View android:id="@+id/right_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <View
-        android:id="@+id/left_side_barrier"
+    <View android:id="@+id/left_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
-    <View
-        android:id="@+id/top_side_barrier"
+    <View android:id="@+id/top_side_barrier"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"

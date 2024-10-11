@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.data.db.item;
 
+import static com.mrboomdev.awery.util.NiceUtils.listToUniqueString;
+import static com.mrboomdev.awery.util.NiceUtils.parseEnum;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.NiceUtils.uniqueStringToList;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -10,7 +13,6 @@ import androidx.room.PrimaryKey;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.util.ParserAdapter;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -118,7 +120,7 @@ public class DBCatalogMedia {
 		}
 
 		if(media.genres != null) {
-			dbMedia.genres = StringUtils.listToUniqueString(media.genres);
+			dbMedia.genres = listToUniqueString(media.genres);
 		}
 
 		if(media.tags != null) {
@@ -128,7 +130,7 @@ public class DBCatalogMedia {
 		}
 
 		if(media.titles != null) {
-			dbMedia.titles = StringUtils.listToUniqueString(media.titles);
+			dbMedia.titles = listToUniqueString(media.titles);
 		}
 
 		return dbMedia;
@@ -177,8 +179,8 @@ public class DBCatalogMedia {
 			media.latestEpisode = Integer.parseInt(latestEpisode);
 		}
 
-		media.type = StringUtils.parseEnum(type, CatalogMedia.MediaType.class);
-		media.status = StringUtils.parseEnum(status, CatalogMedia.MediaStatus.class);
+		media.type = parseEnum(type, CatalogMedia.MediaType.class);
+		media.status = parseEnum(status, CatalogMedia.MediaStatus.class);
 
 		if(extraLargePoster != null || largePoster != null || mediumPoster != null) {
 			media.poster = new CatalogMedia.ImageVersions();
@@ -187,11 +189,11 @@ public class DBCatalogMedia {
 			media.poster.medium = mediumPoster;
 		}
 
-		if(genres != null) media.genres = StringUtils.uniqueStringToList(genres);
-		if(titles != null) media.titles = StringUtils.uniqueStringToList(titles);
+		if(genres != null) media.genres = uniqueStringToList(genres);
+		if(titles != null) media.titles = uniqueStringToList(titles);
 
 		if(tags != null) {
-			media.tags = stream(StringUtils.uniqueStringToList(tags))
+			media.tags = stream(uniqueStringToList(tags))
 					.map(CatalogTag::new).toList();
 		}
 

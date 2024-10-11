@@ -43,8 +43,7 @@ import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.ui.activity.GalleryActivity;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.activity.search.SearchActivity;
-import com.mrboomdev.awery.ui.sheet.TrackingSheet;
-import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog;
 import com.mrboomdev.awery.util.TranslationUtil;
 
 import java.lang.ref.WeakReference;
@@ -141,7 +140,7 @@ public class MediaInfoFragment extends Fragment {
 		});
 
 		binding.details.bookmark.setOnClickListener(v ->
-				MediaUtils.openMediaBookmarkMenu(requireContext(), media));
+				new MediaBookmarkDialog(media).show(requireContext()));
 
 		if(media.description != null && !media.description.isBlank()) {
 			var description = getMarkwon(requireContext()).toMarkdown(media.description);
@@ -294,8 +293,9 @@ public class MediaInfoFragment extends Fragment {
 			return false;
 		});
 
-		binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
-				requireContext(), getChildFragmentManager(), media).show());
+		/*binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
+				requireContext(), getChildFragmentManager(), media).show());*/
+		binding.details.tracking.setVisibility(View.GONE);
 
 		binding.details.browser.setOnClickListener(v ->
 				openUrl(requireContext(), media.url, true));

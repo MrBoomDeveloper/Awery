@@ -14,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.AweryPlatform;
-import com.mrboomdev.awery.sdk.util.exceptions.InvalidSyntaxException;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
@@ -200,7 +199,7 @@ public class SettingsItem implements Serializable {
 			var requirements = showIf.split(",");
 
 			for(var requirement : requirements) {
-				if(!AweryPlatform.getInstance().isRequirementMet(requirement)) return false;
+				if(!AweryPlatform.isRequirementMet(requirement)) return false;
 			}
 		}
 
@@ -277,7 +276,7 @@ public class SettingsItem implements Serializable {
 			var endIndex = description.indexOf('}', startIndex + 1);
 
 			if(endIndex == -1) {
-				throw new InvalidSyntaxException("No closing '}' found in description!");
+				throw new IllegalArgumentException("No closing '}' found in description!");
 			}
 
 			var parsedKey = description.substring(

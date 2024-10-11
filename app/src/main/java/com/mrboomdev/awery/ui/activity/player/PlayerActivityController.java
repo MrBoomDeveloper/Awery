@@ -5,6 +5,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.util.NiceUtils.formatClock;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -33,8 +34,7 @@ import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.MimeTypes;
-import com.mrboomdev.awery.sdk.util.StringUtils;
+import com.mrboomdev.awery.util.ContentType;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
@@ -91,8 +91,8 @@ public class PlayerActivityController {
 				activity.player.getBufferedPosition());
 
 		activity.binding.timer.setText(
-				StringUtils.formatClock(position) + "/" +
-				StringUtils.formatClock(duration));
+				formatClock(position) + "/" +
+				formatClock(duration));
 	}
 
 	public void addLockedUiReason(String reason) {
@@ -327,7 +327,7 @@ public class PlayerActivityController {
 		var itemsAdapter = new PopupAdapter(new ArrayList<>(items.keySet()), item -> {
 			if(item == picker) {
 				var intent = new Intent(Intent.ACTION_GET_CONTENT);
-				intent.setType(MimeTypes.ANY.toString());
+				intent.setType(ContentType.ANY.getMimeType());
 				var chooser = Intent.createChooser(intent, "Choose a subtitles file");
 
 				startActivityForResult(activity, chooser, REQUEST_CODE_PICK_SUBTITLES, (resultCode, result) -> {

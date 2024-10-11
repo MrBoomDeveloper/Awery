@@ -2,17 +2,12 @@ package com.mrboomdev.awery.app;
 
 import com.google.android.material.color.DynamicColors;
 import com.mrboomdev.awery.BuildConfig;
-import com.mrboomdev.awery.sdk.PlatformApi;
-import com.mrboomdev.awery.sdk.util.FancyVersion;
 
 import org.jetbrains.annotations.NotNull;
 
-public class AweryPlatform extends PlatformApi {
-	private static final FancyVersion JVM_LIB_VERSION = new FancyVersion("1.0.0");
-	private static final FancyVersion APP_VERSION = new FancyVersion(BuildConfig.VERSION_NAME);
+public class AweryPlatform {
 
-	@Override
-	public boolean isRequirementMet(@NotNull String requirement) {
+	public static boolean isRequirementMet(@NotNull String requirement) {
 		boolean invert = false;
 
 		if(requirement.startsWith("!")) {
@@ -34,20 +29,5 @@ public class AweryPlatform extends PlatformApi {
 		}
 
 		return result;
-	}
-
-	@Override
-	public FancyVersion getAppVersion() {
-		return APP_VERSION;
-	}
-
-	@Override
-	public @NotNull String getAppName() {
-		return "AweryMobile";
-	}
-
-	@Override
-	public FancyVersion getJvmLibraryVersion() {
-		return JVM_LIB_VERSION;
 	}
 }

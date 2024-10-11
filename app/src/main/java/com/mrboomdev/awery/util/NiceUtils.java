@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.extensions.support.js.JsBridge.fromJs;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,24 +14,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
-import com.mrboomdev.awery.sdk.util.Callbacks;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.io.FileUtil;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.ScriptableObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import java9.util.stream.Stream;
 import java9.util.stream.StreamSupport;
@@ -43,7 +44,32 @@ import java9.util.stream.StreamSupport;
  */
 public class NiceUtils {
 	private static final UniqueIdGenerator fileIdGenerator = new UniqueIdGenerator();
+	@Deprecated(forRemoval = true)
 	private static final String[] REMOVE_LAST_URL_CHARS = { "/", "?", "#", "&", " " };
+
+	public static <T extends Enum<T>> T parseEnum(String string, @NotNull T defaultValue) {
+		if(string == null || string.isBlank()) {
+			return null;
+		}
+
+		try {
+			return Enum.valueOf(defaultValue.getDeclaringClass(), string);
+		} catch(IllegalArgumentException e) {
+			return defaultValue;
+		}
+	}
+	
+	public static <T extends Enum<T>> T parseEnum(String string, @NotNull Class<T> clazz) {
+		if(string == null || string.isBlank()) {
+			return null;
+		}
+		
+		try {
+			return Enum.valueOf(clazz, string);
+		} catch(IllegalArgumentException e) {
+			return null;
+		}
+	}
 
 	@NonNull
 	public static File getTempFile() {
@@ -59,19 +85,18 @@ public class NiceUtils {
 		return file;
 	}
 
-	/**
-	 * @return The result of the callback if the param is not null
-	 * @author MrBoomDev
-	 */
-	public static <A, B> A returnIfNotNull(B param, Callbacks.Result1<A, B> callback) {
-		return param == null ? null : callback.run(param);
+	@Deprecated(forRemoval = true)
+	public interface Callback1<A> {
+		void run(A arg);
 	}
 
-	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback) {
+	@Deprecated(forRemoval = true)
+	public static <A> void doIfNotNull(A param, Callback1<A> callback) {
 		doIfNotNull(param, callback, null);
 	}
 
-	public static <A> void doIfNotNull(A param, Callbacks.Callback1<A> callback, Runnable ifNull) {
+	@Deprecated(forRemoval = true)
+	public static <A> void doIfNotNull(A param, Callback1<A> callback, Runnable ifNull) {
 		if(param != null) {
 			if(callback != null) callback.run(param);
 		} else if(ifNull != null) {
@@ -146,6 +171,7 @@ public class NiceUtils {
 		return result;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static boolean isTrue(Object bool) {
 		if(bool instanceof String s) {
 			return Boolean.TRUE.equals(Boolean.parseBoolean(s));
@@ -155,6 +181,7 @@ public class NiceUtils {
 	}
 
 	@NonNull
+	@Deprecated(forRemoval = true)
 	public static String cleanUrl(String url) {
 		url = requireArgument(url, "url").trim();
 
@@ -174,6 +201,7 @@ public class NiceUtils {
 	}
 
 	@Contract("null -> false")
+	@Deprecated(forRemoval = true)
 	public static boolean isUrlValid(String url) {
 		if(url == null || url.isBlank()) {
 			return false;
@@ -186,15 +214,36 @@ public class NiceUtils {
 			return false;
 		}
 	}
-
-	public static <A> A findRoot(A item, @NonNull Callbacks.Result1<A, A> callback) {
-		var parent = callback.run(item);
-		if(parent == null) return item;
-
-		return findRoot(parent, callback);
+	
+	/**
+	 * Converts list to unique string.
+	 * Used format: ";;;value1;;;value2;;;value3;;;"
+	 * @see #uniqueStringToList(String)
+	 */
+	@NotNull
+	public static String listToUniqueString(@NotNull Iterable<String> iterable) {
+		var builder = new StringBuilder(";;;");
+		
+		for(var string : iterable) {
+			builder.append(string).append(";;;");
+		}
+		
+		return builder.toString();
+	}
+	
+	/**
+	 * Converts unique string to list.
+	 * @see #listToUniqueString(Iterable)
+	 * @param uniqueString - String of format ";;;value1;;;value2;;;value3;;;";;;
+	 */
+	@NotNull
+	public static @Unmodifiable List<String> uniqueStringToList(@NotNull String uniqueString) {
+		if(uniqueString.length() <= 3) return Collections.emptyList();
+		return List.of(uniqueString.substring(3, uniqueString.length() - 3).split(";;;"));
 	}
 
 	@SuppressLint("Range")
+	@Deprecated(forRemoval = true)
 	public static String parseMimeType(Object o) {
 		String fileName;
 
@@ -254,33 +303,81 @@ public class NiceUtils {
 			default -> throw new IllegalArgumentException("Unknown mime type! " + fileName);
 		};
 	}
-
-	@Nullable
-	public static Object invokeMethod(String className, String methodName) {
+	
+	@NotNull
+	public static Date parseDate(String string) {
 		try {
-			var clazz = Class.forName(className);
-			var method = clazz.getMethod(methodName);
-			method.setAccessible(true);
-			return method.invoke(null);
-		} catch(ClassNotFoundException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			return null;
+			var formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+			return Objects.requireNonNull(formatter.parse(string));
+		} catch(Exception e) {
+			throw new IllegalArgumentException("Failed to parse date: " + string, e);
 		}
 	}
-
-	@Nullable
-	public static Object getField(String className, String fieldName) {
-		try {
-			var clazz = Class.forName(className);
-			var field = clazz.getField(fieldName);
-			field.setAccessible(true);
-			return field.get(null);
-		} catch(ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
-			return null;
+	
+	/**
+	 * Converts long to string in format: 24:00.
+	 */
+	@NotNull
+	public static String formatClock(long value) {
+		if(value < 0) {
+			return "00:00";
 		}
+		
+		value /= 1000;
+		
+		var hours = (int) value / 3600;
+		var days = hours / 24;
+		
+		if(days >= 1) {
+			return String.format(Locale.ENGLISH, "%dd %02d:%02d:%02d",
+					days, hours % 24, (int) value / 60, (int) value % 60);
+		}
+		
+		if(hours >= 1) {
+			return String.format(Locale.ENGLISH, "%02d:%02d:%02d",
+					hours, (int) value / 60, (int) value % 60);
+		}
+		
+		return String.format(Locale.ENGLISH, "%02d:%02d",
+				(int) value / 60, (int) value % 60);
+	}
+	
+	@NotNull
+	public static String formatTimer(long value) {
+		if(value <= 0) {
+			return "0s";
+		}
+		
+		value /= 1000;
+		
+		var seconds = (int) value % 60;
+		var minutes = (int) value / 60;
+		
+		if(minutes >= 60) {
+			if(seconds == 0) {
+				return String.format(Locale.ENGLISH, "%dh", minutes / 60);
+			}
+			
+			return String.format(Locale.ENGLISH, "%dh %02d:%02d",
+					minutes / 60, minutes % 60, seconds);
+		}
+		
+		if(minutes >= 1) {
+			if(seconds == 0) {
+				return String.format(Locale.ENGLISH, "%dm", minutes);
+			}
+			
+			return String.format(Locale.ENGLISH, "%dm %02ds",
+					minutes, seconds);
+		}
+		
+		return String.format(Locale.ENGLISH, "%ds", seconds);
 	}
 
 	@NonNull
 	@Contract(pure = true)
+	@Deprecated(forRemoval = true)
 	public static String formatFileSize(long size) {
 		var BORDER = 1000 / 1024;
 
@@ -293,18 +390,6 @@ public class NiceUtils {
 		if(kb > BORDER) return kb + " kb";
 
 		return gb + " b";
-	}
-
-	@Nullable
-	public static Object getField(Object target, String className, String fieldName) {
-		try {
-			var clazz = Class.forName(className);
-			var field = clazz.getField(fieldName);
-			field.setAccessible(true);
-			return field.get(target);
-		} catch(ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
-			return null;
-		}
 	}
 
 	@NonNull
@@ -327,18 +412,26 @@ public class NiceUtils {
 		return builder.toString().trim();
 	}
 
-	public static <A> A find(A[] array, @NonNull Callbacks.Result1<Boolean, A> checker) {
+	@Deprecated(forRemoval = true)
+	public interface Result1<A, B> {
+		A run(B arg);
+	}
+
+	@Deprecated(forRemoval = true)
+	public static <A> A find(A[] array, @NonNull Result1<Boolean, A> checker) {
 		return find(Arrays.asList(array), checker);
 	}
 
 	@Nullable
-	public static <A> Integer findIndex(A[] array, @NonNull Callbacks.Result1<Boolean, A> checker) {
+	@Deprecated(forRemoval = true)
+	public static <A> Integer findIndex(A[] array, @NonNull Result1<Boolean, A> checker) {
 		return findIndex(Arrays.asList(array), checker);
 	}
 
 	@Contract(pure = true)
 	@Nullable
-	public static <A> Integer findIndex(@NonNull Collection<A> collection, @NonNull Callbacks.Result1<Boolean, A> checker) {
+	@Deprecated(forRemoval = true)
+	public static <A> Integer findIndex(@NonNull Collection<A> collection, @NonNull Result1<Boolean, A> checker) {
 		int index = -1;
 
 		for(var item : collection) {
@@ -352,20 +445,23 @@ public class NiceUtils {
 		return null;
 	}
 
-	public static <A> A find(Collection<A> collection, @NonNull Callbacks.Result1<Boolean, A> checker) {
+	@Deprecated(forRemoval = true)
+	public static <A> A find(Collection<A> collection, @NonNull Result1<Boolean, A> checker) {
 		return stream(collection)
 				.filter(checker::run)
 				.findAny().orElse(null);
 	}
 
-	public static <A, B> B findMap(Collection<A> collection, @NonNull Callbacks.Result1<B, A> checker) {
+	@Deprecated(forRemoval = true)
+	public static <A, B> B findMap(Collection<A> collection, @NonNull Result1<B, A> checker) {
 		return stream(collection)
 				.map(checker::run)
 				.filter(Objects::nonNull)
 				.findAny().orElse(null);
 	}
 
-	public static <A> boolean hasAny(Collection<A> collection, Callbacks.Result1<Boolean, A> checker) {
+	@Deprecated(forRemoval = true)
+	public static <A> boolean hasAny(Collection<A> collection, Result1<Boolean, A> checker) {
 		return find(collection, checker) != null;
 	}
 
@@ -373,18 +469,24 @@ public class NiceUtils {
 	 * @return The result of the callback
 	 * @author MrBoomDev
 	 */
-	public static <A, B> A returnWith(B object, @NonNull Callbacks.Result1<A, B> callback) {
+	@Deprecated(forRemoval = true)
+	public static <A, B> A returnWith(B object, @NonNull Result1<A, B> callback) {
 		return callback.run(object);
 	}
 
-	public static <A> A returnWith(@NonNull Callbacks.Result<A> callback) {
-		return callback.run();
+	@Deprecated(forRemoval = true)
+	public interface Result<A> {
+		A run();
 	}
 
-
-
+	@Deprecated(forRemoval = true)
+	public static <A> A returnWith(@NonNull Result<A> callback) {
+		return callback.run();
+	}
+	
 	@NonNull
 	@Contract("null, _ -> fail")
+	@Deprecated(forRemoval = true)
 	public static <T> T requireArgument(T o, String name) throws NullPointerException {
 		if(o == null) {
 			throw new NullPointerException("An required argument \"" + name + "\" was not specified!");
@@ -393,14 +495,17 @@ public class NiceUtils {
 		return o;
 	}
 
+	@Deprecated(forRemoval = true)
 	public static <T> T requireArgument(@NonNull Activity activity, String name, Class<T> clazz) throws NullPointerException {
 		return requireArgument(activity.getIntent(), name, clazz);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static <T> T requireArgument(Intent intent, String name, @NonNull Class<T> clazz) throws NullPointerException {
 		return clazz.cast(requireArgument(getArgument(intent, name, clazz), name));
 	}
 
+	@Deprecated(forRemoval = true)
 	public static <T> T getArgument(Intent intent, String name, Class<T> clazz) {
 		if(intent == null) return null;
 		Object result;
@@ -415,6 +520,7 @@ public class NiceUtils {
 		return clazz.cast(result);
 	}
 
+	@Deprecated(forRemoval = true)
 	public static <T> T getArgument(Bundle bundle, String name, Class<T> clazz) {
 		if(bundle == null) return null;
 		Object result;
@@ -429,12 +535,7 @@ public class NiceUtils {
 		return clazz.cast(result);
 	}
 
-	public static <T> T requireArgument(@NonNull ScriptableObject o, String name, Class<T> type) throws NullPointerException {
-		var val = fromJs(o.get(name, o), type);
-		requireArgument(val, name);
-		return val;
-	}
-
+	@Deprecated(forRemoval = true)
 	@NonNull
 	public static <T> T requireArgument(
 			@NonNull Fragment fragment,
@@ -455,6 +556,7 @@ public class NiceUtils {
 	 * @author MrBoomDev
 	 */
 	@NonNull
+	@Deprecated(forRemoval = true)
 	@SuppressWarnings("unchecked")
 	public static <T> T requireArgument(
 			@NonNull Fragment fragment,
@@ -466,18 +568,8 @@ public class NiceUtils {
 		return o;
 	}
 
-	@NonNull
-	public static String formatNumber(Number number) {
-		if(number == null) return "";
-
-		if(number.floatValue() == number.longValue()) {
-			return String.valueOf(number.longValue());
-		}
-
-		return String.valueOf(number);
-	}
-
-	public static <A> void with(A a, @NonNull Callbacks.Callback1<A> callback) {
+	@Deprecated(forRemoval = true)
+	public static <A> void with(A a, @NonNull Callback1<A> callback) {
 		callback.run(a);
 	}
 
@@ -488,6 +580,7 @@ public class NiceUtils {
 	 */
 	@NonNull
 	@Contract("null -> fail; !null -> param1")
+	@Deprecated(forRemoval = true)
 	public static <T> T requireNonNull(T object) {
 		if(object == null) throw new NullPointerException();
 		return object;
@@ -497,6 +590,7 @@ public class NiceUtils {
 	 * @return The first object if it is not null, otherwise the second object
 	 * @author MrBoomDev
 	 */
+	@Deprecated(forRemoval = true)
 	public static <T> T requireNonNullElse(T firstObject, T secondObject) {
 		return firstObject != null ? firstObject : secondObject;
 	}
@@ -504,6 +598,7 @@ public class NiceUtils {
 	/**
 	 * @return True if the object is not null
 	 */
+	@Deprecated(forRemoval = true)
 	public static boolean nonNull(Object obj) {
 		return obj != null;
 	}
@@ -514,6 +609,7 @@ public class NiceUtils {
 	 */
 	@NonNull
 	@Contract("_ -> new")
+	@Deprecated(forRemoval = true)
 	public static <E> Stream<E> stream(Collection<E> collection) {
 		requireArgument(collection, "collection");
 		return StreamSupport.stream(collection);
@@ -526,19 +622,9 @@ public class NiceUtils {
 	@SafeVarargs
 	@NonNull
 	@Contract("_ -> new")
+	@Deprecated(forRemoval = true)
 	public static <E> Stream<E> stream(E... array) {
 		requireArgument(array, "array");
 		return StreamSupport.stream(Arrays.asList(array));
-	}
-
-	/**
-	 * @return A stream from map entries set compatible with old Androids
-	 * @author MrBoomDev
-	 */
-	@NonNull
-	@Contract("_ -> new")
-	public static <K, V> Stream<Map.Entry<K,V>> stream(@NonNull Map<K, V> map) {
-		requireArgument(map, "map");
-		return StreamSupport.stream(map.entrySet());
 	}
 }

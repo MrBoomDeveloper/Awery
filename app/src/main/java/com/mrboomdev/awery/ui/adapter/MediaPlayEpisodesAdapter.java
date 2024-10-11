@@ -26,10 +26,9 @@ import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
-import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 	@SuppressLint("NotifyDataSetChanged")
 	public void setItems(CatalogMedia media, Collection<? extends CatalogVideo> items) {
 		this.media = media;
-		idGenerator.clear();
+		idGenerator.reset();
 
 		if(media == null || items == null) {
 			this.items = null;

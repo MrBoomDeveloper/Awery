@@ -1,183 +1,184 @@
-package com.mrboomdev.awery.app.update;
+package com.mrboomdev.awery.app.update
 
-import static com.mrboomdev.awery.app.App.showLoadingWindow;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
+import androidx.core.content.FileProvider
+import com.mrboomdev.awery.BuildConfig
+import com.mrboomdev.awery.app.App.getMoshi
+import com.mrboomdev.awery.app.App.showLoadingWindow
+import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread
+import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.app.CrashHandler.CrashReport
+import com.mrboomdev.awery.util.ContentType
+import com.mrboomdev.awery.util.NiceUtils
+import com.mrboomdev.awery.util.exceptions.CancelledException
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.util.extensions.formatFileSize
+import com.mrboomdev.awery.util.extensions.removeIndent
+import com.mrboomdev.awery.util.extensions.startActivityForResult
+import com.mrboomdev.awery.util.io.HttpClient.download
+import com.mrboomdev.awery.util.io.HttpClient.fetch
+import com.mrboomdev.awery.util.io.HttpRequest
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.squareup.moshi.Json
+import com.squareup.moshi.adapter
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
 
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
+@OptIn(ExperimentalStdlibApi::class)
+object UpdatesManager {
+	private const val TAG = "UpdatesManager"
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
-import com.mrboomdev.awery.BuildConfig;
-import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.sdk.util.MimeTypes;
-import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Parser;
-import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.CancelledException;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
-import com.mrboomdev.awery.util.io.HttpClient;
-import com.mrboomdev.awery.util.io.HttpRequest;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-import com.squareup.moshi.Json;
-
-import org.jetbrains.annotations.Contract;
-
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-public class UpdatesManager {
-	private static final String TAG = "UpdatesManager";
-
-	private static final String UPDATES_ENDPOINT = "https://api.github.com/repos/"
+	private val UPDATES_ENDPOINT = ("https://api.github.com/repos/"
 			+ BuildConfig.UPDATES_REPOSITORY
 			+ "/releases"
-			+ (BuildConfig.CHANNEL != UpdatesChannel.BETA ? "/latest" : "");
+			+ (if(BuildConfig.CHANNEL != UpdatesChannel.BETA) "/latest" else ""))
 
-	public static void showUpdateDialog(Update update) {
-		var context = requireNonNull(getAnyActivity(AppCompatActivity.class));
-
-		runOnUiThread(() -> new DialogBuilder(context)
+	fun showUpdateDialog(context: Activity, update: Update) {
+		runOnUiThread {
+			DialogBuilder(context)
 				.setTitle("Update available!")
-				.setMessage(update.title() + "\nSize: " + formatFileSize(update.size()) + "\n\n" + update.body())
-				.setNeutralButton("Dismiss", DialogBuilder::dismiss)
-				.setPositiveButton("Install", dialog -> {
-					var window = showLoadingWindow();
-					var file = new File(context.getCacheDir(), "download/app_update.apk");
+				.setMessage("""
+					${update.title}
+					Size: ${update.size.formatFileSize()}
+	
+					${update.body}
+				""".trim().removeIndent())
+				.setNeutralButton("Dismiss") { it.dismiss() }
+				.setPositiveButton("Install") { dialog ->
+					val window = showLoadingWindow()
 
-					HttpClient.download(new HttpRequest(update.fileUrl()), file).addCallback(new AsyncFuture.Callback<>() {
-						@Override
-						public void onSuccess(File result) {
-							var intent = new Intent(Intent.ACTION_VIEW);
-							intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-							intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-							intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.getPackageName());
-							intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+						Log.e(TAG, "Failed to download an update!", t)
+						window.dismiss()
 
-							intent.setDataAndType(FileProvider.getUriForFile(context,
-									BuildConfig.FILE_PROVIDER, result), MimeTypes.APK.toString());
+						CrashHandler.showErrorDialog(
+							CrashReport.Builder()
+								.setTitle("Failed to download an update")
+								.setThrowable(t)
+								.build())
+					}).launch {
+						val file = HttpRequest(update.fileUrl).download(
+							File(context.cacheDir, "download/app_update.apk"))
 
-							runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, data) -> {
-								window.dismiss();
+						context.startActivityForResult(Intent(Intent.ACTION_VIEW).apply {
+							putExtra(Intent.EXTRA_RETURN_RESULT, true)
+							putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+							putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.packageName)
+							addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-								if(resultCode == Activity.RESULT_FIRST_USER) {
-									toast("Failed to install an update :(");
-								} else if(resultCode == Activity.RESULT_OK) {
-									toast("Updated successfully!");
-									dialog.dismiss();
-								}
-							}));
-						}
+							setDataAndType(FileProvider.getUriForFile(
+								context, BuildConfig.FILE_PROVIDER, file
+							), ContentType.APK.mimeType)
+						}, { resultCode, _ ->
+							window.dismiss()
 
-						@Override
-						public void onFailure(Throwable t) {
-							Log.e(TAG, "Failed to download an update!", t);
-							window.dismiss();
+							if(resultCode == Activity.RESULT_FIRST_USER) {
+								toast("Failed to install an update :(")
+							} else if(resultCode == Activity.RESULT_OK) {
+								toast("Updated successfully!")
+								dialog.dismiss()
+							}
+						})
 
-							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-									.setTitle("Failed to download an update")
-									.setThrowable(t)
-									.build());
-						}
-					});
-				}).show());
+						window.dismiss()
+					}
+				}.show()
+		}
 	}
 
-	@NonNull
-	@Contract(" -> new")
-	public static AsyncFuture<Update> getAppUpdate() {
-		return HttpClient.fetch(new HttpRequest(UPDATES_ENDPOINT).setHeaders(Map.of(
-				"Accept", "application/vnd.github+json",
-				"X-GitHub-Api-Version", "2022-11-28"
-		))).then(response -> {
-			if(response.getStatusCode() != 200) {
-				throw new ZeroResultsException("No releases was found!");
-			}
+	suspend fun fetchLatestAppUpdate(): Update {
+		val response = HttpRequest(UPDATES_ENDPOINT).setHeaders(mapOf(
+			"Accept" to "application/vnd.github+json",
+			"X-GitHub-Api-Version" to "2022-11-28"
+		)).fetch()
 
-			var release = switch(BuildConfig.CHANNEL) {
-				case STABLE, ALPHA -> Parser.fromString(GitHubRelease.class, response.getText());
-
-				case BETA -> {
-					var releases = Parser.<List<GitHubRelease>>fromString(
-							Parser.getAdapter(List.class, GitHubRelease.class), response.getText());
-
-					yield stream(releases).filter(me -> me.prerelease).findFirst()
-							.orElseThrow(() -> new ZeroResultsException("No beta versions was found."));
-				}
-			};
-
-			checkVersion(release);
-
-			var asset = stream(release.assets)
-					.filter(me -> me.name.contains(switch(BuildConfig.CHANNEL) {
-						case STABLE -> "-stable-";
-						case BETA -> "-beta-";
-						case ALPHA -> "-alpha-";
-					}) && me.name.endsWith(".apk"))
-					.findAny().orElseThrow(() -> new ZeroResultsException("No valid files was found!"));
-
-			return new Update(release.name, release.body, asset.size, asset.browserDownloadUrl);
-		});
-	}
-
-	@NonNull
-	private static String parseAlphaVersion(@NonNull String full) {
-		var prodIndex = full.indexOf("-stable-");
-		if(prodIndex != -1) return full.substring(0, prodIndex);
-
-		var betaIndex = full.indexOf("-beta-");
-		if(betaIndex != -1) return full.substring(0, betaIndex);
-
-		var alphaIndex = full.indexOf("-alpha-");
-		if(alphaIndex != -1) return full.substring(0, alphaIndex);
-
-		throw new IllegalStateException("Didn't found the version flavor. Can't decide how to parse an version. " + full);
-	}
-
-	private static void checkVersion(@NonNull GitHubRelease release) {
-		// We cannot compare semantically versions because they do have random commit hashes in it
-		// so instead: did we receive any different version from the server? Then this is a new one!
-		if(BuildConfig.CHANNEL == UpdatesChannel.ALPHA) {
-			if(parseAlphaVersion(BuildConfig.VERSION_NAME).equals(parseAlphaVersion(release.tagName))) {
-				throw new CancelledException("You're using the latest version already!");
-			}
-
-			return;
+		if(response.statusCode != 200) {
+			throw ZeroResultsException("No releases was found!")
 		}
 
-		var compared = NiceUtils.compareVersions(
-				NiceUtils.parseVersion(release.tagName),
-				NiceUtils.parseVersion(BuildConfig.VERSION_NAME));
+		val release = when(BuildConfig.CHANNEL!!) {
+			UpdatesChannel.STABLE, UpdatesChannel.ALPHA -> getMoshi()
+				.adapter<GitHubRelease>()
+				.fromJson(response.text)!!
+
+			UpdatesChannel.BETA -> getMoshi()
+				.adapter<List<GitHubRelease>>()
+				.fromJson(response.text)!!
+				.find { it.prerelease }!!
+		}
+
+		checkVersion(release)
+
+		return release.assets
+			.find {
+				it.name.contains(
+					when(BuildConfig.CHANNEL) {
+						UpdatesChannel.STABLE -> "-stable-"
+						UpdatesChannel.BETA -> "-beta-"
+						UpdatesChannel.ALPHA -> "-alpha-"
+					}
+				) && it.name.endsWith(".apk")
+			}!!.let { asset ->
+				Update(release.name, release.body, asset.size, asset.browserDownloadUrl)
+			}
+	}
+
+	private fun parseAlphaVersion(full: String): String {
+		val prodIndex = full.indexOf("-stable-")
+		if(prodIndex != -1) return full.substring(0, prodIndex)
+
+		val betaIndex = full.indexOf("-beta-")
+		if(betaIndex != -1) return full.substring(0, betaIndex)
+
+		val alphaIndex = full.indexOf("-alpha-")
+		if(alphaIndex != -1) return full.substring(0, alphaIndex)
+
+		throw IllegalStateException("Didn't found the version flavor. Can't decide how to parse an version. $full")
+	}
+
+	private fun checkVersion(release: GitHubRelease) {
+		if(BuildConfig.CHANNEL == UpdatesChannel.ALPHA) {
+			// We cannot compare semantically versions because they do have random commit hashes in it
+			// so instead: did we receive any different version from the server? Then this is a new one!
+
+			if(parseAlphaVersion(BuildConfig.VERSION_NAME) == parseAlphaVersion(release.tagName)) {
+				throw CancelledException("You're using the latest version already!")
+			}
+
+			return
+		}
+
+		val compared = NiceUtils.compareVersions(
+			NiceUtils.parseVersion(release.tagName),
+			NiceUtils.parseVersion(BuildConfig.VERSION_NAME)
+		)
 
 		if(compared <= 0) {
-			throw new CancelledException("You're using the latest version already!");
+			throw CancelledException("You're using the latest version already!")
 		}
 	}
 
-	public record Update(String title, String body, long size, String fileUrl) {}
+	data class Update(
+		val title: String,
+		val body: String,
+		val size: Long,
+		val fileUrl: String)
 
-	private static class GitHubRelease {
-		@Json(name = "tag_name")
-		public String tagName;
-		public List<GitHubReleaseAsset> assets;
-		public String name, body;
-		public boolean prerelease;
-	}
+	private data class GitHubRelease(
+		@Json(name = "tag_name") val tagName: String,
+		val assets: List<GitHubReleaseAsset>,
+		val name: String,
+		val body: String,
+		val prerelease: Boolean)
 
-	private static class GitHubReleaseAsset {
-		@Json(name = "browser_download_url")
-		public String browserDownloadUrl;
-		public String name;
-		public long size;
-	}
+	private data class GitHubReleaseAsset(
+		@Json(name = "browser_download_url") val browserDownloadUrl: String,
+		val name: String,
+		val size: Long)
 }

@@ -64,20 +64,25 @@
                 android:layout_height="wrap_content"
                 android:text="@string/watch"
                 android:paddingRight="36dp"
-                android:layout_marginRight="8dp" />
+                android:layout_marginRight="8dp">
+
+                <requestFocus />
+
+            </com.google.android.material.button.MaterialButton>
 
             <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:id="@+id/tracking"
-                app:icon="@drawable/ic_sync"
-                app:iconSize="25dp"
-                app:iconPadding="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tracking"
-                android:layout_marginRight="8dp" />
+                android:layout_marginRight="8dp"
+                app:iconSize="25dp"
+                app:iconPadding="8dp"
+                app:icon="@drawable/ic_sync"
+                android:text="@string/tracking" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.IconButton.Filled"
+                style="@style/Widget.Material3.Button.IconButton"
                 android:id="@+id/bookmark"
                 app:icon="@drawable/ic_bookmark_filled"
                 app:iconSize="24dp"
@@ -88,7 +93,7 @@
                 android:layout_marginRight="4dp" />
 
             <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.IconButton.Filled"
+                style="@style/Widget.Material3.Button.IconButton"
                 android:id="@+id/browser"
                 app:icon="@drawable/ic_language"
                 app:iconSize="26dp"

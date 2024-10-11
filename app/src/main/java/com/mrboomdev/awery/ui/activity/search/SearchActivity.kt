@@ -1,636 +1,613 @@
-package com.mrboomdev.awery.ui.activity.search;
+package com.mrboomdev.awery.ui.activity.search
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
-import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
-import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.isLandscape
+import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.AweryLifecycle
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.SettingsItemType
+import com.mrboomdev.awery.data.settings.SettingsList
+import com.mrboomdev.awery.databinding.GridMediaCatalogBinding
+import com.mrboomdev.awery.databinding.ScreenSearchBinding
+import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.extensions.data.CatalogMedia
+import com.mrboomdev.awery.extensions.data.CatalogSearchResults
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.activity.MediaActivity
+import com.mrboomdev.awery.ui.dialogs.FiltersDialog
+import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog
+import com.mrboomdev.awery.util.MediaUtils
+import com.mrboomdev.awery.util.Selection
+import com.mrboomdev.awery.util.UniqueIdGenerator
+import com.mrboomdev.awery.util.async.AsyncFuture
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.util.extensions.UI_INSETS
+import com.mrboomdev.awery.util.extensions.applyInsets
+import com.mrboomdev.awery.util.extensions.applyTheme
+import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
+import com.mrboomdev.awery.util.extensions.get
+import com.mrboomdev.awery.util.extensions.inflater
+import com.mrboomdev.awery.util.extensions.leftMargin
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.extensions.rightMargin
+import com.mrboomdev.awery.util.extensions.screenWidth
+import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.util.extensions.topMargin
+import com.mrboomdev.awery.util.extensions.useLayoutParams
+import com.mrboomdev.awery.util.ui.EmptyView
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
+import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
+import java.io.Serializable
+import java.util.Objects
+import java.util.WeakHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
+class SearchActivity : AppCompatActivity() {
+	private lateinit var filters: SettingsList
+	private lateinit var items: MutableList<CatalogMedia>
+	private val ids = WeakHashMap<CatalogMedia?, Long>()
+	private val adapter: Adapter = Adapter()
+	private val idGenerator = UniqueIdGenerator()
+	private var binding: ScreenSearchBinding? = null
+	private var loadingAdapter: BindingSingleViewAdapter<EmptyView>? = null
+	private var source: ExtensionProvider? = null
+	private var didReachedEnd = false
+	private var searchId = 0
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ConcatAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+	private var queryFilter = SettingsItem(
+		SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY
+	)
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.data.settings.SettingsList;
-import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
-import com.mrboomdev.awery.databinding.ScreenSearchBinding;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
-import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
-import com.mrboomdev.awery.ui.sheet.FiltersSheet;
-import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
-import com.mrboomdev.awery.util.ui.EmptyView;
-import com.mrboomdev.awery.util.ui.ViewUtil;
-import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import kotlin.Unit;
-
-public class SearchActivity extends AppCompatActivity {
-	public static final String ACTION_PICK_MEDIA = "pick_media";
-	public static final String ACTION_SEARCH_BY_TAG = "searchByTag";
-	public static final String EXTRA_TAG = "tag";
-	public static final String EXTRA_FILTERS = "filters";
-	public static final String EXTRA_LOADED_MEDIA = "loadedMedia";
-	/**
-	 * It is meant that the provider can be found by using {@code ExtensionProvider.forGlobalId(String)}
-	 */
-	public static final String EXTRA_GLOBAL_PROVIDER_ID = "source";
-	public static final String RESULT_EXTRA_MEDIA = "media";
-	private static final int LOADING_VIEW_TYPE = 1;
-	private static final String SAVED_FILTERS = "filters";
-	private static final String SAVED_ITEMS = "items";
-	private static final String SAVED_DID_REACHED_END = "did_reached_end";
-	private static final String TAG = "SearchActivity";
-	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
-	private final Adapter adapter = new Adapter();
-	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private SettingsList filters = new SettingsList();
-	private ArrayList<CatalogMedia> items = new ArrayList<>();
-	private ScreenSearchBinding binding;
-	private SingleViewAdapter.BindingSingleViewAdapter<EmptyView> loadingAdapter;
-	private ExtensionProvider source;
-	private boolean didReachedEnd;
-	private int searchId;
-
-	private SettingsItem queryFilter = new SettingsItem(
-			SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY);
-
-	private SettingsItem pageFilter = new SettingsItem(
-			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0);
+	private var pageFilter = SettingsItem(
+		SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0
+	)
 
 	/** We initially set this value to "true" so that list won't try
-	 to load anything because we haven't typed anything yet. **/
-	private boolean isLoading = true;
+	 * to load anything because we haven't typed anything yet.  */
+	private var isLoading = true
 
 	@SuppressLint("NotifyDataSetChanged")
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
-		super.onCreate(savedInstanceState);
+	override fun onCreate(savedInstanceState: Bundle?) {
+		applyTheme()
+		enableEdgeToEdge()
+		super.onCreate(savedInstanceState)
 
-		if(savedInstanceState != null) {
-			filters = (SettingsList) savedInstanceState.getSerializable(SAVED_FILTERS);
-			items = (ArrayList<CatalogMedia>) savedInstanceState.getSerializable(SAVED_ITEMS);
-			didReachedEnd = savedInstanceState.getBoolean(SAVED_DID_REACHED_END);
-		}
+		filters = savedInstanceState?.get<SettingsList>(SAVED_FILTERS) ?: SettingsList()
+		items = savedInstanceState?.get<MutableList<CatalogMedia>>(SAVED_ITEMS) ?: ArrayList()
+		didReachedEnd = savedInstanceState?.get<Boolean>(SAVED_DID_REACHED_END) ?: false
+		val filters = intent.get<SettingsList>(EXTRA_FILTERS)
 
-		var columnsCountLand = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.getValue());
-		var columnsCountPort = new AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.getValue());
+		val columnsCountLand = AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.value)
+		val columnsCountPort = AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.value)
 
-		var autoColumnsCountLand = columnsCountLand.get() == 0;
-		var autoColumnsCountPort = columnsCountPort.get() == 0;
-
-		var filters = (List<SettingsItem>) getIntent().getSerializableExtra(EXTRA_FILTERS);
+		val autoColumnsCountLand = columnsCountLand.get() == 0
+		val autoColumnsCountPort = columnsCountPort.get() == 0
 
 		if(filters != null) {
-			var foundQuery = find(filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
-			if(foundQuery != null) queryFilter.setValue(foundQuery.getStringValue());
+			val foundQuery = filters.find { it.key == ExtensionProvider.FILTER_QUERY }
+			if(foundQuery != null) queryFilter.setValue(foundQuery.stringValue)
 		}
 
-		if(savedInstanceState == null) applyFilters(filters, true);
-		else applyFilters(this.filters, false);
+		if(savedInstanceState == null) applyFilters(filters, true)
+		else applyFilters(this.filters, false)
 
 		try {
-			this.source = ExtensionProvider.forGlobalId(Objects.requireNonNull(
-					getIntent().getStringExtra(EXTRA_GLOBAL_PROVIDER_ID)));
-		} catch(ExtensionNotInstalledException e) {
-			toast("Source extension isn't installed!");
-			finish();
+			this.source = ExtensionProvider.forGlobalId(intent.getStringExtra(EXTRA_GLOBAL_PROVIDER_ID)!!)
+		} catch(e: ExtensionNotInstalledException) {
+			toast("Source extension isn't installed!")
+			finish()
 		}
 
-		binding = ScreenSearchBinding.inflate(getLayoutInflater());
-		binding.header.edittext.setText(queryFilter.getStringValue());
-		binding.header.edittext.requestFocus();
-		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+		binding = ScreenSearchBinding.inflate(layoutInflater)
+		binding!!.header.edittext.setText(queryFilter.stringValue)
+		binding!!.header.edittext.requestFocus()
+		binding!!.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
 
-		binding.header.back.setOnClickListener(v -> finish());
-		binding.header.clear.setOnClickListener(v -> binding.header.edittext.setText(null));
+		binding!!.header.back.setOnClickListener { finish() }
+		binding!!.header.clear.setOnClickListener { binding!!.header.edittext.text = null }
 
-		binding.header.filters.setOnClickListener(v -> new FiltersSheet(this, this.filters, source, newFilters -> {
-			applyFilters(newFilters, true);
-			didReachedEnd = false;
-			search(0);
-		}).show());
+		binding!!.header.filters.setOnClickListener {
+			FiltersDialog(filters ?: SettingsList(), source) { updatedFilters ->
+				applyFilters(updatedFilters, true)
+				didReachedEnd = false
+				search(0)
+			}.show(this)
+		}
 
-		var inputManager = getSystemService(InputMethodManager.class);
+		val inputManager = getSystemService(InputMethodManager::class.java)
 
-		binding.header.edittext.setOnEditorActionListener((v, action, event) -> {
+		binding!!.header.edittext.setOnEditorActionListener { v, action, _ ->
 			if(action != EditorInfo.IME_ACTION_SEARCH) {
-				return false;
+				return@setOnEditorActionListener false
 			}
 
 			inputManager.hideSoftInputFromWindow(
-					binding.header.edittext.getWindowToken(), 0);
+				binding!!.header.edittext.windowToken, 0)
 
-			queryFilter.setValue(v.getText().toString());
-			didReachedEnd = false;
+			queryFilter.setValue(v.text.toString())
+			didReachedEnd = false
 
-			search(0);
-			return true;
-		});
-
-		setOnApplyUiInsetsListener(binding.header.getRoot(), insets -> {
-			setTopMargin(binding.header.getRoot(), insets.top);
-			setHorizontalMargin(binding.header.getRoot(), insets.left, insets.right);
-			return true;
-		});
-
-		binding.swipeRefresher.setOnRefreshListener(() -> {
-			this.didReachedEnd = false;
-			search(0);
-		});
-
-		binding.swipeRefresher.setColorSchemeColors(resolveAttrColor(
-				this, android.R.attr.colorPrimary));
-
-		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(resolveAttrColor(
-				this, com.google.android.material.R.attr.colorSurface));
-
-		loadingAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
-			var binding = new EmptyView(parent, false);
-			ViewUtil.useLayoutParams(binding.getRoot(), params -> params.width = ViewUtil.MATCH_PARENT);
-			return binding;
-		}, LOADING_VIEW_TYPE);
-
-		loadingAdapter.setEnabled(false);
-
-		var concatAdapter = new ConcatAdapter(new ConcatAdapter.Config.Builder()
-				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-				.build(), adapter, loadingAdapter);
-
-		var layoutManager = new GridLayoutManager(this, isLandscape()
-				? (autoColumnsCountLand ? 3 : columnsCountLand.get())
-				: (autoColumnsCountPort ? 5 : columnsCountPort.get()));
-
-		binding.recycler.setLayoutManager(layoutManager);
-		binding.recycler.setAdapter(concatAdapter);
-
-		binding.recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-				tryLoadMore();
-			}
-		});
-
-		setOnApplyUiInsetsListener(binding.recycler, insets -> {
-			var padding = dpPx(binding.recycler, 8);
-			setVerticalPadding(binding.recycler, padding + padding * 2);
-			setHorizontalPadding(binding.recycler, insets.left + padding, insets.right + padding);
-
-			if(isLandscape() && autoColumnsCountLand) {
-				float columnSize = dpPx(binding, 110);
-				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
-				columnsCountLand.set((int)(freeSpace / columnSize));
-				layoutManager.setSpanCount(columnsCountLand.get());
-			} else if(!isLandscape() && autoColumnsCountPort) {
-				float columnSize = dpPx(binding, 110);
-				float freeSpace = getResources().getDisplayMetrics().widthPixels - (padding * 2) - insets.left - insets.right;
-				columnsCountPort.set((int)(freeSpace / columnSize));
-				layoutManager.setSpanCount(columnsCountPort.get());
-			}
-
-			return true;
-		});
-
-		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-			@Override
-			public int getSpanSize(int position) {
-				return (position < items.size()) ? 1 : (isLandscape()
-						? (columnsCountLand.get() == 0 ? layoutManager.getSpanCount() : columnsCountLand.get())
-						: columnsCountPort.get() == 0 ? layoutManager.getSpanCount() : columnsCountPort.get());
-			}
-		});
-
-		if(items.isEmpty()) {
-			doIfNotNull((List<CatalogMedia>) getIntent().getSerializableExtra(EXTRA_LOADED_MEDIA), loadedMedia -> {
-				for(var item : loadedMedia) {
-					ids.put(item, idGenerator.getLong());
-				}
-
-				isLoading = false;
-				items.addAll(loadedMedia);
-				adapter.notifyItemRangeInserted(0, items.size());
-			});
-		} else {
-			for(var item : items) {
-				ids.put(item, idGenerator.getLong());
-			}
-
-			isLoading = false;
+			search(0)
+			true
 		}
 
-		setContentView(binding.getRoot());
+		binding!!.header.root.applyInsets(UI_INSETS, { view, insets ->
+			view.topMargin = insets.top
+			view.rightMargin = insets.right
+			view.leftMargin = insets.left
+			true
+		})
 
-		if(ACTION_SEARCH_BY_TAG.equals(getIntent().getAction())) {
-			var tag = requireNonNull(getIntent().getStringExtra(EXTRA_TAG)).trim();
-			didReachedEnd = true;
+		binding!!.swipeRefresher.setOnRefreshListener {
+			this.didReachedEnd = false
+			search(0)
+		}
 
-			binding.headerWrapper.setVisibility(View.GONE);
-			binding.swipeRefresher.setEnabled(false);
+		binding!!.swipeRefresher.setColorSchemeColors(
+			resolveAttrColor(android.R.attr.colorPrimary))
 
+		binding!!.swipeRefresher.setProgressBackgroundColorSchemeColor(
+			resolveAttrColor(com.google.android.material.R.attr.colorSurface)
+		)
 
-			loadingAdapter.setEnabled(true);
-			loadingAdapter.getBinding(EmptyView::startLoading);
+		loadingAdapter = SingleViewAdapter.fromBindingDynamic({ parent ->
+			val binding = EmptyView(parent, false)
+			binding.root.useLayoutParams<ViewGroup.LayoutParams> { it.width = MATCH_PARENT }
+			binding
+		}, LOADING_VIEW_TYPE)
 
-			source.getFilters().addCallback(new AsyncFuture.Callback<>() {
-				private void done() {
-					SearchActivity.this.binding.headerWrapper.setVisibility(View.VISIBLE);
-					SearchActivity.this.binding.swipeRefresher.setEnabled(true);
+		loadingAdapter!!.isEnabled = false
 
-					didReachedEnd = false;
-					search(0);
+		val concatAdapter = ConcatAdapter(
+			ConcatAdapter.Config.Builder()
+				.setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+				.build(), adapter, loadingAdapter)
+
+		val layoutManager = GridLayoutManager(this,
+			if(isLandscape()) if(autoColumnsCountLand) 3 else columnsCountLand.get()
+			else if(autoColumnsCountPort) 5 else columnsCountPort.get())
+
+		binding!!.recycler.layoutManager = layoutManager
+		binding!!.recycler.adapter = concatAdapter
+
+		binding!!.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+			override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+				tryLoadMore()
+			}
+		})
+
+		binding!!.recycler.applyInsets(UI_INSETS, { view, insets ->
+			view.setPadding(
+				insets.left + dpPx(8f),
+				dpPx(24f),
+				insets.right + dpPx(8f),
+				dpPx(24f))
+
+			if(isLandscape() && autoColumnsCountLand) {
+				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
+				columnsCountLand.set((freeSpace / dpPx(110f)).toInt())
+				layoutManager.spanCount = columnsCountLand.get()
+			} else if(!isLandscape() && autoColumnsCountPort) {
+				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
+				columnsCountPort.set((freeSpace / dpPx(110f)).toInt())
+				layoutManager.spanCount = columnsCountPort.get()
+			}
+
+			true
+		})
+
+		layoutManager.spanSizeLookup = object : SpanSizeLookup() {
+			override fun getSpanSize(position: Int): Int {
+				if(position < items.size) {
+					return 1
 				}
 
-				@Nullable
-				private SettingsItem findTag(@NonNull List<? extends SettingsItem> items) {
-					for(var item : items) {
-						if(item.getItems() != null) {
-							var found = findTag(item.getItems());
+				if(isLandscape()) {
+					return if(columnsCountLand.get() == 0) layoutManager.spanCount
+					else columnsCountLand.get()
+				}
+
+				return if(columnsCountPort.get() == 0) layoutManager.spanCount
+				else columnsCountPort.get()
+			}
+		}
+
+		if(items.isEmpty()) {
+			intent.get<List<CatalogMedia>>(EXTRA_LOADED_MEDIA)?.let { loadedMedia ->
+				for(item in loadedMedia) {
+					ids[item] = idGenerator.long
+				}
+
+				isLoading = false
+				items.addAll(loadedMedia)
+				adapter.notifyItemRangeInserted(0, items.size)
+			}
+		} else {
+			for(item in items) {
+				ids[item] = idGenerator.long
+			}
+
+			isLoading = false
+		}
+
+		setContentView(binding!!.root)
+
+		if(ACTION_SEARCH_BY_TAG == intent.action) {
+			val tag = intent.getStringExtra(EXTRA_TAG)!!.trim { it <= ' ' }
+			didReachedEnd = true
+
+			binding!!.headerWrapper.visibility = View.GONE
+			binding!!.swipeRefresher.isEnabled = false
+
+
+			loadingAdapter!!.isEnabled = true
+			loadingAdapter!!.getBinding { it.startLoading() }
+
+			source!!.filters.addCallback(object : AsyncFuture.Callback<SettingsList?> {
+				private fun done() {
+					binding!!.headerWrapper.visibility = View.VISIBLE
+					binding!!.swipeRefresher.isEnabled = true
+
+					didReachedEnd = false
+					search(0)
+				}
+
+				private fun findTag(items: List<SettingsItem>): SettingsItem? {
+					for(item in items) {
+						if(item.items != null) {
+							val found = findTag(item.items)
 
 							if(found != null) {
-								return found;
+								return found
 							}
 						}
 
-						var title = item.getTitle(SearchActivity.this);
-						if(title == null) continue;
+						val title = item.getTitle(this@SearchActivity) ?: continue
 
-						if(requireNonNull(tag).equalsIgnoreCase(title.trim())) {
-							return item;
+						if(Objects.requireNonNull(tag).equals(title.trim { it <= ' ' }, ignoreCase = true)) {
+							return item
 						}
 					}
 
-					return null;
+					return null
 				}
 
-				private void activate(@NonNull SettingsItem item, SettingsItem parent) {
-					if(item.getType() != null) {
-						switch(item.getType()) {
-							case BOOLEAN, SCREEN_BOOLEAN -> item.setValue(true);
-							case EXCLUDABLE -> item.setValue(Selection.State.SELECTED);
+				private fun activate(item: SettingsItem, parent: SettingsItem?) {
+					if(item.type != null) {
+						when(item.type) {
+							SettingsItemType.BOOLEAN, SettingsItemType.SCREEN_BOOLEAN -> item.setValue(true)
+							SettingsItemType.EXCLUDABLE -> item.setValue(Selection.State.SELECTED)
+							else -> {}
 						}
 					} else if(parent != null) {
-						switch(parent.getType()) {
-							case SELECT, SELECT_INTEGER -> parent.setValue(item.getKey());
-							case MULTISELECT -> parent.setValue(Set.of(item.getKey()));
+						when(parent.type) {
+							SettingsItemType.SELECT, SettingsItemType.SELECT_INTEGER -> parent.setValue(item.key)
+							SettingsItemType.MULTISELECT -> parent.setValue(setOf(item.key))
+							else -> {}
 						}
 					} else {
-						onFailure(null);
+						onFailure(UnsupportedOperationException())
 					}
 				}
 
-				@Override
-				public void onSuccess(SettingsList items) {
-					for(var item : items) {
-						item.setAsParentForChildren();
+				override fun onSuccess(items: SettingsList) {
+					for(item in items) {
+						item.setAsParentForChildren()
 					}
 
-					var found = findTag(items);
+					val found = findTag(items)
 
 					if(found == null) {
-						onFailure(null);
+						onFailure(UnsupportedOperationException())
 					} else {
-						SettingsItem parent = found, root = parent;
+						var parent: SettingsItem = found
+						var root = parent
 
-						while((parent = parent.getParent()) != null) {
-							root = parent;
+						while((parent.parent.also { parent = it }) != null) {
+							root = parent
 						}
 
-						activate(found, found.getParent());
-						applyFilters(List.of(root), true);
-						AweryLifecycle.runOnUiThread(this::done, SearchActivity.this.binding.recycler);
+						activate(found, found.parent)
+						applyFilters(listOf(root), true)
+						AweryLifecycle.runOnUiThread({ this.done() }, binding!!.recycler)
 					}
 				}
 
-				@Override
-				public void onFailure(Throwable t) {
-					queryFilter.setValue(tag);
+				override fun onFailure(t: Throwable) {
+					queryFilter.setValue(tag)
 
-					AweryLifecycle.runOnUiThread(() -> {
-						SearchActivity.this.binding.header.edittext.setText(tag);
-						done();
-					}, SearchActivity.this.binding.recycler);
+					AweryLifecycle.runOnUiThread({
+						binding!!.header.edittext.setText(tag)
+						done()
+					}, binding!!.recycler)
 				}
-			});
+			})
 		}
 	}
 
-	@Override
-	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putSerializable(SAVED_FILTERS, filters);
-		outState.putSerializable(SAVED_ITEMS, items);
-		outState.putBoolean(SAVED_DID_REACHED_END, didReachedEnd);
-		super.onSaveInstanceState(outState);
+	override fun onSaveInstanceState(outState: Bundle) {
+		outState.putSerializable(SAVED_FILTERS, filters)
+		outState.putSerializable(SAVED_ITEMS, items as Serializable)
+		outState.putBoolean(SAVED_DID_REACHED_END, didReachedEnd)
+		super.onSaveInstanceState(outState)
 	}
 
-	private void applyFilters(@Nullable List<SettingsItem> newFilters, boolean ignoreInternalFilters) {
-		this.filters.clear();
+	private fun applyFilters(newFilters: List<SettingsItem>?, ignoreInternalFilters: Boolean) {
+		filters.clear()
 
 		if(newFilters != null) {
-			this.filters.addAll(newFilters);
+			filters.addAll(newFilters)
 
-			var foundQuery = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_QUERY));
-			var foundPage = find(this.filters, filter -> Objects.equals(filter.getKey(), ExtensionProvider.FILTER_PAGE));
+			val foundQuery = this.filters.find { it.key == ExtensionProvider.FILTER_QUERY }
+			val foundPage = this.filters.find { it.key == ExtensionProvider.FILTER_PAGE }
 
 			if(foundQuery != null) {
-				if(ignoreInternalFilters) this.filters.remove(foundQuery);
-				else queryFilter = foundQuery;
+				if(ignoreInternalFilters) filters.remove(foundQuery)
+				else queryFilter = foundQuery
 			}
 
 			if(foundPage != null) {
-				if(ignoreInternalFilters) this.filters.remove(foundPage);
-				else pageFilter = foundPage;
+				if(ignoreInternalFilters) filters.remove(foundPage)
+				else pageFilter = foundPage
 			}
 		}
 
 		if(ignoreInternalFilters) {
-			this.filters.add(queryFilter);
-			this.filters.add(pageFilter);
+			filters.add(queryFilter)
+			filters.add(pageFilter)
 		}
 	}
 
-	private void tryLoadMore() {
+	private fun tryLoadMore() {
 		if(!isLoading && !didReachedEnd) {
-			var lastIndex = items.size() - 1;
+			val lastIndex = items.size - 1
+			val manager = binding!!.recycler.layoutManager
 
-			if(binding.recycler.getLayoutManager() instanceof LinearLayoutManager manager
-					&& manager.findLastVisibleItemPosition() >= lastIndex) {
-				pageFilter.setValue(pageFilter.getIntegerValue() + 1);
-				search(pageFilter.getIntegerValue());
+			if(manager is LinearLayoutManager && manager.findLastVisibleItemPosition() >= lastIndex) {
+				pageFilter.setValue(pageFilter.integerValue + 1)
+				search(pageFilter.integerValue)
 			}
 		}
 	}
 
-	private void reachedEnd(long wasSearchId) {
-		loadingAdapter.getBinding((binding) -> runOnUiThread(() -> {
-			if(wasSearchId != searchId) return;
+	private fun reachedEnd(wasSearchId: Long) {
+		loadingAdapter!!.getBinding { binding: EmptyView ->
+			runOnUiThread {
+				if(wasSearchId != searchId.toLong()) return@runOnUiThread
+				this@SearchActivity.didReachedEnd = true
+				binding.title.setText(R.string.you_reached_end)
+				binding.message.setText(R.string.you_reached_end_description)
 
-			SearchActivity.this.didReachedEnd = true;
-			binding.title.setText(R.string.you_reached_end);
-			binding.message.setText(R.string.you_reached_end_description);
+				binding.progressBar.visibility = View.GONE
+				binding.info.visibility = View.VISIBLE
 
-			binding.progressBar.setVisibility(View.GONE);
-			binding.info.setVisibility(View.VISIBLE);
-
-			isLoading = false;
-			didReachedEnd = true;
-		}));
+				isLoading = false
+				didReachedEnd = true
+			}
+		}
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	private void search(int page) {
-		if(queryFilter.getStringValue() == null) {
-			queryFilter.setValue("");
+	private fun search(page: Int) {
+		if(queryFilter.stringValue == null) {
+			queryFilter.setValue("")
 		}
 
-		var wasSearchId = ++searchId;
+		val wasSearchId = ++searchId
 
 		if(page == 0) {
-			this.items.clear();
-			adapter.notifyDataSetChanged();
-			idGenerator.clear();
+			items.clear()
+			adapter.notifyDataSetChanged()
+			idGenerator.reset()
 		}
 
-		loadingAdapter.getBinding((binding) -> {
-			binding.progressBar.setVisibility(View.VISIBLE);
-			binding.info.setVisibility(View.GONE);
-		});
+		loadingAdapter!!.getBinding { binding: EmptyView ->
+			binding.progressBar.visibility = View.VISIBLE
+			binding.info.visibility = View.GONE
+		}
 
-		loadingAdapter.setEnabled(true);
-		pageFilter.setValue(page);
+		loadingAdapter!!.isEnabled = true
+		pageFilter.setValue(page)
 
-		source.searchMedia(filters).addCallback(new AsyncFuture.Callback<>() {
-			@Override
-			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> items) {
-				if(wasSearchId != searchId) return;
+		source!!.searchMedia(filters).addCallback(object : AsyncFuture.Callback<CatalogSearchResults<out CatalogMedia?>?> {
+			override fun onSuccess(items: CatalogSearchResults<out CatalogMedia?>) {
+				if(wasSearchId != searchId) return
 
 				if(!items.hasNextPage()) {
-					reachedEnd(wasSearchId);
+					reachedEnd(wasSearchId.toLong())
 				}
 
-				MediaUtils.filterMedia(items, filteredItems -> {
+				MediaUtils.filterMedia(items) { filteredItems ->
 					if(filteredItems.isEmpty()) {
-						throw new ZeroResultsException("No media was found", R.string.no_media_found);
+						throw ZeroResultsException("No media was found", R.string.no_media_found)
 					}
-
-					for(var item : filteredItems) {
-						ids.put(item, idGenerator.getLong());
+					for(item in filteredItems) {
+						ids[item] = idGenerator.long
 					}
-
-					runOnUiThread(() -> {
-						if(wasSearchId != searchId) return;
-						SearchActivity.this.isLoading = false;
+					runOnUiThread {
+						if(wasSearchId != searchId) return@runOnUiThread
+						this@SearchActivity.isLoading = false
 
 						if(page == 0) {
-							SearchActivity.this.items.addAll(filteredItems);
-							adapter.notifyDataSetChanged();
+							this@SearchActivity.items.addAll(filteredItems)
+							adapter.notifyDataSetChanged()
 						} else {
-							var wasSize = SearchActivity.this.items.size();
-							SearchActivity.this.items.addAll(filteredItems);
-							adapter.notifyItemRangeInserted(wasSize, filteredItems.size());
+							val wasSize = this@SearchActivity.items.size
+							this@SearchActivity.items.addAll(filteredItems)
+							adapter.notifyItemRangeInserted(wasSize, filteredItems.size)
 						}
-
-						runDelayed(() -> tryLoadMore(), 1000, binding.recycler);
-					});
-				});
-
-				onFinally();
-			}
-
-			@Override
-			public void onFailure(Throwable e) {
-				if(wasSearchId != searchId) return;
-
-				var error = new ExceptionDescriptor(e);
-				Log.e(TAG, "Failed to search", e);
-
-				runOnUiThread(() -> {
-					if(wasSearchId != searchId) return;
-
-					loadingAdapter.getBinding((binding) -> {
-						if(wasSearchId != searchId) return;
-
-						if(page == 0) {
-							SearchActivity.this.items.clear();
-							adapter.notifyDataSetChanged();
-						}
-
-						if(e instanceof ZeroResultsException && page != 0) {
-							reachedEnd(wasSearchId);
-						} else {
-							binding.title.setText(error.getTitle(SearchActivity.this));
-							binding.message.setText(error.getMessage(SearchActivity.this));
-						}
-
-						binding.progressBar.setVisibility(View.GONE);
-						binding.info.setVisibility(View.VISIBLE);
-
-						SearchActivity.this.isLoading = false;
-					});
-				});
-
-				onFinally();
-			}
-
-			private void onFinally() {
-				if(wasSearchId != searchId) return;
-				binding.swipeRefresher.setRefreshing(false);
-			}
-		});
-	}
-
-	private class Adapter extends RecyclerView.Adapter<ViewHolder> {
-
-		public Adapter() {
-			setHasStableIds(true);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return Objects.requireNonNull(ids.get(items.get(position)));
-		}
-
-		@NonNull
-		@Override
-		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-			var inflater = LayoutInflater.from(parent.getContext());
-			var binding = GridMediaCatalogBinding.inflate(inflater, parent, false);
-			var viewHolder = new ViewHolder(binding);
-
-			useLayoutParams(binding.getRoot(), params -> {
-				params.width = MATCH_PARENT;
-				setHorizontalMargin(params, dpPx(binding, 6));
-			}, RecyclerView.LayoutParams.class);
-
-			binding.getRoot().setOnClickListener(view -> {
-				if(ACTION_PICK_MEDIA.equals(getIntent().getAction())) {
-					setResult(0, new Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.getItem()));
-					finish();
-					return;
+						AweryLifecycle.runDelayed({ tryLoadMore() }, 1000, binding!!.recycler)
+					}
 				}
 
-				MediaUtils.launchMediaActivity(parent.getContext(), viewHolder.getItem());
-			});
+				onFinally()
+			}
 
-			binding.getRoot().setOnLongClickListener(view -> {
-				var media = viewHolder.getItem();
-				var index = items.indexOf(media);
+			override fun onFailure(e: Throwable) {
+				if(wasSearchId != searchId) return
 
-				var dialog = new MediaActionsDialog(media);
+				val error = ExceptionDescriptor(e)
+				Log.e(TAG, "Failed to search", e)
 
-				dialog.setUpdateCallback(() -> {
-					MediaUtils.isMediaFiltered(media, isFiltered -> {
-						if(!isFiltered) return;
+				runOnUiThread {
+					if(wasSearchId != searchId) return@runOnUiThread
+					loadingAdapter!!.getBinding { binding: EmptyView ->
+						if(wasSearchId != searchId) return@getBinding
+						if(page == 0) {
+							items.clear()
+							adapter.notifyDataSetChanged()
+						}
 
-						runOnUiThread(() -> {
-							items.remove(media);
-							notifyItemRemoved(index);
-						});
-					});
+						if(e is ZeroResultsException && page != 0) {
+							reachedEnd(wasSearchId.toLong())
+						} else {
+							binding.title.text = error.getTitle(this@SearchActivity)
+							binding.message.text = error.getMessage(this@SearchActivity)
+						}
 
-					return Unit.INSTANCE;
-				});
+						binding.progressBar.visibility = View.GONE
+						binding.info.visibility = View.VISIBLE
+						this@SearchActivity.isLoading = false
+					}
+				}
 
-				dialog.show(parent.getContext());
-				return true;
-			});
+				onFinally()
+			}
 
-			return viewHolder;
+			private fun onFinally() {
+				if(wasSearchId != searchId) return
+				binding!!.swipeRefresher.isRefreshing = false
+			}
+		})
+	}
+
+	private inner class Adapter : RecyclerView.Adapter<ViewHolder>() {
+		init {
+			setHasStableIds(true)
 		}
 
-		@Override
-		public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-			holder.bind(items.get(position));
+		override fun getItemId(position: Int): Long {
+			return ids[items[position]] ?: 0
 		}
 
-		@Override
-		public int getItemCount() {
-			return items.size();
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+			val binding = GridMediaCatalogBinding.inflate(parent.context.inflater, parent, false)
+			val viewHolder = ViewHolder(binding)
+
+			binding.root.useLayoutParams<RecyclerView.LayoutParams> {
+				it.width = MATCH_PARENT
+				it.rightMargin = dpPx(6f)
+				it.leftMargin = dpPx(6f)
+			}
+
+			binding.root.setOnClickListener {
+				if(ACTION_PICK_MEDIA == intent.action) {
+					setResult(0, Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.item))
+					finish()
+					return@setOnClickListener
+				}
+
+				startActivity(MediaActivity::class, extras = mapOf(
+					MediaActivity.EXTRA_MEDIA to viewHolder.item!!
+				))
+			}
+
+			binding.root.setOnLongClickListener {
+				val media: CatalogMedia = viewHolder.item!!
+				val index = items.indexOf(media)
+
+				val dialog = MediaActionsDialog(media)
+
+				dialog.updateCallback = {
+					MediaUtils.isMediaFiltered(media) { isFiltered: Boolean? ->
+						if(!isFiltered!!) return@isMediaFiltered
+						runOnUiThread {
+							items.remove(media)
+							notifyItemRemoved(index)
+						}
+					}
+				}
+
+				dialog.show(parent.context)
+				true
+			}
+
+			return viewHolder
+		}
+
+		override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+			holder.bind(items[position])
+		}
+
+		override fun getItemCount(): Int {
+			return items.size
 		}
 	}
 
-	private static class ViewHolder extends RecyclerView.ViewHolder {
-		private final GridMediaCatalogBinding binding;
-		private CatalogMedia item;
+	private class ViewHolder(private val binding: GridMediaCatalogBinding) : RecyclerView.ViewHolder(binding.root) {
+		var item: CatalogMedia? = null
+			private set
 
-		public ViewHolder(@NonNull GridMediaCatalogBinding binding) {
-			super(binding.getRoot());
-			this.binding = binding;
-		}
+		fun bind(item: CatalogMedia) {
+			this.item = item
 
-		public CatalogMedia getItem() {
-			return item;
-		}
-
-		public void bind(@NonNull CatalogMedia item) {
-			this.item = item;
-
-			binding.title.setText(item.getTitle());
-			binding.ongoing.setVisibility(item.status == CatalogMedia.MediaStatus.ONGOING ? View.VISIBLE : View.GONE);
+			binding.title.text = item.title
+			binding.ongoing.visibility = if(item.status == CatalogMedia.MediaStatus.ONGOING) View.VISIBLE else View.GONE
 
 			if(item.averageScore != null) {
-				binding.scoreWrapper.setVisibility(View.VISIBLE);
-				binding.score.setText(String.valueOf(item.averageScore));
+				binding.scoreWrapper.visibility = View.VISIBLE
+				binding.score.text = item.averageScore.toString()
 			} else {
-				binding.scoreWrapper.setVisibility(View.GONE);
+				binding.scoreWrapper.visibility = View.GONE
 			}
 
 			try {
-				Glide.with(binding.getRoot())
-						.load(item.getLargePoster())
-						.transition(DrawableTransitionOptions.withCrossFade())
-						.into(binding.mediaItemBanner);
-			} catch(IllegalArgumentException e) {
-				Log.e(TAG, "Failed to load a poster", e);
+				Glide.with(binding.root)
+					.load(item.largePoster)
+					.transition(DrawableTransitionOptions.withCrossFade())
+					.into(binding.mediaItemBanner)
+			} catch(e: IllegalArgumentException) {
+				Log.e(TAG, "Failed to load a poster", e)
 			}
 		}
+	}
+
+	companion object {
+		const val ACTION_PICK_MEDIA: String = "pick_media"
+		const val ACTION_SEARCH_BY_TAG: String = "searchByTag"
+		const val EXTRA_TAG: String = "tag"
+		const val EXTRA_FILTERS: String = "filters"
+		const val EXTRA_LOADED_MEDIA: String = "loadedMedia"
+
+		/**
+		 * It is meant that the provider can be found by using `ExtensionProvider.forGlobalId(String)`
+		 */
+		const val EXTRA_GLOBAL_PROVIDER_ID: String = "source"
+		const val RESULT_EXTRA_MEDIA: String = "media"
+		private const val LOADING_VIEW_TYPE = 1
+		private const val SAVED_FILTERS = "filters"
+		private const val SAVED_ITEMS = "items"
+		private const val SAVED_DID_REACHED_END = "did_reached_end"
+		private const val TAG = "SearchActivity"
 	}
 }

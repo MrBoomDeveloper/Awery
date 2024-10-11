@@ -1,7 +1,10 @@
 package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.util.NiceUtils.listToUniqueString;
+import static com.mrboomdev.awery.util.NiceUtils.parseDate;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
+import static com.mrboomdev.awery.util.NiceUtils.uniqueStringToList;
 
 import android.util.Base64;
 import android.util.Log;
@@ -11,15 +14,12 @@ import androidx.room.TypeConverter;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsList;
-import com.mrboomdev.awery.sdk.util.StringUtils;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
 import com.squareup.moshi.Types;
 
 import org.jetbrains.annotations.Contract;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,6 +34,7 @@ import java.util.Map;
 
 import java9.util.stream.Collectors;
 
+@Deprecated(forRemoval = true)
 @SuppressWarnings("unused")
 public class ParserAdapter {
 	private static final String TAG = "ParserAdapter";
@@ -42,68 +43,14 @@ public class ParserAdapter {
 	@TypeConverter
 	@FromJson
 	public static List<String> listFromString(String value) {
-		return new ArrayList<>(StringUtils.uniqueStringToList(value));
+		return new ArrayList<>(uniqueStringToList(value));
 	}
 
 	@NonNull
 	@TypeConverter
 	@ToJson
 	public static String listToString(@NonNull List<String> value) {
-		return StringUtils.listToUniqueString(value);
-	}
-
-	public static String arrayToString(NativeArray array) {
-		if(array == null) return null;
-
-		var builder = new StringBuilder();
-		var iterator = array.iterator();
-
-		while(iterator.hasNext()) {
-			var item = iterator.next();
-
-			if(item instanceof NativeArray arr) {
-				builder.append(arrayToString(arr));
-			} else if(item instanceof NativeObject obj) {
-				builder.append(objectToString(obj));
-			} else {
-				builder.append(item.toString());
-			}
-
-			if(iterator.hasNext()) {
-				builder.append(", ");
-			}
-		}
-
-		return "[ " + builder + " ]";
-	}
-
-	public static String objectToString(NativeObject object) {
-		if(object == null) return null;
-
-		var builder = new StringBuilder();
-		var iterator = object.entrySet().iterator();
-
-		while(iterator.hasNext()) {
-			var entry = iterator.next();
-
-			builder.append("\"")
-					.append(entry.getKey())
-					.append("\":");
-
-			if(entry.getValue() instanceof NativeArray arr) {
-				builder.append(arrayToString(arr));
-			} else if(entry.getValue() instanceof NativeObject obj) {
-				builder.append(objectToString(obj));
-			} else {
-				builder.append(entry.getValue().toString());
-			}
-
-			if(iterator.hasNext()) {
-				builder.append(", ");
-			}
-		}
-
-		return "{" + builder + "}";
+		return listToUniqueString(value);
 	}
 
 	@TypeConverter
@@ -221,7 +168,7 @@ public class ParserAdapter {
 	@NonNull
 	public static Calendar calendarFromString(String date) {
 		var calendar = Calendar.getInstance();
-		calendar.setTime(StringUtils.parseDate(date));
+		calendar.setTime(parseDate(date));
 		return calendar;
 	}
 

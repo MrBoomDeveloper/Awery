@@ -28,7 +28,7 @@ object AniyomiKotlinBridge {
         filters: AnimeFilterList
     ): AsyncFuture<AnimesPage> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getSearchAnime(page + 1, query, filters))
             }
         }
@@ -37,7 +37,7 @@ object AniyomiKotlinBridge {
     @JvmStatic
     fun getPopularAnime(source: AnimeCatalogueSource, page: Int): AsyncFuture<AnimesPage> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getPopularAnime(page + 1))
             }
         }
@@ -46,7 +46,7 @@ object AniyomiKotlinBridge {
     @JvmStatic
     fun getLatestAnime(source: AnimeCatalogueSource, page: Int): AsyncFuture<AnimesPage> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getLatestUpdates(page + 1))
             }
         }
@@ -55,7 +55,7 @@ object AniyomiKotlinBridge {
     @JvmStatic
     fun getAnimeDetails(source: AnimeSource, anime: SAnime): AsyncFuture<SAnime> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getAnimeDetails(anime))
             }
         }
@@ -64,7 +64,7 @@ object AniyomiKotlinBridge {
     @JvmStatic
     fun getEpisodesList(source: AnimeSource, anime: SAnime): AsyncFuture<List<SEpisode>> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getEpisodeList(anime))
             }
         }
@@ -73,7 +73,7 @@ object AniyomiKotlinBridge {
     @JvmStatic
     fun getVideosList(source: AnimeSource, episode: SEpisode): AsyncFuture<List<Video>> {
         return AsyncUtils.controllableFuture {
-            CoroutineScope(Job()).launch(CoroutineExceptionHandler { _, e -> it.fail(e) }) {
+            CoroutineScope(CoroutineExceptionHandler { _, e -> it.fail(e) }).launch {
                 it.complete(source.getVideoList(episode))
             }
         }

@@ -1,117 +1,121 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getDatabase;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.CrashHandler.reportIfCrashHappened;
-import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
-
-import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.databinding.ScreenSplashBinding;
-import com.mrboomdev.awery.extensions.ExtensionsFactory;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.ui.activity.setup.SetupActivity;
-import com.mrboomdev.awery.util.async.AsyncFuture;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import com.mrboomdev.awery.app.App.getDatabase
+import com.mrboomdev.awery.app.AweryLifecycle
+import com.mrboomdev.awery.app.AweryLifecycle.runDelayed
+import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.app.CrashHandler.CrashReport
+import com.mrboomdev.awery.databinding.ScreenSplashBinding
+import com.mrboomdev.awery.extensions.ExtensionsFactory
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.activity.MainActivity
+import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity
+import com.mrboomdev.awery.util.async.AsyncFuture
+import com.mrboomdev.awery.util.extensions.applyTheme
+import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.extensions.startActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
-public class SplashActivity extends AppCompatActivity {
-	private static final String TAG = "SplashActivity";
-	private ScreenSplashBinding binding;
+class SplashActivity : AppCompatActivity() {
+	private var binding: ScreenSplashBinding? = null
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		SplashScreen.installSplashScreen(this);
+	override fun onCreate(savedInstanceState: Bundle?) {
+		installSplashScreen()
 
 		try {
-			ThemeManager.apply(this);
-		} catch(Exception e) {
-			Log.e(TAG, "Failed to apply an theme!", e);
+			applyTheme()
+		} catch(e: Exception) {
+			Log.e(TAG, "Failed to apply an theme!", e)
 		}
 
-		enableEdgeToEdge(this);
-		super.onCreate(savedInstanceState);
+		enableEdgeToEdge()
+		super.onCreate(savedInstanceState)
 
-		binding = ScreenSplashBinding.inflate(getLayoutInflater());
-		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
-		getWindow().setNavigationBarColor(resolveAttrColor(this, android.R.attr.colorBackground));
-		setContentView(binding.getRoot());
+		binding = ScreenSplashBinding.inflate(layoutInflater)
+		binding!!.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
+		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
+		setContentView(binding!!.root)
 
-		binding.status.setText("Checking the database...");
+		binding!!.status.text = "Checking the database..."
 
-		reportIfCrashHappened(this, () -> thread(() -> {
-			try {
-				getDatabase().getListDao().getAll();
-			} catch(IllegalStateException e) {
-				Log.e(TAG, "Database is corrupted!", e);
+		CrashHandler.reportIfCrashHappened(this) {
+			lifecycleScope.launch(Dispatchers.IO) {
+				try {
+					getDatabase().listDao.all
+				} catch(e: IllegalStateException) {
+					Log.e(TAG, "Database is corrupted!", e)
 
-				CrashHandler.showErrorDialog(this, new CrashHandler.CrashReport.Builder()
-						.setTitle("Database is corrupted!")
-						.setThrowable(e)
-						.setDismissCallback(AweryLifecycle::exitApp)
-						.build());
+					CrashHandler.showErrorDialog(this@SplashActivity, CrashReport.Builder()
+							.setTitle("Database is corrupted!")
+							.setThrowable(e)
+							.setDismissCallback { AweryLifecycle.exitApp() }
+							.build())
 
-				return;
-			}
-
-			if(AwerySettings.SETUP_VERSION_FINISHED.getValue() < SetupActivity.SETUP_VERSION) {
-				var intent = new Intent(this, SetupActivity.class);
-				startActivity(intent);
-				finish();
-				return;
-			}
-
-			ExtensionsFactory.getInstance().addCallback(new AsyncFuture.Callback<>() {
-				@Override
-				public void onSuccess(ExtensionsFactory result) {
-					startActivity(new Intent(SplashActivity.this, MainActivity.class));
-					finish();
+					return@launch
 				}
 
-				@Override
-				public void onFailure(Throwable t) {
-					Log.e(TAG, "Failed to load an ExtensionsFactory!", t);
-
-					CrashHandler.showErrorDialog(SplashActivity.this, new CrashHandler.CrashReport.Builder()
-							.setTitle("Failed to load an ExtensionsFactory")
-							.setThrowable(t)
-							.setDismissCallback(AweryLifecycle::exitApp)
-							.build());
+				if(AwerySettings.SETUP_VERSION_FINISHED.value < SetupActivity.SETUP_VERSION) {
+					startActivity(SetupActivity::class)
+					finish()
+					return@launch
 				}
-			});
 
-			runOnUiThread(this::update);
-		}));
+				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
+					override fun onSuccess(result: ExtensionsFactory) {
+						startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+						finish()
+					}
+
+					override fun onFailure(t: Throwable) {
+						Log.e(TAG, "Failed to load an ExtensionsFactory!", t)
+
+						CrashHandler.showErrorDialog(
+							this@SplashActivity, CrashReport.Builder()
+								.setTitle("Failed to load an ExtensionsFactory")
+								.setThrowable(t)
+								.setDismissCallback { AweryLifecycle.exitApp() }
+								.build())
+					}
+				})
+
+				runOnUiThread { update() }
+			}
+		}
 	}
 
-	private void update() {
-		if(isDestroyed()) return;
-		var factory = ExtensionsFactory.getInstanceNow();
+	private fun update() {
+		if(isDestroyed) return
+		val factory = ExtensionsFactory.getInstanceNow()
 
 		if(factory == null) {
-			binding.status.setText("Loading extensions...");
-			return;
+			binding!!.status.text = "Loading extensions..."
+			return
 		}
 
-		long progress = 0, total = 0;
+		var progress: Long = 0
+		var total: Long = 0
 
-		for(var manager : factory.getManagers()) {
-			var managerProgress = manager.getProgress();
-			progress += managerProgress.getProgress();
-			total += managerProgress.getMax();
+		for(manager in factory.managers) {
+			val managerProgress = manager.progress
+			progress += managerProgress.progress
+			total += managerProgress.max
 		}
 
-		binding.status.setText("Loading extensions " + progress + "/" + total);
-		AweryLifecycle.runDelayed(this::update, 100);
+		binding!!.status.text = "Loading extensions $progress/$total"
+		runDelayed({ this.update() }, 100)
+	}
+
+	companion object {
+		private const val TAG = "SplashActivity"
 	}
 }

@@ -26,15 +26,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.FeedPagesBinding;
-import com.mrboomdev.awery.databinding.FeedPagesItemBinding;
+import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding;
+import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding;
 import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
+import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog;
 import com.mrboomdev.awery.util.MediaUtils;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 
@@ -48,17 +49,17 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	private final WeakHashMap<CatalogMedia, Long> ids = new WeakHashMap<>();
 	private final PagerAdapter adapter = new PagerAdapter();
 	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-	private final FeedPagesBinding binding;
+	private final FeedFeaturedWrapperBinding binding;
 	private Feed feed;
 
 	@NonNull
 	@Contract("_ -> new")
 	public static PagesFeedViewHolder create(ViewGroup parent) {
-		return new PagesFeedViewHolder(FeedPagesBinding.inflate(
+		return new PagesFeedViewHolder(FeedFeaturedWrapperBinding.inflate(
 				LayoutInflater.from(parent.getContext()), parent,false), parent);
 	}
 
-	private PagesFeedViewHolder(@NonNull FeedPagesBinding binding, ViewGroup parent) {
+	private PagesFeedViewHolder(@NonNull FeedFeaturedWrapperBinding binding, ViewGroup parent) {
 		super(binding.getRoot());
 
 		this.binding = binding;
@@ -79,7 +80,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	@Override
 	public void bind(@NonNull Feed feed) {
 		this.feed = feed;
-		idGenerator.clear();
+		idGenerator.reset();
 
 		if(feed.getItems() != null) {
 			for(var item : feed.getItems()) {
@@ -99,7 +100,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 		@Override
 		public PagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			var inflater = LayoutInflater.from(parent.getContext());
-			var binding = FeedPagesItemBinding.inflate(inflater, parent, false);
+			var binding = FeedFeaturedItemBinding.inflate(inflater, parent, false);
 			var holder = new PagerViewHolder(binding);
 
 			binding.getRoot().setOnClickListener(v -> MediaUtils.launchMediaActivity(
@@ -108,8 +109,7 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 			binding.watch.setOnClickListener(v -> MediaUtils.launchMediaActivity(
 					parent.getContext(), holder.getItem(), "watch"));
 
-			binding.bookmark.setOnClickListener(v -> MediaUtils.openMediaBookmarkMenu(
-					parent.getContext(), holder.getItem()));
+			binding.bookmark.setOnClickListener(v -> new MediaBookmarkDialog(holder.getItem()).show(parent.getContext()));
 
 			binding.getRoot().setOnLongClickListener(v -> {
 				var media = holder.getItem();
@@ -179,10 +179,10 @@ public class PagesFeedViewHolder extends FeedViewHolder {
 	}
 
 	private static class PagerViewHolder extends RecyclerView.ViewHolder {
-		private final FeedPagesItemBinding binding;
+		private final FeedFeaturedItemBinding binding;
 		private CatalogMedia item;
 
-		public PagerViewHolder(@NonNull FeedPagesItemBinding binding) {
+		public PagerViewHolder(@NonNull FeedFeaturedItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}

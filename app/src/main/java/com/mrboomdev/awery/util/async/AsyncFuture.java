@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.async;
 
+import org.jetbrains.annotations.NotNull;
+@Deprecated(forRemoval = true)
 public interface AsyncFuture<T> extends BaseFuture {
 	void addCallback(Callback<T> callback);
 
@@ -127,8 +129,7 @@ public interface AsyncFuture<T> extends BaseFuture {
 	}
 
 	interface Callback<T> {
-		void onSuccess(T result) throws Throwable;
-
-		void onFailure(Throwable t);
+		void onSuccess(@NotNull T result) throws Throwable;
+		void onFailure(@NotNull Throwable t);
 	}
 }

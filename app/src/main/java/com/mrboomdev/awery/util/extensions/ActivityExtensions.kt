@@ -1,6 +1,8 @@
 package com.mrboomdev.awery.util.extensions
 
 import android.app.Activity
+import android.content.ComponentName
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -8,12 +10,63 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.enableEdgeToEdge
+import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.postRunnable
 import com.mrboomdev.awery.ui.ThemeManager
+import java.util.LinkedHashMap
 import java.util.WeakHashMap
+import kotlin.reflect.KClass
 
 private const val TAG = "ActivityExtensions"
 private val backPressedCallbacks = WeakHashMap<() -> Unit, Any>()
+
+fun Activity.startActivityForResult(
+    clazz: KClass<*>? = null,
+    action: String? = null,
+    type: String? = null,
+    categories: Array<String>? = null,
+    extras: Map<String, Any>? = null,
+    callback: (resultCode: Int, result: Intent) -> Unit,
+    requestCode: Int? = null
+) {
+    val activity = this
+
+    startActivityForResult(Intent(action).apply {
+        setType(type)
+
+        if(categories != null) {
+            for(category in categories) {
+                addCategory(category)
+            }
+        }
+
+        if(extras != null) {
+            for((key, value) in extras) {
+                put(key, value)
+            }
+        }
+
+        if(clazz != null) {
+            component = ComponentName(activity, clazz.java)
+        }
+    }, callback, requestCode)
+}
+
+fun Activity.startActivityForResult(
+    intent: Intent,
+    callback: (resultCode: Int, result: Intent) -> Unit,
+    requestCode: Int? = null
+) {
+    runOnUiThread {
+        AweryLifecycle.startActivityForResult(
+            this,
+            intent,
+            requestCode ?: AweryLifecycle.getActivityResultCode()
+        ) { code, result ->
+            callback(code, result)
+        }
+    }
+}
 
 fun Activity.removeOnBackPressedListener(callback: () -> Unit) {
     val onBackInvokedCallback = backPressedCallbacks.remove(callback) ?: return

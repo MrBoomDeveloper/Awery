@@ -23,12 +23,10 @@ import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
-import com.mrboomdev.awery.extensions.support.js.JsManager;
 import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.util.Callbacks;
 import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -65,7 +63,7 @@ public class SettingsData {
 	public static void getSelectionList(
 			Context context,
 			@NonNull String listId,
-			Callbacks.Errorable<Selection<Selection.Selectable<String>>, Throwable> callback
+			Errorable<Selection<Selection.Selectable<String>>, Throwable> callback
 	) {
 		switch(listId) {
 			case "languages" -> callback.onResult(new Selection<>(new ArrayList<>() {{
@@ -131,19 +129,30 @@ public class SettingsData {
 			default -> Log.e(TAG, "Failed to save tags list");
 		}
 	}
-
+	
+	public interface Errorable<T, E extends Throwable> {
+		void onResult(T t, E e);
+		
+		default void onSuccess(T t) {
+			onResult(t, null);
+		}
+		
+		default void onError(E e) {
+			onResult(null, e);
+		}
+	}
+	
 	@Contract(pure = true)
 	public static void getScreen(
 			AppCompatActivity activity,
 			@NonNull SettingsItem item,
-			@MainThread Callbacks.Errorable<SettingsItem, Throwable> callback
+			@MainThread Errorable<SettingsItem, Throwable> callback
 	) {
 		var behaviourId = item.getBehaviour();
 
 		if(behaviourId != null) {
 			if(behaviourId.startsWith("extensions_")) {
 				var manager = ExtensionsFactory.getManager__Deprecated((Class<? extends ExtensionsManager>) switch(behaviourId) {
-					case "extensions_aweryjs" -> JsManager.class;
 					case "extensions_miru" -> MiruManager.class;
 					case "extensions_cloudstream" -> CloudstreamManager.class;
 					case "extensions_aniyomi" -> AniyomiManager.class;

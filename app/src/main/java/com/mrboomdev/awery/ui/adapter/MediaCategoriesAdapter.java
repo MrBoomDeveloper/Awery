@@ -6,11 +6,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mrboomdev.awery.sdk.util.UniqueIdGenerator;
 import com.mrboomdev.awery.ui.fragments.feeds.FailedFeedViewHolder;
 import com.mrboomdev.awery.ui.fragments.feeds.FeedViewHolder;
 import com.mrboomdev.awery.ui.fragments.feeds.ListFeedViewHolder;
 import com.mrboomdev.awery.ui.fragments.feeds.PagesFeedViewHolder;
+import com.mrboomdev.awery.util.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class MediaCategoriesAdapter extends RecyclerView.Adapter<FeedViewHolder>
 	public void setFeeds(@NonNull List<FeedViewHolder.Feed> feeds) {
 		this.feeds.clear();
 		this.feeds.addAll(feeds);
-		this.idGenerator.clear();
+		this.idGenerator.reset();
 
 		for(var category : feeds) {
 			ids.put(category, idGenerator.getLong());

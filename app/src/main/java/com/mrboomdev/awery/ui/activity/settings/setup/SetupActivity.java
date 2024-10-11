@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.activity.setup;
+package com.mrboomdev.awery.ui.activity.settings.setup;
 
 import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.getDatabase;

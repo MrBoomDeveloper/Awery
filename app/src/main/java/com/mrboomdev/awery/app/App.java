@@ -1,11 +1,9 @@
 package com.mrboomdev.awery.app;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
-import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_HISTORY;
@@ -56,7 +54,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ShareCompat;
@@ -79,14 +76,10 @@ import com.mrboomdev.awery.data.db.AweryDB;
 import com.mrboomdev.awery.data.db.item.DBCatalogList;
 import com.mrboomdev.awery.extensions.data.CatalogList;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.sdk.PlatformApi;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.ui.activity.BrowserActivity;
 import com.mrboomdev.awery.util.markdown.LinkifyPlugin;
 import com.mrboomdev.awery.util.markdown.SpoilerPlugin;
-import com.skydoves.balloon.ArrowOrientation;
-import com.skydoves.balloon.Balloon;
-import com.skydoves.balloon.BalloonAlign;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory;
 
@@ -562,7 +555,6 @@ public class App extends Application {
 	@Override
 	public void onCreate() {
 		AweryNotifications.registerNotificationChannels();
-		PlatformApi.setInstance(new AweryPlatform());
 		AweryLifecycle.init(this);
 		ThemeManager.applyApp(this);
 		setupStrictMode();
@@ -653,8 +645,7 @@ public class App extends Application {
 			Runnable buttonCallback,
 			int duration
 	) {
-		var context = getAnyContext();
-		snackbar(activity, context.getString(title), context.getString(button), buttonCallback, duration);
+		snackbar(activity, activity.getString(title), activity.getString(button), buttonCallback, duration);
 	}
 
 	public static void snackbar(@NonNull Activity activity, Object title, Object button, Runnable buttonCallback, int duration) {
@@ -672,27 +663,6 @@ public class App extends Application {
 			snackbar.getView().setOnClickListener(v -> snackbar.dismiss());
 			snackbar.show();
 		});
-	}
-
-	public static void balloon(View view, String text, BalloonAlign align) {
-		runDelayed(() -> new Balloon.Builder(view.getContext())
-				.setText(text)
-				.setTextSize(14)
-				.setPaddingVertical(6)
-				.setPaddingHorizontal(12)
-				.setMaxWidthRatio(.8f)
-				.setMaxWidth(100)
-				.setCornerRadius(8)
-				.setArrowOrientation(switch(align) {
-					case TOP -> ArrowOrientation.BOTTOM;
-					case BOTTOM -> ArrowOrientation.TOP;
-					case START -> ArrowOrientation.END;
-					case END -> ArrowOrientation.START;
-				})
-				.setTextColor(resolveAttrColor(view.getContext(), com.google.android.material.R.attr.colorSurface))
-				.setBackgroundColor(resolveAttrColor(view.getContext(), com.google.android.material.R.attr.colorPrimary))
-				.setLifecycleOwner((AppCompatActivity) getActivity(view.getContext()))
-				.build().showAlign(align, view), 1);
 	}
 
 	@NonNull

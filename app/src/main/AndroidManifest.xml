@@ -179,12 +179,12 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.ExperimentsActivity"
+            android:name=".ui.activity.settings.ExperimentsActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="true" />
 
         <activity
-            android:name=".ui.activity.setup.SetupActivity"
+            android:name=".ui.activity.settings.setup.SetupActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
@@ -194,7 +194,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.AboutActivity"
+            android:name=".ui.activity.settings.AboutActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 

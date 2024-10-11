@@ -1,0 +1,21 @@
+{
+	"tag": [
+		"жанр", "genre", "tag", "genero", "generi", "gênero"
+	],
+
+	"status": [
+		"статус", "status", "stato"
+	],
+
+	"format": [
+		"формат", "category", "categoties", "type", "tipo"
+	],
+
+	"author": [
+		"brand", "producer", "studio", "estúdio"
+	],
+
+	"date": [
+		"year", "anno di uscita", "ano"
+	]
+}
