@@ -53,7 +53,7 @@ jobs:
 
       - name: Build Alpha APK
         id: build_alpha
-        run: ./gradlew assembleAlphaRelease
+        run: ./gradlew assembleAlphaRelease || { echo 'Build failed'; exit 1; }
 
       - name: Sign Alpha APK
         if: success()
