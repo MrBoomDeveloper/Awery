@@ -88,31 +88,12 @@ jobs:
         if: success()
         run: |
           curl -sS -f -X POST \
-  "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-  -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-  -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-  -F "caption=Test Update\n\nCommits:\nTest commit message\nversion: 1.0" \
-  -F "parse_mode=HTML" \
-  -F "message_thread_id=28"
-
-
-
-  - name: Send Alpha APK to Telegram
-        if: success()
-        run: |
-          COMMIT_LOG=$(cat commit_log.txt | sed 's/%0A/\n/g')
-          COMMIT_LOG=$(echo "$COMMIT_LOG" | sed 's/[$&;!#|`*]//g')  # Removes special characters
-          if [ ${#COMMIT_LOG} -gt 1000 ]; then
-            COMMIT_LOG="${COMMIT_LOG:0:997}..."  # Truncate if too long
-          fi
-          telegram_commit_messages="<pre>${COMMIT_LOG}</pre>"
-          curl -sS -f -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
-            -F "parse_mode=HTML" \
-            -F "message_thread_id=28"
+          "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+          -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
+          -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+          -F "caption=Test Update\n\nCommits:\nTest commit message\nversion: 1.0" \
+          -F "parse_mode=HTML" \
+          -F "message_thread_id=28"
 
       - name: Send Alpha APK to Discord
         if: success()
