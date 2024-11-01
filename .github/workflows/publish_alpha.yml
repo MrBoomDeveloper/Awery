@@ -28,6 +28,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Get Commits Since Last Run
+        id: get_commits
         run: |
           if [ -f last_sha.txt ]; then
             LAST_SHA=$(cat last_sha.txt)
@@ -37,27 +38,18 @@ jobs:
           echo "Commits since $LAST_SHA:"
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/mrboomdeveloper/awery/commit/%H)")
           COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/g')
+          # Encode line breaks for environment variable
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | awk '{printf "%s\\n", $0}')
-          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//'%'/'%25'}"
-          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\n'/'%0A'}"
-          FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\r'/'%0D'}"
           echo "COMMIT_LOG=${FORMATTED_COMMIT_LOGS}" >> $GITHUB_ENV
+          # Save to file
           echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
-          BRANCH=${{ github.ref }}
-          BRANCH=${BRANCH#refs/heads/}
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
           echo $GITHUB_SHA > last_sha.txt
-        shell: bash
-        env:
-          CI: true
-        continue-on-error: true
 
       - name: Build Alpha APK
         run: ./gradlew assembleAlphaRelease
 
       - name: Sign Alpha APK
         uses: r0adkll/sign-android-release@v1
-        id: sign_alpha
         with:
           releaseDirectory: "app/build/outputs/apk/alpha/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
@@ -97,13 +89,13 @@ jobs:
         run: |
           commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
           author_name=$(git log -1 --pretty=format:'%an')
-          author_email=$(git log -1 --pretty=format:'%ae')
           author_link="<https://github.com/$author_name>"
           commit_link="<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>"
           commit_message=$(cat commit_log.txt | sed 's/%0A/\n/g')
-          payload=$(jq -nc --arg content "<@&1208839371575529572> 
-          **Commit:** [${commit_id}](${commit_link}) by [${author_name}](${author_link}) 
-          **Message:** ${commit_message}" '{content: $content}')
-          curl -F "payload_json=$payload" \
-           -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-           ${{ secrets.DISCORD_WEBHOOK_URL }}
+          payload="{
+            \"content\": \"<@&1208839371575529572> **Commit:** [${commit_id}](${commit_link}) by [${author_name}](${author_link}) **Message:** ${commit_message}\"
+          }"
+          curl -H "Content-Type: application/json" \
+            -d "$payload" \
+            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
