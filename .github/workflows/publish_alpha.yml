@@ -69,8 +69,8 @@ jobs:
       - name: Send Alpha APK to Telegram
         if: always()
         run: |
-          COMMIT_LOG=$(cat commit_log.txt)
-          telegram_commit_messages="<blockquote>${COMMIT_LOG//%0A/\n}</blockquote>"
+          COMMIT_LOG=$(cat commit_log.txt | sed 's/%0A/\n/g')
+          telegram_commit_messages="<blockquote>${COMMIT_LOG}</blockquote>"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
@@ -102,5 +102,7 @@ jobs:
           }"
           curl -H "Content-Type: application/json" \
             -d "$payload" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+          curl -H "Content-Type: multipart/form-data" \
             -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
