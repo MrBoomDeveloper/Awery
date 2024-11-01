@@ -35,8 +35,8 @@ jobs:
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "Commits since $LAST_SHA:"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
-          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/mrboomdeveloper/awery/commit/%H)")
+          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/g')
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | awk '{printf "%s\\n", $0}')
           FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//'%'/'%25'}"
           FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS//$'\n'/'%0A'}"
@@ -123,8 +123,8 @@ jobs:
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/#([0-9]+)(https:\/\/github\.com\/[^)]+)/<a href="\2">#\1<\/a>/g')
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
             echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
@@ -141,10 +141,12 @@ jobs:
         run: |
           commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
           author_name=$(git log -1 --pretty=format:'%an')
-          author_link="[$author_name](<https://github.com/${{ github.repository_owner }}>)"
+          author_username=$(git log -1 --pretty=format:'%ae' | cut -d'@' -f1)
+          author_link="https://github.com/${author_username}"
+          commit_message=$(cat commit_log.txt | sed 's/%0A/\n/g')
           payload=$(jq -nc --arg content "<@&1208839371575529572> 
-          **Commit:** [${commit_id}](<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>) by ${author_link} 
-          **Message:** $(cat commit_log.txt)" '{content: $content}') 
+          **Commit:** [${commit_id}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}) by [${author_name}](${author_link}) 
+          **Message:** ${commit_message}" '{content: $content}')
           curl -F "payload_json=$payload" \
            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
            ${{ secrets.DISCORD_WEBHOOK_URL }}
