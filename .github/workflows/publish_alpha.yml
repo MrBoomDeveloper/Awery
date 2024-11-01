@@ -49,10 +49,11 @@ jobs:
         continue-on-error: true
 
       - name: Build Alpha APK
+        id: build_alpha
         run: ./gradlew assembleAlphaRelease
 
       - name: Sign Alpha APK
-        if: success() && steps.upload.outcome == 'success'
+        if: success()
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: "app/build/outputs/apk/alpha/release"
@@ -64,7 +65,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload Alpha APK
-        if: success() && steps.upload.outcome == 'success'
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
@@ -72,7 +73,7 @@ jobs:
           path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
 
       - name: Send Alpha APK to Telegram
-        if: success() && steps.upload.outcome == 'success'
+        if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           echo "Commit Log for Telegram:"
@@ -93,7 +94,7 @@ jobs:
             -F "message_thread_id=174"
 
       - name: Send Alpha APK to Discord
-        if: success() && steps.upload.outcome == 'success'
+        if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           echo "Commit Log for Discord:"
