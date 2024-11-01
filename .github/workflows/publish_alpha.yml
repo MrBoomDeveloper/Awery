@@ -35,14 +35,12 @@ jobs:
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-          echo "Commits since $LAST_SHA:"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/mrboomdeveloper/awery/commit/%H)")
-          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/g')
-          # Encode line breaks for environment variable
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | awk '{printf "%s\\n", $0}')
-          echo "COMMIT_LOG=${FORMATTED_COMMIT_LOGS}" >> $GITHUB_ENV
-          # Save to file
-          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          git fetch --unshallow
+          echo "Generating commit log from $LAST_SHA"
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s (by %an)" || echo "No commits found")
+          echo "Raw Commit Logs:"
+          echo "$COMMIT_LOGS"
+          echo "$COMMIT_LOGS" > commit_log.txt
           echo $GITHUB_SHA > last_sha.txt
 
       - name: Build Alpha APK
@@ -69,13 +67,15 @@ jobs:
       - name: Send Alpha APK to Telegram
         if: always()
         run: |
-          COMMIT_LOG=$(cat commit_log.txt | sed 's/%0A/\n/g')
+          COMMIT_LOG=$(cat commit_log.txt)
+          echo "Commit Log for Telegram:"
+          echo "$COMMIT_LOG"
           telegram_commit_messages="<blockquote>${COMMIT_LOG}</blockquote>"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
             -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
+            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174"
@@ -83,23 +83,20 @@ jobs:
       - name: Send Alpha APK to Discord
         if: always()
         run: |
-          commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
-          author_name=$(git log -1 --pretty=format:'%an')
-          author_link="<https://github.com/$author_name>"
-          commit_link="<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>"
-          commit_message=$(cat commit_log.txt | sed 's/%0A/\n/g')
-          if [ "${#commit_message}" -gt 2000 ]; then
-            commit_message="${commit_message:0:1997}..."
-          fi
+          COMMIT_LOG=$(cat commit_log.txt)
+          echo "Commit Log for Discord:"
+          echo "$COMMIT_LOG"
+          
           payload="{
             \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
-              \"title\": \" New Awery Alpha Update!\",
-              \"url\": \"${commit_link}\",
-              \"description\": \"Commits:\n${commit_message}\",
+              \"title\": \"New Awery Alpha Update!\",
+              \"description\": \"Commits:\n${COMMIT_LOG}\",
               \"color\": 5814783
             }]
           }"
+          echo "Discord Payload:"
+          echo "$payload"
           curl -H "Content-Type: application/json" \
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
