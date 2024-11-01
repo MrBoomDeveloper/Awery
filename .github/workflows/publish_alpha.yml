@@ -88,7 +88,11 @@ jobs:
         if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt | sed 's/%0A/\n/g')
-          telegram_commit_messages="<blockquote>${COMMIT_LOG}</blockquote>"
+          COMMIT_LOG=$(echo "$COMMIT_LOG" | sed 's/[$&;!#|`*]//g')  # Removes special characters
+          if [ ${#COMMIT_LOG} -gt 1000 ]; then
+            COMMIT_LOG="${COMMIT_LOG:0:997}..."  # Truncate if too long
+          fi
+          telegram_commit_messages="<pre>${COMMIT_LOG}</pre>"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
