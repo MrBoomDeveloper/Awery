@@ -67,6 +67,14 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
+      - name: Check if APK was created
+        id: check_apk
+        run: |
+          if [ ! -f app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk ]; then
+            echo "APK file not found!"
+            exit 1
+          fi
+
       - name: Upload Alpha APK
         if: success()
         uses: actions/upload-artifact@v4
@@ -79,8 +87,6 @@ jobs:
         if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          echo "Commit Log for Telegram:"
-          echo "$COMMIT_LOG"
           telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
             message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
             message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
