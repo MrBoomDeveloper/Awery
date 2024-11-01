@@ -1,4 +1,4 @@
-name: Publish Alpha Apk
+name: Build & Publish Alpha Apk
 
 on:
   push:
@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -27,55 +29,55 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Get Commits Since Last Run
+      - name: Retrieve Last Successful Commit SHA
+        id: last_successful_sha
+        run: |
+          if [ -f last_successful_sha.txt ]; then
+            LAST_SHA=$(cat last_successful_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD) # Get initial commit if no SHA exists
+          fi
+          echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
+
+      - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          # Fetch the full commit history
-          git fetch --unshallow || git fetch --tags
-
-          # Retrieve the last successful commit hash or use the first commit
-          if [ -f last_sha.txt ]; then
-            LAST_SHA=$(cat last_sha.txt)
-          else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-          fi
-
-          echo "Last SHA: $LAST_SHA"
-          echo "Commits since $LAST_SHA:"
-
-          # Format commit messages
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          
-          # Log the raw commit logs for debugging
-          echo "Raw commit logs: $COMMIT_LOGS"
-
+          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
-          
-          # Sanitize the formatted logs
+          if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
+            FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
+          fi
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
-          
-          # Store the sanitized logs in the environment variable for later use
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
-
-          # Save commit logs to file for further processing
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
-          echo $GITHUB_SHA > last_sha.txt  # Save the current commit SHA for future runs
 
       - name: Build Alpha APK
+        id: build_alpha
         run: ./gradlew assembleAlphaRelease
 
       - name: Sign Alpha APK
+        if: success()
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: "app/build/outputs/apk/alpha/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyStorePassword: ${{ secrets.ANDROIDKEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
+      - name: Check if APK was created
+        id: check_apk
+        run: |
+          if [ ! -f app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk ]; then
+            echo "APK file not found!"
+            exit 1
+          fi
+
       - name: Upload Alpha APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
@@ -83,28 +85,29 @@ jobs:
           path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
 
       - name: Send Alpha APK to Telegram
-        if: always()
+        if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          echo "Commit Log for Telegram:"
-          echo "$COMMIT_LOG"
-          telegram_commit_messages="<blockquote>${COMMIT_LOG}</blockquote>"
+          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
+            echo "$message"
+          done)
+          telegram_commit_messages="${telegram_commit_messages:0:1020}"
+          telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
             -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}" \
+            -F "caption=${telegram_commit_messages}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174"
 
       - name: Send Alpha APK to Discord
-        if: always()
+        if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          echo "Commit Log for Discord:"
-          echo "$COMMIT_LOG"
-          
           payload="{
             \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
@@ -113,11 +116,13 @@ jobs:
               \"color\": 5814783
             }]
           }"
-          echo "Discord Payload:"
-          echo "$payload"
           curl -H "Content-Type: application/json" \
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
           curl -H "Content-Type: multipart/form-data" \
             -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Save Last Successful Commit SHA
+        if: success()
+        run: echo $GITHUB_SHA > last_successful_sha.txt
