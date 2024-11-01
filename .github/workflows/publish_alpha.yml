@@ -1,4 +1,4 @@
-name: Publish Alpha Apk
+name: Publish Alpha Apk 
 
 on:
   push:
