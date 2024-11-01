@@ -70,16 +70,12 @@ jobs:
         if: always()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
-            echo "$message"
-          done)
-          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
+          telegram_commit_messages="<blockquote>${COMMIT_LOG//%0A/\n}</blockquote>"
           curl -sS -f -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
-            -F "text=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
+            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174"
@@ -92,6 +88,9 @@ jobs:
           author_link="<https://github.com/$author_name>"
           commit_link="<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>"
           commit_message=$(cat commit_log.txt | sed 's/%0A/\n/g')
+          if [ "${#commit_message}" -gt 2000 ]; then
+            commit_message="${commit_message:0:1997}..."
+          fi
           payload="{
             \"content\": \"<@&1208839371575529572> **Commit:** [${commit_id}](${commit_link}) by [${author_name}](${author_link}) **Message:** ${commit_message}\",
             \"embeds\": [{
@@ -103,4 +102,5 @@ jobs:
           }"
           curl -H "Content-Type: application/json" \
             -d "$payload" \
+            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
