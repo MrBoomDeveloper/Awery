@@ -30,19 +30,25 @@ jobs:
       - name: Get Commits Since Last Run
         id: get_commits
         run: |
+          # Check if last_sha.txt exists to retrieve the last commit SHA
           if [ -f last_sha.txt ]; then
             LAST_SHA=$(cat last_sha.txt)
-            echo "found the file which was never uploaded"
+            echo "Found the previous commit SHA: $LAST_SHA"
           else
+            # If the file does not exist, retrieve the first commit
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-            echo "this is running"
+            echo "This is the first run; starting from commit $LAST_SHA"
           fi
+          # Fetch the full history in case of shallow clone
           git fetch --unshallow
           echo "Generating commit log from $LAST_SHA"
+          # Get the commit logs since the last successful run
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an")
           echo "Raw Commit Logs:"
           echo "$COMMIT_LOGS"
+          # Save the logs to a file for later use
           echo "$COMMIT_LOGS" > commit_log.txt
+          # Save the current commit SHA for the next run
           echo $GITHUB_SHA > last_sha.txt
 
       - name: Build Alpha APK
