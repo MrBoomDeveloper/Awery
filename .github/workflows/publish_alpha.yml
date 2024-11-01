@@ -141,8 +141,11 @@ jobs:
         run: |
           commit_id=$(echo "${{ github.sha }}" | cut -c1-7)
           author_name=$(git log -1 --pretty=format:'%an')
-          author_username=$(git log -1 --pretty=format:'%ae' | cut -d'@' -f1)
-          author_link="https://github.com/${author_username}"
+          author_email=$(git log -1 --pretty=format:'%ae')
+          # Extract the username from the email address
+          author_username=$(echo "$author_email" | cut -d'@' -f1)
+          # Use the GitHub username directly from the log
+          author_link="https://github.com/$author_name" # Corrected line
           commit_message=$(cat commit_log.txt | sed 's/%0A/\n/g')
           payload=$(jq -nc --arg content "<@&1208839371575529572> 
           **Commit:** [${commit_id}](https://github.com/${{ github.repository }}/commit/${{ github.sha }}) by [${author_name}](${author_link}) 
