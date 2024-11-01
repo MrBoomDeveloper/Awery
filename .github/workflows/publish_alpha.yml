@@ -87,25 +87,31 @@ jobs:
       - name: List APK Directory
         run: ls -la app/build/outputs/apk/alpha/release
 
+      - name: Debugging File Path
+        run: echo "Path to APK:$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+
+      - name: Check Permissions
+        run: chmod +r "$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"   
+
       - name: Send Alpha APK to Telegram
         if: success()
         run: |
-         COMMIT_LOG=$(cat commit_log.txt)
-         telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-         message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
-         message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
-         echo "$message"
-         done)
-         telegram_commit_messages="${telegram_commit_messages:0:1020}"
-         telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
-         curl -sS -f -X POST \
-         "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-         -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-         -F "document=@$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-         -F "caption=${telegram_commit_messages}" \
-         -F "parse_mode=HTML" \
-         -F "disable_web_page_preview=true" \
-         -F "message_thread_id=28"
+          COMMIT_LOG=$(cat commit_log.txt)
+          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
+            echo "$message"
+          done)
+          telegram_commit_messages="${telegram_commit_messages:0:1020}"
+          telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
+          curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
+            -F "document=@$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "caption=${telegram_commit_messages}" \
+            -F "parse_mode=HTML" \
+            -F "disable_web_page_preview=true" \
+            -F "message_thread_id=28"
 
       - name: Send Alpha APK to Discord
         if: success()
