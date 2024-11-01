@@ -37,9 +37,12 @@ jobs:
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
             echo "this is running"
           fi
-          git fetch --unshallow
           echo "Generating commit log from $LAST_SHA"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an")
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          # URL-encode the newline characters for GitHub Actions
+          COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
           echo "Raw Commit Logs:"
           echo "$COMMIT_LOGS"
           echo "$COMMIT_LOGS" > commit_log.txt
