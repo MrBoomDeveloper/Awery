@@ -2,8 +2,6 @@ package com.mrboomdev.awery.extensions.data;
 
 // TODO: 10/14/2024 Move this class to the database package
 public class CatalogList {
-	public static final int FEATURE_RENAME = 1;
-	public static final int FEATURE_DELETE = 2;
 	private String title;
 	private final String id;
 

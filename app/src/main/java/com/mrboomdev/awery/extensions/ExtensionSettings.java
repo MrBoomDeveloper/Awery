@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.Companion;
 import static com.mrboomdev.awery.app.App.showLoadingWindow;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
@@ -311,7 +311,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 					@Override
 					public void onClick(Context context) {
-						copyToClipboard(repository.url, repository.url);
+						Companion.copyToClipboard(repository.url);
 					}
 				},
 

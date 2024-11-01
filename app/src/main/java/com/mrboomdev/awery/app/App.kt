@@ -38,6 +38,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.room.Room.databaseBuilder
 import androidx.viewbinding.ViewBinding
 import com.github.piasy.biv.BigImageViewer
@@ -193,41 +194,6 @@ class App : Application() {
 				.build()
 		}
 
-		/**
-		 * Possible name param syntax:
-		 * <P>`my_awesome_icon` - Will return an icon from the drawable directory</P>
-		 *
-		 * `@mipmap/my_awesome_mipmap` - Will return an drawable from the mipmap directory
-		 *
-		 * `@color/my_color` - WIll return an [ColorDrawable] instance
-		 * @throws Resources.NotFoundException If no resource with such name was found
-		 * @author MrBoomDev
-		 */
-		@JvmStatic
-		@Deprecated("")
-		@Contract(pure = true)
-		@Throws(Resources.NotFoundException::class)
-		fun resolveDrawable(context: Context?, name: String): Drawable? {
-			val clazz = if(name.startsWith("@mipmap/")) mipmap::class.java
-			else if(name.startsWith("@color/")) color::class.java
-			else drawable::class.java
-
-			var res = name
-
-			if(name.contains("/")) {
-				res = name.substring(name.indexOf("/") + 1)
-			}
-
-			val id = getResourceId(clazz, res)
-
-			if(clazz == color::class.java) {
-				val color = ContextCompat.getColor(context!!, id)
-				return ColorDrawable(color)
-			}
-
-			return ContextCompat.getDrawable(context!!, id)
-		}
-
 		@JvmStatic
 		fun getMarkwon(context: Context): Markwon {
 			return Markwon.builder(context)
@@ -240,34 +206,16 @@ class App : Application() {
 				.build()
 		}
 
-		/**
-		 * Create a new ClipData holding data of the type
-		 * [ClipDescription.MIMETYPE_TEXT_PLAIN].
-		 *
-		 * @param label User-visible label for the clip data.
-		 * @param content The actual text in the clip.
-		 */
-		@JvmStatic
-		fun copyToClipboard(label: String?, content: String?) {
-			copyToClipboard(ClipData.newPlainText(label, content))
+		fun copyToClipboard(content: Uri) {
+			copyToClipboard(ClipData.newRawUri(null, content))
 		}
 
-		/**
-		 * Create a new ClipData holding an URI with MIME type
-		 * [ClipDescription.MIMETYPE_TEXT_URILIST].
-		 *
-		 * @param label User-visible label for the clip data.
-		 * @param content The URI in the clip.
-		 */
-		@JvmStatic
-		fun copyToClipboard(label: String?, content: Uri?) {
-			copyToClipboard(ClipData.newRawUri(label, content))
+		fun copyToClipboard(content: String) {
+			copyToClipboard(ClipData.newPlainText(null, content))
 		}
 
-		@JvmStatic
-		fun copyToClipboard(clipData: ClipData?) {
-			val clipboard = anyContext.getSystemService(ClipboardManager::class.java)
-			clipboard.setPrimaryClip(clipData!!)
+		fun copyToClipboard(clipData: ClipData) {
+			appContext.getSystemService<ClipboardManager>()!!.setPrimaryClip(clipData)
 
 			// Android 13 and higher shows a visual confirmation of copied contents
 			// https://developer.android.com/about/versions/13/features/copy-paste
@@ -499,7 +447,6 @@ class App : Application() {
 			StrictMode.setVmPolicy(VmPolicy.Builder()
 				.setClassInstanceLimit(SettingsActivity::class.java, 10)
 				.detectActivityLeaks()
-				.detectLeakedClosableObjects()
 				.detectLeakedRegistrationObjects()
 				.penaltyLog()
 				.apply {

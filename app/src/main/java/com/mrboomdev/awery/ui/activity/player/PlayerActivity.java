@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.App.copyToClipboard;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
@@ -415,8 +414,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 							dialog.dismiss();
 							finish();
 						})
-						.setNeutralButton(R.string.copy, dialog ->
-								copyToClipboard(url, uri))
+						.setNeutralButton(R.string.copy, dialog -> App.Companion.copyToClipboard(uri))
 						.show();
 			}
 

@@ -64,6 +64,13 @@ fun View.spPx(sp: Float): Float {
     return context.spPx(sp)
 }
 
+var View.scale: Float
+    get() = (scaleX + scaleY) / 2
+    set(value) {
+        scaleX = value
+        scaleY = value
+    }
+
 val ViewBinding.context: Context
     get() = root.context
 
@@ -149,7 +156,7 @@ fun <T : ViewBinding> T.applyInsets(
  * @param listener Return true to consume insets
  */
 fun <T : View> T.applyInsets(
-    @WindowInsetsCompat.Type.InsetsType insets: Int,
+    @WindowInsetsCompat.Type.InsetsType insets: Int = UI_INSETS,
     listener: (view: T, insets: Insets) -> Boolean,
     parent: ViewParent? = null
 ) {
@@ -234,6 +241,12 @@ private fun getMargins(view: View): MarginLayoutParams {
     val params = view.layoutParams ?: throw NullPointerException("This view isn't attached to any parent!")
     return if(params is MarginLayoutParams) params
     else throw IllegalStateException("Parent of this view does not support margins!")
+}
+
+fun View.setMargin(callback: MarginLayoutParams.() -> Unit) {
+    useLayoutParams<MarginLayoutParams> {
+        callback(it)
+    }
 }
 
 fun View.setHorizontalMargin(margin: Int) {

@@ -1,135 +1,110 @@
-package com.mrboomdev.awery.ui.activity.settings.setup;
+@file:OptIn(ExperimentalStdlibApi::class)
 
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.resolveDrawable;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
-import static com.mrboomdev.awery.util.ui.ViewUtil.clearImageTint;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setScale;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+package com.mrboomdev.awery.ui.activity.settings.setup
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.VectorDrawable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.VectorDrawable
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.R
+import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.databinding.ItemListSettingBinding
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.util.TabsTemplate
+import com.mrboomdev.awery.util.extensions.clearImageTint
+import com.mrboomdev.awery.util.extensions.context
+import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.inflater
+import com.mrboomdev.awery.util.extensions.readAssets
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.extensions.resolveDrawable
+import com.mrboomdev.awery.util.extensions.scale
+import com.mrboomdev.awery.util.extensions.setImageTintAttr
+import com.mrboomdev.awery.util.extensions.topMargin
+import com.squareup.moshi.adapter
+import java.io.File
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class SetupTabsAdapter : RecyclerView.Adapter<SetupTabsAdapter.ViewHolder?>() {
+	private val templates: MutableList<TabsTemplate> = ArrayList()
+	private var selectedDrawable: Drawable? = null
+	var selected: TabsTemplate? = null
 
-import com.mrboomdev.awery.databinding.ItemListSettingBinding;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.util.Parser;
-import com.mrboomdev.awery.util.TabsTemplate;
+	init {
+		// TODO: 6/27/2024 Return this option when custom feeds will be done
+		/*templates.add(new TabsTemplate() {{
+			this.id = "custom";
+			this.title = "Custom";
+			this.icon = "ic_settings_outlined";
+			this.description = "Are you a power user who likes to customize everything? You must like it!";
+		}});*/
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+		templates.addAll(getMoshi().adapter<List<TabsTemplate>>()
+			.fromJson(File("tabs_templates.json").readAssets())!!)
 
-public class SetupTabsAdapter extends RecyclerView.Adapter<SetupTabsAdapter.ViewHolder> {
-	private final List<TabsTemplate> templates = new ArrayList<>();
-	private Drawable selectedDrawable;
-	private TabsTemplate selected;
-
-	public SetupTabsAdapter() {
-		try {
-			var json = readAssets("tabs_templates.json");
-			var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
-
-			// TODO: 6/27/2024 Return this option when custom feeds will be done
-			/*templates.add(new TabsTemplate() {{
-				this.id = "custom";
-				this.title = "Custom";
-				this.icon = "ic_settings_outlined";
-				this.description = "Are you a power user who likes to customize everything? You must like it!";
-			}});*/
-
-			templates.addAll(Parser.fromString(adapter, json));
-
-			var savedSelected = AwerySettings.TABS_TEMPLATE.getValue();
-			selected = find(templates, template -> Objects.equals(template.id, savedSelected));
-		} catch(IOException e) {
-			throw new RuntimeException(e);
-		}
+		val savedSelected = AwerySettings.TABS_TEMPLATE.value
+		selected = templates.find { it.id == savedSelected }
 	}
 
-	public TabsTemplate getSelected() {
-		return selected;
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+		return ViewHolder(ItemListSettingBinding.inflate(
+			parent.context.inflater, parent, false
+		).apply {
+			title.topMargin = title.dpPx(-5f)
+			checkbox.visibility = View.GONE
+			toggle.visibility = View.GONE
+			divider.visibility = View.GONE
+			options.visibility = View.GONE
+		})
 	}
 
-	@NonNull
-	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		var binding = ItemListSettingBinding.inflate(
-				LayoutInflater.from(parent.getContext()), parent, false);
-
-		setTopMargin(binding.title, dpPx(binding.title, -5));
-		binding.checkbox.setVisibility(View.GONE);
-		binding.toggle.setVisibility(View.GONE);
-		binding.divider.setVisibility(View.GONE);
-		binding.options.setVisibility(View.GONE);
-
-		return new ViewHolder(binding);
+	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+		holder.bind(templates[position])
 	}
 
-	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		holder.bind(templates.get(position));
+	override fun getItemCount(): Int {
+		return templates.size
 	}
 
-	@Override
-	public int getItemCount() {
-		return templates.size();
-	}
+	inner class ViewHolder(private val binding: ItemListSettingBinding) : RecyclerView.ViewHolder(binding.root) {
+		private var template: TabsTemplate? = null
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
-		private final ItemListSettingBinding binding;
-		private TabsTemplate template;
-
-		public ViewHolder(@NonNull ItemListSettingBinding binding) {
-			super(binding.getRoot());
-			this.binding = binding;
-
-			binding.getRoot().setOnClickListener(v -> {
-				selected = template;
-				notifyItemRangeChanged(0, templates.size());
-			});
+		init {
+			binding.root.setOnClickListener {
+				selected = template
+				notifyItemRangeChanged(0, templates.size)
+			}
 
 			/* We need only a single instance so we lazily init an shared object */
 			if(selectedDrawable == null) {
-				var background = new GradientDrawable();
-				background.setCornerRadius(dpPx(binding, 16));
-				background.setColor(resolveAttrColor(getContext(binding), com.google.android.material.R.attr.colorOnSecondary));
-				selectedDrawable = background;
+				selectedDrawable = GradientDrawable().apply {
+					cornerRadius = binding.context.dpPx(16f).toFloat()
+					setColor(binding.context.resolveAttrColor(R.attr.colorOnSecondary))
+				}
 			}
 		}
 
-		public void bind(@NonNull TabsTemplate template) {
-			this.template = template;
+		fun bind(template: TabsTemplate) {
+			this.template = template
 
-			binding.title.setText(template.title);
-			binding.description.setText(template.description);
-			binding.icon.setVisibility(template.icon != null ? View.VISIBLE : View.INVISIBLE);
+			binding.title.text = template.title
+			binding.description.text = template.description
+			binding.icon.visibility = if(template.icon != null) View.VISIBLE else View.INVISIBLE
 
 			if(template.icon != null) {
-				binding.icon.setImageDrawable(resolveDrawable(getContext(binding), template.icon));
+				binding.icon.setImageDrawable(binding.context.resolveDrawable(template.icon))
 
-				if(binding.icon.getDrawable() instanceof VectorDrawable) {
-					setImageTintAttr(binding.icon, com.google.android.material.R.attr.colorOnSecondaryContainer);
-					setScale(binding.icon, 1);
+				if(binding.icon.drawable is VectorDrawable) {
+					binding.icon.setImageTintAttr(R.attr.colorOnSecondaryContainer)
+					binding.icon.scale = 1f
 				} else {
-					clearImageTint(binding.icon);
-					setScale(binding.icon, 1.2f);
+					binding.icon.clearImageTint()
+					binding.icon.scale = 1.2f
 				}
 			}
 
-			binding.getRoot().setBackground(template != selected
-					? null : selectedDrawable);
+			binding.root.background = if(template !== selected) null else selectedDrawable
 		}
 	}
 }

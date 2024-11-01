@@ -22,7 +22,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -363,11 +362,7 @@ abstract class YomiManager<S, T : YomiSource>(
 		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
 	}
 
-	object PackageManagerReceiver: BroadcastReceiver() {
-		private val listeners = HashMap<Long, (intent: Intent) -> Unit>()
-		private const val TAG = "PackageManagerReceiver"
-		const val ID_KEY = "ID"
-
+	class PackageManagerReceiver: BroadcastReceiver() {
 		override fun onReceive(context: Context?, intent: Intent?) {
 			if(intent == null || !intent.hasExtra(ID_KEY)) return
 
@@ -382,12 +377,18 @@ abstract class YomiManager<S, T : YomiSource>(
 			listener(intent)
 		}
 
-		fun addListener(id: Long, listener: (intent: Intent) -> Unit) {
-			listeners[id] = listener
-		}
+		companion object {
+			private val listeners = HashMap<Long, (intent: Intent) -> Unit>()
+			private const val TAG = "PackageManagerReceiver"
+			const val ID_KEY = "ID"
 
-		fun removeListener(id: Long) {
-			listeners.remove(id)
+			fun addListener(id: Long, listener: (intent: Intent) -> Unit) {
+				listeners[id] = listener
+			}
+
+			fun removeListener(id: Long) {
+				listeners.remove(id)
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.app;
 
-import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.Companion;
 import static com.mrboomdev.awery.app.App.isTv;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
@@ -252,8 +252,7 @@ public class CrashHandler {
 							report.dismissCallback.run();
 						}
 					})
-					.setNeutralButton(R.string.copy, dialog ->
-							copyToClipboard(context.getString(R.string.crash_report), report.message))
+					.setNeutralButton(R.string.copy, dialog -> Companion.copyToClipboard(report.message))
 					.setNegativeButton(R.string.share, dialog -> {
 						var newFile = new File(context.getFilesDir(), "crash_report.txt");
 						var intent = new Intent(Intent.ACTION_SEND);

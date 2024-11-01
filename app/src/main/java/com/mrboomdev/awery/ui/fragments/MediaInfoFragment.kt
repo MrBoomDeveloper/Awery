@@ -33,6 +33,7 @@ import com.mrboomdev.awery.ui.activity.MediaActivity
 import com.mrboomdev.awery.ui.activity.MediaActivity.Companion.handleOptionsClick
 import com.mrboomdev.awery.ui.activity.search.SearchActivity
 import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.bottomPadding
@@ -247,7 +248,9 @@ class MediaInfoFragment @JvmOverloads constructor(
 		}
 
 		if(metas.size < 4) {
-			metas.add(ExtensionProvider.forGlobalId(media.globalId).name)
+			try {
+				metas.add(ExtensionProvider.forGlobalId(media.globalId).name)
+			} catch(_: ExtensionNotInstalledException) {}
 		}
 
 		return metas.joinToString("  •  ")

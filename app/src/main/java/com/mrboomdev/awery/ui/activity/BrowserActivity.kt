@@ -24,11 +24,16 @@ import com.mrboomdev.awery.app.App.Companion.copyToClipboard
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
+import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
+import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.cleanUrl
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.extensions.rightMargin
+import com.mrboomdev.awery.util.extensions.setHorizontalMargin
+import com.mrboomdev.awery.util.extensions.setMargin
 import com.mrboomdev.awery.util.ui.ViewUtil
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
@@ -79,7 +84,7 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 			menu.setOnMenuItemClickListener { item ->
 				when(item.itemId) {
 					0 -> {
-						copyToClipboard(binding.webview.url, binding.webview.url)
+						copyToClipboard(binding.webview.url!!)
 						true
 					}
 
@@ -104,15 +109,19 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 			menu.show()
 		}
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.header) { insets: Insets ->
-			binding.header.setPadding(insets.left, insets.top, insets.right, 0)
+		binding.header.applyInsets(UI_INSETS, { view, insets ->
+			view.setPadding(insets.left, insets.top, insets.right, 0)
 			true
-		}
+		})
 
-		ViewUtil.setOnApplyUiInsetsListener(binding.swipeRefresher) { insets: Insets ->
-			ViewUtil.setHorizontalMargin(binding.swipeRefresher, insets.left, insets.right)
+		binding.swipeRefresher.applyInsets(UI_INSETS, { view, insets ->
+			view.setMargin {
+				leftMargin = insets.left
+				rightMargin = insets.right
+			}
+
 			true
-		}
+		})
 
 		val settings = binding.webview.settings
 		settings.allowContentAccess = true
@@ -222,7 +231,11 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 				return false
 			}
 
-			override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>, fileChooserParams: FileChooserParams): Boolean {
+			override fun onShowFileChooser(
+				webView: WebView,
+				filePathCallback: ValueCallback<Array<Uri>>,
+				fileChooserParams: FileChooserParams
+			): Boolean {
 				toast("File picker is currently not supported")
 				return false
 			}
