@@ -84,6 +84,9 @@ jobs:
           retention-days: 90
           path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
 
+      - name: List APK Directory
+        run: ls -la app/build/outputs/apk/alpha/release
+
       - name: Send Alpha APK to Telegram
         if: success()
         run: |
