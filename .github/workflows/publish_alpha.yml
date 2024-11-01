@@ -49,7 +49,7 @@ jobs:
           # Log the raw commit logs for debugging
           echo "Raw commit logs: $COMMIT_LOGS"
 
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           
           # Sanitize the formatted logs
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
