@@ -123,18 +123,18 @@ jobs:
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/#([0-9]+)(https:\/\/github\.com\/[^)]+)/<a href="\2">#\1<\/a>/g')
             echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -F "chat_id=-1002206819738" \
             -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
             -F "parse_mode=HTML" \
-            -F "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}"
+            -F "message_thread_id=174"
 
       - name: Send Alpha APK to Discord
         if: always()
