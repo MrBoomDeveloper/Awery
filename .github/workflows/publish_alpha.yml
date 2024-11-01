@@ -84,15 +84,6 @@ jobs:
           retention-days: 90
           path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
 
-      - name: List APK Directory
-        run: ls -la app/build/outputs/apk/alpha/release
-
-      - name: Debugging File Path
-        run: echo "Path to APK:$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-
-      - name: Check Permissions
-        run: chmod +r "$(pwd)/app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"   
-
       - name: Send Alpha APK to Telegram
         if: success()
         run: |
@@ -111,6 +102,19 @@ jobs:
             -F "caption=${telegram_commit_messages}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
+            -F "message_thread_id=28"
+
+      - name: Send Alpha APK to Telegram
+        if: always()
+        run: |
+          COMMIT_LOG=$(cat commit_log.txt | sed 's/%0A/\n/g')
+          telegram_commit_messages="<blockquote>${COMMIT_LOG}</blockquote>"
+          curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
+            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}\nversion: ${VERSION}" \
+            -F "parse_mode=HTML" \
             -F "message_thread_id=28"
 
       - name: Send Alpha APK to Discord
