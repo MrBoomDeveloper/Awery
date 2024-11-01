@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with: 
+        with:
           fetch-depth: 0
 
       - name: Set up JDK 17
@@ -29,26 +29,27 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Get Commits Since Last Run
+      - name: Retrieve Last Successful Commit SHA
+        id: last_successful_sha
+        run: |
+          if [ -f last_successful_sha.txt ]; then
+            LAST_SHA=$(cat last_successful_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD) # Get initial commit if no SHA exists
+          fi
+          echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
+
+      - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          if [ -f last_sha.txt ]; then
-            LAST_SHA=$(cat last_sha.txt)
-          else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-          fi
-          echo "Commits since $LAST_SHA:"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/${{ github.repository }}\/pull\/\1)/g')
           if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
             FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
           fi
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
-          echo $GITHUB_SHA > last_sha.txt
-        shell: bash
-        continue-on-error: true
 
       - name: Build Alpha APK
         id: build_alpha
@@ -85,12 +86,13 @@ jobs:
             message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
             echo "$message"
           done)
+          telegram_commit_messages="${telegram_commit_messages:0:1020}"
           telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
             -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-            -F "caption=New Awery Alpha Update\n\nCommits:\n${telegram_commit_messages}" \
+            -F "caption=${telegram_commit_messages}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174"
@@ -99,9 +101,6 @@ jobs:
         if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          echo "Commit Log for Discord:"
-          echo "$COMMIT_LOG"
-          
           payload="{
             \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
@@ -110,11 +109,13 @@ jobs:
               \"color\": 5814783
             }]
           }"
-          echo "Discord Payload:"
-          echo "$payload"
           curl -H "Content-Type: application/json" \
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
           curl -H "Content-Type: multipart/form-data" \
             -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Save Last Successful Commit SHA
+        if: success()
+        run: echo $GITHUB_SHA > last_successful_sha.txt
