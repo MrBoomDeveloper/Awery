@@ -27,46 +27,40 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-- name: Get Commits Since Last Run
-  id: get_commits
-  run: |
-    # Fetch the full history to ensure all commits are accessible
-    git fetch --unshallow || git fetch --tags
+      - name: Get Commits Since Last Run
+        id: get_commits
+        run: |
+          # Fetch the full commit history
+          git fetch --unshallow || git fetch --tags
 
-    # Retrieve the last successful commit hash or use the first commit
-    if [ -f last_sha.txt ]; then
-      LAST_SHA=$(cat last_sha.txt)
-    else
-      LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-    fi
+          # Retrieve the last successful commit hash or use the first commit
+          if [ -f last_sha.txt ]; then
+            LAST_SHA=$(cat last_sha.txt)
+          else
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
 
-    echo "Last SHA: $LAST_SHA"
-    echo "Commits since $LAST_SHA:"
+          echo "Last SHA: $LAST_SHA"
+          echo "Commits since $LAST_SHA:"
 
-    # Format commit messages
-    COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-    # Log the raw commit logs for debugging
-    echo "Raw commit logs: $COMMIT_LOGS"
+          # Format commit messages
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          
+          # Log the raw commit logs for debugging
+          echo "Raw commit logs: $COMMIT_LOGS"
 
-    # Prepare formatted commit logs for Telegram and Discord
-    FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          
+          # Sanitize the formatted logs
+          SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
+          
+          # Store the sanitized logs in the environment variable for later use
+          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
 
-    # Check length and truncate if needed
-    if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
-      FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
-    fi
+          # Save commit logs to file for further processing
+          echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
+          echo $GITHUB_SHA > last_sha.txt  # Save the current commit SHA for future runs
 
-    # Sanitize the formatted logs by removing invalid characters
-    SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
-
-    # Store the sanitized logs in the environment variable for later use
-    echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
-
-    # Save commit logs to file for further processing
-    echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
-    echo $GITHUB_SHA > last_sha.txt  # Save the current commit SHA for future runs
-
-        
       - name: Build Alpha APK
         run: ./gradlew assembleAlphaRelease
 
