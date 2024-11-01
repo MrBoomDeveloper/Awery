@@ -87,11 +87,12 @@ jobs:
       - name: Send Alpha APK to Telegram
         if: success()
         run: |
+          COMMIT_LOG=$(cat commit_log.txt)
           curl -sS -f -X POST \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-          -F "caption=Test Update\n\nCommits:\nTest commit message\nversion: 1.0" \
+          -F "caption=New Awery Alpha Update\n\n Commits:\n ${{ env.COMMIT_LOG }}\n version: ${VERSION}"
           -F "parse_mode=HTML" \
           -F "message_thread_id=28"
 
@@ -103,7 +104,7 @@ jobs:
             \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
               \"title\": \"New Awery Alpha Update!\",
-              \"description\": \"Commits:\n${COMMIT_LOG}\",
+              \"description\": \"Commits:\n ${COMMIT_LOG}\",
               \"color\": 5814783
             }]
           }"
