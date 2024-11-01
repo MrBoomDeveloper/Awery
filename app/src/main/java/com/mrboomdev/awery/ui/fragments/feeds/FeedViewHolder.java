@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 
 import org.jetbrains.annotations.Contract;
@@ -48,6 +48,7 @@ public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
 			return displayMode;
 		}
 
+		@Contract(pure = true)
 		public Feed(
 				@NonNull CatalogFeed sourceFeed,
 				CatalogSearchResults<? extends CatalogMedia> items,
@@ -62,6 +63,7 @@ public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
 			this.displayMode = displayMode;
 		}
 
+		@Contract(pure = true)
 		public Feed(
 				@NonNull CatalogFeed sourceFeed,
 				CatalogSearchResults<? extends CatalogMedia> items,
@@ -70,13 +72,18 @@ public abstract class FeedViewHolder extends RecyclerView.ViewHolder {
 			this(sourceFeed, items, null, null, displayMode);
 		}
 
+		@Contract(pure = true)
 		public Feed(@NonNull CatalogFeed sourceFeed, CatalogSearchResults<? extends CatalogMedia> items) {
 			this(sourceFeed, items, null, null, sourceFeed.displayMode);
 		}
 
 		@Contract(pure = true)
 		public Feed(@NonNull CatalogFeed sourceFeed, Throwable throwable, Runnable reloadCallback) {
-			this(sourceFeed, CatalogSearchResults.empty(), throwable, reloadCallback, CatalogFeed.DisplayMode.LIST_HORIZONTAL);
+			this(sourceFeed,
+					CatalogSearchResults.empty(),
+					throwable,
+					reloadCallback,
+					CatalogFeed.DisplayMode.LIST_HORIZONTAL);
 		}
 	}
 }

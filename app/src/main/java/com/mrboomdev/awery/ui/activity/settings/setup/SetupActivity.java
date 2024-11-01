@@ -1,10 +1,9 @@
 package com.mrboomdev.awery.ui.activity.settings.setup;
 
 import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.app.App.getMarkwon;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
@@ -21,7 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSetupBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.ThemeManager;
@@ -200,8 +200,8 @@ public class SetupActivity extends AppCompatActivity {
 				binding.backButton.setEnabled(false);
 
 				thread(() -> {
-					var tabsDao = getDatabase().getTabsDao();
-					var feedsDao = getDatabase().getFeedsDao();
+					var tabsDao = App.Companion.getDatabase().getTabsDao();
+					var feedsDao = App.Companion.getDatabase().getFeedsDao();
 
 					var tabs = tabsDao.getAllTabs();
 

@@ -5,6 +5,8 @@ import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEA
 import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_WATCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
+import androidx.annotation.NonNull;
+
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
@@ -40,11 +42,13 @@ public class AniyomiManager extends YomiManager {
 		return "tachiyomi.animeextension.nsfw";
 	}
 
+	@NonNull
 	@Override
 	public String getRequiredFeature() {
 		return "tachiyomi.animeextension";
 	}
 
+	@NonNull
 	@Override
 	public String getPrefix() {
 		return "Aniyomi: ";
@@ -65,8 +69,9 @@ public class AniyomiManager extends YomiManager {
 		return BASE_FEATURES;
 	}
 
+	@NonNull
 	@Override
-	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
+	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof AnimeSource source) {
 			return List.of(new AniyomiProvider(extension, source) {
 				@Override
@@ -76,7 +81,7 @@ public class AniyomiManager extends YomiManager {
 			});
 		} else if(main instanceof AnimeSourceFactory factory) {
 			return stream(factory.createSources())
-					.map(source -> new AniyomiProvider(extension, source, true) {
+					.map(source -> (ExtensionProvider) new AniyomiProvider(extension, source, true) {
 						@Override
 						public YomiManager getManager() {
 							return AniyomiManager.this;

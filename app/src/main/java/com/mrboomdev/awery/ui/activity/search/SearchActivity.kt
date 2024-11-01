@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui.activity.search
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -18,16 +19,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.isLandscape
-import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.data.settings.SettingsItem
-import com.mrboomdev.awery.data.settings.SettingsItemType
-import com.mrboomdev.awery.data.settings.SettingsList
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.data.settings.SettingsItem
+import com.mrboomdev.awery.app.data.settings.SettingsItemType
+import com.mrboomdev.awery.app.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding
 import com.mrboomdev.awery.databinding.ScreenSearchBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider
-import com.mrboomdev.awery.extensions.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.activity.MediaActivity
@@ -45,7 +47,6 @@ import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.get
 import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
@@ -57,18 +58,27 @@ import com.mrboomdev.awery.util.extensions.useLayoutParams
 import com.mrboomdev.awery.util.ui.EmptyView
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
-import java.io.Serializable
+import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
+import com.mrboomdev.safeargsnext.util.asSafeArgs
+import com.mrboomdev.safeargsnext.util.putSafeArgs
 import java.util.Objects
 import java.util.WeakHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.find
+import kotlin.collections.listOf
+import kotlin.collections.set
+import kotlin.collections.setOf
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extras> {
 	private lateinit var filters: SettingsList
 	private lateinit var items: MutableList<CatalogMedia>
+	private lateinit var binding: ScreenSearchBinding
 	private val ids = WeakHashMap<CatalogMedia?, Long>()
 	private val adapter: Adapter = Adapter()
 	private val idGenerator = UniqueIdGenerator()
-	private var binding: ScreenSearchBinding? = null
 	private var loadingAdapter: BindingSingleViewAdapter<EmptyView>? = null
 	private var source: ExtensionProvider? = null
 	private var didReachedEnd = false
@@ -82,8 +92,27 @@ class SearchActivity : AppCompatActivity() {
 		SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0
 	)
 
+	data class Extras(
+		var filters: SettingsList? = null,
+		val action: Action? = null,
+		val queryTag: String? = null,
+		val preloadedItems: List<CatalogMedia>? = null,
+		val sourceGlobalId: String? = null
+	)
+
+	data class SavedState(
+		var filters: SettingsList,
+		var items: MutableList<CatalogMedia>,
+		var didReachedEnd: Boolean
+	)
+
+	enum class Action {
+		SEARCH_BY_TAG,
+		PICK_MEDIA
+	}
+
 	/** We initially set this value to "true" so that list won't try
-	 * to load anything because we haven't typed anything yet.  */
+	 *  to load anything because we haven't typed anything yet. */
 	private var isLoading = true
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -92,10 +121,22 @@ class SearchActivity : AppCompatActivity() {
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 
-		filters = savedInstanceState?.get<SettingsList>(SAVED_FILTERS) ?: SettingsList()
-		items = savedInstanceState?.get<MutableList<CatalogMedia>>(SAVED_ITEMS) ?: ArrayList()
-		didReachedEnd = savedInstanceState?.get<Boolean>(SAVED_DID_REACHED_END) ?: false
-		val filters = intent.get<SettingsList>(EXTRA_FILTERS)
+		savedInstanceState?.asSafeArgs<SavedState>().let {
+			filters = it?.filters ?: SettingsList()
+			items = it?.items ?: ArrayList()
+			didReachedEnd = it?.didReachedEnd ?: false
+		}
+
+		safeArgs?.let {
+			try {
+				this.source = ExtensionProvider.forGlobalId(it.sourceGlobalId!!)
+			} catch(e: ExtensionNotInstalledException) {
+				toast("Source extension isn't installed!")
+				finish()
+			}
+		}
+
+		val filters = safeArgs?.filters
 
 		val columnsCountLand = AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_LAND.value)
 		val columnsCountPort = AtomicInteger(AwerySettings.MEDIA_COLUMNS_COUNT_PORT.value)
@@ -111,22 +152,15 @@ class SearchActivity : AppCompatActivity() {
 		if(savedInstanceState == null) applyFilters(filters, true)
 		else applyFilters(this.filters, false)
 
-		try {
-			this.source = ExtensionProvider.forGlobalId(intent.getStringExtra(EXTRA_GLOBAL_PROVIDER_ID)!!)
-		} catch(e: ExtensionNotInstalledException) {
-			toast("Source extension isn't installed!")
-			finish()
-		}
-
 		binding = ScreenSearchBinding.inflate(layoutInflater)
-		binding!!.header.edittext.setText(queryFilter.stringValue)
-		binding!!.header.edittext.requestFocus()
-		binding!!.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
+		binding.header.edittext.setText(queryFilter.stringValue)
+		binding.header.edittext.requestFocus()
+		binding.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
 
-		binding!!.header.back.setOnClickListener { finish() }
-		binding!!.header.clear.setOnClickListener { binding!!.header.edittext.text = null }
+		binding.header.back.setOnClickListener { finish() }
+		binding.header.clear.setOnClickListener { binding.header.edittext.text = null }
 
-		binding!!.header.filters.setOnClickListener {
+		binding.header.filters.setOnClickListener {
 			FiltersDialog(filters ?: SettingsList(), source) { updatedFilters ->
 				applyFilters(updatedFilters, true)
 				didReachedEnd = false
@@ -136,13 +170,13 @@ class SearchActivity : AppCompatActivity() {
 
 		val inputManager = getSystemService(InputMethodManager::class.java)
 
-		binding!!.header.edittext.setOnEditorActionListener { v, action, _ ->
+		binding.header.edittext.setOnEditorActionListener { v, action, _ ->
 			if(action != EditorInfo.IME_ACTION_SEARCH) {
 				return@setOnEditorActionListener false
 			}
 
 			inputManager.hideSoftInputFromWindow(
-				binding!!.header.edittext.windowToken, 0)
+				binding.header.edittext.windowToken, 0)
 
 			queryFilter.setValue(v.text.toString())
 			didReachedEnd = false
@@ -151,22 +185,22 @@ class SearchActivity : AppCompatActivity() {
 			true
 		}
 
-		binding!!.header.root.applyInsets(UI_INSETS, { view, insets ->
+		binding.header.root.applyInsets(UI_INSETS, { view, insets ->
 			view.topMargin = insets.top
 			view.rightMargin = insets.right
 			view.leftMargin = insets.left
 			true
 		})
 
-		binding!!.swipeRefresher.setOnRefreshListener {
+		binding.swipeRefresher.setOnRefreshListener {
 			this.didReachedEnd = false
 			search(0)
 		}
 
-		binding!!.swipeRefresher.setColorSchemeColors(
+		binding.swipeRefresher.setColorSchemeColors(
 			resolveAttrColor(android.R.attr.colorPrimary))
 
-		binding!!.swipeRefresher.setProgressBackgroundColorSchemeColor(
+		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(
 			resolveAttrColor(com.google.android.material.R.attr.colorSurface)
 		)
 
@@ -184,30 +218,30 @@ class SearchActivity : AppCompatActivity() {
 				.build(), adapter, loadingAdapter)
 
 		val layoutManager = GridLayoutManager(this,
-			if(isLandscape()) if(autoColumnsCountLand) 3 else columnsCountLand.get()
+			if(isLandscape) if(autoColumnsCountLand) 3 else columnsCountLand.get()
 			else if(autoColumnsCountPort) 5 else columnsCountPort.get())
 
-		binding!!.recycler.layoutManager = layoutManager
-		binding!!.recycler.adapter = concatAdapter
+		binding.recycler.layoutManager = layoutManager
+		binding.recycler.adapter = concatAdapter
 
-		binding!!.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+		binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 			override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 				tryLoadMore()
 			}
 		})
 
-		binding!!.recycler.applyInsets(UI_INSETS, { view, insets ->
+		binding.recycler.applyInsets(UI_INSETS, { view, insets ->
 			view.setPadding(
 				insets.left + dpPx(8f),
 				dpPx(24f),
 				insets.right + dpPx(8f),
 				dpPx(24f))
 
-			if(isLandscape() && autoColumnsCountLand) {
+			if(isLandscape && autoColumnsCountLand) {
 				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
 				columnsCountLand.set((freeSpace / dpPx(110f)).toInt())
 				layoutManager.spanCount = columnsCountLand.get()
-			} else if(!isLandscape() && autoColumnsCountPort) {
+			} else if(!isLandscape && autoColumnsCountPort) {
 				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
 				columnsCountPort.set((freeSpace / dpPx(110f)).toInt())
 				layoutManager.spanCount = columnsCountPort.get()
@@ -222,7 +256,7 @@ class SearchActivity : AppCompatActivity() {
 					return 1
 				}
 
-				if(isLandscape()) {
+				if(isLandscape) {
 					return if(columnsCountLand.get() == 0) layoutManager.spanCount
 					else columnsCountLand.get()
 				}
@@ -233,7 +267,7 @@ class SearchActivity : AppCompatActivity() {
 		}
 
 		if(items.isEmpty()) {
-			intent.get<List<CatalogMedia>>(EXTRA_LOADED_MEDIA)?.let { loadedMedia ->
+			safeArgs?.preloadedItems?.let { loadedMedia ->
 				for(item in loadedMedia) {
 					ids[item] = idGenerator.long
 				}
@@ -250,23 +284,22 @@ class SearchActivity : AppCompatActivity() {
 			isLoading = false
 		}
 
-		setContentView(binding!!.root)
+		setContentView(binding.root)
 
-		if(ACTION_SEARCH_BY_TAG == intent.action) {
-			val tag = intent.getStringExtra(EXTRA_TAG)!!.trim { it <= ' ' }
+		if(Action.SEARCH_BY_TAG == safeArgs?.action) {
+			val tag = safeArgs?.queryTag!!.trim { it <= ' ' }
 			didReachedEnd = true
 
-			binding!!.headerWrapper.visibility = View.GONE
-			binding!!.swipeRefresher.isEnabled = false
-
+			binding.headerWrapper.visibility = View.GONE
+			binding.swipeRefresher.isEnabled = false
 
 			loadingAdapter!!.isEnabled = true
 			loadingAdapter!!.getBinding { it.startLoading() }
 
 			source!!.filters.addCallback(object : AsyncFuture.Callback<SettingsList?> {
 				private fun done() {
-					binding!!.headerWrapper.visibility = View.VISIBLE
-					binding!!.swipeRefresher.isEnabled = true
+					binding.headerWrapper.visibility = View.VISIBLE
+					binding.swipeRefresher.isEnabled = true
 
 					didReachedEnd = false
 					search(0)
@@ -329,27 +362,30 @@ class SearchActivity : AppCompatActivity() {
 
 						activate(found, found.parent)
 						applyFilters(listOf(root), true)
-						AweryLifecycle.runOnUiThread({ this.done() }, binding!!.recycler)
+						runOnUiThread({ this.done() }, binding.recycler)
 					}
 				}
 
 				override fun onFailure(t: Throwable) {
 					queryFilter.setValue(tag)
 
-					AweryLifecycle.runOnUiThread({
-						binding!!.header.edittext.setText(tag)
+					runOnUiThread({
+						binding.header.edittext.setText(tag)
 						done()
-					}, binding!!.recycler)
+					}, binding.recycler)
 				}
 			})
 		}
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
-		outState.putSerializable(SAVED_FILTERS, filters)
-		outState.putSerializable(SAVED_ITEMS, items as Serializable)
-		outState.putBoolean(SAVED_DID_REACHED_END, didReachedEnd)
-		super.onSaveInstanceState(outState)
+		super.onSaveInstanceState(outState.apply {
+			putSafeArgs(SavedState(
+				items = items,
+				filters = filters,
+				didReachedEnd = didReachedEnd
+			))
+		})
 	}
 
 	private fun applyFilters(newFilters: List<SettingsItem>?, ignoreInternalFilters: Boolean) {
@@ -381,7 +417,7 @@ class SearchActivity : AppCompatActivity() {
 	private fun tryLoadMore() {
 		if(!isLoading && !didReachedEnd) {
 			val lastIndex = items.size - 1
-			val manager = binding!!.recycler.layoutManager
+			val manager = binding.recycler.layoutManager
 
 			if(manager is LinearLayoutManager && manager.findLastVisibleItemPosition() >= lastIndex) {
 				pageFilter.setValue(pageFilter.integerValue + 1)
@@ -421,7 +457,7 @@ class SearchActivity : AppCompatActivity() {
 			idGenerator.reset()
 		}
 
-		loadingAdapter!!.getBinding { binding: EmptyView ->
+		loadingAdapter!!.getBinding { binding ->
 			binding.progressBar.visibility = View.VISIBLE
 			binding.info.visibility = View.GONE
 		}
@@ -456,7 +492,7 @@ class SearchActivity : AppCompatActivity() {
 							this@SearchActivity.items.addAll(filteredItems)
 							adapter.notifyItemRangeInserted(wasSize, filteredItems.size)
 						}
-						AweryLifecycle.runDelayed({ tryLoadMore() }, 1000, binding!!.recycler)
+						AweryLifecycle.runDelayed({ tryLoadMore() }, 1000, binding.recycler)
 					}
 				}
 
@@ -496,7 +532,7 @@ class SearchActivity : AppCompatActivity() {
 
 			private fun onFinally() {
 				if(wasSearchId != searchId) return
-				binding!!.swipeRefresher.isRefreshing = false
+				binding.swipeRefresher.isRefreshing = false
 			}
 		})
 	}
@@ -521,15 +557,13 @@ class SearchActivity : AppCompatActivity() {
 			}
 
 			binding.root.setOnClickListener {
-				if(ACTION_PICK_MEDIA == intent.action) {
-					setResult(0, Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.item))
+				if(Action.PICK_MEDIA == safeArgs?.action) {
+					setResult(0, Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.item as Parcelable))
 					finish()
 					return@setOnClickListener
 				}
 
-				startActivity(MediaActivity::class, extras = mapOf(
-					MediaActivity.EXTRA_MEDIA to viewHolder.item!!
-				))
+				startActivity(MediaActivity::class, MediaActivity.Extras(viewHolder.item!!))
 			}
 
 			binding.root.setOnLongClickListener {
@@ -572,7 +606,7 @@ class SearchActivity : AppCompatActivity() {
 			this.item = item
 
 			binding.title.text = item.title
-			binding.ongoing.visibility = if(item.status == CatalogMedia.MediaStatus.ONGOING) View.VISIBLE else View.GONE
+			binding.ongoing.visibility = if(item.status == CatalogMedia.Status.ONGOING) View.VISIBLE else View.GONE
 
 			if(item.averageScore != null) {
 				binding.scoreWrapper.visibility = View.VISIBLE
@@ -583,7 +617,7 @@ class SearchActivity : AppCompatActivity() {
 
 			try {
 				Glide.with(binding.root)
-					.load(item.largePoster)
+					.load(item.poster)
 					.transition(DrawableTransitionOptions.withCrossFade())
 					.into(binding.mediaItemBanner)
 			} catch(e: IllegalArgumentException) {
@@ -593,21 +627,8 @@ class SearchActivity : AppCompatActivity() {
 	}
 
 	companion object {
-		const val ACTION_PICK_MEDIA: String = "pick_media"
-		const val ACTION_SEARCH_BY_TAG: String = "searchByTag"
-		const val EXTRA_TAG: String = "tag"
-		const val EXTRA_FILTERS: String = "filters"
-		const val EXTRA_LOADED_MEDIA: String = "loadedMedia"
-
-		/**
-		 * It is meant that the provider can be found by using `ExtensionProvider.forGlobalId(String)`
-		 */
-		const val EXTRA_GLOBAL_PROVIDER_ID: String = "source"
 		const val RESULT_EXTRA_MEDIA: String = "media"
 		private const val LOADING_VIEW_TYPE = 1
-		private const val SAVED_FILTERS = "filters"
-		private const val SAVED_ITEMS = "items"
-		private const val SAVED_DID_REACHED_END = "did_reached_end"
 		private const val TAG = "SearchActivity"
 	}
 }

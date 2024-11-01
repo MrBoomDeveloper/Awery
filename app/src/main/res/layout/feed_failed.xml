@@ -34,12 +34,25 @@
             tools:text="Category title" />
 
         <ImageView
+            android:id="@+id/browse"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:padding="7dp"
+            android:layout_marginTop="-8dp"
+            android:layout_marginBottom="-8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/ripple_circle_white"
+            android:src="@drawable/ic_language" />
+
+        <ImageView
             android:id="@+id/expand"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:padding="8dp"
             android:layout_marginTop="-8dp"
             android:layout_marginBottom="-8dp"
+            android:layout_marginLeft="8dp"
             android:clickable="true"
             android:focusable="true"
             android:background="@drawable/ripple_circle_white"

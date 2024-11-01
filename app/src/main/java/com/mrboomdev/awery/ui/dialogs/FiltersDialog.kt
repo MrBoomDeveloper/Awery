@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.toast
-import com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread
-import com.mrboomdev.awery.data.settings.CustomSettingsItem
-import com.mrboomdev.awery.data.settings.SettingsItem
-import com.mrboomdev.awery.data.settings.SettingsItemType
-import com.mrboomdev.awery.data.settings.SettingsList
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.data.settings.CustomSettingsItem
+import com.mrboomdev.awery.app.data.settings.SettingsItem
+import com.mrboomdev.awery.app.data.settings.SettingsItemType
+import com.mrboomdev.awery.app.data.settings.SettingsList
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler
@@ -32,7 +32,6 @@ import com.mrboomdev.awery.util.extensions.setPadding
 import com.mrboomdev.awery.util.extensions.setVerticalPadding
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.util.extensions.useLayoutParams
-import com.mrboomdev.awery.util.extensions.weight
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import org.jetbrains.annotations.Contract
 

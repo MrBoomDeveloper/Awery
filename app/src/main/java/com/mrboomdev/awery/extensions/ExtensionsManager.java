@@ -5,15 +5,17 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import android.content.Context;
 import android.net.Uri;
 
-import com.mrboomdev.awery.util.Progress;
+import com.mrboomdev.awery.ext.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.Collection;
 import java.util.List;
 
+import kotlin.NotImplementedError;
+
 public abstract class ExtensionsManager {
+	private final Progress progress = new Progress();
 
 	public Collection<Extension> getExtensions(int flags) {
 		return stream(getAllExtensions())
@@ -29,10 +31,6 @@ public abstract class ExtensionsManager {
 
 	public abstract Collection<Extension> getAllExtensions();
 
-	public boolean hasExtension(String id) {
-		return getExtension(id) != null;
-	}
-
 	public abstract String getName();
 
 	/**
@@ -42,7 +40,7 @@ public abstract class ExtensionsManager {
 	public abstract String getId();
 
 	public AsyncFuture<Extension> installExtension(Context context, Uri uri) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("This extension manager doesn't support installing extensions"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("This extension manager doesn't support installing extensions"));
 	}
 
 	public void loadAllExtensions(Context context) {
@@ -52,7 +50,7 @@ public abstract class ExtensionsManager {
 	}
 
 	public Progress getProgress() {
-		return Progress.EMPTY;
+		return progress;
 	}
 
 	public void loadExtension(Context context, String id) {}
@@ -64,20 +62,10 @@ public abstract class ExtensionsManager {
 	public void unloadExtension(Context context, String id) {}
 
 	public AsyncFuture<Boolean> uninstallExtension(Context context, String id) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("This type of extensions cannot be uninstalled currently"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("This type of extensions cannot be uninstalled currently"));
 	}
 
 	public AsyncFuture<List<Extension>> getRepository(String url) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("This extension manager do not support repositories!"));
-	}
-
-	/**
-	 * Usually called once the app is closing
-	 * @author MrBoomDev
-	 */
-	public void unloadAllExtensions(Context context) {
-		for(var extension : getAllExtensions()) {
-			unloadExtension(context, extension.getId());
-		}
+		return AsyncUtils.futureFailNow(new NotImplementedError("This extension manager do not support repositories!"));
 	}
 }

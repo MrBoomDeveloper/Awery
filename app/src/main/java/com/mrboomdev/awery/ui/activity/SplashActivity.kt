@@ -1,33 +1,42 @@
 package com.mrboomdev.awery.ui.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.mrboomdev.awery.app.App.getDatabase
-import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.app.AweryLifecycle.runDelayed
+import com.mrboomdev.awery.BuildConfig
+import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.app.App.Companion.isTv
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.CrashHandler.CrashReport
+import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.activity.MainActivity
 import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity
+import com.mrboomdev.awery.ui.activity.tv.TvMainActivity
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.startActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+
+private const val USE_NEW_SOURCES = false
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
-	private var binding: ScreenSplashBinding? = null
+	private lateinit var binding: ScreenSplashBinding
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
@@ -41,24 +50,27 @@ class SplashActivity : AppCompatActivity() {
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 
-		binding = ScreenSplashBinding.inflate(layoutInflater)
-		binding!!.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
-		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
-		setContentView(binding!!.root)
+		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
+			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
+			status.text = "Checking if an crash has occured..."
+		}
 
-		binding!!.status.text = "Checking the database..."
+		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
+		setContentView(binding.root)
 
 		CrashHandler.reportIfCrashHappened(this) {
+			binding.status.text = "Checking the database..."
+
 			lifecycleScope.launch(Dispatchers.IO) {
 				try {
-					getDatabase().listDao.all
+					database.listDao.all
 				} catch(e: IllegalStateException) {
 					Log.e(TAG, "Database is corrupted!", e)
 
 					CrashHandler.showErrorDialog(this@SplashActivity, CrashReport.Builder()
 							.setTitle("Database is corrupted!")
 							.setThrowable(e)
-							.setDismissCallback { AweryLifecycle.exitApp() }
+							.setDismissCallback { exitApp() }
 							.build())
 
 					return@launch
@@ -70,9 +82,31 @@ class SplashActivity : AppCompatActivity() {
 					return@launch
 				}
 
+				if(USE_NEW_SOURCES) {
+					ExtensionsManager.init(this@SplashActivity).onEach {
+						launch(Dispatchers.Main) {
+							binding.status.text = "Loading extensions ${it.progress}/${it.max}"
+						}
+					}.onCompletion {
+						// Tv version isn't done yet at 100%
+						startActivity(if(isTv && BuildConfig.DEBUG) TvMainActivity::class else MainActivity::class)
+						finish()
+					}.catch {
+						CrashHandler.showErrorDialog(
+							this@SplashActivity, CrashReport.Builder()
+								.setTitle("Failed to load an ExtensionsFactory")
+								.setThrowable(it)
+								.setDismissCallback { exitApp() }
+								.build())
+					}.collect()
+
+					return@launch
+				}
+
 				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
 					override fun onSuccess(result: ExtensionsFactory) {
-						startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+						// Tv version isn't done yet at 100%
+						startActivity(if(isTv && BuildConfig.DEBUG) TvMainActivity::class else MainActivity::class)
 						finish()
 					}
 
@@ -83,7 +117,7 @@ class SplashActivity : AppCompatActivity() {
 							this@SplashActivity, CrashReport.Builder()
 								.setTitle("Failed to load an ExtensionsFactory")
 								.setThrowable(t)
-								.setDismissCallback { AweryLifecycle.exitApp() }
+								.setDismissCallback { exitApp() }
 								.build())
 					}
 				})
@@ -98,7 +132,7 @@ class SplashActivity : AppCompatActivity() {
 		val factory = ExtensionsFactory.getInstanceNow()
 
 		if(factory == null) {
-			binding!!.status.text = "Loading extensions..."
+			binding.status.text = "Loading extensions..."
 			return
 		}
 
@@ -111,7 +145,7 @@ class SplashActivity : AppCompatActivity() {
 			total += managerProgress.max
 		}
 
-		binding!!.status.text = "Loading extensions $progress/$total"
+		binding.status.text = "Loading extensions $progress/$total"
 		runDelayed({ this.update() }, 100)
 	}
 

@@ -1,108 +1,94 @@
-package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
+package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
-import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
+import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogTag
+import com.mrboomdev.awery.extensions.support.yomi.YomiProvider
+import com.mrboomdev.awery.util.extensions.mapOfNotNull
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SAnimeImpl
+import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 
-import androidx.annotation.NonNull;
+open class AniyomiMedia(
+	provider: AniyomiProvider, protected val anime: SAnime
+) : CatalogMedia(
+	"${AniyomiManager.MANAGER_ID};;;${provider.id}:${provider.extension.id};;;${anime.url}",
+	anime.thumbnail_url,
+	anime.description,
+	null,
+	null,
+	anime.url,
 
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogTag;
-import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
+	if(provider.source !is AnimeHttpSource) null
+	else YomiProvider.concatLink(provider.source.baseUrl, anime.url),
 
-import java.util.HashMap;
+	Type.TV,
+	anime.thumbnail_url,
+	null,
+	null,
+	null,
+	null,
+	null,
 
-import eu.kanade.tachiyomi.animesource.model.SAnime;
-import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
-import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
-import java9.util.stream.Collectors;
+	when(anime.status) {
+		SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> Status.COMPLETED
+		SAnime.ONGOING -> Status.ONGOING
+		SAnime.ON_HIATUS -> Status.PAUSED
+		SAnime.CANCELLED -> Status.CANCELLED
+		else -> null
+	},
 
-public class AniyomiMedia extends CatalogMedia {
-	private final SAnime anime;
+	anime.genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
+		?.map { genre -> genre.trim { it <= ' ' } }
+		?.filter { it.isNotBlank() }
+		?.map { CatalogTag(it) }
+		?.toTypedArray(),
 
-	public AniyomiMedia(@NonNull AniyomiProvider provider, @NonNull SAnime anime) {
-		super(AniyomiManager.MANAGER_ID, provider.getExtension().getId(), provider.getId(), anime.getUrl());
+	anime.genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
+		?.map { genre -> genre.trim { it <= ' ' } }
+		?.filter { it.isNotBlank() }
+		?.toTypedArray(),
 
-		this.setTitle(anime.getTitle());
-		this.setPoster(anime.getThumbnail_url());
-		this.type = MediaType.TV;
+	arrayOf(anime.title),
 
-		this.status = switch(anime.getStatus()) {
-			case SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> CatalogMedia.MediaStatus.COMPLETED;
-			case SAnime.ONGOING -> CatalogMedia.MediaStatus.ONGOING;
-			case SAnime.ON_HIATUS -> CatalogMedia.MediaStatus.PAUSED;
-			case SAnime.CANCELLED -> CatalogMedia.MediaStatus.CANCELLED;
-			default -> CatalogMedia.MediaStatus.UNKNOWN;
-		};
+	mapOfNotNull(
+		Pair("Author", anime.author),
+		Pair("Artist", anime.artist)
+	),
 
-		if(provider.source instanceof AnimeHttpSource httpSource) {
-			this.url = YomiProvider.concatLink(httpSource.getBaseUrl(), anime.getUrl());
+	null
+) {
+	companion object {
+		@JvmStatic
+		fun fromMedia(media: CatalogMedia): SAnime {
+			if(media is AniyomiMedia) {
+				return media.anime
+			}
+
+			val anime = SAnimeImpl()
+			anime.title = media.title ?: "No title"
+			anime.description = media.description
+			anime.thumbnail_url = media.poster
+			anime.url = media.extra!!
+
+			if(media.authors != null) {
+				anime.author = media.authors!!["Author"]
+				anime.artist = media.authors!!["Artist"]
+			}
+
+			anime.status = when(media.status) {
+				Status.ONGOING -> SAnime.ONGOING
+				Status.COMPLETED -> SAnime.COMPLETED
+				Status.PAUSED -> SAnime.ON_HIATUS
+				Status.CANCELLED -> SAnime.CANCELLED
+				else -> 0
+			}
+
+			anime.genre = media.genres
+				?.map { genre -> genre.trim { it <= ' ' } }
+				?.filter { it.isNotBlank() }
+				?.joinToString(", ")
+
+			return anime
 		}
-
-		this.extra = anime.getUrl();
-		this.description = anime.getDescription();
-		this.anime = anime;
-
-		if(anime.getAuthor() != null) {
-			if(authors == null) authors = new HashMap<>();
-			authors.put("Author", anime.getAuthor());
-		}
-
-		if(anime.getArtist() != null) {
-			if(authors == null) authors = new HashMap<>();
-			authors.put("Artist", anime.getArtist());
-		}
-
-		doIfNotNull(anime.getGenre(), genre -> {
-			this.genres = stream(genre.split(", "))
-					.map(String::trim)
-					.filter(item -> !item.isBlank())
-					.toList();
-
-			this.tags = stream(genre.split(", "))
-					.map(String::trim)
-					.filter(item -> !item.isBlank())
-					.map(CatalogTag::new)
-					.toList();
-		});
-	}
-
-	protected static SAnime fromMedia(CatalogMedia media) {
-		if(media instanceof AniyomiMedia animeMedia) {
-			return animeMedia.getAnime();
-		}
-
-		var anime = new SAnimeImpl();
-		anime.setTitle(requireNonNullElse(media.getTitle(), "No title"));
-		anime.setDescription(media.description);
-		anime.setThumbnail_url(media.getBestPoster());
-		anime.setUrl(requireNonNull(media.extra));
-
-		if(media.authors != null) {
-			anime.setAuthor(media.authors.get("Author"));
-			anime.setArtist(media.authors.get("Artist"));
-		}
-
-		if(media.status != null) {
-			anime.setStatus(switch(media.status) {
-				case ONGOING -> SAnime.ONGOING;
-				case COMPLETED -> SAnime.COMPLETED;
-				case PAUSED -> SAnime.ON_HIATUS;
-				case CANCELLED -> SAnime.CANCELLED;
-				case UNKNOWN, COMING_SOON -> 0;
-			});
-		}
-
-		anime.setGenre(media.genres == null ? null : stream(media.genres)
-				.map(String::trim)
-				.filter(item -> !item.isBlank())
-				.collect(Collectors.joining(", ")));
-
-		return anime;
-	}
-
-	protected SAnime getAnime() {
-		return anime;
 	}
 }

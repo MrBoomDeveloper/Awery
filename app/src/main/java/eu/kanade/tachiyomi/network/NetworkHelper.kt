@@ -1,7 +1,7 @@
 package eu.kanade.tachiyomi.network
 
 import android.content.Context
-import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.generated.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor
@@ -13,10 +13,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class NetworkHelper(
-    context: Context
-) {
-
+class NetworkHelper(context: Context) {
     private val cookieJar = AndroidCookieJar()
 
     val client: OkHttpClient = run {
@@ -25,15 +22,12 @@ class NetworkHelper(
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .callTimeout(2, TimeUnit.MINUTES)
-            .cache(
-                Cache(
-                    directory = File(context.cacheDir, Constants.DIRECTORY_NET_CACHE),
-                    maxSize = 5L * 1024 * 1024, // 5 MiB
-                ),
-            )
             .addInterceptor(BrotliInterceptor)
             .addInterceptor(UncaughtExceptionInterceptor())
             .addInterceptor(UserAgentInterceptor(::defaultUserAgentProvider))
+            .cache(Cache(
+                directory = File(context.cacheDir, Constants.DIRECTORY_NET_CACHE),
+                maxSize = 5L * 1024 * 1024, /* 5 MiB */))
 
         if(AwerySettings.LOG_NETWORK.value) {
             val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
@@ -44,7 +38,7 @@ class NetworkHelper(
         }
 
         builder.addInterceptor(
-            CloudflareInterceptor(context, cookieJar, ::defaultUserAgentProvider),
+            CloudflareInterceptor(context, cookieJar, this::defaultUserAgentProvider)
         )
 
         /*when (PrefManager.getVal<Int>(PrefName.DohProvider)) {

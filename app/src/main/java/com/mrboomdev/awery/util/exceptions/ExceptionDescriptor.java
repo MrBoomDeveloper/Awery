@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException;
+import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -17,16 +19,20 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
 
 import javax.net.ssl.SSLHandshakeException;
 
 import eu.kanade.tachiyomi.network.HttpException;
 import java9.util.Objects;
+import kotlin.NotImplementedError;
 import kotlinx.serialization.SerializationException;
 
 public class ExceptionDescriptor {
-	private static final String ROOM_EXCEPTION = "Room cannot verify the data integrity. Looks like you've changed schema but forgot to update the version number.";
 	private final Throwable throwable;
+	
+	private static final String ROOM_EXCEPTION = "Room cannot verify the data integrity. "
+			+ "Looks like you've changed schema but forgot to update the version number.";
 
 	public ExceptionDescriptor(@NonNull Throwable t) {
 		this.throwable = unwrap(t);
@@ -82,7 +88,7 @@ public class ExceptionDescriptor {
 	public static String getTitle(Throwable t, Context context) {
 		if(t instanceof LocalizedException e) {
 			return e.getTitle(context);
-		} else if(t instanceof UnimplementedException
+		} else if(t instanceof NotImplementedError
 				|| t instanceof UnsupportedOperationException) {
 			return context.getString(R.string.not_implemented);
 		} else if(t instanceof SocketTimeoutException) {
@@ -93,7 +99,7 @@ public class ExceptionDescriptor {
 			return "Extension not installed";
 		} else if(t instanceof SocketException e) {
 			return e.getMessage();
-		} else if(t instanceof CancelledException) {
+		} else if(t instanceof CancellationException) {
 			return t.getMessage();
 		} else if(t instanceof SSLHandshakeException) {
 			return context.getString(R.string.failed_handshake);
@@ -107,6 +113,14 @@ public class ExceptionDescriptor {
 			return "Parser has crashed!";
 		} else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && t instanceof Violation) {
 			return "Bad thing has happened...";
+		} else if(t instanceof ExtensionInstallException e) {
+			return e.getUserReadableMessage() != null
+					? e.getUserReadableMessage()
+					: e.getMessage();
+		} else if(t instanceof ExtensionLoadException e) {
+			return e.getUserReadableMessage() != null
+					? e.getUserReadableMessage()
+					: e.getMessage();
 		}
 
 		if(t.getMessage() != null && t.getMessage().contains(ROOM_EXCEPTION)) {
@@ -140,7 +154,7 @@ public class ExceptionDescriptor {
 
 	public boolean isNetworkException() {
 		return throwable instanceof ZeroResultsException ||
-				throwable instanceof UnimplementedException ||
+				throwable instanceof NotImplementedError ||
 				throwable instanceof SocketTimeoutException ||
 				throwable instanceof SocketException ||
 				throwable instanceof HttpException ||
@@ -149,8 +163,10 @@ public class ExceptionDescriptor {
 
 	public static boolean isUnknownException(Throwable t) {
 		return !(t instanceof ZeroResultsException ||
-				t instanceof UnimplementedException ||
+				t instanceof NotImplementedError ||
 				t instanceof SocketTimeoutException ||
+				t instanceof ExtensionLoadException ||
+				t instanceof ExtensionInstallException ||
 				t instanceof ExtensionNotInstalledException ||
 				t instanceof SocketException ||
 				t instanceof SSLHandshakeException ||
@@ -178,7 +194,7 @@ public class ExceptionDescriptor {
 	public static String getMessage(@NonNull Throwable t, Context context) {
 		if(t instanceof LocalizedException e) {
 			return e.getDescription(context);
-		} else if(t instanceof UnimplementedException) {
+		} else if(t instanceof NotImplementedError) {
 			return t.getMessage();
 		} else if(t instanceof ExtensionNotInstalledException e) {
 			return "Please check your filters again. Maybe used extension was removed. It's id: " + e.getExtensionName();
@@ -292,7 +308,7 @@ public class ExceptionDescriptor {
 		UNIMPLEMENTED {
 			@Override
 			protected boolean isMeImpl(Throwable t) {
-				return t instanceof UnsupportedOperationException || t instanceof UnimplementedException;
+				return t instanceof UnsupportedOperationException || t instanceof NotImplementedError;
 			}
 		},
 		OTHER {

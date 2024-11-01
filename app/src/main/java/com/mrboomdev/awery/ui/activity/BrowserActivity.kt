@@ -1,252 +1,231 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity
 
-import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
-import static com.mrboomdev.awery.app.App.copyToClipboard;
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
-import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.webkit.GeolocationPermissions
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
+import android.webkit.PermissionRequest
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.widget.PopupMenu
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.copyToClipboard
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.databinding.ScreenBrowserBinding
+import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
+import com.mrboomdev.awery.util.extensions.applyTheme
+import com.mrboomdev.awery.util.extensions.cleanUrl
+import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.ui.ViewUtil
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
+import eu.kanade.tachiyomi.util.system.WebViewClientCompat
+import java.util.concurrent.atomic.AtomicBoolean
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.webkit.GeolocationPermissions;
-import android.webkit.JsPromptResult;
-import android.webkit.JsResult;
-import android.webkit.PermissionRequest;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.widget.PopupMenu;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.Constants;
-import com.mrboomdev.awery.databinding.ScreenBrowserBinding;
-import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import eu.kanade.tachiyomi.util.system.WebViewClientCompat;
-
-public class BrowserActivity extends AppCompatActivity {
-	public static final String EXTRA_URL = "url";
-	private ScreenBrowserBinding binding;
+class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Extras> {
+	private lateinit var binding: ScreenBrowserBinding
+	data class Extras(val url: String)
 
 	@SuppressLint("SetJavaScriptEnabled")
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
-		super.onCreate(savedInstanceState);
+	override fun onCreate(savedInstanceState: Bundle?) {
+		applyTheme()
+		enableEdgeToEdge()
+		super.onCreate(savedInstanceState)
 
-		binding = ScreenBrowserBinding.inflate(getLayoutInflater());
-		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
-		setContentView(binding.getRoot());
+		binding = ScreenBrowserBinding.inflate(layoutInflater)
+		binding.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
+		setContentView(binding.root)
 
-		binding.exit.setOnClickListener(v -> finish());
-		binding.back.setOnClickListener(v -> binding.webview.goBack());
-		binding.forward.setOnClickListener(v -> binding.webview.goForward());
+		binding.exit.setOnClickListener { finish() }
+		binding.back.setOnClickListener { binding.webview.goBack() }
+		binding.forward.setOnClickListener { binding.webview.goForward() }
 
-		var inputManager = getSystemService(InputMethodManager.class);
+		val inputManager = getSystemService(InputMethodManager::class.java)
 
-		binding.header.setOnClickListener(v -> {
-			binding.edittext.requestFocus();
-			inputManager.showSoftInput(binding.edittext, 0);
-		});
-
-		binding.edittext.setOnEditorActionListener((v, actionId, event) -> {
-			if(actionId == EditorInfo.IME_ACTION_SEARCH) {
-				binding.webview.loadUrl(binding.edittext.getText().toString());
-				binding.edittext.clearFocus();
-
-				inputManager.hideSoftInputFromWindow(
-						binding.edittext.getWindowToken(), 0);
-
-				return true;
-			}
-
-			return false;
-		});
-
-		binding.options.setOnClickListener(v -> {
-			var menu = new PopupMenu(this, v);
-			menu.getMenu().add(0, 0, 0, "Copy link to clipboard");
-			menu.getMenu().add(0, 1, 0, "Open in external browser");
-
-			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
-				case 0 -> {
-					copyToClipboard(binding.webview.getUrl(), binding.webview.getUrl());
-					yield true;
-				}
-
-				case 1 -> {
-					var intent = new Intent(Intent.ACTION_VIEW);
-					intent.setData(Uri.parse(binding.webview.getUrl()));
-					var resolved = intent.resolveActivity(getPackageManager());
-
-					if(resolved == null) {
-						toast("No external browser was found :(", 1);
-						yield true;
-					}
-
-					startActivity(intent);
-					yield true;
-				}
-
-				default -> false;
-			});
-
-			menu.show();
-		});
-
-		setOnApplyUiInsetsListener(binding.header, insets -> {
-			binding.header.setPadding(insets.left, insets.top, insets.right, 0);
-			return true;
-		});
-
-		setOnApplyUiInsetsListener(binding.swipeRefresher, insets -> {
-			setHorizontalMargin(binding.swipeRefresher, insets.left, insets.right);
-			return true;
-		});
-
-		var settings = binding.webview.getSettings();
-		settings.setAllowContentAccess(true);
-		settings.setAllowFileAccess(true);
-		settings.setDatabaseEnabled(true);
-		settings.setDisplayZoomControls(false);
-		settings.setDomStorageEnabled(true);
-		settings.setJavaScriptCanOpenWindowsAutomatically(true);
-		settings.setJavaScriptEnabled(true);
-		settings.setSupportZoom(true);
-		settings.setUserAgentString(Constants.DEFAULT_UA);
-
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			settings.setSafeBrowsingEnabled(false);
+		binding.header.setOnClickListener {
+			binding.edittext.requestFocus()
+			inputManager.showSoftInput(binding.edittext, 0)
 		}
 
-		var url = requireArgument(getIntent(), EXTRA_URL, String.class);
-		binding.edittext.setText(url);
-		binding.webview.loadUrl(url);
+		binding.edittext.setOnEditorActionListener { _, actionId, _ ->
+			if(actionId == EditorInfo.IME_ACTION_SEARCH) {
+				binding.webview.loadUrl(binding.edittext.text.toString())
+				binding.edittext.clearFocus()
+				inputManager.hideSoftInputFromWindow(binding.edittext.windowToken, 0)
+				return@setOnEditorActionListener true
+			}
 
-		binding.swipeRefresher.setOnRefreshListener(() -> binding.webview.reload());
+			false
+		}
 
-		binding.swipeRefresher.setColorSchemeColors(resolveAttrColor(
-				this, android.R.attr.colorPrimary));
+		binding.options.setOnClickListener { v ->
+			val menu = PopupMenu(this, v)
+			menu.menu.add(0, 0, 0, "Copy link to clipboard")
+			menu.menu.add(0, 1, 0, "Open in external browser")
 
-		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(resolveAttrColor(
-				this, com.google.android.material.R.attr.colorSurface));
+			menu.setOnMenuItemClickListener { item ->
+				when(item.itemId) {
+					0 -> {
+						copyToClipboard(binding.webview.url, binding.webview.url)
+						true
+					}
 
-		addOnBackPressedListener(this, () -> {
+					1 -> {
+						val intent = Intent(Intent.ACTION_VIEW)
+						intent.setData(Uri.parse(binding.webview.url))
+						val resolved = intent.resolveActivity(packageManager)
+
+						if(resolved == null) {
+							toast("No external browser was found :(", 1)
+							return@setOnMenuItemClickListener true
+						}
+
+						startActivity(intent)
+						true
+					}
+
+					else -> false
+				}
+			}
+
+			menu.show()
+		}
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.header) { insets: Insets ->
+			binding.header.setPadding(insets.left, insets.top, insets.right, 0)
+			true
+		}
+
+		ViewUtil.setOnApplyUiInsetsListener(binding.swipeRefresher) { insets: Insets ->
+			ViewUtil.setHorizontalMargin(binding.swipeRefresher, insets.left, insets.right)
+			true
+		}
+
+		val settings = binding.webview.settings
+		settings.allowContentAccess = true
+		settings.allowFileAccess = true
+		settings.displayZoomControls = false
+		settings.domStorageEnabled = true
+		settings.javaScriptCanOpenWindowsAutomatically = true
+		settings.javaScriptEnabled = true
+		settings.setSupportZoom(true)
+		settings.userAgentString = Constants.DEFAULT_UA
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			settings.safeBrowsingEnabled = false
+		}
+
+		val url = safeArgs!!.url
+		binding.edittext.setText(url)
+		binding.webview.loadUrl(url)
+
+		binding.swipeRefresher.setOnRefreshListener { binding.webview.reload() }
+
+		binding.swipeRefresher.setColorSchemeColors(
+			resolveAttrColor(android.R.attr.colorPrimary))
+
+		binding.swipeRefresher.setProgressBackgroundColorSchemeColor(
+			resolveAttrColor(com.google.android.material.R.attr.colorSurface)
+		)
+
+		addOnBackPressedListener {
 			if(binding.edittext.hasFocus()) {
-				binding.edittext.clearFocus();
+				binding.edittext.clearFocus()
 
 				inputManager.hideSoftInputFromWindow(
-						binding.edittext.getWindowToken(), 0);
+					binding.edittext.windowToken, 0
+				)
 
-				return;
+				return@addOnBackPressedListener
 			}
-
 			if(binding.webview.canGoBack()) {
-				binding.webview.goBack();
+				binding.webview.goBack()
 			} else {
-				finish();
+				finish()
 			}
-		});
+		}
 
-		binding.webview.setWebViewClient(new WebViewClientCompat() {
-
-			@Override
-			public boolean shouldOverrideUrlCompat(@NonNull WebView view, @NonNull String url) {
-				return !url.startsWith("http");
+		binding.webview.webViewClient = object : WebViewClientCompat() {
+			override fun shouldOverrideUrlCompat(view: WebView, url: String): Boolean {
+				return !url.startsWith("http")
 			}
 
-			@Override
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				binding.edittext.setText(cleanUrl(url));
-				binding.progressBar.setProgressCompat(0, false);
-				binding.progressBar.setVisibility(View.VISIBLE);
+			override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+				binding.edittext.setText(url.cleanUrl())
+				binding.progressBar.setProgressCompat(0, false)
+				binding.progressBar.visibility = View.VISIBLE
 			}
 
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				binding.edittext.setText(cleanUrl(url));
-				binding.swipeRefresher.setRefreshing(false);
-				binding.progressBar.setVisibility(View.GONE);
+			override fun onPageFinished(view: WebView, url: String) {
+				binding.edittext.setText(url.cleanUrl())
+				binding.swipeRefresher.isRefreshing = false
+				binding.progressBar.visibility = View.GONE
 			}
-		});
+		}
 
-		binding.webview.setWebChromeClient(new WebChromeClient() {
-
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				binding.progressBar.setProgressCompat(newProgress, true);
+		binding.webview.webChromeClient = object : WebChromeClient() {
+			override fun onProgressChanged(view: WebView, newProgress: Int) {
+				binding.progressBar.setProgressCompat(newProgress, true)
 			}
 
-			@Override
-			public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-				var didPressButton = new AtomicBoolean();
+			override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+				val didPressButton = AtomicBoolean()
 
-				new DialogBuilder(BrowserActivity.this)
-						.setTitle("\"" + url + "\" says:")
-						.setMessage(message)
-						.setOnDismissListener(dialog -> {
-							if(!didPressButton.get()) {
-								result.cancel();
-							}
-						})
-						.setPositiveButton(R.string.ok, dialog -> {
-							result.confirm();
-							didPressButton.set(true);
-							dialog.dismiss();
-						})
-						.show();
+				DialogBuilder(this@BrowserActivity)
+					.setTitle("\"$url\" says:")
+					.setMessage(message)
+					.setOnDismissListener {
+						if(!didPressButton.get()) {
+							result.cancel()
+						}
+					}
+					.setPositiveButton(R.string.ok) { dialog ->
+						result.confirm()
+						didPressButton.set(true)
+						dialog.dismiss()
+					}
+					.show()
 
-				return true;
+				return true
 			}
 
-			@Override
-			public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
-				toast("Prompts currently aren's supported");
-				return false;
+			override fun onJsPrompt(view: WebView, url: String, message: String, defaultValue: String, result: JsPromptResult): Boolean {
+				toast("Prompts are currently not supported")
+				return false
 			}
 
-			@Override
-			public void onPermissionRequest(PermissionRequest request) {
-				toast("Permissions currently aren's supported");
-				request.deny();
+			override fun onPermissionRequest(request: PermissionRequest) {
+				toast("Permissions are currently not supported")
+				request.deny()
 			}
 
-			@Override
-			public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-				toast("Geolocation currently isn't supported");
-				callback.invoke(origin, false, false);
+			override fun onGeolocationPermissionsShowPrompt(origin: String, callback: GeolocationPermissions.Callback) {
+				toast("Geolocation is currently not supported")
+				callback.invoke(origin, false, false)
 			}
 
-			@Override
-			public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-				toast("Confirmations currently aren's supported");
-				return false;
+			override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
+				toast("Confirmations are currently not supported")
+				return false
 			}
 
-			@Override
-			public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-				toast("Files picker currently isn't supported");
-				return false;
+			override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>, fileChooserParams: FileChooserParams): Boolean {
+				toast("File picker is currently not supported")
+				return false
 			}
-		});
+		}
 	}
 }

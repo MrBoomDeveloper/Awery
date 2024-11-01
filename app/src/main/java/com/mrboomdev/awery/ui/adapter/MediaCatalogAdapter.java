@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
@@ -142,19 +142,19 @@ public class MediaCatalogAdapter extends RecyclerView.Adapter<MediaCatalogAdapte
 			this.item = item;
 
 			binding.title.setText(item.getTitle());
-			binding.ongoing.setVisibility(item.status == CatalogMedia.MediaStatus.ONGOING ? View.VISIBLE : View.GONE);
+			binding.ongoing.setVisibility(item.getStatus() == CatalogMedia.Status.ONGOING ? View.VISIBLE : View.GONE);
 
-			if(item.averageScore != null) {
+			if(item.getAverageScore() != null) {
 				binding.scoreWrapper.setVisibility(View.VISIBLE);
-				binding.score.setText(String.valueOf(item.averageScore));
+				binding.score.setText(String.valueOf(item.getAverageScore()));
 			} else {
 				binding.scoreWrapper.setVisibility(View.GONE);
 			}
 
 			try {
-				if(item.poster != null) {
+				if(item.getPoster() != null) {
 					Glide.with(binding.getRoot())
-							.load(item.poster.large)
+							.load(item.getPoster())
 							.transition(DrawableTransitionOptions.withCrossFade())
 							.into(binding.mediaItemBanner);
 				}

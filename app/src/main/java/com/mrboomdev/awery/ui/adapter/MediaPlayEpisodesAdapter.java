@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.adapter;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.app.App.openUrl;
 import static com.mrboomdev.awery.app.App.share;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
@@ -22,14 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.ui.activity.MediaActivity;
 import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.WeakHashMap;
+
+import kotlin.NotImplementedError;
 
 public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpisodesAdapter.ViewHolder> {
 	private final WeakHashMap<CatalogVideo, Long> progresses = new WeakHashMap<>();
@@ -72,8 +73,8 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		Collections.sort(this.items);
 
 		thread(() -> {
-			var progressDao = getDatabase().getMediaProgressDao();
-			var progress = progressDao.get(media.globalId);
+			var progressDao = App.Companion.getDatabase().getMediaProgressDao();
+			var progress = progressDao.get(media.getGlobalId());
 
 			if(progress != null) {
 				for(var entry : progress.progresses.entrySet()) {
@@ -126,10 +127,10 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		holder.updateProgress();
 
 		thread(() -> {
-			var progressDao = getDatabase().getMediaProgressDao();
+			var progressDao = App.Companion.getDatabase().getMediaProgressDao();
 
-			var progress = progressDao.get(media.globalId);
-			if(progress == null) progress = new CatalogMediaProgress(media.globalId);
+			var progress = progressDao.get(media.getGlobalId());
+			if(progress == null) progress = new CatalogMediaProgress(media.getGlobalId());
 
 			progress.progresses.put(episode.getNumber(), episodeProgress);
 			progressDao.insert(progress);
@@ -178,11 +179,11 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 						throw new NullPointerException("No activity was found with type of MediaActivity");
 					}
 
-					activity.launchAction(MediaActivity.EXTRA_ACTION_COMMENTS, episode);
+					activity.launchAction(MediaActivity.Action.COMMENTS, episode);
 					yield true;
 				}
 
-				case 2 -> throw new UnimplementedException("Download not implemented");
+				case 2 -> throw new NotImplementedError("Download not implemented");
 
 				case 3 -> {
 					share(holder.getItem().getUrl());
@@ -194,7 +195,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 					yield true;
 				}
 
-				case 5 -> throw new UnimplementedException("Hide not implemented");
+				case 5 -> throw new NotImplementedError("Hide not implemented");
 				default -> throw new IllegalStateException("Unexpected value: " + item.getItemId());
 			});
 

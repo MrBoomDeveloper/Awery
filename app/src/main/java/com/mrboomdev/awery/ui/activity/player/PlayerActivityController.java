@@ -1,10 +1,10 @@
 package com.mrboomdev.awery.ui.activity.player;
 
-import static com.mrboomdev.awery.app.App.fixDialog;
+import static com.mrboomdev.awery.util.extensions.DialogExtensionsKt.fix;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.formatClock;
 
 import android.animation.ObjectAnimator;
@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -48,8 +47,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import kotlin.Unit;
+
 public class PlayerActivityController {
-	private static final int REQUEST_CODE_PICK_SUBTITLES = AweryLifecycle.getActivityResultCode();
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;
 	private final Set<String> lockedUiReasons = new HashSet<>();
 	private final PlayerActivity activity;
@@ -229,7 +229,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		fixDialog(dialog.get());
+		fix(dialog.get());
 	}
 
 	public void openSettingsDialog() {
@@ -289,7 +289,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		fixDialog(dialog.get());
+		fix(dialog.get());
 	}
 
 	public void openSubtitlesDialog() {
@@ -330,8 +330,8 @@ public class PlayerActivityController {
 				intent.setType(ContentType.ANY.getMimeType());
 				var chooser = Intent.createChooser(intent, "Choose a subtitles file");
 
-				startActivityForResult(activity, chooser, REQUEST_CODE_PICK_SUBTITLES, (resultCode, result) -> {
-					if(resultCode != PlayerActivity.RESULT_OK) return;
+				startActivityForResult(activity, chooser, (resultCode, result) -> {
+					if(resultCode != PlayerActivity.RESULT_OK) return Unit.INSTANCE;
 
 					var uri = Objects.requireNonNull(result.getData());
 					var file = new File(uri.toString());
@@ -342,6 +342,8 @@ public class PlayerActivityController {
 							return uri;
 						}
 					});
+					
+					return Unit.INSTANCE;
 				});
 
 				dialog.get().dismiss();
@@ -362,7 +364,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		fixDialog(dialog.get());
+		fix(dialog.get());
 	}
 
 	public void openQualityDialog(boolean isRequired) {
@@ -418,7 +420,7 @@ public class PlayerActivityController {
 		sheet.getBehavior().setPeekHeight(9999);
 		sheet.show();
 
-		fixDialog(dialog.get());
+		fix(dialog.get());
 	}
 
 	private class PopupAdapter extends RecyclerView.Adapter<PopupItemHolder> {

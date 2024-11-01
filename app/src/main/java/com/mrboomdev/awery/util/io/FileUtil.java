@@ -148,12 +148,12 @@ public class FileUtil {
 		}
 	}
 
-	public static boolean deleteFile(File file) {
-		if(file == null) return false;
+	public static void deleteFile(File file) {
+		if(file == null) return;
 
 		if(file.isDirectory()) {
 			var children = file.listFiles();
-			if(children == null) return false;
+			if(children == null) return;
 
 			for(var child : children) {
 				deleteFile(child);
@@ -161,7 +161,6 @@ public class FileUtil {
 		}
 
 		file.delete();
-		return true;
 	}
 
 	public static long getFileSize(@NonNull File file) {

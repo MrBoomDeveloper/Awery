@@ -20,7 +20,7 @@ import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.R
-import com.mrboomdev.awery.app.AweryLifecycle.runDelayed
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAlign
@@ -84,6 +84,9 @@ fun LinearLayoutCompat.addView(view: View, width: Int, height: Int, weight: Floa
 //-------------------//
 
 fun View.balloon(text: String, align: BalloonAlign) {
+    // For some strange reason an balloon doesn't show up right after activity been created,
+    // so we need to wait a little bit.
+
     runDelayed({
         Balloon.Builder(context)
             .setText(text)

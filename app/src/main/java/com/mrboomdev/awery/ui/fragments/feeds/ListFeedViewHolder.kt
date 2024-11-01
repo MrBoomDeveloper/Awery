@@ -2,9 +2,11 @@ package com.mrboomdev.awery.ui.fragments.feeds
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.mrboomdev.awery.app.App
-import com.mrboomdev.awery.app.App.isLandscape
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.databinding.FeedListBinding
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.generated.AwerySettings
@@ -36,9 +38,9 @@ class ListFeedViewHolder private constructor(
 		binding.recycler.adapter = adapter
 
 		binding.header.applyInsets(UI_INSETS, { view, insets ->
-			if(isLandscape()) {
+			if(isLandscape) {
 				view.leftMargin = view.dpPx(16f) + (if(
-					App.getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL
+					navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL
 				) insets.left else 0)
 
 				binding.header.rightMargin = insets.right + view.dpPx(16f)
@@ -50,9 +52,9 @@ class ListFeedViewHolder private constructor(
 		}, parent)
 
 		binding.recycler.applyInsets(UI_INSETS, { view, insets ->
-			if(isLandscape()) {
+			if(isLandscape) {
 				view.leftPadding = view.dpPx(32f) + (if(
-					App.getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL
+					navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL
 				) insets.left else 0)
 
 				view.rightPadding = insets.right + view.dpPx(32f)
@@ -74,10 +76,10 @@ class ListFeedViewHolder private constructor(
 				binding.header.isClickable = true
 
 				binding.expand.setOnClickListener { v ->
-					v.context.startActivity(SearchActivity::class, extras = mapOf(
-						SearchActivity.EXTRA_GLOBAL_PROVIDER_ID to feed.sourceFeed.providerGlobalId,
-						SearchActivity.EXTRA_FILTERS to feed.sourceFeed.filters,
-						SearchActivity.EXTRA_LOADED_MEDIA to feed.items
+					v.context.startActivity(SearchActivity::class, args = SearchActivity.Extras(
+						sourceGlobalId = feed.sourceFeed.providerGlobalId,
+						filters = feed.sourceFeed.filters,
+						preloadedItems = feed.items
 					))
 				}
 			} else {

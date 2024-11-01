@@ -5,27 +5,27 @@ import android.content.Intent
 import android.provider.Settings
 import android.util.Log
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.showLoadingWindow
-import com.mrboomdev.awery.app.App.toast
-import com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity
-import com.mrboomdev.awery.app.AweryLifecycle.getAnyContext
+import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
+import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.CrashHandler.CrashReport
+import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.app.data.Constants.DIRECTORY_IMAGE_CACHE
+import com.mrboomdev.awery.app.data.settings.SettingsItem
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.app.update.UpdatesManager
 import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog
-import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
-import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity
 import com.mrboomdev.awery.util.ContentType
-import com.mrboomdev.awery.util.exceptions.CancelledException
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.startActivityForResult
 import com.mrboomdev.awery.util.extensions.startService
-import com.mrboomdev.awery.util.io.FileUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +35,7 @@ import xcrash.XCrash
 import java.io.File
 import java.util.Calendar
 import kotlin.concurrent.thread
+import kotlin.coroutines.cancellation.CancellationException
 
 object SettingsActions {
 	private const val TAG = "SettingsActions"
@@ -50,31 +51,32 @@ object SettingsActions {
 			AwerySettings.TRY_CRASH_NATIVE_ASYNC -> thread { XCrash.testNativeCrash(false) }
 			AwerySettings.TRY_CRASH_JAVA_ASYNC -> thread { XCrash.testJavaCrash(false) }
 
-			AwerySettings.ABOUT -> getAnyContext().startActivity(AboutActivity::class)
-			AwerySettings.START_ONBOARDING -> getAnyContext().startActivity(SetupActivity::class)
-			AwerySettings.EXPERIMENTS -> getAnyContext().startActivity(ExperimentsActivity::class)
+			AwerySettings.ABOUT -> anyContext.startActivity(AboutActivity::class)
+			AwerySettings.START_ONBOARDING -> anyContext.startActivity(SetupActivity::class)
+			AwerySettings.EXPERIMENTS -> anyContext.startActivity(ExperimentsActivity::class)
+			AwerySettings.UI_LANGUAGE -> AweryLocales.showPicker(getAnyActivity()!!)
 
-			AwerySettings.PLAYER_SYSTEM_SUBTITLES -> getAnyContext().startActivity(
+			AwerySettings.PLAYER_SYSTEM_SUBTITLES -> anyContext.startActivity(
 				action = Settings.ACTION_CAPTIONING_SETTINGS)
 
-			AwerySettings.SETUP_THEME -> getAnyContext().startActivity(
+			AwerySettings.SETUP_THEME -> anyContext.startActivity(
 				SetupActivity::class, extras = mapOf(
 					SetupActivity.EXTRA_STEP to SetupActivity.STEP_THEMING,
 					SetupActivity.EXTRA_FINISH_ON_COMPLETE to true
 				))
 
 			AwerySettings.CLEAR_IMAGE_CACHE -> {
-				FileUtil.deleteFile(File(getAnyContext().cacheDir, DIRECTORY_IMAGE_CACHE))
+				File(anyContext.cacheDir, DIRECTORY_IMAGE_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
 			AwerySettings.CLEAR_WEBVIEW_CACHE -> {
-				FileUtil.deleteFile(File(getAnyContext().cacheDir, Constants.DIRECTORY_WEBVIEW_CACHE))
+				File(anyContext.cacheDir, Constants.DIRECTORY_WEBVIEW_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
 			AwerySettings.CLEAR_NET_CACHE -> {
-				FileUtil.deleteFile(File(getAnyContext().cacheDir, Constants.DIRECTORY_NET_CACHE))
+				File(appContext.cacheDir, Constants.DIRECTORY_NET_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
@@ -87,7 +89,7 @@ object SettingsActions {
 						date[Calendar.HOUR_OF_DAY] + "_" +
 						date[Calendar.MINUTE] + "].awerybck"
 
-				val context = getAnyActivity(Activity::class.java)!!
+				val context = getAnyActivity<Activity>()!!
 
 				context.startActivityForResult(
 					action = Intent.ACTION_CREATE_DOCUMENT,
@@ -101,12 +103,12 @@ object SettingsActions {
 
 						context.startService<BackupService>(
 							action = BackupService.ACTION_BACKUP,
-							data = result.data)
+							data = result!!.data)
 					})
 			}
 
 			AwerySettings.RESTORE -> {
-				val context = getAnyActivity(Activity::class.java)!!
+				val context = getAnyActivity<Activity>()!!
 
 				context.startActivityForResult(Intent.createChooser(Intent(Intent.ACTION_GET_CONTENT).apply {
 					setType(ContentType.ANY.mimeType)
@@ -115,7 +117,7 @@ object SettingsActions {
 
 					context.startService<BackupService>(
 						action = BackupService.ACTION_RESTORE,
-						data = result.data)
+						data = result!!.data)
 				})
 			}
 
@@ -126,8 +128,8 @@ object SettingsActions {
 					Log.e(TAG, "Failed to check for updates!", t)
 					window.dismiss()
 
-					if(t is CancelledException) {
-						toast(ExceptionDescriptor.getTitle(t, getAnyContext()), 1)
+					if(t is CancellationException) {
+						toast(ExceptionDescriptor.getTitle(t, anyContext), 1)
 						return@CoroutineExceptionHandler
 					}
 
@@ -139,7 +141,7 @@ object SettingsActions {
 							.build())
 				}).launch {
 					val update = UpdatesManager.fetchLatestAppUpdate()
-					showUpdateDialog(getAnyActivity(Activity::class.java)!!, update)
+					showUpdateDialog(getAnyActivity<Activity>()!!, update)
 					window.dismiss()
 				}
 			}

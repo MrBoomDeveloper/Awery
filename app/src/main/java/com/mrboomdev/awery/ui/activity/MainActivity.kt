@@ -15,19 +15,19 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigationrail.NavigationRailView
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App
-import com.mrboomdev.awery.app.App.getDatabase
-import com.mrboomdev.awery.app.App.getMoshi
-import com.mrboomdev.awery.app.App.isLandscape
-import com.mrboomdev.awery.app.App.toast
-import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.app.AweryLifecycle.runDelayed
+import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.navigationStyle
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.app.update.UpdatesManager
-import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.db.item.DBTab
-import com.mrboomdev.awery.data.settings.SettingsList
+import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.app.data.db.item.DBTab
+import com.mrboomdev.awery.app.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
 import com.mrboomdev.awery.generated.AwerySettings
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCustomTabs() {
         lifecycleScope.launch(Dispatchers.IO) {
-            setupTabs(getDatabase().tabsDao.allTabs)
+            setupTabs(database.tabsDao.allTabs)
         }
     }
 
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                 this, CrashReport.Builder()
                     .setTitle("Failed to read an icons list")
                     .setThrowable(e)
-                    .setDismissCallback { AweryLifecycle.exitApp() }
+                    .setDismissCallback { exitApp() }
                     .build())
 
             return
@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             setupNavigation()
 
-            when(App.getNavigationStyle()!!) {
+            when(navigationStyle) {
                 NavigationStyle_Values.BUBBLE -> {
                     for(i in tabs.indices) {
                         val tab = tabs[i]
@@ -229,19 +229,22 @@ class MainActivity : AppCompatActivity() {
         binding!!.pages.isUserInputEnabled = false
         binding!!.pages.setPageTransformer(FadeTransformer())
 
-        if(App.getNavigationStyle() == NavigationStyle_Values.MATERIAL) {
+        if(navigationStyle == NavigationStyle_Values.MATERIAL) {
             if(AwerySettings.USE_AMOLED_THEME.value) {
                 binding!!.navbarMaterial.setBackgroundColor(-0x1000000)
                 @Suppress("DEPRECATION")
-                window.navigationBarColor = if(isLandscape()) 0 else -0x1000000
+                window.navigationBarColor = if(isLandscape) 0 else -0x1000000
             } else {
                 binding!!.navbarMaterial.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
                 @Suppress("DEPRECATION")
-                window.navigationBarColor = if(isLandscape()) 0 else SurfaceColors.SURFACE_2.getColor(this)
+                window.navigationBarColor = if(isLandscape) 0 else SurfaceColors.SURFACE_2.getColor(this)
             }
 
             binding!!.navbarMaterial.applyInsets(UI_INSETS, { view, insets ->
-                view.topPadding = if((binding!!.navbarMaterial is NavigationRailView)) insets.top else 0
+                view.topPadding = if((binding!!.navbarMaterial is NavigationRailView)) {
+                    insets.top + dpPx(8f)
+                } else 0
+
                 view.leftPadding = insets.left
                 view.bottomPadding = insets.bottom
                 true
@@ -253,17 +256,25 @@ class MainActivity : AppCompatActivity() {
             true
         })
 
-        binding!!.navbarMaterial.setOnItemSelectedListener { tab ->
-            binding!!.pages.setCurrentItem(tab.itemId, false)
-            true
+        (fun(tab: Int) {
+            binding!!.pages.setCurrentItem(tab, false)
+            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(tab)?.get()?.onFocus()
+        }).let {
+            binding!!.navbarBubble.onTabSelected = { tab -> it(tab.id) }
+
+            binding!!.navbarMaterial.setOnItemSelectedListener { tab ->
+                it(tab.itemId)
+                true
+            }
         }
 
-        binding!!.navbarBubble.onTabSelected = { tab ->
-            binding!!.pages.setCurrentItem(tab.id, false)
+        binding!!.pages.setOnFocusChangeListener { _, hasFocus ->
+            if(!hasFocus) return@setOnFocusChangeListener
+            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(binding!!.pages.currentItem)?.get()?.onFocus()
         }
 
-        (fun(tabId: Int) {
-            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(tabId)?.get()?.scrollToTop()
+        (fun(tab: Int) {
+            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(tab)?.get()?.scrollToTop()
         }).let {
             binding!!.navbarMaterial.setOnItemReselectedListener { it(it.itemId) }
             binding!!.navbarBubble.onTabReselected = { it(it.id) }
@@ -289,9 +300,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private class FeedsAdapter(
-        private val tabs: List<DBTab>,
-        fragmentManager: FragmentManager,
-        lifecycle: Lifecycle
+		private val tabs: List<DBTab>,
+		fragmentManager: FragmentManager,
+		lifecycle: Lifecycle
     ) : FragmentStateAdapter(fragmentManager, lifecycle) {
         val fragments = arrayOfNulls<WeakReference<FeedsFragment>?>(tabs.size)
 
@@ -348,11 +359,11 @@ class MainActivity : AppCompatActivity() {
             binding.root.applyInsets(UI_INSETS, { view, insets ->
                 view.topPadding = insets.top + dpPx(16f)
 
-                if(App.isLandscape()) {
+                if(isLandscape) {
                     view.rightPadding = dpPx(32f) + insets.right
                     view.rightPadding = dpPx(32f) + insets.right
                     view.leftPadding = dpPx(32f) +
-                            (if(App.getNavigationStyle() == NavigationStyle_Values.MATERIAL) 0 else insets.left)
+                            (if(navigationStyle == NavigationStyle_Values.MATERIAL) 0 else insets.left)
                 } else {
                     view.setHorizontalPadding(dpPx(16f))
                 }

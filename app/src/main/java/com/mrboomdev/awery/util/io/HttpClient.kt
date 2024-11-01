@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.io
 
-import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
+import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.async.AsyncUtils
@@ -26,7 +26,7 @@ object HttpClient {
 	val client: OkHttpClient by lazy {
 		val builder = OkHttpClient.Builder()
 
-		val cacheDir = File(AweryLifecycle.getAppContext().cacheDir, Constants.DIRECTORY_NET_CACHE)
+		val cacheDir = File(appContext.cacheDir, Constants.DIRECTORY_NET_CACHE)
 		val cache = Cache(cacheDir, 10 * 1024 * 1024  /* 10mb */)
 		builder.cache(cache)
 

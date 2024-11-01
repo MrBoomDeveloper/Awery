@@ -1,87 +1,100 @@
-package com.mrboomdev.awery.ui.fragments.feeds;
+package com.mrboomdev.awery.ui.fragments.feeds
 
-import static com.mrboomdev.awery.app.App.getNavigationStyle;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setLeftMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightMargin;
+import android.view.View
+import android.view.ViewGroup
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.navigationStyle
+import com.mrboomdev.awery.app.App.Companion.openUrl
+import com.mrboomdev.awery.databinding.FeedFailedBinding
+import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
+import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
+import com.mrboomdev.awery.util.extensions.UI_INSETS
+import com.mrboomdev.awery.util.extensions.applyInsets
+import com.mrboomdev.awery.util.extensions.context
+import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.inflater
+import com.mrboomdev.awery.util.extensions.leftMargin
+import com.mrboomdev.awery.util.extensions.rightMargin
+import com.mrboomdev.awery.util.extensions.setHorizontalMargin
+import org.jetbrains.annotations.Contract
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class FailedFeedViewHolder private constructor(
+	private val binding: FeedFailedBinding, parent: ViewGroup
+) : FeedViewHolder(binding.root) {
 
-import androidx.annotation.NonNull;
+	init {
+		binding.header.setOnClickListener { binding.expand.performClick() }
 
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.FeedFailedBinding;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-
-import org.jetbrains.annotations.Contract;
-
-public class FailedFeedViewHolder extends FeedViewHolder {
-	private final FeedFailedBinding binding;
-
-	@NonNull
-	@Contract("_ -> new")
-	public static FailedFeedViewHolder create(ViewGroup parent) {
-		return new FailedFeedViewHolder(FeedFailedBinding.inflate(
-				LayoutInflater.from(parent.getContext()), parent, false), parent);
-	}
-
-	private FailedFeedViewHolder(@NonNull FeedFailedBinding binding, ViewGroup parent) {
-		super(binding.getRoot());
-		this.binding = binding;
-
-		binding.header.setOnClickListener(v -> binding.expand.performClick());
-
-		setOnApplyUiInsetsListener(binding.header, insets -> {
-			if(isLandscape()) {
-				setLeftMargin(binding.header, dpPx(binding.header, 16) +
-						(getNavigationStyle() != AwerySettings.NavigationStyle_Values.MATERIAL ? insets.left : 0));
-
-				setRightMargin(binding.header, insets.right + dpPx(binding.header, 16));
+		binding.header.applyInsets(UI_INSETS, { view, insets ->
+			if(isLandscape) {
+				view.rightMargin = insets.right + view.dpPx(16f)
+				view.leftMargin = view.dpPx(16f) +
+						(if(navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL) insets.left else 0)
 			} else {
-				setHorizontalMargin(binding.header, 0);
+				view.setHorizontalMargin(0)
 			}
-
-			return true;
-		}, parent);
+			true
+		}, parent)
 	}
 
-	@Override
-	public void bind(@NonNull Feed feed) {
-		binding.title.setText(feed.sourceFeed.title);
+	override fun bind(feed: Feed) {
+		binding.title.text = feed.sourceFeed.title
 
-		if(feed.getReloadCallback() != null && !feed.isLoading) {
-			binding.expand.setImageResource(R.drawable.ic_refresh);
-			binding.expand.setVisibility(View.VISIBLE);
-			binding.header.setClickable(true);
+		if(feed.reloadCallback != null && !feed.isLoading) {
+			binding.expand.setImageResource(R.drawable.ic_refresh)
+			binding.expand.visibility = View.VISIBLE
+			binding.header.isClickable = true
+			binding.expand.setOnClickListener { feed.reloadCallback!!.run() }
 
-			binding.expand.setOnClickListener(v ->
-					feed.getReloadCallback().run());
+			try {
+				val source = ExtensionProvider.forGlobalId(
+					feed.sourceFeed.sourceManager,
+					feed.sourceFeed.extensionId,
+					feed.sourceFeed.sourceId)
+
+				if(source.previewUrl != null) {
+					binding.browse.visibility = View.VISIBLE
+					binding.browse.setOnClickListener {
+						openUrl(binding.context, source.previewUrl)
+					}
+				} else {
+					binding.browse.visibility = View.GONE
+				}
+			} catch(_: ExtensionNotInstalledException) {
+				binding.browse.visibility = View.GONE
+			}
 		} else {
-			binding.header.setClickable(false);
-			binding.expand.setVisibility(View.GONE);
-			binding.expand.setOnClickListener(null);
+			binding.header.isClickable = false
+			binding.expand.visibility = View.GONE
+			binding.browse.visibility = View.GONE
+			binding.expand.setOnClickListener(null)
 		}
 
-		if(feed.getThrowable() != null) {
-			binding.errorMessage.setText(ExceptionDescriptor.print(
-					ExceptionDescriptor.unwrap(feed.getThrowable()), getContext(binding)));
+		if(feed.throwable != null) {
+			binding.errorMessage.text = ExceptionDescriptor.print(
+				ExceptionDescriptor.unwrap(feed.throwable), binding.context
+			)
 		} else {
-			binding.errorMessage.setText(getContext(binding).getString(R.string.nothing_found));
+			binding.errorMessage.text = binding.context.getString(R.string.nothing_found)
 		}
 
 		if(feed.isLoading) {
-			binding.errorMessage.setVisibility(View.GONE);
-			binding.progressbar.setVisibility(View.VISIBLE);
+			binding.errorMessage.visibility = View.GONE
+			binding.progressbar.visibility = View.VISIBLE
 		} else {
-			binding.errorMessage.setVisibility(View.VISIBLE);
-			binding.progressbar.setVisibility(View.GONE);
+			binding.errorMessage.visibility = View.VISIBLE
+			binding.progressbar.visibility = View.GONE
+		}
+	}
+
+	companion object {
+		@Contract("_ -> new")
+		fun create(parent: ViewGroup): FailedFeedViewHolder {
+			return FailedFeedViewHolder(FeedFailedBinding.inflate(
+				parent.context.inflater, parent, false), parent)
 		}
 	}
 }

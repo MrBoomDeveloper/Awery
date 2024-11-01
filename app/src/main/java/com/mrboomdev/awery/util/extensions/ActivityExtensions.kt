@@ -11,9 +11,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.enableEdgeToEdge
 import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.app.AweryLifecycle.postRunnable
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.postRunnable
 import com.mrboomdev.awery.ui.ThemeManager
-import java.util.LinkedHashMap
 import java.util.WeakHashMap
 import kotlin.reflect.KClass
 
@@ -26,8 +26,8 @@ fun Activity.startActivityForResult(
     type: String? = null,
     categories: Array<String>? = null,
     extras: Map<String, Any>? = null,
-    callback: (resultCode: Int, result: Intent) -> Unit,
-    requestCode: Int? = null
+    callback: (resultCode: Int, result: Intent?) -> Unit,
+    requestCode: Int = generateRequestCode()
 ) {
     val activity = this
 
@@ -54,17 +54,11 @@ fun Activity.startActivityForResult(
 
 fun Activity.startActivityForResult(
     intent: Intent,
-    callback: (resultCode: Int, result: Intent) -> Unit,
-    requestCode: Int? = null
+    callback: (resultCode: Int, result: Intent?) -> Unit,
+    requestCode: Int = generateRequestCode()
 ) {
     runOnUiThread {
-        AweryLifecycle.startActivityForResult(
-            this,
-            intent,
-            requestCode ?: AweryLifecycle.getActivityResultCode()
-        ) { code, result ->
-            callback(code, result)
-        }
+        AweryLifecycle.startActivityForResult(this, intent, callback, requestCode)
     }
 }
 

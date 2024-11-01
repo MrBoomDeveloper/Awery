@@ -5,15 +5,14 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.mrboomdev.awery.BuildConfig
-import com.mrboomdev.awery.app.App.getMoshi
-import com.mrboomdev.awery.app.App.showLoadingWindow
-import com.mrboomdev.awery.app.App.toast
-import com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread
+import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.NiceUtils
-import com.mrboomdev.awery.util.exceptions.CancelledException
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.formatFileSize
 import com.mrboomdev.awery.util.extensions.removeIndent
@@ -24,6 +23,7 @@ import com.mrboomdev.awery.util.io.HttpRequest
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.squareup.moshi.Json
 import com.squareup.moshi.adapter
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -148,7 +148,7 @@ object UpdatesManager {
 			// so instead: did we receive any different version from the server? Then this is a new one!
 
 			if(parseAlphaVersion(BuildConfig.VERSION_NAME) == parseAlphaVersion(release.tagName)) {
-				throw CancelledException("You're using the latest version already!")
+				throw CancellationException("You're using the latest version already!")
 			}
 
 			return
@@ -160,7 +160,7 @@ object UpdatesManager {
 		)
 
 		if(compared <= 0) {
-			throw CancelledException("You're using the latest version already!")
+			throw CancellationException("You're using the latest version already!")
 		}
 	}
 

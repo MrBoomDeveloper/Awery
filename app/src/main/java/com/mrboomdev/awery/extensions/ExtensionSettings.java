@@ -1,12 +1,11 @@
 package com.mrboomdev.awery.extensions;
 
 import static com.mrboomdev.awery.app.App.copyToClipboard;
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.app.App.showLoadingWindow;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.compareVersions;
@@ -35,18 +34,18 @@ import androidx.core.content.FileProvider;
 
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.db.item.DBRepository;
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.LazySettingsItem;
-import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.app.data.db.item.DBRepository;
+import com.mrboomdev.awery.app.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.app.data.settings.LazySettingsItem;
+import com.mrboomdev.awery.app.data.settings.ObservableSettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItemType;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.CancelledException;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.mrboomdev.awery.util.io.HttpRequest;
@@ -61,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import java9.util.Objects;
@@ -200,7 +200,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 										return;
 									}
 
-									var dao = getDatabase().getRepositoryDao();
+									var dao = App.Companion.getDatabase().getRepositoryDao();
 									var repo = new DBRepository(text, manager.getId());
 									dao.add(repo);
 									repos.add(repo);
@@ -219,7 +219,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								}
 
 								@Override
-								public void onFailure(Throwable t) {
+								public void onFailure(@NonNull Throwable t) {
 									Log.e(TAG, "Failed to get a repository!", t);
 									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(t, context)));
 									loadingWindow.dismiss();
@@ -233,7 +233,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 	public void loadData() {
 		var items = new ArrayList<SettingsItem>();
 
-		repos = getDatabase().getRepositoryDao()
+		repos = App.Companion.getDatabase().getRepositoryDao()
 				.getRepositories(manager.getId());
 
 		if(!repos.isEmpty()) {
@@ -323,7 +323,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						var window = showLoadingWindow();
 
 						thread(() -> {
-							var dao = getDatabase().getRepositoryDao();
+							var dao = App.Companion.getDatabase().getRepositoryDao();
 							dao.remove(repository);
 							repos.remove(repository);
 
@@ -396,7 +396,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 						).addCallback(new AsyncFuture.Callback<>() {
 
 							@Override
-							public void onSuccess(Extension result) {
+							public void onSuccess(@NonNull Extension result) {
 								window.dismiss();
 								toast(R.string.extension_installed_successfully);
 								runOnUiThread(() -> ((RepositorySetting) RepositoryItem.this.getParent()).onSettingChange(RepositoryItem.this));
@@ -406,7 +406,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							public void onFailure(@NonNull Throwable t) {
 								window.dismiss();
 
-								if(t instanceof CancelledException) {
+								if(t instanceof CancellationException) {
 									toast(t.getMessage());
 									return;
 								}
@@ -438,7 +438,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 													window1.dismiss();
 													d.dismiss();
 
-													if(t instanceof CancelledException) {
+													if(t instanceof CancellationException) {
 														toast(t.getMessage());
 														return;
 													}

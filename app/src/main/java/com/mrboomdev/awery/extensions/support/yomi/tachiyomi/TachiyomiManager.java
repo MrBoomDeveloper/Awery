@@ -65,7 +65,7 @@ public class TachiyomiManager extends YomiManager {
 	}
 
 	@Override
-	public List<? extends ExtensionProvider> createProviders(Extension extension, Object main) {
+	public List<ExtensionProvider> createProviders(Extension extension, Object main) {
 		if(main instanceof MangaSource source) {
 			return List.of(new TachiyomiProvider(extension, source, false) {
 				@Override
@@ -75,7 +75,7 @@ public class TachiyomiManager extends YomiManager {
 			});
 		} else if(main instanceof SourceFactory factory) {
 			return stream(factory.createSources())
-					.map(source -> new TachiyomiProvider(extension, source, true) {
+					.map(source -> (ExtensionProvider) new TachiyomiProvider(extension, source, true) {
 						@Override
 						public YomiManager getManager() {
 							return TachiyomiManager.this;

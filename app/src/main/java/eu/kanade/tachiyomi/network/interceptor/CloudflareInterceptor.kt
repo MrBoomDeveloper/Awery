@@ -5,11 +5,10 @@ import android.content.Context
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
 import eu.kanade.tachiyomi.network.AndroidCookieJar
 import eu.kanade.tachiyomi.util.system.WebViewClientCompat
-import eu.kanade.tachiyomi.util.system.isOutdated
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
@@ -31,7 +30,11 @@ class CloudflareInterceptor(
         return response.code in ERROR_CODES && response.header("Server") in SERVER_CHECK
     }
 
-    override fun intercept(chain: Interceptor.Chain, request: Request, response: Response): Response {
+    override fun intercept(
+        chain: Interceptor.Chain,
+        request: Request,
+        response: Response
+    ): Response {
         try {
             response.close()
             cookieManager.remove(request.url, COOKIE_NAMES, 0)
@@ -63,7 +66,6 @@ class CloudflareInterceptor(
 
         var challengeFound = false
         var cloudflareBypassed = false
-        var isWebViewOutdated = false
 
         val origRequestUrl = originalRequest.url.toString()
         val headers = parseHeaders(originalRequest.headers)
@@ -79,12 +81,12 @@ class CloudflareInterceptor(
                             .let { it != null && it != oldCookie }
                     }
 
-                    if (isCloudFlareBypassed()) {
+                    if(isCloudFlareBypassed()) {
                         cloudflareBypassed = true
                         latch.countDown()
                     }
 
-                    if (url == origRequestUrl && !challengeFound) {
+                    if(url == origRequestUrl && !challengeFound) {
                         // The first request didn't return the challenge, abort.
                         latch.countDown()
                     }
@@ -115,10 +117,6 @@ class CloudflareInterceptor(
         latch.awaitFor30Seconds()
 
         executor.execute {
-            if (!cloudflareBypassed) {
-                isWebViewOutdated = webview?.isOutdated() == true
-            }
-
             webview?.run {
                 stopLoading()
                 destroy()
@@ -126,12 +124,7 @@ class CloudflareInterceptor(
         }
 
         // Throw exception if we failed to bypass Cloudflare
-        if (!cloudflareBypassed) {
-            // Prompt user to update WebView if it seems too outdated
-            if (isWebViewOutdated) {
-                toast("Please update the webview app for better compatibility", Toast.LENGTH_LONG)
-            }
-
+        if(!cloudflareBypassed) {
             throw CloudflareBypassException()
         }
     }

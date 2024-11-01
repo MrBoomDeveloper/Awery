@@ -1,123 +1,117 @@
-package com.mrboomdev.awery.ui.adapter;
+package com.mrboomdev.awery.ui.adapter
 
-import android.annotation.SuppressLint;
-import android.view.ViewGroup;
+import android.annotation.SuppressLint
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.mrboomdev.awery.extensions.data.CatalogFeed
+import com.mrboomdev.awery.ui.fragments.feeds.FailedFeedViewHolder
+import com.mrboomdev.awery.ui.fragments.feeds.FeedViewHolder
+import com.mrboomdev.awery.ui.fragments.feeds.FeedViewHolder.Feed
+import com.mrboomdev.awery.ui.fragments.feeds.ListFeedViewHolder
+import com.mrboomdev.awery.ui.fragments.feeds.PagesFeedViewHolder
+import com.mrboomdev.awery.util.UniqueIdGenerator
+import java.util.WeakHashMap
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class MediaCategoriesAdapter : RecyclerView.Adapter<FeedViewHolder>() {
+	private val ids = WeakHashMap<Feed, Long?>()
+	private val feeds: MutableList<Feed> = ArrayList()
+	private val idGenerator = UniqueIdGenerator()
 
-import com.mrboomdev.awery.ui.fragments.feeds.FailedFeedViewHolder;
-import com.mrboomdev.awery.ui.fragments.feeds.FeedViewHolder;
-import com.mrboomdev.awery.ui.fragments.feeds.ListFeedViewHolder;
-import com.mrboomdev.awery.ui.fragments.feeds.PagesFeedViewHolder;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.WeakHashMap;
-
-public class MediaCategoriesAdapter extends RecyclerView.Adapter<FeedViewHolder> {
-	public static final int VIEW_TYPE_PAGES = 1;
-	public static final int VIEW_TYPE_LIST = 2;
-	public static final int VIEW_TYPE_ERROR = 3;
-	private final WeakHashMap<FeedViewHolder.Feed, Long> ids = new WeakHashMap<>();
-	private final List<FeedViewHolder.Feed> feeds = new ArrayList<>();
-	private final UniqueIdGenerator idGenerator = new UniqueIdGenerator();
-
-	@SuppressLint("NotifyDataSetChanged")
-	public MediaCategoriesAdapter() {
-		setHasStableIds(true);
+	init {
+		setHasStableIds(true)
 	}
 
-	@Override
-	public long getItemId(int position) {
-		return Objects.requireNonNull(ids.get(feeds.get(position)));
+	override fun getItemId(position: Int): Long {
+		return ids[feeds[position]]!!
 	}
 
-	@Override
-	public int getItemViewType(int position) {
-		var feed = feeds.get(position);
+	override fun getItemViewType(position: Int): Int {
+		val feed = feeds[position]
 
-		if(feed.getItems() == null || feed.getItems().isEmpty()) {
-			return VIEW_TYPE_ERROR;
+		if(feed.items == null || feed.items.isEmpty()) {
+			return VIEW_TYPE_ERROR
 		}
 
-		return switch(feed.getDisplayMode()) {
-			case LIST_HORIZONTAL -> VIEW_TYPE_LIST;
-			case SLIDES -> VIEW_TYPE_PAGES;
-			case LIST_VERTICAL, GRID -> VIEW_TYPE_LIST; // TODO: Handle other display modes
-		};
+		return when(feed.displayMode) {
+			CatalogFeed.DisplayMode.LIST_HORIZONTAL -> VIEW_TYPE_LIST
+			CatalogFeed.DisplayMode.SLIDES -> VIEW_TYPE_PAGES
+			CatalogFeed.DisplayMode.LIST_VERTICAL, CatalogFeed.DisplayMode.GRID -> VIEW_TYPE_LIST
+			else -> VIEW_TYPE_LIST
+		}
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void setFeeds(@NonNull List<FeedViewHolder.Feed> feeds) {
-		this.feeds.clear();
-		this.feeds.addAll(feeds);
-		this.idGenerator.reset();
+	fun setFeeds(feeds: List<Feed>) {
+		this.feeds.clear()
+		this.feeds.addAll(feeds)
+		idGenerator.reset()
 
-		for(var category : feeds) {
-			ids.put(category, idGenerator.getLong());
+		for(category in feeds) {
+			ids[category] = idGenerator.long
 		}
 
-		notifyDataSetChanged();
+		notifyDataSetChanged()
 	}
 
-	public void updateFeed(FeedViewHolder.Feed feed) {
-		updateFeed(feed, feed);
+	fun updateFeed(feed: Feed) {
+		updateFeed(feed, feed)
 	}
 
-	public void updateFeed(FeedViewHolder.Feed oldFeed, FeedViewHolder.Feed newFeed) {
-		var index = feeds.indexOf(oldFeed);
-		var id = ids.get(oldFeed);
+	fun updateFeed(oldFeed: Feed, newFeed: Feed) {
+		val index = feeds.indexOf(oldFeed)
+		val id = ids[oldFeed]
 
 		if(index == -1) {
-			throw new NoSuchElementException();
+			throw NoSuchElementException()
 		}
 
-		feeds.set(index, newFeed);
-		ids.remove(oldFeed);
-		ids.put(newFeed, id);
+		feeds[index] = newFeed
+		ids.remove(oldFeed)
+		ids[newFeed] = id
 
-		notifyItemChanged(index);
+		notifyItemChanged(index)
+	}
+
+	fun addFeed(feed: Feed) {
+		feeds.add(feed)
+		ids[feed] = idGenerator.long
+		notifyItemInserted(feeds.size - 1)
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void addFeed(FeedViewHolder.Feed feed) {
-		this.feeds.add(feed);
-		this.ids.put(feed, idGenerator.getLong());
-
-		// Try fixing auto scrolling to bottom
-		/*if(categories.size() <= 1) notifyDataSetChanged();
-		else */notifyItemInserted(feeds.size() - 1);
+	fun addFeed(feed: Feed, index: Int) {
+		feeds.add(index, feed)
+		ids[feed] = idGenerator.long
+		notifyItemInserted(index)
 	}
 
-	public void removeFeed(FeedViewHolder.Feed feed) {
-		var wasIndex = this.feeds.indexOf(feed);
-		this.feeds.remove(feed);
-		this.ids.remove(feed);
-		notifyItemRemoved(wasIndex);
+	fun removeFeed(feed: Feed) {
+		val wasIndex = feeds.indexOf(feed)
+		feeds.remove(feed)
+		ids.remove(feed)
+		notifyItemRemoved(wasIndex)
 	}
 
-	@NonNull
-	@Override
-	public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		return switch(viewType) {
-			case VIEW_TYPE_PAGES -> PagesFeedViewHolder.create(parent);
-			case VIEW_TYPE_LIST -> ListFeedViewHolder.create(parent);
-			case VIEW_TYPE_ERROR -> FailedFeedViewHolder.create(parent);
-			default -> throw new IllegalArgumentException("Unknown view type! " + viewType);
-		};
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
+		return when(viewType) {
+			VIEW_TYPE_PAGES -> PagesFeedViewHolder.create(parent)
+			VIEW_TYPE_LIST -> ListFeedViewHolder.create(parent)
+			VIEW_TYPE_ERROR -> FailedFeedViewHolder.create(parent)
+			else -> throw IllegalArgumentException("Unknown view type! $viewType")
+		}
 	}
 
-	@Override
-	public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
-		holder.bind(feeds.get(position));
+	override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
+		holder.bind(feeds[position])
 	}
 
-	@Override
-	public int getItemCount() {
-		return feeds.size();
+	override fun getItemCount(): Int {
+		return feeds.size
+	}
+
+	companion object {
+		const val VIEW_TYPE_PAGES: Int = 1
+		const val VIEW_TYPE_LIST: Int = 2
+		const val VIEW_TYPE_ERROR: Int = 3
 	}
 }

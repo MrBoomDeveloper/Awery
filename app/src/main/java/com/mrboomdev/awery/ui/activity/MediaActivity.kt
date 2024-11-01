@@ -1,205 +1,208 @@
-package com.mrboomdev.awery.ui.activity;
+package com.mrboomdev.awery.ui.activity
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.ContextThemeWrapper
+import android.view.View
+import android.widget.PopupMenu
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.elevation.SurfaceColors
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigationrail.NavigationRailView
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.share
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
+import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.extensions.data.CatalogVideo
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment
+import com.mrboomdev.awery.ui.fragments.MediaInfoFragment
+import com.mrboomdev.awery.ui.fragments.MediaPlayFragment
+import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment
+import com.mrboomdev.awery.util.MediaUtils
+import com.mrboomdev.awery.util.extensions.UI_INSETS
+import com.mrboomdev.awery.util.extensions.applyInsets
+import com.mrboomdev.awery.util.extensions.applyTheme
+import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.ui.FadeTransformer
+import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-import android.view.ContextThemeWrapper;
-import android.view.View;
-import android.widget.PopupMenu;
+class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras> {
+	private lateinit var binding: ScreenMediaDetailsBinding
+	private var commentsFragment: MediaCommentsFragment? = null
+	private var media: CatalogMedia? = null
+	private var pendingExtra: Any? = null
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
+	enum class Action {
+		WATCH, INFO, COMMENTS
+	}
 
-import com.google.android.material.elevation.SurfaceColors;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.navigationrail.NavigationRailView;
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.ThemeManager;
-import com.mrboomdev.awery.ui.fragments.MediaCommentsFragment;
-import com.mrboomdev.awery.ui.fragments.MediaInfoFragment;
-import com.mrboomdev.awery.ui.fragments.MediaPlayFragment;
-import com.mrboomdev.awery.ui.fragments.MediaRelationsFragment;
-import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.extensions.MediaExtensionsKt;
-import com.mrboomdev.awery.util.ui.FadeTransformer;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-public class MediaActivity extends AppCompatActivity {
-	public static final String EXTRA_ACTION_WATCH = "WATCH";
-	public static final String EXTRA_ACTION_INFO = "INFO";
-	public static final String EXTRA_ACTION_COMMENTS = "COMMENTS";
-	public static final String EXTRA_MEDIA = "MEDIA";
-	public static final String EXTRA_ACTION = "ACTION";
-	private ScreenMediaDetailsBinding binding;
-	private MediaCommentsFragment commentsFragment;
-	private CatalogMedia media;
-	private Object pendingExtra;
-
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({ EXTRA_ACTION_WATCH, EXTRA_ACTION_INFO, EXTRA_ACTION_COMMENTS })
-	public @interface Action {}
+	data class Extras(val media: CatalogMedia, val action: Action? = null)
 
 	@SuppressLint("NonConstantResourceId")
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
-		super.onCreate(savedInstanceState);
+	override fun onCreate(savedInstanceState: Bundle?) {
+		applyTheme()
+		enableEdgeToEdge()
+		super.onCreate(savedInstanceState)
 
-		binding = ScreenMediaDetailsBinding.inflate(getLayoutInflater());
-		binding.pager.setUserInputEnabled(false);
-		binding.pager.setPageTransformer(new FadeTransformer());
-		binding.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
+		binding = ScreenMediaDetailsBinding.inflate(layoutInflater)
+		binding.root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
 
-		setOnApplyUiInsetsListener(binding.navigation, insets -> {
-			if(AwerySettings.USE_AMOLED_THEME.getValue()) {
-				binding.navigation.setBackgroundColor(0xff000000);
-				getWindow().setNavigationBarColor(isLandscape() ? 0 : 0xff000000);
-			} else {
-				binding.navigation.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this));
-				getWindow().setNavigationBarColor(isLandscape() ? 0 : SurfaceColors.SURFACE_2.getColor(this));
+		binding.pager.apply {
+			isUserInputEnabled = false
+			adapter = PagerAdapter(supportFragmentManager, lifecycle)
+			setPageTransformer(FadeTransformer())
+		}
+
+		binding.navigation.apply {
+			if(AwerySettings.USE_AMOLED_THEME.value) {
+				setBackgroundColor(0x00000000)
 			}
 
-			if(binding.navigation instanceof NavigationRailView) {
-				binding.navigation.setPadding(insets.left, insets.top, 0, 0);
-			} else {
-				binding.navigation.setPadding(0, 0, 0, insets.bottom);
+			if(this is NavigationRailView) {
+				addHeaderView(FloatingActionButton(
+					context,
+					null,
+					com.google.android.material.R.attr.floatingActionButtonSmallSecondaryStyle
+				).apply {
+					background = ContextCompat.getDrawable(context, R.drawable.ripple_circle_white)
+					setImageResource(R.drawable.ic_back)
+					setOnClickListener { finish() }
+				})
 			}
 
-			return true;
-		});
-
-		if(binding.navigation instanceof NavigationRailView rail) {
-			var style = com.google.android.material.R.attr.floatingActionButtonSmallSecondaryStyle;
-			var header = new FloatingActionButton(this, null, style);
-			header.setImageResource(R.drawable.ic_back);
-			header.setOnClickListener(v -> finish());
-			header.setBackground(ContextCompat.getDrawable(this, R.drawable.ripple_circle_white));
-			rail.addHeaderView(header);
-		}
-
-		if(AwerySettings.USE_AMOLED_THEME.getValue()) {
-			binding.navigation.setBackgroundColor(0x00000000);
-		}
-
-		setMedia(requireArgument(this, EXTRA_MEDIA, CatalogMedia.class));
-	}
-
-	public static void handleOptionsClick(@NonNull View anchor, @NonNull CatalogMedia media) {
-		var context = new ContextThemeWrapper(anchor.getContext(), anchor.getContext().getTheme());
-		var popup = new PopupMenu(context, anchor);
-
-		if(media.url != null) {
-			popup.getMenu().add(0, 0, 0, R.string.share);
-		}
-
-		popup.getMenu().add(0, 1, 0, R.string.blacklist);
-
-		popup.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
-			case 0: MediaExtensionsKt.share(media, context); yield true;
-			case 1: MediaUtils.blacklistMedia(media, () -> toast("Blacklisted successfully")); yield true;
-			default: yield false;
-		});
-
-		popup.show();
-	}
-
-	@SuppressLint("NonConstantResourceId")
-	public void setMedia(@NonNull CatalogMedia media) {
-		this.media = media;
-		binding.pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), getLifecycle()));
-
-		var navigation = (NavigationBarView) binding.navigation;
-
-		navigation.setOnItemSelectedListener(item -> {
-			binding.pager.setCurrentItem(switch(item.getItemId()) {
-				case R.id.info -> 0;
-				case R.id.watch -> 1;
-				case R.id.comments -> 2;
-				case R.id.relations -> 3;
-				default -> throw new IllegalArgumentException("Invalid item id: " + item.getItemId());
-			}, false);
-			return true;
-		});
-
-		if(media.type == CatalogMedia.MediaType.POST || media.type == CatalogMedia.MediaType.BOOK) {
-			var item = navigation.getMenu().findItem(R.id.watch);
-			item.setIcon(R.drawable.ic_book);
-			item.setTitle(R.string.read);
-		}
-
-		var action = getIntent().getStringExtra(EXTRA_ACTION);
-		if(action != null) launchAction(action);
-
-		setContentView(binding.getRoot());
-	}
-
-	public void launchAction(@NonNull String action, Object payload) {
-		var navigation = (NavigationBarView) binding.navigation;
-
-		navigation.setSelectedItemId(switch(action) {
-			case EXTRA_ACTION_INFO -> R.id.info;
-			case EXTRA_ACTION_WATCH -> R.id.watch;
-
-			case EXTRA_ACTION_COMMENTS -> {
-				if(commentsFragment != null) {
-					commentsFragment.setEpisode((CatalogVideo) payload);
+			applyInsets(UI_INSETS, { view, insets ->
+				if(AwerySettings.USE_AMOLED_THEME.value) {
+					view.setBackgroundColor(-0x1000000)
+					window.navigationBarColor = if(isLandscape) 0 else -0x1000000
 				} else {
-					pendingExtra = payload;
+					view.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(context))
+					window.navigationBarColor = if(isLandscape) 0 else SurfaceColors.SURFACE_2.getColor(context)
 				}
 
-				yield R.id.comments;
+				if(view is NavigationRailView) {
+					view.setPadding(insets.left, insets.top, 0, 0)
+				} else {
+					view.setPadding(0, 0, 0, insets.bottom)
+				}
+
+				true
+			})
+
+			setOnItemSelectedListener { item ->
+				binding.pager.setCurrentItem(
+					when(item.itemId) {
+						R.id.info -> 0
+						R.id.watch -> 1
+						R.id.comments -> 2
+						R.id.relations -> 3
+						else -> throw IllegalArgumentException("Invalid item id: " + item.itemId)
+					}, false
+				)
+
+				true
+			}
+		}
+
+		val args = safeArgs!!
+		setMedia(args.media)
+		launchAction(args.action ?: Action.INFO)
+		setContentView(binding.root)
+	}
+
+	@SuppressLint("NonConstantResourceId")
+	fun setMedia(media: CatalogMedia) {
+		this.media = media
+
+		if(media.type == CatalogMedia.Type.POST || media.type == CatalogMedia.Type.BOOK) {
+			binding.navigation.menu.findItem(R.id.watch).apply {
+				setIcon(R.drawable.ic_book)
+				setTitle(R.string.read)
+			}
+		}
+	}
+
+	@JvmOverloads
+	fun launchAction(action: Action, payload: Any? = null) {
+		binding.navigation.selectedItemId = when(action) {
+			Action.INFO -> R.id.info
+			Action.WATCH -> R.id.watch
+
+			Action.COMMENTS -> {
+				if(commentsFragment != null) {
+					commentsFragment!!.setEpisode(payload as CatalogVideo?)
+				} else {
+					pendingExtra = payload
+				}
+
+				R.id.comments
+			}
+		}
+	}
+
+	private inner class PagerAdapter(
+		fragmentManager: FragmentManager,
+		lifecycle: Lifecycle
+	) : FragmentStateAdapter(fragmentManager, lifecycle) {
+		override fun createFragment(position: Int): Fragment {
+			return when(position) {
+				0 -> MediaInfoFragment(media)
+				1 -> MediaPlayFragment(media)
+				3 -> MediaRelationsFragment()
+
+				2 -> {
+					val it = MediaCommentsFragment(media, pendingExtra as CatalogVideo?)
+					commentsFragment = it
+					it
+				}
+
+				else -> throw IllegalArgumentException("Invalid position: $position")
+			}
+		}
+
+		override fun getItemCount(): Int {
+			return 4
+		}
+	}
+
+	companion object {
+
+		@JvmStatic
+		fun handleOptionsClick(anchor: View, media: CatalogMedia) {
+			val context = ContextThemeWrapper(anchor.context, anchor.context.theme)
+			val popup = PopupMenu(context, anchor)
+
+			if(media.url != null) {
+				popup.menu.add(0, 0, 0, R.string.share)
 			}
 
-			default -> throw new IllegalArgumentException("Invalid action: " + action);
-		});
-	}
+			popup.menu.add(0, 1, 0, R.string.blacklist)
 
-	public void launchAction(@NonNull String action) {
-		launchAction(action, null);
-	}
+			popup.setOnMenuItemClickListener { item ->
+				when(item.itemId) {
+					0 -> {
+						share(media.url!!)
+						true
+					}
 
-	private class PagerAdapter extends FragmentStateAdapter {
+					1 -> {
+						MediaUtils.blacklistMedia(media) { toast("Blacklisted successfully") }
+						true
+					}
 
-		public PagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-			super(fragmentManager, lifecycle);
-		}
+					else -> false
+				}
+			}
 
-		@NonNull
-		@Override
-		public Fragment createFragment(int position) {
-			return switch(position) {
-				case 0 -> new MediaInfoFragment(media);
-				case 1 -> new MediaPlayFragment(media);
-				case 3 -> new MediaRelationsFragment();
-				case 2 -> commentsFragment = new MediaCommentsFragment(media, (CatalogVideo) pendingExtra);
-				default -> throw new IllegalArgumentException("Invalid position: " + position);
-			};
-		}
-
-		@Override
-		public int getItemCount() {
-			return 4;
+			popup.show()
 		}
 	}
 }

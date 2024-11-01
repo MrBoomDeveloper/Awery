@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.util;
 
-import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.app.data.db.item.DBTab;
 
 import java.util.List;
 

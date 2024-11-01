@@ -9,15 +9,15 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.getDatabase
-import com.mrboomdev.awery.app.App.showLoadingWindow
-import com.mrboomdev.awery.app.App.toast
-import com.mrboomdev.awery.data.Constants.HIDDEN_LISTS
-import com.mrboomdev.awery.data.db.item.DBCatalogList
-import com.mrboomdev.awery.data.db.item.DBCatalogMedia
+import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.data.Constants.HIDDEN_LISTS
+import com.mrboomdev.awery.app.data.db.item.DBCatalogList
+import com.mrboomdev.awery.app.data.db.item.DBCatalogMedia
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding
 import com.mrboomdev.awery.extensions.data.CatalogList
-import com.mrboomdev.awery.extensions.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.inflater
@@ -37,10 +37,10 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
         val checked = HashMap<String, Boolean>()
 
         CoroutineScope(Dispatchers.IO).launch {
-            val lists = getDatabase().listDao.all
+            val lists = database.listDao.all
                 .filter { !HIDDEN_LISTS.contains(it.id) }
 
-            val progress = getDatabase().mediaProgressDao[media.globalId]
+            val progress = database.mediaProgressDao[media.globalId]
                 ?: CatalogMediaProgress(media.globalId)
 
             fun createListView(item: CatalogList) {
@@ -98,10 +98,10 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
                         return@dismissListener
                     }
 
-                    launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+                    CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
                         toast("Failed to save!")
                         Log.e(TAG, "Failed to save bookmark", t)
-                    }) {
+                    }).launch {
                         progress.clearLists()
 
                         for(entry in checked.entries) {
@@ -110,8 +110,8 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
                         }
 
                         // Update poster, tags and so on...
-                        getDatabase().mediaDao.insert(DBCatalogMedia.fromCatalogMedia(media))
-                        getDatabase().mediaProgressDao.insert(progress)
+                        database.mediaDao.insert(DBCatalogMedia.fromCatalogMedia(media))
+                        database.mediaProgressDao.insert(progress)
 
                         // TODO: Need to replace this with something new
                         //LibraryFragment.notifyDataChanged()
@@ -147,7 +147,7 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
                     CoroutineScope(Dispatchers.IO).launch {
                         val list = CatalogList(text)
                         val dbList = DBCatalogList.fromCatalogList(list)
-                        getDatabase().listDao.insert(dbList)
+                        database.listDao.insert(dbList)
 
                         launch(Dispatchers.Main) {
                             callback(list)
@@ -170,7 +170,7 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
 
                     CoroutineScope(Dispatchers.IO).launch {
                         val dbList = DBCatalogList.fromCatalogList(list)
-                        getDatabase().listDao.delete(dbList)
+                        database.listDao.delete(dbList)
 
                         launch(Dispatchers.Main) {
                             callback()

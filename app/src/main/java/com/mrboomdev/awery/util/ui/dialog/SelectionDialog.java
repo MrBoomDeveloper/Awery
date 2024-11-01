@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
@@ -19,17 +21,31 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.ui.ViewUtil;
 
 import java.util.Objects;
 
 public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<T>> {
 	private final Mode mode;
 	private final LinearLayoutCompat contentView;
-	private Selection<T> items = Selection.empty();
+	@Nullable
+	private Selection<T> items;
 	private RadioGroup radioGroup;
 	private ChipGroup chipGroup;
 	private boolean isChecking;
+	
+	@NonNull
+	public static <T> SelectionDialog<T> single(Context context, Selection<T> items) {
+		var dialog = new SelectionDialog<T>(context, Mode.SINGLE);
+		dialog.setItems(items);
+		return dialog;
+	}
+	
+	@NonNull
+	public static <T> SelectionDialog<T> multi(Context context, Selection<T> items) {
+		var dialog = new SelectionDialog<T>(context, Mode.MULTI);
+		dialog.setItems(items);
+		return dialog;
+	}
 
 	public SelectionDialog(Context context, Mode mode) {
 		super(context);
@@ -46,7 +62,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			chipGroup = new ChipGroup(context);
 			chipGroup.setChipSpacingVertical(dpPx(chipGroup, -4));
 
-			var chipsParams = new LinearLayoutCompat.LayoutParams(ViewUtil.MATCH_PARENT, ViewUtil.MATCH_PARENT);
+			var chipsParams = new LinearLayoutCompat.LayoutParams(MATCH_PARENT, MATCH_PARENT);
 			contentView.addView(chipGroup, chipsParams);
 		}
 	}
@@ -83,7 +99,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 				isChecking = false;
 			});
 
-			radioGroup.addView(radio, ViewUtil.MATCH_PARENT, ViewUtil.WRAP_CONTENT);
+			radioGroup.addView(radio, MATCH_PARENT, WRAP_CONTENT);
 		}
 	}
 
@@ -137,6 +153,10 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 	}
 
 	public Selection<T> getSelection() {
+		if(items == null) {
+			return Selection.empty();
+		}
+		
 		return items;
 	}
 

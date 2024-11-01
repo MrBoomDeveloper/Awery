@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.data;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
@@ -12,8 +11,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
@@ -133,7 +133,7 @@ public class CatalogFeed implements Serializable {
 		return switch(feed.sourceFeed) {
 			// TODO: Finish other templates
 
-			case TEMPLATE_BOOKMARKS -> stream(getDatabase().getListDao().getAll())
+			case TEMPLATE_BOOKMARKS -> stream(App.Companion.getDatabase().getListDao().getAll())
 					.map(list -> {
 						var result = new CatalogFeed();
 						result.sourceManager = TEMPLATING_SOURCE_MANAGER;

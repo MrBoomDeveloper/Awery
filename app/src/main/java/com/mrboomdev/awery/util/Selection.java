@@ -298,10 +298,6 @@ public class Selection<T> implements Collection<Map.Entry<T, Selection.State>> {
 			this(item, id, State.EXCLUDED);
 		}
 
-		public Selectable(T item, State state) {
-			this(item, null, state);
-		}
-
 		public Selectable(T item) {
 			this(item, null, State.EXCLUDED);
 		}

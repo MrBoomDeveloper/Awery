@@ -4,13 +4,13 @@ import android.content.Context
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.mrboomdev.awery.app.App.Companion.share
 import com.mrboomdev.awery.databinding.PopupMediaActionsBinding
-import com.mrboomdev.awery.extensions.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ui.activity.MediaActivity
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.inflater
-import com.mrboomdev.awery.util.extensions.openActivity
-import com.mrboomdev.awery.util.extensions.share
+import com.mrboomdev.awery.util.extensions.startActivity
 
 class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
     var updateCallback: (() -> Unit)? = null
@@ -20,12 +20,16 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
         if(media.url == null) binding.share.visibility = View.GONE
         binding.title.text = media.title
 
-        binding.share.setOnClickListener { media.share(context) }
+        binding.share.setOnClickListener { media.url?.let { share(it) } }
+
         binding.bookmark.setOnClickListener { MediaBookmarkDialog(media).show(context) }
         binding.close.setOnClickListener { dismiss() }
 
         binding.play.setOnClickListener {
-            media.openActivity(context, MediaActivity.EXTRA_ACTION_WATCH)
+            context.startActivity(MediaActivity::class, MediaActivity.Extras(
+                media = media, action = MediaActivity.Action.WATCH
+            ))
+
             dismiss()
         }
 
@@ -34,7 +38,7 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
             dismiss()
         }
 
-        media.bestPoster.let {
+        media.poster.let {
             if(it == null) binding.poster.visibility = View.GONE
             else Glide.with(context)
                 .load(it)

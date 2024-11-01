@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
+import static java.util.Objects.requireNonNull;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -24,14 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.db.item.DBTab;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.db.item.DBTab;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItemType;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.ui.adapter.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
@@ -44,7 +45,6 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
@@ -109,6 +109,10 @@ public abstract class FeedsFragment extends Fragment {
 			setContentBehindToolbarEnabled(false);
 
 			thread(() -> {
+				//if(!isReload) {
+					// TODO: 10/27/2024 Load cached feeds if they aren't too old
+				//}
+				
 				var processedFeeds = CatalogFeed.processFeeds(feeds);
 
 				if(processedFeeds.isEmpty()) {
@@ -131,7 +135,7 @@ public abstract class FeedsFragment extends Fragment {
 		loadFeed(feed, new AsyncFuture.Callback<>() {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
-			public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
+			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) {
 				if(currentLoadId != loadId) return;
 
 				var filtered = MediaUtils.filterMediaSync(searchResults);
@@ -152,7 +156,7 @@ public abstract class FeedsFragment extends Fragment {
 
 					// I hope it'll don't do anything bad
 					if(rowsAdapter.getItemCount() < 2) {
-						Objects.requireNonNull(binding.recycler.getAdapter()).notifyDataSetChanged();
+						requireNonNull(binding.recycler.getAdapter()).notifyDataSetChanged();
 					}
 				}, binding.recycler);
 
@@ -160,7 +164,7 @@ public abstract class FeedsFragment extends Fragment {
 			}
 
 			@Override
-			public void onFailure(Throwable e) {
+			public void onFailure(@NonNull Throwable e) {
 				if(currentLoadId != loadId) return;
 				Log.e(TAG, "Failed to load an feed!", e);
 
@@ -177,7 +181,7 @@ public abstract class FeedsFragment extends Fragment {
 							loadFeed(feed, new AsyncFuture.Callback<>() {
 								@SuppressLint("NotifyDataSetChanged")
 								@Override
-								public void onSuccess(CatalogSearchResults<? extends CatalogMedia> searchResults) {
+								public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) {
 									if(currentLoadId != loadId) return;
 
 									var filtered = MediaUtils.filterMediaSync(searchResults);
@@ -204,7 +208,7 @@ public abstract class FeedsFragment extends Fragment {
 								}
 
 								@Override
-								public void onFailure(Throwable t) {
+								public void onFailure(@NonNull Throwable t) {
 									if(currentLoadId != loadId) return;
 									Log.e(TAG, "Failed to reload an feed!", e);
 
@@ -222,7 +226,7 @@ public abstract class FeedsFragment extends Fragment {
 
 					var rowFeed = new FeedViewHolder.Feed(feed, e, reloadCallback.get());
 					theRowFeed.set(rowFeed);
-					runOnUiThread(() -> failedRowsAdapter.addFeed(rowFeed), binding.recycler);
+					runOnUiThread(() -> failedRowsAdapter.addFeed(rowFeed, 0), binding.recycler);
 				}
 
 				tryToLoadNextFeed(feed, currentLoadId);
@@ -333,12 +337,12 @@ public abstract class FeedsFragment extends Fragment {
 			@Override
 			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
 				if(newState != RecyclerView.SCROLL_STATE_IDLE) return;
-
-				var manager = Objects.requireNonNull(
-						(LinearLayoutManager) recyclerView.getLayoutManager());
-
-				if(manager.findFirstCompletelyVisibleItemPosition() == 0) {
-					binding.headerWrapper.setExpanded(true, true);
+				var manager = requireNonNull(recyclerView.getLayoutManager());
+				
+				if(manager instanceof LinearLayoutManager linearLayoutManager) {
+					if(linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+						binding.headerWrapper.setExpanded(true, true);
+					}
 				}
 			}
 		});
@@ -352,7 +356,16 @@ public abstract class FeedsFragment extends Fragment {
 
 		return binding.getRoot();
 	}
-
+	
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		binding.recycler.requestFocus();
+	}
+	
+	public void onFocus() {
+		binding.recycler.requestFocus();
+	}
+	
 	protected abstract SettingsList getFilters();
 
 	protected abstract int getMaxLoadsAtSameTime();

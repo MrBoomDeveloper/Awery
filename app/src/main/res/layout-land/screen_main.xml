@@ -48,7 +48,7 @@
         android:id="@+id/navbar_material"
         android:visibility="gone"
         tools:visibility="visible"
-        app:menuGravity="center"
+        app:menuGravity="top"
         tools:menu="@menu/media_details_menu"
         app:elevation="8dp"
         android:layout_width="wrap_content"

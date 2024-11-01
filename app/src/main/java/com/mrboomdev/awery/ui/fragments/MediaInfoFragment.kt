@@ -1,305 +1,309 @@
-package com.mrboomdev.awery.ui.fragments;
+package com.mrboomdev.awery.ui.fragments
 
-import static com.mrboomdev.awery.app.App.getMarkwon;
-import static com.mrboomdev.awery.app.App.getOrientation;
-import static com.mrboomdev.awery.app.App.isLandscape;
-import static com.mrboomdev.awery.app.App.openUrl;
-import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setRightPadding;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
-import static com.mrboomdev.awery.util.ui.ViewUtil.setTopPadding;
+import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.material.chip.Chip
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.getMarkwon
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.openUrl
+import com.mrboomdev.awery.app.App.Companion.orientation
+import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.AweryLocales
+import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding
+import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogTag
+import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.ui.activity.GalleryActivity
+import com.mrboomdev.awery.ui.activity.MediaActivity
+import com.mrboomdev.awery.ui.activity.MediaActivity.Companion.handleOptionsClick
+import com.mrboomdev.awery.ui.activity.search.SearchActivity
+import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog
+import com.mrboomdev.awery.util.extensions.UI_INSETS
+import com.mrboomdev.awery.util.extensions.applyInsets
+import com.mrboomdev.awery.util.extensions.bottomPadding
+import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.resolveAttrColor
+import com.mrboomdev.awery.util.extensions.rightPadding
+import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.util.extensions.toCalendar
+import com.mrboomdev.awery.util.extensions.toColorState
+import com.mrboomdev.awery.util.extensions.topMargin
+import com.mrboomdev.awery.util.extensions.topPadding
+import com.mrboomdev.safeargsnext.owner.SafeArgsFragment
+import java.lang.ref.WeakReference
+import java.util.Calendar
 
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class MediaInfoFragment @JvmOverloads constructor(
+	private var media: CatalogMedia? = null
+) : Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
+	private var cachedPoster: WeakReference<Drawable>? = null
+	private lateinit var binding: MediaDetailsOverviewLayoutBinding
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.chip.Chip;
-import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
-import com.mrboomdev.awery.extensions.data.CatalogTag;
-import com.mrboomdev.awery.ui.activity.GalleryActivity;
-import com.mrboomdev.awery.ui.activity.MediaActivity;
-import com.mrboomdev.awery.ui.activity.search.SearchActivity;
-import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog;
-import com.mrboomdev.awery.util.TranslationUtil;
-
-import java.lang.ref.WeakReference;
-import java.util.Calendar;
-import java.util.HashSet;
-
-import java9.util.Objects;
-
-public class MediaInfoFragment extends Fragment {
-	private static final String TAG = "MediaInfoFragment";
-	private WeakReference<Drawable> cachedPoster;
-	private MediaDetailsOverviewLayoutBinding binding;
-	private CatalogMedia media;
-
-	public MediaInfoFragment(CatalogMedia media) {
-		this.media = media;
-
-		var bundle = new Bundle();
-		bundle.putSerializable("media", media);
-		setArguments(bundle);
-	}
+	data class Args(val media: CatalogMedia)
 
 	/**
 	 * DO NOT CALL THIS CONSTRUCTOR DIRECTLY!
 	 * @author MrBoomDev
 	 */
-	public MediaInfoFragment() {
-		this(null);
+	init {
+		val bundle = Bundle()
+		bundle.putSerializable("media", media)
+		arguments = bundle
 	}
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		if(media == null) {
-			media = requireArgument(this, "media");
+			media = safeArgs!!.media
 		}
 
-		var type = Objects.requireNonNullElse(media.type, CatalogMedia.MediaType.TV);
-		var title = Objects.requireNonNullElse(media.getTitle(), "No title");
-		var meta = generateGeneralMetaString(media);
+		val type = media!!.type ?: CatalogMedia.Type.TV
+		val title = media!!.title ?: "No title"
+		val meta = generateGeneralMetaString(media!!)
 
-		binding.details.play.setText(switch(type) {
-			case TV, MOVIE -> R.string.watch;
-			case BOOK, POST -> R.string.read;
-		});
+		binding.details.play.setText(
+			when(type) {
+				CatalogMedia.Type.TV, CatalogMedia.Type.MOVIE -> R.string.watch
+				CatalogMedia.Type.BOOK, CatalogMedia.Type.POST -> R.string.read
+			}
+		)
 
-		binding.details.play.setIcon(ContextCompat.getDrawable(requireContext(), switch(type) {
-			case TV, MOVIE -> R.drawable.ic_play_filled;
-			case BOOK, POST -> R.drawable.ic_round_import_contacts_24;
-		}));
+		binding.details.play.setIcon(
+			ContextCompat.getDrawable(
+				requireContext(), when(type) {
+					CatalogMedia.Type.TV, CatalogMedia.Type.MOVIE -> R.drawable.ic_play_filled
+					CatalogMedia.Type.BOOK, CatalogMedia.Type.POST -> R.drawable.ic_round_import_contacts_24
+				}
+			)
+		)
 
 		if(meta.isBlank()) {
-			binding.details.generalMeta.setVisibility(View.GONE);
+			binding.details.generalMeta.visibility = View.GONE
 		}
 
-		binding.details.title.setText(title);
-		binding.details.generalMeta.setText(meta);
+		binding.details.title.text = title
+		binding.details.generalMeta.text = meta
 
-		var banner = getOrientation() == Configuration.ORIENTATION_LANDSCAPE
-				? media.getBestBanner() : media.getBestPoster();
+		val banner = if(orientation == Configuration.ORIENTATION_LANDSCAPE
+		) media!!.banner else media!!.poster
 
-		Glide.with(binding.getRoot())
-				.load(banner)
-				.transition(DrawableTransitionOptions.withCrossFade())
-				.into(binding.banner);
+		Glide.with(binding.root)
+			.load(banner)
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(binding.banner)
 
-		Glide.with(binding.getRoot())
-				.load(media.getBestPoster())
-				.transition(DrawableTransitionOptions.withCrossFade())
-				.addListener(new RequestListener<>() {
-					@Override
-					public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-						return false;
-					}
-
-					@Override
-					public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-						cachedPoster = new WeakReference<>(resource);
-						return false;
-					}
-				}).into(binding.poster);
-
-		binding.posterWrapper.setOnClickListener(v -> {
-			binding.poster.setTransitionName("poster");
-
-			var intent = new Intent(requireContext(), GalleryActivity.class);
-			intent.putExtra(GalleryActivity.EXTRA_URLS, new String[] { media.getBestPoster() });
-			startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
-					requireActivity(), binding.poster, "poster").toBundle());
-		});
-
-		binding.details.play.setOnClickListener(v -> {
-			if(requireActivity() instanceof MediaActivity activity) activity.launchAction("watch");
-			else throw new IllegalStateException("Activity is not an instance of MediaActivity!");
-		});
-
-		binding.details.bookmark.setOnClickListener(v ->
-				new MediaBookmarkDialog(media).show(requireContext()));
-
-		if(media.description != null && !media.description.isBlank()) {
-			var description = getMarkwon(requireContext()).toMarkdown(media.description);
-
-			if(!description.toString().isBlank()) {
-				binding.details.description.setText(description);
-			} else {
-				binding.details.description.setVisibility(View.GONE);
-				binding.details.descriptionTitle.setVisibility(View.GONE);
-			}
-		} else {
-			binding.details.description.setVisibility(View.GONE);
-			binding.details.descriptionTitle.setVisibility(View.GONE);
-		}
-
-		if(media.tags == null || media.tags.isEmpty()) {
-			binding.details.tagsTitle.setVisibility(View.GONE);
-			binding.details.tags.setVisibility(View.GONE);
-		} else {
-			var spoilers = new HashSet<CatalogTag>();
-
-			for(var tag : media.tags) {
-				if(tag.isSpoiler()) {
-					spoilers.add(tag);
-					continue;
+		Glide.with(binding.root)
+			.load(media!!.poster ?: banner)
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.addListener(object : RequestListener<Drawable> {
+				override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>, isFirstResource: Boolean): Boolean {
+					return false
 				}
 
-				addTagView(tag);
+				override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+					cachedPoster = WeakReference(resource)
+					return false
+				}
+			}).into(binding.poster)
+
+		binding.posterWrapper.setOnClickListener {
+			binding.poster.transitionName = "poster"
+			val intent = Intent(requireContext(), GalleryActivity::class.java)
+			intent.putExtra(GalleryActivity.EXTRA_URLS, arrayOf(media!!.poster ?: media!!.banner))
+			startActivity(
+				intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+					requireActivity(), binding.poster, "poster"
+				).toBundle()
+			)
+		}
+
+		binding.details.play.setOnClickListener {
+			(requireActivity() as MediaActivity).launchAction(MediaActivity.Action.WATCH)
+		}
+
+		binding.details.bookmark.setOnClickListener {
+			MediaBookmarkDialog(media!!).show(requireContext())
+		}
+
+		if(media!!.description != null && media!!.description!!.isNotBlank()) {
+			val description = getMarkwon(requireContext()).toMarkdown(media!!.description!!)
+
+			if(description.toString().isNotBlank()) {
+				binding.details.description.text = description
+			} else {
+				binding.details.description.visibility = View.GONE
+				binding.details.descriptionTitle.visibility = View.GONE
+			}
+		} else {
+			binding.details.description.visibility = View.GONE
+			binding.details.descriptionTitle.visibility = View.GONE
+		}
+
+		if(media!!.tags == null || media!!.tags!!.isEmpty()) {
+			binding.details.tagsTitle.visibility = View.GONE
+			binding.details.tags.visibility = View.GONE
+		} else {
+			val spoilers = HashSet<CatalogTag>()
+
+			for(tag in media!!.tags!!) {
+				if(tag.isSpoiler) {
+					spoilers.add(tag)
+					continue
+				}
+
+				addTagView(tag)
 			}
 
-			if(!spoilers.isEmpty()) {
-				var spoilerChip = new Chip(requireContext());
+			if(spoilers.isNotEmpty()) {
+				val spoilerChip = Chip(requireContext())
 
-				spoilerChip.setChipBackgroundColor(ColorStateList.valueOf(resolveAttrColor(
-						requireContext(), com.google.android.material.R.attr.colorSecondaryContainer)));
+				spoilerChip.chipBackgroundColor = requireContext().resolveAttrColor(
+					com.google.android.material.R.attr.colorSecondaryContainer).toColorState()
 
-				spoilerChip.setText("Show spoilers");
-				binding.details.tags.addView(spoilerChip);
+				spoilerChip.text = "Show spoilers"
+				binding.details.tags.addView(spoilerChip)
 
-				spoilerChip.setOnClickListener(v -> {
-					binding.details.tags.removeView(spoilerChip);
+				spoilerChip.setOnClickListener {
+					binding.details.tags.removeView(spoilerChip)
 
-					for(var tag : spoilers) {
-						addTagView(tag);
+					for(tag in spoilers) {
+						addTagView(tag)
 					}
-				});
+				}
 			}
 		}
 
-		binding.details.browser.setVisibility(media.url != null ? View.VISIBLE : View.GONE);
+		binding.details.browser.visibility = if(media!!.url != null) View.VISIBLE else View.GONE
 	}
 
-	private void addTagView(@NonNull CatalogTag tag) {
-		var chip = new Chip(requireContext());
-		chip.setText(tag.getName());
-		binding.details.tags.addView(chip);
+	private fun addTagView(tag: CatalogTag) {
+		val chip = Chip(requireContext())
+		chip.text = tag.name
+		binding.details.tags.addView(chip)
 
-		chip.setOnClickListener(v -> {
-			var intent = new Intent(requireContext(), SearchActivity.class);
-			intent.setAction(SearchActivity.ACTION_SEARCH_BY_TAG);
-			intent.putExtra(SearchActivity.EXTRA_TAG, tag.getName());
-			intent.putExtra(SearchActivity.EXTRA_GLOBAL_PROVIDER_ID, media.globalId);
-			startActivity(intent);
-		});
+		chip.setOnClickListener {
+			startActivity(SearchActivity::class, args = SearchActivity.Extras(
+				action = SearchActivity.Action.SEARCH_BY_TAG,
+				queryTag = tag.name,
+				sourceGlobalId = media!!.globalId
+			))
+		}
 
-		chip.setOnLongClickListener(v -> {
-			toast("New thing will appear here in future ;)");
-			return true;
-		});
+		chip.setOnLongClickListener {
+			toast("New thing will appear here in future ;)")
+			true
+		}
 	}
 
-	@NonNull
-	private String generateGeneralMetaString(@NonNull CatalogMedia media) {
-		var builder = new StringBuilder();
+	private fun generateGeneralMetaString(media: CatalogMedia): String {
+		val metas = mutableListOf<String>()
 
 		if(media.episodesCount != null) {
-			builder.append(media.episodesCount).append(" ");
-
-			if(media.episodesCount == 1) builder.append(getString(R.string.episode));
-			else builder.append(getString(R.string.episodes));
+			if(media.episodesCount == 1) metas.add(getString(R.string.episode))
+			else metas.add(getString(R.string.episodes))
 		}
 
 		if(media.duration != null) {
-			if(builder.length() > 0) builder.append(" • ");
-
-			if(media.duration < 60) {
-				builder.append(media.duration).append(getString(R.string.minute_short)).append(" ");
-			} else {
-				builder.append((media.duration / 60)).append(getString(R.string.hour_short)).append(" ")
-						.append((media.duration % 60)).append(getString(R.string.minute_short)).append(" ");
-			}
-
-			builder.append(getString(R.string.duration));
+			metas.add(media.duration!!.let {
+				return@let if(it < 60) {
+					"$it${getString(R.string.minute_short)}"
+				} else {
+					"${it / 60}${getString(R.string.hour_short)} " +
+							"${it % 60}${getString(R.string.minute_short)}"
+				}
+			} + " " + getString(R.string.duration))
 		}
 
 		if(media.releaseDate != null) {
-			if(builder.length() > 0) builder.append(" • ");
-			builder.append(media.releaseDate.get(Calendar.YEAR));
+			metas.add(media.releaseDate!!.toCalendar()[Calendar.YEAR].toString())
 		}
 
 		if(media.country != null) {
-			if(builder.length() > 0) builder.append(" • ");
-			builder.append(TranslationUtil.getTranslatedCountryName(requireContext(), media.country));
+			metas.add(AweryLocales.translateCountryName(requireContext(), media.country!!))
 		}
 
-		return builder.toString();
+		if(metas.size < 4 && media.status != null) {
+			metas.add(getString(when(media.status!!) {
+				CatalogMedia.Status.ONGOING -> R.string.status_releasing
+				CatalogMedia.Status.COMPLETED -> R.string.status_finished
+				CatalogMedia.Status.COMING_SOON -> R.string.status_not_yet_released
+				CatalogMedia.Status.PAUSED -> R.string.status_hiatus
+				CatalogMedia.Status.CANCELLED -> R.string.status_cancelled
+			}))
+		}
+
+		if(metas.size < 4) {
+			metas.add(ExtensionProvider.forGlobalId(media.globalId).name)
+		}
+
+		return metas.joinToString("  •  ")
 	}
 
-	@Nullable
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false);
+	override fun onCreateView(
+		inflater: LayoutInflater,
+		container: ViewGroup?,
+		savedInstanceState: Bundle?
+	): View {
+		binding = MediaDetailsOverviewLayoutBinding.inflate(inflater, container, false)
 
-		if(getOrientation() == Configuration.ORIENTATION_PORTRAIT) {
-			setOnApplyUiInsetsListener(binding.posterWrapper, insets -> {
-				setTopMargin(binding.posterWrapper, insets.top + dpPx(binding.posterWrapper, 24));
-				return true;
-			});
+		if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+			binding.posterWrapper.applyInsets(UI_INSETS, { view, insets ->
+				view.topMargin = insets.top + dpPx(24f)
+				true
+			})
 		}
 
 		if(binding.back != null) {
-			binding.back.setOnClickListener(v -> requireActivity().finish());
+			binding.back!!.setOnClickListener { requireActivity().finish() }
 
-			setOnApplyUiInsetsListener(binding.back, insets -> {
-				setTopMargin(binding.back, insets.top + dpPx(binding.back, 16));
-				return true;
-			});
+			binding.back!!.applyInsets(UI_INSETS, { view, insets ->
+				view.topMargin = insets.top + dpPx(16f)
+				true
+			})
 		}
 
-		var options = Objects.requireNonNullElse(binding.options, binding.details.options);
-		options.setOnClickListener(v -> MediaActivity.handleOptionsClick(v, media));
+		val options = binding.options ?: binding.details.options
+		options!!.setOnClickListener { v -> handleOptionsClick(v!!, media!!) }
 
-		setOnApplyUiInsetsListener(options, insets -> {
-			if(!isLandscape(requireContext())) {
-				setTopMargin(options, insets.top + dpPx(options, 16));
-			} else {
-				setTopMargin(options, 0);
-			}
+		options.applyInsets(UI_INSETS, { view, insets ->
+			view.topMargin = if(isLandscape) 0
+			else insets.top + dpPx(16f)
+			true
+		})
 
-			return true;
-		});
+		binding.detailsScroller?.applyInsets(UI_INSETS, { view, insets ->
+			view.topPadding = insets.top + dpPx(8f)
+			view.bottomPadding = insets.bottom + dpPx(8f)
+			view.rightPadding = insets.right + (dpPx(16f))
+			false
+		})
 
-		if(binding.detailsScroller != null) setOnApplyUiInsetsListener(binding.detailsScroller, insets -> {
-			var margin = dpPx(binding.detailsScroller, 8);
+		binding.details.tracking.setOnClickListener {
+			toast("Will be returned in the near future")
+		}
 
-			setTopPadding(binding.detailsScroller, insets.top + margin);
-			setBottomPadding(binding.detailsScroller, insets.bottom + margin);
-			setRightPadding(binding.detailsScroller, insets.right + (margin * 2));
+		binding.details.browser.setOnClickListener {
+			openUrl(requireContext(), media!!.url!!, true)
+		}
 
-			return false;
-		});
+		return binding.root
+	}
 
-		/*binding.details.tracking.setOnClickListener(v -> TrackingSheet.create(
-				requireContext(), getChildFragmentManager(), media).show());*/
-		binding.details.tracking.setVisibility(View.GONE);
-
-		binding.details.browser.setOnClickListener(v ->
-				openUrl(requireContext(), media.url, true));
-
-		return binding.getRoot();
+	companion object {
+		private const val TAG = "MediaInfoFragment"
 	}
 }

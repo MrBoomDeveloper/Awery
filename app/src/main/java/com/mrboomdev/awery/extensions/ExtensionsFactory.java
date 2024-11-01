@@ -10,18 +10,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.app.data.Constants;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.Progress;
+import com.mrboomdev.awery.ext.util.Progress;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import java9.util.Objects;
 import java9.util.stream.StreamSupport;
@@ -120,15 +121,6 @@ public class ExtensionsFactory {
 				.findFirst().orElseThrow();
 	}
 
-	@Deprecated(forRemoval = true)
-	public static ExtensionsManager getManager__Deprecated(@NonNull String name) {
-		return getManager__Deprecated((Class<? extends ExtensionsManager>) switch(name) {
-			case AniyomiManager.MANAGER_ID -> AniyomiManager.class;
-			case InternalManager.MANAGER_ID -> InternalManager.class;
-			default -> throw new IllegalArgumentException("Extensions manager \"" + name + "\" was not found!");
-		});
-	}
-
 	@NonNull
 	@Deprecated(forRemoval = true)
 	public static Collection<Extension> getExtensions__Deprecated(int flags) {
@@ -137,14 +129,7 @@ public class ExtensionsFactory {
 				.flatMap(StreamSupport::stream).toList();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T extends ExtensionsManager> T getManager(Class<T> clazz) {
-		return (T) stream(managers)
-				.filter(manager -> manager.getClass() == clazz)
-				.findFirst().orElseThrow();
-	}
-
-	public ExtensionsManager getManager(@NonNull String name) {
+	public ExtensionsManager getManager(@NonNull String name) throws NoSuchElementException {
 		return stream(managers)
 				.filter(manager -> manager.getId().equals(name))
 				.findFirst().orElseThrow();

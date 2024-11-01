@@ -37,6 +37,7 @@
             android:id="@+id/expand"
             android:layout_width="38dp"
             android:layout_height="38dp"
+            android:contentDescription="Expand"
             android:padding="8dp"
             android:layout_marginTop="-8dp"
             android:layout_marginBottom="-8dp"
@@ -60,6 +61,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
-        tools:listitem="@layout/grid_media_catalog" />
+        tools:listitem="@layout/grid_media_catalog"
+        tools:viewBindingType="androidx.recyclerview.widget.RecyclerView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

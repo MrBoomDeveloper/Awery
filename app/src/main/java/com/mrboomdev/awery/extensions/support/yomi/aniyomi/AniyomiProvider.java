@@ -15,13 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItemType;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
@@ -30,7 +30,6 @@ import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
@@ -51,6 +50,7 @@ import eu.kanade.tachiyomi.animesource.model.AnimesPage;
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl;
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource;
 import java9.util.stream.Collectors;
+import kotlin.NotImplementedError;
 import kotlin.UninitializedPropertyAccessException;
 import okhttp3.Headers;
 
@@ -108,7 +108,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 					.filter(Objects::nonNull)
 					.toList()));
 		} else {
-			return AsyncUtils.futureFailNow(new UnimplementedException("Filters aren't supported!"));
+			return AsyncUtils.futureFailNow(new NotImplementedError("Filters aren't supported!"));
 		}
 	}
 
@@ -273,6 +273,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 		return features;
 	}
 
+	@Contract("null -> fail")
 	private void checkSearchResults(AnimesPage page) {
 		if(page == null) {
 			throw new NullPointerException("page is null!");
@@ -329,7 +330,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 
 			callback.onSuccess(feeds);
 		} else {
-			callback.onFailure(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+			callback.onFailure(new NotImplementedError("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}
 	}
 
@@ -371,7 +372,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 						.toList(), animePage.getHasNextPage());
 			});
 		} else {
-			return AsyncUtils.futureFailNow(new UnimplementedException("AnimeSource doesn't extend the AnimeCatalogueSource!"));
+			return AsyncUtils.futureFailNow(new NotImplementedError("AnimeSource doesn't extend the AnimeCatalogueSource!"));
 		}
 	}
 

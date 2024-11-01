@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -18,11 +19,16 @@ import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.MaterialColors
 import com.mrboomdev.awery.R
+import com.mrboomdev.safeargsnext.SafeArgsIntent
+import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import org.jetbrains.annotations.Contract
 import java.io.File
 import kotlin.reflect.KClass
 
 private const val TAG = "ContextExtensions"
+
+val Context.configuration: Configuration
+    get() = resources.configuration
 
 inline fun <reified T : Service> Context.startService(
     action: String? = null,
@@ -40,6 +46,18 @@ inline fun <reified T : Service> Context.startService(
     }
 
     startService(intent)
+}
+
+fun <A> Context.startActivity(
+    clazz: KClass<out SafeArgsActivity<A>>,
+    args: A,
+    action: String? = null,
+    data: Uri? = null
+) {
+    startActivity(SafeArgsIntent(this, clazz, args).also {
+        it.action = action
+        it.data = data
+    })
 }
 
 fun Context.startActivity(
@@ -67,6 +85,9 @@ fun Context.startActivity(
 
 val Context.screenWidth: Int
     get() = resources.displayMetrics.widthPixels
+
+val Context.screenHeight: Int
+    get() = resources.displayMetrics.heightPixels
 
 fun Context.getCacheFile(path: String): File {
     return File(cacheDir, path)
@@ -133,6 +154,10 @@ fun Context.resolveDrawable(name: String): Drawable? {
     }
 
     return ContextCompat.getDrawable(this, id)
+}
+
+inline fun <reified T> getResourceId(res: String?): Int {
+    return getResourceId(T::class.java, res)
 }
 
 fun getResourceId(type: Class<*>, res: String?): Int {

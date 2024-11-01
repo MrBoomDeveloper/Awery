@@ -15,9 +15,9 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.app.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItemType;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 

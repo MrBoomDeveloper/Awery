@@ -17,10 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.AweryLifecycle
-import com.mrboomdev.awery.data.settings.NicePreferences
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
+import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.app.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.ThemeColorPalette_Values
@@ -175,7 +175,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 		fun apply() {
 			getPrefs().setValue(AwerySettings.THEME_COLOR_PALETTE, palette).saveSync()
 
-			for(activity in AweryLifecycle.getActivities(AppCompatActivity::class.java)) {
+			for(activity in getActivities<AppCompatActivity>()) {
 				activity.recreate()
 			}
 		}
@@ -223,7 +223,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 							return
 						}
 
-						for(activity in AweryLifecycle.getActivities(AppCompatActivity::class.java)) {
+						for(activity in getActivities<AppCompatActivity>()) {
 							activity.recreate()
 							activity.applyTheme()
 						}

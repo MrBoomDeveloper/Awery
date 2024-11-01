@@ -7,14 +7,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
-import com.mrboomdev.awery.extensions.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogTrackingOptions;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
@@ -24,12 +24,15 @@ import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import kotlin.NotImplementedError;
 
 /**
  * Base class for all extension providers.
@@ -72,10 +75,12 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	public static final String FEATURE_FEEDS = "FEEDS";
 	private final Extension extension;
 
+	@Contract(pure = true)
 	public ExtensionProvider(Extension extension) {
 		this.extension = extension;
 	}
 
+	@Contract(pure = true)
 	public ExtensionProvider() {
 		this.extension = null;
 	}
@@ -106,21 +111,23 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 
 		var managerId = split[0];
 		var providerId = split2[0];
-		var extensionId = split2[1];
+		var extensionId = split2.length > 1 ? split2[1] : null;
 
 		try {
-			return stream(ExtensionsFactory.getManager__Deprecated(managerId)
-					.getExtensions(Extension.FLAG_WORKING))
+			var manager = ExtensionsFactory.getInstance().await().getManager(managerId);
+			
+			if(extensionId != null && !"null".equals(extensionId)) {
+				return stream(manager.getExtension(extensionId).getProviders())
+						.filter(it -> it.getId().equals(providerId))
+						.findAny().orElseThrow();
+			}
+			
+			return stream(manager.getExtensions(Extension.FLAG_WORKING))
 					.map(Extension::getProviders)
 					.flatMap(NiceUtils::stream)
-					.filter(provider -> {
-						// In previous versions extension id wasn't been saved
-						if(extensionId != null && !extensionId.isBlank() && !extensionId.equals("null")
-								&& !extensionId.equals(provider.getExtension().getId())) return false;
-
-						return providerId.equals(provider.getId());
-					}).findFirst().orElseThrow();
-		} catch(NoSuchElementException e) {
+					.filter(it -> it.getId().equals(providerId))
+					.findFirst().orElseThrow();
+		} catch(NoSuchElementException | NullPointerException e) {
 			throw new ExtensionNotInstalledException(extensionId, e);
 		}
 	}
@@ -135,15 +142,15 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public AsyncFuture<CatalogMedia> getMedia(String id) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Media obtain isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Media obtain isn't implemented!"));
 	}
 
 	public AsyncFuture<CatalogSearchResults<? extends CatalogMedia>> searchMedia(SettingsList filters) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Media searching isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Media searching isn't implemented!"));
 	}
 
 	public AsyncFuture<SettingsList> getFilters() {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Filters aren't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Filters aren't implemented!"));
 	}
 
 	/**
@@ -152,31 +159,31 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	 * @author MrBoomDev
 	 */
 	public void getSettings(Context context, @NonNull ResponseCallback<SettingsItem> callback) {
-		callback.onFailure(new UnimplementedException("Settings aren't implemented!"));
+		callback.onFailure(new NotImplementedError("Settings aren't implemented!"));
 	}
 
 	public void readMediaComments(ReadMediaCommentsRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments reading isn't implemented!"));
+		callback.onFailure(new NotImplementedError("Comments reading isn't implemented!"));
 	}
 
 	public void postMediaComment(PostMediaCommentRequest request, @NonNull ResponseCallback<CatalogComment> callback) {
-		callback.onFailure(new UnimplementedException("Comments posting isn't implemented!"));
+		callback.onFailure(new NotImplementedError("Comments posting isn't implemented!"));
 	}
 
 	public AsyncFuture<CatalogComment> voteComment(CatalogComment comment) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Comments voting isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Comments voting isn't implemented!"));
 	}
 
 	public AsyncFuture<CatalogComment> editComment(CatalogComment oldComment, CatalogComment newComment) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Comments editing isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Comments editing isn't implemented!"));
 	}
 
 	public AsyncFuture<Boolean> deleteComment(CatalogComment comment) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Comments deletion isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Comments deletion isn't implemented!"));
 	}
 
 	public AsyncFuture<String> getChangelog() {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Changelog isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Changelog isn't implemented!"));
 	}
 
 	public void trackMedia(
@@ -184,23 +191,23 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 			@Nullable CatalogTrackingOptions options,
 			@NonNull ResponseCallback<CatalogTrackingOptions> callback
 	) {
-		callback.onFailure(new UnimplementedException("Media tracking isn't implemented!"));
+		callback.onFailure(new NotImplementedError("Media tracking isn't implemented!"));
 	}
 
 	public void searchTags(@NonNull ResponseCallback<List<CatalogTag>> callback) {
-		callback.onFailure(new UnimplementedException("Tags search isn't implemented!"));
+		callback.onFailure(new NotImplementedError("Tags search isn't implemented!"));
 	}
 
 	public AsyncFuture<List<? extends CatalogVideo>> getVideos(SettingsList filters) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Episodes aren't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Episodes aren't implemented!"));
 	}
 
 	public AsyncFuture<List<CatalogVideoFile>> getVideoFiles(SettingsList filters) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Videos aren't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Videos aren't implemented!"));
 	}
 
 	public AsyncFuture<CatalogSearchResults<CatalogSubtitle>> searchSubtitles(SettingsList filters) {
-		return AsyncUtils.futureFailNow(new UnimplementedException("Subtitles search isn't implemented!"));
+		return AsyncUtils.futureFailNow(new NotImplementedError("Subtitles search isn't implemented!"));
 	}
 
 	/**
@@ -244,7 +251,7 @@ public abstract class ExtensionProvider implements Comparable<ExtensionProvider>
 	}
 
 	public void getFeeds(@NonNull ResponseCallback<List<CatalogFeed>> callback) {
-		callback.onFailure(new UnimplementedException("Categories aren't implemented!"));
+		callback.onFailure(new NotImplementedError("Categories aren't implemented!"));
 	}
 
 	@NonNull

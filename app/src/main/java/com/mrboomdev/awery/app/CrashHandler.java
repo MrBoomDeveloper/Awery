@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.app;
 
 import static com.mrboomdev.awery.app.App.copyToClipboard;
+import static com.mrboomdev.awery.app.App.isTv;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
@@ -49,6 +50,7 @@ public class CrashHandler {
 				.enableNativeCrashHandler()
 				.enableAnrCrashHandler()
 				.enableJavaCrashHandler()
+				.setAnrCheckProcessState(!isTv())
 				.setJavaDumpNetworkInfo(false)
 				.setJavaDumpAllThreads(false)
 				.setNativeDumpNetwork(false)

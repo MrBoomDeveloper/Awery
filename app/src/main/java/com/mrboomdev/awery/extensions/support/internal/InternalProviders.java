@@ -1,17 +1,17 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -48,14 +48,14 @@ public class InternalProviders {
 			return thread(() -> {
 				var feed = filters.require(FILTER_FEED).getStringValue();
 
-				var progresses = getDatabase().getMediaProgressDao().getAllFromList(feed);
+				var progresses = App.Companion.getDatabase().getMediaProgressDao().getAllFromList(feed);
 
 				if(progresses.isEmpty()) {
 					throw new ZeroResultsException("No bookmarks", R.string.no_media_found);
 				}
 
 				return CatalogSearchResults.of(stream(progresses)
-						.map(progress -> getDatabase().getMediaDao()
+						.map(progress -> App.Companion.getDatabase().getMediaDao()
 								.get(progress.globalId).toCatalogMedia())
 						.toList(), false);
 			});

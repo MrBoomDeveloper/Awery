@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.activity.player;
 
 import static com.mrboomdev.awery.app.App.copyToClipboard;
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
@@ -48,8 +47,8 @@ import com.bumptech.glide.Glide;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.CrashHandler;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
@@ -60,6 +59,7 @@ import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 
 import java.util.HashSet;
@@ -101,7 +101,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
+		ActivityExtensionsKt.enableEdgeToEdge(this);
 
 		super.onCreate(savedInstanceState);
 		loadSettings();

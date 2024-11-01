@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.app.App.showLoadingWindow;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivities;
@@ -18,8 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.services.BackupService;
-import com.mrboomdev.awery.data.db.item.DBRepository;
+import com.mrboomdev.awery.app.data.db.item.DBRepository;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.ui.ThemeManager;
 import com.mrboomdev.awery.util.io.FileUtil;
@@ -59,7 +59,7 @@ public class IntentHandlerActivity extends AppCompatActivity {
 				var repo = cleanUrl(uri.getQueryParameter("url"));
 
 				thread(() -> {
-					var dao = getDatabase().getRepositoryDao();
+					var dao = App.Companion.getDatabase().getRepositoryDao();
 					var repos = dao.getRepositories(AniyomiManager.MANAGER_ID);
 
 					if(find(repos, item -> Objects.equals(item.url, repo)) != null) {

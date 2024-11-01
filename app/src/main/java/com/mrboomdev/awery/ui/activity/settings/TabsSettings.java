@@ -1,15 +1,15 @@
 package com.mrboomdev.awery.ui.activity.settings;
 
-import static com.mrboomdev.awery.app.App.getDatabase;
 import static com.mrboomdev.awery.app.App.getResourceId;
 import static com.mrboomdev.awery.app.App.snackbar;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.data.Constants.alwaysTrue;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.app.data.Constants.alwaysTrue;
+import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.find;
+import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
@@ -24,12 +24,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.AweryLifecycle;
-import com.mrboomdev.awery.data.db.item.DBTab;
-import com.mrboomdev.awery.data.settings.CustomSettingsItem;
-import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItem;
-import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.app.data.db.item.DBTab;
+import com.mrboomdev.awery.app.data.settings.CustomSettingsItem;
+import com.mrboomdev.awery.app.data.settings.ObservableSettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.app.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity;
@@ -48,8 +49,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import kotlin.Unit;
+
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
-	private static final int REQUEST_CODE_SETUP = AweryLifecycle.getActivityResultCode();
 	private final Map<String, IconStateful> icons;
 	private final List<SettingsItem> items = new ArrayList<>();
 	private final List<DBTab> tabs = new ArrayList<>();
@@ -109,7 +111,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 								}
 
 								thread(() -> {
-									var dao = getDatabase().getTabsDao();
+									var dao = App.Companion.getDatabase().getTabsDao();
 
 									var tab = new DBTab();
 									tab.title = text.toString();
@@ -229,25 +231,27 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 				var intent = new Intent(context, SetupActivity.class);
 				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_TEMPLATE);
 				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
-
-				startActivityForResult(context, intent, REQUEST_CODE_SETUP, (resultCode, result) -> {
-					if(resultCode != SetupActivity.RESULT_OK) return;
-
+				
+				startActivityForResult(requireNonNull(getActivity(context)), intent, (resultCode, data) -> {
+					if(resultCode != SetupActivity.RESULT_OK) return Unit.INSTANCE;
+					
 					for(int i = items.size() - 1; i >= 0; i--) {
 						if(i <= 1) break;
-
+						
 						var setting = items.get(i);
 						items.remove(setting);
 						onSettingRemoval(setting);
 					}
-
+					
 					snackbar(Objects.requireNonNull(getActivity(context)),
 							R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
+					
+					return Unit.INSTANCE;
 				});
 			}
 		});
 
-		var tabs = getDatabase().getTabsDao().getAllTabs();
+		var tabs = App.Companion.getDatabase().getTabsDao().getAllTabs();
 		Collections.sort(tabs);
 
 		this.tabs.clear();
@@ -301,8 +305,8 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 						.setMessage("You won't be able to revert the deletion.")
 						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
 						.setPositiveButton(R.string.confirm, dialog -> thread(() -> {
-							var tabsDao = getDatabase().getTabsDao();
-							var feedsDao = getDatabase().getFeedsDao();
+							var tabsDao = App.Companion.getDatabase().getTabsDao();
+							var feedsDao = App.Companion.getDatabase().getFeedsDao();
 
 							for(var feed : feedsDao.getAllFromTab(tab.id)) {
 								feedsDao.delete(feed);
@@ -378,7 +382,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 				}
 			}
 
-			thread(() -> getDatabase().getTabsDao().insert(stream(items)
+			thread(() -> App.Companion.getDatabase().getTabsDao().insert(stream(items)
 					.filter(item -> item instanceof TabSetting)
 					.map(setting -> ((TabSetting)setting).tab)
 					.toArray(DBTab[]::new)));

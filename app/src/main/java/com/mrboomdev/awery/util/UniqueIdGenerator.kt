@@ -1,31 +1,58 @@
 package com.mrboomdev.awery.util
 
-class UniqueIdGenerator {
-    private var initialValue = 0L
+/**
+ * An support class, which helps with numbers generation. Useful for generating  unique ids.
+ * By default crashes after an overflow.
+ */
+class UniqueIdGenerator @JvmOverloads constructor(
+    private val initialValue: Long = 0,
+    private val overflowMode: OverflowMode = OverflowMode.THROW
+) {
     private var value = 0L
 
-    constructor(initialValue: Long) {
-        this.value = initialValue
-        this.initialValue = initialValue
-    }
-
-    constructor(): this(0)
-
     val long: Long
-        get() = ++value
+        get() = (++value).apply {
+            if(this >= Long.MAX_VALUE) {
+                if(overflowMode == OverflowMode.RESET) {
+                    value = initialValue
+                    return value
+                }
+
+                throw NumberOverflowException("Long.MAX_VALUE exceeded!")
+            }
+        }
 
     val integer: Int
-        get() = long.toInt()
+        get() = long.toInt().apply {
+            if(this >= Int.MAX_VALUE) {
+                if(overflowMode == OverflowMode.RESET) {
+                    value = initialValue
+                    return value.toInt()
+                }
+
+                throw NumberOverflowException("Int.MAX_VALUE exceeded!")
+            }
+        }
 
     val float: Float
-        get() = long.toFloat()
+        get() = long.toFloat().apply {
+            if(this >= Float.MAX_VALUE) {
+                if(overflowMode == OverflowMode.RESET) {
+                    value = initialValue
+                    return value.toFloat()
+                }
 
-    fun reset(initialValue: Long) {
-        this.initialValue = initialValue
+                throw NumberOverflowException("Float.MAX_VALUE exceeded!")
+            }
+        }
+
+    fun reset() {
         this.value = initialValue
     }
 
-    fun reset() {
-        reset(initialValue)
+    enum class OverflowMode {
+        RESET, THROW
     }
 }
+
+class NumberOverflowException(message: String) : RuntimeException(message)

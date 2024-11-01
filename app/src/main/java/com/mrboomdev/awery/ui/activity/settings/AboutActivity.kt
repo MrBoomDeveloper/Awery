@@ -17,8 +17,9 @@ import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
-import com.mrboomdev.awery.app.App.getMarkwon
-import com.mrboomdev.awery.app.App.isLandscape
+import com.mrboomdev.awery.app.App.Companion.getMarkwon
+import com.mrboomdev.awery.app.App.Companion.isLandscape
+import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.databinding.ScreenAboutBinding
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -34,6 +35,7 @@ import com.mrboomdev.awery.util.extensions.topMargin
 import java.util.Date
 
 class AboutActivity : AppCompatActivity() {
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		applyTheme()
 		enableEdgeToEdge()
@@ -56,7 +58,7 @@ class AboutActivity : AppCompatActivity() {
 		)
 
 		binding.applyInsets(UI_INSETS, { _, insets ->
-			if(isLandscape(this)) {
+			if(isLandscape) {
 				binding.root.setPadding(insets.left, insets.top, insets.right, insets.bottom)
 				window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
 			} else {
@@ -68,22 +70,23 @@ class AboutActivity : AppCompatActivity() {
 		})
 	}
 
-	class ContributorsView(
+	class ContributorsView @JvmOverloads constructor(
 		context: Context,
-		attrs: AttributeSet?,
+		attrs: AttributeSet? = null,
 		defStyleAttr: Int = 0
 	) : LinearLayoutCompat(context, attrs, defStyleAttr) {
+
 		init {
 			orientation = VERTICAL
 
 			for((name, roles, url, avatar) in listOf(
 				Contributor(
-					"MrBoomDev", arrayOf("Main developer"), "https://github.com/MrBoomDeveloper",
+					"MrBoomDev", arrayOf("Main Developer"), "https://github.com/MrBoomDeveloper",
 					"https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
 				),
 
 				Contributor(
-					"Ichiro", arrayOf("App icon"),
+					"Ichiro", arrayOf("App Icon"),
 					"https://discord.com/channels/@me/1262060731981889536",
 					"https://cdn.discordapp.com/avatars/778503249619058689/9d5baf6943f4eafbaf09eb8e9e287f2d.png?size=4096"
 				)
@@ -91,7 +94,7 @@ class AboutActivity : AppCompatActivity() {
 				val linear = LinearLayoutCompat(context).apply {
 					orientation = HORIZONTAL
 					setBackgroundResource(R.drawable.ripple_round_you)
-					addView(this, MATCH_PARENT, WRAP_CONTENT)
+					this@ContributorsView.addView(this, MATCH_PARENT, WRAP_CONTENT)
 					setPadding(dpPx(8f))
 					bottomMargin = dpPx(4f)
 
@@ -137,15 +140,19 @@ class AboutActivity : AppCompatActivity() {
 		}
 	}
 
-	class SocialView(
+	class SocialView @JvmOverloads constructor(
 		context: Context,
-		attrs: AttributeSet?,
+		attrs: AttributeSet? = null,
 		defStyleAttr: Int = 0
 	) : LinearLayoutCompat(context, attrs, defStyleAttr) {
+
 		init {
 			val linear = LinearLayoutCompat(context).apply {
 				gravity = Gravity.CENTER_HORIZONTAL
 				orientation = VERTICAL
+				isClickable = true
+				isFocusable = true
+				setBackgroundResource(R.drawable.ripple_round_you)
 				this@SocialView.addView(this)
 				setPadding(dpPx(12f), dpPx(8f))
 			}
@@ -165,36 +172,18 @@ class AboutActivity : AppCompatActivity() {
 					icon.setImageDrawable(typed.getDrawable(R.styleable.SocialView_socialIcon))
 					label.text = typed.getString(R.styleable.SocialView_socialName)
 
-					linear.isClickable = true
-					linear.isFocusable = true
-					linear.setBackgroundResource(R.drawable.ripple_round_you)
-
-					val url = typed.getString(R.styleable.SocialView_socialLink)
-					linear.setOnClickListener { App.openUrl(context, url) }
+					typed.getString(R.styleable.SocialView_socialLink)?.let { url ->
+						linear.setOnClickListener { openUrl(context, url) }
+					}
 				}
 			}
 		}
 	}
 
-	data class Contributor(val name: String, val roles: Array<String>, val url: String, val avatar: String) {
-		override fun equals(other: Any?): Boolean {
-			if(this === other) return true
-			if(other !is Contributor) return false
-
-			if(name != other.name) return false
-			if(!roles.contentEquals(other.roles)) return false
-			if(url != other.url) return false
-			if(avatar != other.avatar) return false
-
-			return true
-		}
-
-		override fun hashCode(): Int {
-			var result = name.hashCode()
-			result = 31 * result + roles.contentHashCode()
-			result = 31 * result + url.hashCode()
-			result = 31 * result + avatar.hashCode()
-			return result
-		}
-	}
+	data class Contributor(
+		val name: String,
+		val roles: Array<String>,
+		val url: String,
+		val avatar: String
+	)
 }

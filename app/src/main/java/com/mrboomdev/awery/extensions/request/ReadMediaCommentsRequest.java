@@ -2,7 +2,7 @@ package com.mrboomdev.awery.extensions.request;
 
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.extensions.data.CatalogMedia;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 
 public class ReadMediaCommentsRequest {
 	private CatalogMedia media;

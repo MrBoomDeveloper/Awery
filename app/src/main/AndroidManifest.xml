@@ -33,6 +33,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
+    <uses-permission android:name="android.permission.ENFORCE_UPDATE_OWNERSHIP" />
 
     <!-- To view extension packages in API 30+ -->
     <uses-permission
@@ -153,6 +154,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.activity.tv.TvMainActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true" />
+
+        <activity
             android:name=".ui.activity.search.SearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
@@ -196,7 +202,7 @@
         <activity
             android:name=".ui.activity.settings.AboutActivity"
             android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".ui.activity.ReaderActivity"
@@ -254,5 +260,6 @@
 
         </provider>
 
+        <receiver android:name=".sources.yomi.YomiManager$PackageManagerReceiver" />
     </application>
 </manifest>

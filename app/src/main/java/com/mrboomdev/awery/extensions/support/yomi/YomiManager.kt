@@ -1,398 +1,360 @@
-package com.mrboomdev.awery.extensions.support.yomi;
+@file:OptIn(ExperimentalStdlibApi::class)
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
-import static com.mrboomdev.awery.util.NiceUtils.getTempFile;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
+package com.mrboomdev.awery.extensions.support.yomi
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
-import android.util.Log;
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
+import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.extensions.Extension
+import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.extensions.ExtensionSettings
+import com.mrboomdev.awery.extensions.ExtensionsManager
+import com.mrboomdev.awery.util.ContentType
+import com.mrboomdev.awery.util.NiceUtils
+import com.mrboomdev.awery.ext.util.Progress
+import com.mrboomdev.awery.util.async.AsyncFuture
+import com.mrboomdev.awery.util.async.AsyncUtils
+import com.mrboomdev.awery.util.async.ControllableAsyncFuture
+import com.mrboomdev.awery.util.extensions.activity
+import com.mrboomdev.awery.util.io.HttpClient.fetchSync
+import com.mrboomdev.awery.util.io.HttpRequest
+import com.squareup.moshi.adapter
+import dalvik.system.PathClassLoader
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.concurrent.CancellationException
+import java.util.concurrent.atomic.AtomicReference
 
-import androidx.annotation.NonNull;
+abstract class YomiManager : ExtensionsManager() {
+	private val extensions: MutableMap<String, Extension> = HashMap()
 
-import com.mrboomdev.awery.extensions.Extension;
-import com.mrboomdev.awery.extensions.ExtensionProvider;
-import com.mrboomdev.awery.extensions.ExtensionSettings;
-import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.util.ContentType;
-import com.mrboomdev.awery.util.Parser;
-import com.mrboomdev.awery.util.Progress;
-import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.async.ControllableAsyncFuture;
-import com.mrboomdev.awery.util.exceptions.CancelledException;
-import com.mrboomdev.awery.util.io.HttpClient;
-import com.mrboomdev.awery.util.io.HttpRequest;
+	private var progress: Progress? = null
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
+	abstract val mainClassMeta: String?
 
-import dalvik.system.PathClassLoader;
-import java9.util.Objects;
-import java9.util.stream.StreamSupport;
+	abstract val nsfwMeta: String?
 
-public abstract class YomiManager extends ExtensionsManager {
-	private static final int PM_FLAGS = PackageManager.GET_CONFIGURATIONS | PackageManager.GET_META_DATA;
-	private final Map<String, Extension> extensions = new HashMap<>();
-	private static final String TAG = "YomiManager";
-	private Progress progress;
+	abstract val requiredFeature: String
 
-	public abstract String getMainClassMeta();
+	abstract val prefix: String
 
-	public abstract String getNsfwMeta();
+	abstract val minVersion: Double
 
-	public abstract String getRequiredFeature();
+	abstract val maxVersion: Double
 
-	public abstract String getPrefix();
+	abstract val baseFeatures: Set<String?>?
 
-	public abstract double getMinVersion();
+	abstract fun createProviders(extension: Extension?, main: Any?): List<ExtensionProvider?>
 
-	public abstract double getMaxVersion();
-
-	public abstract Set<String> getBaseFeatures();
-
-	public abstract List<? extends ExtensionProvider> createProviders(Extension extension, Object main);
-
-	@Override
-	public Extension getExtension(String id) {
-		return extensions.get(id);
+	override fun getExtension(id: String): Extension {
+		return extensions[id]!!
 	}
 
-	@Override
-	public Collection<Extension> getAllExtensions() {
-		return extensions.values();
+	override fun getAllExtensions(): Collection<Extension> {
+		return extensions.values
 	}
 
-	@Override
-	public Progress getProgress() {
+	override fun getProgress(): Progress {
 		if(progress == null) {
-			return progress = new Progress(getPackages(getAnyContext()).size());
+			return Progress(getPackages(anyContext).size.toLong()).also { progress = it }
 		}
 
-		return progress;
+		return progress!!
 	}
 
-	private List<PackageInfo> getPackages(@NonNull Context context) {
-		return stream(context.getPackageManager().getInstalledPackages(PM_FLAGS))
-				.filter(p -> {
-					if(p.reqFeatures == null) return false;
-
-					for(var feature : p.reqFeatures) {
-						if(feature.name == null) continue;
-						if(feature.name.equals(getRequiredFeature())) return true;
-					}
-
-					return false;
-				}).toList();
+	private fun getPackages(context: Context): List<PackageInfo> {
+		return context.packageManager.getInstalledPackages(PM_FLAGS)
+			.filter { info ->
+				if(info.reqFeatures == null) return@filter false
+				for(feature in info.reqFeatures!!) {
+					if(feature.name == null) continue
+					if(feature.name == requiredFeature) return@filter true
+				}
+				false
+			}.toList()
 	}
 
-	@Override
-	public void loadAllExtensions(@NonNull Context context) {
-		for(var pkg : getPackages(context)) {
-			initExtension(pkg, context);
+	override fun loadAllExtensions(context: Context) {
+		for(pkg in getPackages(context)) {
+			initExtension(pkg, context)
 		}
 
-		progress.setCompleted();
+		progress!!.isCompleted = true
 	}
 
-	private void initExtension(@NonNull PackageInfo pkg, @NonNull Context context) {
-		var pm = context.getPackageManager();
-		var label = pkg.applicationInfo.loadLabel(pm).toString();
+	private fun initExtension(pkg: PackageInfo, context: Context) {
+		val pm = context.packageManager
+		var label = pkg.applicationInfo!!.loadLabel(pm).toString()
 
-		if(label.startsWith(getPrefix())) {
-			label = label.substring(getPrefix().length()).trim();
+		if(label.startsWith(prefix)) {
+			label = label.substring(prefix.length).trim { it <= ' ' }
 		}
 
-		var isNsfw = pkg.applicationInfo.metaData.getInt(getNsfwMeta(), 0) == 1;
+		val isNsfw = pkg.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1
 
-		var extension = new Extension(this, pkg.packageName, label, pkg.versionName) {
-			@Override
-			public Drawable getIcon() {
-				return pkg.applicationInfo.loadIcon(pm);
+		val extension = object : Extension(this, pkg.packageName, label, pkg.versionName) {
+			override fun getIcon(): Drawable {
+				return pkg.applicationInfo!!.loadIcon(pm)
 			}
-		};
+		}
 
 		if(isNsfw) {
-			extension.addFlags(Extension.FLAG_NSFW);
+			extension.addFlags(Extension.FLAG_NSFW)
 		}
 
-		extensions.put(pkg.packageName, extension);
+		extensions[pkg.packageName] = extension
 
 		try {
-			checkSupportedVersionBounds(pkg.versionName, getMinVersion(), getMaxVersion());
-		} catch(IllegalArgumentException e) {
-			extension.setError("Unsupported version!", e);
-			return;
+			checkSupportedVersionBounds(pkg.versionName!!, minVersion, maxVersion)
+		} catch(e: IllegalArgumentException) {
+			extension.setError("Unsupported version!", e)
+			return
 		}
 
-		loadExtension(context, pkg.packageName);
+		loadExtension(context, pkg.packageName)
 	}
 
-	@Override
-	public void loadExtension(Context context, String id) {
-		unloadExtension(context, id);
+	override fun loadExtension(context: Context, id: String) {
+		unloadExtension(context, id)
 
-		List<?> mains;
-		var extension = extensions.get(id);
+		val mains: List<*>
+		val extension = extensions[id] ?: throw NullPointerException("Extension $id not found!")
 
-		if(extension == null) {
-			throw new NullPointerException("Extension " + id + " not found!");
-		}
-
-		var key = ExtensionSettings.getExtensionKey(extension) + "_enabled";
-		if(!getPrefs().getBoolean(key, true)) {
-			return;
+		val key = ExtensionSettings.getExtensionKey(extension) + "_enabled"
+		if(!NicePreferences.getPrefs().getBoolean(key, true)) {
+			return
 		}
 
 		try {
-			mains = loadMains(context, extension);
-		} catch(Throwable t) {
-			Log.e(TAG, "Failed to load main classes!", t);
-			extension.setError("Failed to load main classes!", t);
-			return;
+			mains = loadMains(context, extension)
+		} catch(t: Throwable) {
+			Log.e(TAG, "Failed to load main classes!", t)
+			extension.setError("Failed to load main classes!", t)
+			return
 		}
 
-		var providers = stream(mains)
-				.map(main -> createProviders(extension, main))
-				.flatMap(StreamSupport::stream)
-				.toList();
+		val providers = mains
+			.map { main -> createProviders(extension, main) }
+			.flatten().toList()
 
-		for(var provider : providers) {
-			extension.addProvider(provider);
+		for(provider in providers) {
+			extension.addProvider(provider)
 		}
 
-		extension.setIsLoaded(true);
-		getProgress().increment();
+		extension.setIsLoaded(true)
+		getProgress().increment()
 	}
 
-	@Override
-	public void unloadExtension(Context context, String id) {
-		var extension = extensions.get(id);
+	override fun unloadExtension(context: Context, id: String) {
+		val extension = extensions[id] ?: throw NullPointerException("Extension $id not found!")
 
-		if(extension == null) {
-			throw new NullPointerException("Extension " + id + " not found!");
-		}
+		if(!extension.isLoaded) return
 
-		if(!extension.isLoaded()) return;
-
-		extension.setIsLoaded(false);
-		extension.clearProviders();
-		extension.removeFlags(Extension.FLAG_ERROR | Extension.FLAG_WORKING);
+		extension.setIsLoaded(false)
+		extension.clearProviders()
+		extension.removeFlags(Extension.FLAG_ERROR or Extension.FLAG_WORKING)
 	}
 
-	public List<?> loadMains(
-			Context context,
-			Extension extension
-	) throws PackageManager.NameNotFoundException, ClassNotFoundException {
-		return stream(loadClasses(context, extension)).map(clazz -> {
-			try {
-				var constructor = clazz.getConstructor();
-				return constructor.newInstance();
-			} catch(NoSuchMethodException e) {
-				throw new RuntimeException("Failed to get a default constructor!", e);
-			} catch(InvocationTargetException e) {
-				throw new RuntimeException("Exception was thrown by a constructor!", e.getCause());
-			} catch(IllegalAccessException e) {
-				throw new RuntimeException("Default constructor is inaccessible!", e);
-			} catch(InstantiationException e) {
-				throw new RuntimeException("Requested class cannot be instanciated!", e);
-			} catch(Throwable e) {
-				throw new RuntimeException("Unknown exception occurred!", e);
-			}
-		}).toList();
+	@Throws(PackageManager.NameNotFoundException::class, ClassNotFoundException::class)
+	fun loadMains(
+		context: Context,
+		extension: Extension
+	): List<*> {
+		return loadClasses(context, extension).map { clazz ->
+			val constructor = clazz!!.getConstructor()
+			return@map constructor.newInstance()
+		}.toList()
 	}
 
-	public List<? extends Class<?>> loadClasses(
-			@NonNull Context context,
-			@NonNull Extension extension
-	) throws PackageManager.NameNotFoundException, ClassNotFoundException, NullPointerException {
-		var exception = new AtomicReference<Exception>();
-		var pkgInfo = context.getPackageManager().getPackageInfo(extension.getId(), PM_FLAGS);
+	@Throws(PackageManager.NameNotFoundException::class, ClassNotFoundException::class, NullPointerException::class)
+	fun loadClasses(
+		context: Context,
+		extension: Extension
+	): List<Class<*>?> {
+		val exception = AtomicReference<Exception?>()
+		val pkgInfo = context.packageManager.getPackageInfo(extension.id, PM_FLAGS)
 
-		var classLoader = new PathClassLoader(
-				pkgInfo.applicationInfo.sourceDir,
-				null,
-				context.getClassLoader());
+		val classLoader = PathClassLoader(
+			pkgInfo.applicationInfo!!.sourceDir,
+			null,
+			context.classLoader
+		)
 
-		var mainClassesString = pkgInfo.applicationInfo.metaData.getString(getMainClassMeta());
-		if(mainClassesString == null) throw new NullPointerException("Main classes not found!");
+		val mainClassesString = pkgInfo.applicationInfo!!.metaData.getString(mainClassMeta)
+			?: throw NullPointerException("Main classes not found!")
 
-		var classes = stream(mainClassesString.split(";")).map(mainClass -> {
+		val classes = mainClassesString.split(";").dropLastWhile { it.isEmpty() }.toTypedArray().map {
+			var mainClass = it
+
 			if(mainClass.startsWith(".")) {
-				mainClass = pkgInfo.packageName + mainClass;
+				mainClass = pkgInfo.packageName + mainClass
 			}
-
 			try {
-				return Class.forName(mainClass, false, classLoader);
-			} catch(ClassNotFoundException e) {
-				exception.set(e);
-				return null;
+				return@map Class.forName(mainClass, false, classLoader)
+			} catch(e: ClassNotFoundException) {
+				exception.set(e)
+				return@map null
 			}
-		}).filter(Objects::nonNull).toList();
+		}.filterNotNull().toList()
 
 		if(exception.get() != null) {
-			if(exception.get() instanceof ClassNotFoundException e) throw e;
-			else throw new RuntimeException("Unknown exception occurred!", exception.get());
+			throw exception.get()!!
 		}
 
-		return classes;
+		return classes
 	}
 
-	public void checkSupportedVersionBounds(
-			@NonNull String versionName,
-			double minVersion,
-			double maxVersion
-	) throws IllegalArgumentException {
-		int secondDotIndex = versionName.indexOf(".", versionName.indexOf(".") + 1);
+	@Throws(IllegalArgumentException::class)
+	fun checkSupportedVersionBounds(
+		versionName: String,
+		minVersion: Double,
+		maxVersion: Double
+	) {
+		var versionName = versionName
+		val secondDotIndex = versionName.indexOf(".", versionName.indexOf(".") + 1)
 
 		if(secondDotIndex != -1) {
-			versionName = versionName.substring(0, secondDotIndex);
+			versionName = versionName.substring(0, secondDotIndex)
 		}
 
-		var version = Double.parseDouble(versionName);
+		val version = versionName.toDouble()
 
-		if(version < minVersion) {
-			throw new IllegalArgumentException("Unsupported deprecated version!");
-		} else if(version > maxVersion) {
-			throw new IllegalArgumentException("Unsupported new version!");
+		require(!(version < minVersion)) { "Unsupported deprecated version!" }
+		require(!(version > maxVersion)) { "Unsupported new version!" }
+	}
+
+	override fun getRepository(url: String): AsyncFuture<List<Extension>> {
+		return AsyncUtils.thread<List<Extension>> {
+			val response = fetchSync(HttpRequest(url))
+
+			getMoshi().adapter<List<YomiRepoItem>>().fromJson(response.text)!!
+				.map { it.toExtension(this@YomiManager, url) }
+				.toList()
 		}
 	}
 
-	@Override
-	public AsyncFuture<List<Extension>> getRepository(String url) {
-		return thread(() -> {
-			var response = HttpClient.fetchSync(new HttpRequest(url));
+	private fun installApk(context: Context, uri: Uri, future: ControllableAsyncFuture<Extension>) {
+		val tempFile = NiceUtils.getTempFile()
 
-			var list = Parser.<List<YomiRepoItem>>fromString(
-					Parser.getAdapter(List.class, YomiRepoItem.class), response.getText());
+		try {
+			context.contentResolver.openInputStream(uri).use { inputStream ->
+				FileOutputStream(tempFile).use { os ->
+					val buffer = ByteArray(1024 * 5)
+					var read: Int
 
-			return stream(list)
-					.map(item -> item.toExtension(YomiManager.this, url))
-					.toList();
-		});
-	}
-
-	private void installApk(@NonNull Context context, Uri uri, ControllableAsyncFuture<Extension> future) {
-		var tempFile = getTempFile();
-
-		try(var is = context.getContentResolver().openInputStream(uri)) {
-			try(var os = new FileOutputStream(tempFile)) {
-				var buffer = new byte[1024 * 5];
-				int read;
-
-				while((read = requireNonNull(is).read(buffer)) != -1) {
-					os.write(buffer, 0, read);
-				}
-
-				runOnUiThread(() -> {
-					var intent = new Intent(Intent.ACTION_VIEW);
-					intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-					intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-					intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.getPackageName());
-					intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-					intent.setDataAndType(uri, ContentType.APK.getMimeType());
-
-					var pm = context.getPackageManager();
-					var info = pm.getPackageArchiveInfo(tempFile.getPath(), PM_FLAGS);
-
-					if(info == null) {
-						future.fail(new NullPointerException("Failed to parse an APK!"));
-						return;
+					while((inputStream!!.read(buffer).also { read = it }) != -1) {
+						os.write(buffer, 0, read)
 					}
 
-					runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, data) -> {
-						switch(resultCode) {
-							case Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
-								try {
-									var got = pm.getPackageInfo(info.packageName, PM_FLAGS);
+					runOnUiThread {
+						val intent = Intent(Intent.ACTION_VIEW)
+						intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
+						intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+						intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.packageName)
+						intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+						intent.setDataAndType(uri, ContentType.APK.mimeType)
 
-									if(info.versionCode != got.versionCode) {
-										future.fail(new IllegalStateException("Failed to install an APK!"));
-										return;
+						val pm = context.packageManager
+						val info = pm.getPackageArchiveInfo(tempFile.path, PM_FLAGS)
+
+						if(info == null) {
+							future.fail(NullPointerException("Failed to parse an APK!"))
+							return@runOnUiThread
+						}
+
+						runOnUiThread {
+							startActivityForResult(context.activity, intent, { resultCode, _ ->
+								when(resultCode) {
+									Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
+										try {
+											val got = pm.getPackageInfo(info.packageName, PM_FLAGS)
+
+											if(info.versionCode != got.versionCode) {
+												future.fail(IllegalStateException("Failed to install an APK!"))
+												return@startActivityForResult
+											}
+
+											initExtension(got, context)
+											future.complete(getExtension(info.packageName))
+										} catch(e: Throwable) {
+											future.fail(e)
+										}
 									}
 
-									initExtension(got, context);
-									future.complete(getExtension(info.packageName));
-								} catch(Throwable e) {
-									future.fail(e);
+									Activity.RESULT_CANCELED -> future.fail(CancellationException("Install cancelled"))
 								}
-							}
-
-							case Activity.RESULT_CANCELED -> future.fail(new CancelledException("Install cancelled"));
+							})
 						}
-					}));
-				});
+					}
+				}
 			}
-		} catch(IOException e) {
-			future.fail(e);
+		} catch(e: IOException) {
+			future.fail(e)
 		}
 	}
 
-	@Override
-	public AsyncFuture<Extension> installExtension(Context context, Uri uri) {
-		return AsyncUtils.controllableFuture(future -> {
-			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.getPackageManager().canRequestPackageInstalls()) {
-				installApk(context, uri, future);
-				return;
+	override fun installExtension(context: Context, uri: Uri): AsyncFuture<Extension> {
+		return AsyncUtils.controllableFuture { future ->
+			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.packageManager.canRequestPackageInstalls()) {
+				installApk(context, uri, future)
+				return@controllableFuture
 			}
-
-			var settingsIntent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-			settingsIntent.setData(Uri.parse("package:" + context.getPackageName()));
-
-			runOnUiThread(() -> startActivityForResult(context, settingsIntent, (resultCode, data) -> {
-				switch(resultCode) {
-					case Activity.RESULT_OK -> thread(() -> installApk(context, uri, future));
-					case Activity.RESULT_CANCELED -> future.fail(new CancelledException("Permission denied!"));
-					default -> future.fail(new CancelledException("Failed to install an extension"));
-				}
-			}));
-		});
+			val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+			settingsIntent.setData(Uri.parse("package:" + context.packageName))
+			runOnUiThread {
+				startActivityForResult(context.activity, settingsIntent, { resultCode, _ ->
+					when(resultCode) {
+						Activity.RESULT_OK -> AsyncUtils.thread { installApk(context, uri, future) }
+						Activity.RESULT_CANCELED -> future.fail(CancellationException("Permission denied!"))
+						else -> future.fail(CancellationException("Failed to install an extension"))
+					}
+				})
+			}
+		}
 	}
 
-	@Override
-	public AsyncFuture<Boolean> uninstallExtension(@NonNull Context context, String id) {
-		return AsyncUtils.controllableFuture(future -> {
-			var intent = new Intent(Intent.ACTION_DELETE);
-			intent.setData(Uri.parse("package:" + id));
-
-			runOnUiThread(() -> startActivityForResult(context, intent, (resultCode, data) -> {
-				//Ignore the resultCode, it always equal to 0
-
-				try {
-					context.getPackageManager().getPackageInfo(id, 0);
-					future.complete(false);
-				} catch(PackageManager.NameNotFoundException e) {
-					//App info is no longer available, so it is uninstalled.
-					extensions.remove(id);
+	override fun uninstallExtension(context: Context, id: String): AsyncFuture<Boolean> {
+		return AsyncUtils.controllableFuture { future ->
+			val intent = Intent(Intent.ACTION_DELETE)
+			intent.setData(Uri.parse("package:$id"))
+			runOnUiThread {
+				startActivityForResult(context.activity, intent, { _, _ ->
+					//Ignore the resultCode, it always equal to 0
 
 					try {
-						future.complete(true);
-					} catch(Throwable ex) {
-						future.fail(ex);
+						context.packageManager.getPackageInfo(id, 0)
+						future.complete(false)
+					} catch(e: PackageManager.NameNotFoundException) {
+						//App info is no longer available, so it is uninstalled.
+						extensions.remove(id)
+
+						try {
+							future.complete(true)
+						} catch(ex: Throwable) {
+							future.fail(ex)
+						}
+					} catch(e: Throwable) {
+						future.fail(e)
 					}
-				} catch(Throwable e) {
-					future.fail(e);
-				}
-			}));
-		});
+				})
+			}
+		}
+	}
+
+	companion object {
+		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
+		private const val TAG = "YomiManager"
 	}
 }

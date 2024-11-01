@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.activity;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
@@ -21,10 +20,12 @@ import com.github.piasy.biv.view.BigImageView;
 import com.github.piasy.biv.view.GlideImageViewFactory;
 import com.github.piasy.biv.view.ImageSaveCallback;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.mrboomdev.awery.util.exceptions.UnimplementedException;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
+import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 
 import java.io.File;
+
+import kotlin.NotImplementedError;
 
 public class GalleryActivity extends AppCompatActivity {
 	public static final String EXTRA_URLS = "urls";
@@ -32,7 +33,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		enableEdgeToEdge(this);
+		ActivityExtensionsKt.enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		var urls = requireArgument(getIntent().getStringArrayExtra(EXTRA_URLS), EXTRA_URLS);
@@ -42,7 +43,7 @@ public class GalleryActivity extends AppCompatActivity {
 		}
 
 		if(urls.length > 1) {
-			throw new UnimplementedException("TODO!");
+			throw new NotImplementedError("TODO!");
 		}
 
 		var frame = new FrameLayout(this);

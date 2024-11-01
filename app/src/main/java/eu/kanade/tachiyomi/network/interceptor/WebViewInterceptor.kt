@@ -1,18 +1,16 @@
 package eu.kanade.tachiyomi.network.interceptor
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
-import com.mrboomdev.awery.app.App.toast
+import com.mrboomdev.awery.app.data.Constants
 import eu.kanade.tachiyomi.util.system.DeviceUtil
-import eu.kanade.tachiyomi.util.system.WebViewUtil
-import eu.kanade.tachiyomi.util.system.setDefaultSettings
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import tachiyomi.core.util.lang.launchUI
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -54,16 +52,7 @@ abstract class WebViewInterceptor(
             return response
         }
 
-        if(!WebViewUtil.supportsWebView(context)) {
-            launchUI {
-                toast("WebView is required for Awery!", 1)
-            }
-
-            return response
-        }
-
         initWebView
-
         return intercept(chain, request, response)
     }
 
@@ -81,9 +70,22 @@ abstract class WebViewInterceptor(
         await(30, TimeUnit.SECONDS)
     }
 
-    fun createWebView(request: Request): WebView {
+    @SuppressLint("SetJavaScriptEnabled")
+	fun createWebView(request: Request): WebView {
         return WebView(context).apply {
-            setDefaultSettings()
+            settings.apply {
+                allowContentAccess = true
+                allowFileAccess = true
+                displayZoomControls = false
+                domStorageEnabled = true
+                javaScriptCanOpenWindowsAutomatically = true
+                javaScriptEnabled = true
+                userAgentString = Constants.DEFAULT_UA
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    safeBrowsingEnabled = false
+                }
+            }
             // Avoid sending empty User-Agent, Chromium WebView will reset to default if empty
             settings.userAgentString = request.header("User-Agent") ?: defaultUserAgentProvider()
         }
