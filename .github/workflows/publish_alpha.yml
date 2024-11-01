@@ -92,11 +92,11 @@ jobs:
             commit_message="${commit_message:0:1997}..."
           fi
           payload="{
-            \"content\": \"<@&1208839371575529572> New Awery Alpha Update!\nCommits:\n$(cat commit_log.txt | sed 's/%0A/\n/g')\",
+            \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
-              \"title\": \"New Awery Alpha Update\",
-              \"url\": \"${commit_link}\\",
-              \"description\": \"Commits:\n$(cat commit_log.txt | sed 's/%0A/\n/g')\",
+              \"title\": \" New Awery Alpha Update!\",
+              \"url\": \"${commit_link}\",
+              \"description\": \"Commits:\n${commit_message}\",
               \"color\": 5814783
             }]
           }"
