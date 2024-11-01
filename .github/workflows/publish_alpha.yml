@@ -37,7 +37,7 @@ jobs:
           fi
           git fetch --unshallow
           echo "Generating commit log from $LAST_SHA"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an)
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an")
           echo "Raw Commit Logs:"
           echo "$COMMIT_LOGS"
           echo "$COMMIT_LOGS" > commit_log.txt
