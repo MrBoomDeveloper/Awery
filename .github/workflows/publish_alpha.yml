@@ -32,12 +32,14 @@ jobs:
         run: |
           if [ -f last_sha.txt ]; then
             LAST_SHA=$(cat last_sha.txt)
+            echo "found the file which was never uploaded"
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+            echo "this is running"
           fi
           git fetch --unshallow
           echo "Generating commit log from $LAST_SHA"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an")
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s by %an)
           echo "Raw Commit Logs:"
           echo "$COMMIT_LOGS"
           echo "$COMMIT_LOGS" > commit_log.txt
