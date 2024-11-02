@@ -91,7 +91,7 @@ jobs:
               -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
               -F "message_thread_id=28" \
               -F "document=@$APK_PATH" \
-              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ MESSAGE }}
+              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ COMMIT_LOG }}
                   Version: ${VERSION}" \
               -F "parse_mode=HTML")
             echo "$response"
