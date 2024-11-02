@@ -72,12 +72,22 @@ jobs:
         run: |
           RELEASE_DIR="release_artifacts"
           mkdir -p "$RELEASE_DIR"
-          # Use glob pattern to get the latest signed APK
           SOURCE_APK=$(ls app/build/outputs/apk/alpha/release/*.apk | sort -r | head -n 1)
           TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
           cp "$SOURCE_APK" "$TARGET_APK"
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+
+      - name: Verify APK Existence
+        run: |
+          if [ ! -f "$APK_PATH" ]; then
+            echo "Error: APK not found at $APK_PATH"
+            exit 1
+          fi
+
+      - name: Print APK Path
+        run: |
+          echo "APK Path: $APK_PATH"
 
       - name: Upload to Artifacts
         if: success()
