@@ -129,17 +129,17 @@ jobs:
           echo "Sending to Telegram..."
 
           curl -v -X POST \
-        "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-      -F "chat_id=-1002066701332" \
-      -F "message_thread_id=28" \
-      -F "document=@$APK_PATH" \
-      -F "caption=Commits:%0A${MESSAGE}" \
-      -F "parse_mode=HTML"
+          "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+          -F "chat_id=-1002066701332" \
+          -F "message_thread_id=28" \
+          -F "document=@$APK_PATH" \
+          -F "caption=${MESSAGE}" \
+          -F "parse_mode=HTML"
 
     # Add the else statement as needed
-    else
-      echo "Skipping because skip build set to true"
-    fi
+        else
+         echo "Skipping because skip build set to true"
+         fi
 
   env:
     JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
