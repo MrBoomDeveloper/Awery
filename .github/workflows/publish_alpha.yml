@@ -91,6 +91,8 @@ jobs:
             echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
+          MESSAGE="${telegram_commit_messages}"
+          MESSAGE="${MESSAGE:0:4000}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
@@ -98,7 +100,7 @@ jobs:
             -F "document=@$APK_PATH" \
             -F "caption=New Alpha-Build dropped 🔥
             Latest Changes:
-            ${telegram_commit_messages}" \
+            ${MESSAGE}" \
             -F "parse_mode=HTML"
 
       - name: Send to Discord
@@ -127,6 +129,7 @@ jobs:
           echo "Response: $RESPONSE"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
+
 
       - name: Save Last Successful Commit SHA
         if: success()
