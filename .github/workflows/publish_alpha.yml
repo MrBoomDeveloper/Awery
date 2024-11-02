@@ -84,7 +84,6 @@ jobs:
           MESSAGE="${MESSAGE:0:1020}"
     
           echo "COMMIT_LOG: $COMMIT_LOG"
-          echo "MESSAGE: $MESSAGE"
           APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
           if [ "$SKIP_BUILD" != "true" ]; then
             response=$(curl -sS -f -X POST \
@@ -107,9 +106,7 @@ jobs:
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
     
-          echo "COMMIT_LOG: $COMMIT_LOG"
-          echo "MESSAGE: $MESSAGE"
-
+          echo "COMMIT_LOG: $MESSAGE"
           if [ ! -f "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" ]; then
           echo "Error: APK file not found."
           exit 1
@@ -120,8 +117,13 @@ jobs:
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-          -F "caption=$MESSAGE" \
-          -F "message_thread_id=28"
+         -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ env.COMMIT_LOG }}
+                  Version: ${VERSION}" \
+              -F "parse_mode=HTML")
+            echo "$response"
+          else
+            echo "Skipping because skip build set to true"
+          fi
 
       - name: Send to Discord
         if: always()
