@@ -88,7 +88,8 @@ jobs:
           -F "chat_id=-1002066701332" \
           -F "message_thread_id=28" \
           -F "document=@$APK_PATH" \
-          -F "caption=New Alpha-Build dropped 🔥%0A%0ACommits:$formatted_messages" \
+          -F "caption=New Alpha-Build dropped 🔥
+          Commits:$formatted_messages" \
           -F "parse_mode=HTML"
 
       - name: Send Alpha APK to Discord
