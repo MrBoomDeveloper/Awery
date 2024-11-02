@@ -90,7 +90,7 @@ jobs:
           fi
 
           echo "Sending to Telegram..."
-          curl -v -X POST \
+           response=$(curl -sS -f -X POST \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
