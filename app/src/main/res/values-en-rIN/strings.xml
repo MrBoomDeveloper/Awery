@@ -464,4 +464,5 @@
     <string name="this_not_number">Yeh ek number nahi hai!</string>
     <string name="continue_action">Jari rakhein</string>
     <string name="restart">Dobara shuru karein</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
