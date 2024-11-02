@@ -38,16 +38,10 @@ jobs:
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-        
-          # Retrieve and format commit logs
-          COMMIT_LOGS=$(git log 21bfbfb13959b16dd1437a46ab57b855c1923c6f..HEAD --pretty=format:"● %s ~%an (Commit: %H)" --max-count=10)
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/Shebyyy/Awery/pull/\1)|g')
-
-          # Remove or replace problematic characters
-          SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr '\n' ' ' | tr -d '\r' | sed 's/[^[:print:]]//g' | sed 's/[●֍]//g' | cut -c -900)
-
-          # Export sanitized commit logs to environment variable and file
-          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
+          SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
+          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
 
 
