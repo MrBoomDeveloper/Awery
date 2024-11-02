@@ -103,17 +103,25 @@ jobs:
             ${MESSAGE}" \
             -F "parse_mode=HTML"
 
-      - name: Send to Discord
+      - name: Send Alpha APK to Discord
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"  # Discord embed description limit is 2048 characters
+          payload="{
+            \"content\": \"<@&1208839371575529572>\",
+            \"embeds\": [{
+              \"title\": \"New Awery Alpha Update!\",
+              \"description\": \"Commits:\n${COMMIT_LOG}\",
+              \"color\": 5814783
+            }]
+          }"
           curl -H "Content-Type: application/json" \
-            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$TRUNCATED_COMMIT_LOG\",\"color\":5814783}]}" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@$APK_PATH" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+            -d "$payload" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+          curl -H "Content-Type: multipart/form-data" \
+            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
 
       - name: Save Last Successful Commit SHA
         if: success()
