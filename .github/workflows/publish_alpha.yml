@@ -111,7 +111,7 @@ jobs:
           echo "Release directory contents:"
           ls -la ${{ env.RELEASE_DIR }}
           
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          APK_PATH="/home/runner/work/Awery/Awery/release_artifacts/awery-alpha.apk"
           echo "APK Path: $APK_PATH"
           
           if [ ! -f "$APK_PATH" ]; then
