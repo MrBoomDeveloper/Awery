@@ -32,24 +32,18 @@ jobs:
       - name: Retrieve Last Successful Commit SHA
         id: last_successful_sha
         run: |
-          if [ -f last_successful_sha.txt ]; then
-            LAST_SHA=$(cat last_successful_sha.txt)
-          else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
-          fi
+          LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
+
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
-          if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
-            FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
-          fi
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
-          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
+
       - name: Build Alpha APK
         id: build_alpha
         run: ./gradlew assembleAlphaRelease
@@ -73,18 +67,10 @@ jobs:
           mkdir -p "$RELEASE_DIR"
           SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
           TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
-          echo "Checking source APK existence..."
-          ls -l app/build/outputs/apk/alpha/release/
-          if [ ! -f "$SOURCE_APK" ]; then
-            echo "Error: Signed APK not found at $SOURCE_APK"
-            exit 1
-          fi
-          echo "Copying APK..."
           cp "$SOURCE_APK" "$TARGET_APK"
-          echo "Verifying copied APK..."
-          ls -l "$RELEASE_DIR"
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+
       - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
@@ -93,74 +79,33 @@ jobs:
           path: ${{ env.RELEASE_DIR }}
           retention-days: 90
 
-      
-
       - name: Send to Telegram
         if: success()
         run: |
-          echo "Current directory contents:"
-          ls -la
-
-          echo "Release directory contents:"
-          ls -la release_artifacts
-
-          APK_PATH="release_artifacts/awery-alpha.apk"
-          echo "APK Path: $APK_PATH"
-
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
-
-          if [ ! -f "commit_log.txt" ]; then
-            echo "Error: commit_log.txt not found"
-            exit 1
-          fi
-
-          echo "File sizes:"
-          ls -lh "$APK_PATH"
-
+          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          if [ ! -f "$APK_PATH" ]; then exit 1; fi
+          if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
-          MESSAGE="${COMMIT_LOG}"
-          MESSAGE="${MESSAGE:0:1020}"
-
-          echo "Sending to Telegram..."
+          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${MESSAGE}" \
+            -F "caption=Commits:%0A${MESSAGE}" \
             -F "parse_mode=HTML"
-  
-             if [ "$skip_build" != "true" ]; then
-              echo "Building..."
-          else
-          echo "Skipping because skip build set to true"
-          fi
 
-          env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
-          LAST_SHA: ${{ env.LAST_SHA }}
-          COMMIT_LOG: ${COMMIT_LOG}
-
-     
       - name: Send to Discord
         if: success()
         run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-            
+
       - name: Save Last Successful Commit SHA
         if: success()
         run: echo $GITHUB_SHA > last_successful_sha.txt
