@@ -94,7 +94,7 @@ jobs:
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-          -F "caption="$COMMIT_LOG"
+          -F "caption=$COMMIT_LOG"
               -F "parse_mode=HTML")
             echo "$response"
           else
