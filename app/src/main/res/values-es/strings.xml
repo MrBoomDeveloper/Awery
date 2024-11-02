@@ -103,7 +103,7 @@
     <string name="about">Acerca de</string>
     <string name="devs">Desarrolladores</string>
     <string name="disclaimer">Descargo de Responsabilidad</string>
-    <string name="full_disclaimer">- Awery por sí mismo solo proporciona un rastreador de anime y manga y no ofrece capacidades de transmisión o descarga de anime o manga.\n\n - Awery o cualquiera de sus desarrolladores/personal no alojan ninguno de los contenidos encontrados dentro de Awery. Cualquier imagen e información de anime/manga encontrada en la aplicación se toma de varias API públicas (AniList, MyAnimeList, Kitsu).\n\n - Además, todos los enlaces de anime/manga encontrados en Awery se toman de varios complementos de terceros y no tienen afiliación con Awery o su personal.\n\n - Awery o sus propietarios no son responsables de ningún uso indebido de cualquiera de los contenidos encontrados dentro o fuera de la aplicación y no pueden ser responsables de la distribución de ninguno de los contenidos encontrados dentro de la aplicación.\n\n - Al usar Awery, aceptas que el desarrollador de la aplicación no es responsable de ninguno de los contenidos encontrados en la aplicación. También aceptas que no puedes usar Awery para descargar o transmitir contenido protegido por derechos de autor.\n\n - Si hay problemas de infracción de derechos de autor, por favor contacta al sitio web de origen. El desarrollador no asume ninguna responsabilidad legal.</string>
+    <string name="full_disclaimer">- Awery por sí mismo solo proporciona un rastreador de anime y manga y no proporciona ningún anime o manga streaming o capacidades de descarga. \n\n - Awery o cualquiera de sus desarrolladores/personal no aloja ninguno de los contenidos que se encuentran dentro de Awery. Todas y cada una de las imágenes e información de anime/manga que se encuentran en la aplicación proceden de varias API públicas (AniList, MyAnimeList, Kitsu). \n\n - Además, todos los enlaces de anime/manga que se encuentran en Awery proceden de varios plugins de terceros y no están afiliados a Awery ni a su personal. \n\n - Awery o sus propietarios no son responsables del mal uso de los contenidos que se encuentran dentro o fuera de la aplicación y no se hace responsable de la distribución de cualquiera de los contenidos que se encuentran dentro de la aplicación. \n\n - Al utilizar Awery, aceptas que el desarrollador de la aplicación no es responsable de ninguno de los contenidos de la misma. También aceptas que no puedes utilizar Awery para descargar o transmitir contenidos protegidos por derechos de autor. \n\n - En caso de infracción de los derechos de autor en Internet, ponte en contacto con el sitio web de origen. El desarrollador no asume ninguna responsabilidad legal.</string>
     <string name="video">Vídeo</string>
     <string name="video_info_info">Muestra la resolución del vídeo actual que se está reproduciendo, útil para servidores <b>\"Multi Quality\"</b>.</string>
     <string name="default_quality">Selección de Calidad Automática</string>
@@ -129,7 +129,7 @@
     <string name="ask_update_progress_anime">Preguntar por cada Medios \"Individualmente\"</string>
     <string name="ask_update_progress_info_ep">Desactivar hará que siempre se actualice automáticamente el progreso cuando se vea el episodio.</string>
     <string name="watch_complete_percentage">Porcentaje de Actualización de Visualización</string>
-    <string name="watch_complete_percentage_info">"El porcentaje en el que debe actualizarse tu progreso después de ver un episodio.\n\nEsto también establece el  para cuando pre-cargar enlaces para el próximo episodio."</string>
+    <string name="watch_complete_percentage_info">El porcentaje en el que tu progreso debe ser actualizado después de ver un episodio. \nEsto también establece cuándo precargar los enlaces para el siguiente episodio.</string>
     <string name="behaviour">Comportamiento</string>
     <string name="always_continue">Siempre Continuar desde donde lo dejaste</string>
     <string name="pause_video_focus">Pausar cuando no está en Foco</string>
@@ -449,5 +449,5 @@
     <string name="not_logged_detailed">Error 401. No has iniciado sesión, por favor inicia sesión e intenta nuevamente.</string>
     <string name="no_access_detailed">Error 403. No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta e intenta nuevamente.</string>
     <string name="rate_limited_detailed">Error 429. Has excedido el límite de velocidad, por favor intenta nuevamente más tarde.</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
