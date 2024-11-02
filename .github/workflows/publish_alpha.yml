@@ -39,8 +39,10 @@ jobs:
         id: get_commits
         run: |
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          # Sanitize and format commit logs
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr '\n' '\n' | sed 's/[^[:print:]]//g')
+          echo "Sanitized Commit Logs: $SANITIZED_COMMIT_LOGS"
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
 
