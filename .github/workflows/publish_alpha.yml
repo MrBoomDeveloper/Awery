@@ -95,7 +95,6 @@ jobs:
       - name: Send Alpha APK to Discord
         if: success()
         run: |
-         # Read the commit log
          COMMIT_LOG=$(cat commit_log.txt)
          ESCAPED_COMMIT_LOG=$(echo "$COMMIT_LOG" | sed ':a;N;$!ba;s/\n/\\n/g')
          payload="{
@@ -106,7 +105,6 @@ jobs:
           \"color\": 5814783
           }]
           }"
-
           echo "$payload"
             curl -H "Content-Type: application/json" \
             -d "$payload" \
