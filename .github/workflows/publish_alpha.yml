@@ -86,7 +86,7 @@ jobs:
           if [ ! -f "$APK_PATH" ]; then exit 1; fi
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
+          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:500}"
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//[[:space:]]/}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
