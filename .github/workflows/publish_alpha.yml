@@ -60,7 +60,7 @@ jobs:
         if: success()
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: "app/build/outputs/apk/alpha"
+          releaseDirectory: "app/build/outputs/apk/alpha/release"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
