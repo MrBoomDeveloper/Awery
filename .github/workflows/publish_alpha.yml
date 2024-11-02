@@ -76,29 +76,6 @@ jobs:
           path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
           retention-days: 90
 
-      - name: Send Alpha APK to Telegram
-        if: success()
-        run: |
-          COMMIT_LOG=$(cat commit_log.txt)
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
-          MESSAGE="${MESSAGE:0:1020}"
-    
-          echo "COMMIT_LOG: $COMMIT_LOG"
-          APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          if [ "$SKIP_BUILD" != "true" ]; then
-            response=$(curl -sS -f -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-              -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-              -F "message_thread_id=28" \
-              -F "document=@$APK_PATH" \
-              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ COMMIT_LOG }}
-                  Version: ${VERSION}" \
-              -F "parse_mode=HTML")
-            echo "$response"
-          else
-            echo "Skipping because skip build set to true"
-          fi
-
       - name: Send to Telegram
         if: success()
         run: |
@@ -117,7 +94,7 @@ jobs:
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-         -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ env.COMMIT_LOG }}
+          -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ env.COMMIT_LOG }}
                   Version: ${VERSION}" \
               -F "parse_mode=HTML")
             echo "$response"
