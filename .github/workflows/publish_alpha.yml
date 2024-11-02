@@ -73,18 +73,18 @@ jobs:
         run: |
           RELEASE_DIR="release_artifacts"
           mkdir -p "$RELEASE_DIR"
-          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          # Assuming the signed APK is the last one in the directory
+          SOURCE_APK=$(ls app/build/outputs/apk/alpha/release/*.apk | tail -n 1)
           TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
-          echo "Checking source APK existence..."
-          ls -l app/build/outputs/apk/alpha/release/
-          if [ ! -f "$SOURCE_APK" ]; then
+
+          if [ -f "$SOURCE_APK" ]; then
+            echo "Signed APK found, copying..."
+            cp "$SOURCE_APK" "$TARGET_APK"
+          else
             echo "Error: Signed APK not found at $SOURCE_APK"
             exit 1
           fi
-          echo "Copying APK..."
-          cp "$SOURCE_APK" "$TARGET_APK"
-          echo "Verifying copied APK..."
-          ls -l "$RELEASE_DIR"
+
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
 
