@@ -132,12 +132,12 @@ jobs:
           echo "Sending to Telegram..."
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=-1002206819738" \
+            -F "chat_id=-1002066701332" \
             -F "document=@$APK_PATH" \
             -F "caption=$MESSAGE" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
-            -F "message_thread_id=174"
+            -F "message_thread_id=28"
 
       - name: Send to Discord
         if: success()
