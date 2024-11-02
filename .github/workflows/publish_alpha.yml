@@ -101,47 +101,51 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
-          echo "Current directory contents:"
-          ls -la
+         echo "Current directory contents:"
+         ls -la
           echo "Release directory contents:"
           ls -la ${{ env.RELEASE_DIR }}
-          
+
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           echo "APK Path: $APK_PATH"
-          
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
+
+         if [ ! -f "$APK_PATH" ]; then
+          echo "Error: APK not found at $APK_PATH"
+          exit 1
           fi
-          
+
           if [ ! -f "commit_log.txt" ]; then
-            echo "Error: commit_log.txt not found"
-            exit 1
+          echo "Error: commit_log.txt not found"
+          exit 1
           fi
-          
+
           echo "File sizes:"
           ls -lh "$APK_PATH"
+
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
-          echo "Sending to Telegram..."
-          curl -v -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=-1002066701332" \
-            -F "message_thread_id=28" \
-            -F "document=@$APK_PATH" \
-            -F "caption=Commits:%0A${MESSAGE}" \
-            -F "parse_mode=HTML"
-      
-          else
-          echo "skipping because skip build set to true"
-          fi
 
-          env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
-          LAST_SHA: ${{ env.LAST_SHA }}
-          COMMIT_LOG: ${COMMIT_LOG}
+          echo "Sending to Telegram..."
+
+          curl -v -X POST \
+        "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+      -F "chat_id=-1002066701332" \
+      -F "message_thread_id=28" \
+      -F "document=@$APK_PATH" \
+      -F "caption=Commits:%0A${MESSAGE}" \
+      -F "parse_mode=HTML"
+
+    # Add the else statement as needed
+    else
+      echo "Skipping because skip build set to true"
+    fi
+
+  env:
+    JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+    JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+    LAST_SHA: ${{ env.LAST_SHA }}
+    COMMIT_LOG: ${COMMIT_LOG}
 
      
       - name: Send to Discord
