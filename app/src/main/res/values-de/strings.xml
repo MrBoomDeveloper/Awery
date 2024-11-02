@@ -229,8 +229,7 @@
     <string name="no_update_found">Kein Update gefunden</string>
     <string name="downloading_update">Update %1$s wird heruntergeladen</string>
     <string name="permission_required">Bitte geben Sie die Erlaubnis zum Zugriff auf Dateien &amp; Ordner in den Einstellungen und versuchen Sie es erneut.</string>
-    <string name="started_downloading">Herunterladen gestartet
-\n%1$s</string>
+    <string name="started_downloading">Herunterladen gestartet\n%1$s</string>
     <string name="loading_image_failed">Bild konnte nicht geladen werden</string>
     <string name="failed_to_load_data">Fehler beim Laden der gespeicherten Daten von %1$d</string>
     <string name="access_not_available">Zugriff nicht verfügbar</string>
@@ -450,4 +449,5 @@
     <string name="tracking">Verfolgung</string>
     <string name="adult_content">Erwachseneninhalt</string>
     <string name="read_now">Jetzt lesen</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
