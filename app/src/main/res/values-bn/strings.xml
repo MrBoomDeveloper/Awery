@@ -449,4 +449,5 @@
     <string name="not_logged_detailed">ত্রুটি 401। আপনি লগ ইন করা নেই, দয়া করে লগ ইন করুন এবং আবার চেষ্টা করুন।</string>
     <string name="no_access_detailed">ত্রুটি 403। আপনার এই রিসোর্সে অ্যাক্সেস নেই, আপনার অ্যাকাউন্টে লগ ইন করার চেষ্টা করুন এবং আবার চেষ্টা করুন।</string>
     <string name="rate_limited_detailed">ত্রুটি 429। আপনি রেট সীমা অতিক্রম করেছেন, দয়া করে পরে আবার চেষ্টা করুন।</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
