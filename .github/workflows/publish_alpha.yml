@@ -58,21 +58,15 @@ jobs:
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
+          keyPassword: ${{ secrets.ANDROID_PASSWORD }}
 
       - name: Prepare Release Directory
         if: success()
         run: |
           mkdir -p release_artifacts
-          if [ -f app/build/outputs/apk/alpha/release/app-alpha-release.apk ]; then
-            cp app/build/outputs/apk/alpha/release/app-alpha-release.apk release_artifacts/
-            echo "APK_PATH=release_artifacts/app-alpha-release.apk" >> $GITHUB_ENV
-          else
-            echo "Error: app-alpha-release.apk not found."
-            exit 1
-          fi
+          echo "Found APK files: $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null)"
+          cp app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk release_artifacts/ || { echo "Error: No signed APK file found."; exit 1; }
+          echo "APK_PATH=release_artifacts/app-alpha-release-signed.apk" >> $GITHUB_ENV
 
       - name: Upload to Artifacts
         if: success()
@@ -94,7 +88,7 @@ jobs:
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174" \
-            -F "document=@release_artifacts/app-alpha-release.apk"
+            -F "document=@release_artifacts/app-alpha-release-signed.apk"
 
       - name: Send to Discord
         if: success()
@@ -103,7 +97,7 @@ jobs:
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@release_artifacts/app-alpha-release.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@release_artifacts/app-alpha-release-signed.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
