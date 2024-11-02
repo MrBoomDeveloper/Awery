@@ -34,6 +34,7 @@ jobs:
         run: |
           LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
+
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
@@ -41,6 +42,7 @@ jobs:
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -cd '\11\12\15\40-\176')
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
+
       - name: Build Alpha APK
         id: build_alpha
         run: ./gradlew assembleAlphaRelease
@@ -67,13 +69,13 @@ jobs:
           cp "$SOURCE_APK" "$TARGET_APK"
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+
       - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
           path: ${{ env.RELEASE_DIR }}
-          retention-days: 90
 
       - name: Send to Telegram
         if: success()
@@ -84,9 +86,9 @@ jobs:
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
           telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-          message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
-          message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
-          echo "$message"
+            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+            message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+            echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           curl -v -X POST \
@@ -95,11 +97,10 @@ jobs:
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
             -F "caption=New Alpha-Build dropped 🔥
-
             Latest Changes:
             ${telegram_commit_messages}" \
             -F "parse_mode=HTML"
-            
+
       - name: Send to Discord
         if: success()
         run: |
@@ -109,23 +110,23 @@ jobs:
           ESCAPED_COMMIT_LOG=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/"/\\"/g')
           PAYLOAD=$(cat <<EOF
           {
-  "content": "<@&1208839371575529572>",
-  "embeds": [{
-    "title": "New Awery Alpha Update!",
-    "description": "$ESCAPED_COMMIT_LOG",
-    "color": 5814783
-  }]
-}
-EOF
-)
+            "content": "<@&1208839371575529572>",
+            "embeds": [{
+              "title": "New Awery Alpha Update!",
+              "description": "$ESCAPED_COMMIT_LOG",
+              "color": 5814783
+            }]
+          }
+          EOF
+          )
 
-echo "Sending payload: $PAYLOAD"
-RESPONSE=$(curl -H "Content-Type: application/json" \
-  -d "$PAYLOAD" \
-  "${{ secrets.DISCORD_WEBHOOK_URL }}")
-echo "Response: $RESPONSE"
-curl -F "file=@$APK_PATH" \
-  "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          echo "Sending payload: $PAYLOAD"
+          RESPONSE=$(curl -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}")
+          echo "Response: $RESPONSE"
+          curl -F "file=@$APK_PATH" \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
