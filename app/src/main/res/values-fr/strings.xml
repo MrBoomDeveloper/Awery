@@ -449,4 +449,5 @@
     <string name="completed">Terminé</string>
     <string name="please_report_bug_extension">Veuillez envoyer le texte suivant aux développeurs de l\'extension !</string>
     <string name="read_now">Lire maintenant</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
