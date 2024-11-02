@@ -138,6 +138,13 @@ jobs:
           else
           echo "skipping because skip build set to true"
           fi
+
+          env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+          LAST_SHA: ${{ env.LAST_SHA }}
+          COMMIT_LOG: ${COMMIT_LOG}
+
      
       - name: Send to Discord
         if: success()
