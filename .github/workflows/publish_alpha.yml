@@ -90,7 +90,7 @@ jobs:
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
-            -F "message_thread_id=173" \
+            -F "message_thread_id=174" \
             -F "document=@$APK_PATH" \
             -F "caption=Commits:%0A${MESSAGE}" \
             -F "parse_mode=HTML"
