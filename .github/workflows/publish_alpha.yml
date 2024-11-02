@@ -99,33 +99,22 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
-          echo "Current directory contents:"
-          ls -la
-          echo "Release directory contents:"
-          ls -la ${{ env.RELEASE_DIR }}
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           if [ ! -f "$APK_PATH" ]; then
             echo "Error: APK not found at $APK_PATH"
             exit 1
           fi
-          if [ ! -f "commit_log.txt" ]; then
-            echo "Error: commit_log.txt not found"
-            exit 1
-          fi
-          echo "File sizes:"
-          ls -lh "$APK_PATH"
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
-          echo "Sending to Telegram..."
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
-            -F "document=@$APK_PATH" \
             -F "caption=$MESSAGE" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
-            -F "message_thread_id=174"
+            -F "message_thread_id=174" \
+            --form "document=<(curl -T $APK_PATH https://api.telegram.org/file/upload?file=)"
 
       - name: Send to Discord
         if: success()
