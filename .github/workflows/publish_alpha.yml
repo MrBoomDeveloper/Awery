@@ -42,11 +42,12 @@ jobs:
           LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
 
-      - name: Get New Commits Since Last Successful Run
+      - name: Get Commits Since Last Run
         id: get_commits
         run: |
-          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
+          LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an ֍ (https://github.com/${{ github.repository }}/commit/%H)")
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[\\#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
 
       - name: Build Alpha APK
