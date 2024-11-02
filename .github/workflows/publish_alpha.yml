@@ -39,9 +39,13 @@ jobs:
         id: get_commits
         run: |
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
-          echo "COMMIT_LOG=${FORMATTED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
-          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          # Sanitize the commit log to remove problematic characters
+          SANITIZED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed 's/[<>]/ /g' | tr -d '\n' | tr -d '\r')
+          if [ ${#SANITIZED_COMMIT_LOGS} -gt 4096 ]; then
+            SANITIZED_COMMIT_LOGS="${SANITIZED_COMMIT_LOGS:0:4093}... (truncated)"
+          fi
+          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
 
       - name: Build Alpha APK
         id: build_alpha
