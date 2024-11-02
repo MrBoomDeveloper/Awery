@@ -35,7 +35,7 @@ jobs:
           if [ -f last_successful_sha.txt ]; then
             LAST_SHA=$(cat last_successful_sha.txt)
           else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD) # Get initial commit if no SHA exists
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
 
@@ -56,7 +56,6 @@ jobs:
         id: build_alpha
         run: |
           ./gradlew assembleAlphaRelease || { echo 'Build failed'; exit 1; }
-          ls -la app/build/outputs/apk/alpha/release/  # Debug: List contents after build
 
       - name: Sign Alpha APK
         if: success()
@@ -70,35 +69,26 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Debug Directory Structure
-        run: |
-          echo "Checking directory structure after signing:"
-          ls -R app/build/outputs/apk/
-
-      - name: Setup APK Directory
-        run: |
-          mkdir -p app/build/outputs/apk/alpha
-          echo "Created alpha directory"
-          ls -la app/build/outputs/apk/
-
       - name: Move and Rename Signed APK
         if: success()
         run: |
           SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          TARGET_APK="app/build/outputs/apk/alpha/app-alpha-release.apk"
+          TARGET_DIR="app/build/outputs/apk/alpha"
+          TARGET_APK="${TARGET_DIR}/app-alpha-release.apk"
+          mkdir -p "${TARGET_DIR}"
           if [ ! -f "$SOURCE_APK" ]; then
-            echo "Source APK not found at $SOURCE_APK"
+            echo "Error: Source APK not found at $SOURCE_APK"
             ls -la app/build/outputs/apk/alpha/release/
             exit 1
           fi
-          mv "$SOURCE_APK" "$TARGET_APK"
+          cp "$SOURCE_APK" "$TARGET_APK"
           if [ ! -f "$TARGET_APK" ]; then
-            echo "Failed to move APK to $TARGET_APK"
+            echo "Error: Failed to copy APK to $TARGET_APK"
             exit 1
           fi
-          echo "apk_path=$TARGET_APK" >> $GITHUB_ENV
-          echo "Successfully moved and renamed APK"
-          ls -la app/build/outputs/apk/alpha/
+          echo "APK_PATH=${TARGET_APK}" >> $GITHUB_ENV
+          echo "Successfully copied APK to ${TARGET_APK}"
+          ls -la "${TARGET_DIR}"
 
       - name: Upload Alpha APK
         if: success()
@@ -106,37 +96,48 @@ jobs:
         with:
           name: "Alpha APK"
           retention-days: 90
-          path: ${{ env.apk_path }}
+          path: ${{ env.APK_PATH }}
 
       - name: Send Alpha APK to Telegram
         if: success()
         run: |
-          if [ ! -f "${{ env.apk_path }}" ]; then
-            echo "APK not found at ${{ env.apk_path }}"
+          # Verify APK exists
+          if [ ! -f "${{ env.APK_PATH }}" ]; then
+            echo "Error: APK not found at ${{ env.APK_PATH }}"
+            ls -la $(dirname "${{ env.APK_PATH }}")
+            exit 1
+          fi
+          if [ ! -f "commit_log.txt" ]; then
+            echo "Error: commit_log.txt not found"
             exit 1
           fi
           COMMIT_LOG=$(cat commit_log.txt)
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+          telegram_commit_messages=$(echo "$COMMIT_LOG" | while read -r line; do
             message=$(echo "$line" | sed -E 's/● (.*) ~(.*) ֍(.*)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/mrboomdeveloper\/awery\/pull\/\1)/<a href="\2">#\1<\/a>/g')
+            message=$(echo "$message" | sed -E 's/#([0-9]+) (https:\/\/github.com\/[^\/]+\/[^\/]+\/pull\/\1)/<a href="\2">#\1<\/a>/g')
             echo "$message"
           done)
           telegram_commit_messages="${telegram_commit_messages:0:1020}"
-          telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
-          curl -v -X POST \
+          telegram_message="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}"
+          response=$(curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
-            -F "document=@${{ env.apk_path }}" \
-            -F "caption=${telegram_commit_messages}" \
+            -F "document=@${{ env.APK_PATH }}" \
+            -F "caption=${telegram_message}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
-            -F "message_thread_id=174"
+            -F "message_thread_id=174" 2>&1)
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to send to Telegram"
+            echo "Curl response: $response"
+            exit 1
+          fi
 
       - name: Send Alpha APK to Discord
         if: success()
         run: |
-          if [ ! -f "${{ env.apk_path }}" ]; then
-            echo "APK not found at ${{ env.apk_path }}"
+          if [ ! -f "${{ env.APK_PATH }}" ]; then
+            echo "Error: APK not found at ${{ env.APK_PATH }}"
             exit 1
           fi
           COMMIT_LOG=$(cat commit_log.txt)
@@ -148,12 +149,22 @@ jobs:
               \"color\": 5814783
             }]
           }"
-          curl -H "Content-Type: application/json" \
+          response=$(curl -H "Content-Type: application/json" \
             -d "$payload" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
-          curl -H "Content-Type: multipart/form-data" \
-            -F "file=@${{ env.apk_path }}" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
+            ${{ secrets.DISCORD_WEBHOOK_URL }} 2>&1)
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to send Discord message"
+            echo "Response: $response"
+            exit 1
+          fi
+          response=$(curl -H "Content-Type: multipart/form-data" \
+            -F "file=@${{ env.APK_PATH }}" \
+            ${{ secrets.DISCORD_WEBHOOK_URL }} 2>&1)
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to send Discord file"
+            echo "Response: $response"
+            exit 1
+          fi
 
       - name: Save Last Successful Commit SHA
         if: success()
