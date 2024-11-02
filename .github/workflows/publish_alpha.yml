@@ -130,11 +130,9 @@ jobs:
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=
-        
-          Commits:
-          ${MESSAGE} 
-            -F "parse_mode=HTML")
+            -F "caption=Commits:%0A${MESSAGE}" \
+            -F "parse_mode=HTML"
+      
           else
           echo "skipping because skip build set to true"
           fi
