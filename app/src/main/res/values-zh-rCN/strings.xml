@@ -209,8 +209,7 @@
     <string name="sort_by_release_date">按发布日期排序</string>
     <string name="crop_borders">裁剪边框</string>
     <string name="error_loading_data">加载数据出错 %1$s</string>
-    <string name="saved_to_path">已保存到：
-\n%s</string>
+    <string name="saved_to_path">已保存到：\n%s</string>
     <string name="setting_progress">进度设置为 %1$d</string>
     <string name="back_to_exit">请再次返回以退出</string>
     <string name="no_internet_connection">没有互联网连接</string>
@@ -230,8 +229,7 @@
     <string name="no_update_found">未找到更新</string>
     <string name="downloading_update">下载更新 %1$s</string>
     <string name="permission_required">请在设置中授权访问文件和文件夹，然后重试。</string>
-    <string name="started_downloading">开始下载
-\n%1$s</string>
+    <string name="started_downloading">开始下载\n%1$s</string>
     <string name="loading_image_failed">加载图片失败</string>
     <string name="failed_to_load_data">加载保存的数据失败 %1$d</string>
     <string name="access_not_available">无法获取访问权限</string>
@@ -451,4 +449,5 @@
     <string name="no_title">没有标题</string>
     <string name="dropped">放弃</string>
     <string name="read_now">立即阅读</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
