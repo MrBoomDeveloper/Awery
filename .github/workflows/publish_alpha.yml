@@ -99,6 +99,7 @@ jobs:
           done)
           telegram_commit_messages="${telegram_commit_messages:0:1020}"
           telegram_commit_messages="<b>New Awery Alpha Update</b>%0A%0A<b>Commits:</b>%0A${telegram_commit_messages}%0A%0A<b>Version:</b> ${VERSION}"
+
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
