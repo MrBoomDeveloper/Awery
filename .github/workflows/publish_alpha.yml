@@ -95,6 +95,13 @@ jobs:
           name: "Alpha APK"
           path: ${{ env.RELEASE_DIR }}
           retention-days: 90
+          
+      - name: Get Full APK Path
+        if: success()
+        run: |
+          FULL_APK_PATH="$(pwd)/${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          echo "Full APK Path: $FULL_APK_PATH"
+          echo "APK_PATH=$FULL_APK_PATH" >> $GITHUB_ENV
 
       - name: Send to Telegram
         if: success()
