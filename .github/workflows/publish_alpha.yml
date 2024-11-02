@@ -42,7 +42,6 @@ jobs:
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
@@ -73,18 +72,10 @@ jobs:
         run: |
           RELEASE_DIR="release_artifacts"
           mkdir -p "$RELEASE_DIR"
-          # Assuming the signed APK is the last one in the directory
-          SOURCE_APK=$(ls app/build/outputs/apk/alpha/release/*.apk | tail -n 1)
+          # Use glob pattern to get the latest signed APK
+          SOURCE_APK=$(ls app/build/outputs/apk/alpha/release/*.apk | sort -r | head -n 1)
           TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
-
-          if [ -f "$SOURCE_APK" ]; then
-            echo "Signed APK found, copying..."
-            cp "$SOURCE_APK" "$TARGET_APK"
-          else
-            echo "Error: Signed APK not found at $SOURCE_APK"
-            exit 1
-          fi
-
+          cp "$SOURCE_APK" "$TARGET_APK"
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
 
@@ -100,10 +91,6 @@ jobs:
         if: success()
         run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
@@ -120,16 +107,11 @@ jobs:
         if: success()
         run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@$APK_PATH" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@$APK_PATH" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
