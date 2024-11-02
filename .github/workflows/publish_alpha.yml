@@ -32,9 +32,9 @@ jobs:
       - name: Get Commits Since Last Run
         run: |
           if [ -f last_sha.txt ]; then
-          LAST_SHA=$(cat last_sha.txt)
+            LAST_SHA=$(cat last_sha.txt)
           else
-          LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "Commits since $LAST_SHA:"
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
@@ -42,16 +42,14 @@ jobs:
           COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
-          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
-          echo "$COMMIT_LOGS"
+          echo "COMMIT_LOGS=${COMMIT_LOGS}" >> $GITHUB_ENV
           echo "$COMMIT_LOGS" > commit_log.txt
-          BRANCH=${{ github.ref }}
-          BRANCH=${BRANCH#refs/heads/}
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-        shell: /usr/bin/bash -e {0}
-             env:
-        CI: true
-            continue-on-error: true
+          echo "BRANCH=${{ github.ref }}" >> $GITHUB_ENV
+          shell: /usr/bin/bash -e {0}
+        env:
+          CI: true
+        continue-on-error: true
+
 
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
