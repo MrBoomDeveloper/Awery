@@ -132,19 +132,8 @@
     <string name="no_comment_extensions">Nu aveți extensii de comentarii instalate. Descărcați-le pentru a vedea ceva nou aici!</string>
     <string name="sub_window_color_select">Culoare Fereastră Subtitrare</string>
     <string name="sub_window_color_info">\"Fereastra de subtitrare este partea din stânga și dreapta lor. (unde fundalul nu este)\"</string>
-    <string name="watch_complete_percentage_info">Procentajul la care progresul tău ar trebui să fie actualizat după vizionarea unui episod.
-\nAcesta stabilește și procentul pentru când să preîncarci linkurile pentru episodul următor.</string>
-    <string name="full_disclaimer">- Awery, în sine, oferă doar un tracker pentru anime și manga și nu oferă capacități de streaming sau descărcare pentru anime sau manga.
-\n
-\n - Awery sau oricare dintre dezvoltatorii/angajații săi nu găzduiesc niciunul dintre conținuturile găsite în Awery. Toate imaginile și informațiile despre anime/manga găsite în aplicație sunt preluate de la diverse API-uri publice (AniList, MyAnimeList, Kitsu).
-\n
-\n - În plus, toate linkurile de anime/manga găsite în Awery sunt preluate de la diverse plugin-uri de terță parte și nu au nicio afiliere cu Awery sau angajații săi.
-\n
-\n - Awery sau proprietarii săi nu sunt răspunzători pentru orice utilizare necorespunzătoare a oricărui conținut găsit în sau în afara aplicației și nu pot fi trași la răspundere pentru distribuția niciunui conținut găsit în aplicație.
-\n
-\n - Utilizând Awery, accepți faptul că dezvoltatorul aplicației nu este responsabil pentru niciunul dintre conținuturile găsite în aplicație. De asemenea, ești de acord că nu poți folosi Awery pentru a descărca sau a face streaming de conținut protejat prin drepturi de autor.
-\n
-\n - Dacă sunt implicate probleme legate de încălcarea drepturilor de autor, te rugăm să contactezi site-ul sursă. Dezvoltatorul nu își asumă nicio responsabilitate legală.</string>
+    <string name="watch_complete_percentage_info">Procentajul la care progresul tău ar trebui să fie actualizat după vizionarea unui episod.\nAcesta stabilește și procentul pentru când să preîncarci linkurile pentru episodul următor.</string>
+    <string name="full_disclaimer">- Awery, în sine, oferă doar un tracker pentru anime și manga și nu oferă capacități de streaming sau descărcare pentru anime sau manga.\n\n - Awery sau oricare dintre dezvoltatorii/angajații săi nu găzduiesc niciunul dintre conținuturile găsite în Awery. Toate imaginile și informațiile despre anime/manga găsite în aplicație sunt preluate de la diverse API-uri publice (AniList, MyAnimeList, Kitsu).\n\n - În plus, toate linkurile de anime/manga găsite în Awery sunt preluate de la diverse plugin-uri de terță parte și nu au nicio afiliere cu Awery sau angajații săi.\n\n - Awery sau proprietarii săi nu sunt răspunzători pentru orice utilizare necorespunzătoare a oricărui conținut găsit în sau în afara aplicației și nu pot fi trași la răspundere pentru distribuția niciunui conținut găsit în aplicație.\n\n - Utilizând Awery, accepți faptul că dezvoltatorul aplicației nu este responsabil pentru niciunul dintre conținuturile găsite în aplicație. De asemenea, ești de acord că nu poți folosi Awery pentru a descărca sau a face streaming de conținut protejat prin drepturi de autor.\n\n - Dacă sunt implicate probleme legate de încălcarea drepturilor de autor, te rugăm să contactezi site-ul sursă. Dezvoltatorul nu își asumă nicio responsabilitate legală.</string>
     <string name="height">Înălțime</string>
     <string name="default_quality_info">Folosește automat cea mai apropiată calitate disponibilă în mod implicit, APLICATĂ DOAR pentru serverele \"Multi Quality\". Se schimbă automat la redarea unui videoclip.</string>
     <string name="request_invalid_detailed">Eroare 400. Cererea a fost invalidă, te rugăm să încerci din nou mai târziu.</string>
@@ -177,8 +166,7 @@
     <string name="amoled">Temă Amoled</string>
     <string name="seek_time_info">Timpul în secunde pentru înaintare rapidă &amp; derulare înapoi.</string>
     <string name="show_cast_button">Arată Butonul de Distribuire</string>
-    <string name="always_minimize_info">Necesită activarea PiP, face ca playerul să se comporte asemănător cu playerul YouTube, dar mai bine.
-\nAscunde, de asemenea, butonul PiP.</string>
+    <string name="always_minimize_info">Necesită activarea PiP, face ca playerul să se comporte asemănător cu playerul YouTube, dar mai bine.\nAscunde, de asemenea, butonul PiP.</string>
     <string name="picture_in_picture">Imagine în Imagine</string>
     <string name="always_minimize">Minimizează întotdeauna</string>
     <string name="immersive_mode">Ascunde Bara de Stare</string>
@@ -233,15 +221,13 @@
     <string name="check_app_updates">Verificați automat actualizările aplicației</string>
     <string name="author">Autor</string>
     <string name="account">Cont</string>
-    <string name="subscriptions_info">Timpul pentru ca Awery să verifice periodic episoade/ capete noi
-\n(Timpul mai scurt va duce la un consum mai mare de baterie)</string>
+    <string name="subscriptions_info">Timpul pentru ca Awery să verifice periodic episoade/ capete noi\n(Timpul mai scurt va duce la un consum mai mare de baterie)</string>
     <string name="grid">Rețea</string>
     <string name="sort_by_release_date">Sortează după data lansării</string>
     <string name="crop_borders">Decupați marginile</string>
     <string name="error_loading_data">Eroare la încărcarea datelor %1$s</string>
     <string name="no_internet_connection">Fără conexiune la internet</string>
-    <string name="saved_to_path">Salvat în:
-\n%s</string>
+    <string name="saved_to_path">Salvat în:\n%s</string>
     <string name="setting_progress">Setarea progresului la %1$d</string>
     <string name="back_to_exit">Vă rugăm să apăsați din nou pentru a ieși</string>
     <string name="disabled_auto_skip">Sărituri automate dezactivate OP &amp; ED</string>
@@ -259,8 +245,7 @@
     <string name="no_update_found">Nu s-a găsit nicio actualizare</string>
     <string name="downloading_update">Se descarcă actualizarea %1$s</string>
     <string name="permission_required">Vă rugăm să acordați permisiunea de acces la fișiere și foldere din Setări și să încercați din nou.</string>
-    <string name="started_downloading">A început descărcarea
-\n%1$s</string>
+    <string name="started_downloading">A început descărcarea\n%1$s</string>
     <string name="loading_image_failed">Încărcarea imaginii a eșuat</string>
     <string name="failed_to_load_data">A eșuat încărcarea datelor salvate de %1$d</string>
     <string name="access_not_available">Nu am putut obține accesul</string>
@@ -464,4 +449,5 @@
     <string name="banned">Ești interzis</string>
     <string name="done">Terminat</string>
     <string name="read_now">Citește acum</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

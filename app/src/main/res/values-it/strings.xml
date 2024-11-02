@@ -172,8 +172,7 @@
     <string name="sort_by_release_date">Ordina per Data di Rilascio</string>
     <string name="crop_borders">Ritaglia Bordi</string>
     <string name="error_loading_data">Errore nel caricamento dei dati %1$s</string>
-    <string name="saved_to_path">Salvato in:
-\n%s</string>
+    <string name="saved_to_path">Salvato in:\n%s</string>
     <string name="setting_progress">Impostazione del progresso a %1$d</string>
     <string name="back_to_exit">Per favore, premi Indietro di nuovo per Uscire</string>
     <string name="no_internet_connection">Nessuna Connessione Internet</string>
@@ -190,8 +189,7 @@
     <string name="checking_for_update">Controllo Aggiornamenti</string>
     <string name="dont_show_again">Non mostrare più per la versione %1$s</string>
     <string name="downloading_update">Download Aggiornamento %1$s</string>
-    <string name="started_downloading">Inizio Download
-\n%1$s</string>
+    <string name="started_downloading">Inizio Download\n%1$s</string>
     <string name="loading_image_failed">Caricamento Immagine Fallito</string>
     <string name="failed_to_load_data">Impossibile caricare i dati salvati di %1$d</string>
     <string name="access_not_available">Accesso non disponibile</string>
@@ -343,25 +341,13 @@
     <string name="score">Punteggio</string>
     <string name="remove">Rimuovi</string>
     <string name="format">Formato</string>
-    <string name="full_disclaimer">- Awery da solo fornisce solo un tracker di anime e manga e non offre capacità di streaming o download di anime o manga.
-\n
-\n - Awery o qualsiasi suo sviluppatore/personale non ospita alcun contenuto trovato all\'interno di Awery. Tutte le immagini e le informazioni sugli anime/manga trovate nell\'app sono tratte da varie API pubbliche (AniList, MyAnimeList, Kitsu).
-\n
-\n - Inoltre, tutti i link agli anime/manga trovati in Awery sono tratti da vari plugin di terze parti e non hanno alcuna affiliazione con Awery o il suo personale.
-\n
-\n - Awery o i suoi proprietari non sono responsabili per qualsiasi uso improprio di qualsiasi contenuto trovato all\'interno o all\'esterno dell\'app e non possono essere ritenuti responsabili per la distribuzione di qualsiasi contenuto trovato all\'interno dell\'app.
-\n
-\n - Utilizzando Awery, accetti il fatto che lo sviluppatore dell\'app non è responsabile per alcun contenuto trovato nell\'app. Accetti anche il fatto che non puoi utilizzare Awery per scaricare o trasmettere contenuti protetti da copyright.
-\n
-\n - Se sono coinvolti problemi di violazione di copyright, contattare il sito web di origine. Lo sviluppatore non si assume alcuna responsabilità legale.</string>
+    <string name="full_disclaimer">- Awery da solo fornisce solo un tracker di anime e manga e non offre capacità di streaming o download di anime o manga.\n\n - Awery o qualsiasi suo sviluppatore/personale non ospita alcun contenuto trovato all\'interno di Awery. Tutte le immagini e le informazioni sugli anime/manga trovate nell\'app sono tratte da varie API pubbliche (AniList, MyAnimeList, Kitsu).\n\n - Inoltre, tutti i link agli anime/manga trovati in Awery sono tratti da vari plugin di terze parti e non hanno alcuna affiliazione con Awery o il suo personale.\n\n - Awery o i suoi proprietari non sono responsabili per qualsiasi uso improprio di qualsiasi contenuto trovato all\'interno o all\'esterno dell\'app e non possono essere ritenuti responsabili per la distribuzione di qualsiasi contenuto trovato all\'interno dell\'app.\n\n - Utilizzando Awery, accetti il fatto che lo sviluppatore dell\'app non è responsabile per alcun contenuto trovato nell\'app. Accetti anche il fatto che non puoi utilizzare Awery per scaricare o trasmettere contenuti protetti da copyright.\n\n - Se sono coinvolti problemi di violazione di copyright, contattare il sito web di origine. Lo sviluppatore non si assume alcuna responsabilità legale.</string>
     <string name="video">Video</string>
     <string name="ask_update_progress_info_ep">Disattivare aggiornerà sempre automaticamente il progresso quando l\'episodio viene visto.</string>
-    <string name="watch_complete_percentage_info">La percentuale alla quale il tuo progresso deve essere aggiornato dopo aver visto un episodio.
-\nQuesto imposta anche la % per pre-caricare i link per il prossimo episodio.</string>
+    <string name="watch_complete_percentage_info">La percentuale alla quale il tuo progresso deve essere aggiornato dopo aver visto un episodio.\nQuesto imposta anche la % per pre-caricare i link per il prossimo episodio.</string>
     <string name="picture_in_picture">Immagine nella Immagine</string>
     <string name="always_minimize">Minimizza Sempre</string>
-    <string name="always_minimize_info">Richiede che PiP sia abilitato, fa sì che il lettore si comporti come il Lettore di Youtube ma meglio.
-\nNasconde anche il pulsante PiP.</string>
+    <string name="always_minimize_info">Richiede che PiP sia abilitato, fa sì che il lettore si comporti come il Lettore di Youtube ma meglio.\nNasconde anche il pulsante PiP.</string>
     <string name="animations">Animazioni</string>
     <string name="startUpTab">Scheda di Avvio Predefinita</string>
     <string name="restart_app">Riavviare l\'app?</string>
@@ -374,8 +360,7 @@
     <string name="cancel">Annulla</string>
     <string name="year">Anno</string>
     <string name="account">Account</string>
-    <string name="subscriptions_info">Tempo per Awery per controllare periodicamente nuovi Episodi/Capitoli
-\n(Meno tempo comporterà un maggiore consumo della batteria)</string>
+    <string name="subscriptions_info">Tempo per Awery per controllare periodicamente nuovi Episodi/Capitoli\n(Meno tempo comporterà un maggiore consumo della batteria)</string>
     <string name="first_episode">Questo è il 1° Episodio!</string>
     <string name="no_update_found">Nessun Aggiornamento Trovato</string>
     <string name="permission_required">Per favore, concedi il permesso per accedere a File &amp; Cartelle dalle Impostazioni, e riprova.</string>
@@ -464,4 +449,5 @@
     <string name="no_access_detailed">Errore 403. Non hai accesso a questa risorsa, prova ad accedere al tuo account e riprova.</string>
     <string name="rate_limited_detailed">Errore 429. Hai superato il limite di frequenza, per favore riprova più tardi.</string>
     <string name="not_logged_detailed">Errore 401. Non sei loggato, per favore effettua il login e riprova.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

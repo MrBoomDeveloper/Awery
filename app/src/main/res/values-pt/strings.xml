@@ -99,17 +99,7 @@
     <string name="about">Sobre</string>
     <string name="devs">Desenvolvedores</string>
     <string name="disclaimer">Aviso Legal</string>
-    <string name="full_disclaimer">- Awery por si só apenas fornece um rastreador de anime e mangá e não oferece capacidades de streaming ou download de anime ou mangá.
-\n
-\n - Awery ou qualquer um de seus desenvolvedores/funcionários não hospedam nenhum dos conteúdos encontrados dentro de Awery. Todas as imagens e informações de anime/mangá encontradas no aplicativo são retiradas de várias APIs públicas (AniList, MyAnimeList, Kitsu).
-\n
-\n - Além disso, todos os links de anime/mangá encontrados em Awery são retirados de vários plugins de terceiros e não têm afiliação com Awery ou sua equipe.
-\n
-\n - Awery ou seus proprietários não são responsáveis por qualquer uso indevido de qualquer um dos conteúdos encontrados dentro ou fora do aplicativo e não podem ser responsabilizados pela distribuição de qualquer um dos conteúdos encontrados dentro do aplicativo.
-\n
-\n - Ao usar Awery, você concorda que o desenvolvedor do aplicativo não é responsável por nenhum dos conteúdos encontrados no aplicativo. Você também concorda que não pode usar Awery para baixar ou transmitir qualquer conteúdo protegido por direitos autorais.
-\n
-\n - Se questões de infração na internet estiverem envolvidas, entre em contato com o site de origem. O desenvolvedor não assume qualquer responsabilidade legal.</string>
+    <string name="full_disclaimer">- Awery por si só apenas fornece um rastreador de anime e mangá e não oferece capacidades de streaming ou download de anime ou mangá.\n\n - Awery ou qualquer um de seus desenvolvedores/funcionários não hospedam nenhum dos conteúdos encontrados dentro de Awery. Todas as imagens e informações de anime/mangá encontradas no aplicativo são retiradas de várias APIs públicas (AniList, MyAnimeList, Kitsu).\n\n - Além disso, todos os links de anime/mangá encontrados em Awery são retirados de vários plugins de terceiros e não têm afiliação com Awery ou sua equipe.\n\n - Awery ou seus proprietários não são responsáveis por qualquer uso indevido de qualquer um dos conteúdos encontrados dentro ou fora do aplicativo e não podem ser responsabilizados pela distribuição de qualquer um dos conteúdos encontrados dentro do aplicativo.\n\n - Ao usar Awery, você concorda que o desenvolvedor do aplicativo não é responsável por nenhum dos conteúdos encontrados no aplicativo. Você também concorda que não pode usar Awery para baixar ou transmitir qualquer conteúdo protegido por direitos autorais.\n\n - Se questões de infração na internet estiverem envolvidas, entre em contato com o site de origem. O desenvolvedor não assume qualquer responsabilidade legal.</string>
     <string name="video">Vídeo</string>
     <string name="video_info_info">Mostra a resolução do vídeo atual, útil para servidores <b>\"Multi Qualidade\"</b>.</string>
     <string name="default_quality">Seleção Automática de Qualidade</string>
@@ -145,8 +135,7 @@
     <string name="show_cast_button">Mostrar Botão de Transmissão</string>
     <string name="picture_in_picture">Imagem em Imagem</string>
     <string name="always_minimize">Minimizar Sempre</string>
-    <string name="always_minimize_info">Requer que o PiP esteja ativado, faz com que o player se comporte como o Player do YouTube, mas melhor.
-\nTambém oculta o botão PiP.</string>
+    <string name="always_minimize_info">Requer que o PiP esteja ativado, faz com que o player se comporte como o Player do YouTube, mas melhor.\nTambém oculta o botão PiP.</string>
     <string name="immersive_mode">Ocultar Barra de Status</string>
     <string name="immersive_mode_info">Requer reinicialização do aplicativo para aplicar completamente.</string>
     <string name="startUpTab">Aba Padrão de Início</string>
@@ -189,14 +178,12 @@
     <string name="check_app_updates">Verificar atualizações do App automaticamente</string>
     <string name="author">Autor</string>
     <string name="account">Conta</string>
-    <string name="subscriptions_info">Quantidade de tempo para o Awery verificar periodicamente novos Episódios/Capítulos
-\n(Menos tempo causará maior consumo de bateria)</string>
+    <string name="subscriptions_info">Quantidade de tempo para o Awery verificar periodicamente novos Episódios/Capítulos\n(Menos tempo causará maior consumo de bateria)</string>
     <string name="grid">Grade</string>
     <string name="sort_by_release_date">Ordenar por Data de Lançamento</string>
     <string name="crop_borders">Cortar Bordas</string>
     <string name="error_loading_data">Erro ao carregar dados %1$s</string>
-    <string name="saved_to_path">Salvo em:
-\n%s</string>
+    <string name="saved_to_path">Salvo em:\n%s</string>
     <string name="setting_progress">Definindo progresso para %1$d</string>
     <string name="back_to_exit">Por favor, volte novamente para Sair</string>
     <string name="no_internet_connection">Sem Conexão à Internet</string>
@@ -216,8 +203,7 @@
     <string name="no_update_found">Nenhuma Atualização Encontrada</string>
     <string name="downloading_update">Baixando Atualização %1$s</string>
     <string name="permission_required">Por favor, conceda permissão para acessar Arquivos &amp; Pastas nas Configurações, e tente novamente.</string>
-    <string name="started_downloading">Iniciando Download
-\n%1$s</string>
+    <string name="started_downloading">Iniciando Download\n%1$s</string>
     <string name="loading_image_failed">Falha ao Carregar Imagem</string>
     <string name="failed_to_load_data">Falha ao carregar os dados salvos de %1$d</string>
     <string name="access_not_available">Não foi possível obter acesso</string>
@@ -439,8 +425,7 @@
     <string name="characters">Personagens</string>
     <string name="player_settings">Configurações do Player</string>
     <string name="player">Player</string>
-    <string name="watch_complete_percentage_info">"A porcentagem em que seu progresso deve ser atualizado após assistir a um episódio.
-\nIsso também define o  para quando pré-carregar links para o próximo episódio."</string>
+    <string name="watch_complete_percentage_info">"A porcentagem em que seu progresso deve ser atualizado após assistir a um episódio.\n\nIsso também define o  para quando pré-carregar links para o próximo episódio."</string>
     <string name="behaviour">Comportamento</string>
     <string name="always_continue">Sempre Continuar de Onde Parou</string>
     <string name="pause_video_focus">Pausar Quando Não Estiver em Foco</string>
@@ -464,4 +449,5 @@
     <string name="list_private">Privado</string>
     <string name="copy">Copiar</string>
     <string name="something_terrible_happened">Algo realmente terrível aconteceu 0_0</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

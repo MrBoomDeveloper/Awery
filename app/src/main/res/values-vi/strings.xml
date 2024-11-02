@@ -27,17 +27,7 @@
     <string name="season">Mùa</string>
     <string name="start_date">Ngày bắt đầu</string>
     <string name="roles">Vai trò</string>
-    <string name="full_disclaimer">- Awery chỉ cung cấp chức năng theo dõi anime và manga và không cung cấp khả năng phát hoặc tải xuống anime hoặc manga.
-\n
-\n - Awery hoặc bất kỳ nhà phát triển/nhân viên nào của nó không lưu trữ bất kỳ nội dung nào có trong Awery. Tất cả các hình ảnh và thông tin anime/manga có trong ứng dụng đều được lấy từ các API công cộng khác nhau (AniList, MyAnimeList, Kitsu).
-\n
-\n - Hơn nữa, tất cả các liên kết anime/manga có trong Awery đều được lấy từ các plugin bên thứ ba khác nhau và không có liên kết với Awery hoặc nhân viên của nó.
-\n
-\n - Awery hoặc chủ sở hữu của nó không chịu trách nhiệm về bất kỳ việc sử dụng sai mục nào có trong ứng dụng hoặc ngoài ứng dụng và không thể bị truy cứu trách nhiệm về việc phân phối bất kỳ nội dung nào có trong ứng dụng.
-\n
-\n - Bằng cách sử dụng Awery, bạn đồng ý rằng nhà phát triển của ứng dụng không chịu trách nhiệm về bất kỳ nội dung nào có trong ứng dụng. Bạn cũng đồng ý rằng bạn không thể sử dụng Awery để tải xuống hoặc phát bất kỳ nội dung có bản quyền nào.
-\n
-\n - Nếu có vấn đề vi phạm bản quyền, vui lòng liên hệ với trang web nguồn. Nhà phát triển không chịu bất kỳ trách nhiệm pháp lý nào.</string>
+    <string name="full_disclaimer">- Awery chỉ cung cấp chức năng theo dõi anime và manga và không cung cấp khả năng phát hoặc tải xuống anime hoặc manga.\n\n - Awery hoặc bất kỳ nhà phát triển/nhân viên nào của nó không lưu trữ bất kỳ nội dung nào có trong Awery. Tất cả các hình ảnh và thông tin anime/manga có trong ứng dụng đều được lấy từ các API công cộng khác nhau (AniList, MyAnimeList, Kitsu).\n\n - Hơn nữa, tất cả các liên kết anime/manga có trong Awery đều được lấy từ các plugin bên thứ ba khác nhau và không có liên kết với Awery hoặc nhân viên của nó.\n\n - Awery hoặc chủ sở hữu của nó không chịu trách nhiệm về bất kỳ việc sử dụng sai mục nào có trong ứng dụng hoặc ngoài ứng dụng và không thể bị truy cứu trách nhiệm về việc phân phối bất kỳ nội dung nào có trong ứng dụng.\n\n - Bằng cách sử dụng Awery, bạn đồng ý rằng nhà phát triển của ứng dụng không chịu trách nhiệm về bất kỳ nội dung nào có trong ứng dụng. Bạn cũng đồng ý rằng bạn không thể sử dụng Awery để tải xuống hoặc phát bất kỳ nội dung có bản quyền nào.\n\n - Nếu có vấn đề vi phạm bản quyền, vui lòng liên hệ với trang web nguồn. Nhà phát triển không chịu bất kỳ trách nhiệm pháp lý nào.</string>
     <string name="default_quality_info">Tự động sử dụng chất lượng gần nhất được cung cấp theo mặc định, CHỈ áp dụng cho các máy chủ \"Chất lượng đa dạng\". Tự động thay đổi khi phát video.</string>
     <string name="default_playback_speed">Tốc độ phát lại mặc định: %1$s</string>
     <string name="auto_skip_fillers_info">Bỏ qua các tập filler khi chuyển sang tập tiếp theo.</string>
@@ -62,8 +52,7 @@
     <string name="show_cast_button">Hiển thị nút dàn diễn viên</string>
     <string name="picture_in_picture">Hình trong hình</string>
     <string name="always_minimize">Luôn thu nhỏ</string>
-    <string name="always_minimize_info">Yêu cầu PiP được bật, làm cho trình phát hoạt động giống như Trình phát Youtube nhưng tốt hơn.
-\nCũng ẩn nút PiP.</string>
+    <string name="always_minimize_info">Yêu cầu PiP được bật, làm cho trình phát hoạt động giống như Trình phát Youtube nhưng tốt hơn.\nCũng ẩn nút PiP.</string>
     <string name="immersive_mode">Ẩn thanh trạng thái</string>
     <string name="immersive_mode_info">Yêu cầu khởi động lại ứng dụng để áp dụng hoàn toàn.</string>
     <string name="startUpTab">Tab khởi động mặc định</string>
@@ -290,8 +279,7 @@
     <string name="secondary_sub_color_select">Màu viền phụ đề</string>
     <string name="secondary_sub_outline_type_select">Loại viền phụ đề</string>
     <string name="sub_font_select">Phông chữ phụ đề</string>
-    <string name="watch_complete_percentage_info">"Phần trăm mà tiến độ của bạn nên được cập nhật sau khi xem một tập phim.
-\nĐiều này cũng đặt  để tải trước liên kết cho tập tiếp theo."</string>
+    <string name="watch_complete_percentage_info">"Phần trăm mà tiến độ của bạn nên được cập nhật sau khi xem một tập phim.\n\nĐiều này cũng đặt  để tải trước liên kết cho tập tiếp theo."</string>
     <string name="behaviour">Hành vi</string>
     <string name="always_continue">Luôn tiếp tục từ nơi bạn đã dừng lại</string>
     <string name="pause_video_focus">Tạm dừng khi không có tiêu điểm</string>
@@ -324,14 +312,12 @@
     <string name="check_app_updates">Tự động kiểm tra cập nhật ứng dụng</string>
     <string name="author">Tác giả</string>
     <string name="account">Tài khoản</string>
-    <string name="subscriptions_info">Thời gian để Awery kiểm tra định kỳ các tập/chương mới
-\n(Thời gian ngắn hơn sẽ tiêu tốn nhiều pin hơn)</string>
+    <string name="subscriptions_info">Thời gian để Awery kiểm tra định kỳ các tập/chương mới\n(Thời gian ngắn hơn sẽ tiêu tốn nhiều pin hơn)</string>
     <string name="crop_borders">Cắt viền</string>
     <string name="grid">Lưới</string>
     <string name="sort_by_release_date">Sắp xếp theo ngày phát hành</string>
     <string name="error_loading_data">Lỗi khi tải dữ liệu %1$s</string>
-    <string name="saved_to_path">Đã lưu tại:
-\n%s</string>
+    <string name="saved_to_path">Đã lưu tại:\n%s</string>
     <string name="setting_progress">Đang đặt tiến độ thành %1$d</string>
     <string name="back_to_exit">Vui lòng quay lại để thoát</string>
     <string name="no_internet_connection">Không có kết nối Internet</string>
@@ -345,8 +331,7 @@
     <string name="list_updated">Danh sách đã được cập nhật</string>
     <string name="deleted_from_list">Đã xóa khỏi danh sách</string>
     <string name="permission_required">Vui lòng cấp quyền truy cập vào Tập tin &amp; Thư mục từ Cài đặt, và thử lại.</string>
-    <string name="started_downloading">Đã bắt đầu tải xuống
-\n%1$s</string>
+    <string name="started_downloading">Đã bắt đầu tải xuống\n%1$s</string>
     <string name="downloading_update">Đang tải xuống cập nhật %1$s</string>
     <string name="loading_image_failed">Tải hình ảnh thất bại</string>
     <string name="failed_to_load_data">Không thể tải dữ liệu đã lưu của %1$d</string>
@@ -464,4 +449,5 @@
     <string name="continue_action">Tiếp tục</string>
     <string name="done">Hoàn thành</string>
     <string name="read_now">Đọc ngay</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

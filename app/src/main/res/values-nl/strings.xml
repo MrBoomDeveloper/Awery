@@ -112,17 +112,7 @@
     <string name="download_manager_select">Downloadmanager</string>
     <string name="reader_settings">Lezerinstellingen</string>
     <string name="default_source">Standaard Bron</string>
-    <string name="full_disclaimer">- Awery biedt op zichzelf alleen een anime- en manga-tracker en biedt geen mogelijkheden voor het streamen of downloaden van anime of manga.
-\n
-\n - Awery of enige van zijn ontwikkelaars/personeel hosten geen van de inhoud die in Awery te vinden is. Alle afbeeldingen en anime/manga-informatie in de app zijn afkomstig van verschillende openbare API\'s (AniList, MyAnimeList, Kitsu).
-\n
-\n - Verder zijn alle anime/manga-links die in Awery te vinden zijn afkomstig van verschillende plugins van derden en hebben ze geen band met Awery of zijn personeel.
-\n
-\n - Awery of zijn eigenaren zijn niet aansprakelijk voor enig misbruik van de inhoud die binnen of buiten de app wordt gevonden en kunnen niet verantwoordelijk worden gehouden voor de verspreiding van enige inhoud die in de app wordt gevonden.
-\n
-\n - Door Awery te gebruiken, stem je ermee in dat de ontwikkelaar van de app niet verantwoordelijk is voor enige inhoud die in de app wordt gevonden. Je stemt er ook mee in dat je Awery niet mag gebruiken om auteursrechtelijk beschermde inhoud te downloaden of te streamen.
-\n
-\n - Als er sprake is van internetinbreuk, neem dan contact op met de bronwebsite. De ontwikkelaar neemt geen juridische verantwoordelijkheid op zich.</string>
+    <string name="full_disclaimer">- Awery biedt op zichzelf alleen een anime- en manga-tracker en biedt geen mogelijkheden voor het streamen of downloaden van anime of manga.\n\n - Awery of enige van zijn ontwikkelaars/personeel hosten geen van de inhoud die in Awery te vinden is. Alle afbeeldingen en anime/manga-informatie in de app zijn afkomstig van verschillende openbare API\'s (AniList, MyAnimeList, Kitsu).\n\n - Verder zijn alle anime/manga-links die in Awery te vinden zijn afkomstig van verschillende plugins van derden en hebben ze geen band met Awery of zijn personeel.\n\n - Awery of zijn eigenaren zijn niet aansprakelijk voor enig misbruik van de inhoud die binnen of buiten de app wordt gevonden en kunnen niet verantwoordelijk worden gehouden voor de verspreiding van enige inhoud die in de app wordt gevonden.\n\n - Door Awery te gebruiken, stem je ermee in dat de ontwikkelaar van de app niet verantwoordelijk is voor enige inhoud die in de app wordt gevonden. Je stemt er ook mee in dat je Awery niet mag gebruiken om auteursrechtelijk beschermde inhoud te downloaden of te streamen.\n\n - Als er sprake is van internetinbreuk, neem dan contact op met de bronwebsite. De ontwikkelaar neemt geen juridische verantwoordelijkheid op zich.</string>
     <string name="video_info_info">Toont de resolutie van de huidige video die wordt afgespeeld, handig voor <b>\"Multi Quality\"</b> servers.</string>
     <string name="default_quality">Automatische Kwaliteitsselectie</string>
     <string name="height">Hoogte</string>
@@ -146,8 +136,7 @@
     <string name="ask_update_progress_anime">Vraag voor elk Medium \"Individueel\"</string>
     <string name="ask_update_progress_info_ep">Uitschakelen zorgt ervoor dat de voortgang altijd automatisch wordt bijgewerkt wanneer de aflevering is bekeken.</string>
     <string name="watch_complete_percentage">Kijkupdate Percentage</string>
-    <string name="watch_complete_percentage_info">Het percentage waarbij je voortgang moet worden bijgewerkt na het kijken van een aflevering.
-\nDit stelt ook het percentage in voor wanneer links voor de volgende aflevering worden voorbeladen.</string>
+    <string name="watch_complete_percentage_info">Het percentage waarbij je voortgang moet worden bijgewerkt na het kijken van een aflevering.\nDit stelt ook het percentage in voor wanneer links voor de volgende aflevering worden voorbeladen.</string>
     <string name="behaviour">Gedrag</string>
     <string name="always_continue">Altijd Verdergaan waar je was gebleven</string>
     <string name="pause_video_focus">Pauzeren wanneer niet in Focus</string>
@@ -162,8 +151,7 @@
     <string name="show_cast_button">Cast-knop Weergeven</string>
     <string name="picture_in_picture">Beeld-in-Beeld</string>
     <string name="always_minimize">Altijd Minimaliseren</string>
-    <string name="always_minimize_info">Vereist dat PiP is ingeschakeld, laat de speler werken als de YouTube-speler maar dan beter.
-\nVerbergt ook de PiP-knop.</string>
+    <string name="always_minimize_info">Vereist dat PiP is ingeschakeld, laat de speler werken als de YouTube-speler maar dan beter.\nVerbergt ook de PiP-knop.</string>
     <string name="immersive_mode">Statusbalk Verbergen</string>
     <string name="immersive_mode_info">Vereist dat de app opnieuw wordt opgestart om volledig te worden toegepast.</string>
     <string name="startUpTab">Standaard Opstart Tabblad</string>
@@ -221,14 +209,12 @@
     <string name="check_app_updates">Automatisch Controleren op App-updates</string>
     <string name="author">Auteur</string>
     <string name="account">Account</string>
-    <string name="subscriptions_info">Hoe vaak Awery periodiek controleert op nieuwe afleveringen/hoofdstukken
-\n(Minder tijd zal meer batterijverbruik veroorzaken)</string>
+    <string name="subscriptions_info">Hoe vaak Awery periodiek controleert op nieuwe afleveringen/hoofdstukken\n(Minder tijd zal meer batterijverbruik veroorzaken)</string>
     <string name="grid">Raster</string>
     <string name="sort_by_release_date">Sorteren op Releasedatum</string>
     <string name="crop_borders">Randen Bijsnijden</string>
     <string name="error_loading_data">Fout bij het Laden van Gegevens %1$s</string>
-    <string name="saved_to_path">Opgeslagen naar:
-\n%s</string>
+    <string name="saved_to_path">Opgeslagen naar:\n%s</string>
     <string name="setting_progress">Voortgang instellen op %1$d</string>
     <string name="back_to_exit">Druk nogmaals op terug om af te sluiten</string>
     <string name="no_internet_connection">Geen Internetverbinding</string>
@@ -245,8 +231,7 @@
     <string name="no_next_episode">Geen Volgende Aflevering Gevonden!</string>
     <string name="downloading">Downloaden…</string>
     <string name="next_chapter_not_found">Volgend Hoofdstuk Niet Gevonden</string>
-    <string name="started_downloading">Downloaden Gestart
-\n%1$s</string>
+    <string name="started_downloading">Downloaden Gestart\n%1$s</string>
     <string name="episode_not_found">Kon aflevering niet vinden: %1$s</string>
     <string name="list_updated">Lijst Bijgewerkt</string>
     <string name="deleted_from_list">Verwijderd uit Lijst</string>
@@ -464,4 +449,5 @@
     <string name="not_logged_detailed">Fout 401. Je bent niet ingelogd, log in en probeer het opnieuw.</string>
     <string name="no_access_detailed">Fout 403. Je hebt geen toegang tot deze bron, log in op je account en probeer het opnieuw.</string>
     <string name="rate_limited_detailed">Fout 429. Je hebt de limiet overschreden, probeer het later opnieuw.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

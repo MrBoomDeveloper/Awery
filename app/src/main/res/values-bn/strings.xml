@@ -31,8 +31,7 @@
     <string name="layout">লেআউট</string>
     <string name="skip">স্কিপ করুন</string>
     <string name="dont_show_again">ভার্সন %1$s-এর জন্য আবার দেখাবেন না</string>
-    <string name="started_downloading">ডাউনলোড শুরু হয়েছে
-\n%1$s</string>
+    <string name="started_downloading">ডাউনলোড শুরু হয়েছে\n%1$s</string>
     <string name="loading_image_failed">ইমেজ লোড করতে ব্যর্থ</string>
     <string name="type_contains">অন্তর্ভুক্ত</string>
     <string name="read_on_dantotsu">অ্যাওরিতে পড়ুন</string>
@@ -148,17 +147,7 @@
     <string name="about">সম্পর্কিত</string>
     <string name="devs">ডেভেলপাররা</string>
     <string name="disclaimer">স্বীকৃতি</string>
-    <string name="full_disclaimer">- Awery নিজে কেবল একটি অ্যানিমে এবং মাঙ্গা ট্র্যাকার প্রদান করে এবং কোনও অ্যানিমে বা মাঙ্গা স্ট্রিমিং বা ডাউনলোড করার সক্ষমতা প্রদান করে না।
-\n
-\n - Awery বা এর কোনও ডেভেলপার/স্টাফ Awery তে পাওয়া কোনো কনটেন্ট হোস্ট করে না। অ্যাপ্লিকেশনে পাওয়া সমস্ত ছবি এবং অ্যানিমে/মাঙ্গা তথ্য বিভিন্ন পাবলিক API (AniList, MyAnimeList, Kitsu) থেকে নেওয়া হয়েছে।
-\n
-\n - তাছাড়া, Awery তে পাওয়া সমস্ত অ্যানিমে/মাঙ্গা লিঙ্ক বিভিন্ন তৃতীয় পক্ষের প্লাগইন থেকে নেওয়া হয়েছে এবং Awery বা এর স্টাফের সাথে কোনও সম্পর্ক নেই।
-\n
-\n - Awery বা এর মালিকরা অ্যাপ্লিকেশনের ভিতরে বা বাইরের কনটেন্টের কোনও অপব্যবহারের জন্য দায়ী নয় এবং অ্যাপ্লিকেশনের ভিতরের কনটেন্ট বিতরণের জন্যও দায়ী নয়।
-\n
-\n - Awery ব্যবহার করে আপনি সম্মত হন যে অ্যাপ্লিকেশনের ডেভেলপার অ্যাপ্লিকেশনের ভিতরে থাকা কনটেন্টের জন্য দায়ী নয়। আপনি এই বিষয়েও সম্মত হন যে আপনি Awery ব্যবহার করে কোনও কপিরাইটেড কনটেন্ট ডাউনলোড বা স্ট্রিম করতে পারবেন না।
-\n
-\n - ইন্টারনেট লঙ্ঘনের সমস্যা হলে, দয়া করে সোর্স ওয়েবসাইটের সাথে যোগাযোগ করুন। ডেভেলপার কোনও আইনগত দায়িত্ব গ্রহণ করে না।</string>
+    <string name="full_disclaimer">- Awery নিজে কেবল একটি অ্যানিমে এবং মাঙ্গা ট্র্যাকার প্রদান করে এবং কোনও অ্যানিমে বা মাঙ্গা স্ট্রিমিং বা ডাউনলোড করার সক্ষমতা প্রদান করে না।\n\n - Awery বা এর কোনও ডেভেলপার/স্টাফ Awery তে পাওয়া কোনো কনটেন্ট হোস্ট করে না। অ্যাপ্লিকেশনে পাওয়া সমস্ত ছবি এবং অ্যানিমে/মাঙ্গা তথ্য বিভিন্ন পাবলিক API (AniList, MyAnimeList, Kitsu) থেকে নেওয়া হয়েছে।\n\n - তাছাড়া, Awery তে পাওয়া সমস্ত অ্যানিমে/মাঙ্গা লিঙ্ক বিভিন্ন তৃতীয় পক্ষের প্লাগইন থেকে নেওয়া হয়েছে এবং Awery বা এর স্টাফের সাথে কোনও সম্পর্ক নেই।\n\n - Awery বা এর মালিকরা অ্যাপ্লিকেশনের ভিতরে বা বাইরের কনটেন্টের কোনও অপব্যবহারের জন্য দায়ী নয় এবং অ্যাপ্লিকেশনের ভিতরের কনটেন্ট বিতরণের জন্যও দায়ী নয়।\n\n - Awery ব্যবহার করে আপনি সম্মত হন যে অ্যাপ্লিকেশনের ডেভেলপার অ্যাপ্লিকেশনের ভিতরে থাকা কনটেন্টের জন্য দায়ী নয়। আপনি এই বিষয়েও সম্মত হন যে আপনি Awery ব্যবহার করে কোনও কপিরাইটেড কনটেন্ট ডাউনলোড বা স্ট্রিম করতে পারবেন না।\n\n - ইন্টারনেট লঙ্ঘনের সমস্যা হলে, দয়া করে সোর্স ওয়েবসাইটের সাথে যোগাযোগ করুন। ডেভেলপার কোনও আইনগত দায়িত্ব গ্রহণ করে না।</string>
     <string name="width">প্রস্থ</string>
     <string name="default_quality_info">স্বয়ংক্রিয়ভাবে প্রাপ্ত ডিফল্ট কোয়ালিটি ব্যবহার করে, কেবল \"মাল্টি কোয়ালিটি\" সার্ভারগুলির জন্য প্রযোজ্য। ভিডিও প্লে করার সময় স্বয়ংক্রিয়ভাবে পরিবর্তিত হয়।</string>
     <string name="default_playback_speed">ডিফল্ট প্লেব্যাক স্পিড : %1$s</string>
@@ -174,8 +163,7 @@
     <string name="ask_update_progress_anime">প্রত্যেক মিডিয়া \"ব্যক্তিগতভাবে\" জিজ্ঞাসা করুন</string>
     <string name="ask_update_progress_info_ep">বন্ধ করলে যখন পর্ব দেখা হবে তখন প্রগতি স্বয়ংক্রিয়ভাবে আপডেট হবে।</string>
     <string name="watch_complete_percentage">দেখার আপডেট শতাংশ</string>
-    <string name="watch_complete_percentage_info">পর্ব দেখার পর আপনার প্রগতির আপডেট হওয়ার শতাংশ।
-\nএটি পরবর্তী পর্বের লিঙ্কগুলি প্রিলোড করার জন্য শতাংশও সেট করে।</string>
+    <string name="watch_complete_percentage_info">পর্ব দেখার পর আপনার প্রগতির আপডেট হওয়ার শতাংশ।\nএটি পরবর্তী পর্বের লিঙ্কগুলি প্রিলোড করার জন্য শতাংশও সেট করে।</string>
     <string name="behaviour">আচরণ</string>
     <string name="always_continue">যেখান থেকে ছেড়ে দিয়েছেন সেখান থেকে সর্বদা চলতে থাকুন</string>
     <string name="pause_video_focus">ফোকাস না থাকলে বিরতি</string>
@@ -190,8 +178,7 @@
     <string name="show_cast_button">কাস্ট বোতাম দেখান</string>
     <string name="picture_in_picture">ছবির মধ্যে ছবি</string>
     <string name="always_minimize">সর্বদা সর্বনিম্ন করুন</string>
-    <string name="always_minimize_info">PiP সক্রিয় করতে প্রয়োজনীয়, এটি প্লেয়ারকে ইউটিউব প্লেয়ারের মতো আচরণ করে কিন্তু ভাল।
-\nPiP বোতামও লুকায়।</string>
+    <string name="always_minimize_info">PiP সক্রিয় করতে প্রয়োজনীয়, এটি প্লেয়ারকে ইউটিউব প্লেয়ারের মতো আচরণ করে কিন্তু ভাল।\nPiP বোতামও লুকায়।</string>
     <string name="dubbed">ডাবড</string>
     <string name="subbed">সাবড</string>
     <string name="prefer_dub">ডাবড অ্যানিমে পছন্দ করুন</string>
@@ -241,14 +228,12 @@
     <string name="check_app_updates">অ্যাপ আপডেট স্বয়ংক্রিয়ভাবে পরীক্ষা করুন</string>
     <string name="author">লেখক</string>
     <string name="account">অ্যাকাউন্ট</string>
-    <string name="subscriptions_info">নতুন পর্ব/অধ্যায়ের জন্য অ্যাওরি দ্বারা সময়সীমার পরিমাপ
-\n(কম সময় ব্যাটারি বেশি খরচ করবে)</string>
+    <string name="subscriptions_info">নতুন পর্ব/অধ্যায়ের জন্য অ্যাওরি দ্বারা সময়সীমার পরিমাপ\n(কম সময় ব্যাটারি বেশি খরচ করবে)</string>
     <string name="grid">গ্রিড</string>
     <string name="sort_by_release_date">রিলিজ তারিখ অনুযায়ী সাজান</string>
     <string name="crop_borders">বর্ডার কেটে ফেলুন</string>
     <string name="error_loading_data">তথ্য লোড করতে ত্রুটি %1$s</string>
-    <string name="saved_to_path">সংরক্ষিত হয়েছে:
-\n%s</string>
+    <string name="saved_to_path">সংরক্ষিত হয়েছে:\n%s</string>
     <string name="setting_progress">প্রগতির সেটিং %1$d</string>
     <string name="back_to_exit">এক্সিট করতে আবার ফিরে যান</string>
     <string name="no_internet_connection">ইন্টারনেট সংযোগ নেই</string>
@@ -464,4 +449,5 @@
     <string name="not_logged_detailed">ত্রুটি 401। আপনি লগ ইন করা নেই, দয়া করে লগ ইন করুন এবং আবার চেষ্টা করুন।</string>
     <string name="no_access_detailed">ত্রুটি 403। আপনার এই রিসোর্সে অ্যাক্সেস নেই, আপনার অ্যাকাউন্টে লগ ইন করার চেষ্টা করুন এবং আবার চেষ্টা করুন।</string>
     <string name="rate_limited_detailed">ত্রুটি 429। আপনি রেট সীমা অতিক্রম করেছেন, দয়া করে পরে আবার চেষ্টা করুন।</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

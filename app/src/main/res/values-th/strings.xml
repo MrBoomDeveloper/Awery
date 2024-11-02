@@ -93,17 +93,7 @@
     <string name="reader">เครื่องอ่าน</string>
     <string name="download_manager_select">ตัวจัดการการดาวน์โหลด</string>
     <string name="reader_settings">การตั้งค่าเครื่องอ่าน</string>
-    <string name="full_disclaimer">- Awery ให้บริการเฉพาะการติดตามอนิเมะและมังงะเท่านั้น และไม่ให้บริการสตรีมหรือดาวน์โหลดอนิเมะหรือมังงะใด ๆ
-\n
-\n - Awery หรือทีมพัฒนาหรือเจ้าหน้าที่ของ Awery ไม่ได้โฮสต์เนื้อหาใด ๆ ที่พบใน Awery ทุกภาพและข้อมูลอนิเมะ/มังงะที่พบในแอปจะถูกนำมาจาก API สาธารณะต่าง ๆ (AniList, MyAnimeList, Kitsu)
-\n
-\n - นอกจากนี้ ลิงก์อนิเมะ/มังงะทั้งหมดที่พบใน Awery จะถูกนำมาจากปลั๊กอินบุคคลที่สามต่าง ๆ และไม่มีความเกี่ยวข้องกับ Awery หรือทีมงาน
-\n
-\n - Awery หรือเจ้าของ Awery ไม่รับผิดชอบต่อการใช้งานผิดวัตถุประสงค์ของเนื้อหาใด ๆ ที่พบภายในหรือภายนอกแอป และไม่สามารถรับผิดชอบต่อการแจกจ่ายเนื้อหาใด ๆ ที่พบในแอปได้
-\n
-\n - โดยการใช้ Awery คุณยอมรับว่าผู้พัฒนาแอปไม่รับผิดชอบต่อเนื้อหาใด ๆ ที่พบในแอป และคุณยอมรับว่าจะไม่ใช้ Awery เพื่อดาวน์โหลดหรือสตรีมเนื้อหาที่มีลิขสิทธิ์
-\n
-\n - หากมีปัญหาเรื่องการละเมิดลิขสิทธิ์โปรดติดต่อเว็บไซต์ต้นทาง ผู้พัฒนาไม่รับผิดชอบทางกฎหมายใด ๆ</string>
+    <string name="full_disclaimer">- Awery ให้บริการเฉพาะการติดตามอนิเมะและมังงะเท่านั้น และไม่ให้บริการสตรีมหรือดาวน์โหลดอนิเมะหรือมังงะใด ๆ\n\n - Awery หรือทีมพัฒนาหรือเจ้าหน้าที่ของ Awery ไม่ได้โฮสต์เนื้อหาใด ๆ ที่พบใน Awery ทุกภาพและข้อมูลอนิเมะ/มังงะที่พบในแอปจะถูกนำมาจาก API สาธารณะต่าง ๆ (AniList, MyAnimeList, Kitsu)\n\n - นอกจากนี้ ลิงก์อนิเมะ/มังงะทั้งหมดที่พบใน Awery จะถูกนำมาจากปลั๊กอินบุคคลที่สามต่าง ๆ และไม่มีความเกี่ยวข้องกับ Awery หรือทีมงาน\n\n - Awery หรือเจ้าของ Awery ไม่รับผิดชอบต่อการใช้งานผิดวัตถุประสงค์ของเนื้อหาใด ๆ ที่พบภายในหรือภายนอกแอป และไม่สามารถรับผิดชอบต่อการแจกจ่ายเนื้อหาใด ๆ ที่พบในแอปได้\n\n - โดยการใช้ Awery คุณยอมรับว่าผู้พัฒนาแอปไม่รับผิดชอบต่อเนื้อหาใด ๆ ที่พบในแอป และคุณยอมรับว่าจะไม่ใช้ Awery เพื่อดาวน์โหลดหรือสตรีมเนื้อหาที่มีลิขสิทธิ์\n\n - หากมีปัญหาเรื่องการละเมิดลิขสิทธิ์โปรดติดต่อเว็บไซต์ต้นทาง ผู้พัฒนาไม่รับผิดชอบทางกฎหมายใด ๆ</string>
     <string name="height">ความสูง</string>
     <string name="width">ความกว้าง</string>
     <string name="default_quality_info">เลือกคุณภาพที่ใกล้เคียงที่สุดโดยอัตโนมัติ โดยจะใช้เฉพาะเซิร์ฟเวอร์ Multi Quality เท่านั้นและจะเปลี่ยนแปลงอัตโนมัติเมื่อเล่นวิดีโอ</string>
@@ -122,8 +112,7 @@
     <string name="ask_update_progress_anime">ถามแต่ละสื่อ เป็นรายบุคคล</string>
     <string name="ask_update_progress_info_ep">การปิดใช้งานจะอัปเดตความก้าวหน้าอัตโนมัติเมื่อดูตอนเสร็จ</string>
     <string name="watch_complete_percentage">เปอร์เซ็นต์การดูเสร็จสมบูรณ์</string>
-    <string name="watch_complete_percentage_info">"เปอร์เซ็นต์ที่ควรอัปเดตความก้าวหน้าหลังจากดูตอนเสร็จ
-\nนอกจากนี้ยังตั้งค่า  สำหรับการโหลดลิงก์ล่วงหน้าสำหรับตอนถัดไป"</string>
+    <string name="watch_complete_percentage_info">"เปอร์เซ็นต์ที่ควรอัปเดตความก้าวหน้าหลังจากดูตอนเสร็จ\n\nนอกจากนี้ยังตั้งค่า  สำหรับการโหลดลิงก์ล่วงหน้าสำหรับตอนถัดไป"</string>
     <string name="behaviour">พฤติกรรม</string>
     <string name="always_continue">เริ่มต้นจากที่คุณหยุดเสมอ</string>
     <string name="pause_video_focus">หยุดชั่วคราวเมื่อไม่อยู่ในโฟกัส</string>
@@ -138,8 +127,7 @@
     <string name="show_cast_button">แสดงปุ่ม Cast</string>
     <string name="picture_in_picture">ภาพในภาพ</string>
     <string name="always_minimize">ย่อตลอดเวลา</string>
-    <string name="always_minimize_info">ต้องเปิดใช้งาน PiP ทำให้เครื่องเล่นทำงานเหมือนกับ Youtube Player แต่ดีกว่า
-\nนอกจากนี้ยังซ่อนปุ่ม PiP</string>
+    <string name="always_minimize_info">ต้องเปิดใช้งาน PiP ทำให้เครื่องเล่นทำงานเหมือนกับ Youtube Player แต่ดีกว่า\nนอกจากนี้ยังซ่อนปุ่ม PiP</string>
     <string name="immersive_mode">ซ่อนแถบสถานะ</string>
     <string name="immersive_mode_info">ต้องรีสตาร์ทแอปเพื่อใช้งานเต็มที่</string>
     <string name="startUpTab">แท็บเริ่มต้น</string>
@@ -188,8 +176,7 @@
     <string name="check_app_updates">ตรวจสอบการอัปเดตแอปอัตโนมัติ</string>
     <string name="author">ผู้เขียน</string>
     <string name="account">บัญชี</string>
-    <string name="saved_to_path">บันทึกที่:
-\n%s</string>
+    <string name="saved_to_path">บันทึกที่:\n%s</string>
     <string name="setting_progress">ตั้งค่าความก้าวหน้าเป็น %1$d</string>
     <string name="back_to_exit">กรุณากดย้อนกลับอีกครั้งเพื่อออก</string>
     <string name="no_internet_connection">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</string>
@@ -361,8 +348,7 @@
     <string name="year">ปี</string>
     <string name="apply">ใช้</string>
     <string name="cancel">ยกเลิก</string>
-    <string name="subscriptions_info">ระยะเวลาในการตรวจสอบอัปเดตตอน/บทใหม่
-\n(ระยะเวลาน้อยจะใช้พลังงานแบตเตอรี่มากขึ้น)</string>
+    <string name="subscriptions_info">ระยะเวลาในการตรวจสอบอัปเดตตอน/บทใหม่\n(ระยะเวลาน้อยจะใช้พลังงานแบตเตอรี่มากขึ้น)</string>
     <string name="grid">ตาราง</string>
     <string name="sort_by_release_date">จัดเรียงตามวันที่วางจำหน่าย</string>
     <string name="crop_borders">ครอบขอบ</string>
@@ -380,8 +366,7 @@
     <string name="no_update_found">ไม่พบการอัปเดต</string>
     <string name="downloading_update">กำลังดาวน์โหลดการอัปเดต %1$s</string>
     <string name="permission_required">กรุณาอนุญาตการเข้าถึงไฟล์ &amp; โฟลเดอร์จากการตั้งค่า และลองอีกครั้ง</string>
-    <string name="started_downloading">เริ่มการดาวน์โหลด
-\n%1$s</string>
+    <string name="started_downloading">เริ่มการดาวน์โหลด\n%1$s</string>
     <string name="loading_image_failed">การโหลดภาพล้มเหลว</string>
     <string name="failed_to_load_data">ล้มเหลวในการโหลดข้อมูลที่บันทึกไว้ของ %1$d</string>
     <string name="access_not_available">ไม่สามารถเข้าถึงได้</string>
@@ -464,4 +449,5 @@
     <string name="delayed">ล่าช้า</string>
     <string name="rate_limited_detailed">ข้อผิดพลาด 429 คุณเกินขีดจำกัดการร้องขอ กรุณาลองอีกครั้งในภายหลัง</string>
     <string name="no_access_detailed">ข้อผิดพลาด 403 คุณไม่มีสิทธิ์เข้าถึงแหล่งข้อมูลนี้ กรุณาลองเข้าสู่ระบบบัญชีของคุณและลองอีกครั้ง</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

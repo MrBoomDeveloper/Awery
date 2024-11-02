@@ -133,17 +133,7 @@
     <string name="reader">Czytnik</string>
     <string name="download_manager_select">Menadżer pobierania</string>
     <string name="reader_settings">Ustawienia czytnika</string>
-    <string name="full_disclaimer">- Awery sam w sobie jedynie zapewnia śledzenie anime i mangi i nie oferuje możliwości streamowania ani pobierania anime czy mangi.
-\n
-\n - Awery ani żaden z jego deweloperów/pracowników nie hostuje żadnej treści znajdującej się w Awery. Wszystkie obrazy i informacje o anime/mandze znajdujące się w aplikacji pochodzą z różnych publicznych API (AniList, MyAnimeList, Kitsu).
-\n
-\n - Ponadto, wszystkie linki do anime/mangi znajdujące się w Awery pochodzą z różnych wtyczek stron trzecich i nie mają związku z Awery ani jego personelem.
-\n
-\n - Awery ani jego właściciele nie ponoszą odpowiedzialności za jakiekolwiek niewłaściwe użycie jakiejkolwiek treści znajdującej się wewnątrz lub na zewnątrz aplikacji i nie mogą być pociągnięci do odpowiedzialności za dystrybucję jakichkolwiek treści znajdujących się wewnątrz aplikacji.
-\n
-\n - Korzystając z Awery, zgadzasz się na fakt, że deweloper aplikacji nie jest odpowiedzialny za jakiekolwiek treści znajdujące się w aplikacji. Zgadzasz się również na fakt, że nie możesz używać Awery do pobierania ani streamowania jakichkolwiek treści objętych prawami autorskimi.
-\n
-\n - Jeśli występują problemy z naruszeniem praw autorskich w Internecie, prosimy o kontakt z witryną źródłową. Deweloper nie ponosi żadnej odpowiedzialności prawnej.</string>
+    <string name="full_disclaimer">- Awery sam w sobie jedynie zapewnia śledzenie anime i mangi i nie oferuje możliwości streamowania ani pobierania anime czy mangi.\n\n - Awery ani żaden z jego deweloperów/pracowników nie hostuje żadnej treści znajdującej się w Awery. Wszystkie obrazy i informacje o anime/mandze znajdujące się w aplikacji pochodzą z różnych publicznych API (AniList, MyAnimeList, Kitsu).\n\n - Ponadto, wszystkie linki do anime/mangi znajdujące się w Awery pochodzą z różnych wtyczek stron trzecich i nie mają związku z Awery ani jego personelem.\n\n - Awery ani jego właściciele nie ponoszą odpowiedzialności za jakiekolwiek niewłaściwe użycie jakiejkolwiek treści znajdującej się wewnątrz lub na zewnątrz aplikacji i nie mogą być pociągnięci do odpowiedzialności za dystrybucję jakichkolwiek treści znajdujących się wewnątrz aplikacji.\n\n - Korzystając z Awery, zgadzasz się na fakt, że deweloper aplikacji nie jest odpowiedzialny za jakiekolwiek treści znajdujące się w aplikacji. Zgadzasz się również na fakt, że nie możesz używać Awery do pobierania ani streamowania jakichkolwiek treści objętych prawami autorskimi.\n\n - Jeśli występują problemy z naruszeniem praw autorskich w Internecie, prosimy o kontakt z witryną źródłową. Deweloper nie ponosi żadnej odpowiedzialności prawnej.</string>
     <string name="video">Wideo</string>
     <string name="video_info_info">Pokazuje rozdzielczość aktualnie odtwarzanego wideo, przydatne dla serwerów <b>Multi Quality</b>.</string>
     <string name="default_quality">Automatyczny wybór jakości</string>
@@ -169,8 +159,7 @@
     <string name="ask_update_progress_anime">Pytaj o każdy Media Indywidualnie</string>
     <string name="ask_update_progress_info_ep">Wyłączenie spowoduje zawsze automatyczną aktualizację postępu po obejrzeniu odcinka.</string>
     <string name="watch_complete_percentage">Procent ukończenia oglądania</string>
-    <string name="watch_complete_percentage_info">"Procent, przy którym Twój postęp powinien być aktualizowany po obejrzeniu odcinka.
-\nUstawia również  dla wstępnego ładowania linków do następnego odcinka."</string>
+    <string name="watch_complete_percentage_info">"Procent, przy którym Twój postęp powinien być aktualizowany po obejrzeniu odcinka.\n\nUstawia również  dla wstępnego ładowania linków do następnego odcinka."</string>
     <string name="behaviour">Zachowanie</string>
     <string name="always_continue">Zawsze kontynuuj od miejsca, w którym przerwano</string>
     <string name="pause_video_focus">Pauza, gdy nie jest w fokusie</string>
@@ -184,8 +173,7 @@
     <string name="skip_time">Czas pomijania</string>
     <string name="show_cast_button">Pokaż przycisk obsady</string>
     <string name="always_minimize">Zawsze minimalizuj</string>
-    <string name="always_minimize_info">Wymaga włączenia PiP, sprawia, że odtwarzacz zachowuje się jak odtwarzacz YouTube, ale lepiej.
-\nUkrywa również przycisk PiP.</string>
+    <string name="always_minimize_info">Wymaga włączenia PiP, sprawia, że odtwarzacz zachowuje się jak odtwarzacz YouTube, ale lepiej.\nUkrywa również przycisk PiP.</string>
     <string name="immersive_mode">Ukryj pasek statusu</string>
     <string name="auto_detect_webtoon_info">Jeśli manga nie pochodzi z Japonii, czytnik domyślnie przełączy się na ustawienia Webtoon Reader</string>
     <string name="default_settings">Ustawienia domyślne</string>
@@ -218,8 +206,7 @@
     <string name="auto_detect_webtoon">Automatyczne wykrywanie webtoons</string>
     <string name="wrap_images">Zawijaj obrazy</string>
     <string name="account">Konto</string>
-    <string name="subscriptions_info">Czas, po którym Awery okresowo sprawdza nowe odcinki/rozdziały
-\n(Mniejszy czas spowoduje większe zużycie baterii)</string>
+    <string name="subscriptions_info">Czas, po którym Awery okresowo sprawdza nowe odcinki/rozdziały\n(Mniejszy czas spowoduje większe zużycie baterii)</string>
     <string name="grid">Siatka</string>
     <string name="sort_by_release_date">Sortuj według daty wydania</string>
     <string name="crop_borders">Przytnij krawędzie</string>
@@ -243,8 +230,7 @@
     <string name="check_app_updates">Automatyczne sprawdzanie aktualizacji aplikacji</string>
     <string name="author">Autor</string>
     <string name="error_loading_data">Błąd ładowania danych %1$s</string>
-    <string name="saved_to_path">Zapisano w:
-\n%s</string>
+    <string name="saved_to_path">Zapisano w:\n%s</string>
     <string name="setting_progress">Ustawianie postępu na %1$d</string>
     <string name="back_to_exit">Proszę naciśnij Wstecz ponownie, aby wyjść</string>
     <string name="no_internet_connection">Brak połączenia z internetem</string>
@@ -264,8 +250,7 @@
     <string name="no_update_found">Nie znaleziono aktualizacji</string>
     <string name="downloading_update">Pobieranie aktualizacji %1$s</string>
     <string name="permission_required">Proszę zezwolić na dostęp do plików i folderów w ustawieniach i spróbować ponownie.</string>
-    <string name="started_downloading">Rozpoczęto pobieranie
-\n%1$s</string>
+    <string name="started_downloading">Rozpoczęto pobieranie\n%1$s</string>
     <string name="loading_image_failed">Nie udało się załadować obrazu</string>
     <string name="failed_to_load_data">Nie udało się załadować zapisanych danych %1$d</string>
     <string name="access_not_available">Nie udało się uzyskać dostępu</string>
@@ -464,4 +449,5 @@
     <string name="select_tracker">Wybierz śledzik</string>
     <string name="select_title">Wybierz tytuł</string>
     <string name="not_logged_detailed">Błąd 401. Nie jesteś zalogowany, zaloguj się i spróbuj ponownie.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

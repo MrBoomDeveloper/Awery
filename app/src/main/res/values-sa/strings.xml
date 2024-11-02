@@ -168,17 +168,7 @@
     <string name="devs">विकासकाः</string>
     <string name="disclaimer">अस्वीकृति</string>
     <string name="video">वीडियो</string>
-    <string name="full_disclaimer">- Awery स्वयं केवल एक एनीमे और मंगा ट्रैकर प्रदान करता है और कोई एनीमे या मंगा स्ट्रीमिंग या डाउनलोडिंग क्षमताएँ नहीं प्रदान करता।
-\n
-\n - Awery या इसके किसी भी डेवलपर/कर्मचारी द्वारा Awery में पाई जाने वाली सामग्री की मेज़बानी नहीं की जाती है। ऐप में पाई गई सभी छवियाँ और एनीमे/मंगा जानकारी विभिन्न सार्वजनिक एपीआई (AniList, MyAnimeList, Kitsu) से ली गई हैं।
-\n
-\n - इसके अतिरिक्त, Awery में पाई जाने वाली सभी एनीमे/मंगा लिंक विभिन्न तृतीय-पार्टी प्लगइन्स से ली गई हैं और Awery या इसके कर्मचारियों से कोई संबंध नहीं है।
-\n
-\n - Awery या इसके मालिक किसी भी सामग्री के दुरुपयोग के लिए जिम्मेदार नहीं हैं जो ऐप के भीतर या बाहर पाई जाती है और ऐप के भीतर किसी भी सामग्री के वितरण के लिए उत्तरदायी नहीं हो सकते।
-\n
-\n - Awery का उपयोग करके, आप इस तथ्य से सहमत होते हैं कि ऐप के डेवलपर ऐप में पाई जाने वाली किसी भी सामग्री के लिए जिम्मेदार नहीं हैं। आप इस तथ्य से भी सहमत होते हैं कि आप Awery का उपयोग किसी भी कॉपीराइटेड सामग्री को डाउनलोड या स्ट्रीम करने के लिए नहीं कर सकते।
-\n
-\n - यदि इंटरनेट उल्लंघन मुद्दे शामिल हैं, तो कृपया स्रोत वेबसाइट से संपर्क करें। डेवलपर किसी भी कानूनी जिम्मेदारी को नहीं स्वीकार करता।</string>
+    <string name="full_disclaimer">- Awery स्वयं केवल एक एनीमे और मंगा ट्रैकर प्रदान करता है और कोई एनीमे या मंगा स्ट्रीमिंग या डाउनलोडिंग क्षमताएँ नहीं प्रदान करता।\n\n - Awery या इसके किसी भी डेवलपर/कर्मचारी द्वारा Awery में पाई जाने वाली सामग्री की मेज़बानी नहीं की जाती है। ऐप में पाई गई सभी छवियाँ और एनीमे/मंगा जानकारी विभिन्न सार्वजनिक एपीआई (AniList, MyAnimeList, Kitsu) से ली गई हैं।\n\n - इसके अतिरिक्त, Awery में पाई जाने वाली सभी एनीमे/मंगा लिंक विभिन्न तृतीय-पार्टी प्लगइन्स से ली गई हैं और Awery या इसके कर्मचारियों से कोई संबंध नहीं है।\n\n - Awery या इसके मालिक किसी भी सामग्री के दुरुपयोग के लिए जिम्मेदार नहीं हैं जो ऐप के भीतर या बाहर पाई जाती है और ऐप के भीतर किसी भी सामग्री के वितरण के लिए उत्तरदायी नहीं हो सकते।\n\n - Awery का उपयोग करके, आप इस तथ्य से सहमत होते हैं कि ऐप के डेवलपर ऐप में पाई जाने वाली किसी भी सामग्री के लिए जिम्मेदार नहीं हैं। आप इस तथ्य से भी सहमत होते हैं कि आप Awery का उपयोग किसी भी कॉपीराइटेड सामग्री को डाउनलोड या स्ट्रीम करने के लिए नहीं कर सकते।\n\n - यदि इंटरनेट उल्लंघन मुद्दे शामिल हैं, तो कृपया स्रोत वेबसाइट से संपर्क करें। डेवलपर किसी भी कानूनी जिम्मेदारी को नहीं स्वीकार करता।</string>
     <string name="width">चौड़ाई</string>
     <string name="default_quality_info">स्वतः निकटतम गुणवत्ता का उपयोग करता है, केवल \"मल्टी क्वालिटी\" सर्वरों के लिए लागू। वीडियो चलाते समय स्वचालित रूप से बदल जाता है।</string>
     <string name="default_playback_speed">डिफ़ॉल्ट प्लेबैक गति : %1$s</string>
@@ -199,13 +189,11 @@
     <string name="watch_complete_percentage">देखने की पूर्णता प्रतिशत</string>
     <string name="behaviour">व्यवहार</string>
     <string name="always_continue">जहाँ छोड़ा था वहाँ से हमेशा जारी रखें</string>
-    <string name="watch_complete_percentage_info">वह प्रतिशत जिस पर आपकी प्रगति को एपिसोड देखने के बाद अद्यतन किया जाना चाहिए।
-\nयह अगले एपिसोड के लिए लिंक पूर्व-लोड करने के लिए प्रतिशत भी सेट करता है।</string>
+    <string name="watch_complete_percentage_info">वह प्रतिशत जिस पर आपकी प्रगति को एपिसोड देखने के बाद अद्यतन किया जाना चाहिए।\nयह अगले एपिसोड के लिए लिंक पूर्व-लोड करने के लिए प्रतिशत भी सेट करता है।</string>
     <string name="pause_video_focus">फोकस में न होने पर रुके</string>
     <string name="gestures">वॉल्यूम &amp; ब्राइटनेस इशारे</string>
     <string name="always_minimize">हमेशा न्यूनतम करें</string>
-    <string name="always_minimize_info">PiP को सक्षम करने की आवश्यकता है, इसे Youtube प्लेयर की तरह व्यवहार बनाता है लेकिन बेहतर।
-\nPiP बटन को भी छुपाता है।</string>
+    <string name="always_minimize_info">PiP को सक्षम करने की आवश्यकता है, इसे Youtube प्लेयर की तरह व्यवहार बनाता है लेकिन बेहतर।\nPiP बटन को भी छुपाता है।</string>
     <string name="immersive_mode">स्थिति पट्टी छुपाएँ</string>
     <string name="animations">एनिमेशन</string>
     <string name="restart_app">ऐप को पुनरारंभ करें?</string>
@@ -253,13 +241,11 @@
     <string name="author">लेखकः</string>
     <string name="account">खाता</string>
     <string name="grid">ग्रिड्</string>
-    <string name="subscriptions_info">आवेरी एकस्मिन कालसन्दर्भे नव एपीसोड/अध्यायाणि जाँचयति
-\n(अल्पः कालः अधिकं बैटरी उपभोगं जनयति)</string>
+    <string name="subscriptions_info">आवेरी एकस्मिन कालसन्दर्भे नव एपीसोड/अध्यायाणि जाँचयति\n(अल्पः कालः अधिकं बैटरी उपभोगं जनयति)</string>
     <string name="sort_by_release_date">प्रकाशनदिनाङ्केन वर्गीकर्तुम्</string>
     <string name="crop_borders">सीमा कटयतु</string>
     <string name="error_loading_data">डेटा लोडं त्रुटिः %1$s</string>
-    <string name="saved_to_path">पथः संरक्षितम्:
-\n%s</string>
+    <string name="saved_to_path">पथः संरक्षितम्:\n%s</string>
     <string name="setting_progress">प्रगतिं %1$d परिभाषयति</string>
     <string name="back_to_exit">विसर्जयितुं पुनः पृष्ठं प्रवर्तयतु</string>
     <string name="no_internet_connection">इंटरनेट् सम्पर्कः न अस्ति</string>
@@ -279,8 +265,7 @@
     <string name="no_update_found">अद्यतनीकृतिः न स्यात्</string>
     <string name="downloading_update">अद्यतनीकृतिं डाउनलोडयति %1$s</string>
     <string name="permission_required">कृपया सेटिंग्स् इत्यस्मिन् फाइल्स् एवं फोल्डर्स् प्रविष्ट्य अनुमतिं दातुम् पुनः प्रयासयतु.</string>
-    <string name="started_downloading">डाउनलोडं प्रारम्भः
-\n%1$s</string>
+    <string name="started_downloading">डाउनलोडं प्रारम्भः\n%1$s</string>
     <string name="loading_image_failed">चित्रं लोडं विफलम्</string>
     <string name="failed_to_load_data">सङ्गृहीतस्य डेटा लोडं विफलम् %1$d</string>
     <string name="access_not_available">प्रवेशः न प्राप्यते</string>
@@ -464,4 +449,5 @@
     <string name="not_logged_detailed">दोषः ४०१। त्वं लॉग्ड् न अस्ति, कृपया लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="no_access_detailed">दोषः ४०३। एषः संसाधनस्य प्रवेशः न अस्ति, कृपया त्वस्य खातायाः लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="rate_limited_detailed">दोषः ४२९। त्वं दरस्य सीमां अतिक्रमितवान्, कृपया पुनः प्रयत्नं योजयतु।</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

@@ -127,17 +127,7 @@
     <string name="about">אודות</string>
     <string name="devs">מפתחים</string>
     <string name="disclaimer">הצהרת אחריות</string>
-    <string name="full_disclaimer">- Awery מספקת רק מערכת מעקב לאנימה ומנגה ואינה מספקת אפשרויות סטרימינג או הורדה לאנימה או מנגה.
-\n
-\n - Awery או כל אחד מהמפתחים/צוות אינם מארחים את התוכן שנמצא בתוך Awery. כל התמונות ומידע על אנימה/מנגה שנמצא באפליקציה נלקח מ-API ציבוריים שונים (AniList, MyAnimeList, Kitsu).
-\n
-\n - יתרה מכך, כל הקישורים לאנימה/מנגה שנמצאים ב-Awery נלקחים מפתרונות צד שלישי שונים ואין להם קשר עם Awery או עם צוותה.
-\n
-\n - Awery או בעליה אינם אחראים לשימוש לא נכון בכל התכנים שנמצאים בתוך או מחוץ לאפליקציה ולא ניתן להחזיק אותם אחראיים על הפצת התכנים שנמצאים בתוך האפליקציה.
-\n
-\n - על ידי שימוש ב-Awery, אתה מסכים לכך שמפתח האפליקציה אינו אחראי לכל התכנים שנמצאים באפליקציה. אתה גם מסכים לכך שאינך יכול להשתמש ב-Awery להורדה או סטרימינג של תוכן מוגן בזכויות יוצרים.
-\n
-\n - אם יש בעיות של הפרת זכויות אינטרנט, אנא צור קשר עם האתר המקורי. המפתח אינו לוקח על עצמו אחריות חוקית.</string>
+    <string name="full_disclaimer">- Awery מספקת רק מערכת מעקב לאנימה ומנגה ואינה מספקת אפשרויות סטרימינג או הורדה לאנימה או מנגה.\n\n - Awery או כל אחד מהמפתחים/צוות אינם מארחים את התוכן שנמצא בתוך Awery. כל התמונות ומידע על אנימה/מנגה שנמצא באפליקציה נלקח מ-API ציבוריים שונים (AniList, MyAnimeList, Kitsu).\n\n - יתרה מכך, כל הקישורים לאנימה/מנגה שנמצאים ב-Awery נלקחים מפתרונות צד שלישי שונים ואין להם קשר עם Awery או עם צוותה.\n\n - Awery או בעליה אינם אחראים לשימוש לא נכון בכל התכנים שנמצאים בתוך או מחוץ לאפליקציה ולא ניתן להחזיק אותם אחראיים על הפצת התכנים שנמצאים בתוך האפליקציה.\n\n - על ידי שימוש ב-Awery, אתה מסכים לכך שמפתח האפליקציה אינו אחראי לכל התכנים שנמצאים באפליקציה. אתה גם מסכים לכך שאינך יכול להשתמש ב-Awery להורדה או סטרימינג של תוכן מוגן בזכויות יוצרים.\n\n - אם יש בעיות של הפרת זכויות אינטרנט, אנא צור קשר עם האתר המקורי. המפתח אינו לוקח על עצמו אחריות חוקית.</string>
     <string name="video_info_info">מציג את הרזולוציה של הוידאו הנוכחי שנשחק, מועיל לשרתים של <b>\"איכות מרובה\"</b>.</string>
     <string name="default_quality">בחירת איכות אוטומטית</string>
     <string name="height">גובה</string>
@@ -161,16 +151,14 @@
     <string name="ask_update_progress_anime">שאל עבור כל מדיה \"בנפרד\"</string>
     <string name="ask_update_progress_info_ep">כיבוי יגרום לעדכון אוטומטי של ההתקדמות כאשר הפרק נצפה.</string>
     <string name="watch_complete_percentage">אחוז עדכון הצפייה</string>
-    <string name="watch_complete_percentage_info">"האחוז שבו יש לעדכן את ההתקדמות לאחר צפייה בפרק.
-\nזה גם קובע את  לעדכון הקישורים לפרק הבא."</string>
+    <string name="watch_complete_percentage_info">"האחוז שבו יש לעדכן את ההתקדמות לאחר צפייה בפרק.\n\nזה גם קובע את  לעדכון הקישורים לפרק הבא."</string>
     <string name="pause_video_focus">הפסק כאשר לא ממוקד</string>
     <string name="gestures">מחוות של עוצמת קול ובהירות</string>
     <string name="double_tap">הקשה כפולה לחיפוש</string>
     <string name="show_cast_button">הצג כפתור תפקידים</string>
     <string name="picture_in_picture">תמונה בתוך תמונה</string>
     <string name="always_minimize">מזער תמיד</string>
-    <string name="always_minimize_info">דורש את PiP להיות מופעל, גורם לנגן להתנהג כמו נגן YouTube אבל טוב יותר.
-\nגם מסתיר את כפתור PiP.</string>
+    <string name="always_minimize_info">דורש את PiP להיות מופעל, גורם לנגן להתנהג כמו נגן YouTube אבל טוב יותר.\nגם מסתיר את כפתור PiP.</string>
     <string name="immersive_mode">הסתר סרגלי מצב וניווט</string>
     <string name="immersive_mode_info">דורש הפעלה מחדש של האפליקציה כדי להחיל במלואו.</string>
     <string name="startUpTab">כרטיסיית התחל ברירת מחדל</string>
@@ -224,14 +212,12 @@
     <string name="release_calendar">לוח שנה</string>
     <string name="always_continue_shows">המשך תמיד תוכניות</string>
     <string name="account">חשבון</string>
-    <string name="subscriptions_info">זמן שבו Awery בודקת באופן תקופתי פרקים חדשים
-\n(פחות זמן יגרום לצריכת סוללה גבוהה יותר)</string>
+    <string name="subscriptions_info">זמן שבו Awery בודקת באופן תקופתי פרקים חדשים\n(פחות זמן יגרום לצריכת סוללה גבוהה יותר)</string>
     <string name="grid">רשת</string>
     <string name="sort_by_release_date">מיין לפי תאריך שחרור</string>
     <string name="crop_borders">גזור גבולות</string>
     <string name="error_loading_data">שגיאה בהטענת נתונים %1$s</string>
-    <string name="saved_to_path">נשמר ל:
-\n%s</string>
+    <string name="saved_to_path">נשמר ל:\n%s</string>
     <string name="setting_progress">קביעת התקדמות ל-%1$d</string>
     <string name="back_to_exit">אנא חזור אחורה שוב כדי לצאת</string>
     <string name="no_internet_connection">אין חיבור לאינטרנט</string>
@@ -251,8 +237,7 @@
     <string name="no_update_found">לא נמצא עדכון</string>
     <string name="downloading_update">מוריד עדכון %1$s</string>
     <string name="permission_required">אנא אפשר גישה לקבצים ותיקיות מההגדרות, ונסה שוב.</string>
-    <string name="started_downloading">התחל להוריד
-\n%1$s</string>
+    <string name="started_downloading">התחל להוריד\n%1$s</string>
     <string name="loading_image_failed">טעינת תמונה נכשלה</string>
     <string name="failed_to_load_data">כישלון בהטענת נתונים שנשמרו של %1$d</string>
     <string name="access_not_available">לא ניתן לקבל גישה</string>
@@ -464,4 +449,5 @@
     <string name="not_logged_detailed">שגיאה 401. אתה לא מחובר, נא התחבר וניסי שוב.</string>
     <string name="no_access_detailed">שגיאה 403. אין לך גישה למשאב הזה, נסה להתחבר לחשבונך וניסי שוב.</string>
     <string name="rate_limited_detailed">שגיאה 429. חרגת מהמגבלה, נא לנסות שוב מאוחר יותר.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>

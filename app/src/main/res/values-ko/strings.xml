@@ -104,17 +104,7 @@
     <string name="about">정보</string>
     <string name="devs">개발자</string>
     <string name="disclaimer">면책 조항</string>
-    <string name="full_disclaimer">- Awery 자체는 애니메이션 및 만화 트래커만 제공하며 애니메이션이나 만화를 스트리밍하거나 다운로드할 수 있는 기능은 제공하지 않습니다.
-\n
-\n - Awery 또는 그 개발자/직원은 Awery에 있는 콘텐츠를 호스팅하지 않습니다. 앱에 있는 모든 이미지 및 애니메이션/만화 정보는 다양한 공개 API(AniList, MyAnimeList, Kitsu)에서 가져온 것입니다.
-\n
-\n - 또한, Awery에서 찾을 수 있는 모든 애니메이션/만화 링크는 다양한 제3자 플러그인에서 가져온 것이며 Awery 또는 그 직원과는 아무런 관련이 없습니다.
-\n
-\n - Awery 또는 그 소유자는 앱 안팎에서 찾을 수 있는 모든 콘텐츠의 오용에 대해 책임을 지지 않으며, 앱 안에서 찾을 수 있는 콘텐츠의 배포에 대한 책임을 지지 않습니다.
-\n
-\n - Awery를 사용함으로써, 귀하는 앱 개발자가 앱에 있는 모든 콘텐츠에 대해 책임을 지지 않는다는 사실에 동의하는 것입니다. 또한 귀하는 Awery를 사용하여 저작권이 있는 콘텐츠를 다운로드하거나 스트리밍할 수 없다는 사실에 동의하는 것입니다.
-\n
-\n - 인터넷 저작권 침해 문제가 발생할 경우 소스 웹사이트에 문의하십시오. 개발자는 어떠한 법적 책임도 지지 않습니다.</string>
+    <string name="full_disclaimer">- Awery 자체는 애니메이션 및 만화 트래커만 제공하며 애니메이션이나 만화를 스트리밍하거나 다운로드할 수 있는 기능은 제공하지 않습니다.\n\n - Awery 또는 그 개발자/직원은 Awery에 있는 콘텐츠를 호스팅하지 않습니다. 앱에 있는 모든 이미지 및 애니메이션/만화 정보는 다양한 공개 API(AniList, MyAnimeList, Kitsu)에서 가져온 것입니다.\n\n - 또한, Awery에서 찾을 수 있는 모든 애니메이션/만화 링크는 다양한 제3자 플러그인에서 가져온 것이며 Awery 또는 그 직원과는 아무런 관련이 없습니다.\n\n - Awery 또는 그 소유자는 앱 안팎에서 찾을 수 있는 모든 콘텐츠의 오용에 대해 책임을 지지 않으며, 앱 안에서 찾을 수 있는 콘텐츠의 배포에 대한 책임을 지지 않습니다.\n\n - Awery를 사용함으로써, 귀하는 앱 개발자가 앱에 있는 모든 콘텐츠에 대해 책임을 지지 않는다는 사실에 동의하는 것입니다. 또한 귀하는 Awery를 사용하여 저작권이 있는 콘텐츠를 다운로드하거나 스트리밍할 수 없다는 사실에 동의하는 것입니다.\n\n - 인터넷 저작권 침해 문제가 발생할 경우 소스 웹사이트에 문의하십시오. 개발자는 어떠한 법적 책임도 지지 않습니다.</string>
     <string name="video">비디오</string>
     <string name="video_info_info">현재 재생 중인 비디오의 해상도를 표시하며, <b>\"멀티 퀄리티\"</b> 서버에 유용합니다.</string>
     <string name="default_quality">자동 품질 선택</string>
@@ -140,8 +130,7 @@
     <string name="ask_update_progress_anime">각 미디어에 대해 \"개별적으로\" 묻기</string>
     <string name="ask_update_progress_info_ep">끄면 에피소드를 시청할 때 항상 자동으로 진행 상황이 업데이트됩니다.</string>
     <string name="watch_complete_percentage">시청 완료 비율</string>
-    <string name="watch_complete_percentage_info">에피소드를 시청한 후 진행 상황이 업데이트되어야 하는 비율입니다.
-\n이것은 또한 다음 에피소드를 위한 링크를 미리 로드할 때의 를 설정합니다.</string>
+    <string name="watch_complete_percentage_info">에피소드를 시청한 후 진행 상황이 업데이트되어야 하는 비율입니다.\n이것은 또한 다음 에피소드를 위한 링크를 미리 로드할 때의 를 설정합니다.</string>
     <string name="behaviour">동작</string>
     <string name="always_continue">항상 이전 시점부터 계속 재생</string>
     <string name="pause_video_focus">포커스가 없을 때 일시정지</string>
@@ -156,8 +145,7 @@
     <string name="show_cast_button">캐스트 버튼 표시</string>
     <string name="picture_in_picture">화면 속 화면</string>
     <string name="always_minimize">항상 최소화</string>
-    <string name="always_minimize_info">PiP가 활성화되어 있어야 하며, YouTube 플레이어보다 더 나은 방식으로 작동합니다.
-\n또한 PiP 버튼을 숨깁니다.</string>
+    <string name="always_minimize_info">PiP가 활성화되어 있어야 하며, YouTube 플레이어보다 더 나은 방식으로 작동합니다.\n또한 PiP 버튼을 숨깁니다.</string>
     <string name="immersive_mode">상태 바 숨기기</string>
     <string name="immersive_mode_info">완전히 적용하려면 앱을 재시작해야 합니다.</string>
     <string name="startUpTab">기본 시작 탭</string>
@@ -217,14 +205,12 @@
     <string name="check_app_updates">앱 업데이트 자동 확인</string>
     <string name="author">저자</string>
     <string name="account">계정</string>
-    <string name="subscriptions_info">Awery가 주기적으로 새 에피소드/챕터를 확인하는 시간
-\n(시간이 적을수록 배터리 소모가 많습니다)</string>
+    <string name="subscriptions_info">Awery가 주기적으로 새 에피소드/챕터를 확인하는 시간\n(시간이 적을수록 배터리 소모가 많습니다)</string>
     <string name="grid">격자</string>
     <string name="sort_by_release_date">발매일로 정렬</string>
     <string name="crop_borders">테두리 자르기</string>
     <string name="error_loading_data">데이터 로드 오류 %1$s</string>
-    <string name="saved_to_path">저장 위치:
-\n%s</string>
+    <string name="saved_to_path">저장 위치:\n%s</string>
     <string name="setting_progress">진행 상태를 %1$d로 설정</string>
     <string name="back_to_exit">종료하려면 뒤로 가기를 다시 수행하세요</string>
     <string name="no_internet_connection">인터넷 연결 없음</string>
@@ -244,8 +230,7 @@
     <string name="no_update_found">업데이트를 찾을 수 없습니다</string>
     <string name="downloading_update">업데이트 다운로드 중 %1$s</string>
     <string name="permission_required">파일 및 폴더에 접근할 수 있는 권한을 설정에서 부여한 후 다시 시도해 주세요.</string>
-    <string name="started_downloading">다운로드 시작됨
-\n%1$s</string>
+    <string name="started_downloading">다운로드 시작됨\n%1$s</string>
     <string name="loading_image_failed">이미지 로드 실패</string>
     <string name="failed_to_load_data">저장된 데이터 로드 실패 %1$d</string>
     <string name="access_not_available">접근할 수 없습니다</string>

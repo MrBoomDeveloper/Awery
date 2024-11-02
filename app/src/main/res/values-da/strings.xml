@@ -67,17 +67,7 @@
     <string name="about">Om</string>
     <string name="devs">Udviklere</string>
     <string name="disclaimer">Ansvarsfraskrivelse</string>
-    <string name="full_disclaimer">- Awery leverer kun en anime- og mangatracker og tilbyder ikke streaming- eller downloadmuligheder for anime eller manga.
-\n
-\n - Awery eller nogen af dets udviklere/personale hoster ikke noget af det indhold, der findes i Awery. Alle billeder og anime/manga-informationer i appen er hentet fra forskellige offentlige API\'er (AniList, MyAnimeList, Kitsu).
-\n
-\n - Derudover er alle anime/manga-links i Awery hentet fra forskellige tredjeparts-plugins og har ingen tilknytning til Awery eller dets personale.
-\n
-\n - Awery eller dets ejere kan ikke holdes ansvarlige for misbrug af noget af det indhold, der findes i eller uden for appen, og kan ikke holdes ansvarlige for distributionen af noget af det indhold, der findes i appen.
-\n
-\n - Ved at bruge Awery accepterer du, at udvikleren af appen ikke er ansvarlig for noget af det indhold, der findes i appen. Du accepterer også, at du ikke må bruge Awery til at downloade eller streame ophavsretligt beskyttet indhold.
-\n
-\n - Hvis der opstår internetrelaterede krænkelser, bedes du kontakte kildesiden. Udvikleren påtager sig intet juridisk ansvar.</string>
+    <string name="full_disclaimer">- Awery leverer kun en anime- og mangatracker og tilbyder ikke streaming- eller downloadmuligheder for anime eller manga.\n\n - Awery eller nogen af dets udviklere/personale hoster ikke noget af det indhold, der findes i Awery. Alle billeder og anime/manga-informationer i appen er hentet fra forskellige offentlige API\'er (AniList, MyAnimeList, Kitsu).\n\n - Derudover er alle anime/manga-links i Awery hentet fra forskellige tredjeparts-plugins og har ingen tilknytning til Awery eller dets personale.\n\n - Awery eller dets ejere kan ikke holdes ansvarlige for misbrug af noget af det indhold, der findes i eller uden for appen, og kan ikke holdes ansvarlige for distributionen af noget af det indhold, der findes i appen.\n\n - Ved at bruge Awery accepterer du, at udvikleren af appen ikke er ansvarlig for noget af det indhold, der findes i appen. Du accepterer også, at du ikke må bruge Awery til at downloade eller streame ophavsretligt beskyttet indhold.\n\n - Hvis der opstår internetrelaterede krænkelser, bedes du kontakte kildesiden. Udvikleren påtager sig intet juridisk ansvar.</string>
     <string name="video">Video</string>
     <string name="video_info_info">Viser opløsningen på den aktuelle video, nyttigt til <b>\"Multi Quality\"</b> servere.</string>
     <string name="default_quality">Automatisk kvalitetsvalg</string>
@@ -103,8 +93,7 @@
     <string name="ask_update_progress_anime">Spørg for hver medie Individuelt</string>
     <string name="ask_update_progress_info_ep">Hvis deaktiveret, opdateres fremskridtene automatisk, når episoden er set.</string>
     <string name="watch_complete_percentage">Se opdateringsprocent</string>
-    <string name="watch_complete_percentage_info">"Den procentdel, hvor dit fremskridt skal opdateres efter at have set en episode.
-\nDette sætter også  for, hvornår links til næste episode skal forudindlæses."</string>
+    <string name="watch_complete_percentage_info">"Den procentdel, hvor dit fremskridt skal opdateres efter at have set en episode.\n\nDette sætter også  for, hvornår links til næste episode skal forudindlæses."</string>
     <string name="behaviour">Adfærd</string>
     <string name="always_continue">Fortsæt altid, hvor du slap</string>
     <string name="pause_video_focus">Pause, når ikke i fokus</string>
@@ -119,8 +108,7 @@
     <string name="show_cast_button">Vis Cast-knap</string>
     <string name="picture_in_picture">Billede i billede</string>
     <string name="always_minimize">Minimer altid</string>
-    <string name="always_minimize_info">Kræver, at PiP er aktiveret, gør afspilleren som YouTube-afspilleren, men bedre.
-\nSkjuler også PiP-knappen.</string>
+    <string name="always_minimize_info">Kræver, at PiP er aktiveret, gør afspilleren som YouTube-afspilleren, men bedre.\nSkjuler også PiP-knappen.</string>
     <string name="immersive_mode">Skjul statuslinje</string>
     <string name="immersive_mode_info">Kræver genstart af appen for at anvende fuldt ud.</string>
     <string name="startUpTab">Standard opstartsfane</string>
@@ -180,14 +168,12 @@
     <string name="check_app_updates">Tjek Automatisk for App Opdateringer</string>
     <string name="author">Forfatter</string>
     <string name="account">Konto</string>
-    <string name="subscriptions_info">Tidsinterval for Awery til at tjekke for nye Episoder/Kapitler
-\n(Mindre tid vil forbruge mere batteri)</string>
+    <string name="subscriptions_info">Tidsinterval for Awery til at tjekke for nye Episoder/Kapitler\n(Mindre tid vil forbruge mere batteri)</string>
     <string name="grid">Gitter</string>
     <string name="sort_by_release_date">Sorter efter Udgivelsesdato</string>
     <string name="crop_borders">Beskær Kanter</string>
     <string name="error_loading_data">Fejl ved indlæsning af data %1$s</string>
-    <string name="saved_to_path">Gemt til:
-\n%s</string>
+    <string name="saved_to_path">Gemt til:\n%s</string>
     <string name="setting_progress">Indstiller fremskridt til %1$d</string>
     <string name="back_to_exit">Tryk tilbage igen for at afslutte</string>
     <string name="no_internet_connection">Ingen Internetforbindelse</string>
@@ -207,8 +193,7 @@
     <string name="no_update_found">Ingen Opdatering Fundet</string>
     <string name="downloading_update">Downloader Opdatering %1$s</string>
     <string name="permission_required">Giv venligst tilladelse til at få adgang til Filer &amp; Mapper fra Indstillinger, &amp; prøv igen.</string>
-    <string name="started_downloading">Startede Download
-\n%1$s</string>
+    <string name="started_downloading">Startede Download\n%1$s</string>
     <string name="loading_image_failed">Fejl ved indlæsning af billede</string>
     <string name="failed_to_load_data">Kunne ikke indlæse gemte data for %1$d</string>
     <string name="access_not_available">Kunne ikke få adgang</string>
@@ -464,4 +449,5 @@
     <string name="this_not_number">Dette er ikke et tal!</string>
     <string name="continue_action">Fortsæt</string>
     <string name="restart">Genstart</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
