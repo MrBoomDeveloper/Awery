@@ -32,17 +32,19 @@ jobs:
       - name: Retrieve Last Successful Commit SHA
         id: last_successful_sha
         run: |
-          LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
+          if [ -f last_successful_sha.txt ]; then
+            LAST_SHA=$(cat last_successful_sha.txt)
+          else
+            LAST_SHA="0000000000000000000000000000000000000000"  # Fallback to an initial SHA
+          fi
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
 
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
-          # Sanitize and format commit logs
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr '\n' '\n' | sed 's/[^[:print:]]//g')
-          echo "Sanitized Commit Logs: $SANITIZED_COMMIT_LOGS"
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
 
