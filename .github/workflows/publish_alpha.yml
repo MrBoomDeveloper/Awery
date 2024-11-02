@@ -60,7 +60,7 @@ jobs:
         if: success()
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: "app/build/outputs/apk/alpha/release"
+          releaseDirectory: "app/build/outputs/apk/alpha"
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -71,7 +71,7 @@ jobs:
       - name: Check if APK was created
         id: check_apk
         run: |
-          if [ ! -f app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk ]; then
+          if [ ! -f app/build/outputs/apk/alpha/app-alpha-release.apk ]; then
             echo "APK file not found!"
             exit 1
           fi
@@ -82,7 +82,7 @@ jobs:
         with:
           name: "Alpha APK"
           retention-days: 90
-          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          path: "app/build/outputs/apk/alpha/app-alpha-release.apk"
 
       - name: Send Alpha APK to Telegram
         if: success()
@@ -98,7 +98,7 @@ jobs:
           curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
-            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "document=@app/build/outputs/apk/alpha/app-alpha-release.apk" \
             -F "caption=${telegram_commit_messages}" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
@@ -120,7 +120,7 @@ jobs:
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
           curl -H "Content-Type: multipart/form-data" \
-            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "file1=@app/build/outputs/apk/alpha/app-alpha-release.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: Save Last Successful Commit SHA
