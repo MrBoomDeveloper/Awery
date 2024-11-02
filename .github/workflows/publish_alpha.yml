@@ -88,16 +88,18 @@ jobs:
         if: success()
         run: |
           APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          COMMIT_LOG=$(echo "${COMMIT_LOG}" | head -c 4096) # Truncate if too long
-
-          curl -sS -f -X POST \
+          response=$(curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-            -F "document=@${APK_PATH}" \
-            -F "caption=New Alpha-Build dropped 🔥\\n\\nCommits:\\n${COMMIT_LOG}\\n\\nVersion: 1.0" \
-            -F "parse_mode=HTML" \
-            -F "message_thread_id=28"
-
+            -F "message_thread_id=28" \
+            -F "document=@$APK_PATH" \
+            -F "caption=New Alpha-Build dropped 🔥\n\n\
+          Commits:\n\
+          ${{ env.COMMIT_LOG }}\n\n\
+          Dev:\n\
+          ${{ secrets.DEV_INFO }}\n\n\
+          Version: ${VERSION}" \
+            -F "parse_mode=HTML")
 
       - name: Send Alpha APK to Discord
         if: always()
