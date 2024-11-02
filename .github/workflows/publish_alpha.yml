@@ -96,41 +96,130 @@ jobs:
           -F "parse_mode=HTML" \
           -F "message_thread_id=28"
 
-      - name: Send Alpha APK to Telegram
-          COMMIT_LOG=$(cat commit_log.txt)
-          if [ "$SKIP_BUILD" != "true" ]; then
+      - name: Upload APK to Discord and Telegram
+        shell: bash
+        run: |
+        
+        # Truncate field values
+         max_length=1000
+        commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
+        if [ ${#developers} -gt $max_length ]; then
+          developers="${developers:0:$max_length}... (truncated)"
+        fi
+        if [ ${#commit_messages} -gt $max_length ]; then
+          commit_messages="${commit_messages:0:$max_length}... (truncated)"
+        fi
+
+        # Construct Discord payload
+        discord_data=$(jq -nc \
+                      --arg field_value "$commit_messages" \
+                      --arg author_value "$developers" \
+                      --arg footer_text "Version $VERSION" \
+                      --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+                      --arg thumbnail_url "$thumbnail_url" \
+                      --argjson embed_color "$embed_color" \
+                      '{
+                        "content": "<@&1225347048321191996>",
+                        "embeds": [
+                          {
+                            "title": "New Alpha-Build dropped",
+                            "color": $embed_color,
+                            "fields": [
+                              {
+                                "name": "Commits:",
+                                "value": $field_value,
+                                "inline": true
+                              },
+                              {
+                                "name": "Developers:",
+                                "value": $author_value,
+                                "inline": false
+                              }
+                            ],
+                            "footer": {
+                              "text": $footer_text
+                            },
+                            "timestamp": $timestamp,
+                            "thumbnail": {
+                              "url": $thumbnail_url
+                            }
+                          }
+                        ],
+                        "attachments": []
+                      }')
+        echo "Debug: Final Discord payload:"
+        echo "$discord_data"
+        
+        # Send Discord message
+        curl -H "Content-Type: application/json" \
+             -d "$discord_data" \
+             ${{ secrets.DISCORD_WEBHOOK }}
+        echo "You have only send an embed to discord due to SKIP_BUILD being set to true"
+        
+        # Upload APK to Discord
+        if [ "$SKIP_BUILD" != "true" ]; then
+          curl -F "payload_json=${contentbody}" \
+               -F "dantotsu_debug=@app/build/outputs/apk/google/alpha/app-google-alpha.apk" \
+               ${{ secrets.DISCORD_WEBHOOK }}
+        else
+          echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
+        fi
+
+        # Format commit messages for Telegram
+        telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+          message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+          echo "$message"
+        done)
+        telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
+
+        # Configuring dev info
+        echo "$developers" > dev_info.txt
+        echo "$developers"
+        # making the file executable
+        chmod +x workflowscripts/tel_parser.sed
+        ./workflowscripts/tel_parser.sed dev_info.txt >> output.txt
+        dev_info_tel=$(< output.txt)
+        
+        telegram_dev_info="<blockquote>${dev_info_tel}</blockquote>"
+        echo "$telegram_dev_info"
+
+        # Upload APK to Telegram
+        if [ "$SKIP_BUILD" != "true" ]; then
           APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
           response=$(curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-            -F "message_thread_id=28" \
+            -F "message_thread_id=7044" \
             -F "document=@$APK_PATH" \
-            -F "caption=New Alpha-Build dropped 
-            
-          Commits:
-         ${COMMIT_LOG}
+            -F "caption=New Alpha-Build dropped 🔥
         
+        Commits:
+        ${telegram_commit_messages}
+        Dev:
+        ${telegram_dev_info}
+        version: ${VERSION}" \
             -F "parse_mode=HTML")
-         else
+        else
           echo "skipping because skip build set to true"
-         fi
+        fi
         
-        env:
+      env:
         COMMIT_LOG: ${{ env.COMMIT_LOG }}
         VERSION: ${{ env.VERSION }}
 
-      - name: Upload Current SHA as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-         name: last-sha
-         path: last_sha.txt
+    - name: Upload Current SHA as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: last-sha
+        path: last_sha.txt
 
-      - name: Upload Commit log as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-         name: commit-log
-         path: commit_log.txt
-
+    - name: Upload Commit log as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: commit-log
+        path: commit_log.txt
+        
       - name: Send Alpha APK to Discord
         if: success()
         run: |
