@@ -123,7 +123,7 @@ jobs:
           -F "message_thread_id=28"
 
       - name: Send to Discord
-        if: success()
+        if: always()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
