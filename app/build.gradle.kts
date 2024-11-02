@@ -120,31 +120,6 @@ android {
             manifestPlaceholders["fileProvider"] = "${packageName}.alpha.FileProvider"
             manifestPlaceholders["appLabel"] = "Awery Alpha"
         }
-
-        register("beta") {
-            dimension = "type"
-            versionNameSuffix = "-beta"
-            applicationIdSuffix = ".beta"
-
-            buildConfigField("${packageName}.app.update.UpdatesChannel", "CHANNEL", "${packageName}.app.update.UpdatesChannel.BETA")
-            buildConfigField("String", "FILE_PROVIDER", "\"${packageName}.beta.FileProvider\"")
-            buildConfigField("String", "UPDATES_REPOSITORY", "\"MrBoomDeveloper/Awery\"")
-
-            manifestPlaceholders["fileProvider"] = "${packageName}.beta.FileProvider"
-            manifestPlaceholders["appLabel"] = "Awery Beta"
-        }
-
-        register("prod") {
-            dimension = "type"
-            versionNameSuffix = "-stable"
-
-            buildConfigField("${packageName}.app.update.UpdatesChannel", "CHANNEL", "${packageName}.app.update.UpdatesChannel.STABLE")
-            buildConfigField("String", "FILE_PROVIDER", "\"${packageName}.FileProvider\"")
-            buildConfigField("String", "UPDATES_REPOSITORY", "\"MrBoomDeveloper/Awery\"")
-
-            manifestPlaceholders["fileProvider"] = "${packageName}.FileProvider"
-            manifestPlaceholders["appLabel"] = "Awery"
-        }
     }
 
     buildFeatures {
