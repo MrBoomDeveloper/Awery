@@ -37,7 +37,7 @@ jobs:
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"- %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }} ..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -cd '\11\12\15\40-\176')
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
@@ -104,19 +104,29 @@ jobs:
       - name: Send to Discord
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          APK_PATH="release_artifacts/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"  # Discord embed description limit is 2048 characters
+          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"
           ESCAPED_COMMIT_LOG=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/"/\\"/g')
-          PAYLOAD="{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$ESCAPED_COMMIT_LOG\",\"color\":5814783}]}"
-          echo "$PAYLOAD"
-          curl -H "Content-Type: application/json" \
-          -d "$PAYLOAD" \
-          "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          PAYLOAD=$(cat <<EOF
+          {
+  "content": "<@&1208839371575529572>",
+  "embeds": [{
+    "title": "New Awery Alpha Update!",
+    "description": "$ESCAPED_COMMIT_LOG",
+    "color": 5814783
+  }]
+}
+EOF
+)
 
-          curl -F "file=@$APK_PATH" \
-          "${{ secrets.DISCORD_WEBHOOK_URL }}"
-
+echo "Sending payload: $PAYLOAD"
+RESPONSE=$(curl -H "Content-Type: application/json" \
+  -d "$PAYLOAD" \
+  "${{ secrets.DISCORD_WEBHOOK_URL }}")
+echo "Response: $RESPONSE"
+curl -F "file=@$APK_PATH" \
+  "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
