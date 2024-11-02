@@ -82,36 +82,34 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then exit 1; fi
-          if [ ! -f "commit_log.txt" ]; then exit 1; fi
-          
-          # Limit to the first 10 commits or adjust as needed
-          TRUNCATED_COMMIT_LOG=$(head -n 10 commit_log.txt | awk '{if(length($0)>50) $0=substr($0,1,50) "..."; print}')
+         APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+         if [ ! -f "$APK_PATH" ]; then exit 1; fi
+         if [ ! -f "commit_log.txt" ]; then exit 1; fi
+         COMMIT_LOG=$(cat commit_log.txt)
+         TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:1020}"
 
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
-          curl -v -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=-1002066701332" \
-            -F "message_thread_id=28" \
-            -F "document=@$APK_PATH" \
-            -F "caption=Commits:%0A${MESSAGE}" \
-            -F "parse_mode=HTML"
-
+         MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
+         curl -v -X POST \
+         "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+         -F "chat_id=-1002066701332" \
+         -F "message_thread_id=28" \
+         -F "document=@$APK_PATH" \
+         -F "caption=Commits:%0A${MESSAGE}" \
+         -F "parse_mode=HTML"
+         
       - name: Send to Discord
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
-          EMBEDDED_CONTENT="New Awery Alpha Update!\n\n$TRUNCATED_COMMIT_LOG"
-          curl -H "Content-Type: application/json" \
-            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$EMBEDDED_CONTENT\",\"color\":5814783}]}" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+         APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+         COMMIT_LOG=$(cat commit_log.txt)
+         TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
+         EMBEDDED_CONTENT="New Awery Alpha Update!\n\n$TRUNCATED_COMMIT_LOG"
 
-          # Upload the APK file to Discord separately
-          curl -F "file=@$APK_PATH" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+         curl -H "Content-Type: application/json" \
+         -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$EMBEDDED_CONTENT\",\"color\":5814783}]}" \
+         "${{ secrets.DISCORD_WEBHOOK_URL }}"
+         curl -F "file=@$APK_PATH" \
+         "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
