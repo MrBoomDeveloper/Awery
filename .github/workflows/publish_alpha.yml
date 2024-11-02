@@ -86,8 +86,8 @@ jobs:
           if [ ! -f "$APK_PATH" ]; then exit 1; fi
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:500}"
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//[[:space:]]/}"
+          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | head -n 10) # Limit to first 10 lines
+          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
@@ -101,9 +101,10 @@ jobs:
         run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | tr '\n' '\\n' | head -n 50)
+          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | head -n 10) # Limit to first 10 lines
+          EMBEDDED_CONTENT="New Awery Alpha Update!\n\n$TRUNCATED_COMMIT_LOG"
           curl -H "Content-Type: application/json" \
-            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$TRUNCATED_COMMIT_LOG\",\"color\":5814783}]}" \
+            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$EMBEDDED_CONTENT\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
