@@ -39,7 +39,6 @@ jobs:
         id: get_commits
         run: |
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          # Sanitize the commit log to remove problematic characters
           SANITIZED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed 's/[<>]/ /g' | tr -d '\n' | tr -d '\r')
           if [ ${#SANITIZED_COMMIT_LOGS} -gt 4096 ]; then
             SANITIZED_COMMIT_LOGS="${SANITIZED_COMMIT_LOGS:0:4093}... (truncated)"
@@ -67,12 +66,11 @@ jobs:
         if: success()
         run: |
           mkdir -p release_artifacts
-          echo "Found APK files: $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null)"
-          if [ $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null | wc -l) -gt 0 ]; then
-            cp app/build/outputs/apk/alpha/release/*.apk release_artifacts/
-            echo "APK_PATH=release_artifacts/*.apk" >> $GITHUB_ENV
+          if [ -f app/build/outputs/apk/alpha/release/app-alpha-release.apk ]; then
+            cp app/build/outputs/apk/alpha/release/app-alpha-release.apk release_artifacts/
+            echo "APK_PATH=release_artifacts/app-alpha-release.apk" >> $GITHUB_ENV
           else
-            echo "Error: No APK files found."
+            echo "Error: app-alpha-release.apk not found."
             exit 1
           fi
 
@@ -96,7 +94,7 @@ jobs:
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174" \
-            -F "document=@release_artifacts/*.apk"
+            -F "document=@release_artifacts/app-alpha-release.apk"
 
       - name: Send to Discord
         if: success()
@@ -105,7 +103,7 @@ jobs:
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@release_artifacts/*.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@release_artifacts/app-alpha-release.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
