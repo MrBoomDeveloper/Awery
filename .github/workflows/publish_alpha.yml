@@ -69,8 +69,8 @@ jobs:
           mkdir -p release_artifacts
           echo "Found APK files: $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null)"
           if [ $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null | wc -l) -gt 0 ]; then
-            cp app/build/outputs/apk/alpha/release/*.apk release_artifacts/awery-alpha.apk
-            echo "APK_PATH=release_artifacts/awery-alpha.apk" >> $GITHUB_ENV
+            cp app/build/outputs/apk/alpha/release/*.apk release_artifacts/
+            echo "APK_PATH=release_artifacts/*.apk" >> $GITHUB_ENV
           else
             echo "Error: No APK files found."
             exit 1
@@ -96,7 +96,7 @@ jobs:
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174" \
-            -F "document=@${{ env.APK_PATH }}"
+            -F "document=@release_artifacts/*.apk"
 
       - name: Send to Discord
         if: success()
@@ -105,7 +105,7 @@ jobs:
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@${{ env.APK_PATH }}" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@release_artifacts/*.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
