@@ -209,8 +209,7 @@
     <string name="sort_by_release_date">Ordenar por Fecha de Lanzamiento</string>
     <string name="crop_borders">Recortar Bordes</string>
     <string name="error_loading_data">Error cargando datos %1$s</string>
-    <string name="saved_to_path">Guardado en:
-\n%s</string>
+    <string name="saved_to_path">Guardado en:\n%s</string>
     <string name="setting_progress">Configurando el progreso a %1$d</string>
     <string name="back_to_exit">Por favor, regrese para salir</string>
     <string name="no_internet_connection">Sin Conexión a Internet</string>
@@ -450,4 +449,5 @@
     <string name="not_logged_detailed">Error 401. No has iniciado sesión, por favor inicia sesión e intenta nuevamente.</string>
     <string name="no_access_detailed">Error 403. No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta e intenta nuevamente.</string>
     <string name="rate_limited_detailed">Error 429. Has excedido el límite de velocidad, por favor intenta nuevamente más tarde.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
