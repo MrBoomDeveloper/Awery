@@ -42,6 +42,7 @@ jobs:
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
+          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
