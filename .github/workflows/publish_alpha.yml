@@ -58,17 +58,23 @@ jobs:
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Prepare Release Directory
         if: success()
         run: |
-          mkdir -p release_artifacts
-          echo "Found APK files: $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null)"
-          cp app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk release_artifacts/ || { echo "Error: No signed APK file found."; exit 1; }
-          echo "APK_PATH=release_artifacts/app-alpha-release-signed.apk" >> $GITHUB_ENV
+          RELEASE_DIR="release_artifacts"
+          mkdir -p "$RELEASE_DIR"
+          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          TARGET_APK="$RELEASE_DIR/app-alpha-release-signed.apk"
+          if [ ! -f "$SOURCE_APK" ]; then
+            echo "Error: Signed APK not found at $SOURCE_APK"
+            exit 1
+          fi
+          cp "$SOURCE_APK" "$TARGET_APK"
+          echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
 
       - name: Upload to Artifacts
         if: success()
@@ -81,6 +87,7 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
+          APK_PATH="${{ env.APK_PATH }}"
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
@@ -90,16 +97,17 @@ jobs:
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
             -F "message_thread_id=174" \
-            -F "document=@release_artifacts/app-alpha-release-signed.apk"
+            -F "document=@$APK_PATH"
 
       - name: Send to Discord
         if: success()
         run: |
+          APK_PATH="${{ env.APK_PATH }}"
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@release_artifacts/app-alpha-release-signed.apk" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@$APK_PATH" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
