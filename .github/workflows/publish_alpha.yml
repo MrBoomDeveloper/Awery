@@ -132,20 +132,16 @@ jobs:
             -F "document=@$APK_PATH" \
             -F "caption=
         
-        Commits:
-          ${MESSAGE} \
+          Commits:
+          ${MESSAGE} 
             -F "parse_mode=HTML")
           else
           echo "skipping because skip build set to true"
           fi
-        
-    env:
-        COMMIT_LOG: ${{ env.COMMIT_LOG }}
-        VERSION: ${{ env.VERSION }}
-
-        - name: Send to Discord
-          if: success()
-          run: |
+     
+      - name: Send to Discord
+        if: success()
+        run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           if [ ! -f "$APK_PATH" ]; then
             echo "Error: APK not found at $APK_PATH"
