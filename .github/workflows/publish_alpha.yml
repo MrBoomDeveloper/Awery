@@ -68,41 +68,14 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Prepare Release Directory
-        if: success()
-        run: |
-          RELEASE_DIR="release_artifacts"
-          mkdir -p "$RELEASE_DIR"
-          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
-          echo "Checking source APK existence..."
-          ls -l app/build/outputs/apk/alpha/release/
-          if [ ! -f "$SOURCE_APK" ]; then
-            echo "Error: Signed APK not found at $SOURCE_APK"
-            exit 1
-          fi
-          echo "Copying APK..."
-          cp "$SOURCE_APK" "$TARGET_APK"
-          echo "Verifying copied APK..."
-          ls -l "$RELEASE_DIR"
-          echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
-          echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
-
       - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: "Alpha APK"
-          path: ${{ env.RELEASE_DIR }}
+          name: "app-alpha-release-signed.apk"
+          path: app/build/outputs/apk/alpha/release/
           retention-days: 90
           
-      - name: Get Full APK Path
-        if: success()
-        run: |
-          FULL_APK_PATH="$(pwd)/${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          echo "Full APK Path: $FULL_APK_PATH"
-          echo "APK_PATH=$FULL_APK_PATH" >> $GITHUB_ENV
-
       - name: Send to Telegram
         if: success()
         run: |
