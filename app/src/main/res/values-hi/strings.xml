@@ -210,8 +210,7 @@
     <string name="sort_by_release_date">रिलीज की तारीख द्वारा छाँटें</string>
     <string name="crop_borders">बॉर्डर क्रॉप करें</string>
     <string name="error_loading_data">डेटा लोड करने में त्रुटि %1$s</string>
-    <string name="saved_to_path">सहेजा गया:
-\n%s</string>
+    <string name="saved_to_path">सहेजा गया:\n%s</string>
     <string name="setting_progress">प्रगति सेट कर रहा है %1$d</string>
     <string name="back_to_exit">बाहर निकलने के लिए कृपया फिर से वापस जाएँ</string>
     <string name="no_internet_connection">इंटरनेट कनेक्शन नहीं है</string>
