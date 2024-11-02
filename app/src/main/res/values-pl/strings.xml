@@ -449,4 +449,5 @@
     <string name="select_tracker">Wybierz śledzik</string>
     <string name="select_title">Wybierz tytuł</string>
     <string name="not_logged_detailed">Błąd 401. Nie jesteś zalogowany, zaloguj się i spróbuj ponownie.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
