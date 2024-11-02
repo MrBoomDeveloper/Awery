@@ -106,34 +106,14 @@ jobs:
       - name: Send to Discord
         if: success()
         run: |
-          APK_PATH="release_artifacts/awery-alpha.apk"
+          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
-          echo "Commit Log: $COMMIT_LOG" # Debug line to check commit content
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"
-          ESCAPED_COMMIT_LOG=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/"/\\"/g')
-          echo "Escaped Commit Log: $ESCAPED_COMMIT_LOG" # Debug line to check escaped content
-          
-          PAYLOAD=$(cat <<EOF
-          {
-            "content": "<@&1208839371575529572>",
-            "embeds": [{
-              "title": "New Awery Alpha Update!",
-              "description": "$ESCAPED_COMMIT_LOG",
-              "color": 5814783
-            }]
-          }
-          EOF
-          )
-
-          echo "Sending payload: $PAYLOAD"
-          RESPONSE=$(curl -H "Content-Type: application/json" \
-            -d "$PAYLOAD" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}")
-          echo "Response: $RESPONSE"
+          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"  # Discord embed description limit is 2048 characters
+          curl -H "Content-Type: application/json" \
+            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$TRUNCATED_COMMIT_LOG\",\"color\":5814783}]}" \
+            "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-
-
 
       - name: Save Last Successful Commit SHA
         if: success()
