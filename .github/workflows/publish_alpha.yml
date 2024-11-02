@@ -152,7 +152,7 @@ jobs:
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
           curl -H "Content-Type: multipart/form-data" \
-            -F "file1=@${{ env.apk_path }}" \
+            -F "file=@${{ env.apk_path }}" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: Save Last Successful Commit SHA
