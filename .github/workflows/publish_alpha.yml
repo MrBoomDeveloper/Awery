@@ -35,12 +35,29 @@ jobs:
           if [ -f last_successful_sha.txt ]; then
             LAST_SHA=$(cat last_successful_sha.txt)
           else
-            LAST_SHA="0000000000000000000000000000000000000000"  # Fallback to an initial SHA
+            LAST_SHA=""  # Initialize to empty if file does not exist
           fi
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
 
+      - name: Check for New Commits
+        id: check_commits
+        run: |
+          if [ -z "${{ env.LAST_SHA }}" ]; then
+            echo "No previous SHA found, assuming first run."
+            echo "NEW_COMMITS=true" >> $GITHUB_ENV
+          else
+            COMMIT_COUNT=$(git rev-list --count "${{ env.LAST_SHA }}..HEAD")
+            if [ "$COMMIT_COUNT" -gt 0 ]; then
+              echo "NEW_COMMITS=true" >> $GITHUB_ENV
+            else
+              echo "No new commits found."
+              echo "NEW_COMMITS=false" >> $GITHUB_ENV
+            fi
+          fi
+
       - name: Get New Commits Since Last Successful Run
         id: get_commits
+        if: env.NEW_COMMITS == 'true'
         run: |
           COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
