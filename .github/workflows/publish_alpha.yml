@@ -1,4 +1,4 @@
-name: Publish Alpha Apk 
+name: Build & Publish Alpha APK
 
 on:
   push:
@@ -29,33 +29,28 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Get Commits Since Last Run
+      - name: Retrieve Last Successful Commit SHA
+        id: last_successful_sha
         run: |
-          if [ -f last_sha.txt ]; then
-            LAST_SHA=$(cat last_sha.txt)
+          if [ -f last_successful_sha.txt ]; then
+            LAST_SHA=$(cat last_successful_sha.txt)
           else
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-          echo "Commits since $LAST_SHA:"
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
-          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
-          echo "$COMMIT_LOGS" > commit_log.txt
-          shell: /usr/bin/bash -e {0}
-        env:
-          CI: true
-        continue-on-error: true
+          echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
 
-      - name: Save Current SHA for Next Run
-        run: echo ${{ github.sha }} > last_sha.txt
-
-      - name: Set variables
+      - name: Get New Commits Since Last Successful Run
+        id: get_commits
         run: |
-          VER=$(grep -E -o "versionName \".*\"" app/build.gradle | sed -e 's/versionName //g' | tr -d '"')
-          SHA=${{ github.sha }}
-          VERSION="$VER+${SHA:0:7}"
-          echo "Version $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
+          if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
+            FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
+          fi
+          SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
+          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
 
       - name: Build Alpha APK
         id: build_alpha
@@ -65,7 +60,7 @@ jobs:
         if: success()
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: "app/build/outputs/apk/alpha/release"
+          releaseDirectory: app/build/outputs/apk/alpha/release
           signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -73,59 +68,30 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      - name: Check if APK was created
-        id: check_apk
+      - name: Prepare Release Directory
+        if: success()
         run: |
-          if [ ! -f app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk ]; then
-            echo "APK file not found!"
+          RELEASE_DIR="release_artifacts"
+          mkdir -p "$RELEASE_DIR"
+          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
+          echo "Checking source APK existence..."
+          ls -l app/build/outputs/apk/alpha/release/
+          if [ ! -f "$SOURCE_APK" ]; then
+            echo "Error: Signed APK not found at $SOURCE_APK"
             exit 1
           fi
+          echo "Copying APK..."
+          cp "$SOURCE_APK" "$TARGET_APK"
+          echo "Verifying copied APK..."
+          ls -l "$RELEASE_DIR"
+          echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
+          echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
 
-      - name: Upload Alpha APK
+      - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
+          path: ${{ env.RELEASE_DIR }}
           retention-days: 90
-          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-
-      - name: Send Alpha APK to Telegram
-        if: success()
-        run: |
-          APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          if [ "$SKIP_BUILD" != "true" ]; then
-            response=$(curl -sS -f -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-              -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-              -F "message_thread_id=28" \
-              -F "document=@$APK_PATH" \
-              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ env.COMMIT_LOG }}
-                  Version: ${VERSION}" \
-              -F "parse_mode=HTML")
-            echo "$response"
-          else
-            echo "Skipping because skip build set to true"
-          fi
-
-      - name: Send Alpha APK to Discord
-        if: success()
-        run: |
-          COMMIT_LOG=$(cat commit_log.txt)
-          payload="{
-            \"content\": \"<@&1208839371575529572>\",
-            \"embeds\": [{
-              \"title\": \"New Awery Alpha Update!\",
-              \"description\": \"Commits:\n${COMMIT_LOG}\",
-              \"color\": 5814783
-            }]
-          }"
-          curl -H "Content-Type: application/json" \
-            -d "$payload" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
-          curl -H "Content-Type: multipart/form-data" \
-            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-      - name: Save Last Successful Commit SHA
-        if: success()
-        run: echo $GITHUB_SHA > last_successful_sha.txt
