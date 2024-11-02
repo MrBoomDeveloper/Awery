@@ -67,8 +67,13 @@ jobs:
         if: success()
         run: |
           mkdir -p release_artifacts
-          cp app/build/outputs/apk/alpha/release/*.apk release_artifacts/awery-alpha.apk
-          echo "APK_PATH=release_artifacts/awery-alpha.apk" >> $GITHUB_ENV
+          if [ $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null | wc -l) -eq 1 ]; then
+            cp app/build/outputs/apk/alpha/release/*.apk release_artifacts/awery-alpha.apk
+            echo "APK_PATH=release_artifacts/awery-alpha.apk" >> $GITHUB_ENV
+          else
+            echo "Error: Expected exactly one APK file, but found $(ls app/build/outputs/apk/alpha/release/*.apk 2>/dev/null | wc -l)."
+            exit 1
+          fi
 
       - name: Upload to Artifacts
         if: success()
