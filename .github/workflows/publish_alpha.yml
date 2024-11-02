@@ -125,7 +125,7 @@ jobs:
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=${MESSAGE}" \
+            -F "caption=test${MESSAGE}" \
             -F "parse_mode=HTML"
       
           else
