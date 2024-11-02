@@ -449,4 +449,5 @@
     <string name="request_invalid_detailed">Грешка 400. Заявката е невалидна, моля опитайте отново по-късно.</string>
     <string name="not_logged_detailed">Грешка 401. Не сте влезли, моля влезте и опитайте отново.</string>
     <string name="no_access_detailed">Грешка 403. Нямате достъп до този ресурс, опитайте да влезете в акаунта си и опитайте отново.</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
