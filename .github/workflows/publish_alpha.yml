@@ -96,6 +96,7 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
+          if [ "$SKIP_BUILD" != "true" ]; then
           echo "Current directory contents:"
           ls -la
           echo "Release directory contents:"
@@ -127,6 +128,10 @@ jobs:
             -F "document=@$APK_PATH" \
             -F "caption=<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${MESSAGE}" \
             -F "parse_mode=HTML"
+
+          else
+            echo "skipping because skip build set to true"
+          fi
 
         
           env:
