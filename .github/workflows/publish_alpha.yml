@@ -29,28 +29,40 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Retrieve Last Successful Commit SHA
-        id: last_successful_sha
+      - name: Get Commits Since Last Run
         run: |
-          if [ -f last_successful_sha.txt ]; then
-            LAST_SHA=$(cat last_successful_sha.txt)
+          if [ -f last_sha.txt ]; then
+          LAST_SHA=$(cat last_sha.txt)
           else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD) # Get initial commit if no SHA exists
+          LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
-          echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
+          echo "Commits since $LAST_SHA:"
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
+          COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
+          COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
+          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "$COMMIT_LOGS"
+          echo "$COMMIT_LOGS" > commit_log.txt
+          BRANCH=${{ github.ref }}
+          BRANCH=${BRANCH#refs/heads/}
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+        shell: /usr/bin/bash -e {0}
+             env:
+        CI: true
+            continue-on-error: true
 
-      - name: Get New Commits Since Last Successful Run
-        id: get_commits
+      - name: Save Current SHA for Next Run
+        run: echo ${{ github.sha }} > last_sha.txt
+
+      - name: Set variables
         run: |
-          echo "Retrieving commits since last successful SHA: ${{ env.LAST_SHA }}"
-          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
-          if [ ${#FORMATTED_COMMIT_LOGS} -gt 4096 ]; then
-            FORMATTED_COMMIT_LOGS="${FORMATTED_COMMIT_LOGS:0:4093}... (truncated)"
-          fi
-          SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
-          echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
-          echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
+          VER=$(grep -E -o "versionName \".*\"" app/build.gradle | sed -e 's/versionName //g' | tr -d '"')
+          SHA=${{ github.sha }}
+          VERSION="$VER+${SHA:0:7}"
+          echo "Version $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build Alpha APK
         id: build_alpha
@@ -100,7 +112,6 @@ jobs:
           else
             echo "Skipping because skip build set to true"
           fi
-
 
       - name: Send Alpha APK to Discord
         if: always()
