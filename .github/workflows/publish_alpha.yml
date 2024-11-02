@@ -83,10 +83,10 @@ jobs:
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
-          telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG=" | sed 's/%0A/\n/g' | head -n 10 | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
-            echo "$message"
+          telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
+          message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
+          echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${telegram_commit_messages}"
@@ -96,7 +96,8 @@ jobs:
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=Testing
+            -F "caption=New Alpha-Build dropped 🔥
+            Latest Changes:
             ${MESSAGE}" \
             -F "parse_mode=HTML"
             
@@ -106,11 +107,16 @@ jobs:
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"  # Discord embed description limit is 2048 characters
+          ESCAPED_COMMIT_LOG=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/"/\\"/g')
+          PAYLOAD="{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$ESCAPED_COMMIT_LOG\",\"color\":5814783}]}"
+          echo "$PAYLOAD"
           curl -H "Content-Type: application/json" \
-          -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"${TRUNCATED_COMMIT_LOG}\",\"color\":5814783}]}" \
+          -d "$PAYLOAD" \
           "${{ secrets.DISCORD_WEBHOOK_URL }}"
+
           curl -F "file=@$APK_PATH" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          "${{ secrets.DISCORD_WEBHOOK_URL }}"
+
 
       - name: Save Last Successful Commit SHA
         if: success()
