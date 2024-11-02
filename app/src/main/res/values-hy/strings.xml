@@ -449,5 +449,5 @@
     <string name="banned">Դուք արգելված եք</string>
     <string name="no_access_detailed">Սխալ 403. Դուք չունեք հասանելիություն այս ռեսուրսին, փորձեք մուտք գործել ձեր հաշիվը և փորձել կրկին:</string>
     <string name="rate_limited_detailed">Սխալ 429. Դուք գերազանցել եք արագության սահմանափակումը, խնդրում ենք փորձել կրկին ավելի ուշ:</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
