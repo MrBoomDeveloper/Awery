@@ -106,26 +106,6 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
-          echo "Current directory contents:"
-          ls -la
-          echo "Release directory contents:"
-          ls -la ${{ env.RELEASE_DIR }}
-          
-          APK_PATH="/home/runner/work/Awery/Awery/release_artifacts/awery-alpha.apk"
-          echo "APK Path: $APK_PATH"
-          
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
-          
-          if [ ! -f "commit_log.txt" ]; then
-            echo "Error: commit_log.txt not found"
-            exit 1
-          fi
-          
-          echo "File sizes:"
-          ls -lh "$APK_PATH"
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
@@ -133,7 +113,7 @@ jobs:
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
-            -F "document=@$APK_PATH" \
+            -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             -F "caption=$MESSAGE" \
             -F "parse_mode=HTML" \
             -F "disable_web_page_preview=true" \
@@ -142,16 +122,11 @@ jobs:
       - name: Send to Discord
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "Error: APK not found at $APK_PATH"
-            exit 1
-          fi
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@$APK_PATH" \
+          curl -F "file=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
