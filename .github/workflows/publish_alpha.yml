@@ -94,13 +94,13 @@ jobs:
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"  # Truncate to stay within Telegram's 1024 character limit
-          MESSAGE="${TRUNCATED_COMMIT_LOG}"
+          MESSAGE="<b>New Awery Alpha Update</b>%0A${TRUNCATED_COMMIT_LOG}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${MESSAGE}" \
+            -F "caption=<b>Latest Changes:</b>%0A${MESSAGE}" \
             -F "parse_mode=HTML"
 
       - name: Send to Discord
