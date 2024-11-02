@@ -81,13 +81,16 @@ jobs:
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
-          formatted_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          formatted_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           curl -v -X POST \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "message_thread_id=28" \
           -F "document=@$APK_PATH" \
-          -F "caption=New Alpha-Build dropped 🔥%0A%0ACommits:%0A$formatted_messages" \
+          -F "caption=New Alpha-Build dropped 🔥
+            Commits:%0A
+            $formatted_messages" \
           -F "parse_mode=HTML"
 
       - name: Send Alpha APK to Discord
@@ -98,7 +101,7 @@ jobs:
             \"content\": \"<@&1208839371575529572>\",
             \"embeds\": [{
               \"title\": \"New Awery Alpha Update!\",
-              \"description\": \"Commits:\n${COMMIT_LOG}\",
+              \"description\": \"Commits:\n ${COMMIT_LOG}\",
               \"color\": 5814783
             }]
           }"
@@ -108,7 +111,6 @@ jobs:
           curl -H "Content-Type: multipart/form-data" \
             -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
-
 
       - name: Save Last Successful Commit SHA
         if: success()
