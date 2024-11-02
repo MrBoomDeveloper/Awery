@@ -89,16 +89,15 @@ jobs:
           echo "$message"
           done)
           telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${telegram_commit_messages}"
-          MESSAGE="${MESSAGE:0:4000}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
             -F "caption=New Alpha-Build dropped 🔥
+
             Latest Changes:
-            ${MESSAGE}" \
+            ${telegram_commit_messages}" \
             -F "parse_mode=HTML"
             
       - name: Send to Discord
