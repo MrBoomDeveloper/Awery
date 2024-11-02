@@ -107,8 +107,8 @@ jobs:
           COMMIT_LOG=$(cat commit_log.txt)
           TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:2000}"  # Discord embed description limit is 2048 characters
           curl -H "Content-Type: application/json" \
-            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$TRUNCATED_COMMIT_LOG\",\"color\":5814783}]}" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"${TRUNCATED_COMMIT_LOG}\",\"color\":5814783}]}" \
+          "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
