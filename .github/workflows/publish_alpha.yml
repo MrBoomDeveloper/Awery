@@ -90,11 +90,12 @@ jobs:
           fi
 
           echo "Sending to Telegram..."
-           response=$(curl -sS -f -X POST \
+          curl -v -X POST \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
           -F "caption=$COMMIT_LOG"
+          -F "message_thread_id=28" \
               -F "parse_mode=HTML")
             echo "$response"
           else
