@@ -68,48 +68,94 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
+      - name: Prepare Release Directory
+        if: success()
+        run: |
+          RELEASE_DIR="release_artifacts"
+          mkdir -p "$RELEASE_DIR"
+          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
+          echo "Checking source APK existence..."
+          ls -l app/build/outputs/apk/alpha/release/
+          if [ ! -f "$SOURCE_APK" ]; then
+            echo "Error: Signed APK not found at $SOURCE_APK"
+            exit 1
+          fi
+          echo "Copying APK..."
+          cp "$SOURCE_APK" "$TARGET_APK"
+          echo "Verifying copied APK..."
+          ls -l "$RELEASE_DIR"
+          echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
+          echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+
       - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
-          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          path: ${{ env.RELEASE_DIR }}
           retention-days: 90
+
+      
 
       - name: Send to Telegram
         if: success()
         run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Release directory contents:"
+          ls -la ${{ env.RELEASE_DIR }}
+          
+          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          echo "APK Path: $APK_PATH"
+          
+          if [ ! -f "$APK_PATH" ]; then
+            echo "Error: APK not found at $APK_PATH"
+            exit 1
+          fi
+          
+          if [ ! -f "commit_log.txt" ]; then
+            echo "Error: commit_log.txt not found"
+            exit 1
+          fi
+          
+          echo "File sizes:"
+          ls -lh "$APK_PATH"
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
-    
-          echo "COMMIT_LOG: $MESSAGE"
-          if [ ! -f "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" ]; then
-          echo "Error: APK file not found."
-          exit 1
-          fi
-
           echo "Sending to Telegram..."
           curl -v -X POST \
-          "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-          -F "chat_id=-1002066701332" \
-          -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-          -F "caption=$COMMIT_LOG"
-          -F "message_thread_id=28" \
-              -F "parse_mode=HTML")
-            echo "$response"
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=-1002066701332" \
+            -F "message_thread_id=28" \
+            -F "document=@$APK_PATH" \
+            -F "caption=
+        
+        Commits:
+          ${MESSAGE} \
+            -F "parse_mode=HTML")
           else
-            echo "Skipping because skip build set to true"
+          echo "skipping because skip build set to true"
           fi
-    
-      - name: Send to Discord
-        if: always()
-        run: |
+        
+    env:
+        COMMIT_LOG: ${{ env.COMMIT_LOG }}
+        VERSION: ${{ env.VERSION }}
+
+        - name: Send to Discord
+          if: success()
+          run: |
+          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "Error: APK not found at $APK_PATH"
+            exit 1
+          fi
           COMMIT_LOG=$(cat commit_log.txt)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+          curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
