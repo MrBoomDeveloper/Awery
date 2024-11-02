@@ -117,7 +117,7 @@ jobs:
           echo "File sizes:"
           ls -lh "$APK_PATH"
           COMMIT_LOG=$(cat commit_log.txt)
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
+          MESSAGE="${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
           echo "Sending to Telegram..."
           curl -v -X POST \
@@ -125,7 +125,7 @@ jobs:
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=test${MESSAGE}" \
+            -F "caption=<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${MESSAGE}" \
             -F "parse_mode=HTML"
       
           else
