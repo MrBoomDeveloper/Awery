@@ -209,8 +209,7 @@
     <string name="sort_by_release_date">リリース日で並べ替え</string>
     <string name="crop_borders">境界線を切り取る</string>
     <string name="error_loading_data">データの読み込みエラー %1$s</string>
-    <string name="saved_to_path">保存先:
-\n%s</string>
+    <string name="saved_to_path">保存先:\n%s</string>
     <string name="setting_progress">進行状況を %1$d に設定しました</string>
     <string name="back_to_exit">終了するにはもう一度「戻る」を実行してください</string>
     <string name="no_internet_connection">インターネット接続なし</string>
@@ -230,8 +229,7 @@
     <string name="no_update_found">更新が見つかりません</string>
     <string name="downloading_update">更新をダウンロード中 %1$s</string>
     <string name="permission_required">設定からファイルとフォルダへのアクセス権を付与してください。そして、もう一度お試しください。</string>
-    <string name="started_downloading">ダウンロードを開始しました
-\n%1$s</string>
+    <string name="started_downloading">ダウンロードを開始しました\n%1$s</string>
     <string name="loading_image_failed">画像の読み込みに失敗しました</string>
     <string name="failed_to_load_data">保存されたデータの読み込みに失敗しました %1$d</string>
     <string name="access_not_available">アクセスを取得できませんでした</string>
@@ -451,4 +449,5 @@
     <string name="pink">ピンク</string>
     <string name="dark_theme_description">私はバットマンです！</string>
     <string name="read_now">今すぐ読む</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
