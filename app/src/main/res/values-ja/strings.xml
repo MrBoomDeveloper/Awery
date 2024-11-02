@@ -449,5 +449,5 @@
     <string name="pink">ピンク</string>
     <string name="dark_theme_description">私はバットマンです！</string>
     <string name="read_now">今すぐ読む</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
