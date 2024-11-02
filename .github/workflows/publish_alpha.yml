@@ -8,6 +8,13 @@ on:
       - "docs/**"
       - "README.md"
       - "LICENSE.md"
+      - ".github/workflows/bug_greetings.yml"
+      - ".github/workflows/feature_greetings.yml"
+      - ".github/workflows/pr_greetings.yml"
+      - ".github/workflows/test_build.yml"
+      - ".github/ISSUE_TEMPLATE/config.yml"
+      - ".github/ISSUE_TEMPLATE/report_issue.yml"
+      - ".github/ISSUE_TEMPLATE/request_feature.yml"
 
 jobs:
   build:
