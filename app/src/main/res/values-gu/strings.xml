@@ -449,5 +449,5 @@
     <string name="lets_begin">ચાલો શરૂ કરીએ</string>
     <string name="cleared_successfully">સફળતાપૂર્વક સાફ થયું!</string>
     <string name="login">પ્રવેશ કરો</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
