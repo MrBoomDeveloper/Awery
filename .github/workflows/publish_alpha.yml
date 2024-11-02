@@ -38,7 +38,6 @@ jobs:
             LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
           echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
-
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
@@ -51,7 +50,6 @@ jobs:
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS}" >> $GITHUB_ENV
           echo "$SANITIZED_COMMIT_LOGS" > commit_log.txt
-
       - name: Build Alpha APK
         id: build_alpha
         run: ./gradlew assembleAlphaRelease
@@ -87,7 +85,6 @@ jobs:
           ls -l "$RELEASE_DIR"
           echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
           echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
-
       - name: Upload to Artifacts
         if: success()
         uses: actions/upload-artifact@v4
@@ -103,39 +100,45 @@ jobs:
           ls -la
           echo "Release directory contents:"
           ls -la ${{ env.RELEASE_DIR }}
+          
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           echo "APK Path: $APK_PATH"
-
+          
           if [ ! -f "$APK_PATH" ]; then
             echo "Error: APK not found at $APK_PATH"
             exit 1
           fi
-
+          
           if [ ! -f "commit_log.txt" ]; then
             echo "Error: commit_log.txt not found"
             exit 1
           fi
-
+          
           echo "File sizes:"
           ls -lh "$APK_PATH"
-
           COMMIT_LOG=$(cat commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${COMMIT_LOG}"
           MESSAGE="${MESSAGE:0:1020}"
-
-          if [ "${{ secrets.SKIP_BUILD }}" != "true" ]; then
-            echo "Sending to Telegram..."
-            curl -v -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-              -F "chat_id=-1002066701332" \
-              -F "message_thread_id=28" \
-              -F "document=@$APK_PATH" \
-              -F "caption=${MESSAGE}" \
-              -F "parse_mode=HTML"
+          echo "Sending to Telegram..."
+          curl -v -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=-1002066701332" \
+            -F "message_thread_id=28" \
+            -F "document=@$APK_PATH" \
+            -F "caption=${MESSAGE}" \
+            -F "parse_mode=HTML"
+      
           else
-            echo "Skipping because skip build set to true"
+          echo "skipping because skip build set to true"
           fi
 
+          env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.13-11/x64
+          LAST_SHA: ${{ env.LAST_SHA }}
+          COMMIT_LOG: ${COMMIT_LOG}
+
+     
       - name: Send to Discord
         if: success()
         run: |
@@ -150,7 +153,7 @@ jobs:
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-
+            
       - name: Save Last Successful Commit SHA
         if: success()
         run: echo $GITHUB_SHA > last_successful_sha.txt
