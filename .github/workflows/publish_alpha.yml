@@ -38,7 +38,7 @@ jobs:
       - name: Get New Commits Since Last Successful Run
         id: get_commits
         run: |
-          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          COMMIT_LOGS=$(git log ${{ env.LAST_SHA }}..HEAD --pretty=format:"- %s ~%an [Commit](https://github.com/${{ github.repository }}/commit/%H)")
           FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
           SANITIZED_COMMIT_LOGS=$(echo "$FORMATTED_COMMIT_LOGS" | tr -d '\n' | tr -d '\r' | sed 's/[^[:print:]]//g')
           echo "COMMIT_LOG=${SANITIZED_COMMIT_LOGS:0:4096}" >> $GITHUB_ENV
@@ -85,27 +85,29 @@ jobs:
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           if [ ! -f "$APK_PATH" ]; then exit 1; fi
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
-          COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"  # Truncate to stay within Telegram's 1024 character limit
-          MESSAGE="<b>New Awery Alpha Update</b>%0A${TRUNCATED_COMMIT_LOG}"
+          TRUNCATED_COMMIT_LOG=$(head -n 10 commit_log.txt)
+          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002066701332" \
             -F "message_thread_id=28" \
             -F "document=@$APK_PATH" \
-            -F "caption=<b>Latest Changes:</b>%0A${MESSAGE}" \
+            -F "caption=Commits:%0A${MESSAGE}" \
             -F "parse_mode=HTML"
 
       - name: Send to Discord
-        if: always()
+        if: success()
         run: |
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
+          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | head -n 10) # Limit to first 10 lines
+          EMBEDDED_CONTENT="New Awery Alpha Update!\n\n$TRUNCATED_COMMIT_LOG"
           curl -H "Content-Type: application/json" \
-            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$COMMIT_LOG\",\"color\":5814783}]}" \
+            -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$EMBEDDED_CONTENT\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
           curl -F "file=@$APK_PATH" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
+
 
       - name: Save Last Successful Commit SHA
         if: success()
