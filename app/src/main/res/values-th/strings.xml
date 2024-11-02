@@ -449,4 +449,5 @@
     <string name="delayed">ล่าช้า</string>
     <string name="rate_limited_detailed">ข้อผิดพลาด 429 คุณเกินขีดจำกัดการร้องขอ กรุณาลองอีกครั้งในภายหลัง</string>
     <string name="no_access_detailed">ข้อผิดพลาด 403 คุณไม่มีสิทธิ์เข้าถึงแหล่งข้อมูลนี้ กรุณาลองเข้าสู่ระบบบัญชีของคุณและลองอีกครั้ง</string>
+    <string name="app_name" translatable="false"></string>
 </resources>
