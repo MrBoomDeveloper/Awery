@@ -96,6 +96,41 @@ jobs:
           -F "parse_mode=HTML" \
           -F "message_thread_id=28"
 
+      - name: Send Alpha APK to Telegram
+          COMMIT_LOG=$(cat commit_log.txt)
+          if [ "$SKIP_BUILD" != "true" ]; then
+          APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          response=$(curl -sS -f -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+            -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
+            -F "message_thread_id=28" \
+            -F "document=@$APK_PATH" \
+            -F "caption=New Alpha-Build dropped 
+            
+          Commits:
+         ${COMMIT_LOG}
+        
+            -F "parse_mode=HTML")
+         else
+          echo "skipping because skip build set to true"
+         fi
+        
+        env:
+        COMMIT_LOG: ${{ env.COMMIT_LOG }}
+        VERSION: ${{ env.VERSION }}
+
+      - name: Upload Current SHA as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+         name: last-sha
+         path: last_sha.txt
+
+      - name: Upload Commit log as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+         name: commit-log
+         path: commit_log.txt
+
       - name: Send Alpha APK to Discord
         if: success()
         run: |
