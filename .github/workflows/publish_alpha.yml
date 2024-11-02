@@ -88,18 +88,19 @@ jobs:
         if: success()
         run: |
           APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          response=$(curl -sS -f -X POST \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-            -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
-            -F "message_thread_id=28" \
-            -F "document=@$APK_PATH" \
-            -F "caption=New Alpha-Build dropped 🔥\n\n\
-          Commits:\n\
-          ${{ env.COMMIT_LOG }}\n\n\
-          Dev:\n\
-          ${{ secrets.DEV_INFO }}\n\n\
-          Version: ${VERSION}" \
-            -F "parse_mode=HTML")
+          if [ "$SKIP_BUILD" != "true" ]; then
+            response=$(curl -sS -f -X POST \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
+              -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
+              -F "message_thread_id=28" \
+              -F "document=@$APK_PATH" \
+              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:\n${COMMIT_LOG}\n\nDev:\n\nVersion: ${VERSION}" \
+              -F "parse_mode=HTML")
+            echo "$response"
+          else
+            echo "Skipping because skip build set to true"
+          fi
+
 
       - name: Send Alpha APK to Discord
         if: always()
