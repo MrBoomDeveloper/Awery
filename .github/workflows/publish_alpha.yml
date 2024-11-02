@@ -87,6 +87,7 @@ jobs:
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
           TRUNCATED_COMMIT_LOG=$(head -n 10 commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
+          MESSAGE="${MESSAGE:0:500}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
