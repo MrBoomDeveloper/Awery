@@ -95,12 +95,12 @@ jobs:
           -F "chat_id=-1002066701332" \
           -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
           -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${{ env.COMMIT_LOG }}
-                  Version: ${VERSION}" \
               -F "parse_mode=HTML")
             echo "$response"
           else
             echo "Skipping because skip build set to true"
           fi
+    
 
       - name: Send to Discord
         if: always()
