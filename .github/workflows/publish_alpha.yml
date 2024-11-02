@@ -85,8 +85,7 @@ jobs:
           APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           if [ ! -f "$APK_PATH" ]; then exit 1; fi
           if [ ! -f "commit_log.txt" ]; then exit 1; fi
-          COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | head -n 10) # Limit to first 10 lines
+          TRUNCATED_COMMIT_LOG=$(head -n 10 commit_log.txt)
           MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${TRUNCATED_COMMIT_LOG//$'\n'/%0A}"
           curl -v -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
