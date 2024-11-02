@@ -39,17 +39,12 @@ jobs:
           echo "Commits since $LAST_SHA:"
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
           COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
-          COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
-          COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
-          COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
-          echo "COMMIT_LOGS=${COMMIT_LOGS}" >> $GITHUB_ENV
+          echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
           echo "$COMMIT_LOGS" > commit_log.txt
-          echo "BRANCH=${{ github.ref }}" >> $GITHUB_ENV
           shell: /usr/bin/bash -e {0}
         env:
           CI: true
         continue-on-error: true
-
 
       - name: Save Current SHA for Next Run
         run: echo ${{ github.sha }} > last_sha.txt
@@ -104,7 +99,7 @@ jobs:
               -F "chat_id=${{ secrets.TELEGRAM_CHANNEL_ID }}" \
               -F "message_thread_id=28" \
               -F "document=@$APK_PATH" \
-              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${COMMIT_LOG}
+              -F "caption=New Alpha-Build dropped 🔥\n\nCommits:${COMMIT_LOGS}
                   Version: ${VERSION}" \
               -F "parse_mode=HTML")
             echo "$response"
