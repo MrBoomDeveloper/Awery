@@ -62,13 +62,10 @@ jobs:
       - name: Prepare Release Directory
         if: success()
         run: |
-          RELEASE_DIR="release_artifacts"
-          mkdir -p "$RELEASE_DIR"
-          SOURCE_APK="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
-          TARGET_APK="$RELEASE_DIR/awery-alpha.apk"
-          cp "$SOURCE_APK" "$TARGET_APK"
-          echo "APK_PATH=$TARGET_APK" >> $GITHUB_ENV
-          echo "RELEASE_DIR=$RELEASE_DIR" >> $GITHUB_ENV
+          mkdir -p release_artifacts
+          cp app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk release_artifacts/awery-alpha.apk
+          echo "APK_PATH=release_artifacts/awery-alpha.apk" >> $GITHUB_ENV
+          echo "RELEASE_DIR=release_artifacts" >> $GITHUB_ENV
 
       - name: Upload to Artifacts
         if: success()
@@ -81,38 +78,31 @@ jobs:
       - name: Send to Telegram
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
-          if [ ! -f "$APK_PATH" ]; then exit 1; fi
-          if [ ! -f "commit_log.txt" ]; then exit 1; fi
           COMMIT_LOG=$(cat commit_log.txt)
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | head -n 10 | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          telegram_commit_messages=$(echo "$COMMIT_LOG" | while read -r line; do
+            message=$(echo "$line" | sed -E 's/- (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
             message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
             echo "$message"
           done)
-          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
-          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A${telegram_commit_messages}"
+          MESSAGE="<b>New Awery Alpha Update</b>%0A%0A<b>Latest Changes:</b>%0A<blockquote>${telegram_commit_messages}</blockquote>"
           MESSAGE="${MESSAGE:0:4000}"
-          curl -v -X POST \
+          curl -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
             -F "message_thread_id=174" \
-            -F "document=@$APK_PATH" \
+            -F "document=@${{ env.APK_PATH }}" \
             -F "caption=${MESSAGE}" \
             -F "parse_mode=HTML"
 
       - name: Send to Discord
         if: success()
         run: |
-          APK_PATH="${{ env.RELEASE_DIR }}/awery-alpha.apk"
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG=$(echo "$COMMIT_LOG" | head -n 10)
-          EMBEDDED_CONTENT="New Awery Alpha Update!\n\n$TRUNCATED_COMMIT_LOG"
+          EMBEDDED_CONTENT=$(echo "$COMMIT_LOG" | head -n 10)
           curl -H "Content-Type: application/json" \
             -d "{\"content\":\"<@&1208839371575529572>\",\"embeds\":[{\"title\":\"New Awery Alpha Update!\",\"description\":\"$EMBEDDED_CONTENT\",\"color\":5814783}]}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
-          curl -F "file=@$APK_PATH" \
-            "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          curl -F "file=@${{ env.APK_PATH }}" "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Save Last Successful Commit SHA
         if: success()
