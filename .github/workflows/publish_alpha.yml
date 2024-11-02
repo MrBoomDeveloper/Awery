@@ -108,7 +108,7 @@ jobs:
           fi
 
       - name: Send Alpha APK to Discord
-        if: always()
+        if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
           payload="{
