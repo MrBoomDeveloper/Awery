@@ -449,5 +449,5 @@
     <string name="account_required">Требуется учетная запись</string>
     <string name="connection_failed">Не удалось подключиться</string>
     <string name="banned">Вы забанены</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
