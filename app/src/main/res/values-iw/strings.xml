@@ -449,5 +449,5 @@
     <string name="not_logged_detailed">שגיאה 401. אתה לא מחובר, נא התחבר וניסי שוב.</string>
     <string name="no_access_detailed">שגיאה 403. אין לך גישה למשאב הזה, נסה להתחבר לחשבונך וניסי שוב.</string>
     <string name="rate_limited_detailed">שגיאה 429. חרגת מהמגבלה, נא לנסות שוב מאוחר יותר.</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
