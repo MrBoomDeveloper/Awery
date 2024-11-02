@@ -210,8 +210,7 @@
     <string name="sort_by_release_date">발매일로 정렬</string>
     <string name="crop_borders">테두리 자르기</string>
     <string name="error_loading_data">데이터 로드 오류 %1$s</string>
-    <string name="saved_to_path">저장 위치:
-\n%s</string>
+    <string name="saved_to_path">저장 위치:\n%s</string>
     <string name="setting_progress">진행 상태를 %1$d로 설정</string>
     <string name="back_to_exit">종료하려면 뒤로 가기를 다시 수행하세요</string>
     <string name="no_internet_connection">인터넷 연결 없음</string>
