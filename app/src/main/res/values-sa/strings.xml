@@ -449,5 +449,5 @@
     <string name="not_logged_detailed">दोषः ४०१। त्वं लॉग्ड् न अस्ति, कृपया लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="no_access_detailed">दोषः ४०३। एषः संसाधनस्य प्रवेशः न अस्ति, कृपया त्वस्य खातायाः लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="rate_limited_detailed">दोषः ४२९। त्वं दरस्य सीमां अतिक्रमितवान्, कृपया पुनः प्रयत्नं योजयतु।</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
