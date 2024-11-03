@@ -29,11 +29,7 @@
 <details>
   <summary>Star History</summary>
   <a href="https://github.com/MrBoomDeveloper/Awery/stargazers">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=MrBoomDeveloper/Awery&Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=MrBoomDeveloper/Awery&Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=MrBoomDeveloper/Awery&Date" width="400" height="200" />
-    </picture>
+      <img alt="Star History Chart" src="https://starchart.cc/brahmkshatriya/echo.svg?variant=adaptive" width="370" height="235" />
   </a>
 </details>
 
