@@ -39,14 +39,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download last SHA artifact
-        uses: actions/download-artifact@v4
-        if: steps.list_runs.outputs.last_run_id != ''
+        uses: dawidd6/action-download-artifact@v3
         with:
+          workflow: publish_alpha.yml
           name: last-sha
           path: .
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ steps.list_runs.outputs.last_run_id }}
-          repository: ${{ github.repository }}
         continue-on-error: true
 
       - name: Handle Missing SHA File
