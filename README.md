@@ -29,7 +29,7 @@
 <details>
   <summary>Star History</summary>
   <a href="https://github.com/MrBoomDeveloper/Awery/stargazers">
-      <img alt="Star History Chart" src="https://starchart.cc/brahmkshatriya/echo.svg?variant=adaptive" width="370" height="235" />
+      <img alt="Star History Chart" src="https://starchart.cc/mrboomdeveloper/awery.svg?variant=adaptive" width="370" height="235" />
   </a>
 </details>
 
