@@ -452,19 +452,6 @@ public class NiceUtils {
 				.findAny().orElse(null);
 	}
 
-	@Deprecated(forRemoval = true)
-	public static <A, B> B findMap(Collection<A> collection, @NonNull Result1<B, A> checker) {
-		return stream(collection)
-				.map(checker::run)
-				.filter(Objects::nonNull)
-				.findAny().orElse(null);
-	}
-
-	@Deprecated(forRemoval = true)
-	public static <A> boolean hasAny(Collection<A> collection, Result1<Boolean, A> checker) {
-		return find(collection, checker) != null;
-	}
-
 	/**
 	 * @return The result of the callback
 	 * @author MrBoomDev
@@ -593,14 +580,6 @@ public class NiceUtils {
 	@Deprecated(forRemoval = true)
 	public static <T> T requireNonNullElse(T firstObject, T secondObject) {
 		return firstObject != null ? firstObject : secondObject;
-	}
-
-	/**
-	 * @return True if the object is not null
-	 */
-	@Deprecated(forRemoval = true)
-	public static boolean nonNull(Object obj) {
-		return obj != null;
 	}
 
 	/**

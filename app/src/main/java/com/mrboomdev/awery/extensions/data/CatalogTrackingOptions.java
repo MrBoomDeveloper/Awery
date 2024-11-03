@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.data;
 import java.util.Calendar;
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 public class CatalogTrackingOptions {
 	public static final int FEATURE_PRIVATE = 1;
 	public static final int FEATURE_LISTS = 2;

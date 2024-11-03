@@ -53,7 +53,6 @@ object SettingsActions {
 
 			AwerySettings.ABOUT -> anyContext.startActivity(AboutActivity::class)
 			AwerySettings.START_ONBOARDING -> anyContext.startActivity(SetupActivity::class)
-			AwerySettings.EXPERIMENTS -> anyContext.startActivity(ExperimentsActivity::class)
 			AwerySettings.UI_LANGUAGE -> AweryLocales.showPicker(getAnyActivity()!!)
 
 			AwerySettings.PLAYER_SYSTEM_SUBTITLES -> anyContext.startActivity(

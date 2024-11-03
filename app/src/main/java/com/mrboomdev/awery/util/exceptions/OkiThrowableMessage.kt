@@ -59,7 +59,9 @@ class OkiThrowableMessage(
 	}
 }
 
-private fun Throwable.unwrap(unwrapper: ((throwable: Throwable) -> Boolean) = { it.mayDescribe }): Throwable {
+private fun Throwable.unwrap(
+	unwrapper: ((throwable: Throwable) -> Boolean) = { it.mayDescribe }
+): Throwable {
 	var t: Throwable? = this
 
 	while(t != null) {

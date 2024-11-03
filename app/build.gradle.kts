@@ -184,7 +184,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.activity)
     implementation(libs.compose.ui)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.tv.material)

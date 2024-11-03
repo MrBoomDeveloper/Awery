@@ -13,7 +13,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryPlatform;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
@@ -199,7 +199,7 @@ public class SettingsItem implements Serializable {
 			var requirements = showIf.split(",");
 
 			for(var requirement : requirements) {
-				if(!AweryPlatform.isRequirementMet(requirement)) return false;
+				if(!App.Companion.isRequirementMet(requirement)) return false;
 			}
 		}
 

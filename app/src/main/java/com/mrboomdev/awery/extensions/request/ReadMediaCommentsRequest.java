@@ -4,6 +4,7 @@ import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 
+@Deprecated(forRemoval = true)
 public class ReadMediaCommentsRequest {
 	private CatalogMedia media;
 	private CatalogVideo episode;

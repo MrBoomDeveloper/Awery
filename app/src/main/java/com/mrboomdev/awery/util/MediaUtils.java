@@ -26,15 +26,9 @@ import java.util.Collection;
 public class MediaUtils {
 
 	@Deprecated(forRemoval = true)
-	public static void launchMediaActivity(@NonNull Context context, @NonNull CatalogMedia media, String action) {
-		context.startActivity(new SafeArgsIntent<>(context, MediaActivity.class, new MediaActivity.Extras(
-				media, action != null ? MediaActivity.Action.valueOf(action) : null
-		)));
-	}
-
-	@Deprecated(forRemoval = true)
 	public static void launchMediaActivity(@NonNull Context context, CatalogMedia media) {
-		launchMediaActivity(context, media, null);
+		context.startActivity(new SafeArgsIntent<>(context, MediaActivity.class,
+				new MediaActivity.Extras(media, null)));
 	}
 
 	@NonNull

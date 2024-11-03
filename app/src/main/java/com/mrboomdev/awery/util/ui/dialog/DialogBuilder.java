@@ -8,6 +8,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jetbrains.annotations.Contract;
+
 public final class DialogBuilder extends BaseDialogBuilder<DialogBuilder> {
 
 	public DialogBuilder(Context context) {
@@ -18,6 +20,7 @@ public final class DialogBuilder extends BaseDialogBuilder<DialogBuilder> {
 		this(getAnyActivity(AppCompatActivity.class));
 	}
 
+	@Contract(pure = true)
 	@Nullable
 	@Override
 	protected View getContentView(View parentView) {

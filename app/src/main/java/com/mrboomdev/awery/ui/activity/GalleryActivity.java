@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.ui.activity;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;

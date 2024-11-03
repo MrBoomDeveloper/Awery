@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.widgets;
 
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_CONSTRAINT;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setImageTintAttr;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setVerticalMargin;

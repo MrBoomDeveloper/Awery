@@ -2,7 +2,6 @@ package com.mrboomdev.awery.util.io;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
-import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
@@ -10,8 +9,6 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.mrboomdev.awery.util.NiceUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,9 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -52,36 +46,6 @@ public class FileUtil {
 		}
 	}
 
-	@NonNull
-	public static List<File> listFiles(@NonNull File parent) {
-		var children = parent.listFiles();
-
-		if(children == null || children.length == 0) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.asList(children);
-	}
-
-	public static List<File> listFilesRecusrsively(@NonNull File parent) {
-		if(parent.isDirectory()) {
-			var children = parent.listFiles();
-
-			if(children != null) {
-				if(children.length == 0) {
-					return Collections.emptyList();
-				}
-
-				return stream(children)
-						.map(FileUtil::listFilesRecusrsively)
-						.flatMap(NiceUtils::stream)
-						.toList();
-			}
-		}
-
-		return Collections.singletonList(parent);
-	}
-
 	public static void zip(@NonNull Map<File, String> paths, OutputStream into) throws IOException {
 		try(var out = new ZipOutputStream(into)) {
 			var data = new byte[BUFFER_SIZE];
@@ -99,12 +63,6 @@ public class FileUtil {
 					out.closeEntry();
 				}
 			}
-		}
-	}
-
-	public static void zip(@NonNull Map<File, String> paths, File into) throws IOException {
-		try(var out = new FileOutputStream(into)) {
-			zip(paths, out);
 		}
 	}
 

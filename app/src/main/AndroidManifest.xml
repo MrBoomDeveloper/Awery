@@ -185,11 +185,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.settings.ExperimentsActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true" />
-
-        <activity
             android:name=".ui.activity.settings.setup.SetupActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
@@ -224,11 +219,6 @@
 
         <service
             android:name=".app.services.DownloadService"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
-
-        <service
-            android:name=".app.services.SubscriptionsService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
 

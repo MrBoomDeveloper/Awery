@@ -15,24 +15,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewbinding.ViewBinding;
 
-import org.jetbrains.annotations.Contract;
-
 @Deprecated(forRemoval = true)
 public class ViewUtil {
 	public static final int UI_INSETS = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
-	public static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
-	public static final int MATCH_PARENT = ViewGroup.LayoutParams.MATCH_PARENT;
-	public static final int MATCH_CONSTRAINT = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
 	private static final String TAG = "ViewUtil";
 	
 	public static boolean setLeftMargin(View view, int margin) {
@@ -45,11 +38,6 @@ public class ViewUtil {
 	}
 
 	@Deprecated(forRemoval = true)
-	public static void setImageTintColor(@NonNull ImageView view, @ColorInt int color) {
-		view.setImageTintList(ColorStateList.valueOf(color));
-	}
-
-	@Deprecated(forRemoval = true)
 	public static void setImageTintAttr(@NonNull ImageView view, @AttrRes int attr) {
 		var color = resolveAttrColor(view.getContext(), attr);
 		view.setImageTintList(ColorStateList.valueOf(color));
@@ -58,21 +46,6 @@ public class ViewUtil {
 	@Deprecated(forRemoval = true)
 	public static void clearImageTint(@NonNull ImageView view) {
 		view.setImageTintList(null);
-	}
-
-	@NonNull
-	@Contract("_, _ -> new")
-	@Deprecated(forRemoval = true)
-	public static LinearLayout.LayoutParams createLinearParams(int width, int height) {
-		return new LinearLayout.LayoutParams(width, height);
-	}
-
-	@NonNull
-	@Deprecated(forRemoval = true)
-	public static LinearLayoutCompat.LayoutParams createLinearParams(int width, int height, int weight) {
-		var params = new LinearLayoutCompat.LayoutParams(width, height);
-		params.weight = weight;
-		return params;
 	}
 
 	public static boolean setWeight(@NonNull View view, float weight) {
@@ -99,30 +72,6 @@ public class ViewUtil {
 		margins.setMargins(margin, margin, margin, margin);
 		view.setLayoutParams(margins);
 		return true;
-	}
-
-	@Deprecated(forRemoval = true)
-	public static int getTopMargin(View view) {
-		var margins = getMargins(view);
-		return margins == null ? 0 : margins.topMargin;
-	}
-
-	@Deprecated(forRemoval = true)
-	public static int getBottomMargin(View view) {
-		var margins = getMargins(view);
-		return margins == null ? 0 : margins.bottomMargin;
-	}
-
-	@Deprecated(forRemoval = true)
-	public static int getRightMargin(View view) {
-		var margins = getMargins(view);
-		return margins == null ? 0 : margins.rightMargin;
-	}
-
-	@Deprecated(forRemoval = true)
-	public static int getLeftMargin(View view) {
-		var margins = getMargins(view);
-		return margins == null ? 0 : margins.leftMargin;
 	}
 
 	public static boolean setMargin(View view, int horizontal, int vertical) {
@@ -175,16 +124,6 @@ public class ViewUtil {
 			marginLayoutParams.topMargin = margin;
 			marginLayoutParams.bottomMargin = margin;
 		}
-	}
-
-	public static boolean setHorizontalMargin(ViewGroup.LayoutParams params, int margin) {
-		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
-			marginLayoutParams.rightMargin = margin;
-			marginLayoutParams.leftMargin = margin;
-			return true;
-		}
-
-		return false;
 	}
 
 	@Deprecated(forRemoval = true)
@@ -260,30 +199,6 @@ public class ViewUtil {
 		return true;
 	}
 
-	public static boolean setHorizontalMargin(View view, int margin) {
-		var margins = getMargins(view);
-		if(margins == null) return false;
-
-		margins.leftMargin = margin;
-		margins.rightMargin = margin;
-		view.setLayoutParams(margins);
-		return true;
-	}
-
-	public static void setHorizontalMargin(View view, int left, int right) {
-		var margins = getMargins(view);
-		if(margins == null) return;
-
-		margins.leftMargin = left;
-		margins.rightMargin = right;
-		view.setLayoutParams(margins);
-	}
-
-	@Deprecated(forRemoval = true)
-	public static void setLeftPadding(@NonNull View view, int padding) {
-		view.setPadding(padding, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
-	}
-
 	@Deprecated(forRemoval = true)
 	public static void setRightPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), padding, view.getPaddingBottom());
@@ -292,11 +207,6 @@ public class ViewUtil {
 	@Deprecated(forRemoval = true)
 	public static void setTopPadding(@NonNull View view, int padding) {
 		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), view.getPaddingBottom());
-	}
-
-	@Deprecated(forRemoval = true)
-	public static void setVerticalPadding(@NonNull View view, int padding) {
-		view.setPadding(view.getPaddingLeft(), padding, view.getPaddingRight(), padding);
 	}
 
 	@Deprecated(forRemoval = true)

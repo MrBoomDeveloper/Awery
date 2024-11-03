@@ -38,6 +38,7 @@ import androidx.room.Room.databaseBuilder
 import androidx.viewbinding.ViewBinding
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideCustomImageLoader
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.resources.MaterialAttributes
@@ -517,6 +518,31 @@ class App : Application() {
 
 			dialog.window!!.setBackgroundDrawable(null)
 			return dialog
+		}
+
+		fun isRequirementMet(requirement: String): Boolean {
+			var requirement = requirement
+			var invert = false
+
+			if(requirement.startsWith("!")) {
+				invert = true
+				requirement = requirement.substring(1)
+			}
+
+			val result = when(requirement) {
+				"material_you" -> DynamicColors.isDynamicColorAvailable()
+				"tv" -> isTv
+				"beta" -> BuildConfig.IS_BETA
+				"debug" -> BuildConfig.DEBUG
+				"never" -> false
+				else -> true
+			}
+
+			if(invert) {
+				return !result
+			}
+
+			return result
 		}
 	}
 }

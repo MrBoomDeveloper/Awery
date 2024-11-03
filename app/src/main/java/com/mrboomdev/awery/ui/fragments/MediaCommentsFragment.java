@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.fragments;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.App.getMarkwon;
 import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
@@ -10,7 +11,6 @@ import static com.mrboomdev.awery.util.NiceUtils.parseDate;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
-import static com.mrboomdev.awery.util.ui.ViewUtil.MATCH_PARENT;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setBottomPadding;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;

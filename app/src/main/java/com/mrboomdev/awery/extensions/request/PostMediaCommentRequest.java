@@ -3,6 +3,7 @@ package com.mrboomdev.awery.extensions.request;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 
+@Deprecated(forRemoval = true)
 public class PostMediaCommentRequest {
 	private CatalogComment comment, parent;
 	private CatalogVideo episode;
