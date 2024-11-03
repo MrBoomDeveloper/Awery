@@ -179,6 +179,7 @@ dependencies {
     implementation(libs.glide.imageViewFactory)
     implementation(libs.konfetti.xml)
     implementation(libs.animatedBottomBar)
+    implementation(project(":ui"))
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

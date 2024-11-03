@@ -26,6 +26,7 @@ dependencyResolutionManagement {
 
         mavenCentral()
         maven("https://jitpack.io")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -33,3 +34,4 @@ rootProject.name = "awery"
 include(":app")
 include(":desktop")
 include(":ext")
+include(":ui")

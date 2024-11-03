@@ -1,39 +1,66 @@
-package com.mrboomdev.awery.desktop;
+package com.mrboomdev.awery.desktop
 
-import com.mrboomdev.awery.desktop.ui.components.Button;
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
+import androidx.compose.foundation.window.WindowDraggableArea
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.darkColors
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.MenuBar
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import com.mrboomdev.awery.desktop.ui.components.StatusBar
+import java.awt.Dimension
+import kotlin.system.exitProcess
 
-import java.awt.Toolkit;
+fun main() = application {
+	Window(
+		title = "Awery",
+		undecorated = true,
+		transparent = true,
+		onCloseRequest = { exitApplication() }
+	) {
+		remember {
+			window.minimumSize = Dimension(500, 350)
+			window.requestFocus()
+		}
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+		WindowDraggableArea(
+			modifier = Modifier.clip(AbsoluteRoundedCornerShape(4.dp))
+		) {
+			MaterialTheme(colors = darkColors()) {
+				Surface(
+					modifier = Modifier.fillMaxSize(),
+					color = MaterialTheme.colors.background
+				) {
+					Column {
+						StatusBar(
+							title = "Awery",
+							windowScope = this@Window
+						)
 
-public class Main {
-
-	public static void main(String[] args) {
-		var toolkit = Toolkit.getDefaultToolkit();
-
-		var frame = new JFrame();
-		frame.setTitle("Awery");
-		frame.setAutoRequestFocus(true);
-		frame.setResizable(true);
-
-		frame.setSize(
-				Math.round(toolkit.getScreenSize().width * .75f),
-				Math.round(toolkit.getScreenSize().height * .75f));
-
-		frame.setLocation(
-				toolkit.getScreenSize().width / 2 - frame.getWidth() / 2,
-				toolkit.getScreenSize().height / 2 - frame.getHeight() / 2);
-
-		var label = new JLabel("Welcome to Awery!");
-		label.setBounds(200, 0, 200, 200);
-		frame.add(label);
-
-		var button = new Button("Hello, World!");
-		button.setBounds(150, 200, 220, 50);
-		frame.add(button);
-
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+						Button(
+							modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+							onClick = { println("Hello, World!") }
+						) {
+							Text("Hello, Everynyan UwU")
+						}
+					}
+				}
+			}
+		}
 	}
 }

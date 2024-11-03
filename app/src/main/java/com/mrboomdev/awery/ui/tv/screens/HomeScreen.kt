@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -58,7 +59,7 @@ fun HomeScreen(
 	val sectionsState = remember { mutableStateListOf<MediaRowContent>() }
 	val featuredState = remember { mutableStateListOf<CatalogMedia>() }
 	val tabs = remember { mutableStateListOf<Pair<DBTab, IconStateful>>() }
-	val savedDefaultTab = AwerySettings.DEFAULT_HOME_TAB.value
+	val savedDefaultTab = remember { AwerySettings.DEFAULT_HOME_TAB.value }
 
 	LaunchedEffect("HomeScreenEffect") {
 		/*if(AwerySettings.AUTO_CHECK_APP_UPDATE.value) {
