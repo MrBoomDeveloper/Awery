@@ -19,12 +19,63 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      COMMIT_LOG: ""
+      
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: List Workflow Runs
+        id: list_runs
+        run: |
+          WORKFLOW_ID=$(gh api repos/${{ github.repository }}/actions/workflows/publish_alpha.yml -q .id)
+          LAST_RUN_ID=$(gh api repos/${{ github.repository }}/actions/workflows/$WORKFLOW_ID/runs \
+            -q '.workflow_runs[1].id')
+          echo "last_run_id=$LAST_RUN_ID" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download last SHA artifact
+        uses: actions/download-artifact@v4
+        if: steps.list_runs.outputs.last_run_id != ''
+        with:
+          name: last-sha
+          path: .
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.list_runs.outputs.last_run_id }}
+          repository: ${{ github.repository }}
+        continue-on-error: true
+
+      - name: Handle Missing SHA File
+        run: |
+          if [ ! -f last_sha.txt ] || [ ! -s last_sha.txt ]; then
+            echo "Creating initial SHA file with 10 commits ago"
+            git rev-list HEAD~10 -n 1 > last_sha.txt
+          fi
+
+      - name: Get New Commits Since Last Successful Run
+        id: get_commits
+        run: |
+          LAST_SHA=$(cat last_sha.txt)
+          if ! git rev-parse --quiet --verify "$LAST_SHA^{commit}" >/dev/null; then
+            echo "Invalid SHA found, using last 10 commits"
+            LAST_SHA=$(git rev-list HEAD~10 -n 1)
+          fi
+          echo "Using SHA: $LAST_SHA"
+          COMMIT_COUNT=$(git rev-list --count $LAST_SHA..HEAD)
+          if [ "$COMMIT_COUNT" -gt 10 ]; then
+            echo "Too many commits, limiting to last 10"
+            LAST_SHA=$(git rev-list HEAD~10 -n 1)
+          fi
+          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|Merge pull request #([0-9]+) from ([^ ]+)|Merge pull request <a href="https://github.com/${{ github.repository }}/pull/\1">#\1</a> from \2|g')
+          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
+          echo "$FORMATTED_COMMIT_LOGS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,20 +86,6 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-      - name: Retrieve Last Successful Commit SHA
-        id: last_successful_sha
-        run: |
-          LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
-          echo "LAST_SHA=${LAST_SHA}" >> $GITHUB_ENV
-
-      - name: Get Commits Since Last Run
-        id: get_commits
-        run: |
-          LAST_SHA=$(cat last_successful_sha.txt || git rev-list --max-parents=0 HEAD)
-          COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an ֍ (https://github.com/${{ github.repository }}/commit/%H)")
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|#([0-9]+)|[\\#\1](https://github.com/${{ github.repository }}/pull/\1)|g')
-          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
 
       - name: Build Alpha APK
         id: build_alpha
@@ -88,7 +125,10 @@ jobs:
         if: success()
         run: |
           COMMIT_LOG=$(cat commit_log.txt)
-          TRUNCATED_COMMIT_LOG="${COMMIT_LOG:0:900}"
+          if [ ${#COMMIT_LOG} -gt 1024 ]; then
+            COMMIT_LOG="${COMMIT_LOG:0:900}... (truncated)"
+          fi
+          TRUNCATED_COMMIT_LOG="$COMMIT_LOG"
           telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
           formatted_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           curl -v -X POST \
@@ -103,24 +143,50 @@ jobs:
       - name: Send Alpha APK to Discord
         if: success()
         run: |
-         COMMIT_LOG=$(cat commit_log.txt)
-         ESCAPED_COMMIT_LOG=$(echo "$COMMIT_LOG" | sed ':a;N;$!ba;s/\n/\\n/g')
-         payload="{
-          \"content\": \"<@&1208839371575529572>\",
-          \"embeds\": [{
-          \"title\": \"New Awery Alpha Update!\",
-          \"description\": \"Commits:\\n${ESCAPED_COMMIT_LOG}\",
-          \"color\": 5814783
-          }]
+          COMMIT_LOG=$(cat commit_log.txt)
+          if [ ${#COMMIT_LOG} -gt 2000 ]; then
+            TRUNCATED_LOG=$(echo "$COMMIT_LOG" | head -c 1800)
+            LAST_COMPLETE=$(echo "$TRUNCATED_LOG" | grep -o "^●.*$" | tail -n 1)
+            if [ ! -z "$LAST_COMPLETE" ]; then
+              LAST_POS=$(echo "$TRUNCATED_LOG" | grep -b -o "^$LAST_COMPLETE" | cut -d: -f1)
+              COMMIT_LOG="${COMMIT_LOG:0:$LAST_POS}$LAST_COMPLETE\nCommit removed cause it was incomplete"
+            else
+              COMMIT_LOG="${COMMIT_LOG:0:1800}... (truncated)"
+            fi
+          fi
+          ESCAPED_COMMIT_LOG=$(echo "$COMMIT_LOG" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+          payload="{
+            \"content\": \"<@&1208839371575529572>\",
+            \"embeds\": [{
+              \"title\": \"New Awery Alpha Update!\",
+              \"description\": \"Commits:\\n${ESCAPED_COMMIT_LOG}\",
+              \"color\": 5814783
+            }]
           }"
-          echo "$payload"
-            curl -H "Content-Type: application/json" \
+          curl -H "Content-Type: application/json" \
             -d "$payload" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
           curl -H "Content-Type: multipart/form-data" \
-            -F "file1=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+            -F "file1=@$APK_PATH" \
             ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Save Last Successful Commit SHA
+      - name: Save Current SHA for Next Run
         if: success()
-        run: echo $GITHUB_SHA > last_successful_sha.txt
+        run: |
+          echo ${{ github.sha }} > last_sha.txt
+          cat last_sha.txt
+
+      - name: Upload Current SHA as Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-sha
+          path: last_sha.txt
+          retention-days: 90
+
+      - name: Upload Commit log as Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commit-log
+          path: commit_log.txt
