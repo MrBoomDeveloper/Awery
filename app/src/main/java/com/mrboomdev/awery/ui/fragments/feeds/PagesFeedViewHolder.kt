@@ -17,7 +17,7 @@ import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding
 import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.ui.ThemeManager
+import com.mrboomdev.awery.app.ThemeManager
 import com.mrboomdev.awery.ui.activity.MediaActivity
 import com.mrboomdev.awery.ui.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.ui.dialogs.MediaBookmarkDialog

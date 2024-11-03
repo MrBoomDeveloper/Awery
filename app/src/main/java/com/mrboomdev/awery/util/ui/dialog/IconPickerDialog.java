@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.util.ui.dialog;
 
-import static com.mrboomdev.awery.app.App.getResourceId;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -145,10 +144,9 @@ public abstract class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDi
 		@SuppressLint("DiscouragedApi")
 		public void bind(T item) {
 			this.item = item;
-			var icon = getIcon(item);
-
-			var id = getResourceId(R.drawable.class, icon.getActive());
-			view.setImageResource(id);
+			
+			view.setImageResource(getIcon(item)
+					.getResourceId(IconStateful.State.ACTIVE));
 
 			view.setImageTintList(ColorStateList.valueOf(resolveAttrColor(view.getContext(),
 					com.google.android.material.R.attr.colorOnBackground)));

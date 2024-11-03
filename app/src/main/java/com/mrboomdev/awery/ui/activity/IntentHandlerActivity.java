@@ -21,7 +21,7 @@ import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.services.BackupService;
 import com.mrboomdev.awery.app.data.db.item.DBRepository;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
-import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.app.ThemeManager;
 import com.mrboomdev.awery.util.io.FileUtil;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 

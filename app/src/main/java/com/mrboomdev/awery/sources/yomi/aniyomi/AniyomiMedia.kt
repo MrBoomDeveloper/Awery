@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.extensions.support.yomi.aniyomi
+package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
@@ -8,16 +8,16 @@ import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.model.SAnimeImpl
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 
-fun SAnime.toMedia(provider: AniyomiProvider) = CatalogMedia(
-	"${AniyomiManager.MANAGER_ID};;;${provider.id}:${provider.extension.id};;;${url}",
+fun SAnime.toMedia(source: AniyomiSource) = CatalogMedia(
+	"${AniyomiManager.ID};;;${source.id};;;${url}",
 	thumbnail_url,
 	description,
 	null,
 	null,
 	url,
 
-	if(provider.source !is AnimeHttpSource) null
-	else YomiProvider.concatLink(provider.source.baseUrl, url),
+	if(source.source !is AnimeHttpSource) null
+	else YomiProvider.concatLink(source.source.baseUrl, url),
 
 	CatalogMedia.Type.TV,
 	thumbnail_url,

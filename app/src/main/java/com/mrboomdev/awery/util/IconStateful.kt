@@ -1,45 +1,77 @@
-package com.mrboomdev.awery.util;
+package com.mrboomdev.awery.util
 
-import static com.mrboomdev.awery.app.App.getResourceId;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import androidx.annotation.DrawableRes
+import androidx.appcompat.graphics.drawable.StateListDrawableCompat
+import androidx.core.content.ContextCompat
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.util.extensions.getResourceId
+import com.squareup.moshi.JsonClass
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.graphics.drawable.StateListDrawableCompat;
-import androidx.core.content.ContextCompat;
-
-import com.mrboomdev.awery.R;
-
-public class IconStateful {
-	private String active, inActive;
-	public String[] names;
-
-	@NonNull
-	public String getActive() {
-		return active != null ? active : inActive;
+@JsonClass(generateAdapter = true)
+class IconStateful(
+	val active: String? = null,
+	val inActive: String? = null,
+	@DrawableRes var activeId: Int? = null,
+	@DrawableRes var inActiveId: Int? = null,
+	val names: Array<String> = arrayOf()
+) {
+	private fun getResourceName(state: State): String {
+		return when(state) {
+			State.ACTIVE -> active ?: inActive!!
+			State.INACTIVE -> inActive ?: active!!
+		}
 	}
 
-	@NonNull
-	public String getInActive() {
-		return inActive != null ? inActive : active;
+	@DrawableRes
+	fun getResourceId(state: State): Int {
+		return getResourceIdImpl(state) ?: when(state) {
+			State.ACTIVE -> getResourceIdImpl(State.INACTIVE)
+			State.INACTIVE -> getResourceIdImpl(State.ACTIVE)
+		}!!
 	}
 
-	public Drawable getDrawable(Context context) {
-		var statefulDrawable = new StateListDrawableCompat();
-		statefulDrawable.addState(new int[] { android.R.attr.state_checked }, getDrawable(context, State.ACTIVE));
-		statefulDrawable.addState(new int[] { }, getDrawable(context, State.INACTIVE));
-		return statefulDrawable;
+	private fun getResourceIdImpl(state: State): Int? {
+		when(state) {
+			State.ACTIVE -> {
+				if(activeId != null) {
+					return activeId!!
+				}
+
+				if(active != null) {
+					activeId = getResourceId<R.drawable>(active)
+					return activeId!!
+				}
+			}
+
+			State.INACTIVE -> {
+				if(inActiveId != null) {
+					return inActiveId!!
+				}
+
+				if(inActive != null) {
+					inActiveId = getResourceId<R.drawable>(inActive)
+					return inActiveId!!
+				}
+			}
+		}
+
+		return null
 	}
 
-	public Drawable getDrawable(Context context, @NonNull State state) {
-		return ContextCompat.getDrawable(context, switch(state) {
-			case ACTIVE -> getResourceId(R.drawable.class, getActive());
-			case INACTIVE -> getResourceId(R.drawable.class, getInActive());
-		});
+	fun getDrawable(context: Context): Drawable {
+		return StateListDrawableCompat().apply {
+			addState(intArrayOf(android.R.attr.state_checked), getDrawable(context, State.ACTIVE))
+			addState(intArrayOf(), getDrawable(context, State.INACTIVE))
+		}
 	}
 
-	public enum State {
+	fun getDrawable(context: Context, state: State): Drawable? {
+		return ContextCompat.getDrawable(context, getResourceId(state))
+	}
+
+	enum class State {
 		ACTIVE, INACTIVE
 	}
 }

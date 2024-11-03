@@ -217,8 +217,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 			var media = filters.require(
 					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
 
-			var episodes = AniyomiKotlinBridge.getEpisodesList(
-					source, AniyomiMedia.fromMedia(media)).await();
+			var episodes = AniyomiKotlinBridge.getEpisodesList(source, AniyomiMediaKt.toSAnime(media)).await();
 
 			if(episodes == null || episodes.isEmpty()) {
 				throw new ZeroResultsException("Aniyomi: No episodes found", R.string.no_episodes_found);
@@ -297,7 +296,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 			try { anime.getUrl(); } catch(UninitializedPropertyAccessException ex) { anime.setUrl(id); }
 			try { anime.getTitle(); } catch(UninitializedPropertyAccessException ex) { anime.setTitle(id); }
 
-			return new AniyomiMedia(this, anime);
+			return AniyomiMediaKt.toMedia(anime, this);
 		});
 	}
 
@@ -368,7 +367,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 				checkSearchResults(animePage);
 
 				return CatalogSearchResults.of(stream(animePage.getAnimes())
-						.map(item -> new AniyomiMedia(this, item))
+						.map(item -> AniyomiMediaKt.toMedia(item, this))
 						.toList(), animePage.getHasNextPage());
 			});
 		} else {

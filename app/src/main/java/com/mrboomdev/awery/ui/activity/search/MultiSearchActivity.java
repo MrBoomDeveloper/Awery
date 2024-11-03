@@ -31,7 +31,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.internal.InternalProviders;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.app.ThemeManager;
 import com.mrboomdev.awery.ui.fragments.feeds.FeedsFragment;
 import com.mrboomdev.awery.util.NiceUtils;
 

@@ -135,25 +135,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tabs = theTabs.sorted()
-
         val savedDefaultTab = AwerySettings.DEFAULT_HOME_TAB.value
-        val icons: Map<String, IconStateful>
 
-        try {
-            icons = getMoshi().adapter<Map<String, IconStateful>>()
-                .fromJson(readAssets("icons.json"))!!
-        } catch(e: IOException) {
-            Log.e(TAG, "Failed to read an icons atlas!", e)
-
-            CrashHandler.showErrorDialog(
-                this, CrashReport.Builder()
-                    .setTitle("Failed to read an icons list")
-                    .setThrowable(e)
-                    .setDismissCallback { exitApp() }
-                    .build())
-
-            return
-        }
+        val icons = getMoshi().adapter<Map<String, IconStateful>>()
+            .fromJson(readAssets("icons.json"))!!
 
         runOnUiThread {
             setupNavigation()

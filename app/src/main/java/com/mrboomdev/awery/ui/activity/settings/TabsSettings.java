@@ -92,9 +92,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 												.setTitle(R.string.select_icon)
 												.setItems(icons.entrySet())
 												.setSelectionListener(item -> {
-													var id = getResourceId(R.drawable.class, item.getValue().getActive());
-													var view = binding.get().icon;
-													view.setImageResource(id);
+													binding.get().icon.setImageResource(item.getValue().getResourceId(IconStateful.State.ACTIVE));
 													icon.set(item.getKey());
 												}).show());
 
@@ -357,9 +355,9 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			if(icon == null) {
 				return null;
 			}
-
-			var id = getResourceId(R.drawable.class, icon.getActive());
-			return ContextCompat.getDrawable(context, id);
+			
+			return ContextCompat.getDrawable(context,
+					icon.getResourceId(IconStateful.State.ACTIVE));
 		}
 
 		@Override

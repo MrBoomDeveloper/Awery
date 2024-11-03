@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
-import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.app.ThemeManager;
 
 public class ExperimentsActivity extends AppCompatActivity {
 

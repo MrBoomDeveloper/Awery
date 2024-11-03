@@ -5,8 +5,11 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp").version("2.0.21-1.0.25")
+    kotlin("plugin.serialization") version "2.0.20"
     alias(libs.plugins.compose.compiler)
+    id("androidx.room").version(libs.versions.roomRuntime)
 }
 
 val useSdk = 35
@@ -82,9 +85,12 @@ android {
 
     sourceSets {
         get("main").apply {
-            assets.srcDirs(files("$projectDir/schemas"))
             java.srcDirs(file("$projectDir/awery_gen/main/java"))
         }
+    }
+
+    room {
+        schemaDirectory("schemas")
     }
 
     buildTypes {
@@ -152,15 +158,15 @@ dependencies {
     implementation(libs.fragment.ktx)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.xcrash.android.lib)
-    implementation(libs.android.retrostreams)
+    implementation(libs.deprecated.android.retrostreams)
     implementation(project(":ext"))
 
     // Database
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // UI
-    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.splashscreen)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.material)
@@ -176,10 +182,11 @@ dependencies {
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.activity)
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.toolingPreview)
-    implementation(libs.androidx.material)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.tv.material)
     implementation(libs.compose.tv.foundation)
 
@@ -203,7 +210,7 @@ dependencies {
     // Image Loading
     api(libs.glide)
     implementation(libs.glide.annotations)
-    annotationProcessor(libs.glide.compiler)
+    ksp(libs.glide.compiler)
     implementation(libs.glide)
     implementation(libs.glide.okhttp3)
 
@@ -218,8 +225,8 @@ dependencies {
 
     // Aniyomi
     implementation(libs.quickjs.android)
-    implementation(libs.rxjava)
-    implementation(libs.rxandroid)
+    implementation(libs.rx.java)
+    implementation(libs.rx.android)
     implementation(libs.injekt)
     implementation(libs.jsoup)
     implementation(libs.java.nat.sort)
@@ -228,6 +235,7 @@ dependencies {
     implementation(files("../libs/safe-args-next.aar"))
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
+    ksp(libs.moshi.kotlin.codegen)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json.okio)
     implementation(libs.kotlinx.serialization.protobuf)

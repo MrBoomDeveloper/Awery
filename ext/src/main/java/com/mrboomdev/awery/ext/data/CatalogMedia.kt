@@ -4,7 +4,8 @@ import com.mrboomdev.awery.ext.constants.AweryAgeRating
 import java.io.Serial
 import java.io.Serializable
 
-open class CatalogMedia(
+@kotlinx.serialization.Serializable
+class CatalogMedia(
 	val globalId: String,
 
 	val banner: String? = null,
@@ -22,17 +23,12 @@ open class CatalogMedia(
 	val averageScore: Float? = null,
 	val status: Status? = null,
 
-	tags: Array<CatalogTag>? = null,
-	genres: Array<String>? = null,
-	titles: Array<String>? = null,
-	authors: Map<String, String>? = null,
-	ids: Map<String, String>? = null
+	val tags: Array<CatalogTag>? = null,
+	val genres: Array<String>? = null,
+	val titles: Array<String>? = null,
+	val authors: Map<String, String>? = null,
+	val ids: Map<String, String>? = null
 ) : Serializable {
-	val ids = ids?.toMap()
-	val authors = authors?.toMap()
-	val titles = titles?.clone()
-	val tags = tags?.clone()
-	val genres = genres?.clone()
 
 	constructor(original: CatalogMedia) : this(
 		globalId = original.globalId,

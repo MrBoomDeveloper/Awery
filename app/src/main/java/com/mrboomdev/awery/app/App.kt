@@ -12,15 +12,11 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
-import android.os.strictmode.InstanceCountViolation
-import android.os.strictmode.Violation
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -37,7 +33,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.room.Room.databaseBuilder
 import androidx.viewbinding.ViewBinding
@@ -49,14 +44,10 @@ import com.google.android.material.resources.MaterialAttributes
 import com.google.android.material.snackbar.Snackbar
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.R.color
-import com.mrboomdev.awery.R.drawable
-import com.mrboomdev.awery.R.mipmap
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.app.data.db.AweryDB
 import com.mrboomdev.awery.app.data.db.item.DBCatalogList
@@ -64,7 +55,6 @@ import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
-import com.mrboomdev.awery.ui.ThemeManager
 import com.mrboomdev.awery.ui.activity.BrowserActivity
 import com.mrboomdev.awery.ui.activity.settings.SettingsActivity
 import com.mrboomdev.awery.util.extensions.configuration
@@ -84,7 +74,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import org.jetbrains.annotations.Contract
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException

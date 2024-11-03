@@ -17,9 +17,8 @@ import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.ui.activity.MainActivity
 import com.mrboomdev.awery.ui.activity.settings.setup.SetupActivity
-import com.mrboomdev.awery.ui.activity.tv.TvMainActivity
+import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge

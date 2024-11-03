@@ -24,7 +24,7 @@ import com.mrboomdev.awery.app.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.ThemeColorPalette_Values
-import com.mrboomdev.awery.ui.ThemeManager
+import com.mrboomdev.awery.app.ThemeManager
 import com.mrboomdev.awery.ui.activity.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler
 import com.mrboomdev.awery.util.extensions.applyTheme

@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui;
+package com.mrboomdev.awery.app;
 
 import static android.content.Context.UI_MODE_SERVICE;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;

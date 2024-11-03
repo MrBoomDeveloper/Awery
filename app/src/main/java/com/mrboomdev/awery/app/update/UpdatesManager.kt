@@ -93,6 +93,10 @@ object UpdatesManager {
 	}
 
 	suspend fun fetchLatestAppUpdate(): Update {
+		if(BuildConfig.DEBUG) {
+			throw ZeroResultsException("Updates in the debug mode are disabled!")
+		}
+
 		val response = HttpRequest(UPDATES_ENDPOINT).setHeaders(mapOf(
 			"Accept" to "application/vnd.github+json",
 			"X-GitHub-Api-Version" to "2022-11-28"
@@ -115,18 +119,22 @@ object UpdatesManager {
 
 		checkVersion(release)
 
-		return release.assets
-			.find {
-				it.name.contains(
-					when(BuildConfig.CHANNEL) {
-						UpdatesChannel.STABLE -> "-stable-"
-						UpdatesChannel.BETA -> "-beta-"
-						UpdatesChannel.ALPHA -> "-alpha-"
-					}
-				) && it.name.endsWith(".apk")
-			}!!.let { asset ->
-				Update(release.name, release.body, asset.size, asset.browserDownloadUrl)
-			}
+		val asset = release.assets.find {
+			it.name.contains(
+				when(BuildConfig.CHANNEL) {
+					UpdatesChannel.STABLE -> "-stable"
+					UpdatesChannel.BETA -> "-beta"
+					UpdatesChannel.ALPHA -> "-alpha"
+				}
+			) && it.name.endsWith(".apk")
+		}
+
+		if(asset == null) {
+			throw ZeroResultsException("No valid assets were found! " +
+					"Response text from the server: ${response.text}")
+		}
+
+		return Update(release.name, release.body, asset.size, asset.browserDownloadUrl)
 	}
 
 	private fun parseAlphaVersion(full: String): String {

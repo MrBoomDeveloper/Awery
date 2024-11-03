@@ -39,7 +39,7 @@ import com.mrboomdev.awery.app.data.settings.NicePreferences;
 import com.mrboomdev.awery.app.data.settings.SettingsData;
 import com.mrboomdev.awery.app.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
-import com.mrboomdev.awery.ui.ThemeManager;
+import com.mrboomdev.awery.app.ThemeManager;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.EmptyView;

@@ -13,7 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.postRunnable
-import com.mrboomdev.awery.ui.ThemeManager
+import com.mrboomdev.awery.app.ThemeManager
 import java.util.WeakHashMap
 import kotlin.reflect.KClass
 

@@ -22,8 +22,6 @@ import com.mrboomdev.awery.app.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
-import com.mrboomdev.awery.extensions.support.cloudstream.CloudstreamManager;
-import com.mrboomdev.awery.extensions.support.miru.MiruManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.generated.AwerySettings;
@@ -153,8 +151,6 @@ public class SettingsData {
 		if(behaviourId != null) {
 			if(behaviourId.startsWith("extensions_")) {
 				var manager = ExtensionsFactory.getManager__Deprecated((Class<? extends ExtensionsManager>) switch(behaviourId) {
-					case "extensions_miru" -> MiruManager.class;
-					case "extensions_cloudstream" -> CloudstreamManager.class;
 					case "extensions_aniyomi" -> AniyomiManager.class;
 					case "extensions_tachiyomi" -> TachiyomiManager.class;
 					default -> throw new IllegalArgumentException("Unknown extension manager! " + behaviourId);

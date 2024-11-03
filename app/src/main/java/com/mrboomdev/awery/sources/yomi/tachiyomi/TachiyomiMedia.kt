@@ -1,25 +1,26 @@
-package com.mrboomdev.awery.extensions.support.yomi.aniyomi
+package com.mrboomdev.awery.sources.yomi.tachiyomi
 
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider
 import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.animesource.model.SAnime
-import eu.kanade.tachiyomi.animesource.model.SAnimeImpl
-import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
+import eu.kanade.tachiyomi.source.model.SManga
+import eu.kanade.tachiyomi.source.model.SMangaImpl
+import eu.kanade.tachiyomi.source.online.HttpSource
 
-fun SAnime.toMedia(provider: AniyomiProvider) = CatalogMedia(
-	"${AniyomiManager.MANAGER_ID};;;${provider.id}:${provider.extension.id};;;${url}",
+fun SManga.toMedia(source: TachiyomiSource) = CatalogMedia(
+	"${TachiyomiManager.ID};;;${source.id};;;${url}",
 	thumbnail_url,
 	description,
 	null,
 	null,
 	url,
 
-	if(provider.source !is AnimeHttpSource) null
-	else YomiProvider.concatLink(provider.source.baseUrl, url),
+	if(source.source !is HttpSource) null
+	else YomiProvider.concatLink(source.source.baseUrl, url),
 
-	CatalogMedia.Type.TV,
+	CatalogMedia.Type.BOOK,
 	thumbnail_url,
 	null,
 	null,
@@ -56,19 +57,19 @@ fun SAnime.toMedia(provider: AniyomiProvider) = CatalogMedia(
 	null
 )
 
-fun CatalogMedia.toSAnime(): SAnime {
-	return SAnimeImpl().also { anime ->
-		anime.title = title ?: "No title"
-		anime.description = description
-		anime.thumbnail_url = poster
-		anime.url = extra!!
+fun CatalogMedia.toSManga(): SManga {
+	return SMangaImpl().also { manga ->
+		manga.title = title ?: "No title"
+		manga.description = description
+		manga.thumbnail_url = poster
+		manga.url = extra!!
 
 		if(authors != null) {
-			anime.author = authors!!["Author"]
-			anime.artist = authors!!["Artist"]
+			manga.author = authors!!["Author"]
+			manga.artist = authors!!["Artist"]
 		}
 
-		anime.status = when(status) {
+		manga.status = when(status) {
 			CatalogMedia.Status.ONGOING -> SAnime.ONGOING
 			CatalogMedia.Status.COMPLETED -> SAnime.COMPLETED
 			CatalogMedia.Status.PAUSED -> SAnime.ON_HIATUS
@@ -76,7 +77,7 @@ fun CatalogMedia.toSAnime(): SAnime {
 			else -> 0
 		}
 
-		anime.genre = genres
+		manga.genre = genres
 			?.map { genre -> genre.trim { it <= ' ' } }
 			?.filter { it.isNotBlank() }
 			?.joinToString(", ")
