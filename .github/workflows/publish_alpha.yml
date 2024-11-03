@@ -149,7 +149,7 @@ jobs:
             LAST_COMPLETE=$(echo "$TRUNCATED_LOG" | grep -o "^●.*$" | tail -n 1)
             if [ ! -z "$LAST_COMPLETE" ]; then
               LAST_POS=$(echo "$TRUNCATED_LOG" | grep -b -o "^$LAST_COMPLETE" | cut -d: -f1)
-              COMMIT_LOG="${COMMIT_LOG:0:$LAST_POS}$LAST_COMPLETE\nCommit removed cause it was incomplete"
+              COMMIT_LOG="${COMMIT_LOG:0:$LAST_POS}$LAST_COMPLETE"
             else
               COMMIT_LOG="${COMMIT_LOG:0:1800}... (truncated)"
             fi
