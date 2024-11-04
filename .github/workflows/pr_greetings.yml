@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-      contents: read
     steps:
     - name: Check if the PR creator is the repo owner or Weblate
       id: check_owner
@@ -22,27 +21,12 @@ jobs:
           echo "The PR creator is the repository owner or Weblate. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
         else
-          echo "The PR creator is not the repository owner or Weblate. Proceeding to check contribution history."
+          echo "The PR creator is not the repository owner or Weblate. Sending greeting message."
           echo "skip=false" >> $GITHUB_ENV
         fi
 
-    - name: Check if the contributor is first-time
-      id: check_first_time
-      if: env.skip != 'true'
-      run: |
-        PR_AUTHOR=$(jq -r '.pull_request.user.login' "$GITHUB_EVENT_PATH")
-        CONTRIBUTOR_CHECK=$(curl -s "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits?author=${PR_AUTHOR}&per_page=100" | jq -r '.[].commit.author.name')
-
-        if [[ -z "$CONTRIBUTOR_CHECK" ]]; then
-          echo "This is a first-time contributor. Sending greeting message."
-          echo "first_time=true" >> $GITHUB_ENV
-        else
-          echo "This contributor has contributed before. Skipping greeting message."
-          echo "first_time=false" >> $GITHUB_ENV
-        fi
-
     - name: Send Greeting Message
-      if: env.first_time == 'true'
+      if: env.skip != 'true'
       uses: actions/github-script@v6
       with:
         script: |
