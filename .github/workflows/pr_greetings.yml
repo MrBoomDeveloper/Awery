@@ -12,17 +12,31 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Ensure the repository is checked out
+
     - name: Check if the PR creator is the repo owner or Weblate
       id: check_owner
       run: |
         PR_AUTHOR=$(jq -r '.pull_request.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
+        
         if [ "$PR_AUTHOR" = "$REPO_OWNER" ] || [ "$PR_AUTHOR" = "weblate" ]; then
           echo "The PR creator is the repository owner or Weblate. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
         else
-          echo "The PR creator is not the repository owner or Weblate. Sending greeting message."
-          echo "skip=false" >> $GITHUB_ENV
+          echo "The PR creator is not the repository owner or Weblate. Checking for previous PRs..."
+          
+          # Check for previous pull requests by the author
+          PREVIOUS_PRS=$(gh pr list --author "$PR_AUTHOR" --json number --jq '. | length')
+          
+          if [ "$PREVIOUS_PRS" -eq 0 ]; then
+            echo "This is the user's first pull request. Sending greeting message."
+            echo "skip=false" >> $GITHUB_ENV
+          else
+            echo "User has previous pull requests. Skipping greeting message."
+            echo "skip=true" >> $GITHUB_ENV
+          fi
         fi
 
     - name: Send Greeting Message
