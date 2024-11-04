@@ -10,6 +10,9 @@ jobs:
     permissions:
       issues: write
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Ensure the repository is checked out
+
     - name: Check if the issue is labeled as a Feature Request
       id: check_feature_label
       run: |
@@ -26,7 +29,7 @@ jobs:
       if: env.skip_label_check == 'false'
       id: check_first_request
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GH_TOKEN for GitHub CLI
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the default GitHub token
       run: |
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
@@ -61,8 +64,8 @@ jobs:
           - Updates on the request will be provided, and it may be scheduled for future development.
 
           **👥 Stay Connected**  
-          - **[Discord](https://discord.com/invite/yspVzD4Kbm)**: Join our community to discuss ideas and stay updated.  
-          - **[Telegram](https://t.me/mrboomdev_awery)**: Connect with us directly for real-time updates.
+          - **[Discord]**: Join our community to discuss ideas and stay updated.  
+          - **[Telegram]**: Connect with us directly for real-time updates.
 
           We appreciate your suggestion and look forward to potentially implementing it!
           `;
