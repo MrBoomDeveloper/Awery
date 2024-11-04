@@ -25,6 +25,8 @@ jobs:
     - name: Check if the user has submitted a feature request before
       if: env.skip_label_check == 'false'
       id: check_first_request
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GH_TOKEN for GitHub CLI
       run: |
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
