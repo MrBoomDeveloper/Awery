@@ -68,7 +68,7 @@ jobs:
             LAST_SHA=$(git rev-list HEAD~10 -n 1)
           fi
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/MrBoomDeveloper\/Awery\/pull\/\1)/g')
           echo "$COMMIT_LOGS" > commit_log.txt
           echo "$FORMATTED_COMMIT_LOGS" > discord_commit_log.txt
           echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
