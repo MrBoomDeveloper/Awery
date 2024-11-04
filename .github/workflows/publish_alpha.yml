@@ -68,8 +68,9 @@ jobs:
             LAST_SHA=$(git rev-list HEAD~10 -n 1)
           fi
           COMMIT_LOGS=$(git log $LAST_SHA..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)")
-          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's|Merge pull request #([0-9]+) from ([^ ]+)|Merge pull request <a href="https://github.com/${{ github.repository }}/pull/\1">#\1</a> from \2|g')
-          echo "$FORMATTED_COMMIT_LOGS" > commit_log.txt
+          FORMATTED_COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/Shebyyy\/Awery\/pull\/\1)/g')
+          echo "$COMMIT_LOGS" > commit_log.txt
+          echo "$FORMATTED_COMMIT_LOGS" > discord_commit_log.txt
           echo "COMMIT_LOG<<EOF" >> $GITHUB_ENV
           echo "$FORMATTED_COMMIT_LOGS" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -127,6 +128,7 @@ jobs:
           fi
           TRUNCATED_COMMIT_LOG="$COMMIT_LOG"
           telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
+          telegram_commit_messages=$(echo "$telegram_commit_messages" | sed -E 's|Merge pull request #([0-9]+) from ([^ ]+)|Merge pull request <a href="https://github.com/${{ github.repository }}/pull/\1">#\1</a> from \2|g')
           formatted_messages="<blockquote>${telegram_commit_messages}</blockquote>"
           curl -v -X POST \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
@@ -140,7 +142,7 @@ jobs:
       - name: Send Alpha APK to Discord
         if: success()
         run: |
-          COMMIT_LOG=$(cat commit_log.txt)
+          COMMIT_LOG=$(cat discord_commit_log.txt)
           if [ ${#COMMIT_LOG} -gt 2000 ]; then
             TRUNCATED_LOG=$(echo "$COMMIT_LOG" | head -c 1800)
             LAST_COMPLETE=$(echo "$TRUNCATED_LOG" | grep -o "^●.*$" | tail -n 1)
