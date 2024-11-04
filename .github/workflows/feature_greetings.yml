@@ -32,12 +32,27 @@ jobs:
           echo "The issue creator is the repository owner. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
         else
-          echo "The issue creator is not the repository owner. Sending greeting message."
+          echo "The issue creator is not the repository owner. Checking for previous feature requests."
           echo "skip=false" >> $GITHUB_ENV
         fi
 
+    - name: Check for Previous Feature Requests
+      if: env.skip == 'false'
+      id: check_previous_requests
+      run: |
+        ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
+        RESPONSE=$(curl -s "https://api.github.com/search/issues?q=author:${ISSUE_AUTHOR}+label:\"New Feature\"+repo:${GITHUB_REPOSITORY}")
+        COUNT=$(echo "$RESPONSE" | jq -r '.total_count')
+        if [ "$COUNT" -gt 0 ]; then
+          echo "This user has made previous feature requests. Skipping greeting message."
+          echo "first_time=false" >> $GITHUB_ENV
+        else
+          echo "This is the user's first feature request. Sending greeting message."
+          echo "first_time=true" >> $GITHUB_ENV
+        fi
+
     - name: Send Greeting Message
-      if: env.skip_label_check == 'false' && env.skip != 'true'
+      if: env.skip_label_check == 'false' && env.skip != 'true' && env.first_time == 'true'
       uses: actions/github-script@v6
       with:
         script: |
