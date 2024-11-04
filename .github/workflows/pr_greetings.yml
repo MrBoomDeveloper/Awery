@@ -17,6 +17,8 @@ jobs:
 
     - name: Check if the PR creator is the repo owner or Weblate
       id: check_owner
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GitHub token for authentication
       run: |
         PR_AUTHOR=$(jq -r '.pull_request.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
@@ -51,8 +53,8 @@ jobs:
 
           **👥 Connect with the Community**  
           While you're here, why not join our communities to stay engaged?  
-          - **[Discord](https://discord.com/invite/yspVzD4Kbm)**: Chat with fellow developers, ask questions, and get the latest updates.  
-          - **[Telegram](https://t.me/mrboomdev_awery)**: Connect directly with us for real-time discussions and updates.
+          - **[Discord]**: Chat with fellow developers, ask questions, and get the latest updates.  
+          - **[Telegram]**: Connect directly with us for real-time discussions and updates.
 
           **📋 What to Expect Next**  
           - Our team will review your pull request as soon as possible.  
