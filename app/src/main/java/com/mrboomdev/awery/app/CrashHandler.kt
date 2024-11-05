@@ -16,7 +16,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.copyToClipboard
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.App.Companion.toast
@@ -25,21 +24,16 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
 import com.mrboomdev.awery.util.extensions.activity
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.fixAndShow
-import com.mrboomdev.awery.util.extensions.setHorizontalPadding
 import com.mrboomdev.awery.util.extensions.setMargin
-import com.mrboomdev.awery.util.extensions.setVerticalPadding
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import xcrash.Errno
 import xcrash.XCrash
 import xcrash.XCrash.InitParameters
 import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 
 object CrashHandler {
 	private const val TAG = "CrashHandler"
@@ -121,38 +115,6 @@ object CrashHandler {
 	@Deprecated(message = "old java shit")
 	fun showErrorDialog(report: CrashReport) {
 		showErrorDialog(getAnyActivity<AppCompatActivity>()!!, report)
-	}
-
-	private fun createExpandable(context: Context, message: String?): View {
-		val linear = LinearLayoutCompat(context)
-		linear.orientation = LinearLayoutCompat.VERTICAL
-
-		val expander = MaterialTextView(context)
-		expander.setBackgroundResource(R.drawable.ripple_round_you)
-		expander.text = "Click to see the exception"
-		expander.isClickable = true
-		expander.isFocusable = true
-		linear.addView(expander)
-
-		expander.setPadding(expander.dpPx(16f))
-		expander.setMargin {
-			setMargins(expander.dpPx(-16f))
-			bottomMargin = 0
-		}
-
-		val content = MaterialTextView(context)
-		content.setTextIsSelectable(true)
-		content.text = message
-		content.visibility = View.GONE
-		linear.addView(content)
-
-		expander.setOnClickListener {
-			val makeVisible = content.visibility != View.VISIBLE
-			expander.text = if(makeVisible) "Click to hide the exception" else "Click to see the exception"
-			content.visibility = if(makeVisible) View.VISIBLE else View.GONE
-		}
-
-		return linear
 	}
 
 	@JvmStatic

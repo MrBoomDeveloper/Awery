@@ -183,6 +183,9 @@ public class MediaCommentsFragment extends Fragment {
 		if(comment != null) {
 			swipeRefresher.setRefreshing(false);
 			loadingAdapter.setEnabled(false);
+			
+//			headerAdapter.getBinding(binding -> binding.searchStatus.setText(
+//					getString(R.string.save, Math.max(comment.comments, comment.size()))));
 
 			headerAdapter.getBinding(binding ->
 					binding.searchStatus.setText("Found " + Math.max(comment.comments, comment.size()) + " comments"));
