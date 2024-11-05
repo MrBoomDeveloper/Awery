@@ -449,5 +449,5 @@
     <string name="not_logged_detailed">Error 401. No has iniciado sesión, por favor inicia sesión e intenta nuevamente.</string>
     <string name="no_access_detailed">Error 403. No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta e intenta nuevamente.</string>
     <string name="rate_limited_detailed">Error 429. Has excedido el límite de velocidad, por favor intenta nuevamente más tarde.</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
 </resources>
