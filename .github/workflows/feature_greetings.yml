@@ -12,8 +12,12 @@ jobs:
       uses: actions/checkout@v2
     - name: Check if the issue is labeled as a Feature Request
       id: check_feature_label
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        LABELS=$(jq -r '.issue.labels[].name' "$GITHUB_EVENT_PATH")
+        ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+        LABELS=$(gh issue view $ISSUE_NUMBER --json labels --jq '.labels[].name')
+        
         if echo "$LABELS" | grep -q 'New Feature'; then
           echo "This issue is labeled as a feature request."
           echo "skip_label_check=false" >> $GITHUB_ENV
@@ -29,12 +33,15 @@ jobs:
       run: |
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
+        ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+        
         if [ "$ISSUE_AUTHOR" = "$REPO_OWNER" ]; then
           echo "The issue creator is the repository owner. Skipping greeting message."
           echo "skip_first_request=true" >> $GITHUB_ENV
         else
           echo "Checking for previous feature requests..."
-          PREVIOUS_REQUESTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "New Feature" --json number --jq '. | length')
+          # Get all issues by the author except the current one
+          PREVIOUS_REQUESTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "New Feature" --json number --jq '. | map(select(.number != '$ISSUE_NUMBER')) | length')
           echo "User $ISSUE_AUTHOR has submitted $PREVIOUS_REQUESTS feature request(s) previously"
           
           if [ "$PREVIOUS_REQUESTS" -eq 0 ]; then
