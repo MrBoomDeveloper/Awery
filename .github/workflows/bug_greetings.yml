@@ -32,12 +32,29 @@ jobs:
           echo "The issue creator is the repository owner. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
         else
-          echo "The issue creator is not the repository owner. Sending greeting message."
+          echo "The issue creator is not the repository owner. Checking for previous bug reports..."
           echo "skip=false" >> $GITHUB_ENV
         fi
 
+    - name: Check if the user has submitted a bug report before
+      if: env.skip == 'false'
+      id: check_first_bug_report
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GH_TOKEN for GitHub CLI
+      run: |
+        ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
+        PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --json number --jq '. | length')
+
+        if [ "$PREVIOUS_REPORTS" -eq 0 ]; then
+          echo "This is the user's first bug report. Sending greeting message."
+          echo "skip_first_report=false" >> $GITHUB_ENV
+        else
+          echo "User has previous bug reports. Skipping greeting message."
+          echo "skip_first_report=true" >> $GITHUB_ENV
+        fi
+
     - name: Send Greeting Message
-      if: env.skip_label_check == 'false' && env.skip != 'true'
+      if: env.skip_label_check == 'false' && env.skip != 'true' && env.skip_first_report != 'true'
       uses: actions/github-script@v6
       with:
         script: |
