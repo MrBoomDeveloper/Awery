@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,29 +46,9 @@ fun FeaturedMediaCarousel(
 	modifier: Modifier = Modifier,
 	onItemSelected: (media: CatalogMedia) -> Unit = {}
 ) {
-	@Composable
-	fun Modifier.onFirstGainingVisibility(onGainingVisibility: () -> Unit): Modifier {
-		var isVisible by remember { mutableStateOf(false) }
-		LaunchedEffect(isVisible) { if (isVisible) onGainingVisibility() }
-
-		return onPlaced { isVisible = true }
-	}
-
-	@Composable
-	fun Modifier.requestFocusOnFirstGainingVisibility(): Modifier {
-		val focusRequester = remember { FocusRequester() }
-		return focusRequester(focusRequester).onFirstGainingVisibility {
-			focusRequester.requestFocus()
-		}
-	}
-
-	var carouselFocused by remember { mutableStateOf(false) }
-
 	Carousel(
+		modifier = modifier,
 		itemCount = featuredContent.size,
-		modifier = modifier.onFocusChanged {
-			carouselFocused = it.isFocused
-		},
 
 		contentTransformEndToStart = fadeIn(tween(500))
 			.togetherWith(fadeOut(tween(500))),
@@ -77,12 +58,9 @@ fun FeaturedMediaCarousel(
 	) { index ->
 		val media = featuredContent[index]
 
-		Box {
-			var buttonFocused by remember { mutableStateOf(false) }
-
-			val buttonModifier = if(!carouselFocused) Modifier
-			else Modifier.requestFocusOnFirstGainingVisibility()
-
+		Box(
+			modifier = Modifier.clickable { onItemSelected(media) }
+		) {
 			AsyncImage(
 				model = media.banner,
 				contentDescription = media.description,
@@ -106,35 +84,6 @@ fun FeaturedMediaCarousel(
 					style = MaterialTheme.typography.bodyLarge,
 					text = media.description ?: "No description"
 				)
-
-				Spacer(modifier = Modifier.height(32.dp))
-
-				Row(
-					modifier = Modifier.fillMaxHeight(),
-					verticalAlignment = Alignment.Bottom
-				) {
-					Button(
-						onClick = { onItemSelected(media) },
-						modifier = buttonModifier
-							.onFocusChanged { buttonFocused = it.isFocused }
-					) {
-						Text(
-							style = MaterialTheme.typography.bodyLarge,
-							text = stringResource(R.string.watch_now)
-						)
-					}
-
-					Spacer(modifier = Modifier.width(16.dp))
-
-					Button(
-						onClick = { toast("Coming soon...") }
-					) {
-						Text(
-							style = MaterialTheme.typography.bodyLarge,
-							text = stringResource(R.string.bookmark)
-						)
-					}
-				}
 			}
 		}
 	}

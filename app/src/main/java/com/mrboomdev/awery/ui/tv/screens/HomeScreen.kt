@@ -35,6 +35,7 @@ import com.mrboomdev.awery.app.data.db.item.DBTab
 import com.mrboomdev.awery.app.data.settings.SettingsList
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.tv.Screens
 import com.mrboomdev.awery.ui.tv.components.MediaRowContent
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.TabsTemplate
@@ -48,9 +49,6 @@ import kotlinx.serialization.Serializable
 
 private const val THUMBNAIL_URL = "https://i.ibb.co/QD0b4HD/5liphf3577971.jpg"
 private const val BANNER_URL = "https://i.ibb.co/YNDxjs7/b40jj2sfqfpd1.png"
-
-@Serializable
-object HomeScreenArgs
 
 @Composable
 fun HomeScreen(
@@ -91,26 +89,26 @@ fun HomeScreen(
 						selected = selectedIndex == index,
 						colors = NavigationDrawerItemColors(
 							containerColor = Color.Transparent,
-							contentColor = Color(0xFFFFFFFF),
+							contentColor = Color.White,
 							inactiveContentColor = Color(0x56FFFFFF),
-							focusedContainerColor = Color(0x3EFFFFFF),
-							focusedContentColor = contentColorFor(MaterialTheme.colorScheme.inverseSurface),
+							focusedContainerColor = Color.White,
+							focusedContentColor = Color.Black,
 							pressedContainerColor = Color(0x3EFFFFFF),
 							pressedContentColor = contentColorFor(MaterialTheme.colorScheme.inverseSurface),
 							selectedContainerColor = Color(0x14FFFFFF),
-							selectedContentColor = Color(0xffffffff),
+							selectedContentColor = Color.White,
 							disabledContainerColor = Color.Transparent,
 							disabledContentColor = MaterialTheme.colorScheme.onSurface,
 							disabledInactiveContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-							focusedSelectedContainerColor = Color(0x3EFFFFFF),
-							focusedSelectedContentColor = Color(0xffffffff),
+							focusedSelectedContainerColor = Color.White,
+							focusedSelectedContentColor = Color.Black,
 							pressedSelectedContainerColor = MaterialTheme.colorScheme.inverseSurface,
 							pressedSelectedContentColor = contentColorFor(MaterialTheme.colorScheme.inverseSurface)
 						),
 
 						onClick = {
 							if(tab.id == "settings") {
-								navController.navigate(SettingsScreenArgs)
+								navController.navigate(Screens.Settings)
 								return@NavigationDrawerItem
 							}
 
@@ -133,7 +131,7 @@ fun HomeScreen(
 				sections = sectionsState,
 				featuredItems = featuredState,
 				onItemSelected = {
-					navController.navigate(MediaScreenArgs(media = it))
+					navController.navigate(Screens.Media(media = it))
 				}
 			)
 		}

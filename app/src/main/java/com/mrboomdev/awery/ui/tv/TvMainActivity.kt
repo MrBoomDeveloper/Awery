@@ -12,12 +12,10 @@ import androidx.tv.material3.MaterialTheme
 import com.mrboomdev.awery.app.data.settings.NicePreferences
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ui.tv.screens.HomeScreen
-import com.mrboomdev.awery.ui.tv.screens.HomeScreenArgs
 import com.mrboomdev.awery.ui.tv.screens.MediaScreen
-import com.mrboomdev.awery.ui.tv.screens.MediaScreenArgs
 import com.mrboomdev.awery.ui.tv.screens.SettingsScreen
-import com.mrboomdev.awery.ui.tv.screens.SettingsScreenArgs
 import com.mrboomdev.awery.util.NavUtils
+import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
 class TvMainActivity : ComponentActivity() {
@@ -35,20 +33,29 @@ class TvMainActivity : ComponentActivity() {
 	@Composable
 	fun Navigation() {
 		val navController = rememberNavController()
-		NavHost(navController = navController, startDestination = HomeScreenArgs) {
-			composable<HomeScreenArgs> {
+		NavHost(navController = navController, startDestination = Screens.Home) {
+			composable<Screens.Home> {
 				HomeScreen(navController = navController)
 			}
 
-			composable<MediaScreenArgs>(
+			composable<Screens.Media>(
 				typeMap = mapOf(typeOf<CatalogMedia>() to NavUtils.getSerializableNavType<CatalogMedia>())
 			) {
-				MediaScreen(media = it.toRoute<MediaScreenArgs>().media)
+				MediaScreen(media = it.toRoute<Screens.Media>().media)
 			}
 
-			composable<SettingsScreenArgs> {
+			composable<Screens.Settings> {
 				SettingsScreen(screen = NicePreferences.getSettingsMap())
 			}
 		}
 	}
+}
+
+sealed class Screens {
+	@Serializable
+	data object Home
+	@Serializable
+	data object Settings
+	@Serializable
+	data class Media(val media: CatalogMedia): Screens()
 }

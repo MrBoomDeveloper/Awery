@@ -43,6 +43,7 @@ object LocaleHelper {
             "zh-TW" -> Locale.forLanguageTag("zh-Hant")
             else -> Locale.forLanguageTag(lang)
         }
+
         return locale!!.getDisplayName(locale).replaceFirstChar { it.uppercase(locale) }
     }
 

@@ -43,7 +43,7 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 	private String title, message, okButtonLabel, cancelButtonLabel, neutralButtonLabel;
 	private boolean isCancelable = true, didCreateRoot;
 
-	public BaseDialogBuilder(Context context) {
+	public BaseDialogBuilder(@NonNull Context context) {
 		this.context = context;
 	}
 

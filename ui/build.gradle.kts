@@ -13,4 +13,5 @@ dependencies {
 	implementation(project(":ext"))
 	implementation(compose.material)
 	implementation(compose.material3)
+	implementation(libs.coil.compose)
 }

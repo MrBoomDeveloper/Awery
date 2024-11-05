@@ -5,19 +5,22 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getAnyActivity;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.Objects;
+
 public final class DialogBuilder extends BaseDialogBuilder<DialogBuilder> {
 
-	public DialogBuilder(Context context) {
+	public DialogBuilder(@NonNull Context context) {
 		super(context);
 	}
 
 	public DialogBuilder() {
-		this(getAnyActivity(AppCompatActivity.class));
+		this(Objects.requireNonNull(getAnyActivity(AppCompatActivity.class)));
 	}
 
 	@Contract(pure = true)

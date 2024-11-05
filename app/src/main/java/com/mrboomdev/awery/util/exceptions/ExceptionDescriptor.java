@@ -148,10 +148,6 @@ public class ExceptionDescriptor {
 		return Reason.OTHER;
 	}
 
-	public Reason getReason() {
-		return getReason(throwable);
-	}
-
 	public boolean isNetworkException() {
 		return throwable instanceof ZeroResultsException ||
 				throwable instanceof NotImplementedError ||
@@ -278,33 +274,6 @@ public class ExceptionDescriptor {
 				return false;
 			}
 		},
-		/*BAD_NETWORK {
-
-		},
-		NO_ACCESS {
-
-		},
-		BANNED {
-
-		},
-		ACCOUNT_REQUIRED {
-
-		},
-		BAD_CODE {
-
-		},
-		NOTHING_FOUND {
-
-		},
-		ILLEGAL_QUERY {
-
-		},
-		TIMEOUT {
-
-		},
-		RATE_LIMITED {
-
-		},*/
 		UNIMPLEMENTED {
 			@Override
 			protected boolean isMeImpl(Throwable t) {
@@ -321,43 +290,6 @@ public class ExceptionDescriptor {
 		public boolean isMe(Throwable t) {
 			return isMeImpl(unwrap(t));
 		}
-
-		/*
-		if(throwable instanceof JsException js) {
-			return switch(Objects.requireNonNullElse(js.getErrorId(), "")) {
-				case JsException.ERROR_RATE_LIMITED -> Reason.RATE_LIMITED;
-				case JsException.SERVER_ERROR, JsException.SERVER_DOWN -> Reason.SERVER_DOWN;
-				case JsException.ERROR_ACCOUNT_REQUIRED -> Reason.NO_ACCESS;
-				case JsException.ERROR_HTTP -> Reason.BAD_NETWORK;
-				case JsException.ERROR_NOTHING_FOUND -> Reason.NOTHING_FOUND;
-				case JsException.ERROR_BANNED -> Reason.BANNED;
-				default -> Reason.OTHER;
-			};
-		}
-
-		if(throwable instanceof ZeroResultsException) {
-			return Reason.NOTHING_FOUND;
-		}
-
-		if(throwable instanceof SocketTimeoutException) {
-			return Reason.TIMEOUT;
-		}
-
-		if(throwable instanceof SocketException ||
-				throwable instanceof HttpException ||
-				throwable instanceof SSLHandshakeException) {
-			return Reason.BAD_NETWORK;
-		}
-
-		if(throwable instanceof UnimplementedException ||
-				throwable instanceof UnsupportedOperationException) {
-			return Reason.UNIMPLEMENTED;
-		}
-
-		if(throwable instanceof InvalidSyntaxException) {
-
-		}
-		 */
 
 		protected abstract boolean isMeImpl(Throwable t);
 	}

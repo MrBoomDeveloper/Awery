@@ -442,7 +442,7 @@ class App : Application() {
 				.apply {
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 						penaltyListener({ it.run() }) { violation ->
-							runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>())
+							runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>()!!)
 								.setTitle("StrictMode.VmPolicy Violation!")
 								.setMessage(Log.getStackTraceString(violation))
 								.setPositiveButton(R.string.ok) { it.dismiss() }

@@ -9,6 +9,7 @@ import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.util.Selection
+import com.mrboomdev.awery.util.extensions.applyCopy
 import com.mrboomdev.awery.util.extensions.getResourceId
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
@@ -25,7 +26,10 @@ object AweryLocales {
 			"ja", "jp", "japan", "jpn", "jap" -> context.getString(R.string.japan)
 			"ru", "russia", "rus" -> context.getString(R.string.russia)
 			"ko", "korea", "kor", "kr" -> context.getString(R.string.korea)
-			else -> Locale.forLanguageTag(input).displayCountry
+
+			else -> Locale.forLanguageTag(input).applyCopy {
+				displayCountry.replaceFirstChar { it.uppercase(this) }
+			}
 		}
 	}
 
@@ -36,7 +40,10 @@ object AweryLocales {
 			"ja", "jp", "japanese" -> context.getString(R.string.japanese)
 			"ru", "rus", "russian" -> context.getString(R.string.russian)
 			"ko", "kor", "korean" -> context.getString(R.string.korean)
-			else -> Locale.forLanguageTag(input).displayLanguage
+
+			else -> Locale.forLanguageTag(input).applyCopy {
+				displayLanguage.replaceFirstChar { it.uppercase(this) }
+			}
 		}
 	}
 

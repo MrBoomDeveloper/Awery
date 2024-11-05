@@ -57,11 +57,9 @@ object UpdatesManager {
 						Log.e(TAG, "Failed to download an update!", t)
 						window.dismiss()
 
-						CrashHandler.showErrorDialog(
-							CrashReport.Builder()
-								.setTitle("Failed to download an update")
-								.setThrowable(t)
-								.build())
+						CrashHandler.showDialog(
+							title = "Failed to download an update",
+							throwable = t)
 					}).launch {
 						val file = HttpRequest(update.fileUrl).download(
 							File(context.cacheDir, "download/app_update.apk"))

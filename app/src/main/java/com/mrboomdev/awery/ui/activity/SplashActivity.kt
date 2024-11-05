@@ -12,7 +12,6 @@ import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
@@ -57,7 +56,7 @@ class SplashActivity : AppCompatActivity() {
 		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
 		setContentView(binding.root)
 
-		CrashHandler.reportIfCrashHappened(this) {
+		CrashHandler.showDialogIfCrashHappened(this) {
 			binding.status.text = "Checking the database..."
 
 			lifecycleScope.launch(Dispatchers.IO) {
@@ -66,11 +65,11 @@ class SplashActivity : AppCompatActivity() {
 				} catch(e: IllegalStateException) {
 					Log.e(TAG, "Database is corrupted!", e)
 
-					CrashHandler.showErrorDialog(this@SplashActivity, CrashReport.Builder()
-							.setTitle("Database is corrupted!")
-							.setThrowable(e)
-							.setDismissCallback { exitApp() }
-							.build())
+					CrashHandler.showDialog(
+						context = this@SplashActivity,
+						title = "Database is corrupted!",
+						throwable = e,
+						dismissCallback = ::exitApp)
 
 					return@launch
 				}
@@ -91,12 +90,11 @@ class SplashActivity : AppCompatActivity() {
 						startActivity(if(isTv && BuildConfig.DEBUG) TvMainActivity::class else MainActivity::class)
 						finish()
 					}.catch {
-						CrashHandler.showErrorDialog(
-							this@SplashActivity, CrashReport.Builder()
-								.setTitle("Failed to load an ExtensionsFactory")
-								.setThrowable(it)
-								.setDismissCallback { exitApp() }
-								.build())
+						CrashHandler.showDialog(
+							context = this@SplashActivity,
+							title = "Failed to load an ExtensionsFactory",
+							throwable = it,
+							dismissCallback = ::exitApp)
 					}.collect()
 
 					return@launch
@@ -112,12 +110,11 @@ class SplashActivity : AppCompatActivity() {
 					override fun onFailure(t: Throwable) {
 						Log.e(TAG, "Failed to load an ExtensionsFactory!", t)
 
-						CrashHandler.showErrorDialog(
-							this@SplashActivity, CrashReport.Builder()
-								.setTitle("Failed to load an ExtensionsFactory")
-								.setThrowable(t)
-								.setDismissCallback { exitApp() }
-								.build())
+						CrashHandler.showDialog(
+							context = this@SplashActivity,
+							title = "Failed to load an ExtensionsFactory",
+							throwable = t,
+							dismissCallback = ::exitApp)
 					}
 				})
 

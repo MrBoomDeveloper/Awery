@@ -1,35 +1,37 @@
 package com.mrboomdev.awery.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.onClick
 import androidx.compose.material.Text
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.mrboomdev.awery.ext.data.CatalogMedia
 
 @Composable
 fun MediaCard(
 	media: CatalogMedia,
-	modifier: Modifier = Modifier,
-	onClick: () -> Unit = {}
+	onClick: () -> Unit = {},
+	modifier: Modifier = Modifier
+		.width(175.dp)
+		.height(250.dp)
 ) {
-	Column(
-		modifier = modifier
-			.clickable { onClick() }
-	) {
-		/*Card(
-			onClick = onClick,
-			modifier = modifier
-				.width(175.dp)
-				.height(250.dp)
-		) {
+	Column(modifier = modifier.clickable { onClick() }) {
+		Card(modifier = Modifier.weight(1f)) {
 			Box {
 				AsyncImage(
 					model = media.poster,
@@ -39,7 +41,7 @@ fun MediaCard(
 						.background(Color(0xFF1D1D1D))
 				)
 			}
-		}*/
+		}
 
 		if(media.title != null) {
 			Text(

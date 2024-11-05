@@ -126,7 +126,7 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
     companion object {
         private const val TAG = "MediaBookmarkDialog"
 
-        fun requestCreateNewList(context: Context?, callback: (list: CatalogList) -> Unit) {
+        fun requestCreateNewList(context: Context, callback: (list: CatalogList) -> Unit) {
             val input = EditTextField(context, "List name")
             input.setLinesCount(1)
 
