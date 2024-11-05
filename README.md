@@ -64,7 +64,7 @@ We welcome contributions, from translations to new features. Join our [Discord s
 ## 💖 Acknowledgments
 A big thank you to everyone who has contributed to Awery’s development. Your support is invaluable!
 
-<a href="https://github.com/brahmkshatriya/echo/graphs/contributors">
+<a href="https://github.com/mrboomdeveloper/awery/graphs/contributors">
   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/MrBoomDeveloper/Awery?style=flat-square&label=Contributors%20%3A&labelColor=%230f1318&color=%230f1318" align="left">
 </a>
 <br>
