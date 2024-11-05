@@ -12,8 +12,12 @@ jobs:
       uses: actions/checkout@v2
     - name: Check if the issue is labeled as a Bug Report
       id: check_bug_label
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        LABELS=$(jq -r '.issue.labels[].name' "$GITHUB_EVENT_PATH")
+        ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+        LABELS=$(gh issue view $ISSUE_NUMBER --json labels --jq '.labels[].name')
+        
         if echo "$LABELS" | grep -q 'Bug'; then
           echo "This issue is labeled as a bug report."
           echo "skip_label_check=false" >> $GITHUB_ENV
@@ -41,7 +45,10 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
-        PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --json number --jq '. | length')
+        ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+        
+        # Get all issues by the author except the current one
+        PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --json number --jq '. | map(select(.number != '$ISSUE_NUMBER')) | length')
         echo "User $ISSUE_AUTHOR has submitted $PREVIOUS_REPORTS bug report(s) previously"
         
         if [ "$PREVIOUS_REPORTS" -eq 0 ]; then
