@@ -10,6 +10,9 @@ jobs:
     permissions:
       issues: write
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2  # Checkout the repository to access git commands
+
     - name: Check if the issue is labeled as a Bug Report
       id: check_bug_label
       run: |
