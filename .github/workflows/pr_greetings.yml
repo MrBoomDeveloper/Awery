@@ -1,11 +1,9 @@
 name: PR Greetings
-
 on:
   pull_request:
     types: [opened]
   pull_request_target:
     types: [opened]
-
 jobs:
   greeting:
     runs-on: ubuntu-latest
@@ -13,25 +11,22 @@ jobs:
       pull-requests: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2  # Ensure the repository is checked out
-
+      uses: actions/checkout@v2
     - name: Check if the PR creator is the repo owner or Weblate
       id: check_owner
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set the GitHub token for authentication
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         PR_AUTHOR=$(jq -r '.pull_request.user.login' "$GITHUB_EVENT_PATH")
         REPO_OWNER=$(jq -r '.repository.owner.login' "$GITHUB_EVENT_PATH")
-        
         if [ "$PR_AUTHOR" = "$REPO_OWNER" ] || [ "$PR_AUTHOR" = "weblate" ]; then
           echo "The PR creator is the repository owner or Weblate. Skipping greeting message."
           echo "skip=true" >> $GITHUB_ENV
         else
           echo "The PR creator is not the repository owner or Weblate. Checking for previous PRs..."
-          
-          # Check for previous pull requests by the author
+          # Check for previous pull requests by the author and log the count
           PREVIOUS_PRS=$(gh pr list --author "$PR_AUTHOR" --json number --jq '. | length')
-          
+          echo "User $PR_AUTHOR has created $PREVIOUS_PRS pull request(s) previously"
           if [ "$PREVIOUS_PRS" -eq 0 ]; then
             echo "This is the user's first pull request. Sending greeting message."
             echo "skip=false" >> $GITHUB_ENV
@@ -40,7 +35,6 @@ jobs:
             echo "skip=true" >> $GITHUB_ENV
           fi
         fi
-
     - name: Send Greeting Message
       if: env.skip != 'true'
       uses: actions/github-script@v6
@@ -50,18 +44,15 @@ jobs:
           const message = `
           **🎉 Thank you for your contribution!**  
           Your Pull Request has been successfully submitted and is now awaiting review. We truly appreciate your efforts to improve Awery.
-
           **👥 Connect with the Community**  
           While you're here, why not join our communities to stay engaged?  
           - **[Discord]**: Chat with fellow developers, ask questions, and get the latest updates.  
           - **[Telegram]**: Connect directly with us for real-time discussions and updates.
-
           **📋 What to Expect Next**  
           - Our team will review your pull request as soon as possible.  
           - You'll receive notifications if further information or changes are needed.  
           - Once approved, your changes will be merged into the main project.
-
-          We’re excited to collaborate with you. Stay tuned for updates!
+          We're excited to collaborate with you. Stay tuned for updates!
           `;
           await github.rest.issues.createComment({
             owner: context.repo.owner,
