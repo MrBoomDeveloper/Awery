@@ -47,8 +47,8 @@ jobs:
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
         
-        # Get all issues by the author except the current one
-        PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --json number --jq '. | map(select(.number != '$ISSUE_NUMBER')) | length')
+        # Get all issues (both open and closed) by the author except the current one
+        PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --state all --json number --jq '. | map(select(.number != '$ISSUE_NUMBER')) | length')
         echo "User $ISSUE_AUTHOR has submitted $PREVIOUS_REPORTS bug report(s) previously"
         
         if [ "$PREVIOUS_REPORTS" -eq 0 ]; then
