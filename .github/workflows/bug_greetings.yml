@@ -19,7 +19,7 @@ jobs:
         LABELS=$(gh issue view $ISSUE_NUMBER --json labels --jq '.labels[].name')
         
         if echo "$LABELS" | grep -q 'Bug'; then
-          echo "This issue is labeled as a bug report.Checking if the issue creator is the repository owner."
+          echo "This issue is labeled as a bug report. Checking if the issue creator is the repository owner."
           echo "skip_label_check=false" >> $GITHUB_ENV
         else
           echo "This issue is not labeled as a bug report. Skipping greeting message."
