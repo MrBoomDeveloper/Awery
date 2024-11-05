@@ -11,14 +11,14 @@ jobs:
       issues: write
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2  # Checkout the repository to access git commands
+      uses: actions/checkout@v2  # Ensure the repository is checked out
 
     - name: Check if the issue is labeled as a Bug Report
       id: check_bug_label
       run: |
         LABELS=$(jq -r '.issue.labels[].name' "$GITHUB_EVENT_PATH")
         if echo "$LABELS" | grep -q 'Bug'; then
-          echo "This issue is labeled as a bug report. Checking if the issue creator is the repository owner."
+          echo "This issue is labeled as a bug report."
           echo "skip_label_check=false" >> $GITHUB_ENV
         else
           echo "This issue is not labeled as a bug report. Skipping greeting message."
@@ -47,6 +47,8 @@ jobs:
       run: |
         ISSUE_AUTHOR=$(jq -r '.issue.user.login' "$GITHUB_EVENT_PATH")
         PREVIOUS_REPORTS=$(gh issue list --author "$ISSUE_AUTHOR" --label "Bug" --json number --jq '. | length')
+
+        echo "Previous bug report count: $PREVIOUS_REPORTS"
 
         if [ "$PREVIOUS_REPORTS" -eq 0 ]; then
           echo "This is the user's first bug report. Sending greeting message."
