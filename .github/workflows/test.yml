@@ -221,12 +221,12 @@ jobs:
 
           curl -H "Content-Type: application/json" \
                -d "$discord_data" \
-               ${{ secrets.DISCORD_WEBHOOK }}
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
 
           if [ "$SKIP_BUILD" != "true" ]; then
             curl -F "payload_json=${contentbody}" \
-                 -F "dantotsu_debug=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-                 ${{ secrets.DISCORD_WEBHOOK }}
+                 -F "Awery_debug=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+                 ${{ secrets.DISCORD_WEBHOOK_URL }}
           else
             echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
           fi
