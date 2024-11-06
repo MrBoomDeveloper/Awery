@@ -39,23 +39,24 @@ jobs:
       - name: Get Commits Since Last Run
         run: |
           if [ -f last_sha.txt ]; then
-            LAST_SHA=$(cat last_sha.txt)
+          LAST_SHA=$(cat last_sha.txt)
           else
-            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+          LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
+
           echo "Commits since $LAST_SHA:"
-          COMMIT_LOGS=$(git log "$LAST_SHA"..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/${{ github.repository }}/commit/%H)" --max-count=10)
+          COMMIT_LOGS=$(git log "$LAST_SHA"..HEAD --pretty=format:"● %s ~%an [֍](https://github.com/Shebyyy/Awery/commit/%H)" --max-count=10)
           COMMIT_LOGS=$(echo "$COMMIT_LOGS" | sed -E 's/#([0-9]+)/[#\1](https:\/\/github.com\/rebelonion\/Dantotsu\/pull\/\1)/g')
           COMMIT_LOGS="${COMMIT_LOGS//'%'/'%25'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\n'/'%0A'}"
           COMMIT_LOGS="${COMMIT_LOGS//$'\r'/'%0D'}"
+
           echo "COMMIT_LOG=${COMMIT_LOGS}" >> $GITHUB_ENV
-          echo "$COMMIT_LOGS"
           echo "$COMMIT_LOGS" > commit_log.txt
-          BRANCH=${{ github.ref }}
+
+          BRANCH=refs/heads/Test
           BRANCH=${BRANCH#refs/heads/}
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-          shell: /usr/bin/bash -e {0}
         continue-on-error: true
 
       - name: Save Current SHA for Next Run
@@ -199,50 +200,43 @@ jobs:
           done <<< "$sorted_contributors"
 
           thumbnail_url="${top_contributor_avatar:-https://i.imgur.com/5o3Y9Jb.gif}"
-          max_length=1000
-          commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
-          if [ ${#developers} -gt $max_length ]; then
-            developers="${developers:0:$max_length}... (truncated)"
-          fi
-          if [ ${#commit_messages} -gt $max_length ]; then
-            commit_messages="${commit_messages:0:$max_length}... (truncated)"
-          fi
 
           discord_data=$(jq -nc \
-                          --arg field_value "$commit_messages" \
-                          --arg author_value "$developers" \
-                          --arg footer_text "Version $VERSION" \
-                          --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
-                          --argjson embed_color "$embed_color" \
-                          '{
-                            "content": "<@&1225347048321191996>",
-                            "embeds": [
-                              {
-                                "title": "New Alpha-Build dropped",
-                                "color": $embed_color,
-                                "fields": [
-                                  {
-                                    "name": "Commits:",
-                                    "value": $field_value,
-                                    "inline": true
-                                  },
-                                  {
-                                    "name": "Developers:",
-                                    "value": $author_value,
-                                    "inline": false
-                                  }
-                                ],
-                                "footer": {
-                                  "text": $footer_text
-                                },
-                                "timestamp": $timestamp,
-                                "thumbnail": {
-                                  "url": $thumbnail_url
-                                }
-                              }
-                            ],
-                            "attachments": []
-                          }')
+              --arg field_value "$commit_messages" \
+              --arg author_value "$developers" \
+              --arg footer_text "Version $VERSION" \
+              --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+              --arg thumbnail_url "$thumbnail_url" \  # Pass the variable here
+              --argjson embed_color "$embed_color" \
+          '{
+        "content": "<@&1225347048321191996>",
+        "embeds": [
+            {
+                "title": "New Alpha-Build dropped",
+                "color": $embed_color,
+                "fields": [
+                    {
+                        "name": "Commits:",
+                        "value": $field_value,
+                        "inline": true
+                    },
+                    {
+                        "name": "Developers:",
+                        "value": $author_value,
+                        "inline": false
+                    }
+                ],
+                "footer": {
+                    "text": $footer_text
+                },
+                "timestamp": $timestamp,
+                "thumbnail": {
+                    "url": $thumbnail_url  # Reference the passed variable
+                }
+            }
+        ],
+        "attachments": []
+    }')
 
           echo "Debug: Final Discord payload:"
           echo "$discord_data"
