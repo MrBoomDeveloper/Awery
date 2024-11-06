@@ -469,5 +469,6 @@
     <string name="buffering_video">Video wird gepuffert</string>
     <string name="bad_request">Fehlerhafte Anfrage</string>
     <string name="mark_watched">Als gesehen markieren</string>
-    <string name="delete_confirmation">%s gelöscht</string>
+    <string name="delete_confirmation">%s löschen?</string>
+    <string name="open_link_externally">In externem Browser öffnen</string>
 </resources>
