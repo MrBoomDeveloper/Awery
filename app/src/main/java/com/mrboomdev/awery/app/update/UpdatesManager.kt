@@ -5,7 +5,9 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.mrboomdev.awery.BuildConfig
+import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
@@ -42,15 +44,15 @@ object UpdatesManager {
 	fun showUpdateDialog(context: Activity, update: Update) {
 		runOnUiThread {
 			DialogBuilder(context)
-				.setTitle("Update available!")
+				.setTitle(R.string.update_available)
 				.setMessage("""
 					${update.title}
-					Size: ${update.size.formatFileSize()}
+					${i18n(R.string.size)}: ${update.size.formatFileSize()}
 	
 					${update.body}
 				""".trim().removeIndent())
-				.setNeutralButton("Dismiss") { it.dismiss() }
-				.setPositiveButton("Install") { dialog ->
+				.setNeutralButton(R.string.dismiss) { it.dismiss() }
+				.setPositiveButton(R.string.download) { dialog ->
 					val window = showLoadingWindow()
 
 					CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->

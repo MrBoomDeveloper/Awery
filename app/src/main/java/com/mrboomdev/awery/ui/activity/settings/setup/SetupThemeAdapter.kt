@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
 import com.mrboomdev.awery.app.data.settings.NicePreferences
 import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
@@ -148,14 +149,14 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			}
 
 			if(theme.palette == ThemeColorPalette_Values.MATERIAL_YOU && !didSuggestYou) {
-				binding.root.balloon("The app's color will be based on your wallpaper!", BalloonAlign.END)
+				binding.root.balloon(i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
 				didSuggestYou = true
 				getPrefs().setValue(AwerySettings.DID_SUGGEST_MATERIAL_YOU, true).saveAsync()
 			}
 
 			binding.root.setOnLongClickListener {
 				if(theme.palette == ThemeColorPalette_Values.MATERIAL_YOU) {
-					binding.root.balloon("The app's color will be based on your wallpaper!", BalloonAlign.END)
+					binding.root.balloon(i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
 					return@setOnLongClickListener true
 				}
 

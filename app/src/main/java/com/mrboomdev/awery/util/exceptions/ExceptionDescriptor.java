@@ -28,6 +28,7 @@ import java9.util.Objects;
 import kotlin.NotImplementedError;
 import kotlinx.serialization.SerializationException;
 
+@Deprecated(forRemoval = true)
 public class ExceptionDescriptor {
 	private final Throwable throwable;
 	

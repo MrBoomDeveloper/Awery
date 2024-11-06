@@ -431,7 +431,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 	@SuppressWarnings("unchecked")
 	private void loadData() {
 		onPlaybackStateChanged(Player.STATE_BUFFERING);
-		binding.loadingStatus.setText("Loading videos list...");
+		binding.loadingStatus.setText(R.string.loading_videos_list);
 		var intent = getIntent();
 
 		this.episode = (CatalogVideo) intent.getSerializableExtra("episode");
@@ -459,7 +459,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 				}
 
 				@Override
-				public void onFailure(Throwable throwable) {
+				public void onFailure(@NonNull Throwable throwable) {
 					if(isDestroyed()) return;
 
 					var error = new ExceptionDescriptor(throwable);
@@ -565,7 +565,7 @@ public class PlayerActivity extends AppCompatActivity implements Player.Listener
 			case Player.STATE_BUFFERING -> {
 				isVideoBuffering = true;
 
-				binding.loadingStatus.setText("Buffering video...");
+				binding.loadingStatus.setText(R.string.buffering_video);
 
 				binding.loadingCircle.setVisibility(View.VISIBLE);
 				binding.loadingStatus.setVisibility(View.VISIBLE);

@@ -254,8 +254,8 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		fun i18n(@StringRes res: Int): String {
-			return appContext.getString(res)
+		fun i18n(@StringRes res: Int, vararg params: Any): String {
+			return appContext.getString(res, params)
 		}
 
 		@JvmStatic

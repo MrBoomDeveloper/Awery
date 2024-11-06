@@ -50,6 +50,7 @@ import com.mrboomdev.awery.util.adapters.MediaAdapter
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -424,7 +425,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 
 		variantsAdapter!!.getBinding { binding ->
 			runOnUiThread {
-				binding.searchStatus.text = "Searching episodes for \"" + media.title + "\"..."
+				binding.searchStatus.text = getString(R.string.searching_episodes_for, media.title)
 				binding.searchStatus.setOnClickListener { startActivity(
 					MediaActivity::class, MediaActivity.Extras(media)) }
 			}
@@ -464,7 +465,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 
 				runOnUiThread {
 					variantsAdapter!!.getBinding { binding ->
-						binding.searchStatus.text = "Selected \"${media.title}\""
+						binding.searchStatus.text = getString(R.string.selected_s, media.title)
 						startActivity(MediaActivity::class, args = MediaActivity.Extras(media))
 					}
 
@@ -531,7 +532,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 
 						variantsAdapter!!.getBinding { binding ->
 							runOnUiThread {
-								binding.searchStatus.text = "Searching for \"" + queryFilter.stringValue + "\"..."
+								binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
 								binding.searchStatus.setOnClickListener(null)
 							}
 						}
@@ -555,7 +556,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 		if(searchId != null) {
 			variantsAdapter!!.getBinding { binding ->
 				runOnUiThread {
-					binding.searchStatus.text = "Searching for \"$searchTitle\"..."
+					binding.searchStatus.text = getString(R.string.searching_for, searchTitle)
 					binding.searchStatus.setOnClickListener(null)
 				}
 			}
@@ -572,7 +573,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 
 					variantsAdapter!!.getBinding { binding ->
 						runOnUiThread {
-							binding.searchStatus.text = "Searching for \"${queryFilter.stringValue}\"..."
+							binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
 							binding.searchStatus.setOnClickListener(null)
 						}
 					}
@@ -583,7 +584,7 @@ class MediaPlayFragment @JvmOverloads constructor(
 		} else {
 			variantsAdapter!!.getBinding { binding ->
 				runOnUiThread {
-					binding.searchStatus.text = "Searching for \"" + queryFilter.stringValue + "\"..."
+					binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
 					binding.searchStatus.setOnClickListener(null)
 				}
 			}
@@ -620,18 +621,18 @@ class MediaPlayFragment @JvmOverloads constructor(
 
 	private fun handleExceptionUi(source: ExtensionProvider?, throwable: Throwable) {
 		if(source !== selectedSource && source != null) return
-		val error = ExceptionDescriptor(throwable)
+		val error = OkiThrowableMessage(throwable)
 
 		val context = context ?: return
 
 		variantsAdapter!!.getBinding { binding ->
-			binding.searchStatus.text = error.getMessage(context)
+			binding.searchStatus.text = error.message
 			binding.searchStatus.setOnClickListener(null)
 		}
 
 		placeholderAdapter!!.getBinding { binding ->
 			runOnUiThread {
-				binding.setInfo(error.getTitle(context), error.getMessage(context))
+				binding.setInfo(error.title, error.message)
 				placeholderAdapter!!.setEnabled(true)
 			}
 		}

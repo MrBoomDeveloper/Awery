@@ -12,7 +12,6 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.app.data.Constants.DIRECTORY_IMAGE_CACHE
 import com.mrboomdev.awery.app.data.settings.SettingsItem
@@ -132,12 +131,10 @@ object SettingsActions {
 						return@CoroutineExceptionHandler
 					}
 
-					CrashHandler.showErrorDialog(
-						CrashReport.Builder()
-							.setTitle("Failed to check for updates")
-							.setPrefix(R.string.please_report_bug_app)
-							.setThrowable(t)
-							.build())
+					CrashHandler.showDialog(
+						title = "Failed to check for updates",
+						messagePrefixRes = R.string.please_report_bug_app,
+						throwable = t)
 				}).launch {
 					val update = UpdatesManager.fetchLatestAppUpdate()
 					showUpdateDialog(getAnyActivity<Activity>()!!, update)

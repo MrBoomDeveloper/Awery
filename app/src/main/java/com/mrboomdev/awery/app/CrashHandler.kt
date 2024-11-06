@@ -227,7 +227,7 @@ object CrashHandler {
 						}, "Share crash report"))
 					}
 
-					setNeutralButton("See error") {
+					setNeutralButton(R.string.see_error) {
 						BottomSheetDialog(mContext?.activity ?: activity!!).apply {
 							setContentView(NestedScrollView(mContext!!).apply {
 								addView(MaterialTextView(mContext).apply {

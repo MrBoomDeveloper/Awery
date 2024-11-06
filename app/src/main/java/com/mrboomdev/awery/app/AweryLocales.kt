@@ -74,7 +74,7 @@ object AweryLocales {
 		SelectionDialog.single(context, Selection(availableLocales.map {
 			Selection.Selectable(it.first, it.first.toString(), it.second,
 				if(it.first.areMostlySame(currentLocale)) Selection.State.SELECTED else Selection.State.UNSELECTED)
-		})).setTitle("Select language")
+		})).setTitle(R.string.select_language)
 			.setPositiveButton(R.string.save) { dialog, selection ->
 				selection.get(Selection.State.SELECTED)?.let {
 					AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(it.item))

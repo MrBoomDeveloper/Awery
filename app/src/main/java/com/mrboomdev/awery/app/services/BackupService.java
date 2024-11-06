@@ -14,6 +14,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.CrashHandler;
 import com.mrboomdev.awery.util.io.FileUtil;
 
@@ -60,7 +61,7 @@ public class BackupService extends Service {
 				}
 
 				FileUtil.zip(map, into);
-				toast("Created backup successfully!");
+				toast(R.string.backup_success);
 				runOnUiThread(popup::dismiss);
 				stopSelf();
 
@@ -87,7 +88,7 @@ public class BackupService extends Service {
 		thread(() -> {
 			try {
 				FileUtil.unzip(uri, new File(getFilesDir(), ".."));
-				toast("Restored backup successfully!");
+				toast(R.string.restore_success);
 				restartApp();
 				stopSelf();
 			} catch(IOException e) {

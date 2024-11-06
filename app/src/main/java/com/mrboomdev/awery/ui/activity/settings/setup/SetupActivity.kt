@@ -65,8 +65,8 @@ class SetupActivity : AppCompatActivity() {
 		when(intent.getIntExtra("step", STEP_WELCOME)) {
 			STEP_WELCOME -> {
 				if(AwerySettings.SETUP_VERSION_FINISHED.value != 0) {
-					binding.title.text = "Awery has been updated!"
-					binding.message.text = "We have some new awesome things to setup!"
+					binding.title.setText(R.string.awery_updated_title)
+					binding.message.setText(R.string.awery_updated_description)
 					binding.backButton.visibility = View.GONE
 				}
 
@@ -82,8 +82,8 @@ class SetupActivity : AppCompatActivity() {
 			}
 
 			STEP_THEMING -> {
-				binding.title.text = "App colors"
-				binding.message.text = "Favorite colors lift your spirits :)"
+				binding.title.setText(R.string.color_palette)
+				binding.message.setText(R.string.color_palette_description)
 
 				binding.recycler.layoutManager = LinearLayoutManager(this)
 				binding.recycler.adapter = create(this)
@@ -135,7 +135,7 @@ class SetupActivity : AppCompatActivity() {
 					)
 				}
 
-				binding.title.text = "Extensions"
+				binding.title.setText(R.string.extensions)
 				binding.icon.visibility = View.VISIBLE
 				binding.icon.setImageResource(R.drawable.ic_extension_filled)
 				binding.icon.setImageTintAttr(com.google.android.material.R.attr.colorOnSecondaryContainer)
@@ -158,7 +158,7 @@ class SetupActivity : AppCompatActivity() {
 					createParty(275, 225, 300, 200, 150, .4),
 					createParty(275, 225, 300, 200, 330, .6))
 
-				binding.title.text = "We've done!"
+				binding.title.setText(R.string.were_done)
 				binding.message.text = "Now you can go watch your favourite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)"
 				binding.continueButton.setText(R.string.finish)
 

@@ -175,7 +175,7 @@ class MediaInfoFragment @JvmOverloads constructor(
 				spoilerChip.chipBackgroundColor = requireContext().resolveAttrColor(
 					com.google.android.material.R.attr.colorSecondaryContainer).toColorState()
 
-				spoilerChip.text = "Show spoilers"
+				spoilerChip.setText(R.string.show_spoilers)
 				binding.details.tags.addView(spoilerChip)
 
 				spoilerChip.setOnClickListener {

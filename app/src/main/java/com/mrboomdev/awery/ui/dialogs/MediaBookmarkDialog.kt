@@ -10,6 +10,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.data.Constants.HIDDEN_LISTS
@@ -127,18 +128,18 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
         private const val TAG = "MediaBookmarkDialog"
 
         fun requestCreateNewList(context: Context, callback: (list: CatalogList) -> Unit) {
-            val input = EditTextField(context, "List name")
+            val input = EditTextField(context, R.string.list_name)
             input.setLinesCount(1)
 
             val dialog = DialogBuilder(context)
-                .setTitle("Create new list")
+                .setTitle(R.string.create_list)
                 .addView(input.view)
                 .setNegativeButton(R.string.cancel) { it.dismiss() }
-                .setPositiveButton("Create") { dialog ->
+                .setPositiveButton(R.string.create) { dialog ->
                     val text = input.text.trim { it <= ' ' }
 
                     if(text.isBlank()) {
-                        input.setError("List name cannot be empty!")
+                        input.setError(R.string.text_cant_empty)
                         return@setPositiveButton
                     }
 
@@ -162,7 +163,7 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
 
         fun requestDeleteList(context: Context, list: CatalogList, callback: () -> Unit) {
             DialogBuilder(context)
-                .setTitle("Delete \"" + list.title + "\"?")
+                .setTitle(i18n(R.string.delete_confirmation, list.title))
                 .setMessage(R.string.sure_delete_list_description)
                 .setNegativeButton(R.string.cancel) { it.dismiss() }
                 .setPositiveButton(R.string.delete) { dialog ->

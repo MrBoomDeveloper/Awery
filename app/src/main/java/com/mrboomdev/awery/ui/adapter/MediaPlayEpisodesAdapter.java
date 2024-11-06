@@ -9,6 +9,7 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setTopMargin;
+import static java.util.Objects.requireNonNullElse;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
+import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
@@ -35,7 +37,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.WeakHashMap;
 
 import kotlin.NotImplementedError;
@@ -150,19 +151,18 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		var holder = new ViewHolder(binding);
 
 		binding.options.setOnClickListener(v -> {
-			long progress = Objects.requireNonNullElse(
-					progresses.get(holder.getItem()), 0L);
+			long progress = requireNonNullElse(progresses.get(holder.getItem()), 0L);
 
 			var menu = new PopupMenu(MaterialThemeOverlay.wrap(v.getContext(), null,
 					0, com.google.android.material.R.style.Widget_Material3_PopupMenu), v);
 
 			menu.getMenu().add(0, 0, 0, progress != 0
-					? "Remove from watched" : "Mark as watched");
+					? R.string.mark_not_watched : R.string.mark_watched);
 
-			menu.getMenu().add(0, 1, 0, "See comments");
+			menu.getMenu().add(0, 1, 0, R.string.comments);
 //			menu.getMenu().add(0, 2, 0, "Download");
-			menu.getMenu().add(0, 3, 0, "Share");
-			menu.getMenu().add(0, 4, 0, "Open in browser");
+			menu.getMenu().add(0, 3, 0, R.string.share);
+			menu.getMenu().add(0, 4, 0, R.string.open_link_externally);
 //			menu.getMenu().add(0, 5, 0, "Hide");
 
 			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {
@@ -238,7 +238,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 		}
 
 		public void updateProgress() {
-			long progress = Objects.requireNonNullElse(progresses.get(item), 0L);
+			long progress = requireNonNullElse(progresses.get(item), 0L);
 			binding.container.setAlpha((progress != 0) ? .6f : 1);
 			binding.bannerWrapper.setAlpha((progress != 0) ? .4f : 1);
 		}

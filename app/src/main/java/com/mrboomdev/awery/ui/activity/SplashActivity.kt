@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.mrboomdev.awery.BuildConfig
+import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
@@ -50,14 +51,14 @@ class SplashActivity : AppCompatActivity() {
 
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
 			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
-			status.text = "Checking if an crash has occured..."
+			status.setText(R.string.checking_if_crash_occurred)
 		}
 
 		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
 		setContentView(binding.root)
 
 		CrashHandler.showDialogIfCrashHappened(this) {
-			binding.status.text = "Checking the database..."
+			binding.status.setText(R.string.checking_database)
 
 			lifecycleScope.launch(Dispatchers.IO) {
 				try {
@@ -67,7 +68,7 @@ class SplashActivity : AppCompatActivity() {
 
 					CrashHandler.showDialog(
 						context = this@SplashActivity,
-						title = "Database is corrupted!",
+						titleRes = R.string.database_corrupted,
 						throwable = e,
 						dismissCallback = ::exitApp)
 
@@ -83,7 +84,7 @@ class SplashActivity : AppCompatActivity() {
 				if(USE_NEW_SOURCES) {
 					ExtensionsManager.init(this@SplashActivity).onEach {
 						launch(Dispatchers.Main) {
-							binding.status.text = "Loading extensions ${it.progress}/${it.max}"
+							binding.status.text = getString(R.string.loading_extensions_n, it.progress, it.max)
 						}
 					}.onCompletion {
 						// Tv version isn't done yet at 100%
@@ -128,7 +129,7 @@ class SplashActivity : AppCompatActivity() {
 		val factory = ExtensionsFactory.getInstanceNow()
 
 		if(factory == null) {
-			binding.status.text = "Loading extensions..."
+			binding.status.setText(R.string.loading_extensions)
 			return
 		}
 
@@ -141,7 +142,7 @@ class SplashActivity : AppCompatActivity() {
 			total += managerProgress.max
 		}
 
-		binding.status.text = "Loading extensions $progress/$total"
+		binding.status.text = getString(R.string.loading_extensions_n, progress, total)
 		runDelayed({ this.update() }, 100)
 	}
 

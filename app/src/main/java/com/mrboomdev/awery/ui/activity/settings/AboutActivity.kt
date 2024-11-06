@@ -19,6 +19,7 @@ import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.Companion.getMarkwon
+import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.databinding.ScreenAboutBinding
@@ -49,8 +50,8 @@ class AboutActivity : AppCompatActivity() {
 		binding.back.setOnClickListener { finish() }
 
 		binding.version.text = arrayOf(
-			"Version: ${BuildConfig.VERSION_NAME}",
-			"Build at: ${Date(BuildConfig.BUILD_TIME)}"
+			"${i18n(R.string.version)}: ${BuildConfig.VERSION_NAME}",
+			"${i18n(R.string.built_at)}: ${Date(BuildConfig.BUILD_TIME)}"
 		).joinToString("\n")
 
 		getMarkwon(this).setMarkdown(

@@ -78,8 +78,8 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 
 		binding.options.setOnClickListener { v ->
 			val menu = PopupMenu(this, v)
-			menu.menu.add(0, 0, 0, "Copy link to clipboard")
-			menu.menu.add(0, 1, 0, "Open in external browser")
+			menu.menu.add(0, 0, 0, R.string.copy_link_to_clipboard)
+			menu.menu.add(0, 1, 0, R.string.open_link_externally)
 
 			menu.setOnMenuItemClickListener { item ->
 				when(item.itemId) {

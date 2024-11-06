@@ -328,7 +328,7 @@ public class PlayerActivityController {
 			if(item == picker) {
 				var intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.setType(ContentType.ANY.getMimeType());
-				var chooser = Intent.createChooser(intent, "Choose a subtitles file");
+				var chooser = Intent.createChooser(intent, "Pick subtitles file");
 
 				startActivityForResult(activity, chooser, (resultCode, result) -> {
 					if(resultCode != PlayerActivity.RESULT_OK) return Unit.INSTANCE;

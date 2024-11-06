@@ -29,27 +29,27 @@ class OkiThrowableMessage(
 			is SSLHandshakeException -> i18n(R.string.failed_handshake)
 			is SocketException -> t.message
 			is UnknownHostException -> t.message
-			is BotSecurityBypassException -> "Failed to bypass ${t.blockerName}"
-			is ExtensionInstallException -> "Failed to install an extension"
-			is ExtensionLoadException -> "Failed to load an extension"
+			is BotSecurityBypassException -> i18n(R.string.failed_to_bypass, t.blockerName)
+			is ExtensionInstallException -> i18n(R.string.extension_installed_failed)
+			is ExtensionLoadException -> i18n(R.string.extension_load_failed)
 			is CancellationException -> "Operation cancelled"
 			is UnsupportedOperationException -> "Unsupported action"
 			is NotImplementedError -> "Unsupported action"
 
 			is HttpException -> when(t.code) {
-				400, 422 -> "Bad request"
+				400, 422 -> i18n(R.string.bad_request)
 				403 -> i18n(R.string.access_denied)
 				404 -> i18n(R.string.nothing_found)
 				429 -> i18n(R.string.too_much_requests)
 				500, 503 -> i18n(R.string.server_down)
 				504 -> i18n(R.string.timed_out)
-				else -> "Unknown network error"
+				else -> i18n(R.string.unknown_net_error)
 			}
 
 			else -> null
 		}) ?: run {
 			if(t.message?.contains(ROOM_EXCEPTION) == true) {
-				return "Database corrupted!"
+				return i18n(R.string.database_corrupted)
 			}
 
 			return@run i18n(R.string.something_went_wrong)
@@ -59,26 +59,24 @@ class OkiThrowableMessage(
 		get() = when(t) {
 			is LocalizedException -> t.getDescription(appContext)
 			is SocketTimeoutException -> i18n(R.string.connection_timeout)
-			is SocketException -> "Failed to connect to the server!"
-			is SSLHandshakeException -> "Failed to connect to the server!"
+			is BotSecurityBypassException -> i18n(R.string.failed_bypass_detailed, t.blockerName)
+			is SocketException -> i18n(R.string.failed_to_connect_to_server)
+			is SSLHandshakeException -> i18n(R.string.failed_to_connect_to_server)
 			is NotImplementedError -> t.message
 			is ExtensionInstallException -> t.userReadableMessage
 			is ExtensionLoadException -> t.userReadableMessage
 
 			is HttpException -> "(${t.code}) " + when(t.code) {
-				400, 422 -> "The request was invalid, please try again later."
-				401 -> "You are not logged in, please log in and try again."
-				403 -> "You have no access to this resource, try logging into your account."
+				400, 422 -> i18n(R.string.request_invalid_detailed)
+				401 -> i18n(R.string.not_logged_detailed)
+				403 -> i18n(R.string.no_access_detailed)
 				404 -> i18n(R.string.not_found_detailed)
-				429 -> "You have exceeded the rate limit, please try again later."
-				500 -> "An internal server error has occurred, please try again later."
-				503 -> "The server is currently unavailable, please try again later."
-				504 -> "The connection timed out, please try again later."
+				429 -> i18n(R.string.rate_limited_detailed)
+				500 -> i18n(R.string.server_internal_error)
+				503 -> i18n(R.string.server_unavailable)
+				504 -> i18n(R.string.connection_timeout)
 				else -> i18n(R.string.unknown_error)
 			}
-
-			is BotSecurityBypassException -> "Your request has been blocked by \"${t.blockerName}\". " +
-					"Try completing an captcha and refreshing to resolve this problem"
 
 			else -> null
 		} ?: run {
@@ -101,6 +99,8 @@ class OkiThrowableMessage(
 			is SocketTimeoutException -> Category.TIMEOUT
 			is SSLHandshakeException -> Category.FAILED_TO_CONNECT
 			is ZeroResultsException -> Category.NO_RESULTS
+			is NoSuchElementException -> Category.NO_RESULTS
+			is HttpException -> Category.FAILED_TO_CONNECT
 			else -> Category.UNKNOWN
 		}
 
@@ -136,11 +136,15 @@ private val Throwable.mayDescribe: Boolean
 	get() = this is ExtensionLoadException
 			|| this is ExtensionInstallException
 			|| this is UnsupportedOperationException
+			|| this is HttpException
 			|| this is CancellationException
+			|| this is LocalizedException
 			|| this is NotImplementedError
 			|| this is SocketTimeoutException
 			|| this is BotSecurityBypassException
 			|| this is SSLHandshakeException
+			|| this is SocketException
+			|| this is UnknownHostException
 
 private val Throwable.isNetworkExceptionImpl
 	get() = this is SocketTimeoutException ||
