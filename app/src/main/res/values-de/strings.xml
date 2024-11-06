@@ -467,4 +467,7 @@
     <string name="selected_s">%s ausgewählt</string>
     <string name="loading_videos_list">Videoliste wird geladen</string>
     <string name="buffering_video">Video wird gepuffert</string>
+    <string name="bad_request">Fehlerhafte Anfrage</string>
+    <string name="mark_watched">Als gesehen markieren</string>
+    <string name="delete_confirmation">%s gelöscht</string>
 </resources>
