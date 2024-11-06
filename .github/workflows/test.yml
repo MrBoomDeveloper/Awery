@@ -21,12 +21,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMMIT_LOG: ""
-      
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Download last SHA artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: Test.yml
+          name: last-sha
+          path: .
+        continue-on-error: true 
 
     - name: Download last SHA artifact
       uses: dawidd6/action-download-artifact@v3
