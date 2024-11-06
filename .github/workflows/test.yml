@@ -118,7 +118,7 @@ jobs:
 
           declare -A additional_info
           additional_info["Sheby"]="\n Discord: <@612532963938271232>\n AniList: [Sheby](<https://anilist.co/user/5724017/>)"
-          additional_info["itsmechinmoy"]="\n Discord: <@523539866311720963>\n AniList: [Sheby](<https://anilist.co/user/6110204/>)""
+          additional_info["itsmechinmoy"]="\n Discord: <@523539866311720963>\n AniList: [itsmechinmoy](<https://anilist.co/user/6110204/>)"
           additional_info["MrBoomDev"]="\n Discord: <@1034891767822176357>"
 
           declare -A contributor_colors
