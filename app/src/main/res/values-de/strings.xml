@@ -474,4 +474,5 @@
     <string name="copy_link_to_clipboard">Link in die Zwischenablage kopieren</string>
     <string name="backup_success">Datensicherung erfolgreich erstellt!</string>
     <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
+    <string name="update_available">Aktualisierung verfügbar</string>
 </resources>
