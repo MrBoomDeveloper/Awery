@@ -484,4 +484,9 @@
     <string name="searching_for"></string>
     <string name="see_error"></string>
     <string name="wallpaper_based_colors"></string>
+    <string name="dismiss"></string>
+    <string name="version"></string>
+    <string name="download"></string>
+    <string name="size"></string>
+    <string name="select_language"></string>
 </resources>
