@@ -450,4 +450,21 @@
     <string name="adult_content">Erwachseneninhalt</string>
     <string name="read_now">Jetzt lesen</string>
     <string name="app_name" translatable="false"/>
+    <string name="awery_updated_title">Awery wurde aktualisiert!</string>
+    <string name="were_done">Wir haben es geschafft!</string>
+    <string name="database_corrupted">Datenbank beschädigt!</string>
+    <string name="failed_to_bypass">Umgehung von %s fehlgeschlagen</string>
+    <string name="extension_load_failed">Das Laden einer Erweiterung ist fehlgeschlagen!</string>
+    <string name="failed_to_connect_to_server">Verbindung zum Server ist fehlgeschlagen!</string>
+    <string name="server_internal_error">Es ist ein interner Serverfehler aufgetreten, bitte versuchen Sie es später noch einmal.</string>
+    <string name="server_unavailable">Der Server ist derzeit nicht verfügbar, bitte versuchen Sie es später noch einmal.</string>
+    <string name="unknown_net_error">Unbekannter Netzwerkfehler</string>
+    <string name="loading_extensions_n">Erweiterungen %d/%d werden geladen</string>
+    <string name="loading_extensions">Erweiterungen werden geladen</string>
+    <string name="checking_if_crash_occurred">Es wird geprüft, ob ein Absturz aufgetreten ist</string>
+    <string name="color_palette_description">Lieblingsfarben heben die Laune :)</string>
+    <string name="awery_updated_description">Wir haben ein paar neue, tolle Sachen zum Einrichten!</string>
+    <string name="selected_s">%s ausgewählt</string>
+    <string name="loading_videos_list">Videoliste wird geladen</string>
+    <string name="buffering_video">Video wird gepuffert</string>
 </resources>
