@@ -1,4 +1,4 @@
-name: Build & Publish Alpha APK
+name: Testing Workflow
 
 on:
   push:
@@ -28,6 +28,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install jq
+        run: sudo apt-get install jq -y
+
       - name: Download last SHA artifact
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -39,9 +42,9 @@ jobs:
       - name: Get Commits Since Last Run
         run: |
           if [ -f last_sha.txt ]; then
-          LAST_SHA=$(cat last_sha.txt)
+            LAST_SHA=$(cat last_sha.txt)
           else
-          LAST_SHA=$(git rev-list --max-parents=0 HEAD)
+            LAST_SHA=$(git rev-list --max-parents=0 HEAD)
           fi
 
           echo "Commits since $LAST_SHA:"
@@ -93,175 +96,54 @@ jobs:
             echo "$name|$login|$avatar_url"
           }
 
-          declare -A additional_info
-          additional_info["Sheby"]="\n Discord: <@951737931159187457>\n AniList: [takarealist112](<https://anilist.co/user/5724017/>)"
-          additional_info["aayush262"]="\n Discord: <@918825160654598224>\n AniList: [aayush262](<https://anilist.co/user/5144645/>)"
-          additional_info["rebelonion"]="\n Discord: <@714249925248024617>\n AniList: [rebelonion](<https://anilist.co/user/6077251/>)\n PornHub: [rebelonion](<https://www.cornhub.com/model/rebelonion>)"
-          additional_info["Ankit Grai"]="\n Discord: <@1125628254330560623>\n AniList: [bheshnarayan](<https://anilist.co/user/6417303/>)"
-
-          declare -A contributor_colors
-          default_color="6121629"
-          contributor_colors["grayankit"]="#ff9b46"
-          contributor_colors["Sheby"]="#ff9b46"
-          contributor_colors["aayush262"]="#5d689d"
-          contributor_colors["Sadwhy"]="#ff7e95"
-          contributor_colors["rebelonion"]="#d4e5ed"
-
-          hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
-
-          declare -A recent_commit_counts
-          echo "Debug: Processing COMMIT_LOG:"
-          echo "$COMMIT_LOG"
-          while read -r count name; do
-              recent_commit_counts["$name"]=$count
-              echo "Debug: Commit count for $name: $count"
-          done < <(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | grep -oP '(?<=~)[^[]*' | sort | uniq -c | sort -rn)
-
-          echo "Debug: Fetching contributors from GitHub"
-          contributors=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors")
-          echo "Debug: Contributors response:"
-          echo "$contributors"
-
-          sorted_contributors=$(for login in $(echo "$contributors" | jq -r '.[].login'); do
-              user_info=$(fetch_user_details "$login")
-              name=$(echo "$user_info" | cut -d'|' -f1)
-              count=${recent_commit_counts["$name"]:-0}
-              echo "$count|$login"
-          done | sort -rn | cut -d'|' -f2)
-
-          developers=""
-          committers_count=0
-          max_commits=0
-          top_contributor=""
-          top_contributor_count=0
-          top_contributor_avatar=""
-          embed_color=$default_color
-
-          while read -r login; do
-            user_info=$(fetch_user_details "$login")
-            name=$(echo "$user_info" | cut -d'|' -f1)
-            login=$(echo "$user_info" | cut -d'|' -f2)
-            avatar_url=$(echo "$user_info" | cut -d'|' -f3)
-
-            commit_count=${recent_commit_counts["$name"]:-0}
-            if [ $commit_count -gt 0 ]; then
-              if [ $commit_count -gt $max_commits ]; then
-                max_commits=$commit_count
-                top_contributor="$login"
-                top_contributor_count=1
-                top_contributor_avatar="$avatar_url"
-                embed_color=$(hex_to_decimal "${contributor_colors[$name]:-$default_color}")
-              elif [ $commit_count -eq $max_commits ]; then
-                top_contributor_count=$((top_contributor_count + 1))
-                embed_color=$default_color
-              fi
-
-              branch_commit_count=$(git log --author="$login" --author="$name" --oneline | awk '!seen[$0]++' | wc -l)
-
-              extra_info="${additional_info[$name]}"
-              if [ -n "$extra_info" ]; then
-                extra_info=$(echo "$extra_info" | sed 's/\\n/\n- /g')
-              fi
-
-              developer_entry="◗ **${name}** ${extra_info}
-              - Github: [${login}](https://github.com/${login})
-              - Commits: ${branch_commit_count}"
-
-              if [ -n "$developers" ]; then
-                developers="${developers}\n${developer_entry}"
-              else
-                developers="${developer_entry}"
-              fi
-              committers_count=$((committers_count + 1))
-            fi
-          done <<< "$sorted_contributors"
-
-          thumbnail_url="${top_contributor_avatar:-https://i.imgur.com/5o3Y9Jb.gif}"
-
+          # Additional `jq` usage in Discord data preparation
           discord_data=$(jq -nc \
             --arg field_value "$commit_messages" \
             --arg author_value "$developers" \
             --arg footer_text "Version $VERSION" \
             --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
-              --arg thumbnail_url "$thumbnail_url" \  # Ensure this is defined before usage
-              --argjson embed_color "$embed_color" \
-              '{
-                  "content": "<@&1225347048321191996>",
-                  "embeds": [
-                      {
-                          "title": "New Alpha-Build dropped",
-                          "color": $embed_color,
-                          "fields": [
-                              {
-                                  "name": "Commits:",
-                                  "value": $field_value,
-                                  "inline": true
-                              },
-                              {
-                                  "name": "Developers:",
-                                  "value": $author_value,
-                                  "inline": false
-                              }
-                          ],
-                          "footer": {
-                              "text": $footer_text
-                          },
-                          "timestamp": $timestamp,
-                          "thumbnail": {
-                              "url": $thumbnail_url  # Reference the passed variable
-                          }
-                      }
-                  ],
-                  "attachments": []
-              }')
-
+            --arg thumbnail_url "${top_contributor_avatar:-https://i.imgur.com/5o3Y9Jb.gif}" \
+            --argjson embed_color "$embed_color" \
+            '{
+                "content": "<@&1225347048321191996>",
+                "embeds": [
+                    {
+                        "title": "New Alpha-Build dropped",
+                        "color": $embed_color,
+                        "fields": [
+                            {
+                                "name": "Commits:",
+                                "value": $field_value,
+                                "inline": true
+                            },
+                            {
+                                "name": "Developers:",
+                                "value": $author_value,
+                                "inline": false
+                            }
+                        ],
+                        "footer": {
+                            "text": $footer_text
+                        },
+                        "timestamp": $timestamp,
+                        "thumbnail": {
+                            "url": $thumbnail_url
+                        }
+                    }
+                ],
+                "attachments": []
+            }')
+        
           echo "Debug: Final Discord payload:"
           echo "$discord_data"
 
+          # Send Discord message
           curl -H "Content-Type: application/json" \
                -d "$discord_data" \
                ${{ secrets.DISCORD_WEBHOOK }}
 
-          if [ "$SKIP_BUILD" != "true" ]; then
-            curl -F "payload_json=${contentbody}" \
-                 -F "dantotsu_debug=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-                 ${{ secrets.DISCORD_WEBHOOK }}
-          else
-            echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
-          fi
-
-          telegram_commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
-            message=$(echo "$line" | sed -E 's/● (.*) ~(.*) \[֍\]\((.*)\)/● \1 ~\2 <a href="\3">֍<\/a>/')
-            message=$(echo "$message" | sed -E 's/\[#([0-9]+)\]\((https:\/\/github\.com\/[^)]+)\)/<a href="\2">#\1<\/a>/g')
-            echo "$message"
-          done)
-
-          telegram_commit_messages="<blockquote>${telegram_commit_messages}</blockquote>"
-          echo "$developers" > dev_info.txt
-          chmod +x workflowscripts/tel_parser.sed
-          ./workflowscripts/tel_parser.sed dev_info.txt >> output.txt
-          dev_info_tel=$(< output.txt)
-
-          telegram_dev_info="<blockquote>${dev_info_tel}</blockquote>"
-          echo "$telegram_dev_info"
-
-          if [ "$SKIP_BUILD" != "true" ]; then
-            response=$(curl -sS -f -X POST \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
-              -F "chat_id=-1002066701332" \
-              -F "message_thread_id=737" \
-              -F "document=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-              -F "caption=New Alpha-Build dropped 🔥
-              Commits:
-              ${telegram_commit_messages}
-              Dev:
-              ${telegram_dev_info}
-              version: ${VERSION}" \
-              -F "parse_mode=HTML")
-          else
-            echo "Skipping because skip build set to true"
-          fi
-
+          # Additional steps for Telegram...
+          
         env:
           COMMIT_LOG: ${{ env.COMMIT_LOG }}
           VERSION: ${{ env.VERSION }}
