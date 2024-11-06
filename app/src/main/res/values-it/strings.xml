@@ -449,5 +449,5 @@
     <string name="no_access_detailed">Errore 403. Non hai accesso a questa risorsa, prova ad accedere al tuo account e riprova.</string>
     <string name="rate_limited_detailed">Errore 429. Hai superato il limite di frequenza, per favore riprova più tardi.</string>
     <string name="not_logged_detailed">Errore 401. Non sei loggato, per favore effettua il login e riprova.</string>
-    <string name="app_name" translatable="false"></string>
+    <string name="app_name" translatable="false"/>
 </resources>
