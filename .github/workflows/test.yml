@@ -199,7 +199,21 @@ jobs:
             fi
           done <<< "$sorted_contributors"
 
-          thumbnail_url="${top_contributor_avatar:-https://i.imgur.com/5o3Y9Jb.gif}"
+          if [ $top_contributor_count -eq 1 ]; then
+          thumbnail_url="$top_contributor_avatar"
+          else
+          thumbnail_url="https://i.imgur.com/5o3Y9Jb.gif"
+          embed_color=$default_color
+          fi
+        
+          max_length=1000
+          commit_messages=$(echo "$COMMIT_LOG" | sed 's/%0A/\n/g; s/^/\n/')
+          if [ ${#developers} -gt $max_length ]; then
+          developers="${developers:0:$max_length}... (truncated)"
+          fi
+          if [ ${#commit_messages} -gt $max_length ]; then
+          commit_messages="${commit_messages:0:$max_length}... (truncated)"
+          fi
 
           discord_data=$(jq -nc \
               --arg field_value "$commit_messages" \
