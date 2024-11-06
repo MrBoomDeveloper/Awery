@@ -471,5 +471,7 @@
     <string name="mark_watched">Als gesehen markieren</string>
     <string name="delete_confirmation">%s löschen?</string>
     <string name="open_link_externally">In externem Browser öffnen</string>
-    <string name="copy_link_to_clipboard">Token in die Zwischenablage kopieren</string>
+    <string name="copy_link_to_clipboard">Link in die Zwischenablage kopieren</string>
+    <string name="backup_success">Datensicherung erfolgreich erstellt!</string>
+    <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
 </resources>
