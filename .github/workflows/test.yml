@@ -81,7 +81,29 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-   
+      - name: Build Alpha APK
+        id: build_alpha
+        run: ./gradlew assembleAlphaRelease
+
+      - name: Sign Alpha APK
+        if: success()
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/alpha/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+          
+      - name: Upload Alpha APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Alpha APK"
+          retention-days: 90
+          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          
       - name: Upload APK to Discord and Telegram
         shell: bash
         run: |
@@ -103,7 +125,7 @@ jobs:
           declare -A contributor_colors
           default_color="6121629"
           contributor_colors["grayankit"]="#ff9b46"
-          contributor_colors["Shebyyy"]="#ff9b46"
+          contributor_colors["Sheby"]="#ff9b46"
           contributor_colors["aayush262"]="#5d689d"
           contributor_colors["Sadwhy"]="#ff7e95"
           contributor_colors["rebelonion"]="#d4e5ed"
