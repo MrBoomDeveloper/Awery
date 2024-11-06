@@ -447,7 +447,11 @@
     <string name="read_now">Leer ahora</string>
     <string name="request_invalid_detailed">Error 400. La solicitud era inválida, por favor intenta nuevamente más tarde.</string>
     <string name="not_logged_detailed">Error 401. No has iniciado sesión, por favor inicia sesión e intenta nuevamente.</string>
-    <string name="no_access_detailed">Error 403. No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta e intenta nuevamente.</string>
-    <string name="rate_limited_detailed">Error 429. Has excedido el límite de velocidad, por favor intenta nuevamente más tarde.</string>
+    <string name="no_access_detailed">No tienes acceso a este recurso, intenta iniciar sesión en tu cuenta y vuelve a intentarlo.</string>
+    <string name="rate_limited_detailed">Has excedido el límite de velocidad, por favor intenta nuevamente más tarde.</string>
     <string name="app_name" translatable="false"/>
+    <string name="database_corrupted">¡Base de datos corrupta!</string>
+    <string name="awery_updated_title">¡Awery ha sido actualizado!</string>
+    <string name="checking_database">Comprobando la base de datos</string>
+    <string name="bad_request">Solicitud incorrecta</string>
 </resources>
