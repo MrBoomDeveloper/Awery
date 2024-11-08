@@ -129,7 +129,7 @@
     <string name="ask_update_progress_anime">Preguntar por cada Medios \"Individualmente\"</string>
     <string name="ask_update_progress_info_ep">Desactivar hará que siempre se actualice automáticamente el progreso cuando se vea el episodio.</string>
     <string name="watch_complete_percentage">Porcentaje de Actualización de Visualización</string>
-    <string name="watch_complete_percentage_info">El porcentaje en el que tu progreso debe ser actualizado después de ver un episodio.\nEsto también establece cuándo precargar los enlaces para el siguiente episodio.</string>
+    <string name="watch_complete_percentage_info">El porcentaje en el que tu progreso debe ser actualizado después de ver un episodio.\nEsto también establece el %s para cuando hay que precargar los enlaces para el siguiente episodio.</string>
     <string name="behaviour">Comportamiento</string>
     <string name="always_continue">Siempre Continuar desde donde lo dejaste</string>
     <string name="pause_video_focus">Pausar cuando no está en Foco</string>
