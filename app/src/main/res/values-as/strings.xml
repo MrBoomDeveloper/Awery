@@ -129,7 +129,7 @@
     <string name="ask_update_progress_anime">প্ৰত্যেক মিডিয়াৰ বাবে \"বিচাৰা\"</string>
     <string name="ask_update_progress_info_ep">বন্ধ কৰি ললে এপিচ\'ড চাওঁতে স্বয়ংক্ৰিয়ভাৱে প্ৰগ্ৰেছ আপডেট হব।</string>
     <string name="watch_complete_percentage">চাবলৈ নিৰ্দিষ্ট শতাংশ</string>
-    <string name="watch_complete_percentage_info">এপিচ\'ড চাওঁতে কোন সময়ত আপডেট কৰিব লাগিব তাৰ শতাংশ নিৰ্ধাৰণ কৰক।\nএইয়া পৰবৰ্তী এপিচ\'ডৰ লিংক প্ৰিল\'ড কৰাৰ সময়টোও নিৰ্ধাৰণ কৰে।</string>
+    <string name="watch_complete_percentage_info">এপিচ\'ড চাওঁতাৰ পিছত আপোনাৰ অগ্ৰগতি কিমান শতাংশত আপডেট কৰিব লাগিব সেয়া নিৰ্ধাৰণ কৰক। \nএইয়া পৰবৰ্তী এপিচ\'ডৰ লিংকসমূহ প্ৰিল\'ড কৰিবলৈ %s সময় নিৰ্ধাৰণ কৰে।</string>
     <string name="behaviour">আচৰণ</string>
     <string name="always_continue">য\'ৰ পৰা এৰি থৈছিলা তাতৰ পৰা পুনৰ আৰম্ভ কৰক</string>
     <string name="pause_video_focus">পত্ৰলত নহ\'লে ভিডিঅ\' ৰখাওক</string>
