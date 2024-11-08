@@ -155,7 +155,7 @@
     <string name="ask_update_progress_anime">Ask for each Media \"Individually\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">The percentage at which your progress should be updated after watching an episode.\nThis also sets the \% for when to preload links for the next episode.</string>
+    <string name="watch_complete_percentage_info">The percentage at which your progress should be updated after watching an episode.\nThis also sets the %s for when to preload links for the next episode.</string>
     <string name="behaviour">Behaviour</string>
     <string name="always_continue">Always Continue from where you left off</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
