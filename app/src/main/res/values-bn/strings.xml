@@ -449,5 +449,44 @@
     <string name="not_logged_detailed">ত্রুটি 401। আপনি লগ ইন করা নেই, দয়া করে লগ ইন করুন এবং আবার চেষ্টা করুন।</string>
     <string name="no_access_detailed">ত্রুটি 403। আপনার এই রিসোর্সে অ্যাক্সেস নেই, আপনার অ্যাকাউন্টে লগ ইন করার চেষ্টা করুন এবং আবার চেষ্টা করুন।</string>
     <string name="rate_limited_detailed">ত্রুটি 429। আপনি রেট সীমা অতিক্রম করেছেন, দয়া করে পরে আবার চেষ্টা করুন।</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
+    <string name="show_spoilers"></string>
+    <string name="version"></string>
+    <string name="searching_episodes_for"></string>
+    <string name="dismiss"></string>
+    <string name="awery_updated_title"></string>
+    <string name="database_corrupted"></string>
+    <string name="failed_to_bypass"></string>
+    <string name="checking_if_crash_occurred"></string>
+    <string name="loading_extensions"></string>
+    <string name="delete_confirmation"></string>
+    <string name="mark_not_watched"></string>
+    <string name="backup_success"></string>
+    <string name="copy_link_to_clipboard"></string>
+    <string name="built_at"></string>
+    <string name="download"></string>
+    <string name="searching_for"></string>
+    <string name="unknown_net_error"></string>
+    <string name="loading_extensions_n"></string>
+    <string name="color_palette_description"></string>
+    <string name="restore_success"></string>
+    <string name="loading_videos_list"></string>
+    <string name="server_internal_error"></string>
+    <string name="failed_bypass_detailed"></string>
+    <string name="update_available"></string>
+    <string name="see_error"></string>
+    <string name="mark_watched"></string>
+    <string name="extension_load_failed"></string>
+    <string name="select_language"></string>
+    <string name="failed_to_connect_to_server"></string>
+    <string name="checking_database"></string>
+    <string name="selected_s"></string>
+    <string name="server_unavailable"></string>
+    <string name="size"></string>
+    <string name="buffering_video"></string>
+    <string name="were_done"></string>
+    <string name="bad_request"></string>
+    <string name="awery_updated_description"></string>
+    <string name="open_link_externally"></string>
+    <string name="wallpaper_based_colors"></string>
 </resources>
