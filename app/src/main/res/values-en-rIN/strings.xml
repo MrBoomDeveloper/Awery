@@ -40,7 +40,7 @@
     <string name="devs">Developers</string>
     <string name="ask_update_progress_info_ep">Isko off karne par hamesha episode dekhne ke baad progress ko automatically update karega.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">Ye percentage hai jab aapke progress ko episode dekhne ke baad update kiya jana chahiye.\nYe agle episode ke links preload karne ke waqt ke liye bhi set karta hai.</string>
+    <string name="watch_complete_percentage_info">Ye percentage hai jab aapke progress ko episode dekhne ke baad update kiya jana chahiye.\nYe agle episode ke links preload karne ke waqt ke liye bhi %s set karta hai.</string>
     <string name="behaviour">Vyavhar</string>
     <string name="seek_time">Seek Samay</string>
     <string name="amoled">Amoled Theme</string>
@@ -238,7 +238,7 @@
     <string name="video_info_info">Abhi play ho rahi video ki resolution dikhata hai, jo <b>\"Multi Quality\"</b> servers ke liye upyogi hai.</string>
     <string name="default_quality">Auto Quality Chayan</string>
     <string name="height">Unchai</string>
-    <string name="full_disclaimer">- Awery sirf ek anime aur manga tracker provide karta hai aur streaming ya downloading ki suvidha nahi deta.\n\n - Awery ya uske developer/staff me se koi bhi Awery ke andar milne wale content ko host nahi karta. Sabhi images aur anime/manga ki jankari alag-alag public APIs (AniList, MyAnimeList, Kitsu) se li gayi hai.\n\n - Saath hi, Awery me milne wale sabhi anime/manga ke links third-party plugins se liye gaye hai, jo Awery ya uske staff se related nahi hai.\n\n - Awery ya uske malik kisi bhi content ke misuse ke liye zimmedar nahi hai, na hi app ke andar ya bahar ke content ke prasar ke liye accountable hai.\n\n - Awery ka istemal karte hue, aap maante hai ki app ke developer kisi bhi content ke liye zimmedar nahi hai. Aap ye bhi maante hai ki aap Awery ka istemal copyright kiye gaye content ko download ya stream karne ke liye nahi karenge.\n\n - Agar internet infringement se judi samasyaayein ho, to kripya source website se sampark karein. Developer kisi bhi kanuni jimmedari nahi leta.</string>
+    <string name="full_disclaimer">Awery sirf ek anime aur manga tracker provide karta hai aur streaming ya downloading ki suvidha nahi deta.\n - Awery ya uske developer/staff me se koi bhi Awery ke andar milne wale content ko host nahi karta. Sabhi images aur anime/manga ki jankari alag-alag public APIs (AniList, MyAnimeList, Kitsu) se li gayi hai.\n - Saath hi, Awery me milne wale sabhi anime/manga ke links third-party plugins se liye gaye hai, jo Awery ya uske staff se related nahi hai.\n - Awery ya uske malik kisi bhi content ke misuse ke liye zimmedar nahi hai, na hi app ke andar ya bahar ke content ke prasar ke liye accountable hai.\n - Awery ka istemal karte hue, aap maante hai ki app ke developer kisi bhi content ke liye zimmedar nahi hai. Aap ye bhi maante hai ki aap Awery ka istemal copyright kiye gaye content ko download ya stream karne ke liye nahi karenge.\n - Agar internet infringement se judi samasyaayein ho, to kripya source website se sampark karein. Developer kisi bhi kanuni jimmedari nahi leta.</string>
     <string name="width">Chaudai</string>
     <string name="default_quality_info">Apne aap sabse kareebi quality use karta hai, jo keval \"Multi Quality\" servers par lagu hota hai. Video play hone par auto change hota hai.</string>
     <string name="default_playback_speed">Default Playback Speed: %1$s</string>
