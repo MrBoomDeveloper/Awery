@@ -129,14 +129,7 @@
     <string name="about">About</string>
     <string name="devs">Developers</string>
     <string name="disclaimer">Disclaimer</string>
-    <string name="full_disclaimer">
-    - Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.
-    \n - Awery or any of its developers/staff don't host any content inside Awery. Any images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).
-    \n - Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff.
-    \n - Awery or its owners aren't liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.
-    \n - By using Awery, you comply with the fact that the app developer is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.
-    \n - If internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.
-    </string>
+    <string name="full_disclaimer">Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.\n- Awery or any of its developers/staff don't host any content inside Awery. Any images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).\n-Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff\n-Awery or its owners aren't liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.\n-By using Awery, you comply with the fact that the app developer is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.\n-If internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.</string>
     <string name="video">Video</string>
     <string name="video_info_info">Shows what the Resolution of the current video playing, useful for <b>\"Multi Quality\"</b> servers.</string>
     <string name="default_quality">Auto Quality Selection</string>
@@ -162,7 +155,7 @@
     <string name="ask_update_progress_anime">Ask for each Media \"Individually\"</string>
     <string name="ask_update_progress_info_ep">Turning off will always automatically update progress when the episode is watched.</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="watch_complete_percentage_info">The percentage at which your progress should be updated after watching an episode. \nThis also sets the \% for when to preload links for the next episode.</string>
+    <string name="watch_complete_percentage_info">The percentage at which your progress should be updated after watching an episode.\nThis also sets the \% for when to preload links for the next episode.</string>
     <string name="behaviour">Behaviour</string>
     <string name="always_continue">Always Continue from where you left off</string>
     <string name="pause_video_focus">Pause when not in Focus</string>
