@@ -162,10 +162,10 @@
     <string name="connection_failed">Connection asafal raha</string>
     <string name="banned">Aap par pabandi lagayi gayi hai</string>
     <string name="read_now">Abhi padhein</string>
-    <string name="request_invalid_detailed">Galti 400. Request galat thi, kripya baad mein koshish karein.</string>
-    <string name="not_logged_detailed">Galti 401. Aap logged in nahi hain, kripya login karein aur fir koshish karein.</string>
-    <string name="no_access_detailed">Galti 403. Aapko is resource ka access nahi hai, apne account mein login karein aur fir koshish karein.</string>
-    <string name="rate_limited_detailed">Galti 429. Aapne rate limit ko paar kar liya hai, kripya baad mein koshish karein.</string>
+    <string name="request_invalid_detailed">Request galat thi, kripya baad mein koshish karein.</string>
+    <string name="not_logged_detailed">Aap logged in nahi hain, kripya login karein aur fir koshish karein.</string>
+    <string name="no_access_detailed">Aapko is resource ka access nahi hai, apne account mein login karein aur fir koshish karein.</string>
+    <string name="rate_limited_detailed">Aapne rate limit ko paar kar liya hai, kripya baad mein koshish karein.</string>
     <string name="empty_library_title">Library khaali hai</string>
     <string name="empty_library_message">Catalog dekhna shuru karo aur naye cheezein yahan dikhengi!</string>
     <string name="login">Login karo</string>

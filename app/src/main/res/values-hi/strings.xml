@@ -322,10 +322,10 @@
     <string name="confirm">पुष्टि करें</string>
     <string name="no_tracker_extensions">आपके पास कोई इंस्टॉल्ड ट्रैकर एक्सटेंशन्स नहीं हैं। यहाँ कुछ नया देखने के लिए उन्हें डाउनलोड करें!</string>
     <string name="no_subtitles_extensions">आपके पास कोई इंस्टॉल्ड सबटाइटल एक्सटेंशन्स नहीं हैं। यहाँ कुछ नया देखने के लिए उन्हें डाउनलोड करें!</string>
-    <string name="request_invalid_detailed">त्रुटि 400। अनुरोध अमान्य था, कृपया बाद में पुनः प्रयास करें।</string>
-    <string name="not_logged_detailed">त्रुटि 401। आप लॉग इन नहीं हैं, कृपया लॉग इन करें और पुनः प्रयास करें।</string>
-    <string name="no_access_detailed">त्रुटि 403। आपके पास इस संसाधन तक पहुंच नहीं है, कृपया अपने खाते में लॉग इन करें और पुनः प्रयास करें।</string>
-    <string name="rate_limited_detailed">त्रुटि 429। आप ने दर सीमा को पार कर लिया है, कृपया बाद में पुनः प्रयास करें।</string>
+    <string name="request_invalid_detailed">अनुरोध अमान्य था, कृपया बाद में पुनः प्रयास करें।</string>
+    <string name="not_logged_detailed">आप लॉग इन नहीं हैं, कृपया लॉग इन करें और पुनः प्रयास करें।</string>
+    <string name="no_access_detailed">आपके पास इस संसाधन तक पहुंच नहीं है, कृपया अपने खाते में लॉग इन करें और पुनः प्रयास करें।</string>
+    <string name="rate_limited_detailed">आप ने दर सीमा को पार कर लिया है, कृपया बाद में पुनः प्रयास करें।</string>
     <string name="restart">पुनरारंभ करें</string>
     <string name="restart_to_apply_settings">सेटिंग्स लागू करने के लिए, आपको एप्लिकेशन को पुनरारंभ करना होगा</string>
     <string name="ok">ठीक है</string>
