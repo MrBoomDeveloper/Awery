@@ -322,7 +322,7 @@
     <string name="no_subtitles_extensions">No tienes extensiones de subtítulos instaladas. ¡Descárgalas para ver algo nuevo aquí!</string>
     <string name="confirm">Confirmar</string>
     <string name="nsfw_content">Contenido NSFW</string>
-    <string name="ok">Aceptar</string>
+    <string name="ok">De acuerdo</string>
     <string name="hide">Ocultar</string>
     <string name="you_reached_end">Has llegado al final</string>
     <string name="blacklist">Lista Negra</string>
@@ -415,10 +415,10 @@
     <string name="unknown_file_type">¡Tipo de archivo desconocido!</string>
     <string name="unknown_file_type_description">Lo siento, pero Awery aún no soporta este formato de archivo. Por favor, informa a los desarrolladores sobre este problema para que puedan solucionarlo lo antes posible.</string>
     <string name="torrent_usupported">Los torrents no están soportados</string>
-    <string name="connection_error">Ha ocurrido un error de conexión, por favor intenta nuevamente más tarde</string>
+    <string name="connection_error">Ha ocurrido un error de conexión, por favor inténtalo nuevamente más tarde</string>
     <string name="torrent_unsupported_message">Lo siento, pero Awery no soporta torrents en este momento. Puedes intentar instalar un reproductor de torrents de terceros para reproducir este tipo de archivo.</string>
-    <string name="unknown_error">Ha ocurrido un error desconocido, por favor intenta nuevamente más tarde</string>
-    <string name="connection_timeout">Se ha producido un tiempo de espera en la conexión, por favor intenta nuevamente más tarde</string>
+    <string name="unknown_error">Ha ocurrido un error desconocido, por favor inténtalo nuevamente más tarde</string>
+    <string name="connection_timeout">Se ha producido un tiempo de espera en la conexión, por favor intentalo nuevamente más tarde</string>
     <string name="text_cant_empty">¡El texto no puede estar vacío!</string>
     <string name="this_not_number">¡Esto no es un número!</string>
     <string name="create_tab">Crear una pestaña</string>
