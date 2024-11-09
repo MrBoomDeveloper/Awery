@@ -449,5 +449,44 @@
     <string name="not_logged_detailed">Fout 401. Je bent niet ingelogd, log in en probeer het opnieuw.</string>
     <string name="no_access_detailed">Fout 403. Je hebt geen toegang tot deze bron, log in op je account en probeer het opnieuw.</string>
     <string name="rate_limited_detailed">Fout 429. Je hebt de limiet overschreden, probeer het later opnieuw.</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
+    <string name="show_spoilers"></string>
+    <string name="failed_to_connect_to_server"></string>
+    <string name="update_available"></string>
+    <string name="built_at"></string>
+    <string name="size"></string>
+    <string name="failed_to_bypass"></string>
+    <string name="checking_database"></string>
+    <string name="bad_request"></string>
+    <string name="database_corrupted"></string>
+    <string name="were_done"></string>
+    <string name="awery_updated_title"></string>
+    <string name="unknown_net_error"></string>
+    <string name="server_internal_error"></string>
+    <string name="server_unavailable"></string>
+    <string name="extension_load_failed"></string>
+    <string name="color_palette_description"></string>
+    <string name="loading_extensions"></string>
+    <string name="searching_for"></string>
+    <string name="awery_updated_description"></string>
+    <string name="loading_videos_list"></string>
+    <string name="mark_watched"></string>
+    <string name="searching_episodes_for"></string>
+    <string name="backup_success"></string>
+    <string name="copy_link_to_clipboard"></string>
+    <string name="wallpaper_based_colors"></string>
+    <string name="open_link_externally"></string>
+    <string name="select_language"></string>
+    <string name="version"></string>
+    <string name="restore_success"></string>
+    <string name="see_error"></string>
+    <string name="mark_not_watched"></string>
+    <string name="dismiss"></string>
+    <string name="failed_bypass_detailed"></string>
+    <string name="download"></string>
+    <string name="buffering_video"></string>
+    <string name="checking_if_crash_occurred"></string>
+    <string name="delete_confirmation"></string>
+    <string name="loading_extensions_n"></string>
+    <string name="selected_s"></string>
 </resources>
