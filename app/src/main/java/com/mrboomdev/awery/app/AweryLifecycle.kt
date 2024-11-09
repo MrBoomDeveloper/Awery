@@ -488,6 +488,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		}
 
 		private var app: App? = null
+
 		@JvmStatic
 		var appContext: App
 			get() {

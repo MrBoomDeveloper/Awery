@@ -22,8 +22,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.MaterialColors
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.getResourceId
 import com.mrboomdev.safeargsnext.SafeArgsIntent
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
+import com.mrboomdev.safeargsnext.owner.SafeArgsService
+import com.mrboomdev.safeargsnext.util.putSafeArgs
 import org.jetbrains.annotations.Contract
 import java.io.File
 import kotlin.reflect.KClass
@@ -32,6 +35,12 @@ private const val TAG = "ContextExtensions"
 
 val Context.configuration: Configuration
     get() = resources.configuration
+
+inline fun <reified T> Context.startService(clazz: KClass<out SafeArgsService<T>>, args: T) {
+    startService(Intent().apply {
+        putSafeArgs(args as Any)
+    })
+}
 
 inline fun <reified T : Service> Context.startService(
     action: String? = null,
@@ -139,7 +148,7 @@ val Context.activity: Activity
 @Contract(pure = true)
 @Throws(Resources.NotFoundException::class)
 fun Context.resolveDrawable(name: String): Drawable? {
-    val clazz: Class<*> = if(name.startsWith("@mipmap/")) R.mipmap::class.java
+    val clazz = if(name.startsWith("@mipmap/")) R.mipmap::class.java
     else if(name.startsWith("@color/")) R.color::class.java
     else R.drawable::class.java
 
@@ -157,32 +166,6 @@ fun Context.resolveDrawable(name: String): Drawable? {
     }
 
     return ContextCompat.getDrawable(this, id)
-}
-
-inline fun <reified T> getResourceId(res: String?): Int {
-    return getResourceId(T::class.java, res)
-}
-
-fun getResourceId(type: Class<*>, res: String?): Int {
-    if(res == null) return 0
-
-    try {
-        val field = type.getDeclaredField(res)
-        field.isAccessible = true
-        val result = field[null]
-
-        if(result == null) {
-            Log.e(TAG, "Resource id \"" + res + "\" was not initialized in \"" + type.name + "\"!")
-            return 0
-        }
-
-        return result as Int
-    } catch(e: NoSuchFieldException) {
-        return 0
-    } catch(e: IllegalAccessException) {
-        throw IllegalStateException(
-            "Generated resource id filed cannot be private! Check if the provided class is the R class", e)
-    }
 }
 
 fun Context.resolveAttr(@AttrRes res: Int): TypedValue? {

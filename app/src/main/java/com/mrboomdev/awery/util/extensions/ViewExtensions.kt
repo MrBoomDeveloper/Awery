@@ -8,6 +8,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
@@ -20,10 +21,15 @@ import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.R
+import com.mrboomdev.awery.app.App.Companion.getMarkwon
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAlign
+
+fun TextView.setMarkwon(markdown: String) {
+    getMarkwon(context).setMarkdown(this, markdown)
+}
 
 fun <T : View> ViewGroup.addView(view: T, runAfterAdding: (view: T) -> Unit) {
     addView(view)

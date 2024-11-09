@@ -2,6 +2,7 @@ import java.util.Locale
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.android.application)
@@ -145,7 +146,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform")
+        freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform", "-opt-in=kotlin.ExperimentalStdlibApi")
     }
 }
 
@@ -179,6 +180,7 @@ dependencies {
     implementation(libs.glide.imageViewFactory)
     implementation(libs.konfetti.xml)
     implementation(libs.animatedBottomBar)
+    implementation(libs.hauler)
     implementation(project(":ui"))
 
     // Compose
@@ -210,8 +212,8 @@ dependencies {
 
     // Image Loading
     api(libs.glide)
-    implementation(libs.glide.annotations)
     ksp(libs.glide.compiler)
+    implementation(libs.glide.annotations)
     implementation(libs.glide)
     implementation(libs.glide.okhttp3)
 
@@ -234,9 +236,9 @@ dependencies {
 
     // Serialization
     implementation(files("../libs/safe-args-next.aar"))
+    ksp(libs.moshi.kotlin.codegen)
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
-    ksp(libs.moshi.kotlin.codegen)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json.okio)
     implementation(libs.kotlinx.serialization.protobuf)

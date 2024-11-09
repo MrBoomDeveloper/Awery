@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -65,33 +64,6 @@ public class ViewUtil {
 		view.setScaleY(scale);
 	}
 
-	public static boolean setMargin(View view, int margin) {
-		var margins = getMargins(view);
-		if(margins == null) return false;
-
-		margins.setMargins(margin, margin, margin, margin);
-		view.setLayoutParams(margins);
-		return true;
-	}
-
-	public static boolean setMargin(View view, int horizontal, int vertical) {
-		var margins = getMargins(view);
-		if(margins == null) return false;
-
-		margins.setMargins(horizontal, vertical, horizontal, vertical);
-		view.setLayoutParams(margins);
-		return true;
-	}
-
-	public static boolean setMargin(View view, int left, int top, int right, int bottom) {
-		var margins = getMargins(view);
-		if(margins == null) return false;
-
-		margins.setMargins(left, top, right, bottom);
-		view.setLayoutParams(margins);
-		return true;
-	}
-
 	public static void setPadding(@NonNull View view, int padding) {
 		view.setPadding(padding, padding, padding, padding);
 	}
@@ -130,26 +102,7 @@ public class ViewUtil {
 	public interface UseLayoutParamsCallback<T extends ViewGroup.LayoutParams> {
 		void onUse(T params);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Deprecated(forRemoval = true)
-	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
-			@NonNull View view,
-			UseLayoutParamsCallback<T> callback
-	) {
-		try {
-			var params = view.getLayoutParams();
-			if(params == null) return false;
-
-			callback.onUse((T) params);
-			view.setLayoutParams(params);
-			return true;
-		} catch(ClassCastException e) {
-			Log.e(TAG, "Failed to cast layout params!", e);
-			return false;
-		}
-	}
-
+	
 	@Deprecated(forRemoval = true)
 	public static <T extends ViewGroup.LayoutParams> boolean useLayoutParams(
 			@NonNull View view,
@@ -306,7 +259,7 @@ public class ViewUtil {
 
 	@Nullable
 	@Deprecated(forRemoval = true)
-	public static ViewGroup.MarginLayoutParams getMargins(@NonNull View view) {
+	private static ViewGroup.MarginLayoutParams getMargins(@NonNull View view) {
 		var params = view.getLayoutParams();
 
 		if(params instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {

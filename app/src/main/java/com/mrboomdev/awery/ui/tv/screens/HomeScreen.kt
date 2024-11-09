@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -45,7 +44,6 @@ import com.squareup.moshi.adapter
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 private const val THUMBNAIL_URL = "https://i.ibb.co/QD0b4HD/5liphf3577971.jpg"
 private const val BANNER_URL = "https://i.ibb.co/YNDxjs7/b40jj2sfqfpd1.png"
@@ -138,7 +136,6 @@ fun HomeScreen(
 	}
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 private suspend fun loadData(
 	sectionsState: MutableList<MediaRowContent>,
 	featuredState: MutableList<CatalogMedia>,

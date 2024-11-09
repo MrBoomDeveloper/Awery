@@ -3,12 +3,14 @@ package com.mrboomdev.awery.util.extensions
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
@@ -114,15 +116,28 @@ fun Activity.setContentViewCompat(view: View) {
     }
 }
 
+// The light scrim color used in the platform API 29+
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/com/android/internal/policy/DecorView.java;drc=6ef0f022c333385dba2c294e35b8de544455bf19;l=142
+private val DefaultLightScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+// The dark scrim color used in the platform.
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/res/color/system_bar_background_semi_transparent.xml
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/remote_color_resources_res/values/colors.xml;l=67
+private val DefaultDarkScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
 /**
  * Safely enables the "Edge to edge" experience.
  * I really don't know why, but sometimes it just randomly crashes!
  * Because of it we have to rerun this method on a next frame.
  * @author MrBoomDev
  */
-fun ComponentActivity.enableEdgeToEdge() {
+@JvmOverloads
+fun ComponentActivity.enableEdgeToEdge(
+    statusBarStyle: SystemBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+    navigationBarStyle: SystemBarStyle = SystemBarStyle.auto(DefaultLightScrim, DefaultDarkScrim)
+) {
     try {
-        enableEdgeToEdge()
+        enableEdgeToEdge(statusBarStyle, navigationBarStyle)
     } catch(e: RuntimeException) {
         Log.e(TAG, "Failed to enable EdgeToEdge! Will retry a little bit later.", e)
         postRunnable { enableEdgeToEdge() }

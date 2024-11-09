@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.app.data.settings.SettingsItem;
 import com.mrboomdev.awery.app.data.settings.SettingsItemType;
 import com.mrboomdev.awery.app.data.settings.SettingsList;
@@ -28,6 +29,7 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.util.Selection;
+import com.mrboomdev.awery.util.adapters.MediaAdapter;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
@@ -214,8 +216,8 @@ public abstract class AniyomiProvider extends YomiProvider {
 	@Override
 	public AsyncFuture<List<? extends CatalogVideo>> getVideos(@NonNull SettingsList filters) {
 		return thread(() -> {
-			var media = filters.require(
-					ExtensionProvider.FILTER_MEDIA).parseJsonValue(CatalogMedia.class);
+			var media = App.Companion.getMoshi(MediaAdapter.INSTANCE).adapter(CatalogMedia.class)
+					.fromJson(filters.require(ExtensionProvider.FILTER_MEDIA).getStringValue());
 
 			var episodes = AniyomiKotlinBridge.getEpisodesList(source, AniyomiMediaKt.toSAnime(media)).await();
 

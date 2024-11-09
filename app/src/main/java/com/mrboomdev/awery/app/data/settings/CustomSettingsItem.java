@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.app.data.settings;
 
-import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Selection;
 
 import kotlin.NotImplementedError;

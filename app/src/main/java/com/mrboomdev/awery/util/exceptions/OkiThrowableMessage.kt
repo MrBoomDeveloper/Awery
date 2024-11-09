@@ -171,3 +171,5 @@ val Throwable.isNetworkException: Boolean
 
 		return false
 	}
+
+fun Throwable.explain() = OkiThrowableMessage(this)

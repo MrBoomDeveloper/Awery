@@ -14,6 +14,7 @@ coreSplashscreen = "1.0.1"
 ebookReader = "0.1.6"
 fragmentKtxVersion = "1.8.5"
 glide = "4.16.0"
+hauler = "5.0.0"
 injekt = "91edab2317"
 jsoup = "1.18.1"
 javaNatSort = "natural-comparator-1.1"
@@ -72,6 +73,7 @@ compose-tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "c
 compose-tv-material = { module = "androidx.tv:tv-material", version.ref = "compose-tv-material" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+hauler = { module = "app.futured.hauler:hauler", version.ref = "hauler" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "core" }
 markwon-editor = { module = "io.noties.markwon:editor", version.ref = "core" }

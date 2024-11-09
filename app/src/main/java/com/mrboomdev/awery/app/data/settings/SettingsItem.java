@@ -2,7 +2,6 @@ package com.mrboomdev.awery.app.data.settings;
 
 import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -14,8 +13,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.ui.activity.settings.SettingsActions;
-import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActions;
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 import com.squareup.moshi.Json;
@@ -244,10 +243,6 @@ public class SettingsItem implements Serializable {
 	
 	public <T> T parseJsonValue(Class<T> clazz) throws IOException {
 		return Parser.fromString(clazz, getStringValue());
-	}
-
-	public <T> T parseJsonValue(Parser.Adapter<T> adapter) throws IOException {
-		return Parser.fromString(adapter, getStringValue());
 	}
 
 	/**

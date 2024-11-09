@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.data;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -17,23 +18,32 @@ public class CatalogMediaProgress {
 	@NonNull
 	public String globalId;
 	@ColumnInfo(name = "last_watch_source")
+	@Nullable
 	public String lastWatchSource;
 	@ColumnInfo(name = "last_season")
 	public Float lastSeason;
 	@ColumnInfo(name = "last_variant")
+	@Nullable
 	public String lastVariant;
 	@ColumnInfo(name = "last_episode")
 	public Float lastEpisode;
 	@ColumnInfo(name = "last_id")
+	@Nullable
 	public String lastId;
 	@ColumnInfo(name = "last_title")
+	@Nullable
 	public String lastTitle;
 	@ColumnInfo(name = "last_comments_source")
+	@Nullable
 	public String lastCommentsSource;
 	@ColumnInfo(name = "last_relations_source")
+	@Nullable
 	public String lastRelationsSource;
+	@Nullable
 	public List<String> lists = new ArrayList<>();
+	@Nullable
 	public Map<String, String> trackers = new HashMap<>();
+	@Nullable
 	public Map<Float, Long> progresses = new HashMap<>();
 
 	@NonNull

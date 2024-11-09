@@ -12,7 +12,6 @@ import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.CrashHandler.CrashReport
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
@@ -97,10 +96,10 @@ object UpdatesManager {
 			throw ZeroResultsException("Updates in the debug mode are disabled!")
 		}
 
-		val response = HttpRequest(UPDATES_ENDPOINT).setHeaders(mapOf(
-			"Accept" to "application/vnd.github+json",
-			"X-GitHub-Api-Version" to "2022-11-28"
-		)).fetch()
+		val response = HttpRequest(UPDATES_ENDPOINT).apply {
+			headers["Accept"] = "application/vnd.github+json"
+			headers["X-GitHub-Api-Version"] = "2022-11-28"
+		}.fetch()
 
 		if(response.statusCode != 200) {
 			throw ZeroResultsException("No releases was found!")

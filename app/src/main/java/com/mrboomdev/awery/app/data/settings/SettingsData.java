@@ -25,7 +25,7 @@ import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.ui.activity.settings.TabsSettings;
+import com.mrboomdev.awery.ui.mobile.screens.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException;

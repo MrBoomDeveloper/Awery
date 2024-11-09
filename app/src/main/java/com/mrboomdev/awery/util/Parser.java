@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.util.adapters.MediaAdapter;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -13,7 +14,10 @@ import java.lang.reflect.Type;
 
 @Deprecated(forRemoval = true)
 public class Parser {
-	private static final Moshi moshi = new Moshi.Builder().add(new ParserAdapter()).build();
+	private static final Moshi moshi = new Moshi.Builder()
+			.add(new ParserAdapter())
+			.add(MediaAdapter.INSTANCE)
+			.build();
 
 	@NonNull
 	public static String toString(Type type, Object object) {

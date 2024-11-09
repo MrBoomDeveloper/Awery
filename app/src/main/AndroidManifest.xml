@@ -63,7 +63,7 @@
         tools:targetApi="tiramisu">
 
         <activity
-            android:name=".ui.activity.SplashActivity"
+            android:name=".ui.mobile.screens.SplashActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/Theme.Awery.Splash"
             android:exported="true">
@@ -77,7 +77,8 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.IntentHandlerActivity"
+            android:name=".ui.mobile.screens.IntentHandlerActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/Theme.Awery.Splash"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
@@ -139,7 +140,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.player.PlayerActivity"
+            android:name=".ui.mobile.screens.player.PlayerActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
@@ -149,7 +150,7 @@
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".ui.mobile.screens.catalog.MainActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
@@ -159,53 +160,54 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.activity.search.SearchActivity"
+            android:name=".ui.mobile.screens.search.SearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.search.MultiSearchActivity"
+            android:name=".ui.mobile.screens.search.MultiSearchActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.BrowserActivity"
+            android:name=".ui.mobile.screens.BrowserActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name=".ui.mobile.screens.LoginActivity"
             android:windowSoftInputMode="adjustPan"
             android:launchMode="singleInstance"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.MediaActivity"
+            android:name=".ui.mobile.screens.media.MediaActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.settings.setup.SetupActivity"
+            android:name=".ui.mobile.screens.setup.SetupActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.GalleryActivity"
+            android:name=".ui.mobile.screens.GalleryActivity"
             android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.Draggable"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.settings.AboutActivity"
+            android:name=".ui.mobile.screens.settings.AboutActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="true" />
 
         <activity
-            android:name=".ui.activity.ReaderActivity"
+            android:name=".ui.mobile.screens.ReaderActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <activity
-            android:name=".ui.activity.settings.SettingsActivity"
+            android:name=".ui.mobile.screens.settings.SettingsActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
@@ -216,11 +218,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-        <service
-            android:name=".app.services.DownloadService"
-            android:foregroundServiceType="dataSync"
-            android:exported="false" />
 
         <service
             android:name=".app.services.BackupService"

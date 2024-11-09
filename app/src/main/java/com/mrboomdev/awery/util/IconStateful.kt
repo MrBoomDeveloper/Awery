@@ -6,7 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.graphics.drawable.StateListDrawableCompat
 import androidx.core.content.ContextCompat
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.util.extensions.getResourceId
+import com.mrboomdev.awery.app.App.Companion.getResourceId
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -17,12 +17,6 @@ class IconStateful(
 	@DrawableRes var inActiveId: Int? = null,
 	val names: Array<String> = arrayOf()
 ) {
-	private fun getResourceName(state: State): String {
-		return when(state) {
-			State.ACTIVE -> active ?: inActive!!
-			State.INACTIVE -> inActive ?: active!!
-		}
-	}
 
 	@DrawableRes
 	fun getResourceId(state: State): Int {

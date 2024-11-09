@@ -4,6 +4,7 @@ import com.mrboomdev.awery.ext.constants.AweryAgeRating
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
 
 object MediaAdapter {
@@ -58,6 +59,7 @@ object MediaAdapter {
 		)
 	}
 
+	@JsonClass(generateAdapter = true)
 	data class MoshiMedia(
 		var globalId: String,
 		var titles: Array<String>? = null,

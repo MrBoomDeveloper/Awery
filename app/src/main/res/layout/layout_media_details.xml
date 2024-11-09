@@ -109,7 +109,7 @@
         app:layout_constraintRight_toRightOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/actions" />
 
-    <com.mrboomdev.awery.ui.widgets.ExpandableTextView
+    <com.mrboomdev.awery.ui.mobile.components.ExpandableTextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

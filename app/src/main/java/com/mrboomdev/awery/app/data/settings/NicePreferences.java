@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.mrboomdev.awery.ui.activity.settings.SettingsDataHandler;
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 

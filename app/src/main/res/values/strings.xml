@@ -3,7 +3,7 @@
     <string name="app_name" translatable="false">Awery</string>
     <string name="empty_library_title">Library is empty</string>
     <string name="awery_updated_title">Awery has been updated!</string>
-    <string name="were_done">We've done!</string>
+    <string name="were_done">We\'ve done!</string>
     <string name="database_corrupted">Database corrupted!</string>
     <string name="checking_database">Checking the database</string>
     <string name="bad_request">Bad request</string>
@@ -129,7 +129,7 @@
     <string name="about">About</string>
     <string name="devs">Developers</string>
     <string name="disclaimer">Disclaimer</string>
-    <string name="full_disclaimer">Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.\n- Awery or any of its developers/staff don't host any content inside Awery. Any images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).\n-Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff\n-Awery or its owners aren't liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.\n-By using Awery, you comply with the fact that the app developer is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.\n-If internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.</string>
+    <string name="full_disclaimer">Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.\n- Awery or any of its developers/staff don\'t host any content inside Awery. Any images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).\n-Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff\n-Awery or its owners aren\'t liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.\n-By using Awery, you comply with the fact that the app developer is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.\n-If internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.</string>
     <string name="video">Video</string>
     <string name="video_info_info">Shows what the Resolution of the current video playing, useful for <b>\"Multi Quality\"</b> servers.</string>
     <string name="default_quality">Auto Quality Selection</string>
@@ -382,7 +382,7 @@
     <string name="fit">Fit</string>
     <string name="fill">Fill</string>
     <string name="zoom">Zoom</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="nsfw_content">NSFW Content</string>
     <string name="second_short">s</string>
     <string name="hour_short">h</string>
@@ -445,10 +445,10 @@
     <string name="unknown_file_type">Unknown file type!</string>
     <string name="unknown_file_type_description">Sorry, but Awery doesn\'t support yet this file format! Please, tell developers about this problem, so that they can fix it as soon as possible.</string>
     <string name="torrent_usupported">Torrents are not supported</string>
-    <string name="connection_error">Connection error has occured, please try again later</string>
+    <string name="connection_error">Connection error has occurred, please try again later</string>
     <string name="torrent_unsupported_message">Sorry, but Awery doesn\'t support torrents at the moment. You can try installing a third-party torrent player to play this type of file.</string>
-    <string name="unknown_error">Unknown error has occured, please try again later</string>
-    <string name="connection_timeout">Connection timeout has occured, please try again later</string>
+    <string name="unknown_error">Unknown error has occurred, please try again later</string>
+    <string name="connection_timeout">Connection timeout has occurred, please try again later</string>
     <string name="text_cant_empty">Text cannot be empty!</string>
     <string name="this_not_number">This is not a number!</string>
     <string name="continue_action">Continue</string>
@@ -476,7 +476,7 @@
     <string name="see_error">See error</string>
     <string name="version">Version</string>
     <string name="built_at">Built at</string>
-    <string name="wallpaper_based_colors">The app's color will be based on your wallpaper!</string>
+    <string name="wallpaper_based_colors">The app\'s color will be based on your wallpaper!</string>
     <string name="size">Size</string>
     <string name="download">Download</string>
     <string name="extension_crashed">Extension has crashed!</string>

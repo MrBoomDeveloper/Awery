@@ -49,6 +49,7 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.ThemeManager.isDarkModeEnabled
 import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.app.data.db.AweryDB
 import com.mrboomdev.awery.app.data.db.item.DBCatalogList
@@ -56,8 +57,8 @@ import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
-import com.mrboomdev.awery.ui.activity.BrowserActivity
-import com.mrboomdev.awery.ui.activity.settings.SettingsActivity
+import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.extensions.configuration
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
@@ -223,7 +224,6 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		@Deprecated("")
 		fun getResourceId(type: Class<*>, res: String?): Int {
 			if(res == null) return 0
 
@@ -245,6 +245,10 @@ class App : Application() {
 					"Generated resource id filed cannot be private! Check if the provided class is the R class", e
 				)
 			}
+		}
+
+		inline fun <reified T> getResourceId(res: String?): Int {
+			return getResourceId(T::class.java, res)
 		}
 
 		@JvmStatic
@@ -398,19 +402,17 @@ class App : Application() {
 				return
 			}
 
-			val customTabsIntent = CustomTabsIntent.Builder()
-				.setColorScheme(
-					if(ThemeManager.isDarkModeEnabled()) CustomTabsIntent.COLOR_SCHEME_DARK
-					else CustomTabsIntent.COLOR_SCHEME_LIGHT).build()
+			val customTabsIntent = CustomTabsIntent.Builder().apply {
+				setColorScheme(
+					if(isDarkModeEnabled()) CustomTabsIntent.COLOR_SCHEME_DARK
+					else CustomTabsIntent.COLOR_SCHEME_LIGHT)
+			}.build().apply {
+				intent.data = Uri.parse(url)
+			}
 
-			customTabsIntent.intent.setData(Uri.parse(url))
-
-			val resolvedActivity = customTabsIntent.intent
-				.resolveActivity(context.packageManager)
-
-			if(resolvedActivity != null) {
+			customTabsIntent.intent.resolveActivity(context.packageManager)?.also {
 				context.startActivity(customTabsIntent.intent, customTabsIntent.startAnimationBundle)
-			} else {
+			} ?: run {
 				Log.e(TAG, "No external browser was found, launching a internal one.")
 				context.startActivity(BrowserActivity::class, BrowserActivity.Extras(url))
 			}

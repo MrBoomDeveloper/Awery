@@ -7,13 +7,17 @@ import java.util.Arrays
  * will be permitted to the returned map.
  */
 fun <K, V> mapOfNotNull(vararg pairs: Pair<K?, V?>): Map<K, V> {
-	return LinkedHashMap<K, V>().apply {
+	return mutableMapOf<K, V>().apply {
 		for((key, value) in pairs) {
 			if(key != null && value != null) {
 				put(key, value)
 			}
 		}
-	}
+	}.toMap()
+}
+
+inline fun <reified E> arrayOfNotNull(vararg elements: E?): Array<E> {
+	return elements.filterNotNull().toTypedArray()
 }
 
 fun <E> List<E>.limit(max: Int): List<E> {

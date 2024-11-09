@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.getResourceId
 import com.mrboomdev.awery.util.Selection
 import com.mrboomdev.awery.util.extensions.applyCopy
-import com.mrboomdev.awery.util.extensions.getResourceId
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
 import org.xmlpull.v1.XmlPullParser

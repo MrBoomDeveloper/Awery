@@ -16,6 +16,15 @@
         <item name="android:windowActivityTransitions">true</item>
     </style>
 
+    <style name="Theme.Draggable" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">#000000</item>
+    </style>
+
     <style name="Theme.Awery" parent="Theme.Base">
         <item name="android:windowLightStatusBar">true</item>
     </style>
