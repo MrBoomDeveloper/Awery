@@ -25,6 +25,7 @@ appcompat = "1.7.0"
 kotlinxCoroutinesCore = "1.9.0"
 kotlinxSerializationJson = "1.7.1"
 animatedBottomBar = "1.1.0"
+leakcanaryAndroid = "2.14"
 material = "1.12.0"
 materialVersion = "1.7.5"
 media3 = "1.4.1"
@@ -75,6 +76,7 @@ compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
 hauler = { module = "app.futured.hauler:hauler", version.ref = "hauler" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "core" }
 markwon-editor = { module = "io.noties.markwon:editor", version.ref = "core" }
 markwon-strikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "core" }
