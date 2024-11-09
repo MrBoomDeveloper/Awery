@@ -104,7 +104,7 @@ class App : Application() {
 		// Note: I'm so sorry. I've just waste the whole day to try fixing THIS SHIT!!!!
 		// And in result in nothing! FUCKIN LIGHT THEME! WHY DOES IT EXIST!?!?!?!?!?!?!?!?!?!?
 		// SYKA BLYYYYYYAAAAAAAT
-		AwerySettings.USE_DARK_THEME.getValue(ThemeManager.isDarkModeEnabled())
+		AwerySettings.USE_DARK_THEME.getValue(isDarkModeEnabled())
 
 		if(AwerySettings.LOG_NETWORK.value) {
 			val logFile = File(getExternalFilesDir(null), "okhttp3_log.txt")
@@ -259,7 +259,7 @@ class App : Application() {
 
 		@JvmStatic
 		fun i18n(@StringRes res: Int, vararg params: Any): String {
-			return appContext.getString(res, params)
+			return appContext.getString(res, *params)
 		}
 
 		@JvmStatic
@@ -486,7 +486,7 @@ class App : Application() {
 
 		@JvmStatic
 		fun snackbar(activity: Activity, title: Any?, button: Any?, buttonCallback: Runnable?, duration: Int) {
-			AweryLifecycle.runOnUiThread {
+			runOnUiThread {
 				val titleText = title?.toString() ?: "null"
 				val buttonText = button?.toString() ?: "null"
 
@@ -494,10 +494,10 @@ class App : Application() {
 				val snackbar = Snackbar.make(rootView, titleText, duration)
 
 				if(buttonCallback != null) {
-					snackbar.setAction(buttonText) { view: View? -> buttonCallback.run() }
+					snackbar.setAction(buttonText) { buttonCallback.run() }
 				}
 
-				snackbar.view.setOnClickListener { v: View? -> snackbar.dismiss() }
+				snackbar.view.setOnClickListener { snackbar.dismiss() }
 				snackbar.show()
 			}
 		}
@@ -523,15 +523,15 @@ class App : Application() {
 		}
 
 		fun isRequirementMet(requirement: String): Boolean {
-			var requirement = requirement
+			var mRequirement = requirement
 			var invert = false
 
-			if(requirement.startsWith("!")) {
+			if(mRequirement.startsWith("!")) {
 				invert = true
-				requirement = requirement.substring(1)
+				mRequirement = mRequirement.substring(1)
 			}
 
-			val result = when(requirement) {
+			val result = when(mRequirement) {
 				"material_you" -> DynamicColors.isDynamicColorAvailable()
 				"tv" -> isTv
 				"beta" -> BuildConfig.IS_BETA

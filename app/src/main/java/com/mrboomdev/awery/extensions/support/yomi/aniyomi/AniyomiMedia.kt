@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi
 
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider
 import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.animesource.model.SAnime
@@ -9,25 +8,17 @@ import eu.kanade.tachiyomi.animesource.model.SAnimeImpl
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 
 fun SAnime.toMedia(provider: AniyomiProvider) = CatalogMedia(
-	"${AniyomiManager.MANAGER_ID};;;${provider.id}:${provider.extension.id};;;${url}",
-	thumbnail_url,
-	description,
-	null,
-	null,
-	url,
+	globalId = "${AniyomiManager.MANAGER_ID};;;${provider.id}:${provider.extension.id};;;${url}",
+	type = CatalogMedia.Type.TV,
+	titles = arrayOf(title),
+	poster = thumbnail_url,
+	description = description,
+	extra = url,
 
-	if(provider.source !is AnimeHttpSource) null
+	url = if(provider.source !is AnimeHttpSource) null
 	else YomiProvider.concatLink(provider.source.baseUrl, url),
 
-	CatalogMedia.Type.TV,
-	thumbnail_url,
-	null,
-	null,
-	null,
-	null,
-	null,
-
-	when(status) {
+	status = when(status) {
 		SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
 		SAnime.ONGOING -> CatalogMedia.Status.ONGOING
 		SAnime.ON_HIATUS -> CatalogMedia.Status.PAUSED
@@ -35,25 +26,15 @@ fun SAnime.toMedia(provider: AniyomiProvider) = CatalogMedia(
 		else -> null
 	},
 
-	genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
-		?.map { genre -> genre.trim { it <= ' ' } }
-		?.filter { it.isNotBlank() }
-		?.map { CatalogTag(it) }
-		?.toTypedArray(),
-
-	genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
+	genres = genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
 		?.map { genre -> genre.trim { it <= ' ' } }
 		?.filter { it.isNotBlank() }
 		?.toTypedArray(),
 
-	arrayOf(title),
-
-	mapOfNotNull(
+	authors = mapOfNotNull(
 		Pair("Author", author),
 		Pair("Artist", artist)
-	),
-
-	null
+	)
 )
 
 fun CatalogMedia.toSAnime(): SAnime {

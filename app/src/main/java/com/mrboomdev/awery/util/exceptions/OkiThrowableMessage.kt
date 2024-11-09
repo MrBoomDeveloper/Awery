@@ -7,6 +7,7 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException
 import eu.kanade.tachiyomi.network.HttpException
+import java9.util.Objects
 import kotlinx.coroutines.CancellationException
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -21,6 +22,17 @@ class OkiThrowableMessage(
 	unwrapper: ((throwable: Throwable) -> Boolean) = { it.mayDescribe }
 ) {
 	private val t = throwable.unwrap(unwrapper)
+
+	fun print(): String {
+		val title = this.title
+		val message = this.message
+
+		if(title == message) {
+			return title
+		}
+
+		return "$title\n$message".trimIndent()
+	}
 
 	val title: String
 		get() = (when(t) {

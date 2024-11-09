@@ -26,6 +26,7 @@ import androidx.viewbinding.ViewBinding
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.util.UniqueIdGenerator
 import org.jetbrains.annotations.Contract
+import java.lang.ref.WeakReference
 import java.lang.reflect.InvocationTargetException
 import java.util.Objects
 import java.util.WeakHashMap
@@ -73,6 +74,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 	 * DO NOT EVER USE DIRECTLY THIS CLASS!
 	 * It was made just for the Android Framework to work properly!
 	 */
+	@Suppress("OVERRIDE_DEPRECATION")
 	internal class CallbackFragment(
 		private val fragmentManager: FragmentManager,
 		private val activityResultCallback: ((resultCode: Int, data: Intent?) -> Unit)? = null,
@@ -106,17 +108,31 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		}
 	}
 
-	private class ActivityInfo<A : Activity?>(val activity: A) : Comparable<ActivityInfo<A>?> {
-		var lastActiveTime: Long = 0
-		var isPaused: Boolean = false
+	private class ActivityInfo<A : Activity?>(activity: A) : Comparable<ActivityInfo<A>?> {
+		val activity = WeakReference(activity)
+		var lastActiveTime = 0L
+		var isPaused = false
 
 		override fun compareTo(other: ActivityInfo<A>?): Int {
 			if(other == null) {
 				return 1
 			}
 
-			val realMe = infos[activity]
-			val realHe = infos[other.activity]
+			val myActivity = activity.get()
+			val otherActivity = other.activity.get()
+
+			if(otherActivity == null) {
+				if(myActivity == null) {
+					return 0
+				}
+
+				return 1
+			} else if(myActivity == null) {
+				return -1
+			}
+
+			val realMe = infos[myActivity]
+			val realHe = infos[otherActivity]
 
 			if(realMe != null) {
 				isPaused = realMe.isPaused
@@ -136,13 +152,13 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 			if(isPaused && !other.isPaused) return -1
 			if(!isPaused && other.isPaused) return 1
 
-			if(activity!!.isDestroyed && !other.activity!!.isDestroyed) return -1
-			if(!activity.isDestroyed && other.activity!!.isDestroyed) return 1
+			if(myActivity.isDestroyed && !otherActivity.isDestroyed) return -1
+			if(!myActivity.isDestroyed && otherActivity.isDestroyed) return 1
 
-			if(hasWindowFocus(activity) && !hasWindowFocus(other.activity!!)) return 1
-			if(!hasWindowFocus(activity) && hasWindowFocus(other.activity!!)) return -1
+			if(hasWindowFocus(myActivity) && !hasWindowFocus(otherActivity)) return 1
+			if(!hasWindowFocus(myActivity) && hasWindowFocus(otherActivity)) return -1
 
-			return activity.taskId.compareTo(other.activity!!.taskId)
+			return myActivity.taskId.compareTo(otherActivity.taskId)
 		}
 
 		/**
@@ -279,7 +295,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 			try {
 				return getAllActivitiesRecursively(requiredSuper)
 					.sortedDescending()
-					.map { it.activity }
+					.mapNotNull { it.activity.get() }
 					.toList()
 			} catch(e: Exception) {
 				Log.e(TAG, "Failed to get activities!", e)
@@ -296,14 +312,14 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		@Contract(pure = true)
 		fun <A : Activity> getAnyActivity(requiredSuper: Class<A>): A? {
 			try {
-				return getAllActivitiesRecursively(requiredSuper).apply {
+				return (getAllActivitiesRecursively(requiredSuper).apply {
 					if(size == 1) {
-						return this[0].activity
+						return this[0].activity.get()
 					}
 
-					// App should handle this behaviour properly or else crashes will occur
-					if(isEmpty()) return null
-				}.sortedDescending()[0].activity
+				}).sortedDescending()
+					.mapNotNull { it.activity.get() }
+					.getOrNull(0)
 			} catch(e: Exception) {
 				Log.e(TAG, "Failed to get any activity!", e)
 				toast("So your device is not supported :(", 1)
@@ -355,36 +371,30 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		private val activityThread: Any?
 			get() {
 				try {
-					val clazz = Class.forName("android.app.ActivityThread")
-					val field = clazz.getDeclaredField("sCurrentActivityThread")
-					field.isAccessible = true
-					val value = field[null]
-					if(value != null) return value
-				} catch(ignored: Exception) {
-				}
+					Class.forName("android.app.ActivityThread")
+						.getDeclaredField("sCurrentActivityThread")
+						.apply { isAccessible = true }
+						.get(null)?.let { return it }
+				} catch(_: Exception) {}
 
 				try {
-					val clazz = Class.forName("android.app.AppGlobals")
-					val field = clazz.getDeclaredField("sCurrentActivityThread")
-					field.isAccessible = true
-					val value = field[null]
-					if(value != null) return value
-				} catch(ignored: Exception) {
-				}
+					Class.forName("android.app.AppGlobals")
+						.getDeclaredField("sCurrentActivityThread")
+						.apply { isAccessible = true }
+						.get(null)?.let { return it }
+				} catch(_: Exception) {}
 
-				try {
-					val clazz = Class.forName("android.app.ActivityThread")
-					val method = clazz.getDeclaredMethod("currentActivityThread")
-					method.isAccessible = true
-					return method.invoke(null)
-				} catch(ignored: Exception) {
-					return null
-				}
+				return try {
+					Class.forName("android.app.ActivityThread")
+						.getDeclaredMethod("currentActivityThread")
+						.apply { isAccessible = true }
+						.invoke(null)
+				} catch(_: Exception) { null }
 			}
 
 		@JvmStatic
-		fun postRunnable(runnable: Runnable?): Runnable? {
-			return if(handler!!.post(runnable!!)) runnable else null
+		fun postRunnable(runnable: Runnable): Runnable? {
+			return if(handler!!.post(runnable)) runnable else null
 		}
 
 		@JvmStatic
@@ -407,34 +417,11 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		@JvmStatic
 		fun runOnUiThread(callback: Runnable, recycler: RecyclerView): Runnable {
 			if(!isMainThread || recycler.isComputingLayout) {
-				val runnable = Runnable { runOnUiThread(callback, recycler) }
-				handler!!.post(runnable)
-				return runnable
+				return Runnable { runOnUiThread(callback, recycler) }
+					.also { handler!!.post(it) }
 			}
 
-			callback.run()
-			return callback
-		}
-
-		@JvmStatic
-		@Deprecated(message = "old shit for java")
-		fun getContext(binding: ViewBinding?): Context? {
-			if(binding == null) return null
-			return binding.root.context
-		}
-
-		@JvmStatic
-		@Contract("null -> null")
-		@Deprecated(message = "old shit for java")
-		fun getContext(view: View?): Context? {
-			if(view == null) return null
-			return view.context
-		}
-
-		@JvmStatic
-		@Deprecated(message = "old shit for java")
-		fun getContext(inflater: LayoutInflater): Context {
-			return inflater.context
+			return callback.also { it.run() }
 		}
 
 		@JvmStatic

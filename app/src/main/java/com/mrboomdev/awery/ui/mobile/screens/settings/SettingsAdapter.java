@@ -6,7 +6,6 @@ import static com.mrboomdev.awery.app.App.snackbar;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
@@ -519,7 +518,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 			super(binding.getRoot());
 
 			this.binding = binding;
-			this.context = getContext(binding);
+			this.context = binding.getRoot().getContext();
 
 			binding.toggle.setOnCheckedChangeListener(this);
 			binding.checkbox.setOnCheckedChangeListener(this);

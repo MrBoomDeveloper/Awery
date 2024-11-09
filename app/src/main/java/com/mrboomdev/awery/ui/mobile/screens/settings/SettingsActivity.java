@@ -5,7 +5,6 @@ import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.setContentViewCompat;
 import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -249,7 +248,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			setTopPadding(binding.header, insets.top + dpPx(binding.header, 8));
 			setHorizontalPadding(binding.header, insets.left, insets.right);
 
-			setRightMargin(binding.actions, isLandscape(getContext(binding))
+			setRightMargin(binding.actions, isLandscape()
 					? dpPx(binding.actions, 18) : 0);
 
 			return true;

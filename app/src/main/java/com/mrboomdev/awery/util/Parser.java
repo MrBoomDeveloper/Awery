@@ -35,12 +35,6 @@ public class Parser {
 	}
 
 	@NonNull
-	@SuppressWarnings("unchecked")
-	public static <T> T fromString(Type type, String json) throws IOException {
-		return (T) requireNonNull(moshi.adapter(type).fromJson(json));
-	}
-
-	@NonNull
 	public static <T> T fromString(Class<T> type, String json) throws IOException {
 		return requireNonNull(moshi.adapter(type).fromJson(json));
 	}

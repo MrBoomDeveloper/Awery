@@ -13,6 +13,7 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.AweryLifecycle
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding
 import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
@@ -83,17 +84,13 @@ class PagesFeedViewHolder private constructor(
 			val holder = PagerViewHolder(binding)
 
 			binding.root.setOnClickListener {
-				parent.context.startActivity(
-					MediaActivity::class, MediaActivity.Extras(
-					media = holder.item!!, action = MediaActivity.Action.INFO
-				))
+				parent.context.startActivity(MediaActivity::class, MediaActivity.Extras(
+					media = holder.item!!, action = MediaActivity.Action.INFO))
 			}
 
 			binding.watch.setOnClickListener {
-				parent.context.startActivity(
-					MediaActivity::class, MediaActivity.Extras(
-					media = holder.item!!, action = MediaActivity.Action.WATCH
-				))
+				parent.context.startActivity(MediaActivity::class, MediaActivity.Extras(
+					media = holder.item!!, action = MediaActivity.Action.WATCH))
 			}
 
 			binding.bookmark.setOnClickListener {
@@ -106,9 +103,10 @@ class PagesFeedViewHolder private constructor(
 				val dialog = MediaActionsDialog(media)
 
 				dialog.updateCallback = {
-					MediaUtils.isMediaFiltered(media) { isFiltered: Boolean? ->
+					MediaUtils.isMediaFiltered(media) { isFiltered ->
 						if(!isFiltered!!) return@isMediaFiltered
-						AweryLifecycle.runOnUiThread {
+
+						runOnUiThread {
 							val was = feed!!.items.removeAt(index)
 							notifyItemRemoved(index)
 							ids.remove(was)
@@ -166,9 +164,6 @@ class PagesFeedViewHolder private constructor(
 		var item: CatalogMedia? = null
 			private set
 
-		val view: View
-			get() = binding.root
-
 		@SuppressLint("SetTextI18n")
 		fun bind(item: CatalogMedia) {
 			binding.title.text = item.title
@@ -205,7 +200,7 @@ class PagesFeedViewHolder private constructor(
 			}
 
 			binding.tags.text = (item.genres?.asList() ?: item.tags?.map { it.name })
-				?.limit(3)?.joinToString { ", " } ?: ""
+				?.limit(3)?.joinToString(", ") ?: ""
 
 			binding.poster.setImageDrawable(null)
 			binding.banner.setImageDrawable(null)

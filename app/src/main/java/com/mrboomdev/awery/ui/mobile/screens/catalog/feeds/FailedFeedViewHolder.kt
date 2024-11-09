@@ -9,8 +9,8 @@ import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.databinding.FeedFailedBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
+import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.context
@@ -19,7 +19,6 @@ import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.rightMargin
 import com.mrboomdev.awery.util.extensions.setHorizontalMargin
-import org.jetbrains.annotations.Contract
 
 class FailedFeedViewHolder private constructor(
 	private val binding: FeedFailedBinding, parent: ViewGroup
@@ -58,7 +57,7 @@ class FailedFeedViewHolder private constructor(
 				if(source.previewUrl != null) {
 					binding.browse.visibility = View.VISIBLE
 					binding.browse.setOnClickListener {
-						openUrl(binding.context, source.previewUrl)
+						openUrl(binding.context, source.previewUrl, true)
 					}
 				} else {
 					binding.browse.visibility = View.GONE
@@ -74,9 +73,7 @@ class FailedFeedViewHolder private constructor(
 		}
 
 		if(feed.throwable != null) {
-			binding.errorMessage.text = ExceptionDescriptor.print(
-				ExceptionDescriptor.unwrap(feed.throwable), binding.context
-			)
+			binding.errorMessage.text = feed.throwable!!.explain().print()
 		} else {
 			binding.errorMessage.text = binding.context.getString(R.string.nothing_found)
 		}
@@ -91,10 +88,7 @@ class FailedFeedViewHolder private constructor(
 	}
 
 	companion object {
-		@Contract("_ -> new")
-		fun create(parent: ViewGroup): FailedFeedViewHolder {
-			return FailedFeedViewHolder(FeedFailedBinding.inflate(
-				parent.context.inflater, parent, false), parent)
-		}
+		fun create(parent: ViewGroup) = FailedFeedViewHolder(FeedFailedBinding.inflate(
+			parent.context.inflater, parent, false), parent)
 	}
 }

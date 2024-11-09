@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.mobile.screens.media;
 import static com.mrboomdev.awery.app.App.openUrl;
 import static com.mrboomdev.awery.app.App.share;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
-import static com.mrboomdev.awery.app.AweryLifecycle.getContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
@@ -170,7 +169,7 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 				}
 
 				case 1 -> {
-					var activity = (MediaActivity) getActivity(getContext(parent));
+					var activity = (MediaActivity) getActivity(parent.getContext());
 					var episode = holder.getItem();
 
 					if(activity == null) {

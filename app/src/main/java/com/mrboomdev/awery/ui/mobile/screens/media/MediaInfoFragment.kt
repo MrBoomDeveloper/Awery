@@ -76,7 +76,7 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		val banner = if(orientation == Configuration.ORIENTATION_LANDSCAPE) media.banner else media.poster
 
 		Glide.with(binding.root)
-			.load(banner)
+			.load(banner ?: media.poster)
 			.transition(withCrossFade())
 			.into(binding.banner)
 
@@ -119,8 +119,14 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		}
 
 		if(media.tags == null || media.tags!!.isEmpty()) {
-			binding.details.tagsTitle.visibility = View.GONE
-			binding.details.tags.visibility = View.GONE
+			if(media.genres == null) {
+				binding.details.tagsTitle.visibility = View.GONE
+				binding.details.tags.visibility = View.GONE
+			} else {
+				for(tag in media.genres!!) {
+					addTagView(CatalogTag(tag))
+				}
+			}
 		} else {
 			val spoilers = HashSet<CatalogTag>()
 
