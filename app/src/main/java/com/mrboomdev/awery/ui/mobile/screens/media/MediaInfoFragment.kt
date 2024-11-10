@@ -86,7 +86,7 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 			.into(binding.poster)
 
 		binding.posterWrapper.setOnClickListener {
-			if(media.poster == null || media.banner == null) {
+			if(media.poster == null && media.banner == null) {
 				return@setOnClickListener
 			}
 

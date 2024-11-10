@@ -10,22 +10,71 @@ import androidx.compose.material.Text
 import androidx.compose.material.darkColors
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import com.mrboomdev.awery.desktop.ui.components.StatusBar
+import java.awt.BorderLayout
 import java.awt.Dimension
+import javax.swing.JDialog
+import javax.swing.JFrame
+import javax.swing.JWindow
+import javax.swing.SwingUtilities
+import javax.swing.WindowConstants
+import kotlin.system.exitProcess
+
+/*fun main() = SwingUtilities.invokeLater {
+	val window = JFrame()
+	window.type = java.awt.Window.Type.UTILITY
+
+	val panel = ComposePanel()
+	panel.setContent {
+		val state = rememberWindowState(placement = WindowPlacement.Floating)
+
+		MaterialTheme(colors = darkColors()) {
+			Surface(
+				modifier = Modifier.fillMaxSize(),
+				color = MaterialTheme.colors.background
+			) {
+				Column {
+					StatusBar(
+						title = "Awery",
+						windowState = state,
+						onCloseRequest = { exitProcess(0) }
+					)
+
+					Button(
+						modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+						onClick = { println("Hello, World!") }
+					) {
+						Text("Hello, Everynyan UwU")
+					}
+				}
+			}
+		}
+	}
+
+	window.contentPane.add(panel, BorderLayout.CENTER)
+	window.size = Dimension(500, 350)
+	window.isVisible = true
+}*/
 
 fun main() = application {
+	val state = rememberWindowState(placement = WindowPlacement.Floating)
+
 	Window(
 		title = "Awery",
 		undecorated = true,
-		onCloseRequest = { exitApplication() }
+		state = state,
+		onCloseRequest = ::exitApplication
 	) {
 		remember {
 			window.minimumSize = Dimension(500, 350)
-			window.requestFocus()
 		}
 
 		WindowDraggableArea {
@@ -37,7 +86,8 @@ fun main() = application {
 					Column {
 						StatusBar(
 							title = "Awery",
-							windowScope = this@Window
+							windowState = state,
+							onCloseRequest = ::exitApplication
 						)
 
 						Button(

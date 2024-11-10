@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.NiceUtils.uniqueStringToList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -35,29 +36,37 @@ public class DBCatalogMedia {
 	@ColumnInfo(name = "global_id")
 	@NonNull
 	public String globalId;
-
-	public String titles, description, ids, url;
-	public String banner, extra, country, authors;
-	public String duration, type;
+	@Nullable
+	public String titles, description, ids, url, banner, extra, country, authors, duration, type;
 	@ColumnInfo(name = "release_date")
+	@Nullable
 	public String releaseDate;
 	@ColumnInfo(name = "episodes_count")
+	@Nullable
 	public String episodesCount;
 	@ColumnInfo(name = "average_score")
+	@Nullable
 	public String averageScore;
+	@Nullable
 	public String tags, genres;
+	@Nullable
 	public String status;
 	@ColumnInfo(name = "poster_extra_large")
+	@Nullable
 	public String poster;
 	@ColumnInfo(name = "poster_large")
 	@Deprecated(forRemoval = true)
+	@Nullable
 	public String __DEPRECATED_largePoster;
 	@ColumnInfo(name = "poster_medium")
 	@Deprecated(forRemoval = true)
+	@Nullable
 	public String __DEPRECATED_mediumPoster;
 	@ColumnInfo(name = "latest_episode")
+	@Nullable
 	public String latestEpisode;
 	@ColumnInfo(name = "age_rating")
+	@Nullable
 	public String ageRating;
 
 	public DBCatalogMedia(@NonNull String globalId) {
@@ -152,11 +161,11 @@ public class DBCatalogMedia {
 				averageScore != null ? Float.parseFloat(averageScore) : null,
 				parseEnum(status, CatalogMedia.Status.class),
 				
-				tags != null ? (CatalogTag[]) stream(uniqueStringToList(tags))
-						.map(CatalogTag::new).toArray() : null,
+				tags != null ? stream(uniqueStringToList(tags))
+						.map(CatalogTag::new).toArray(CatalogTag[]::new) : null,
 				
-				genres == null ? null : (String[]) uniqueStringToList(genres).toArray(),
-				titles == null ? null : (String[]) uniqueStringToList(titles).toArray(),
+				genres == null ? null : stream(uniqueStringToList(genres)).toArray(String[]::new),
+				titles == null ? null : stream(uniqueStringToList(titles)).toArray(String[]::new),
 				authors == null ? null : ParserAdapter.mapFromString(authors),
 				ids == null ? null : ParserAdapter.mapFromString(ids));
 	}

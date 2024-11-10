@@ -24,6 +24,7 @@ import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.setImageTintAttr
+import com.mrboomdev.awery.util.extensions.setMarkwon
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
@@ -112,27 +113,22 @@ class SetupActivity : AppCompatActivity() {
 
 			STEP_SOURCES -> {
 				val template = AwerySettings.TABS_TEMPLATE.value
-				val markwon = getMarkwon(this)
 
 				if(template == "dantotsu") {
-					markwon.setMarkdown(
-						binding.message, """
-							The Dantotsu template requires some extensions to work.
-							In this beta version, you cannot install extensions directly through the app :(
-							Currently you can download them on our:
-							Discord server: https://discord.com/invite/yspVzD4Kbm
-							Telegram channel: https://t.me/mrboomdev_awery
-							""".trimIndent()
-					)
+					binding.message.setMarkwon("""
+						The Dantotsu template requires some extensions to work.
+						In this beta version, you cannot install extensions directly through the app :(
+						Currently you can download them on our:
+						Discord server: https://discord.com/invite/yspVzD4Kbm
+						Telegram channel: https://t.me/mrboomdev_awery
+						""".trimIndent())
 				} else {
-					markwon.setMarkdown(
-						binding.message, """
-							In this beta version, you cannot install extensions directly through the app :(
-							Currently you can download them on our:
-							Discord server: https://discord.com/invite/yspVzD4Kbm
-							Telegram channel: https://t.me/mrboomdev_awery
-							""".trimIndent()
-					)
+					binding.message.setMarkwon("""
+						In this beta version, you cannot install extensions directly through the app :(
+						Currently you can download them on our:
+						Discord server: https://discord.com/invite/yspVzD4Kbm
+						Telegram channel: https://t.me/mrboomdev_awery
+						""".trimIndent())
 				}
 
 				binding.title.setText(R.string.extensions)

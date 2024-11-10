@@ -3,13 +3,10 @@ package com.mrboomdev.awery.app
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -28,7 +25,6 @@ import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
 import com.mrboomdev.awery.util.extensions.activity
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.fixAndShow
-import com.mrboomdev.awery.util.extensions.setMargin
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import xcrash.Errno
 import xcrash.XCrash
@@ -149,10 +145,10 @@ object CrashHandler {
 				title = if(files.size == 1) null else "Awery crash report #${index + 1}",
 				messagePrefixRes = R.string.please_report_bug_app,
 				file = file,
-				dismissCallback = {
+				dismissCallback = if(index == 0) {{
 					crashLogsDirectory.delete()
 					continuationCallback()
-				}
+				}} else {{}}
 			)
 		}
 	}

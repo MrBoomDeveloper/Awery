@@ -158,6 +158,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.webkit)
     implementation(libs.fragment.ktx)
+    implementation(libs.androidx.core.google.shortcuts)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.xcrash.android.lib)
     implementation(libs.deprecated.android.retrostreams)

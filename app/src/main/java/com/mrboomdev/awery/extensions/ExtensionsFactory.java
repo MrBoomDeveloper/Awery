@@ -71,16 +71,7 @@ public class ExtensionsFactory {
 
 		managers.add(new AniyomiManager());
 		managers.add(new InternalManager());
-
-		//managers.add(new TachiyomiManager()); // We doesn't support manga reading at the moment so we can just disable it for now
-
-		/*List.of(
-				,
-				//
-				//new CloudstreamManager(),
-				//new MiruManager(),
-				//new JsManager(), //J s extensions were a bad decision
-				);*/
+		managers.add(new InternalManager());
 
 		for(var manager : managers) {
 			manager.loadAllExtensions(context);

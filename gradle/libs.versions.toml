@@ -10,6 +10,7 @@ coilCompose = "3.0.0-rc01"
 colorpickerview = "2.3.0"
 compose-bom = "2024.10.01"
 core = "4.6.2"
+coreGoogleShortcuts = "1.1.0"
 coreSplashscreen = "1.0.1"
 ebookReader = "0.1.6"
 fragmentKtxVersion = "1.8.5"
@@ -45,11 +46,13 @@ compose-tv-foundation = "1.0.0-alpha11"
 compose-tv-material = "1.0.0"
 compose-ui = "1.7.5"
 webkit = "1.12.1"
+windowStyler = "0.3.2"
 xcrashAndroidLib = "3.1.0"
 uiTooling = "1.7.5"
 jetbrainsKotlinJvm = "2.0.20"
 
 [libraries]
+androidx-core-google-shortcuts = { module = "androidx.core:core-google-shortcuts", version.ref = "coreGoogleShortcuts" }
 deprecated-android-retrostreams = { module = "net.sourceforge.streamsupport:android-retrostreams", version.ref = "androidRetrostreams" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
@@ -117,6 +120,7 @@ pageindicatorview = { module = "com.github.emilaleborn:PageIndicatorView", versi
 quickjs-android = { module = "app.cash.quickjs:quickjs-android", version.ref = "quickjsAndroid" }
 rx-android = { module = "io.reactivex:rxandroid", version.ref = "rxandroid" }
 rx-java = { module = "io.reactivex:rxjava", version.ref = "rxjava" }
+window-styler = { module = "com.mayakapps.compose:window-styler", version.ref = "windowStyler" }
 xcrash-android-lib = { module = "com.iqiyi.xcrash:xcrash-android-lib", version.ref = "xcrashAndroidLib" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 

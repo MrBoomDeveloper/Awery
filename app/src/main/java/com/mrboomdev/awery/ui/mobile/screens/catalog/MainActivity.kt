@@ -53,6 +53,7 @@ import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.util.io.FileUtil.readAssets
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity2
 import com.mrboomdev.awery.util.ui.FadeTransformer
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -334,8 +335,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             binding.settingsWrapper.setOnClickListener {
-                val intent = Intent(requireActivity(), SettingsActivity::class.java)
-                startActivity(intent)
+                if(AwerySettings.EXPERIMENT_SETTINGS2.value) {
+                    startActivity(SettingsActivity2::class)
+                } else {
+                    startActivity(SettingsActivity::class)
+                }
             }
 
             binding.root.applyInsets(UI_INSETS, { view, insets ->

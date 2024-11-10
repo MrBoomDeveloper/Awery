@@ -37,7 +37,7 @@ val Context.configuration: Configuration
     get() = resources.configuration
 
 inline fun <reified T> Context.startService(clazz: KClass<out SafeArgsService<T>>, args: T) {
-    startService(Intent().apply {
+    startService(Intent(this, clazz.java).apply {
         putSafeArgs(args as Any)
     })
 }

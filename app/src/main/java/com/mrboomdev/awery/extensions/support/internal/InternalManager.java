@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
+import static com.mrboomdev.awery.util.NiceUtils.stream;
+
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.extensions.Extension;
@@ -14,7 +16,7 @@ public class InternalManager extends ExtensionsManager {
 
 	@NonNull
 	private Extension createExtension(@NonNull InternalProviders.InternalProvider provider) {
-		var extension = new Extension(provider.getName(), provider.getId(), "1.0.0", null);
+		var extension = new Extension(provider.getId(), provider.getName(), "1.0.0", null);
 		extension.addProvider(provider);
 		provider.setup(this, extension);
 		return extension;
@@ -22,7 +24,7 @@ public class InternalManager extends ExtensionsManager {
 
 	@Override
 	public Extension getExtension(String id) {
-		return null;
+		return stream(extensions).filter(it -> id.equals(it.getId())).findAny().orElseThrow();
 	}
 
 	@Override

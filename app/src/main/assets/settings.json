@@ -204,10 +204,33 @@
 				{ "key": "check_app_update", "type": "action", "title": "Check app update" },
 
 				{ "type": "category", "title": "Developers" },
+
+				{
+					"key": "experiments", "type": "screen", "title": "Experiments",
+					"icon": "ic_experiment_outlined", "items": [
+						{
+							"key": "experiment_splash_load_sources", "title": "experiment_splash_load_sources",
+							"type": "boolean", "boolean_value": false
+						}, {
+							"key": "experiment_pip_controls", "title": "experiment_pip_controls",
+							"type": "boolean", "boolean_value": false
+						}, {
+							"key": "experiment_media_play2", "title": "experiment_media_play2",
+							"type": "boolean", "boolean_value": false
+						}, {
+							"key": "experiment_tv_compose", "title": "experiment_tv_compose",
+							"type": "boolean", "boolean_value": false
+						}, {
+							"key": "experiment_settings2", "title": "experiment_settings2",
+							"type": "boolean", "boolean_value": false
+						}
+					]
+				},
+
 				{ "key": "log_network", "type": "boolean", "restart": true, "title": "Verbose network logging" },
 				{ "key": "start_onboarding", "type": "action", "title": "Start onboarding" },
 
-				{ "type": "category",  "title": "These buttons are supposed to crash the app. Don't report them!" },
+				{ "type": "category", "title": "These buttons are supposed to crash the app. Don't report them!" },
 				{ "key": "try_crash_native", "type": "action", "title": "Throw Native Exception" },
 				{ "key": "try_crash_native_async", "type": "action", "title": "Throw Async Native Exception" },
 				{ "key": "try_crash_java", "type": "action", "title": "Throw Java Exception" },

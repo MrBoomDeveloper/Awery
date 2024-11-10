@@ -1,9 +1,14 @@
 package com.mrboomdev.awery.ui.mobile.screens
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.mrboomdev.awery.BuildConfig
@@ -14,6 +19,8 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.ExtensionsManager
+import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.generated.AwerySettings
@@ -32,8 +39,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-private const val USE_NEW_SOURCES = false
-
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 	private lateinit var binding: ScreenSplashBinding
@@ -49,6 +54,24 @@ class SplashActivity : AppCompatActivity() {
 
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
+
+		// If any experiment is enabled, then crate an shortcut
+		if(NicePreferences.getSettingsMap().findItem("experiments")
+			.items.find { it.booleanValue == true } != null
+		) {
+			ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
+				ShortcutInfoCompat.Builder(this, "experiments")
+					.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
+					.setLongLabel("Open experimental settings")
+					.setShortLabel("Experiments")
+					.setLongLived(true)
+					.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
+						action = Intent.ACTION_VIEW
+						data = Uri.parse("awery://experiments")
+					}).build())
+		} else {
+			ShortcutManagerCompat.removeDynamicShortcuts(applicationContext, listOf("experiments"))
+		}
 
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
 			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
@@ -82,14 +105,13 @@ class SplashActivity : AppCompatActivity() {
 					return@launch
 				}
 
-				if(USE_NEW_SOURCES) {
+				if(AwerySettings.EXPERIMENT_SPLASH_LOAD_SOURCES.value) {
 					ExtensionsManager.init(this@SplashActivity).onEach {
 						launch(Dispatchers.Main) {
 							binding.status.text = getString(R.string.loading_extensions_n, it.progress, it.max)
 						}
 					}.onCompletion {
-						// Tv version isn't done yet at 100%
-						startActivity(if(isTv && BuildConfig.DEBUG) TvMainActivity::class else MainActivity::class)
+						startActivity(if(isTv || AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
 						finish()
 					}.catch {
 						CrashHandler.showDialog(

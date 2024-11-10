@@ -7,9 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -31,52 +31,72 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import kotlin.system.exitProcess
 
 @Composable
 fun StatusBar(
 	title: String,
-	windowScope: FrameWindowScope
+	windowState: WindowState,
+	onCloseRequest: () -> Unit = { exitProcess(0) }
 ) {
 	Column {
 		Row(
+			modifier = Modifier.height(40.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Text(
 				fontSize = 15.sp,
 				text = title,
-				modifier = Modifier
-					.padding(24.dp, 0.dp)
+				modifier = Modifier.padding(24.dp, 0.dp)
 			)
 
 			Spacer(modifier = Modifier.weight(1f))
 
 			Button(
-				onClick = { windowScope.window.isMinimized = true },
-				text = "Minimize",
-				icon = painterResource("ic_minimize.xml"),
 				hoverColor = Color(0x11AAAAAA),
-				pressColor = Color(0x22AAAAAA)
-			)
+				pressColor = Color(0x22AAAAAA),
+				onClick = { windowState.isMinimized = true }
+			) {
+				Image(
+					modifier = Modifier.fillMaxHeight()
+						.aspectRatio(1.4f)
+						.padding(12.dp),
+
+					painter = painterResource("icon/minimize.xml"),
+					contentDescription = "Minimize")
+			}
 
 			Button(
+				hoverColor = Color(0x11AAAAAA),
+				pressColor = Color(0x22AAAAAA),
 				onClick = {
-					windowScope.window.placement = if(windowScope.window.placement == WindowPlacement.Maximized)
-					WindowPlacement.Floating else WindowPlacement.Maximized
-				},
+					windowState.placement = if(windowState.placement == WindowPlacement.Maximized) {
+						WindowPlacement.Floating
+					} else WindowPlacement.Maximized
+				}
+			) {
+				Image(
+					modifier = Modifier.fillMaxHeight()
+						.aspectRatio(1.4f)
+						.padding(12.dp),
 
-				text = "Fullscreen",
-				icon = painterResource("ic_select_window_2.xml"),
-				hoverColor = Color(0x11AAAAAA),
-				pressColor = Color(0x22AAAAAA)
-			)
+					painter = painterResource("icon/select_window_2.xml"),
+					contentDescription = "Fullscreen")
+			}
 
 			Button(
-				onClick = { exitProcess(0) },
-				text = "Close",
-				icon = painterResource("ic_close.xml"),
-				hoverColor = Color(0xffff0000)
-			)
+				hoverColor = Color(0xffff0000),
+				onClick = onCloseRequest
+			) {
+				Image(
+					modifier = Modifier.fillMaxHeight()
+						.aspectRatio(1.4f)
+						.padding(11.dp),
+
+					painter = painterResource("icon/close.xml"),
+					contentDescription = "Close")
+			}
 		}
 
 		Divider()
@@ -87,11 +107,10 @@ fun StatusBar(
 @Composable
 private fun Button(
 	modifier: Modifier = Modifier,
-	text: String,
-	icon: Painter? = null,
 	onClick: () -> Unit,
 	hoverColor: Color,
-	pressColor: Color = hoverColor
+	pressColor: Color = hoverColor,
+	content: @Composable () -> Unit
 ) {
 	var isHovered by remember { mutableStateOf(false) }
 	var isPressed by remember { mutableStateOf(false) }
@@ -108,19 +127,6 @@ private fun Button(
 			.onPointerEvent(PointerEventType.Release) { isPressed = false }
 			.clickable { onClick() }
 	) {
-		if(icon != null) {
-			Image(
-				painter = icon,
-				contentDescription = text,
-				modifier = Modifier.height(35.dp)
-					.width(50.dp)
-					.padding(10.dp)
-			)
-		} else {
-			Text(
-				modifier = Modifier.padding(24.dp, 8.dp),
-				text = text
-			)
-		}
+		content()
 	}
 }

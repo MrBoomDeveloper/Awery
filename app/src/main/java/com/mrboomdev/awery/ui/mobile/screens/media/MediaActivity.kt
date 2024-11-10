@@ -79,8 +79,8 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 					view.setBackgroundColor(-0x1000000)
 					window.navigationBarColor = if(isLandscape) 0 else -0x1000000
 				} else {
-					view.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(context))
-					window.navigationBarColor = if(isLandscape) 0 else SurfaceColors.SURFACE_2.getColor(context)
+					view.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(view.context))
+					window.navigationBarColor = if(isLandscape) 0 else SurfaceColors.SURFACE_2.getColor(view.context)
 				}
 
 				if(view is NavigationRailView) {
@@ -143,12 +143,10 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 		lifecycle: Lifecycle
 	) : FragmentStateAdapter(fragmentManager, lifecycle) {
 		override fun createFragment(position: Int) = when(position) {
-			0 -> MediaInfoFragment().apply { putSafeArgs(
-				MediaInfoFragment.Args(
+			0 -> MediaInfoFragment().apply { putSafeArgs(MediaInfoFragment.Args(
 				this@MediaActivity.rememberSafeArgs!!.media)) }
 
-			1 -> MediaPlayFragment().apply { putSafeArgs(
-				MediaPlayFragment.Args(
+			1 -> MediaPlayFragment().apply { putSafeArgs(MediaPlayFragment.Args(
 				this@MediaActivity.rememberSafeArgs!!.media)) }
 
 			2 -> MediaCommentsFragment(
@@ -156,8 +154,7 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 				pendingExtra as CatalogVideo?
 			).also { commentsFragment = it }
 
-			3 -> MediaRelationsFragment().apply { putSafeArgs(
-				MediaRelationsFragment.Args(
+			3 -> MediaRelationsFragment().apply { putSafeArgs(MediaRelationsFragment.Args(
 				this@MediaActivity.rememberSafeArgs!!.media)) }
 
 			else -> throw IllegalArgumentException("Invalid position: $position")

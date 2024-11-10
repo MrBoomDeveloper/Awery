@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.app.services
 
+import android.app.Service
 import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
@@ -10,6 +11,7 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.util.FileType
 import com.mrboomdev.awery.util.io.unzipFiles
 import com.mrboomdev.awery.util.io.zipFiles
 import com.mrboomdev.safeargsnext.owner.SafeArgsService
@@ -23,24 +25,27 @@ private const val TAG = "BackupService"
 private val BACKUP_DIRECTORIES = arrayOf("shared_prefs", "databases")
 
 class BackupService : SafeArgsService<BackupService.Args>() {
-	class Args(val action: Action, val targetUri: Uri)
+	class Args(val action: Action, val targetUri: Uri, val fileType: FileType = FileType.AWERY_BACKUP)
 
 	enum class Action {
 		BACKUP, RESTORE
 	}
 
 	override fun onStartCommand(args: Args?, flags: Int, startId: Int): Int {
-		if(args == null) throw NullPointerException("Arguments are required!")
+		if(args == null) {
+			stopSelf()
+			return START_NOT_STICKY
+		}
 
 		when(args.action) {
-			Action.BACKUP -> startBackup(args.targetUri)
-			Action.RESTORE -> startRestore(args.targetUri)
+			Action.BACKUP -> startBackup(args.targetUri, args.fileType)
+			Action.RESTORE -> startRestore(args.targetUri, args.fileType)
 		}
 
 		return super.onStartCommand(args, flags, startId)
 	}
 
-	private fun startBackup(into: Uri) {
+	private fun startBackup(into: Uri, fileType: FileType) {
 		val popup = showLoadingWindow()
 
 		CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
@@ -51,15 +56,21 @@ class BackupService : SafeArgsService<BackupService.Args>() {
 				stopSelf()
 			}
 		}).launch {
-			zipFiles(HashMap<String, File>().apply {
-				for(dir in BACKUP_DIRECTORIES) {
-					val list = File(dataDir, dir).listFiles() ?: continue
+			when(fileType) {
+				FileType.AWERY_BACKUP -> {
+					zipFiles(HashMap<String, File>().apply {
+						for(dir in BACKUP_DIRECTORIES) {
+							val list = File(dataDir, dir).listFiles() ?: continue
 
-					for(file in list) {
-						this[dir + "/" + file.name] = file
-					}
+							for(file in list) {
+								this[dir + "/" + file.name] = file
+							}
+						}
+					}, into)
 				}
-			}, into)
+
+				else -> TODO("Unsupported backup type: $fileType")
+			}
 
 			toast(R.string.backup_success)
 			runOnUiThread { popup.dismiss() }
@@ -67,7 +78,7 @@ class BackupService : SafeArgsService<BackupService.Args>() {
 		}
 	}
 
-	private fun startRestore(uri: Uri) {
+	private fun startRestore(uri: Uri, fileType: FileType) {
 		val window = showLoadingWindow()
 
 		CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
@@ -82,7 +93,11 @@ class BackupService : SafeArgsService<BackupService.Args>() {
 				File(dataDir, dir).deleteRecursively()
 			}
 
-			unzipFiles(uri, dataDir)
+			when(fileType) {
+				FileType.AWERY_BACKUP -> unzipFiles(uri, dataDir)
+				else -> TODO("Unsupported restore type: $fileType")
+			}
+
 			toast(R.string.restore_success)
 			restartApp()
 			stopSelf()

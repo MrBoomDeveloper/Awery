@@ -12,12 +12,12 @@ version = "1.0.0"
 dependencies {
 	// Core
 	implementation(project(":ext"))
-	implementation(project(":ui"))
 	implementation(kotlin("stdlib-jdk8"))
-	implementation(compose.desktop.currentOs)
-
-    // Utils
     implementation(libs.moshi)
+
+	// Ui
+	implementation(compose.desktop.currentOs)
+	implementation(project(":ui"))
 
     // Networking
     implementation(libs.okhttp)
