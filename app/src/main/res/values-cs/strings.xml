@@ -489,4 +489,6 @@
     <string name="database_corrupted"></string>
     <string name="built_at"></string>
     <string name="loading_videos_list"></string>
+    <string name="welcome_to_app_description"></string>
+    <string name="setup_finished_description"></string>
 </resources>
