@@ -489,4 +489,6 @@
     <string name="copy_link_to_clipboard"></string>
     <string name="open_link_externally"></string>
     <string name="searching_for"></string>
+    <string name="welcome_to_app_description"></string>
+    <string name="setup_finished_description"></string>
 </resources>
