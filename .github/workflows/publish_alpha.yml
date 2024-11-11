@@ -216,7 +216,7 @@ jobs:
           developers="${developers:0:$max_length}... (truncated)"
           fi
           if [ ${#commit_messages} -gt $max_length ]; then
-          commit_messages="${commit_messages:0:$max_length}... (truncated)"
+          commit_messages="${commit_messages:0:$max_length}"
           fi
 
           discord_data=$(jq -nc \
