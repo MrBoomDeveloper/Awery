@@ -489,4 +489,6 @@
     <string name="delete_confirmation"></string>
     <string name="loading_extensions_n"></string>
     <string name="selected_s"></string>
+    <string name="setup_finished_description"></string>
+    <string name="welcome_to_app_description"></string>
 </resources>
