@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.ItemListSettingBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.TabsTemplate
@@ -40,7 +41,7 @@ class SetupTabsAdapter : RecyclerView.Adapter<SetupTabsAdapter.ViewHolder?>() {
 			this.description = "Are you a power user who likes to customize everything? You must like it!";
 		}});*/
 
-		templates.addAll(getMoshi().adapter<List<TabsTemplate>>()
+		templates.addAll(getMoshi(SettingsList.ADAPTER).adapter<List<TabsTemplate>>()
 			.fromJson(File("tabs_templates.json").readAssets())!!)
 
 		val savedSelected = AwerySettings.TABS_TEMPLATE.value

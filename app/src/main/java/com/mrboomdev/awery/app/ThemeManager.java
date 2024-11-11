@@ -40,6 +40,9 @@ public class ThemeManager {
 	}
 
 	public static boolean isDarkModeEnabled() {
+		// Light theme on tv is an really bad thing.
+		if(App.Companion.isTv()) return true;
+		
 		var config = getAnyContext().getResources().getConfiguration();
 		return (config.uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
 	}

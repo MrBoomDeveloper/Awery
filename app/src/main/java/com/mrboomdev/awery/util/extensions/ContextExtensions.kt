@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
@@ -32,6 +33,10 @@ import java.io.File
 import kotlin.reflect.KClass
 
 private const val TAG = "ContextExtensions"
+
+fun Context.hasPermission(permission: String): Boolean {
+    return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+}
 
 val Context.configuration: Configuration
     get() = resources.configuration

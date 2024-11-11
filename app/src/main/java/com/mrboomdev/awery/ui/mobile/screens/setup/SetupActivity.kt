@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.app.App.Companion.getMarkwon
 import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.app.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
@@ -25,6 +24,7 @@ import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.setImageTintAttr
 import com.mrboomdev.awery.util.extensions.setMarkwon
+import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
@@ -155,7 +155,7 @@ class SetupActivity : AppCompatActivity() {
 					createParty(275, 225, 300, 200, 330, .6))
 
 				binding.title.setText(R.string.were_done)
-				binding.message.text = "Now you can go watch your favourite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)"
+				binding.message.setText(R.string.setup_finished_description)
 				binding.continueButton.setText(R.string.finish)
 
 				binding.icon.visibility = View.VISIBLE
@@ -250,18 +250,17 @@ class SetupActivity : AppCompatActivity() {
 			STEP_TEMPLATE -> STEP_SOURCES
 			STEP_SOURCES -> STEP_FINISH
 			STEP_ANALYTICS -> STEP_FINISH
+
 			STEP_FINISH -> {
 				getPrefs().setValue(AwerySettings.SETUP_VERSION_FINISHED, SETUP_VERSION).saveSync()
 				finishAffinity()
-
-				val intent = Intent(this, SplashActivity::class.java)
-				startActivity(intent)
-
+				startActivity(SplashActivity::class)
 				return
 			}
 
 			else -> throw IllegalArgumentException("Unknown step!")
 		}
+
 		startStep(nextStep)
 	}
 

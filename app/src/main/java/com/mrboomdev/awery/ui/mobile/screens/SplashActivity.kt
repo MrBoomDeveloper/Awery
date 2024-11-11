@@ -126,8 +126,7 @@ class SplashActivity : AppCompatActivity() {
 
 				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
 					override fun onSuccess(result: ExtensionsFactory) {
-						// Tv version isn't done yet at 100%
-						startActivity(if(isTv && BuildConfig.DEBUG) TvMainActivity::class else MainActivity::class)
+						startActivity(if(isTv || AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
 						finish()
 					}
 

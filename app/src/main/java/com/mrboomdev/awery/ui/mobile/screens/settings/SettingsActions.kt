@@ -2,6 +2,8 @@ package com.mrboomdev.awery.ui.mobile.screens.settings
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import com.mrboomdev.awery.R
@@ -22,9 +24,12 @@ import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.exceptions.explain
+import com.mrboomdev.awery.util.extensions.hasPermission
+import com.mrboomdev.awery.util.extensions.requestPermission
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.startActivityForResult
 import com.mrboomdev.awery.util.extensions.startService
+import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +94,25 @@ object SettingsActions {
 
 				val context = getAnyActivity<Activity>()!!
 
+				if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && !context.hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+					context.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, { didGrant ->
+						if(didGrant) run(item) else (DialogBuilder(context).apply {
+							setTitle("Permission required!")
+							setMessage("Sorry, but you cannot create files without an storage permission.")
+							setNegativeButton(R.string.dismiss) { dismiss() }
+
+							setPositiveButton("Open settings") {
+								context.startActivity(action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+									data = Uri.parse("package:${context.packageName}"))
+
+								dismiss()
+							}
+						}).show()
+					})
+
+					return
+				}
+
 				context.startActivityForResult(
 					action = Intent.ACTION_CREATE_DOCUMENT,
 					type = ContentType.ANY.mimeType,
@@ -106,6 +130,25 @@ object SettingsActions {
 
 			AwerySettings.RESTORE -> {
 				val context = getAnyActivity<Activity>()!!
+
+				if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && !context.hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+					context.requestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, { didGrant ->
+						if(didGrant) run(item) else (DialogBuilder(context).apply {
+							setTitle("Permission required!")
+							setMessage("Sorry, but you cannot select files without an storage permission.")
+							setNegativeButton(R.string.dismiss) { dismiss() }
+
+							setPositiveButton("Open settings") {
+								context.startActivity(action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+									data = Uri.parse("package:${context.packageName}"))
+
+								dismiss()
+							}
+						}).show()
+					})
+
+					return
+				}
 
 				context.startActivityForResult(Intent.createChooser(Intent(Intent.ACTION_GET_CONTENT).apply {
 					setType(ContentType.ANY.mimeType)

@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.darkColorScheme
 import com.mrboomdev.awery.app.data.settings.NicePreferences
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ui.tv.screens.HomeScreen
@@ -24,7 +25,7 @@ class TvMainActivity : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 
 		setContent {
-			MaterialTheme {
+			MaterialTheme(colorScheme = darkColorScheme()) {
 				Navigation()
 			}
 		}

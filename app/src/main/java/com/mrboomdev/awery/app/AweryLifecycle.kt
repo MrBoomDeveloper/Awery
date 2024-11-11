@@ -217,7 +217,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		}
 
 		@MainThread
-		private fun addActivityResultListener(
+		fun addActivityResultListener(
 			activity: Activity,
 			requestCode: Int,
 			activityResultCallback: ((resultCode: Int, data: Intent?) -> Unit)?,

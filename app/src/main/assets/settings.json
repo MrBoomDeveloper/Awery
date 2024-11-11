@@ -209,19 +209,19 @@
 					"key": "experiments", "type": "screen", "title": "Experiments",
 					"icon": "ic_experiment_outlined", "items": [
 						{
-							"key": "experiment_splash_load_sources", "title": "experiment_splash_load_sources",
+							"key": "experiment_splash_load_sources", "title": "Use new sources loader",
 							"type": "boolean", "boolean_value": false
 						}, {
-							"key": "experiment_pip_controls", "title": "experiment_pip_controls",
+							"key": "experiment_pip_controls", "title": "Picture in picture player controls",
 							"type": "boolean", "boolean_value": false
 						}, {
-							"key": "experiment_media_play2", "title": "experiment_media_play2",
+							"key": "experiment_media_play2", "title": "Use new MediaPlayFragment instead",
 							"type": "boolean", "boolean_value": false
 						}, {
-							"key": "experiment_tv_compose", "title": "experiment_tv_compose",
+							"key": "experiment_tv_compose", "title": "Launch TV activity on startup",
 							"type": "boolean", "boolean_value": false
 						}, {
-							"key": "experiment_settings2", "title": "experiment_settings2",
+							"key": "experiment_settings2", "title": "Remastered settings",
 							"type": "boolean", "boolean_value": false
 						}
 					]
