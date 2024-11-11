@@ -489,4 +489,6 @@
     <string name="searching_for">Buscando %s</string>
     <string name="loading_videos_list">Cargando lista de vídeos</string>
     <string name="restore_success">¡Copia de seguridad restaurada correctamente!</string>
+    <string name="welcome_to_app_description">La aplicación perfecta donde puedes personalizar todo, con un montón de funciones y una apariencia elegante.</string>
+    <string name="setup_finished_description">Ahora puedes ir a ver tus programas favoritos. ¡Esperamos que disfrutes de esta aplicación! Si quieres, puedes enviarnos una reseña con lo que te ha gustado :)</string>
 </resources>
