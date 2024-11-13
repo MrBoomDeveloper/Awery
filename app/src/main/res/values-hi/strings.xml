@@ -489,4 +489,6 @@
     <string name="failed_to_bypass">%s को बायपास करने में विफल!</string>
     <string name="loading_extensions_n">एक्सटेंशन्स लोड कर रहे हैं %d/%d</string>
     <string name="selected_s">चुना गया %s</string>
+    <string name="welcome_to_app_description">यह एक आदर्श ऐप है, जहां आप ढेर सारी सुविधाओं और स्टाइलिश लुक के साथ सब कुछ कस्टमाइज़ कर सकते हैं।</string>
+    <string name="setup_finished_description">अब आप अपने पसंदीदा शो देख सकते हैं। हमें उम्मीद है कि आपको यह ऐप पसंद आएगा! अगर आप चाहें तो हमें अपनी पसंद के बारे में समीक्षा भेज सकते हैं :)</string>
 </resources>
