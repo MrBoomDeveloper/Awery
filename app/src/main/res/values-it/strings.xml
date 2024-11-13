@@ -344,7 +344,7 @@
     <string name="full_disclaimer">Awery fornisce solo un tracker di anime e manga e non fornisce alcuna funzionalità di streaming o download di anime o manga.\n- Awery o i suoi sviluppatori/staff non ospitano alcun contenuto all\'interno di Awery. Tutte le immagini e le informazioni sugli anime/manga presenti nell\'applicazione sono tratte da varie API pubbliche (AniList, MyAnimeList, Kitsu).\n-Inoltre, tutti i link agli anime/manga presenti in Awery sono presi da vari plugin di terze parti e non hanno alcuna affiliazione con Awery o il suo staff.\n-Awery o i suoi proprietari non sono responsabili per l\'uso improprio dei contenuti presenti all\'interno o all\'esterno dell\'applicazione e non possono essere ritenuti responsabili per la distribuzione dei contenuti presenti all\'interno dell\'applicazione.\n-Utilizzando Awery, l\'utente accetta il fatto che lo sviluppatore dell\'applicazione non è responsabile dei contenuti presenti nell\'applicazione. L\'utente accetta inoltre di non utilizzare Awery per scaricare o trasmettere contenuti protetti da copyright.\n-In caso di problemi di violazione di Internet, si prega di contattare il sito web di origine. Lo sviluppatore non si assume alcuna responsabilità legale.</string>
     <string name="video">Video</string>
     <string name="ask_update_progress_info_ep">Disattivare aggiornerà sempre automaticamente il progresso quando l\'episodio viene visto.</string>
-    <string name="watch_complete_percentage_info">La percentuale alla quale il tuo progresso deve essere aggiornato dopo aver visto un episodio.\nQuesto imposta anche la % per pre-caricare i link per il prossimo episodio.</string>
+    <string name="watch_complete_percentage_info">La percentuale alla quale il tuo progresso deve essere aggiornato dopo aver visto un episodio.\nQuesto imposta anche la %s per pre-caricare i link per il prossimo episodio.</string>
     <string name="picture_in_picture">Immagine nella Immagine</string>
     <string name="always_minimize">Minimizza Sempre</string>
     <string name="always_minimize_info">Richiede che PiP sia abilitato, fa sì che il lettore si comporti come il Lettore di Youtube ma meglio.\nNasconde anche il pulsante PiP.</string>
@@ -489,4 +489,6 @@
     <string name="open_link_externally">Apri nel browser esterno</string>
     <string name="wallpaper_based_colors">Il colore dell\'app sarà basato sul tuo sfondo!</string>
     <string name="failed_bypass_detailed">La tua richiesta è stata bloccata da %s. Prova a completare un captcha e ad aggiornare per risolvere questo problema.</string>
+    <string name="welcome_to_app_description">L\'app perfetta in cui puoi personalizzare tutto, con tantissime funzionalità e un aspetto elegante.</string>
+    <string name="setup_finished_description">Ora puoi andare a guardare i tuoi programmi preferiti. Speriamo che questa app ti piaccia! Se vuoi, puoi inviarci una recensione con ciò che ti è piaciuto :)</string>
 </resources>
