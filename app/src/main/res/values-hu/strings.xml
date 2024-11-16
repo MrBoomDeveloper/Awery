@@ -449,4 +449,5 @@
     <string name="select_title">Válasszon címet</string>
     <string name="no_access_detailed">Hiba 403. Nincs hozzáférése ehhez az erőforráshoz, próbáljon meg bejelentkezni a fiókjába és próbálkozzon újra.</string>
     <string name="rate_limited_detailed">Hiba 429. Túllépte a sebességkorlátot, kérjük próbálja meg később.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
