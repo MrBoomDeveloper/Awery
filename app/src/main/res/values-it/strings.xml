@@ -449,7 +449,7 @@
     <string name="no_access_detailed">Non hai accesso a questa risorsa, prova ad accedere al tuo account e riprova.</string>
     <string name="rate_limited_detailed">Hai superato il limite di tentativi, riprova più tardi.</string>
     <string name="not_logged_detailed">Non sei loggato, per favore effettua l\'accesso e riprova.</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
     <string name="awery_updated_title">Awery è stato aggiornato!</string>
     <string name="searching_for">Ricerca di %s</string>
     <string name="failed_to_bypass">Impossibile bypassare %s</string>
