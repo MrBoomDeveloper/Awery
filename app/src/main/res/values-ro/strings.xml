@@ -449,4 +449,5 @@
     <string name="banned">Ești interzis</string>
     <string name="done">Terminat</string>
     <string name="read_now">Citește acum</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
