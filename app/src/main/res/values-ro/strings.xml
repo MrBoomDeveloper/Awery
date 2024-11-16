@@ -491,4 +491,13 @@
     <string name="loading_extensions">Loading extensions</string>
     <string name="mark_not_watched">Remove from watched</string>
     <string name="selected_s">Selected %s</string>
+    <string name="analytics_title">Analytics</string>
+    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
+    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
+    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="analytics_message">TODO</string>
+    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
+    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
+    <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>
