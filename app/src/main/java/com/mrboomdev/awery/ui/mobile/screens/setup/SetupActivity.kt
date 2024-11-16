@@ -113,11 +113,13 @@ class SetupActivity : AppCompatActivity() {
 
 			STEP_SOURCES -> {
 				val template = AwerySettings.TABS_TEMPLATE.value
-
-				if(template == "dantotsu") {
-					binding.message.setMarkwon(getString(R.string.dantotsu_message))
+				val discordUrl = getString(R.string.discord_link)
+				val telegramUrl = getString(R.string.telegram_link)
+				
+				if (template == "dantotsu") {
+				    binding.message.setMarkwon(getString(R.string.dantotsu_message, discordUrl, telegramUrl))
 				} else {
-					binding.message.setMarkwon(getString(R.string.generic_message))
+				    binding.message.setMarkwon(getString(R.string.generic_message, discordUrl, telegramUrl))
 				}
 
 				binding.title.setText(R.string.extensions)
