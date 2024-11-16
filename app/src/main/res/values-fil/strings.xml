@@ -449,4 +449,5 @@
     <string name="request_invalid_detailed">Error 400. Hindi wasto ang request, pakisubukan muli mamaya.</string>
     <string name="not_logged_detailed">Error 401. Hindi ka naka-login, pakilogin at subukan muli.</string>
     <string name="rate_limited_detailed">Error 429. Lumampas ka sa rate limit, pakisubukan muli mamaya.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
