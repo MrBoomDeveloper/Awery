@@ -396,7 +396,6 @@
     <string name="top_rated">Top Rated</string>
     <string name="movies">Movies</string>
     <string name="most_favourited">Most Favourited</string>
-    <string name="dalayed">Delayed</string>
     <string name="dropped">Dropped</string>
     <string name="cancelled">Cancelled</string>
     <string name="completed">Completed</string>
@@ -491,7 +490,6 @@
     <string name="rate_limited_detailed">You have exceed the rate limit, please try again later.</string>
     <string name="welcome_to_app_description">The perfect app where you can customize everything, with tons of features and a stylish look.</string>
     <string name="setup_finished_description">Now you can go watch your favorite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)</string>
-    <string name="select_template">Select Template</string>
     <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
