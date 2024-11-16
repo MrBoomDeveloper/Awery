@@ -402,7 +402,6 @@
     <string name="torrent_unsupported_message">Désolé, mais Awery ne prend pas en charge les torrents pour le moment. Vous pouvez essayer d\'installer un lecteur de torrents tiers pour lire ce type de fichier.</string>
     <string name="unknown_error">Une erreur inconnue s\'est produite, veuillez réessayer plus tard</string>
     <string name="connection_timeout">Le délai de connexion a expiré, veuillez réessayer plus tard</string>
-    <string name="dalayed">Retardé</string>
     <string name="select_tracker">Sélectionner un tracker</string>
     <string name="select_title">Sélectionner un titre</string>
     <string name="select_status">Sélectionner un statut</string>

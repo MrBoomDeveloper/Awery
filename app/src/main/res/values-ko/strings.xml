@@ -374,7 +374,6 @@
     <string name="movies">영화</string>
     <string name="most_favourited">가장 좋아요를 많이 받은</string>
     <string name="top_rated">최고 평점</string>
-    <string name="dalayed">지연됨</string>
     <string name="request_invalid_detailed">오류 400. 요청이 잘못되었습니다. 나중에 다시 시도해 주세요.</string>
     <string name="not_logged_detailed">오류 401. 로그인하지 않았습니다. 로그인 후 다시 시도해 주세요.</string>
     <string name="no_access_detailed">오류 403. 이 자원에 대한 접근 권한이 없습니다. 계정에 로그인한 후 다시 시도해 주세요.</string>
