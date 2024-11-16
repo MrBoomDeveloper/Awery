@@ -449,4 +449,5 @@
     <string name="no_title">没有标题</string>
     <string name="dropped">放弃</string>
     <string name="read_now">立即阅读</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
