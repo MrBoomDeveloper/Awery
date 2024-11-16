@@ -389,8 +389,8 @@
     <string name="clear_network_cache">নেটৱৰ্ক ক্যাশ পৰিস্কাৰ কৰক</string>
     <string name="github_repository">GitHub ৰিপ’জিটৰী</string>
     <string name="are_you_sure">আপুনি নিশ্চিত নেকি?</string>
-    <string name="app_crash">এপ্লিকেচন তলৰ পৰা পৰিছে!</string>
-    <string name="crash_report">ক্রাশ ৰিপৰ্ট</string>
+    <string name="app_crash">এপ্লিকেচন ক্ৰেচ হৈ গৈছে</string>
+    <string name="crash_report">ক্ৰেচ ৰিপৰ্ট</string>
     <string name="copy">কপি</string>
     <string name="something_terrible_happened">কিবা অতিকৈ বেয়া হৈছে 0_0</string>
     <string name="app_not_responding_restart">এপ্লিকেচন উত্তৰ দিয়া নাই। পুনৰাৰম্ভৰ চেষ্টা কৰা হচ্ছে ._.</string>
@@ -416,7 +416,7 @@
     <string name="havent_selected_source">আপুনি কোনো উৎস বাছনি কৰা নাই!</string>
     <string name="nothing_selected">কোনো বাছনি কৰা নাই</string>
     <string name="server_error">চাৰ্ভাৰ ত্ৰুটি</string>
-    <string name="extension_crashed">এক্সটেনচন তলৰ পৰা পৰিছে!</string>
+    <string name="extension_crashed">এক্সটেনচন ক্ৰেচ হৈ গৈছে</string>
     <string name="account_required">অ্যাকাউণ্টৰ প্ৰয়োজন</string>
     <string name="connection_failed">সংযোগ বিফল</string>
     <string name="banned">আপুনি নিষিদ্ধ</string>
@@ -429,7 +429,7 @@
     <string name="connection_timeout">সংযোগৰ সময়সীমা উত্তীৰ্ণ হৈছে, অনুগ্ৰহ কৰি পিচত চেষ্টা কৰক</string>
     <string name="zoom">জুম</string>
     <string name="popular">জনপ্ৰিয়</string>
-    <string name="share_crash_report">ক্রাশ ৰিপৰ্ট ভাগ-বতৰা কৰক</string>
+    <string name="share_crash_report">ক্ৰেচ ৰিপৰ্ট ভাগ-বতৰা কৰক</string>
     <string name="tabs">ট্যাবসমূহ</string>
     <string name="planning_watch">চাবলৈ পৰিকল্পনা কৰা</string>
     <string name="nsfw_content">NSFW সামগ্ৰী</string>
@@ -453,7 +453,7 @@
     <string name="were_done">আমাৰ কাম শেষ!</string>
     <string name="select_language">ভাষা নিৰ্বাচন কৰক</string>
     <string name="version">সংস্কৰণ</string>
-    <string name="mark_watched">পৰিসমাপ্ত বুলি চিহ্নিত কৰক</string>
+    <string name="mark_watched">চোৱা হিচাপে চিহ্নিত কৰক</string>
     <string name="loading_extensions">এক্সটেনচনসমূহ লোড হৈ আছে</string>
     <string name="checking_database">ডেটাবেছ পৰীক্ষা কৰা হৈছে</string>
     <string name="built_at">নিৰ্মাণৰ তাৰিখ</string>
@@ -472,9 +472,9 @@
     <string name="selected_s">বাছনি কৰা %s</string>
     <string name="searching_for">%s বিচাৰি আছে</string>
     <string name="buffering_video">ভিডিঅ\' বাফাৰিং কৰি আছে</string>
-    <string name="delete_confirmation">%s মচি পেলাবা নেকি?</string>
+    <string name="delete_confirmation">%s টো ডিলিট কৰক?</string>
     <string name="loading_videos_list">ভিডিঅ\' তালিকা লোড হৈ আছে</string>
-    <string name="mark_not_watched">পৰিসমাপ্তৰ পৰা আঁতৰাওক</string>
+    <string name="mark_not_watched">চোৱা তালিকাৰ পৰা আঁতৰাওক</string>
     <string name="open_link_externally">বাহ্যিক ব্ৰাউজাৰত খুলক</string>
     <string name="copy_link_to_clipboard">লিংকটো ক্লিপবোর্ডলৈ কপি কৰক</string>
     <string name="backup_success">ব্যাকআপ সফলতাৰে নিৰ্মাণ কৰা হ\'ল!</string>
@@ -483,7 +483,7 @@
     <string name="dismiss">অগ্ৰাহ্য কৰক</string>
     <string name="see_error">ত্ৰুটি চাওক</string>
     <string name="size">আকাৰ</string>
-    <string name="download">ডাউনলোড কৰক</string>
+    <string name="download">ডাউনলোড</string>
     <string name="failed_bypass_detailed">আপোনাৰ অনুৰোধ %s ৰ দ্বাৰা ৰোধ কৰা হৈছে। এই সমস্যা সমাধান কৰিবলৈ কেপচা পূৰ্ণ কৰক আৰু ৰিফ্ৰেশ কৰক।</string>
     <string name="wallpaper_based_colors">এপ্পৰ ৰং আপোনাৰ ৱালপেপাৰৰ ওপৰত আধাৰিত হব!</string>
     <string name="awery_updated_title">Awery আপডেট কৰা হৈছে!</string>
