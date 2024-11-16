@@ -449,4 +449,5 @@
     <string name="not_logged_detailed">Hata 401. Giriş yapmadınız, lütfen giriş yapın ve tekrar deneyin.</string>
     <string name="no_access_detailed">Hata 403. Bu kaynağa erişiminiz yok.</string>
     <string name="rate_limited_detailed">Hata 429. Rate limit sınırını aştınız, lütfen daha sonra tekrar deneyin.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
