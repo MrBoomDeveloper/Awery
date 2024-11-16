@@ -497,7 +497,7 @@
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="analytics_title">Analytics</string>
-    <string name="analytics_message">TODO</string>
+    <string name="analytics_message" translatable="false">TODO</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
     <string name="existing_custom_tabs_title">Existing custom tabs found</string>
     <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don't want that, then simply select "None".</string>
