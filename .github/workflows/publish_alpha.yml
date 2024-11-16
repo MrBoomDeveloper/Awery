@@ -233,42 +233,43 @@ jobs:
                           "title": "New Alpha-Build dropped",
                           "color": $embed_color,
                           "fields": [
-                    {
-                          "name": "Commits:",
-                          "value": $field_value,
-                          "inline": true
-                    },
-                    {
-                          "name": "Developers:",
-                          "value": $author_value,
-                          "inline": false
-                    }
-                ],
-                "footer": {
-                    "text": $footer_text
-                },
-                "timestamp": $timestamp,
-                "thumbnail": {
-                    "url": $thumbnail_url
+                              {
+                                  "name": "Commits:",
+                                  "value": $field_value,
+                                  "inline": false
+                              },
+                              {
+                                  "name": "Developers:",
+                                  "value": $author_value,
+                                  "inline": false
+                              }
+                          ],
+                          "footer": {
+                              "text": $footer_text
+                          },
+                          "timestamp": $timestamp,
+                          "thumbnail": {
+                              "url": $thumbnail_url
                           }
                       }
-                  ],
-                  "attachments": []
+                  ]
               }')
 
           echo "Debug: Final Discord payload:"
           echo "$discord_data"
 
           curl -H "Content-Type: application/json" \
+               -H "User-Agent: GitHub-Action-Script" \
+               -X POST \
                -d "$discord_data" \
-               ${{ secrets.DISCORD_WEBHOOK_URL }}
+               "${{ secrets.DISCORD_WEBHOOK_URL }}" || echo "Failed to send embed message"
 
           if [ "$SKIP_BUILD" != "true" ]; then
-            curl -F "payload_json=${contentbody}" \
-                 -F "Awery_debug=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
-                 ${{ secrets.DISCORD_WEBHOOK_URL }}
+              curl -H "User-Agent: GitHub-Action-Script" \
+                   -F "file=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+                   "${{ secrets.DISCORD_WEBHOOK_URL }}" || echo "Failed to send APK file"
           else
-            echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
+              echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
           fi
 
           COMMIT_LOG=$(cat commit_log.txt)
