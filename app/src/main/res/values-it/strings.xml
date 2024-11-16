@@ -449,7 +449,6 @@
     <string name="no_access_detailed">Non hai accesso a questa risorsa, prova ad accedere al tuo account e riprova.</string>
     <string name="rate_limited_detailed">Hai superato il limite di tentativi, riprova più tardi.</string>
     <string name="not_logged_detailed">Non sei loggato, per favore effettua l\'accesso e riprova.</string>
-    <string name="app_name" translatable="false"></string>
     <string name="awery_updated_title">Awery è stato aggiornato!</string>
     <string name="searching_for">Ricerca di %s</string>
     <string name="failed_to_bypass">Impossibile bypassare %s</string>
@@ -491,4 +490,5 @@
     <string name="failed_bypass_detailed">La tua richiesta è stata bloccata da %s. Prova a completare un captcha e ad aggiornare per risolvere questo problema.</string>
     <string name="welcome_to_app_description">L\'app perfetta in cui puoi personalizzare tutto, con tantissime funzionalità e un aspetto elegante.</string>
     <string name="setup_finished_description">Ora puoi andare a guardare i tuoi programmi preferiti. Speriamo che questa app ti piaccia! Se vuoi, puoi inviarci una recensione con ciò che ti è piaciuto :)</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>

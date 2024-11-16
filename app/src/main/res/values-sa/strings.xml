@@ -449,7 +449,6 @@
     <string name="not_logged_detailed">त्वं लॉग्ड् न अस्ति, कृपया लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="no_access_detailed">एषः संसाधनस्य प्रवेशः न अस्ति, कृपया त्वस्य खातायाः लॉगिनं कृत्वा पुनः प्रयत्नं योजयतु।</string>
     <string name="rate_limited_detailed">त्वं दरस्य सीमां अतिक्रमितवान्, कृपया पुनः प्रयत्नं योजयतु।</string>
-    <string name="app_name" translatable="false"></string>
     <string name="restore_success">प्रतिसङ्ग्रहः पुनःस्थापितः सफलतायाम्!</string>
     <string name="mark_not_watched">दृष्टं अपाकृत्य चिन्हय</string>
     <string name="awery_updated_description">नूतनाः किञ्चन अद्भुतानि उपक्रमणीयानि सन्ति!</string>
@@ -491,4 +490,5 @@
     <string name="failed_to_bypass">बाधा अपगच्छति असफलम् %s</string>
     <string name="setup_finished_description">इदानीं भवन्तः स्वस्य प्रियप्रदर्शनानि द्रष्टुं गन्तुं शक्नुवन्ति। आशास्महे यत् भवद्भ्यः एतत् एप् आनन्दं लप्स्यते! यदि भवान् इच्छति तर्हि भवान् अस्मान् समीक्षां प्रेषयितुं शक्नोति यत् भवतां रोचते :)</string>
     <string name="welcome_to_app_description">सम्यक् एप्लिकेशनं यत्र भवान् सर्वं अनुकूलितुं शक्नोति, टन-मात्रायां विशेषताभिः सह, स्टाइलिश-रूपेण च।</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>

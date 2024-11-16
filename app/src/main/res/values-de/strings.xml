@@ -449,7 +449,6 @@
     <string name="tracking">Verfolgung</string>
     <string name="adult_content">Erwachseneninhalt</string>
     <string name="read_now">Jetzt lesen</string>
-    <string name="app_name" translatable="false"></string>
     <string name="awery_updated_title">Awery wurde aktualisiert!</string>
     <string name="were_done">Wir haben es geschafft!</string>
     <string name="database_corrupted">Datenbank beschädigt!</string>
@@ -475,20 +474,21 @@
     <string name="backup_success">Datensicherung erfolgreich erstellt!</string>
     <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
     <string name="update_available">Aktualisierung verfügbar</string>
-    <string name="checking_database"></string>
-    <string name="mark_not_watched"></string>
-    <string name="built_at"></string>
-    <string name="failed_bypass_detailed"></string>
-    <string name="searching_episodes_for"></string>
-    <string name="show_spoilers"></string>
-    <string name="searching_for"></string>
-    <string name="see_error"></string>
-    <string name="wallpaper_based_colors"></string>
-    <string name="dismiss"></string>
-    <string name="version"></string>
-    <string name="download"></string>
-    <string name="size"></string>
-    <string name="select_language"></string>
-    <string name="setup_finished_description"></string>
-    <string name="welcome_to_app_description"></string>
+    <string name="app_name" translatable="false">Awery</string>
+    <string name="checking_database">Checking the database</string>
+    <string name="mark_not_watched">Remove from watched</string>
+    <string name="built_at">Built at</string>
+    <string name="failed_bypass_detailed">Your request has been blocked by %s. Try completing an captcha and refreshing to resolve this problem.</string>
+    <string name="see_error">See error</string>
+    <string name="version">Version</string>
+    <string name="size">Size</string>
+    <string name="select_language">Select language</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="setup_finished_description">Now you can go watch your favorite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)</string>
+    <string name="wallpaper_based_colors">The app\'s color will be based on your wallpaper!</string>
+    <string name="searching_episodes_for">Searching episodes for %s</string>
+    <string name="searching_for">Searching for %s</string>
+    <string name="show_spoilers">Show spoilers</string>
+    <string name="download">Download</string>
+    <string name="welcome_to_app_description">The perfect app where you can customize everything, with tons of features and a stylish look.</string>
 </resources>

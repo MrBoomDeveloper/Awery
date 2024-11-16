@@ -449,7 +449,6 @@
     <string name="this_not_number">Yeh ek number nahi hai!</string>
     <string name="continue_action">Jari rakhein</string>
     <string name="restart">Dobara shuru karein</string>
-    <string name="app_name" translatable="false"></string>
     <string name="show_spoilers">Spoiler dikhaayein</string>
     <string name="searching_episodes_for">Episodes dhoondh rahe hain %s ke liye</string>
     <string name="selected_s">Chuna gaya %s</string>
@@ -491,4 +490,5 @@
     <string name="download">Download</string>
     <string name="welcome_to_app_description">Ye ek perfect app he yha aap dher saare subidhao aur stylish looks ke sath app ko customised kr sakte he.</string>
     <string name="setup_finished_description">Ab aap apne pasandita show dekh sakte he. Hamme ummeed he ki aapko yeh app pasand ayega aur aap chahe to hame aapki pasand ke baare me samiksha bhej sakte he :)</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>

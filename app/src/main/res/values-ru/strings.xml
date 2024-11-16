@@ -449,7 +449,6 @@
     <string name="account_required">Требуется учетная запись</string>
     <string name="connection_failed">Не удалось подключиться</string>
     <string name="banned">Вы забанены</string>
-    <string name="app_name" translatable="false"></string>
     <string name="show_spoilers">Показать спойлеры</string>
     <string name="selected_s">Выбрано %s</string>
     <string name="mark_not_watched">Удалить из просмотренного</string>
@@ -491,4 +490,5 @@
     <string name="restore_success">Резервная копия успешно восстановлена!</string>
     <string name="setup_finished_description">Теперь вы можете смотреть свои любимые передачи. Мы надеемся, что вам понравится это приложение! Если хотите, вы можете отправить нам отзыв о том, что вам понравилось :)</string>
     <string name="welcome_to_app_description">Прекрасное приложение, в котором вы можете настроить все, с множеством функций и стильным внешним видом.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
