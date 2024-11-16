@@ -490,4 +490,5 @@
     <string name="failed_to_bypass">बाधा अपगच्छति असफलम् %s</string>
     <string name="setup_finished_description">इदानीं भवन्तः स्वस्य प्रियप्रदर्शनानि द्रष्टुं गन्तुं शक्नुवन्ति। आशास्महे यत् भवद्भ्यः एतत् एप् आनन्दं लप्स्यते! यदि भवान् इच्छति तर्हि भवान् अस्मान् समीक्षां प्रेषयितुं शक्नोति यत् भवतां रोचते :)</string>
     <string name="welcome_to_app_description">सम्यक् एप्लिकेशनं यत्र भवान् सर्वं अनुकूलितुं शक्नोति, टन-मात्रायां विशेषताभिः सह, स्टाइलिश-रूपेण च।</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
