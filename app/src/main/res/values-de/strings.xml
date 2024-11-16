@@ -449,7 +449,7 @@
     <string name="tracking">Verfolgung</string>
     <string name="adult_content">Erwachseneninhalt</string>
     <string name="read_now">Jetzt lesen</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
     <string name="awery_updated_title">Awery wurde aktualisiert!</string>
     <string name="were_done">Wir haben es geschafft!</string>
     <string name="database_corrupted">Datenbank beschädigt!</string>
@@ -475,4 +475,20 @@
     <string name="backup_success">Datensicherung erfolgreich erstellt!</string>
     <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
     <string name="update_available">Aktualisierung verfügbar</string>
+    <string name="checking_database"></string>
+    <string name="mark_not_watched"></string>
+    <string name="built_at"></string>
+    <string name="failed_bypass_detailed"></string>
+    <string name="searching_episodes_for"></string>
+    <string name="show_spoilers"></string>
+    <string name="searching_for"></string>
+    <string name="see_error"></string>
+    <string name="wallpaper_based_colors"></string>
+    <string name="dismiss"></string>
+    <string name="version"></string>
+    <string name="download"></string>
+    <string name="size"></string>
+    <string name="select_language"></string>
+    <string name="setup_finished_description"></string>
+    <string name="welcome_to_app_description"></string>
 </resources>

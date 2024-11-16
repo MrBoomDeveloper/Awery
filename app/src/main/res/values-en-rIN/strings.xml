@@ -449,7 +449,7 @@
     <string name="this_not_number">Yeh ek number nahi hai!</string>
     <string name="continue_action">Jari rakhein</string>
     <string name="restart">Dobara shuru karein</string>
-    <string name="app_name" translatable="false"/>
+    <string name="app_name" translatable="false"></string>
     <string name="show_spoilers">Spoiler dikhaayein</string>
     <string name="searching_episodes_for">Episodes dhoondh rahe hain %s ke liye</string>
     <string name="selected_s">Chuna gaya %s</string>
