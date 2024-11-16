@@ -449,4 +449,5 @@
     <string name="not_logged_detailed">Fout 401. Je bent niet ingelogd, log in en probeer het opnieuw.</string>
     <string name="no_access_detailed">Fout 403. Je hebt geen toegang tot deze bron, log in op je account en probeer het opnieuw.</string>
     <string name="rate_limited_detailed">Fout 429. Je hebt de limiet overschreden, probeer het later opnieuw.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
