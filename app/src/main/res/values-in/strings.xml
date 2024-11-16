@@ -449,4 +449,5 @@
     <string name="read_now">Baca sekarang</string>
     <string name="request_invalid_detailed">Kesalahan 400. Permintaan tidak valid, silakan coba lagi nanti.</string>
     <string name="not_logged_detailed">Kesalahan 401. Anda belum masuk, silakan masuk dan coba lagi.</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
