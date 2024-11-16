@@ -99,7 +99,7 @@ class SetupActivity : AppCompatActivity() {
 
 			STEP_TEMPLATE -> {
 				binding.title.setText(R.string.select_template)
-				binding.message.text = "The content you see through the app. You can select it at any time in Settings."
+				binding.message.text = getString(R.string.generic_message) 
 
 				binding.recycler.layoutManager = LinearLayoutManager(this)
 				binding.recycler.addItemDecoration(RecyclerItemDecoration(dpPx(8f)))
@@ -115,20 +115,9 @@ class SetupActivity : AppCompatActivity() {
 				val template = AwerySettings.TABS_TEMPLATE.value
 
 				if(template == "dantotsu") {
-					binding.message.setMarkwon("""
-						The Dantotsu template requires some extensions to work.
-						In this beta version, you cannot install extensions directly through the app :(
-						Currently you can download them on our:
-						Discord server: https://discord.com/invite/yspVzD4Kbm
-						Telegram channel: https://t.me/mrboomdev_awery
-						""".trimIndent())
+					binding.message.setMarkwon(getString(R.string.dantotsu_message))
 				} else {
-					binding.message.setMarkwon("""
-						In this beta version, you cannot install extensions directly through the app :(
-						Currently you can download them on our:
-						Discord server: https://discord.com/invite/yspVzD4Kbm
-						Telegram channel: https://t.me/mrboomdev_awery
-						""".trimIndent())
+					binding.message.setMarkwon(getString(R.string.generic_message))
 				}
 
 				binding.title.setText(R.string.extensions)
@@ -138,14 +127,14 @@ class SetupActivity : AppCompatActivity() {
 			}
 
 			STEP_ANALYTICS -> {
-				binding.title.text = "Analytics"
-				binding.message.text = "TODO"
-				binding.recycler.visibility = View.VISIBLE
-
-				binding.recycler.adapter = SingleViewAdapter.fromView(MaterialSwitch(this).apply {
-					text = "Automatically send crash reports"
-					isChecked = true
-				})
+			    binding.title.text = getString(R.string.analytics_title)
+			    binding.message.text = getString(R.string.analytics_message)
+			    binding.recycler.visibility = View.VISIBLE
+			
+			    binding.recycler.adapter = SingleViewAdapter.fromView(MaterialSwitch(this).apply {
+			        text = getString(R.string.automatically_send_reports)
+			        isChecked = true
+			    })
 			}
 
 			STEP_FINISH -> {
@@ -194,14 +183,14 @@ class SetupActivity : AppCompatActivity() {
 
 						runOnUiThread {
 							DialogBuilder(this@SetupActivity)
-								.setTitle("Existing custom tabs found")
-								.setMessage("To use an template we have to delete all your custom tabs with feeds. If you don't want that, then simply select \"None\".")
-								.setOnDismissListener {
-									if(!didDeleted.get()) {
-										binding.backButton.isEnabled = true
-										binding.continueButton.isEnabled = true
-									}
-								}
+							    .setTitle(getString(R.string.existing_custom_tabs_title))
+							    .setMessage(getString(R.string.existing_custom_tabs_message))
+							    .setOnDismissListener {
+							        if (!didDeleted.get()) {
+							            binding.backButton.isEnabled = true
+							            binding.continueButton.isEnabled = true
+							        }
+							    }
 								.setNegativeButton(R.string.cancel) { it.dismiss() }
 								.setPositiveButton(R.string.delete) { dialog ->
 									didDeleted.set(true)
