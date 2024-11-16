@@ -474,4 +474,5 @@
     <string name="backup_success">Datensicherung erfolgreich erstellt!</string>
     <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
     <string name="update_available">Aktualisierung verfügbar</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
