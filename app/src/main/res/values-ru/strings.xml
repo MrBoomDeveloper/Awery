@@ -449,7 +449,6 @@
     <string name="account_required">Требуется учетная запись</string>
     <string name="connection_failed">Не удалось подключиться</string>
     <string name="banned">Вы забанены</string>
-    <string name="app_name" translatable="false"></string>
     <string name="show_spoilers">Показать спойлеры</string>
     <string name="selected_s">Выбрано %s</string>
     <string name="mark_not_watched">Удалить из просмотренного</string>
