@@ -449,4 +449,5 @@
     <string name="this_not_number">Dette er ikke et tal!</string>
     <string name="continue_action">Fortsæt</string>
     <string name="restart">Genstart</string>
+    <string name="app_name" translatable="false">Awery</string>
 </resources>
