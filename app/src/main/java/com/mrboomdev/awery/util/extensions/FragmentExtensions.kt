@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.util.extensions
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri

@@ -3,14 +3,11 @@ package com.mrboomdev.awery.sources.yomi.aniyomi
 import android.content.Context
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.ext.constants.AweryAgeRating
-import com.mrboomdev.awery.ext.source.Source
-import com.mrboomdev.awery.ext.source.SourcesManager
-import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.sources.yomi.YomiManager
-import com.mrboomdev.awery.sources.yomi.YomiSource
 import com.mrboomdev.awery.util.AndroidImage
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
+import eu.kanade.tachiyomi.source.SourceFactory
 
 class AniyomiManager(
 	context: Context
@@ -25,29 +22,48 @@ class AniyomiManager(
 	override val mainClass = "tachiyomi.animeextension.class"
 	override val requiredFeature = "tachiyomi.animeextension"
 
+	private fun getSelected(it: Any?): AnimeSource? {
+		if(it == null) {
+			return null
+		}
+
+		if(it is AnimeSource) {
+			return it
+		}
+
+		if(it is AnimeSourceFactory) {
+			return getSelected(it.createSources())
+		}
+
+		if(it is List<*>) {
+			return getSelected(it.toTypedArray())
+		}
+
+		if(it is Array<*>) {
+			for(i in it) {
+				if(i is AnimeSourceFactory) {
+					return getSelected(i.createSources())
+				}
+
+				if(i is AnimeSource) {
+					// TODO: Return an source selected by the user.
+					return i
+				}
+			}
+		}
+
+		throw UnsupportedOperationException("Unsupported source type!")
+	}
+
 	@Throws(IllegalArgumentException::class)
 	override fun createSourceWrapper(
 		label: String,
 		isNsfw: Boolean,
 		packageInfo: PackageInfo,
-		source: Any?,
+		sources: Array<Any>?,
 		exception: Throwable?
 	): AniyomiSource {
-		val selectedSource = source?.let {
-			if(it is AnimeSource) {
-				return@let it
-			}
-
-			if(it is Array<*> && it.isArrayOf<AnimeSource>()) {
-				return@let getSelectedSource(it.filterIsInstance<AnimeSource>())
-			}
-
-			if(it is AnimeSourceFactory) {
-				return@let getSelectedSource(it.createSources())
-			}
-
-			throw IllegalArgumentException("This is not an AnimeSource!")
-		}
+		val selectedSource = getSelected(sources)
 
 		return object : AniyomiSource(packageInfo, selectedSource) {
 			override val manager = this@AniyomiManager

@@ -13,13 +13,9 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import androidx.annotation.AttrRes
-import androidx.annotation.DrawableRes
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.MaterialColors
 import com.mrboomdev.awery.R

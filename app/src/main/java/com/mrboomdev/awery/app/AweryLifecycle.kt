@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.app
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
@@ -8,21 +7,15 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import androidx.annotation.MainThread
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.util.UniqueIdGenerator
 import org.jetbrains.annotations.Contract
@@ -75,26 +68,25 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 	 * It was made just for the Android Framework to work properly!
 	 */
 	@Suppress("OVERRIDE_DEPRECATION")
-	internal class CallbackFragment(
-		private val fragmentManager: FragmentManager,
-		private val activityResultCallback: ((resultCode: Int, data: Intent?) -> Unit)? = null,
-		private val permissionsResultCallback: ((didGranted: Boolean) -> Unit)? = null,
-		private val requestCode: Int
-	) : Fragment() {
+	internal class CallbackFragment : Fragment() {
+		internal lateinit var fragmentManager: FragmentManager
+		internal var requestCode: Int = 0
+		internal var activityResultCallback: ((Int, Intent?) -> Unit)? = null
+		internal var permissionsResultCallback: ((didGranted: Boolean) -> Unit)? = null
 
 		override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-			if(requestCode != this.requestCode || activityResultCallback == null) return
-			activityResultCallback.invoke(resultCode, data)
+			if(requestCode != this.requestCode) return
+			activityResultCallback?.invoke(resultCode, data)
 			finish()
 		}
 
 		override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-			if(requestCode != this.requestCode || permissionsResultCallback == null) return
+			if(requestCode != this.requestCode) return
 
 			if(permissions.isEmpty()) {
-				permissionsResultCallback.invoke(false)
+				permissionsResultCallback?.invoke(false)
 			} else if(permissions.size == 1) {
-				permissionsResultCallback.invoke(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+				permissionsResultCallback?.invoke(grantResults[0] == PackageManager.PERMISSION_GRANTED)
 			} else {
 				throw IllegalStateException("Somehow you've requested multiple permissions at once. This behaviour isn't supported.")
 			}
@@ -176,11 +168,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		}
 	}
 
-	enum class Permission(val manifestConstants: String?) {
-		NOTIFICATIONS(if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else null),
-		STORAGE(if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Manifest.permission.MANAGE_EXTERNAL_STORAGE else Manifest.permission.WRITE_EXTERNAL_STORAGE)
-	}
-
 	companion object {
 		private val infos = WeakHashMap<Activity, ActivityInfo<Activity>>()
 		private const val TAG = "AweryLifecycle"
@@ -224,11 +211,17 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 			permissionsResultCallback: ((didGranted: Boolean) -> Unit)?
 		): Fragment {
 			if(activity is FragmentActivity) {
-				return activity.supportFragmentManager.let {
-					val fragment = CallbackFragment(it, activityResultCallback, permissionsResultCallback, requestCode)
-					it.beginTransaction().add(fragment, null).commit()
-					it.executePendingTransactions()
-					fragment
+				return activity.supportFragmentManager.let { fragmentManager ->
+					val fragment = CallbackFragment().apply {
+						this.fragmentManager = fragmentManager
+						this.requestCode = requestCode
+						this.activityResultCallback = activityResultCallback
+						this.permissionsResultCallback = permissionsResultCallback
+					}
+
+					fragmentManager.beginTransaction().add(fragment, null).commit()
+					fragmentManager.executePendingTransactions()
+					return@let fragment
 				}
 			} else {
 				throw IllegalArgumentException("Activity must be an instance of FragmentActivity!")
@@ -252,24 +245,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		) {
 			addActivityResultListener(context, requestCode, activityResultCallback, null)
 				.startActivityForResult(intent, requestCode)
-		}
-
-		@JvmOverloads
-		fun requestPermission(
-			context: Activity,
-			permission: Permission,
-			callback: (didGrant: Boolean) -> Unit,
-			requestCode: Int = generateRequestCode()
-		) {
-			if(permission.manifestConstants == null ||
-				ContextCompat.checkSelfPermission(context, permission.manifestConstants) == PackageManager.PERMISSION_GRANTED
-			) {
-				callback(true)
-				return
-			}
-
-			addActivityResultListener(context, requestCode, null, callback)
-			ActivityCompat.requestPermissions(context, arrayOf(permission.manifestConstants), requestCode)
 		}
 
 		@JvmStatic

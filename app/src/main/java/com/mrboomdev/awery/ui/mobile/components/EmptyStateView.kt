@@ -1,85 +1,83 @@
-package com.mrboomdev.awery.ui.mobile.components;
+package com.mrboomdev.awery.ui.mobile.components
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.viewbinding.ViewBinding
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.mrboomdev.awery.databinding.LayoutLoadingBinding
+import com.mrboomdev.awery.util.extensions.inflater
 
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.viewbinding.ViewBinding;
+class EmptyStateView(private val binding: LayoutLoadingBinding) : ViewBinding {
+	val title: TextView = binding.title
+	val message: TextView = binding.message
+	val progressBar: CircularProgressIndicator = binding.progressBar
+	val info: LinearLayout = binding.info
+	val button: Button = binding.button
+	val button2: Button = binding.button2
 
-import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
+	constructor(context: Context) :
+			this(LayoutLoadingBinding.inflate(context.inflater))
 
-public class EmptyStateView implements ViewBinding {
-	private final LayoutLoadingBinding binding;
-	public final TextView title, message;
-	public final CircularProgressIndicator progressBar;
-	public final LinearLayout info;
-	public final Button button;
+	constructor(parent: ViewGroup, attachToParent: Boolean = false) :
+			this(LayoutLoadingBinding.inflate(parent.context.inflater, parent, attachToParent))
 
-	public EmptyStateView(@NonNull LayoutLoadingBinding binding) {
-		this.binding = binding;
-		title = binding.title;
-		message = binding.message;
-		progressBar = binding.progressBar;
-		info = binding.info;
-		button = binding.button;
-	}
+	@JvmOverloads
+	fun setInfo(
+		title: String? = null,
+		message: String? = null,
+		buttonText: String? = null,
+		buttonClickListener: Runnable? = null,
+		button2Text: String? = null,
+		button2OnClick: () -> Unit = {}
+	) {
+		binding.title.text = title
+		binding.message.text = message
 
-	public EmptyStateView(Context context) {
-		this(LayoutLoadingBinding.inflate(LayoutInflater.from(context)));
-	}
-
-	public EmptyStateView(ViewGroup parent, boolean attachToParent) {
-		this(LayoutLoadingBinding.inflate(LayoutInflater.from(parent.getContext()), parent, attachToParent));
-	}
-
-	public void setInfo(String title, String message, String buttonText, Runnable buttonClickListener) {
-		binding.title.setText(title);
-		binding.message.setText(message);
-
-		progressBar.setVisibility(View.GONE);
-		info.setVisibility(View.VISIBLE);
+		progressBar.visibility = View.GONE
+		info.visibility = View.VISIBLE
+		button.visibility = View.GONE
 
 		if(buttonText != null && buttonClickListener != null) {
-			button.setText(buttonText);
-			button.setOnClickListener(v -> buttonClickListener.run());
-			button.setVisibility(View.VISIBLE);
+			button.text = buttonText
+			button.setOnClickListener { buttonClickListener.run() }
+			button.visibility = View.VISIBLE
 		} else {
-			button.setVisibility(View.GONE);
+			button.visibility = View.GONE
+		}
+
+		if(button2Text != null) {
+			button2.text = button2Text
+			button2.setOnClickListener { button2OnClick() }
+			button2.visibility = View.VISIBLE
+		} else {
+			button2.visibility = View.GONE
 		}
 	}
 
-	public void hideAll() {
-		progressBar.setVisibility(View.GONE);
-		info.setVisibility(View.GONE);
+	fun hideAll() {
+		progressBar.visibility = View.GONE
+		info.visibility = View.GONE
 	}
 
-	public void setInfo(String title, String message) {
-		setInfo(title, message, null, null);
+	fun setInfo(@StringRes title: Int, @StringRes message: Int) {
+		setInfo(context.getString(title), context.getString(message))
 	}
 
-	public void setInfo(@StringRes int title, @StringRes int message) {
-		setInfo(getContext().getString(title), getContext().getString(message));
+	val context: Context
+		get() = binding.root.context
+
+	fun startLoading() {
+		progressBar.visibility = View.VISIBLE
+		info.visibility = View.GONE
 	}
 
-	public Context getContext() {
-		return binding.getRoot().getContext();
-	}
-
-	public void startLoading() {
-		progressBar.setVisibility(View.VISIBLE);
-		info.setVisibility(View.GONE);
-	}
-
-	@NonNull
-	@Override
-	public View getRoot() {
-		return binding.getRoot();
+	override fun getRoot(): View {
+		return binding.root
 	}
 }

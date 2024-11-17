@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minHeight="250dp"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -40,14 +41,36 @@
             tools:text="@tools:sample/lorem/random"
             android:ellipsize="end"/>
 
-        <Button
-            android:id="@+id/button"
+        <com.google.android.flexbox.FlexboxLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:visibility="gone"
-            tools:visibility="visible"
-            tools:text="Awesome button" />
+            android:orientation="horizontal"
+            app:flexWrap="wrap">
+
+            <Button
+                style="@style/Widget.Material3.Button.TextButton"
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="32dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="Button 2" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="Awesome button" />
+
+        </com.google.android.flexbox.FlexboxLayout>
 
     </LinearLayout>
 

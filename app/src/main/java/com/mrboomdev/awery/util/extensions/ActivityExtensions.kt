@@ -3,7 +3,6 @@ package com.mrboomdev.awery.util.extensions
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
@@ -14,13 +13,11 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.addActivityResultListener
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.postRunnable
-import com.mrboomdev.awery.app.AweryLifecycle.Permission
-import com.mrboomdev.awery.app.ThemeManager
+import com.mrboomdev.awery.app.theme.ThemeManager
 import java.util.WeakHashMap
 import kotlin.reflect.KClass
 

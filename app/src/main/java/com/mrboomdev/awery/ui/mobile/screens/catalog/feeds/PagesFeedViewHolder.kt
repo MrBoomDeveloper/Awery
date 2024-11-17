@@ -12,13 +12,12 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
-import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding
 import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.app.ThemeManager
+import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog

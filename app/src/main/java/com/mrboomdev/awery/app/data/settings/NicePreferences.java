@@ -315,8 +315,7 @@ public class NicePreferences implements SettingsDataHandler {
 	 */
 	@NonNull
 	public static NicePreferences getPrefs(String fileName) {
-		var context = getAppContext().getApplicationContext();
-		return new NicePreferences(context.getSharedPreferences(fileName, 0));
+		return new NicePreferences(getAppContext().getSharedPreferences(fileName, 0));
 	}
 
 	/**
@@ -533,7 +532,7 @@ public class NicePreferences implements SettingsDataHandler {
 	public interface BaseSetting {
 		String getKey();
 
-		default SettingsItem findSetting() {
+		default SettingsItem asSetting() {
 			return getSettingsMap().findItem(getKey());
 		}
 

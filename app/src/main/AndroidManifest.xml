@@ -70,7 +70,6 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
@@ -157,7 +156,20 @@
         <activity
             android:name=".ui.tv.TvMainActivity"
             android:windowSoftInputMode="adjustPan"
-            android:exported="true" />
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.tv.TvExperimentsActivity"
+            android:label="Awery Experiments"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true"
+            android:enabled="false">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.mobile.screens.search.SearchActivity"
@@ -253,5 +265,6 @@
         </provider>
 
         <receiver android:name=".sources.yomi.YomiManager$PackageManagerReceiver" />
+        <receiver android:name=".ui.mobile.screens.player.PlayerPip$Receiver" />
     </application>
 </manifest>

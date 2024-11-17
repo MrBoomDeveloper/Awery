@@ -91,7 +91,7 @@ abstract class YomiManager : ExtensionsManager() {
 			initExtension(pkg, context)
 		}
 
-		progress!!.isCompleted = true
+		getProgress().isCompleted = true
 	}
 
 	private fun initExtension(pkg: PackageInfo, context: Context) {

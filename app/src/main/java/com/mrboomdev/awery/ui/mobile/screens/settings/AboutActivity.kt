@@ -160,8 +160,11 @@ class AboutActivity : AppCompatActivity() {
         }.root)
     }
 
-    @SuppressLint("ViewConstructor")
-    class ContributorView(context: Context) : LinearLayoutCompat(context) {
+    class ContributorView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+    ) : LinearLayoutCompat(context, attrs, defStyleAttr) {
         private val name: MaterialTextView
         private val roles: MaterialTextView
         private val icon: AppCompatImageView
@@ -254,13 +257,15 @@ class AboutActivity : AppCompatActivity() {
             }
 
             if(attrs != null) {
-                context.obtainStyledAttributes(attrs, R.styleable.SocialView).use { typed ->
+                context.obtainStyledAttributes(attrs, R.styleable.SocialView).also { typed ->
                     icon.setImageDrawable(typed.getDrawable(R.styleable.SocialView_socialIcon))
                     label.text = typed.getString(R.styleable.SocialView_socialName)
 
                     typed.getString(R.styleable.SocialView_socialLink)?.let { url ->
                         linear.setOnClickListener { openUrl(context, url) }
                     }
+
+                    typed.recycle()
                 }
             }
         }

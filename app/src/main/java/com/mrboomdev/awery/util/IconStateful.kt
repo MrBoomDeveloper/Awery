@@ -2,6 +2,8 @@ package com.mrboomdev.awery.util
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.appcompat.graphics.drawable.StateListDrawableCompat
 import androidx.core.content.ContextCompat
@@ -16,7 +18,37 @@ class IconStateful(
 	@DrawableRes var activeId: Int? = null,
 	@DrawableRes var inActiveId: Int? = null,
 	val names: Array<String> = arrayOf()
-) {
+): Parcelable, java.io.Serializable {
+	constructor(parcel: Parcel) : this(
+		parcel.readString(),
+		parcel.readString(),
+		parcel.readByte().let { if(it.toInt() == 0) null else parcel.readInt() },
+		parcel.readByte().let { if(it.toInt() == 0) null else parcel.readInt() },
+		parcel.createStringArray() as Array<String>
+	)
+
+	override fun describeContents() = 0
+
+	override fun writeToParcel(dest: Parcel, flags: Int) {
+		dest.writeString(active)
+		dest.writeString(inActive)
+
+		if(activeId != null) {
+			dest.writeByte(1)
+			dest.writeInt(activeId!!)
+		} else {
+			dest.writeByte(0)
+		}
+
+		if(inActiveId != null) {
+			dest.writeByte(1)
+			dest.writeInt(inActiveId!!)
+		} else {
+			dest.writeByte(0)
+		}
+
+		dest.writeStringArray(names)
+	}
 
 	@DrawableRes
 	fun getResourceId(state: State): Int {
@@ -67,5 +99,22 @@ class IconStateful(
 
 	enum class State {
 		ACTIVE, INACTIVE
+	}
+
+	companion object {
+		@Suppress("ConstPropertyName")
+		const val serialVersionUID = 1L
+
+		@JvmField
+		val CREATOR = object : Parcelable.Creator<IconStateful> {
+
+			override fun createFromParcel(parcel: Parcel): IconStateful {
+				return IconStateful(parcel)
+			}
+
+			override fun newArray(size: Int): Array<IconStateful?> {
+				return arrayOfNulls(size)
+			}
+		}
 	}
 }

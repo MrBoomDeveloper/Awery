@@ -21,7 +21,7 @@ class OkiThrowableMessage(
 	throwable: Throwable,
 	unwrapper: ((throwable: Throwable) -> Boolean) = { it.mayDescribe }
 ) {
-	private val t = throwable.unwrap(unwrapper)
+	val t = throwable.unwrap(unwrapper)
 
 	fun print(): String {
 		val title = this.title

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Awery</string>
     <string name="empty_library_title">Library is empty</string>
     <string name="awery_updated_title">Awery has been updated!</string>
@@ -313,7 +313,7 @@
     <string name="available">Available</string>
     <string name="lets_go">Let\'s Go</string>
     <string name="no_description_available">"No Description Available"</string>
-    <string name="selected">Selected</string>
+    <string name="selected" tools:ignore="PrivateResource">Selected</string>
     <string name="found">Found</string>
     <string name="age">Age</string>
     <string name="birthday">Birthday</string>
@@ -431,7 +431,7 @@
     <string name="app_crash">Awery has crashed!</string>
     <string name="share_crash_report">Share crash report</string>
     <string name="crash_report">Crash report</string>
-    <string name="copy">Copy</string>
+    <string name="copy" tools:ignore="PrivateResource">Copy</string>
     <string name="something_terrible_happened">Something REALLY TERRIBLE has happened 0_0</string>
     <string name="app_not_responding_restart">Awery isn\'t responding. Trying to restart ._.</string>
     <string name="delayed">Delayed</string>
@@ -498,5 +498,5 @@
     <string name="analytics_message" translatable="false">TODO</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
     <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select \"None\".</string>
+    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select "None".</string>
 </resources>

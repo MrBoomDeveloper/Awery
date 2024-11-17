@@ -5,20 +5,26 @@ import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.Progress
+import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.sources.yomi.tachiyomi.TachiyomiManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 import kotlin.reflect.KClass
 
 object ExtensionsManager {
 	private val managers = mutableListOf<SourcesManager<*>>()
 
-	fun init(context: Context) = flow {
+	fun init(context: Context) = channelFlow {
+		YomiManager.initYomiShit(context)
+
 		val maxValues = mutableMapOf<SourcesManager<*>, Long>()
 		val progress = Progress()
 
@@ -32,19 +38,17 @@ object ExtensionsManager {
 		)
 
 		coroutineScope {
-			managers.map { manager ->
-				async {
-					manager.loadAll().onEach {
-						maxValues[manager] = it.max
-						progress.max = maxValues.values.sum()
-						progress.increment()
-						emit(progress)
-					}
-				}
-			}.awaitAll()
+			for(manager in managers) {
+				manager.loadAll().onEach {
+					maxValues[manager] = it.max
+					progress.max = maxValues.values.sum()
+					progress.increment()
+					send(progress)
+				}.collect()
+			}
 
 			progress.isCompleted = true
-			emit(progress)
+			send(progress)
 		}
 	}
 

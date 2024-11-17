@@ -3,12 +3,7 @@ package com.mrboomdev.awery.sources.yomi.tachiyomi
 import android.content.Context
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.ext.constants.AweryAgeRating
-import com.mrboomdev.awery.ext.source.Source
-import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.sources.yomi.YomiManager
-import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
-import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager.Companion
-import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiSource
 import com.mrboomdev.awery.util.AndroidImage
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
@@ -28,29 +23,48 @@ class TachiyomiManager(
 	override val mainClass = "tachiyomi.extension.class"
 	override val requiredFeature = "tachiyomi.extension"
 
+	private fun getSelected(it: Any?): MangaSource? {
+		if(it == null) {
+			return null
+		}
+
+		if(it is MangaSource) {
+			return it
+		}
+
+		if(it is SourceFactory) {
+			return getSelected(it.createSources())
+		}
+
+		if(it is List<*>) {
+			return getSelected(it.toTypedArray())
+		}
+
+		if(it is Array<*>) {
+			for(i in it) {
+				if(i is SourceFactory) {
+					return getSelected(i.createSources())
+				}
+
+				if(i is MangaSource) {
+					// TODO: Return an source selected by the user.
+					return i
+				}
+			}
+		}
+
+		throw UnsupportedOperationException("Unsupported source type!")
+	}
+
 	@Throws(IllegalArgumentException::class)
 	override fun createSourceWrapper(
 		label: String,
 		isNsfw: Boolean,
 		packageInfo: PackageInfo,
-		source: Any?,
+		sources: Array<Any>?,
 		exception: Throwable?
 	): TachiyomiSource {
-		val selectedSource = source?.let {
-			if(it is MangaSource) {
-				return@let it
-			}
-
-			if(it is Array<*> && it.isArrayOf<MangaSource>()) {
-				return@let getSelectedSource(it.filterIsInstance<MangaSource>())
-			}
-
-			if(it is SourceFactory) {
-				return@let getSelectedSource(it.createSources())
-			}
-
-			throw IllegalArgumentException("This is not an MangaSource!")
-		}
+		val selectedSource = getSelected(sources)
 
 		return object : TachiyomiSource(packageInfo, selectedSource) {
 			override val manager = this@TachiyomiManager

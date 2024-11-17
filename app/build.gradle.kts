@@ -1,9 +1,8 @@
+import com.android.build.api.dsl.ApplicationProductFlavor
 import java.util.Locale
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import org.codehaus.groovy.transform.trait.Traits.Implemented
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.android.application)
@@ -112,24 +111,6 @@ android {
         }
     }
 
-    flavorDimensions.add("type")
-
-    productFlavors {
-        register("alpha") {
-            isDefault = true
-            dimension = "type"
-            versionNameSuffix = "-alpha"
-            applicationIdSuffix = ".alpha"
-
-            buildConfigField("${packageName}.app.update.UpdatesChannel", "CHANNEL", "${packageName}.app.update.UpdatesChannel.ALPHA")
-            buildConfigField("String", "FILE_PROVIDER", "\"${packageName}.alpha.FileProvider\"")
-            buildConfigField("String", "UPDATES_REPOSITORY", "\"itsmechinmoy/awery-updater\"")
-
-            manifestPlaceholders["fileProvider"] = "${packageName}.alpha.FileProvider"
-            manifestPlaceholders["appLabel"] = "Awery Alpha"
-        }
-    }
-
     buildFeatures {
         viewBinding = true
         buildConfig = true
@@ -149,6 +130,43 @@ android {
         jvmTarget = "17"
         freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform", "-opt-in=kotlin.ExperimentalStdlibApi")
     }
+
+    flavorDimensions += listOf("channel")
+
+    productFlavors {
+        fun ApplicationProductFlavor.createChannelProductFlavor(id: String, title: String) {
+            dimension = "channel"
+            versionNameSuffix = "-$id"
+            applicationIdSuffix = ".$id"
+
+            buildConfigField("String", "FILE_PROVIDER",
+                "\"${packageName}.$id.FileProvider\"")
+
+            buildConfigField("${packageName}.app.update.UpdatesChannel", "CHANNEL",
+                "${packageName}.app.update.UpdatesChannel.${id.uppercase()}")
+
+            manifestPlaceholders["fileProvider"] = "${packageName}.$id.FileProvider"
+            manifestPlaceholders["appLabel"] = "Awery $title"
+        }
+
+        register("alpha") {
+            createChannelProductFlavor("alpha", "Alpha")
+            buildConfigField("String", "UPDATES_REPOSITORY", "\"itsmechinmoy/awery-updater\"")
+            isDefault = true
+        }
+
+        register("beta") {
+            createChannelProductFlavor("beta", "Beta")
+            buildConfigField("String", "UPDATES_REPOSITORY", "\"MrBoomDeveloper/Awery\"")
+        }
+
+        register("stable") {
+            createChannelProductFlavor("stable", "Stable")
+            buildConfigField("String", "UPDATES_REPOSITORY", "\"MrBoomDeveloper/Awery\"")
+            manifestPlaceholders["appLabel"] = "Awery"
+            applicationIdSuffix = null
+        }
+    }
 }
 
 dependencies {
@@ -157,7 +175,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.webkit)
-    implementation(libs.fragment.ktx)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.core.google.shortcuts)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.xcrash.android.lib)
@@ -187,9 +205,9 @@ dependencies {
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.activity)
-    implementation(libs.compose.ui)
-    implementation(libs.androidx.compose.material)
+    implementation(libs.compose.android.activity)
+    implementation(libs.compose.android.ui)
+    implementation(libs.compose.android.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.tv.material)
     implementation(libs.compose.tv.foundation)
@@ -245,7 +263,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.protobuf)
 
 	// Debugging
-    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.compose.android.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 }
 
@@ -264,15 +282,14 @@ fun String.toCamelCase(): String {
 }
 
 fun formatKey(o: Setting, usedKeys: MutableSet<String>): String {
-    var result = "    public static final "
+    var result = "\tpublic static final "
 
     if(o.type == "select" && o.items != null) {
-        val enumName = o.key!!.uppercase(Locale.ENGLISH).toCamelCase() + "_Values"
+        val enumName = o.key!!.uppercase().toCamelCase() + "_Values"
 
-        result = "\n" + result
-        result += "EnumSetting<$enumName> ${o.key.uppercase(Locale.ENGLISH)} = new EnumSetting<>(\"${o.key}\", $enumName.class);\n\n"
+        result += "EnumSetting<$enumName> ${o.key.uppercase()} =\n\t\t\tnew EnumSetting<>(\"${o.key}\", $enumName.class);\n\n"
 
-        result += "    public enum $enumName implements EnumWithKey {\n        "
+        result += "\tpublic enum $enumName implements EnumWithKey {\n\t\t"
 
         val iterator = o.items.iterator()
 
@@ -284,22 +301,22 @@ fun formatKey(o: Setting, usedKeys: MutableSet<String>): String {
                         "\nYou have to remove one of them for app to work properly.")
             }
 
-            result += item.key!!.uppercase(Locale.ENGLISH) + "(\"${item.key}\")"
+            result += item.key!!.uppercase() + "(\"${item.key}\")"
 
             if(iterator.hasNext()) {
-                result += ", "
+                result += ",\n\t\t"
             }
         }
 
-        result += ";\n\n        private final String key;\n\n        ${enumName}(String key) {\n"
-        result += "            this.key = key;\n        }\n\n        @Override\n        public String getKey() {\n"
-        result += "            return key;\n        }\n    }\n"
+        result += ";\n\n\t\tprivate final String key;\n\n\t\t${enumName}(String key) {\n"
+        result += "\t\t\tthis.key = key;\n\t\t}\n\n\t\t@Override\n\t\tpublic String getKey() {\n"
+        result += "\t\t\treturn key;\n\t\t}\n\t}\n\n"
 
         return result
     }
 
     if(listOf("action", "select", "multiselect").contains(o.type)) {
-        return result + "String ${o.key!!.uppercase(Locale.ENGLISH)} = \"${o.key}\";\n"
+        return result + "String ${o.key!!.uppercase()} = \"${o.key}\";\n"
     }
 
     when(o.type) {
@@ -308,7 +325,7 @@ fun formatKey(o: Setting, usedKeys: MutableSet<String>): String {
         "boolean", "screen_boolean" -> result += "Boolean"
     }
 
-    result += "Setting ${o.key!!.uppercase(Locale.ENGLISH)} = () -> \"${o.key}\";\n"
+    result += "Setting ${o.key!!.uppercase()} = () -> \"${o.key}\";\n"
     return result
 }
 
@@ -318,22 +335,20 @@ fun collectKeys(from: Setting, usedKeys: MutableSet<String>): String {
                 "\nYou have to remove one of them for app to work properly.")
     }
 
-    val builder = StringBuilder()
-
-    when(from.type) {
-        "screen" -> {
-            if(from.items != null) {
-                for(item in from.items) {
-                    builder.append(collectKeys(item, usedKeys))
+    return buildString {
+        when(from.type) {
+            "screen" -> {
+                if(from.items != null) {
+                    for(item in from.items) {
+                        append(collectKeys(item, usedKeys))
+                    }
                 }
             }
+
+            "string", "integer", "boolean", "action",
+            "select", "select_integer", "multiselect" -> append(formatKey(from, usedKeys))
         }
-
-        "string", "integer", "boolean", "action",
-        "select", "select_integer", "multiselect" -> builder.append(formatKey(from, usedKeys))
     }
-
-    return builder.toString()
 }
 
 data class Setting(val key: String?, val type: String?, val items: List<Setting>?)
@@ -343,20 +358,23 @@ fun generateSettingsClass(dir: File) {
     val settings = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build().adapter<Setting>().fromJson(
         file("$projectDir/src/main/assets/settings.json").readText())!!
 
-    val builder = StringBuilder()
-        .append("package com.mrboomdev.awery.generated;\n")
-        .append("\n")
-        .append("import com.mrboomdev.awery.app.data.settings.NicePreferences.*;\n")
-        .append("\n")
-        .append("/**\n")
-        .append(" * Auto-generated class created during the compilation. Please, do not edit it.\n")
-        .append(" * @author MrBoomDev\n")
-        .append(" */\n")
-        .append("public class AwerySettings {\n")
-        .append(collectKeys(settings, HashSet()))
-        .append("}")
+    File(dir, "AwerySettings.java").writeText(buildString {
+        append("package com.mrboomdev.awery.generated;\n")
+        append("\n")
+        append("import com.mrboomdev.awery.app.data.settings.NicePreferences.*;\n")
+        append("import com.mrboomdev.awery.app.data.settings.NicePreferences;\n")
+        append("import com.mrboomdev.awery.app.data.settings.SettingsItem;\n")
+        append("\n")
+        append("// Auto-generated class created during the compilation. Please, do not edit it.\n")
+        append("public class AwerySettings {\n")
 
-    File(dir, "AwerySettings.java").writeText(builder.toString())
+        append("\tpublic static SettingsItem get(String key) {\n")
+        append("\t\treturn NicePreferences.getSettingsMap().findItem(key);\n")
+        append("\t}\n\n")
+
+        append(collectKeys(settings, HashSet()))
+        append("}")
+    })
 }
 
 tasks.register("generateClasses") {

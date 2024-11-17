@@ -1,7 +1,9 @@
 package com.mrboomdev.awery.ui.mobile.screens
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,6 +28,7 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.catalog.MainActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
+import com.mrboomdev.awery.ui.tv.TvExperimentsActivity
 import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.applyTheme
@@ -37,6 +40,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
@@ -56,21 +60,32 @@ class SplashActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 
 		// If any experiment is enabled, then crate an shortcut
-		if(NicePreferences.getSettingsMap().findItem("experiments")
-			.items.find { it.booleanValue == true } != null
-		) {
-			ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
-				ShortcutInfoCompat.Builder(this, "experiments")
-					.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
-					.setLongLabel("Open experimental settings")
-					.setShortLabel("Experiments")
-					.setLongLived(true)
-					.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
-						action = Intent.ACTION_VIEW
-						data = Uri.parse("awery://experiments")
-					}).build())
+		if(AwerySettings.get("experiments").items.find { it.booleanValue == true } != null) {
+			if(isTv) {
+				// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
+				packageManager.setComponentEnabledSetting(
+					ComponentName(this, TvExperimentsActivity::class.java),
+					PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+			} else {
+				ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
+					ShortcutInfoCompat.Builder(this, "experiments")
+						.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
+						.setLongLabel("Open experimental settings")
+						.setShortLabel("Experiments")
+						.setLongLived(true)
+						.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
+							action = Intent.ACTION_VIEW
+							data = Uri.parse("awery://experiments")
+						}).build())
+			}
 		} else {
-			ShortcutManagerCompat.removeDynamicShortcuts(applicationContext, listOf("experiments"))
+			if(isTv) {
+				packageManager.setComponentEnabledSetting(
+					ComponentName(this, TvExperimentsActivity::class.java),
+					PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+			} else {
+				ShortcutManagerCompat.removeLongLivedShortcuts(applicationContext, listOf("experiments"))
+			}
 		}
 
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
@@ -106,27 +121,33 @@ class SplashActivity : AppCompatActivity() {
 				}
 
 				if(AwerySettings.EXPERIMENT_SPLASH_LOAD_SOURCES.value) {
-					ExtensionsManager.init(this@SplashActivity).onEach {
-						launch(Dispatchers.Main) {
-							binding.status.text = getString(R.string.loading_extensions_n, it.progress, it.max)
-						}
-					}.onCompletion {
-						startActivity(if(isTv || AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
-						finish()
-					}.catch {
+					try {
+						ExtensionsManager.init(applicationContext).onEach {
+							launch(Dispatchers.Main) {
+								binding.status.text = getString(R.string.loading_extensions_n, it.progress, it.max)
+							}
+						}.collect()
+					} catch(t: Throwable) {
+						Log.e(TAG, "Extensions loading failed!", t)
+
 						CrashHandler.showDialog(
 							context = this@SplashActivity,
-							title = "Failed to load an ExtensionsFactory",
-							throwable = it,
+							title = "Extensions loading failed",
+							throwable = t,
 							dismissCallback = ::exitApp)
-					}.collect()
+
+						return@launch
+					}
+
+					startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
+					finish()
 
 					return@launch
 				}
 
 				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
 					override fun onSuccess(result: ExtensionsFactory) {
-						startActivity(if(isTv || AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
+						startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
 						finish()
 					}
 

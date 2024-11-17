@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import com.mrboomdev.awery.extensions.support.yomi.YomiHelper
+import com.mrboomdev.awery.sources.yomi.YomiManager
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import rx.Observable
+import uy.kohesive.injekt.injectLazy
 import java.net.URI
 import java.net.URISyntaxException
 import java.security.MessageDigest
@@ -29,7 +30,7 @@ abstract class AnimeHttpSource : AnimeCatalogueSource {
     /**
      * Network service.
      */
-    protected val network: NetworkHelper = YomiHelper.networkHelper()
+    protected val network: NetworkHelper by injectLazy()
 
     /**
      * Base url of the website without the trailing slash, like: http://mysite.com

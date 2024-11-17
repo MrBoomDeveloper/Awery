@@ -19,13 +19,12 @@ import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
-import com.mrboomdev.awery.app.data.settings.NicePreferences
 import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.app.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.ThemeColorPalette_Values
-import com.mrboomdev.awery.app.ThemeManager
+import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
 import com.mrboomdev.awery.util.extensions.applyTheme
@@ -199,10 +198,10 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 					private val items: MutableList<SettingsItem> = ArrayList()
 
 					init {
-						items.add(NicePreferences.getSettingsMap().findItem(AwerySettings.USE_DARK_THEME.key))
+						items.add(AwerySettings.USE_DARK_THEME.asSetting())
 
 						if(AwerySettings.USE_DARK_THEME.value) {
-							items.add(NicePreferences.getSettingsMap().findItem(AwerySettings.USE_AMOLED_THEME.key))
+							items.add(AwerySettings.USE_AMOLED_THEME.asSetting())
 						}
 					}
 

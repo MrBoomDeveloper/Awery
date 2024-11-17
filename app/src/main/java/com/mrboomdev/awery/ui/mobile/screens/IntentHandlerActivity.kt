@@ -14,6 +14,7 @@ import com.mrboomdev.awery.app.data.db.item.DBRepository
 import com.mrboomdev.awery.app.data.settings.NicePreferences
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.FileType
 import com.mrboomdev.awery.util.extensions.applyTheme
@@ -161,7 +162,7 @@ class IntentHandlerActivity : AppCompatActivity() {
 			"awery" -> {
 				when(uri.host) {
 					"experiments" -> {
-						SettingsActivity.start(this, NicePreferences.getSettingsMap().findItem("experiments"))
+						SettingsActivity.start(this, AwerySettings.get("experiments"))
 						finish()
 					}
 

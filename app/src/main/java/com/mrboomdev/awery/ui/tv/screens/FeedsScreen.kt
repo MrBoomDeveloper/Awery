@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -29,10 +30,9 @@ import kotlin.math.abs
 fun FeedsScreen(
 	sections: List<MediaRowContent>? = null,
 	featuredItems: List<CatalogMedia>? = null,
-	onItemSelected: (media: CatalogMedia) -> Unit
+	onItemSelected: (media: CatalogMedia) -> Unit,
+	listState: LazyListState = rememberLazyListState()
 ) {
-	val listState = rememberLazyListState()
-
 	// a bring into view spec that pivots around the center of the scrollable container
 	val customBringIntoViewSpec = object : BringIntoViewSpec {
 		val customAnimationSpec = tween<Float>(easing = LinearEasing)

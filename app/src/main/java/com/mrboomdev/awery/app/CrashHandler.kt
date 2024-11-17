@@ -46,6 +46,10 @@ object CrashHandler {
 		when(XCrash.init(context, InitParameters().apply {
 			setAppVersion(BuildConfig.VERSION_NAME)
 
+			// Sometimes exoplayer does throw some native exceptions in the background
+			// and XCrash catches it for no reason, so we don't catch any native exceptions.
+			disableNativeCrashHandler()
+
 			// This library doesn't check if an ANR has happened
 			// properly on Android TV, so we disable it.
 			setAnrCheckProcessState(!isTv)
@@ -84,7 +88,6 @@ object CrashHandler {
 		})) {
 			Errno.INIT_LIBRARY_FAILED -> "Failed to initialize XCrash library!"
 			Errno.LOAD_LIBRARY_FAILED -> "Failed to load XCrash library!"
-			Errno.CONTEXT_IS_NULL -> "XCrash context is null!"
 			else -> ""
 		}.let {
 			if(it.isBlank()) return
@@ -208,12 +211,19 @@ object CrashHandler {
 					it.dismiss()
 				}
 
-				if(file != null || message != null || messageRes != null) {
+				if(file != null || message != null || oki != null) {
 					setNegativeButton(R.string.share) {
 						val mFile = file ?: File((mContext ?: appContext).filesDir, "crash_report.txt").apply {
 							delete()
 							createNewFile()
-							writeText(message ?: i18n(messageRes!!))
+
+							if(message != null) {
+								appendText(message)
+							}
+
+							if(oki != null) {
+								appendText(oki.print())
+							}
 						}
 
 						(mContext ?: appContext).startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
@@ -227,7 +237,7 @@ object CrashHandler {
 						BottomSheetDialog(mContext?.activity ?: activity!!).apply {
 							setContentView(NestedScrollView(mContext!!).apply {
 								addView(MaterialTextView(mContext).apply {
-									text = (file?.readText() ?: message ?: i18n(messageRes!!)).trim()
+									text = (file?.readText() ?: oki?.print() ?: message ?: i18n(messageRes!!)).trim()
 									setTextIsSelectable(true)
 									setPadding(dpPx(16f))
 								})

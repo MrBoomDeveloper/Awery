@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.mobile.screens
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -185,6 +186,9 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 					return true
 				} catch(e: URISyntaxException) {
 					Log.e(TAG, "Failed to parse intent!", e)
+					return false
+				} catch(e: ActivityNotFoundException) {
+					Log.e(TAG, "No activity was found!", e)
 					return false
 				}
 			}

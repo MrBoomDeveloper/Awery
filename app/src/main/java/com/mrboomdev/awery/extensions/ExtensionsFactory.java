@@ -11,11 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mrboomdev.awery.app.data.Constants;
-import com.mrboomdev.awery.extensions.support.internal.InternalManager;
-import com.mrboomdev.awery.extensions.support.yomi.YomiHelper;
-import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
-import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.ext.util.Progress;
+import com.mrboomdev.awery.extensions.support.internal.InternalManager;
+import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.sources.yomi.YomiManager;
+import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
 
@@ -67,7 +67,7 @@ public class ExtensionsFactory {
 	private ExtensionsFactory(@NonNull Application context) {
 		Log.d(TAG, "Start loading...");
 		instance = this;
-		YomiHelper.init(context);
+		YomiManager.Companion.initYomiShit(context);
 
 		managers.add(new AniyomiManager());
 		managers.add(new InternalManager());

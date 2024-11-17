@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.ui.mobile.AweryTheme
+import com.mrboomdev.awery.app.theme.MobileTheme
 
 class SettingsActivity2: AppCompatActivity() {
 
@@ -14,7 +14,7 @@ class SettingsActivity2: AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 
 		setContent {
-			AweryTheme {
+			MobileTheme {
 				SettingsScreen()
 			}
 		}

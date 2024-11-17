@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import kotlin.Unit;
 
-public class PlayerActivityController {
+public class PlayerController {
 	private static final int SHOW_UI_FOR_MILLIS = 3_000;
 	private final Set<String> lockedUiReasons = new HashSet<>();
 	private final PlayerActivity activity;
@@ -57,7 +57,7 @@ public class PlayerActivityController {
 	private boolean isUiFadeLocked, isUiVisible;
 	private final boolean dim = AwerySettings.PLAYER_DIM_SCREEN.getValue();
 
-	public PlayerActivityController(PlayerActivity activity) {
+	public PlayerController(PlayerActivity activity) {
 		this.activity = activity;
 
 		this.hideUiRunnable = () -> {

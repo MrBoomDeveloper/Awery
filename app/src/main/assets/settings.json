@@ -139,31 +139,18 @@
 					"title": "dim_screen", "icon": "ic_brightness_medium_outlined",
 					"description": "After clicking on the screen, black overlay will be shown on top of the video."
 				}, {
-					"type": "screen", "show_if": "never",
-					"title": "subtitles", "icon": "ic_subtitles_filled",
-					"items": [
-						{
-							"key": "subtitles_text_size", "type": "integer", "title": "subtitles_size",
-							"from": 2, "to": 100, "integer_value": 14
-						}, {
-							"key": "subtitles_background_opacity", "type": "integer", "title": "subtitles_back_opacity",
-							"from": 0, "to": 100, "integer_value": 85
-						}
-					]
-				}, {
 					"key": "player_system_subtitles", "type": "action",
 					"title": "subtitles", "icon": "ic_subtitles_filled"
+				}, {
+					"key": "pip_on_background", "type": "boolean", "boolean_value": true,
+					"icon": "ic_pip_outlined", "title": "Switch to Picture in Picture mode after minimizing"
 				}
 			]
 		}, {
 			"type": "screen", "show_if": "debug",
 			"title": "reader", "icon": "ic_menu_book_filled",
 			"items": [
-				{
-					"key": "bruh", "type": "action", "behaviour": "none",
-					"title": "Sorry bro, but you currently can't read those chinese comics.",
-					"description": "Come here later..."
-				}
+
 			]
 		}, {
 			"type": "screen", "title": "storage", "icon": "ic_storage",
@@ -213,9 +200,6 @@
 							"type": "boolean", "boolean_value": false
 						}, {
 							"key": "experiment_pip_controls", "title": "Picture in picture player controls",
-							"type": "boolean", "boolean_value": false
-						}, {
-							"key": "experiment_media_play2", "title": "Use new MediaPlayFragment instead",
 							"type": "boolean", "boolean_value": false
 						}, {
 							"key": "experiment_tv_compose", "title": "Launch TV activity on startup",

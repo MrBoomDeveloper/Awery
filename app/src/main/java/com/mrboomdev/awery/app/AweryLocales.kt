@@ -9,8 +9,9 @@ import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getResourceId
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.util.Selection
-import com.mrboomdev.awery.util.extensions.applyCopy
+import com.mrboomdev.awery.util.extensions.letWith
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
 import org.xmlpull.v1.XmlPullParser
@@ -27,7 +28,7 @@ object AweryLocales {
 			"ru", "russia", "rus" -> context.getString(R.string.russia)
 			"ko", "korea", "kor", "kr" -> context.getString(R.string.korea)
 
-			else -> Locale.forLanguageTag(input).applyCopy {
+			else -> Locale.forLanguageTag(input).letWith {
 				displayCountry.replaceFirstChar { it.uppercase(this) }
 			}
 		}
@@ -41,7 +42,7 @@ object AweryLocales {
 			"ru", "rus", "russian" -> context.getString(R.string.russian)
 			"ko", "kor", "korean" -> context.getString(R.string.korean)
 
-			else -> Locale.forLanguageTag(input).applyCopy {
+			else -> Locale.forLanguageTag(input).letWith {
 				displayLanguage.replaceFirstChar { it.uppercase(this) }
 			}
 		}
@@ -78,6 +79,7 @@ object AweryLocales {
 			.setPositiveButton(R.string.save) { dialog, selection ->
 				selection.get(Selection.State.SELECTED)?.let {
 					AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(it.item))
+					restartApp()
 				}
 
 				dialog.dismiss()

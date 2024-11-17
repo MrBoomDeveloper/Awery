@@ -1,6 +1,5 @@
-package com.mrboomdev.awery.app;
+package com.mrboomdev.awery.app.theme;
 
-import static android.content.Context.UI_MODE_SERVICE;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
 
@@ -19,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.generated.AwerySettings;
 
 public class ThemeManager {
@@ -40,21 +40,22 @@ public class ThemeManager {
 	}
 
 	public static boolean isDarkModeEnabled() {
-		// Light theme on tv is an really bad thing.
-		if(App.Companion.isTv()) return true;
-		
 		var config = getAnyContext().getResources().getConfiguration();
 		return (config.uiMode & Configuration.UI_MODE_NIGHT_YES) == Configuration.UI_MODE_NIGHT_YES;
 	}
 
 	public static void applyApp(Context context) {
 		var isDarkModeEnabled = AwerySettings.USE_DARK_THEME.getValue(null);
+		
+		// Light theme on tv is an really bad thing.
+		if(App.Companion.isTv()) isDarkModeEnabled = true;
 
 		if(isDarkModeEnabled != null) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-				((UiModeManager) context.getSystemService(UI_MODE_SERVICE))
+				context.getSystemService(UiModeManager.class)
 						.setApplicationNightMode(isDarkModeEnabled
-								? UiModeManager.MODE_NIGHT_YES : UiModeManager.MODE_NIGHT_NO);
+								? UiModeManager.MODE_NIGHT_YES
+								: UiModeManager.MODE_NIGHT_NO);
 			} else {
 				AppCompatDelegate.setDefaultNightMode(isDarkModeEnabled
 						? AppCompatDelegate.MODE_NIGHT_YES

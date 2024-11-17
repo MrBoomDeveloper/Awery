@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.sources.yomi
 
+import android.app.Application
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -18,11 +19,17 @@ import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.util.UniqueIdGenerator
 import dalvik.system.PathClassLoader
+import eu.kanade.tachiyomi.network.NetworkHelper
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.addSingleton
+import uy.kohesive.injekt.api.addSingletonFactory
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.util.concurrent.CancellationException
@@ -85,23 +92,23 @@ abstract class YomiManager<S, T : YomiSource>(
 			}.toList()
 	}
 
-	override fun loadAll() = flow {
+	override fun loadAll() = channelFlow {
 		val packages = getPackages(context)
 
 		val progress = Progress(packages.size.toLong())
-		emit(progress)
+		send(progress)
 
 		coroutineScope {
 			getPackages(context).map { pkg ->
 				async {
 					createSource(pkg.packageName, isEnabled(pkg.packageName))
 					progress.increment()
-					emit(progress)
+					send(progress)
 				}
 			}.awaitAll()
 
 			progress.isCompleted = true
-			emit(progress)
+			send(progress)
 		}
 	}
 
@@ -115,11 +122,6 @@ abstract class YomiManager<S, T : YomiSource>(
 	}
 
 	abstract fun getSourceLongId(source: S): Long
-
-	fun getSelectedSource(sources: List<S>): S? {
-		// TODO: Let user to select an desired source in settings
-		return sources.getOrNull(0)
-	}
 
 	private fun createSource(packageName: String, init: Boolean): T {
 		var throwable: Throwable? = null
@@ -135,12 +137,12 @@ abstract class YomiManager<S, T : YomiSource>(
 
 		val isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1
 
-		val source = if(init) {
+		val sources = if(init) {
 			try {
 				checkSupportedVersionBounds(packageInfo.versionName!!)
 
 				try {
-					instantiateMain(packageInfo)
+					instantiateMains(packageInfo)
 				} catch(e: Throwable) {
 					throwable = e
 					null
@@ -152,10 +154,10 @@ abstract class YomiManager<S, T : YomiSource>(
 
 		} else null
 
-		return createSourceWrapper(label, isNsfw, packageInfo, source, throwable)
+		return createSourceWrapper(label, isNsfw, packageInfo, sources, throwable)
 	}
 
-	private fun instantiateMain(packageInfo: PackageInfo): Any {
+	private fun instantiateMains(packageInfo: PackageInfo): Array<Any> {
 		val classLoader = PathClassLoader(
 			packageInfo.applicationInfo!!.sourceDir,
 			null,
@@ -164,7 +166,7 @@ abstract class YomiManager<S, T : YomiSource>(
 		val mainClassesString = packageInfo.applicationInfo!!.metaData.getString(mainClass)
 			?: throw NullPointerException("Main classes not found!")
 
-		val classes = mainClassesString.split(";").dropLastWhile { it.isEmpty() }.toTypedArray().map { fullClassName ->
+		return mainClassesString.split(";").dropLastWhile { it.isEmpty() }.toTypedArray().map { fullClassName ->
 			var mainClass = fullClassName
 
 			if(mainClass.startsWith(".")) {
@@ -176,8 +178,6 @@ abstract class YomiManager<S, T : YomiSource>(
 				it.newInstance()
 			}
 		}.filterNotNull().toTypedArray()
-
-		return classes
 	}
 
 	@Throws(UnsupportedOperationException::class)
@@ -194,15 +194,12 @@ abstract class YomiManager<S, T : YomiSource>(
 		}
 	}
 
-	/**
-	 * @param source May be either type of generic or either an array win generic type.
-	 */
 	@Throws(IllegalArgumentException::class)
 	abstract fun createSourceWrapper(
 		label: String,
 		isNsfw: Boolean,
 		packageInfo: PackageInfo,
-		source: Any?,
+		sources: Array<Any>?,
 		exception: Throwable?
 	): T
 
@@ -360,6 +357,18 @@ abstract class YomiManager<S, T : YomiSource>(
 
 	companion object {
 		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
+
+		fun initYomiShit(context: Context) {
+			Injekt.addSingleton<Application>(context.applicationContext as Application)
+			Injekt.addSingleton(NetworkHelper(context))
+
+			Injekt.addSingletonFactory {
+				Json {
+					ignoreUnknownKeys = true
+					explicitNulls = false
+				}
+			}
+		}
 	}
 
 	class PackageManagerReceiver: BroadcastReceiver() {

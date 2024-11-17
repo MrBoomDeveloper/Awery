@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
+import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -33,7 +34,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
 import androidx.room.Room.databaseBuilder
 import androidx.viewbinding.ViewBinding
 import com.github.piasy.biv.BigImageViewer
@@ -49,11 +52,12 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.ThemeManager.isDarkModeEnabled
+import com.mrboomdev.awery.app.theme.ThemeManager.isDarkModeEnabled
 import com.mrboomdev.awery.app.data.Constants
 import com.mrboomdev.awery.app.data.db.AweryDB
 import com.mrboomdev.awery.app.data.db.item.DBCatalogList
 import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
@@ -258,9 +262,13 @@ class App : Application() {
 		}
 
 		@JvmStatic
+		fun i18n(@StringRes res: Int, vararg params: Any) =
+			ContextCompat.getContextForLanguage(appContext).getString(res, params)
+
+		/*@JvmStatic
 		fun i18n(@StringRes res: Int, vararg params: Any): String {
 			return appContext.getString(res, *params)
-		}
+		}*/
 
 		@JvmStatic
 		@JvmOverloads
@@ -389,9 +397,15 @@ class App : Application() {
 		val isLandscape: Boolean
 			get() = isLandscape(appContext)
 
+		@Suppress("DEPRECATION")
 		@JvmStatic
 		val isTv by lazy {
-			appContext.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+			with(appContext) {
+				packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+						|| packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+						|| getSystemService<UiModeManager>()!!.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+						|| !packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)
+			}
 		}
 
 		@JvmStatic

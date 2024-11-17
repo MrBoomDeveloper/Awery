@@ -19,6 +19,7 @@ import com.google.android.material.elevation.SurfaceColors
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
@@ -59,6 +60,7 @@ import com.mrboomdev.awery.util.extensions.setVerticalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
+import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
 import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
@@ -104,12 +106,11 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 	}
 
 	override fun onEpisodeSelected(episode: CatalogVideo, episodes: List<CatalogVideo>) {
-		PlayerActivity.selectSource(selectedSource)
-
-		val intent = Intent(requireContext(), PlayerActivity::class.java)
-		intent.putExtra("episode", episode)
-		intent.putExtra("episodes", episodes as Serializable)
-		startActivity(intent)
+		startActivity(PlayerActivity::class, PlayerActivity.Extras(
+			episode = episode,
+			episodes = episodes,
+			source = selectedSource!!.globalId
+		))
 
 		lifecycleScope.launch(Dispatchers.IO) {
 			val dao = database.mediaProgressDao
@@ -324,7 +325,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		queryFilter.setValue(media!!.title)
 
 		if(providers?.isEmpty() == true) {
-			handleExceptionUi(null, ZeroResultsException("No extensions was found", R.string.no_extensions_found))
+			handleExceptionUi(ZeroResultsException("No extensions was found", R.string.no_extensions_found))
 			variantsAdapter!!.isEnabled = false
 			return
 		}
@@ -462,7 +463,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 				runOnUiThread {
 					handleExceptionMark(source, e)
 					if(autoSelectNextSource()) return@runOnUiThread
-					handleExceptionUi(source, e)
+					handleExceptionUi(e, source, media)
 				}
 			}
 		})
@@ -483,7 +484,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 			}
 		}
 
-		val lastUsedTitleIndex = AtomicInteger(0)
+		var lastUsedTitleIndex = 0
 
 		if(autoChangeSource) {
 			queryFilter.setValue(media!!.title)
@@ -505,8 +506,8 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 				runOnUiThread {
 					context ?: return@runOnUiThread
 
-					if(autoChangeTitle && media!!.titles != null && lastUsedTitleIndex.get() < media!!.titles!!.size - 1) {
-						val newIndex = lastUsedTitleIndex.incrementAndGet()
+					if(autoChangeTitle && media!!.titles != null && lastUsedTitleIndex < media!!.titles!!.size - 1) {
+						val newIndex = ++lastUsedTitleIndex
 						queryFilter.setValue(media!!.titles!![newIndex])
 						source.searchMedia(filters).addCallback(this)
 
@@ -525,7 +526,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 					} else {
 						handleExceptionMark(source, e)
 						if(autoSelectNextSource()) return@runOnUiThread
-						handleExceptionUi(source, e)
+						handleExceptionUi(e, source)
 					}
 				}
 			}
@@ -599,7 +600,11 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		else sourceStatuses[source] = ExtensionStatus.BROKEN_PARSER
 	}
 
-	private fun handleExceptionUi(source: ExtensionProvider?, throwable: Throwable) {
+	private fun handleExceptionUi(
+		throwable: Throwable,
+		source: ExtensionProvider? = null,
+		media: CatalogMedia? = null
+	) {
 		if(source !== selectedSource && source != null) return
 		val error = OkiThrowableMessage(throwable)
 
@@ -612,7 +617,22 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 		placeholderAdapter!!.getBinding { binding ->
 			runOnUiThread {
-				binding.setInfo(error.title, error.message)
+				if(error.t is BotSecurityBypassException && source != null && (media?.url != null || source.previewUrl != null)) {
+					binding.setInfo(
+						title = error.title,
+						message = error.message,
+						buttonText = "Retry",
+						buttonClickListener = { loadEpisodesFromSource(source) },
+						button2OnClick = { openUrl(requireContext(), media?.url ?: source.previewUrl!!, true) },
+						button2Text = "Open website"
+					)
+				} else {
+					binding.setInfo(
+						title = error.title,
+						message = error.message
+					)
+				}
+
 				placeholderAdapter!!.setEnabled(true)
 			}
 		}

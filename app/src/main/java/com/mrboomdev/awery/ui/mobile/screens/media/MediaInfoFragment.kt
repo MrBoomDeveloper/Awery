@@ -32,6 +32,7 @@ import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.arrayOfNotNull
 import com.mrboomdev.awery.util.extensions.bottomPadding
 import com.mrboomdev.awery.util.extensions.dpPx
+import com.mrboomdev.awery.util.extensions.plus
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.rightPadding
 import com.mrboomdev.awery.util.extensions.startActivity
@@ -185,8 +186,10 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		val metas = mutableListOf<String>()
 
 		if(media.episodesCount != null) {
-			if(media.episodesCount == 1) metas.add(getString(R.string.episode))
-			else metas.add(getString(R.string.episodes))
+			metas.add(media.episodesCount + " " + getString(
+				if(media.episodesCount == 1) R.string.episode
+				else R.string.episodes)
+			)
 		}
 
 		if(media.duration != null) {
