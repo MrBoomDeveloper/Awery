@@ -64,7 +64,7 @@ private val EXCLUDE_GITHUB_IDS = arrayOf(
     114061880L, // tinotendamha
     72887534L,  // asvintheguy
     175734244L, // SaarGirl
-    171004872L, // Goko1
+    171004872L, // Goki1
     119158637L, // Runkandel
     22217419L   // rezaalmanda
 )
@@ -75,19 +75,16 @@ private val LOCAL_DEVS = arrayOf(
         "https://github.com/MrBoomDeveloper",
         "https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
     ),
-
     Contributor(
         "Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
         "https://github.com/itsmechinmoy",
         "https://avatars.githubusercontent.com/u/167056923?v=4"
     ),
-
     Contributor(
         "Shebyyy", arrayOf("Contributor, Discord and Telegram Moderator"),
         "https://github.com/Shebyyy",
         "https://avatars.githubusercontent.com/u/83452219?v=4"
     ),
-
     Contributor(
         "Ichiro", arrayOf("App Icon"),
         "https://discord.com/channels/@me/1262060731981889536",
@@ -127,6 +124,7 @@ class AboutActivity : AppCompatActivity() {
             })
 
             val items = LOCAL_DEVS.toMutableList()
+            val localUsernames = LOCAL_DEVS.map { it.name.lowercase() }.toSet()
 
             class ViewHolder(val view: ContributorView): RecyclerView.ViewHolder(view)
 
@@ -149,13 +147,14 @@ class AboutActivity : AppCompatActivity() {
                     cacheDuration = 60 * 60 * 24 * 7 /** 7 days **/
                 }.fetch().let {
                     getMoshi().adapter<List<GitHubContributor>>().fromJson(it.text)!!
-                }.filter {
-                    it.id !in EXCLUDE_GITHUB_IDS
+                }.filter { contributor ->
+                    contributor.id !in EXCLUDE_GITHUB_IDS && 
+                    contributor.login.lowercase() !in localUsernames
                 }.map { it.toContributor() }
 
                 withContext(Dispatchers.Main) {
                     items.addAll(receivedItems)
-                    info.recycler.adapter!!.notifyItemRangeInserted(2, receivedItems.size)
+                    info.recycler.adapter!!.notifyItemRangeInserted(LOCAL_DEVS.size, receivedItems.size)
                 }
             }
         }.root)
