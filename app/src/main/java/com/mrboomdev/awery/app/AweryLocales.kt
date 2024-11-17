@@ -49,12 +49,14 @@ object AweryLocales {
 	}
 
 	fun showPicker(context: Context) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		// So uhm... There is some strange shit happening on some devices which doesn't show you all the settings
+		// (English Indian) for example on ColorOS, so we do show an custom picker.
+		/*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			context.startActivity(action = Settings.ACTION_APP_LOCALE_SETTINGS,
 				data = Uri.parse("package:${context.packageName}"))
 		} else {
-			showCustomPicker(context)
-		}
+			*/showCustomPicker(context)
+		/*}*/
 	}
 
 	private fun showCustomPicker(context: Context) {
