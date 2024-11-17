@@ -71,12 +71,12 @@ private val EXCLUDE_GITHUB_IDS = arrayOf(
 
 private val LOCAL_DEVS = arrayOf(
     Contributor(
-        "MrBoomDev", arrayOf("Main Developer"), 
+        "MrBoomDeveloper", arrayOf("Main Developer"), 
         "https://github.com/MrBoomDeveloper",
         "https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
     ),
     Contributor(
-        "itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
+        "Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
         "https://github.com/itsmechinmoy",
         "https://avatars.githubusercontent.com/u/167056923?v=4"
     ),
