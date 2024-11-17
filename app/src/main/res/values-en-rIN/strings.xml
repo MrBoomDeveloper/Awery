@@ -77,7 +77,7 @@
     <string name="no_update_found">Koi Update Nahi Mili</string>
     <string name="downloading_update">Update Download ho raha hai %1$s</string>
     <string name="permission_required">Files &amp; Folders ka access dene ke liye Settings mein permission do, fir dobara try karo.</string>
-    <string name="started_downloading">Downloading shuru hui\n%1$s</string>
+    <string name="started_downloading">Downloading shuru hui %1$s</string>
     <string name="loading_image_failed">Image Load karne mein Fail hua</string>
     <string name="failed_to_load_data">Saved data load nahi ho paya %1$d</string>
     <string name="time_format">%1$d din %2$d ghante %3$d minute %4$d second</string>
@@ -490,13 +490,13 @@
     <string name="welcome_to_app_description">Ye ek perfect app he yha aap dher saare subidhao aur stylish looks ke sath app ko customised kr sakte he.</string>
     <string name="setup_finished_description">Ab aap apne pasandita show dekh sakte he. Hamme ummeed he ki aapko yeh app pasand ayega aur aap chahe to hame aapki pasand ke baare me samiksha bhej sakte he :)</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="analytics_title">Vishleshan</string>
+    <string name="generic_message">Is beta version mein, aap app ke through extensions directly install nahi kar sakte :(\nAbhi ke liye, aap inhe humare par download kar sakte hain:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
+    <string name="existing_custom_tabs_title">Mojuda custom tabs mile</string>
+    <string name="existing_custom_tabs_message">Template ka istemal karne ke liye, humein aapke sabhi custom tabs ko hataana hoga jinmein feeds hain. Agar aap aisa nahi chahte, to bas \"Koi nahi\" choose karein.</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="dantotsu_message">Dantotsu template ko kam krne keliye kuch extensions ki jarurat he.\nIs beta version mein, aap app ke through extensions directly install nahi kar sakte :(\nAbhi ke liye, aap inhe humare par download kar sakte hain:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
+    <string name="automatically_send_reports">Swachalit roop se crash report bhejein</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>
