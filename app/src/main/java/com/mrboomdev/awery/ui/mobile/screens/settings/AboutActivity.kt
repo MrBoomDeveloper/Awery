@@ -64,7 +64,7 @@ private val EXCLUDE_GITHUB_IDS = arrayOf(
     114061880L, // tinotendamha
     72887534L,  // asvintheguy
     175734244L, // SaarGirl
-    171004872L, // Goki1
+    171004872L, // Goko1
     119158637L, // Runkandel
     22217419L   // rezaalmanda
 )
@@ -76,7 +76,7 @@ private val LOCAL_DEVS = arrayOf(
         "https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
     ),
     Contributor(
-        "Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
+        "itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
         "https://github.com/itsmechinmoy",
         "https://avatars.githubusercontent.com/u/167056923?v=4"
     ),
