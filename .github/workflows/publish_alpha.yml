@@ -274,7 +274,7 @@ jobs:
             fi
             COMMIT_LOG=$(cat commit_log.txt)
           if [ ${#COMMIT_LOG} -gt 1024 ]; then
-            COMMIT_LOG="${COMMIT_LOG:0:900}... (truncated)"
+            COMMIT_LOG="${COMMIT_LOG:0:900}"
           fi
           TRUNCATED_COMMIT_LOG="$COMMIT_LOG"
           telegram_commit_messages=$(echo "$TRUNCATED_COMMIT_LOG" | sed 's/%0A/\n/g' | while read -r line; do
