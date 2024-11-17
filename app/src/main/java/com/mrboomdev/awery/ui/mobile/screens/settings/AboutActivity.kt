@@ -55,36 +55,33 @@ import java.util.Date
 
 private const val TAG = "AboutActivity"
 private const val URL = "https://api.github.com/repos/MrBoomDeveloper/Awery/contributors?per_page=100&page=0"
-private val EXCLUDE_GITHUB_USERS = arrayOf(
-    "rebelonion", 
-    "weblate",
-    "aayush2622", 
-    "Sadwhy", 
-    "WaiWhat", 
-    "tinotendamha", 
-    "asvintheguy", 
-    "SaarGirl",
-    "Goko1",
-    "Runkandel",
-    "rezaalmanda"
+private val EXCLUDE_GITHUB_IDS = arrayOf(
+    87634197L,  // rebelonion
+    1607653L,   // weblate
+    99584765L,  // aayush2622
+    99601717L,  // Sadwhy
+    149729762L, // WaiWhat
+    114061880L, // tinotendamha
+    72887534L,  // asvintheguy
+    175734244L, // SaarGirl
+    171004872L, // Goko1
+    119158637L, // Runkandel
+    22217419L   // rezaalmanda
 )
 
 private val LOCAL_DEVS = arrayOf(
     Contributor(
-        "MrBoomDev", arrayOf("Main Developer"), 
-        "https://github.com/MrBoomDeveloper",
+        "MrBoomDev", arrayOf("Main Developer"), "https://github.com/MrBoomDeveloper",
         "https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
     ),
 
     Contributor(
         "Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
-        "https://github.com/itsmechinmoy",
         "https://avatars.githubusercontent.com/u/167056923?v=4"
     ),
 
     Contributor(
         "Shebyyy", arrayOf("Contributor, Discord and Telegram Moderator"),
-        "https://github.com/Shebyyy",
         "https://avatars.githubusercontent.com/u/83452219?v=4"
     ),
 
@@ -97,195 +94,196 @@ private val LOCAL_DEVS = arrayOf(
 
 class AboutActivity : AppCompatActivity() {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		applyTheme()
-		enableEdgeToEdge()
-		super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        applyTheme()
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
-		setContentView(ScreenAboutBinding.inflate(layoutInflater).apply {
-			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
-			back.setOnClickListener { finish() }
+        setContentView(ScreenAboutBinding.inflate(layoutInflater).apply {
+            root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
+            back.setOnClickListener { finish() }
 
-			version.text = arrayOf(
-				"${i18n(R.string.version)}: ${BuildConfig.VERSION_NAME}",
-				"${i18n(R.string.built_at)}: ${Date(BuildConfig.BUILD_TIME)}"
-			).joinToString("\n")
+            version.text = arrayOf(
+                "${i18n(R.string.version)}: ${BuildConfig.VERSION_NAME}",
+                "${i18n(R.string.built_at)}: ${Date(BuildConfig.BUILD_TIME)}"
+            ).joinToString("\n")
 
-			info.fundMessage.setMarkwon(
-				info.fundMessage.text.toString())
+            info.fundMessage.setMarkwon(
+                info.fundMessage.text.toString())
 
-			applyInsets(UI_INSETS, { _, insets ->
-				if(isLandscape) {
-					root.setPadding(insets.left, insets.top, insets.right, insets.bottom)
-					window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
-				} else {
-					root.setPadding(insets.left, 0)
-					header.topMargin = insets.top
-				}
+            applyInsets(UI_INSETS, { _, insets ->
+                if(isLandscape) {
+                    root.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+                    window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
+                } else {
+                    root.setPadding(insets.left, 0)
+                    header.topMargin = insets.top
+                }
 
-				true
-			})
+                true
+            })
 
-			val items = LOCAL_DEVS.toMutableList()
+            val items = LOCAL_DEVS.toMutableList()
 
-			class ViewHolder(val view: ContributorView): RecyclerView.ViewHolder(view)
+            class ViewHolder(val view: ContributorView): RecyclerView.ViewHolder(view)
 
-			info.recycler.adapter = object : RecyclerView.Adapter<ViewHolder>() {
-				override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-					ViewHolder(ContributorView(parent.context))
+            info.recycler.adapter = object : RecyclerView.Adapter<ViewHolder>() {
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+                    ViewHolder(ContributorView(parent.context))
 
-				override fun getItemCount() = items.size
+                override fun getItemCount() = items.size
 
-				override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-					holder.view.contributor = items[position]
-				}
-			}
+                override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                    holder.view.contributor = items[position]
+                }
+            }
 
-			lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
-				Log.e(TAG, "Failed to load contributors list", t)
-			}) {
-				val receivedItems = HttpRequest(URL).apply {
-					cacheMode = HttpCacheMode.CACHE_FIRST
-					cacheDuration = 60 * 60 * 24 * 7 /** 7 days **/
-				}.fetch().let {
-					getMoshi().adapter<List<GitHubContributor>>().fromJson(it.text)!!
-				}.filter {
-					it.login !in EXCLUDE_GITHUB_USERS
-				}.map { it.toContributor() }
+            lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+                Log.e(TAG, "Failed to load contributors list", t)
+            }) {
+                val receivedItems = HttpRequest(URL).apply {
+                    cacheMode = HttpCacheMode.CACHE_FIRST
+                    cacheDuration = 60 * 60 * 24 * 7 /** 7 days **/
+                }.fetch().let {
+                    getMoshi().adapter<List<GitHubContributor>>().fromJson(it.text)!!
+                }.filter {
+                    it.id !in EXCLUDE_GITHUB_IDS
+                }.map { it.toContributor() }
 
-				withContext(Dispatchers.Main) {
-					items.addAll(receivedItems)
-					info.recycler.adapter!!.notifyItemRangeInserted(2, receivedItems.size)
-				}
-			}
-		}.root)
-	}
+                withContext(Dispatchers.Main) {
+                    items.addAll(receivedItems)
+                    info.recycler.adapter!!.notifyItemRangeInserted(2, receivedItems.size)
+                }
+            }
+        }.root)
+    }
 
-	@SuppressLint("ViewConstructor")
-	class ContributorView(context: Context) : LinearLayoutCompat(context) {
-		private val name: MaterialTextView
-		private val roles: MaterialTextView
-		private val icon: AppCompatImageView
-		private val linear: LinearLayoutCompat
+    @SuppressLint("ViewConstructor")
+    class ContributorView(context: Context) : LinearLayoutCompat(context) {
+        private val name: MaterialTextView
+        private val roles: MaterialTextView
+        private val icon: AppCompatImageView
+        private val linear: LinearLayoutCompat
 
-		var contributor: Contributor? = null
-			set(value) {
-				field = value
+        var contributor: Contributor? = null
+            set(value) {
+                field = value
 
-				if(value != null) {
-					Glide.with(icon)
-						.load(value.avatar)
-						.transition(DrawableTransitionOptions.withCrossFade())
-						.into(icon)
+                if(value != null) {
+                    Glide.with(icon)
+                        .load(value.avatar)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(icon)
 
-					name.text = value.name
-					roles.text = value.roles.joinToString(", ")
-					setOnClickListener { openUrl(context, value.url) }
-				}
-			}
+                    name.text = value.name
+                    roles.text = value.roles.joinToString(", ")
+                    setOnClickListener { openUrl(context, value.url) }
+                }
+            }
 
-		init {
-			orientation = VERTICAL
+        init {
+            orientation = VERTICAL
 
-			linear = LinearLayoutCompat(context).apply {
-				orientation = HORIZONTAL
-				setBackgroundResource(R.drawable.ripple_round_you)
-				this@ContributorView.addView(this, MATCH_PARENT, WRAP_CONTENT)
-				setPadding(dpPx(8f))
-				bottomMargin = dpPx(4f)
+            linear = LinearLayoutCompat(context).apply {
+                orientation = HORIZONTAL
+                setBackgroundResource(R.drawable.ripple_round_you)
+                this@ContributorView.addView(this, MATCH_PARENT, WRAP_CONTENT)
+                setPadding(dpPx(8f))
+                bottomMargin = dpPx(4f)
 
-				isClickable = true
-				isFocusable = true
-			}
+                isClickable = true
+                isFocusable = true
+            }
 
-			val iconWrapper = CardView(context).apply {
-				radius = dpPx(48f).toFloat()
-				linear.addView(this)
-			}
+            val iconWrapper = CardView(context).apply {
+                radius = dpPx(48f).toFloat()
+                linear.addView(this)
+            }
 
-			icon = AppCompatImageView(context).apply {
-				iconWrapper.addView(this, dpPx(48f), dpPx(48f))
-			}
+            icon = AppCompatImageView(context).apply {
+                iconWrapper.addView(this, dpPx(48f), dpPx(48f))
+            }
 
-			val info = LinearLayoutCompat(context).apply {
-				orientation = VERTICAL
-				linear.addView(this)
-				leftMargin = dpPx(16f)
-			}
+            val info = LinearLayoutCompat(context).apply {
+                orientation = VERTICAL
+                linear.addView(this)
+                leftMargin = dpPx(16f)
+            }
 
-			name = MaterialTextView(context).apply {
-				setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-				setTextColor(context.resolveAttrColor(com.google.android.material.R.attr.colorOnBackground))
-				info.addView(this)
-				bottomMargin = dpPx(4f)
-			}
+            name = MaterialTextView(context).apply {
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                setTextColor(context.resolveAttrColor(com.google.android.material.R.attr.colorOnBackground))
+                info.addView(this)
+                bottomMargin = dpPx(4f)
+            }
 
-			roles = MaterialTextView(context).apply {
-				setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-				info.addView(this)
-			}
-		}
-	}
+            roles = MaterialTextView(context).apply {
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                info.addView(this)
+            }
+        }
+    }
 
-	class SocialView @JvmOverloads constructor(
-		context: Context,
-		attrs: AttributeSet? = null,
-		defStyleAttr: Int = 0
-	) : LinearLayoutCompat(context, attrs, defStyleAttr) {
+    class SocialView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+    ) : LinearLayoutCompat(context, attrs, defStyleAttr) {
 
-		init {
-			val linear = LinearLayoutCompat(context).apply {
-				gravity = Gravity.CENTER_HORIZONTAL
-				orientation = VERTICAL
-				isClickable = true
-				isFocusable = true
-				setBackgroundResource(R.drawable.ripple_round_you)
-				this@SocialView.addView(this)
-				setPadding(dpPx(12f), dpPx(8f))
-			}
+        init {
+            val linear = LinearLayoutCompat(context).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                orientation = VERTICAL
+                isClickable = true
+                isFocusable = true
+                setBackgroundResource(R.drawable.ripple_round_you)
+                this@SocialView.addView(this)
+                setPadding(dpPx(12f), dpPx(8f))
+            }
 
-			val icon = AppCompatImageView(context).apply {
-				linear.addView(this, dpPx(42f), dpPx(42f))
-				setImageTintAttr(com.google.android.material.R.attr.colorOnSecondaryContainer)
-			}
+            val icon = AppCompatImageView(context).apply {
+                linear.addView(this, dpPx(42f), dpPx(42f))
+                setImageTintAttr(com.google.android.material.R.attr.colorOnSecondaryContainer)
+            }
 
-			val label = MaterialTextView(context).apply {
-				linear.addView(this, WRAP_CONTENT, WRAP_CONTENT)
-				topMargin = dpPx(4f)
-			}
+            val label = MaterialTextView(context).apply {
+                linear.addView(this, WRAP_CONTENT, WRAP_CONTENT)
+                topMargin = dpPx(4f)
+            }
 
-			if(attrs != null) {
-				context.obtainStyledAttributes(attrs, R.styleable.SocialView).use { typed ->
-					icon.setImageDrawable(typed.getDrawable(R.styleable.SocialView_socialIcon))
-					label.text = typed.getString(R.styleable.SocialView_socialName)
+            if(attrs != null) {
+                context.obtainStyledAttributes(attrs, R.styleable.SocialView).use { typed ->
+                    icon.setImageDrawable(typed.getDrawable(R.styleable.SocialView_socialIcon))
+                    label.text = typed.getString(R.styleable.SocialView_socialName)
 
-					typed.getString(R.styleable.SocialView_socialLink)?.let { url ->
-						linear.setOnClickListener { openUrl(context, url) }
-					}
-				}
-			}
-		}
-	}
+                    typed.getString(R.styleable.SocialView_socialLink)?.let { url ->
+                        linear.setOnClickListener { openUrl(context, url) }
+                    }
+                }
+            }
+        }
+    }
 
-	class Contributor(
-		val name: String,
-		val roles: Array<String>,
-		val url: String,
-		val avatar: String
-	)
+    class Contributor(
+        val name: String,
+        val roles: Array<String>,
+        val url: String,
+        val avatar: String
+    )
 
-	class GitHubContributor(
-		val login: String,
-		@Json(name = "avatar_url")
-		val avatarUrl: String,
-		@Json(name = "html_url")
-		val htmlUrl: String
-	) {
-		fun toContributor() = Contributor(
-			name = login,
-			roles = arrayOf(),
-			url = htmlUrl,
-			avatar = avatarUrl
-		)
-	}
+    class GitHubContributor(
+        val login: String,
+        @Json(name = "avatar_url")
+        val avatarUrl: String,
+        @Json(name = "html_url")
+        val htmlUrl: String,
+        val id: Long
+    ) {
+        fun toContributor() = Contributor(
+            name = login,
+            roles = arrayOf(),
+            url = htmlUrl,
+            avatar = avatarUrl
+        )
+    }
 }
