@@ -71,29 +71,25 @@ private val EXCLUDE_GITHUB_USERS = arrayOf(
 
 private val LOCAL_DEVS = arrayOf(
     Contributor(
-        "MrBoomDev", 
-        arrayOf("Main Developer"), 
+        "MrBoomDev", arrayOf("Main Developer"), 
         "https://github.com/MrBoomDeveloper",
         "https://cdn.discordapp.com/avatars/1034891767822176357/3420c6a4d16fe513a69c85d86cb206c2.png?size=4096"
     ),
 
     Contributor(
-        "Itsmechinmoy", 
-        arrayOf("Contributor, Discord and Telegram Admin"),
+        "Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
         "https://github.com/itsmechinmoy",
         "https://avatars.githubusercontent.com/u/167056923?v=4"
     ),
 
     Contributor(
-        "Shebyyy", 
-        arrayOf("Contributor, Discord and Telegram Moderator"),
+        "Shebyyy", arrayOf("Contributor, Discord and Telegram Moderator"),
         "https://github.com/Shebyyy",
         "https://avatars.githubusercontent.com/u/83452219?v=4"
     ),
 
     Contributor(
-        "Ichiro", 
-        arrayOf("App Icon"),
+        "Ichiro", arrayOf("App Icon"),
         "https://discord.com/channels/@me/1262060731981889536",
         "https://cdn.discordapp.com/avatars/778503249619058689/5e1cd37e9473c7bc8ca164fe4f985e87.webp?size=4096"
     )
