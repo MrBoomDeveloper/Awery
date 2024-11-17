@@ -389,7 +389,7 @@
     <string name="clear_network_cache">নেটৱৰ্ক ক্যাশ পৰিস্কাৰ কৰক</string>
     <string name="github_repository">GitHub ৰিপ’জিটৰী</string>
     <string name="are_you_sure">আপুনি নিশ্চিত নেকি?</string>
-    <string name="app_crash">এপ্লিকেচন ক্ৰেচ হৈ গৈছে</string>
+    <string name="app_crash">এপ্লিকেচন ক্ৰেচ হৈ গৈছে!</string>
     <string name="crash_report">ক্ৰেচ ৰিপৰ্ট</string>
     <string name="copy">কপি</string>
     <string name="something_terrible_happened">কিবা অতিকৈ বেয়া হৈছে 0_0</string>
@@ -416,7 +416,7 @@
     <string name="havent_selected_source">আপুনি কোনো উৎস বাছনি কৰা নাই!</string>
     <string name="nothing_selected">কোনো বাছনি কৰা নাই</string>
     <string name="server_error">চাৰ্ভাৰ ত্ৰুটি</string>
-    <string name="extension_crashed">এক্সটেনচন ক্ৰেচ হৈ গৈছে</string>
+    <string name="extension_crashed">এক্সটেনচন ক্ৰেচ হৈ গৈছে!</string>
     <string name="account_required">অ্যাকাউণ্টৰ প্ৰয়োজন</string>
     <string name="connection_failed">সংযোগ বিফল</string>
     <string name="banned">আপুনি নিষিদ্ধ</string>

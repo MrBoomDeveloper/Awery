@@ -133,7 +133,7 @@
     <string name="ask_update_progress_anime">Запрашивать для каждого медиа \"Индивидуально\"</string>
     <string name="ask_update_progress_info_ep">Отключение будет всегда автоматически обновлять прогресс при просмотре эпизода.</string>
     <string name="watch_complete_percentage">Процент завершенного просмотра</string>
-    <string name="watch_complete_percentage_info">Процент, при котором ваш прогресс должен обновляться после просмотра эпизода. Это также устанавливает %s для того, когда следует предварительно загружать ссылки для следующего эпизода.</string>
+    <string name="watch_complete_percentage_info">Процент, при котором ваш прогресс должен обновляться после просмотра эпизода. \nЭто также устанавливает %s для того, когда следует предварительно загружать ссылки для следующего эпизода.</string>
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с того места, где вы остановились</string>
     <string name="pause_video_focus">Пауза при потере фокуса</string>

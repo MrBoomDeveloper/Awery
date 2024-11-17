@@ -122,7 +122,7 @@
     <string name="sub_window_color_info">उपशीर्षक विंडो वह हिस्सा है जो उनके बाईं और दाईं ओर होता है। (जहां पृष्ठभूमि नहीं होती)</string>
     <string name="sub_font_select">उपशीर्षक फ़ॉन्ट</string>
     <string name="subtitle_font_size">उपशीर्षक आकार</string>
-    <string name="auto">स्वत:</string>
+    <string name="auto">स्वत</string>
     <string name="auto_play_next_episode">स्वत: अगला एपिसोड चलाएं</string>
     <string name="auto_skip_fillers">स्वत: फिलर छोड़ें</string>
     <string name="auto_skip_fillers_info">अगले एपिसोड पर जाते समय फिलर एपिसोड छोड़ता है।</string>
@@ -485,7 +485,7 @@
     <string name="were_done">हमने पूरा कर लिया!</string>
     <string name="database_corrupted">डेटाबेस भ्रष्ट हो गया है!</string>
     <string name="bad_request">अनुरोध त्रुटिपूर्ण है</string>
-    <string name="failed_to_bypass">%s को बायपास करने में विफल!</string>
+    <string name="failed_to_bypass">%s को बायपास करने में विफल</string>
     <string name="loading_extensions_n">एक्सटेंशन्स लोड कर रहे हैं %d/%d</string>
     <string name="selected_s">चुना गया %s</string>
     <string name="welcome_to_app_description">यह एक आदर्श ऐप है, जहां आप ढेर सारी सुविधाओं और स्टाइलिश लुक के साथ सब कुछ कस्टमाइज़ कर सकते हैं।</string>

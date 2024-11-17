@@ -248,7 +248,7 @@
     <string name="sub_background_color_select">Subtitle ka Background ka Rang</string>
     <string name="secondary_sub_outline_type_select">Subtitle Outline ka Type</string>
     <string name="sub_window_color_select">Subtitle Window ka Rang</string>
-    <string name="sub_window_color_info">Subtitle window unka hissa hota hai jo subtitle ke dono taraf hota hai (jahaan background nahi hota).</string>
+    <string name="sub_window_color_info">Subtitle window unka hissa hota hai jo subtitle ke dono taraf hota hai (jahaan background nahi hota)</string>
     <string name="sub_font_select">Subtitle ka Font</string>
     <string name="subtitle_font_size">Subtitle ka Size</string>
     <string name="auto">Auto</string>
@@ -266,7 +266,7 @@
     <string name="gestures">Volume &amp; Brightness Gestures</string>
     <string name="double_tap">Seek karne ke liye Double Tap kare</string>
     <string name="fast_forward">Fast Forward</string>
-    <string name="double_tap_info">Isko off karne par fast forward &amp; rewind buttons dikhai denge.</string>
+    <string name="double_tap_info">Isko off karne par fast forward &amp; rewind buttons dikhai denge</string>
     <string name="always_minimize_info">PiP ko enable karna zaroori hai, player ko Youtube Player jaisa banata hai, lekin behtar.\nPiP button ko bhi chhupa deta hai.</string>
     <string name="immersive_mode">Status Bar Chhupaye</string>
     <string name="current_page">Current Page</string>
@@ -274,14 +274,14 @@
     <string name="subbed">Subbed</string>
     <string name="none">Koi nahi</string>
     <string name="selected_dns">Chuna Hua DNS</string>
-    <string name="dns_info">Agar aapka ISP kisi source ko block karta hai to change karein.</string>
+    <string name="dns_info">Agar aapka ISP kisi source ko block karta hai to change karein</string>
     <string name="keep_screen_on">Screen Ko On Rakhe</string>
     <string name="layout">Layout</string>
     <string name="spaced_pages">Spaced Pages</string>
-    <string name="auto_detect_webtoon_info">Agar manga Japan se nahi hai, to reader default Webtoon Reader settings par set ho jaayega.</string>
+    <string name="auto_detect_webtoon_info">Agar manga Japan se nahi hai, to reader default Webtoon Reader settings par set ho jaayega</string>
     <string name="default_settings">Default Settings</string>
     <string name="dual_page">Dual Page</string>
-    <string name="dual_page_info">Ek page par 2 images dikhata hai, agar images same size ki nahi hui to ajeeb lagega.</string>
+    <string name="dual_page_info">Ek page par 2 images dikhata hai, agar images same size ki nahi hui to ajeeb lagega</string>
     <string name="true_colors">True Colors</string>
     <string name="true_colors_info">(32-bit color mode) Images par banding ko kam karta hai, performance par prabhav daal sakta hai.</string>
     <string name="image_rotation">Image Rotation</string>
@@ -453,7 +453,7 @@
     <string name="selected_s">Chuna gaya %s</string>
     <string name="searching_for">Dhoondh rahe hain %s ke liye</string>
     <string name="buffering_video">Video buffer kar raha hai</string>
-    <string name="failed_to_bypass">%s ko bypass karne mein asafal!</string>
+    <string name="failed_to_bypass">%s ko bypass karne mein asafal</string>
     <string name="server_unavailable">Server abhi uplabdh nahi hai, kripya baad mein try karein.</string>
     <string name="extension_load_failed">Extension load karne mein asafal!</string>
     <string name="awery_updated_title">Awery update ho gaya hai!</string>
