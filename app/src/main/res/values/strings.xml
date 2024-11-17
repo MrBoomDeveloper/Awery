@@ -255,7 +255,7 @@
     <string name="no_update_found">No Update Found</string>
     <string name="downloading_update">Downloading Update %1$s</string>
     <string name="permission_required">Please give permission to access Files &amp; Folders from Settings, &amp; Try again.</string>
-    <string name="started_downloading">Started Downloading%1$s</string>
+    <string name="started_downloading">Started Downloading %1$s</string>
     <string name="loading_image_failed">Loading Image Failed</string>
     <string name="failed_to_load_data">Failed to load saved data of %1$d</string>
     <string name="access_not_available">Wasn\'t able to get access</string>
