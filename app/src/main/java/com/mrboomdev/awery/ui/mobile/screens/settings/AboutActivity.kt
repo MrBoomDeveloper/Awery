@@ -55,7 +55,19 @@ import java.util.Date
 
 private const val TAG = "AboutActivity"
 private const val URL = "https://api.github.com/repos/MrBoomDeveloper/Awery/contributors?per_page=100&page=0"
-private val EXCLUDE_GITHUB_USERS = arrayOf("MrBoomDeveloper", "weblate")
+private val EXCLUDE_GITHUB_USERS = arrayOf(
+    "rebelonion", 
+    "weblate",
+    "aayush2622", 
+    "Sadwhy", 
+    "WaiWhat", 
+    "tinotendamha", 
+    "asvintheguy", 
+    "SaarGirl",
+    "Goko1",
+    "Runkandel",
+    "rezaalmanda"
+)
 
 private val LOCAL_DEVS = arrayOf(
 	Contributor(
@@ -64,9 +76,19 @@ private val LOCAL_DEVS = arrayOf(
 	),
 
 	Contributor(
+		"Itsmechinmoy", arrayOf("Contributor, Discord and Telegram Admin"),
+		"https://avatars.githubusercontent.com/u/167056923?v=4"
+	),
+
+	Contributor(
+		"Shebyyy", arrayOf("Contributor, Discord and Telegram Moderator"),
+		"https://avatars.githubusercontent.com/u/83452219?v=4"
+	),
+
+	Contributor(
 		"Ichiro", arrayOf("App Icon"),
 		"https://discord.com/channels/@me/1262060731981889536",
-		"https://cdn.discordapp.com/avatars/778503249619058689/9d5baf6943f4eafbaf09eb8e9e287f2d.png?size=4096"
+		"https://cdn.discordapp.com/avatars/778503249619058689/5e1cd37e9473c7bc8ca164fe4f985e87.webp?size=4096"
 	)
 )
 
