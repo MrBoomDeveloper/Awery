@@ -255,7 +255,7 @@
     <string name="no_update_found">No Update Found</string>
     <string name="downloading_update">Downloading Update %1$s</string>
     <string name="permission_required">Please give permission to access Files &amp; Folders from Settings, &amp; Try again.</string>
-    <string name="started_downloading">Started Downloading\n%1$s</string>
+    <string name="started_downloading">Started Downloading%1$s</string>
     <string name="loading_image_failed">Loading Image Failed</string>
     <string name="failed_to_load_data">Failed to load saved data of %1$d</string>
     <string name="access_not_available">Wasn\'t able to get access</string>
@@ -498,5 +498,5 @@
     <string name="analytics_message" translatable="false">TODO</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
     <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don't want that, then simply select "None".</string>
+    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select \"None\".</string>
 </resources>
