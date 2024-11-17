@@ -232,7 +232,7 @@
     <string name="no_update_found">Обновлений не найдено</string>
     <string name="downloading_update">Загрузка обновления %1$s</string>
     <string name="permission_required">Пожалуйста, предоставьте разрешение на доступ к файлам и папкам в настройках и попробуйте снова.</string>
-    <string name="started_downloading">Начата загрузка\n%1$s</string>
+    <string name="started_downloading">Начата загрузка %1$s</string>
     <string name="loading_image_failed">Не удалось загрузить изображение</string>
     <string name="failed_to_load_data">Не удалось загрузить сохраненные данные %1$d</string>
     <string name="access_not_available">Не удалось получить доступ</string>
@@ -490,13 +490,13 @@
     <string name="setup_finished_description">Теперь вы можете смотреть свои любимые передачи. Мы надеемся, что вам понравится это приложение! Если хотите, вы можете отправить нам отзыв о том, что вам понравилось :)</string>
     <string name="welcome_to_app_description">Прекрасное приложение, в котором вы можете настроить все, с множеством функций и стильным внешним видом.</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="analytics_title">Аналитика</string>
+    <string name="generic_message">В этой бета-версии вы не можете устанавливать расширения напрямую через приложение :(\nВ данный момент вы можете скачать их на нашем:\nDiscord сервере: %1$s\nTelegram канале: %2$s</string>
+    <string name="existing_custom_tabs_title">Найдены существующие пользовательские вкладки</string>
+    <string name="existing_custom_tabs_message">Чтобы использовать шаблон, нам нужно удалить все ваши пользовательские вкладки с лентами. Если вы не хотите этого, просто выберите \"Нет\".</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="dantotsu_message">Шаблону Dantotsu требуется несколько расширений для работы.\nВ этой бета-версии вы не можете устанавливать расширения напрямую через приложение :(\nСейчас вы можете скачать их на нашем:\nDiscord сервере: %1$s\nTelegram канале: %2$s</string>
+    <string name="automatically_send_reports">Автоматически отправлять отчёты об ошибках</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>

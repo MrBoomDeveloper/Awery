@@ -229,7 +229,7 @@
     <string name="no_update_found">No se encontró Actualización</string>
     <string name="downloading_update">Descargando Actualización %1$s</string>
     <string name="permission_required">Por favor, otorgue permiso para acceder a Archivos &amp; Carpetas desde Configuración, y vuelva a intentarlo.</string>
-    <string name="started_downloading">Comenzando a Descargar\n%1$s</string>
+    <string name="started_downloading">Comenzando a Descargar %1$s</string>
     <string name="loading_image_failed">Error al Cargar Imagen</string>
     <string name="failed_to_load_data">Error al cargar datos guardados de %1$d</string>
     <string name="access_not_available">No se pudo obtener acceso</string>
@@ -490,13 +490,13 @@
     <string name="welcome_to_app_description">La aplicación perfecta donde puedes personalizar todo, con un montón de funciones y una apariencia elegante.</string>
     <string name="setup_finished_description">Ahora puedes ir a ver tus programas favoritos. ¡Esperamos que disfrutes de esta aplicación! Si quieres, puedes enviarnos una reseña con lo que te ha gustado :)</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="analytics_title">Análisis</string>
+    <string name="generic_message">En esta versión beta, no puedes instalar extensiones directamente a través de la app :(\nActualmente, puedes descargarlas en nuestro:\nServidor de Discord: %1$s\nCanal de Telegram: %2$s</string>
+    <string name="existing_custom_tabs_title">Se han encontrado pestañas personalizadas existentes</string>
+    <string name="existing_custom_tabs_message">Para usar una plantilla, debemos eliminar todas tus pestañas personalizadas con feeds. Si no deseas eso, simplemente selecciona \"Ninguno\".</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="dantotsu_message">La plantilla Dantotsu requiere algunas extensiones para funcionar.\nEn esta versión beta, no puedes instalar extensiones directamente a través de la app :(\nActualmente, puedes descargarlas en nuestro:\nServidor de Discord: %1$s\nCanal de Telegram: %2$s</string>
+    <string name="automatically_send_reports">Enviar informes de fallos automáticamente</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>

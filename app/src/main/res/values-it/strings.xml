@@ -189,7 +189,7 @@
     <string name="checking_for_update">Controllo Aggiornamenti</string>
     <string name="dont_show_again">Non mostrare più per la versione %1$s</string>
     <string name="downloading_update">Download Aggiornamento %1$s</string>
-    <string name="started_downloading">Inizio Download\n%1$s</string>
+    <string name="started_downloading">Inizio Download %1$s</string>
     <string name="loading_image_failed">Caricamento Immagine Fallito</string>
     <string name="failed_to_load_data">Impossibile caricare i dati salvati di %1$d</string>
     <string name="access_not_available">Accesso non disponibile</string>

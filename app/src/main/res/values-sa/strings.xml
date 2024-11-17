@@ -265,7 +265,7 @@
     <string name="no_update_found">अद्यतनीकृतिः न स्यात्</string>
     <string name="downloading_update">अद्यतनीकृतिं डाउनलोडयति %1$s</string>
     <string name="permission_required">कृपया सेटिंग्स् इत्यस्मिन् फाइल्स् एवं फोल्डर्स् प्रविष्ट्य अनुमतिं दातुम् पुनः प्रयासयतु.</string>
-    <string name="started_downloading">डाउनलोडं प्रारम्भः\n%1$s</string>
+    <string name="started_downloading">डाउनलोडं प्रारम्भ %1$s</string>
     <string name="loading_image_failed">चित्रं लोडं विफलम्</string>
     <string name="failed_to_load_data">सङ्गृहीतस्य डेटा लोडं विफलम् %1$d</string>
     <string name="access_not_available">प्रवेशः न प्राप्यते</string>
@@ -490,13 +490,13 @@
     <string name="setup_finished_description">इदानीं भवन्तः स्वस्य प्रियप्रदर्शनानि द्रष्टुं गन्तुं शक्नुवन्ति। आशास्महे यत् भवद्भ्यः एतत् एप् आनन्दं लप्स्यते! यदि भवान् इच्छति तर्हि भवान् अस्मान् समीक्षां प्रेषयितुं शक्नोति यत् भवतां रोचते :)</string>
     <string name="welcome_to_app_description">सम्यक् एप्लिकेशनं यत्र भवान् सर्वं अनुकूलितुं शक्नोति, टन-मात्रायां विशेषताभिः सह, स्टाइलिश-रूपेण च।</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="existing_custom_tabs_title">विद्यमानानि कस्टम टॅब्स् मिलितानि</string>
+    <string name="existing_custom_tabs_message">एकां रूपरेखां उपयोगितुं, अस्मिन वयं सर्वेण सह तव कस्टम टॅब्स् फीड्स् च विलोपयितुम् अर्हामः। यदा त्वं तत् न इच्छसि, तर्हि \'नैकं\' चयनय।</string>
     <string name="analytics_message">TODO</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="analytics_title">विश्लेषणम्</string>
+    <string name="generic_message">अस्मिन बीटा संस्करणे, त्वं अनुप्रयोगेण विस्तारकाणि प्रत्यक्षतया स्थापयितुम् अर्हसि न। :(\nवर्तमानकाले त्वं तान् अद्यतनं कर्तुं अस्मिनः:\nDiscord सर्वरः: %1$s\nTelegram चॅनेलः: %2$s</string>
+    <string name="dantotsu_message">Dantotsu रूपरेखा कार्य करने हेतु किञ्चित् विस्तारकाणि आवश्यकानि सन्ति।\nअस्मिन् बीटा संस्करणे, त्वं अनुप्रयोगेण विस्तारकानि प्रत्यक्षतया स्थापयितुम् अर्हसि न। :(\nवर्तमानकाले त्वं तान् अद्यतनं कर्तुं अस्मिनः:\nDiscord सर्वरः: %1$s\nTelegram चॅनेलः: %2$s</string>
+    <string name="automatically_send_reports">स्वचालितं दुर्घटनासंस्कारवृत्तान्तानि प्रेषय</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>
