@@ -229,8 +229,8 @@
     <string name="no_update_found">No se encontró Actualización</string>
     <string name="downloading_update">Descargando Actualización %1$s</string>
     <string name="permission_required">Por favor, otorgue permiso para acceder a Archivos &amp; Carpetas desde Configuración, y vuelva a intentarlo.</string>
-    <string name="started_downloading">Comenzando a Descargar %1$s</string>
-    <string name="loading_image_failed">Error al Cargar Imagen</string>
+    <string name="started_downloading">Descarga iniciada de %1$s</string>
+    <string name="loading_image_failed">Error al cargar la imagen</string>
     <string name="failed_to_load_data">Error al cargar datos guardados de %1$d</string>
     <string name="access_not_available">No se pudo obtener acceso</string>
     <string name="episode_release_countdown">El Episodio %1$d será lanzado en</string>
@@ -493,7 +493,7 @@
     <string name="analytics_title">Análisis</string>
     <string name="generic_message">En esta versión beta, no puedes instalar extensiones directamente a través de la app :(\nActualmente, puedes descargarlas en nuestro:\nServidor de Discord: %1$s\nCanal de Telegram: %2$s</string>
     <string name="existing_custom_tabs_title">Se han encontrado pestañas personalizadas existentes</string>
-    <string name="existing_custom_tabs_message">Para usar una plantilla, debemos eliminar todas tus pestañas personalizadas con feeds. Si no deseas eso, simplemente selecciona \"Ninguno\".</string>
+    <string name="existing_custom_tabs_message">Para usar una plantilla, debemos eliminar todas tus pestañas personalizadas con feeds. Si no deseas eso, simplemente selecciona ninguno.</string>
     <string name="analytics_message">TODO</string>
     <string name="dantotsu_message">La plantilla Dantotsu requiere algunas extensiones para funcionar.\nEn esta versión beta, no puedes instalar extensiones directamente a través de la app :(\nActualmente, puedes descargarlas en nuestro:\nServidor de Discord: %1$s\nCanal de Telegram: %2$s</string>
     <string name="automatically_send_reports">Enviar informes de fallos automáticamente</string>

@@ -486,7 +486,7 @@
     <string name="setup_finished_description">Now you can go watch your favorite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)</string>
     <string name="wallpaper_based_colors">The app\'s color will be based on your wallpaper!</string>
     <string name="searching_episodes_for">Searching episodes for %s</string>
-    <string name="searching_for">Searching for %s</string>
+    <string name="searching_for">Suche nach „%s“</string>
     <string name="show_spoilers">Show spoilers</string>
     <string name="download">Download</string>
     <string name="welcome_to_app_description">The perfect app where you can customize everything, with tons of features and a stylish look.</string>
