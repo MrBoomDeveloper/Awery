@@ -46,36 +46,20 @@ abstract class YomiManager<S, T : YomiSource>(
 	abstract val requiredFeature: String
 	abstract val nsfwMeta: String
 
-	/**
-	 * It is marked as nullable, to be able to recalculate it's values,
-	 * but the returned value is always non-null.
-	 */
-	private var sourcesList: List<T>? = null
-		get() {
-			var it = field
-
-			if(field == null) {
-				it = sources.values.toList()
-				field = it
-			}
-
-			return it
-		}
-
 	override fun get(id: String): T {
 		return sources[id] ?: throw NoSuchElementException(id)
 	}
 
 	override fun getAll(): List<T> {
-		return sourcesList!!
+		return sources.values.toList()
 	}
 
 	override suspend fun load(id: String) {
-		createSource(id, true)
+		sources[id] = createSource(id, true)
 	}
 
 	override suspend fun unload(id: String) {
-		createSource(id, false)
+		sources[id] = createSource(id, false)
 	}
 
 	private fun getPackages(context: Context): List<PackageInfo> {
@@ -101,7 +85,7 @@ abstract class YomiManager<S, T : YomiSource>(
 		coroutineScope {
 			getPackages(context).map { pkg ->
 				async {
-					createSource(pkg.packageName, isEnabled(pkg.packageName))
+					sources[pkg.packageName] = createSource(pkg.packageName, isEnabled(pkg.packageName))
 					progress.increment()
 					send(progress)
 				}

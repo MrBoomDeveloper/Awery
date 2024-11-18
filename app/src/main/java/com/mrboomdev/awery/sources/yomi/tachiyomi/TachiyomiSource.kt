@@ -2,7 +2,6 @@ package com.mrboomdev.awery.sources.yomi.tachiyomi
 
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.ext.constants.AweryFeature
-import com.mrboomdev.awery.ext.constants.AweryFilters
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
@@ -17,6 +16,8 @@ import eu.kanade.tachiyomi.source.MangaSource
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 abstract class TachiyomiSource(
 	packageInfo: PackageInfo,
@@ -25,10 +26,19 @@ abstract class TachiyomiSource(
 
 	override val feeds = if(source is CatalogueSource) {
 		CatalogSearchResults(listOfNotNull(
-			CatalogFeed(FEED_POPULAR, "Popular in ${source.name}"),
+			CatalogFeed(
+				managerId = TachiyomiManager.ID,
+				sourceId = id,
+				feedId = FEED_POPULAR,
+				title = "Popular in ${source.name}"
+			),
 
-			if(!source.supportsLatest) null
-			else CatalogFeed(FEED_LATEST, "Latest in ${source.name}")
+			if(!source.supportsLatest) null else CatalogFeed(
+				managerId = TachiyomiManager.ID,
+				sourceId = id,
+				feedId = FEED_LATEST,
+				title = "Latest in ${source.name}"
+			)
 		))
 	} else null
 
@@ -44,56 +54,63 @@ abstract class TachiyomiSource(
 	}.toTypedArray()
 
 	private suspend fun getMangasPage(filters: Settings): MangasPage {
-		if(source is CatalogueSource) {
-			val feed = filters[AweryFilters.FEED]?.value as? String
-			val query = filters[AweryFilters.QUERY]?.value as? String ?: ""
-			val page = filters[AweryFilters.PAGE]?.value as? Int ?: 0
+		return withContext(Dispatchers.IO) {
+			if(source is CatalogueSource) {
+				val feed = filters[FILTER_FEED]?.value as? String
+				val query = filters[FILTER_QUERY]?.value as? String ?: ""
+				val page = filters[FILTER_PAGE]?.value as? Int ?: 0
 
-			return when(feed) {
-				FEED_POPULAR -> source.fetchPopularManga(page)
-				FEED_LATEST -> source.fetchLatestUpdates(page)
+				return@withContext when(feed) {
+					FEED_POPULAR -> source.fetchPopularManga(page)
+					FEED_LATEST -> source.fetchLatestUpdates(page)
 
-				else -> {
-					// TODO: Apply filters
-					source.fetchSearchManga(page, query, source.getFilterList())
-				}
-			}.awaitSingle()
+					else -> {
+						// TODO: Apply filters
+						source.fetchSearchManga(page, query, source.getFilterList())
+					}
+				}.awaitSingle()
+			}
+
+			throw UnsupportedOperationException("This source doesn't support browsing!")
 		}
-
-		throw UnsupportedOperationException("This source doesn't support browsing!")
 	}
 
-	override suspend fun searchMedia(filters: Settings): CatalogSearchResults<CatalogMedia> {
-		return getMangasPage(filters).let { page ->
-			CatalogSearchResults(page.mangas.map { manga ->
-				CatalogMedia(
-					globalId = "${AniyomiManager.ID};;;$id;;;${manga.url}",
-					titles = arrayOf(manga.title),
-					description = manga.description,
-					poster = manga.thumbnail_url,
-					extra = manga.url,
-					type = CatalogMedia.Type.BOOK,
+	@Suppress("UNCHECKED_CAST")
+	override suspend fun <E, T : Catalog<E>> search(catalog: T, filters: Settings): CatalogSearchResults<E> {
+		return when(catalog) {
+			Catalog.Media -> getMangasPage(filters).let { page ->
+				CatalogSearchResults(page.mangas.map { manga ->
+					CatalogMedia(
+						globalId = "${AniyomiManager.ID};;;$id;;;${manga.url}",
+						titles = arrayOf(manga.title),
+						description = manga.description,
+						poster = manga.thumbnail_url,
+						extra = manga.url,
+						type = CatalogMedia.Type.BOOK,
 
-					genres = manga.genre?.split(", ")?.toTypedArray(),
+						genres = manga.genre?.split(", ")?.toTypedArray(),
 
-					url = if(source is HttpSource) {
-						concatLink(source.baseUrl, manga.url)
-					} else null,
+						url = if(source is HttpSource) {
+							concatLink(source.baseUrl, manga.url)
+						} else null,
 
-					status = when(manga.status) {
-						SManga.COMPLETED, SManga.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
-						SManga.ON_HIATUS -> CatalogMedia.Status.PAUSED
-						SManga.ONGOING -> CatalogMedia.Status.ONGOING
-						SManga.CANCELLED -> CatalogMedia.Status.CANCELLED
-						else -> null
-					},
+						status = when(manga.status) {
+							SManga.COMPLETED, SManga.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
+							SManga.ON_HIATUS -> CatalogMedia.Status.PAUSED
+							SManga.ONGOING -> CatalogMedia.Status.ONGOING
+							SManga.CANCELLED -> CatalogMedia.Status.CANCELLED
+							else -> null
+						},
 
-					authors = mapOfNotNull(
-						"Artist" to manga.artist,
-						"Author" to manga.author
+						authors = mapOfNotNull(
+							"Artist" to manga.artist,
+							"Author" to manga.author
+						)
 					)
-				)
-			}, page.hasNextPage)
+				}, page.hasNextPage)
+			} as CatalogSearchResults<E>
+
+			else -> throw UnsupportedOperationException("Unsupported catalog! $catalog")
 		}
 	}
 }

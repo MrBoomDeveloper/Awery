@@ -8,7 +8,7 @@ import com.mrboomdev.awery.ext.source.Source
 abstract class YomiSource(
 	val packageInfo: PackageInfo
 ): Source() {
-	override val id = packageInfo.packageName
+	final override val id = packageInfo.packageName
 	abstract val feeds: CatalogSearchResults<CatalogFeed>?
 
 	final override suspend fun getFeeds(): CatalogSearchResults<CatalogFeed> {

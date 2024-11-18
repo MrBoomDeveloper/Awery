@@ -2,17 +2,37 @@ package com.mrboomdev.awery.ext.data
 
 import java.util.LinkedList
 
-class Settings(vararg settings: Setting) : LinkedList<Setting>(settings.toList()) {
+class Settings(
+	vararg items: Setting
+) : LinkedList<Setting>(items.toList()) {
 
-	operator fun get(key: String): Setting? {
+	operator fun get(key: String, type: Setting.Type? = null): Setting? {
 		return find {
-			it.key == key
+			if(type != null) {
+				return@find it.key == key && it.type == type
+			}
+
+			return@find it.key == key
 		}
 	}
 
-	fun get(key: String, type: Setting.Type): Setting? {
-		return find {
-			it.key == key && it.type == type
+	fun getRecursively(key: String, type: Setting.Type? = null): Setting? {
+		for(item in this) {
+			if(type != null) {
+				if(item.key == key && item.type == type) {
+					return item
+				}
+			} else {
+				if(item.key == key) {
+					return item
+				}
+			}
+
+			item.items?.getRecursively(key, type)?.also {
+				return it
+			}
 		}
+
+		return null
 	}
 }

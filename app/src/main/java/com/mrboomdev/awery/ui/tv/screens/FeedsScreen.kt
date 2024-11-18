@@ -19,16 +19,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.app.App.Companion.configuration
+import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ui.tv.components.FeaturedMediaCarousel
 import com.mrboomdev.awery.ui.tv.components.MediaRow
-import com.mrboomdev.awery.ui.tv.components.MediaRowContent
 import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedsScreen(
-	sections: List<MediaRowContent>? = null,
+	sections: List<CatalogFeed.Loaded>? = null,
 	featuredItems: List<CatalogMedia>? = null,
 	onItemSelected: (media: CatalogMedia) -> Unit,
 	listState: LazyListState = rememberLazyListState()

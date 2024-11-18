@@ -1,8 +1,10 @@
 package com.mrboomdev.awery.ui.tv.components
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,8 +20,10 @@ import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Card
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.app.theme.TvTheme
+import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 
 /**
  * An media card with components optimized for TV.
@@ -30,18 +34,19 @@ fun MediaCard(
 	modifier: Modifier = Modifier,
 	onClick: () -> Unit = {}
 ) {
-	Column {
+	Column(modifier = modifier) {
 		Card(
 			onClick = onClick,
-			modifier = modifier
-				.width(175.dp)
-				.height(250.dp)
+			onLongClick = { MediaActionsDialog(media).show(getAnyActivity<Activity>()!!) },
+			modifier = Modifier
+				.fillMaxWidth()
+				.weight(1f)
 		) {
 			Box {
 				AsyncImage(
 					model = media.poster,
 					contentDescription = media.title,
-					contentScale = ContentScale.Crop,
+					contentScale = ContentScale.FillWidth,
 					modifier = Modifier
 						.background(Color(0xFF1D1D1D))
 				)
@@ -53,6 +58,8 @@ fun MediaCard(
 				color = Color.White,
 				text = media.title!!,
 				fontSize = 16.sp,
+				maxLines = 2,
+				minLines = 2,
 
 				style = TextStyle(
 					shadow = Shadow(

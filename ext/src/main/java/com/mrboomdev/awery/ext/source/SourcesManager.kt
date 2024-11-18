@@ -10,7 +10,7 @@ abstract class SourcesManager<T : Source> {
 	abstract val id: String
 	abstract val name: String
 
-	abstract fun get(id: String): T?
+	abstract operator fun get(id: String): T?
 	abstract fun getAll(): List<T>
 
 	@Throws(ExtensionLoadException::class)

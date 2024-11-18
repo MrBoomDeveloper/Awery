@@ -263,12 +263,7 @@ class App : Application() {
 
 		@JvmStatic
 		fun i18n(@StringRes res: Int, vararg params: Any) =
-			ContextCompat.getContextForLanguage(appContext).getString(res, params)
-
-		/*@JvmStatic
-		fun i18n(@StringRes res: Int, vararg params: Any): String {
-			return appContext.getString(res, *params)
-		}*/
+			ContextCompat.getContextForLanguage(appContext).getString(res, *params)
 
 		@JvmStatic
 		@JvmOverloads

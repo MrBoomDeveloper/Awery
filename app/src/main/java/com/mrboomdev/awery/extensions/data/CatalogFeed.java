@@ -20,7 +20,6 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
 import com.squareup.moshi.Json;
 
 import java.io.Serial;
@@ -98,10 +97,6 @@ public class CatalogFeed implements Serializable {
 
 	public String getProviderGlobalId() {
 		return sourceManager + ";;;" + sourceId + ":" + extensionId;
-	}
-
-	public ExtensionProvider getSourceProvider() throws ExtensionNotInstalledException {
-		return ExtensionProvider.forGlobalId(sourceManager, extensionId, sourceId);
 	}
 
 	/**
@@ -222,7 +217,7 @@ public class CatalogFeed implements Serializable {
 
 	@Override
 	public int hashCode() {
-		var hashCode =  getProviderGlobalId().hashCode();
+		var hashCode = getProviderGlobalId().hashCode();
 
 		if(displayMode != null) {
 			hashCode += displayMode.hashCode();

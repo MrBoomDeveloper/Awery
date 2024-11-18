@@ -17,39 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
-
-data class MediaRowContent(
-	val title: String,
-	val items: List<CatalogMedia>
-): Parcelable {
-	@Suppress("DEPRECATION", "UNCHECKED_CAST")
-	constructor(parcel: Parcel) : this(
-		parcel.readString()!!,
-		parcel.readSerializable() as List<CatalogMedia>
-	)
-
-	override fun describeContents() = 0
-
-	override fun writeToParcel(dest: Parcel, flags: Int) {
-		dest.writeString(title)
-		dest.writeList(items)
-	}
-
-	companion object CREATOR : Parcelable.Creator<MediaRowContent> {
-		override fun createFromParcel(parcel: Parcel): MediaRowContent {
-			return MediaRowContent(parcel)
-		}
-
-		override fun newArray(size: Int): Array<MediaRowContent?> {
-			return arrayOfNulls(size)
-		}
-	}
-}
+import com.mrboomdev.awery.util.exceptions.explain
 
 @Composable
 fun MediaRow(
-	content: MediaRowContent,
+	content: CatalogFeed.Loaded,
 	modifier: Modifier = Modifier,
 	onItemSelected: (CatalogMedia) -> Unit = {}
 ) {
@@ -57,24 +31,36 @@ fun MediaRow(
 		modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 24.dp)
 	) {
 		Text(
-			text = content.title,
+			text = content.feed.title,
 			style = MaterialTheme.typography.headlineSmall,
 			color = Color(0xFFFFFFFF)
 		)
 	}
 
-	LazyRow(
-		modifier = modifier,
-		horizontalArrangement = Arrangement.spacedBy(12.dp),
-		contentPadding = PaddingValues(16.dp, 0.dp)
-	) {
-		items(content.items) { media ->
-			MediaCard(
-				media = media,
-				onClick = { onItemSelected(media) },
-				modifier = Modifier
-					.width(125.dp)
-					.height(175.dp)
+	if(content.items != null) {
+		LazyRow(
+			modifier = modifier,
+			horizontalArrangement = Arrangement.spacedBy(12.dp),
+			contentPadding = PaddingValues(16.dp, 0.dp)
+		) {
+			items(content.items as List<CatalogMedia>) { media ->
+				MediaCard(
+					media = media,
+					onClick = { onItemSelected(media) },
+					modifier = Modifier
+						.width(125.dp)
+						.height(240.dp)
+				)
+			}
+		}
+	} else {
+		if(content.throwable != null) {
+			Text(
+				modifier = Modifier.padding(16.dp, 0.dp),
+				text = content.throwable!!.explain().print(),
+				style = MaterialTheme.typography.bodyLarge,
+				color = Color(0xFFCACACA),
+				maxLines = 5
 			)
 		}
 	}

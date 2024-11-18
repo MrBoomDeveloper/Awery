@@ -2,14 +2,19 @@ package com.mrboomdev.awery.app
 
 import android.content.Context
 import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.ext.data.CatalogFeed
+import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.data.Settings
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.sources.yomi.tachiyomi.TachiyomiManager
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
@@ -52,10 +57,80 @@ object ExtensionsManager {
 		}
 	}
 
+	fun List<CatalogFeed>.loadAll() = channelFlow {
+		for(feed in this@loadAll) {
+			loadFeed(feed)
+		}
+	}
+
+	private suspend fun ProducerScope<CatalogFeed.Loaded>.loadFeed(feed: CatalogFeed) {
+		if(feed.managerId == "INTERNAL") {
+			when(feed.feedId) {
+				"AUTO_GENERATE" -> {
+					val feeds = managers.map { it.getAll() }.flatten().map { it.getFeeds() }.flatten().shuffled()
+
+					for(gotFeed in feeds) {
+						loadFeed(gotFeed)
+					}
+				}
+
+				"BOOKMARKS" -> {
+					TODO()
+				}
+			}
+
+			return
+		}
+
+		val manager = getManager(feed.managerId)
+
+		if(manager == null) {
+			send(CatalogFeed.Loaded(
+				feed = feed,
+				throwable = ZeroResultsException("Source manager isn't installed! ${feed.managerId}")
+			))
+
+			return
+		}
+
+		val source = manager[feed.sourceId]
+
+		if(source == null) {
+			send(CatalogFeed.Loaded(
+				feed = feed,
+				throwable = ZeroResultsException("Source isn't installed! ${feed.sourceId}")
+			))
+
+			return
+		}
+
+		try {
+			send(CatalogFeed.Loaded(
+				feed = feed,
+				items = source.search(Source.Catalog.Media, Settings(
+					object : Setting() {
+						override val key: String = Source.FILTER_FEED
+						override var value: Any? = feed
+					},
+
+					object : Setting() {
+						override val key: String = Source.FILTER_PAGE
+						override var value: Any? = 0
+					}
+				))
+			))
+		} catch(t: Throwable) {
+			send(CatalogFeed.Loaded(
+				feed = feed,
+				throwable = t
+			))
+		}
+	}
+
 	fun getSource(globalId: String): Source? {
 		return globalId.split(";;;").let {
 			// Due to compatibility we have to trim all shit after :
-			get(it[0])?.get(it[1].split(":")[0])
+			getManager(it[0])?.get(it[1].split(":")[0])
 		}
 	}
 
@@ -81,14 +156,14 @@ object ExtensionsManager {
 		managers.add(manager)
 	}
 
-	operator fun get(managerId: String): SourcesManager<*>? {
+	fun getManager(managerId: String): SourcesManager<*>? {
 		return managers.find {
 			managerId == it.id
 		}
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	operator fun <T: SourcesManager<*>> get(clazz: KClass<T>): T? {
+	fun <T: SourcesManager<*>> getManager(clazz: KClass<T>): T? {
 		return managers.find {
 			clazz == it::class
 		} as T?
