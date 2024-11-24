@@ -10,7 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.app.data.Constants;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.ext.util.Progress;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;

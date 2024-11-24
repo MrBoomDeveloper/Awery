@@ -13,9 +13,9 @@ import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.app.data.Constants.HIDDEN_LISTS
-import com.mrboomdev.awery.app.data.db.item.DBCatalogList
-import com.mrboomdev.awery.app.data.db.item.DBCatalogMedia
+import com.mrboomdev.awery.data.Constants.HIDDEN_LISTS
+import com.mrboomdev.awery.data.db.item.DBCatalogList
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia
 import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.ext.data.CatalogMedia

@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.app.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.SplashActivity

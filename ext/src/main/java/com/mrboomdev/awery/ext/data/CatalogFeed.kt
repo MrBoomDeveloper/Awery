@@ -5,13 +5,16 @@ import java.io.Serializable
 
 class CatalogFeed(
 	@Json(name = "source_manager")
-	val managerId: String,
+	val managerId: String? = null,
 	@Json(name = "source_id")
-	val sourceId: String,
+	val sourceId: String? = null,
 	@Json(name = "source_feed")
-	val feedId: String?,
+	val feedId: String? = null,
 	val title: String,
-	val style: Style = Style.UNSPECIFIED
+	val style: Style = Style.UNSPECIFIED,
+	@Json(name = "hide_if_empty")
+	val hideIfEmpty: Boolean = false,
+	val filters: Settings? = null
 ): Serializable {
 	class Loaded(
 		val feed: CatalogFeed,

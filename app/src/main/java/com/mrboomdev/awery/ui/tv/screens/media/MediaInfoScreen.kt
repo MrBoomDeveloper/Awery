@@ -62,6 +62,7 @@ fun MediaInfoScreen(
 		Text(
 			modifier = Modifier.widthIn(max = maxTextWidth),
 			text = media.title ?: stringResource(R.string.no_title),
+			maxLines = 2,
 			color = Color.White,
 			style = TextStyle(
 				fontSize = 40.sp,

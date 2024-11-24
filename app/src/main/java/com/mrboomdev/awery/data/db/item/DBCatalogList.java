@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.db.item;
+package com.mrboomdev.awery.data.db.item;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

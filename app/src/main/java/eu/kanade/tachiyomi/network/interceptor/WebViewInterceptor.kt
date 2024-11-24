@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.webkit.WebSettings
 import android.webkit.WebView
-import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.data.Constants
 import eu.kanade.tachiyomi.util.system.DeviceUtil
 import okhttp3.Headers
 import okhttp3.Interceptor

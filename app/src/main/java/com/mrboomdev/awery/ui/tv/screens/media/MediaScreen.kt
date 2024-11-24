@@ -72,7 +72,7 @@ fun MediaScreen(media: CatalogMedia) {
 			item {
 				MediaInfoScreen(
 					media = media,
-					maxTextWidth = 300.dp,
+					maxTextWidth = 350.dp,
 					modifier = Modifier
 						.drawBehind {
 							drawRect(

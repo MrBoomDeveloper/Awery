@@ -10,8 +10,7 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.app.data.db.item.DBRepository
-import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.generated.AwerySettings

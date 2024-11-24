@@ -1,6 +1,13 @@
 package com.mrboomdev.awery.util.extensions
 
-import java.util.Arrays
+/**
+ * Fills an list with nulls until it matches an requested size.
+ */
+fun <E> MutableList<E?>.ensureSize(size: Int) {
+	while(this.size < size) {
+		add(null)
+	}
+}
 
 /**
  * Only pairs with both key and value specified

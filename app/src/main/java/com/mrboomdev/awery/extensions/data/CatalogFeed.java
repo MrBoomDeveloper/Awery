@@ -12,8 +12,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;

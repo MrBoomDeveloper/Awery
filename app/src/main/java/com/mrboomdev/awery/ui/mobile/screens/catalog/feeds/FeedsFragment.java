@@ -25,10 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.db.item.DBTab;
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;

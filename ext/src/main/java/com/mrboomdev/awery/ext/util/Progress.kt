@@ -2,19 +2,16 @@ package com.mrboomdev.awery.ext.util
 
 class Progress @JvmOverloads constructor(
 	var max: Long = 0,
-	var progress: Long = 0
+	var value: Long = 0
 ) {
 	fun increment() {
-		progress++
+		value++
 	}
 
-	var isCompleted: Boolean
-		get() = progress >= max
-		set(value) {
-			if(value) {
-				progress = max
-			} else if(progress >= max) {
-				progress = 0
-			}
-		}
+	val isCompleted: Boolean
+		get() = value >= max
+
+	fun finish() {
+		value = max
+	}
 }

@@ -17,14 +17,15 @@ import com.google.android.material.navigationrail.NavigationRailView
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
+import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.update.UpdatesManager
-import com.mrboomdev.awery.app.data.Constants
-import com.mrboomdev.awery.app.data.db.item.DBTab
-import com.mrboomdev.awery.app.data.settings.SettingsList
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.data.db.item.DBTab
+import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
 import com.mrboomdev.awery.generated.AwerySettings
@@ -153,7 +154,9 @@ class MainActivity : AppCompatActivity() {
                             tabIndex = i
                         }
 
-                        binding!!.navbarBubble.addTab(binding!!.navbarBubble.createTab(drawable, tab.title))
+                        binding!!.navbarBubble.addTab(binding!!.navbarBubble.createTab(
+                            drawable, i18n<R.string>(tab.title) ?: tab.title
+                        ))
                     }
 
                     binding!!.navbarBubble.selectTabAt(if (tabIndex != -1) tabIndex else 0, false)
@@ -167,13 +170,13 @@ class MainActivity : AppCompatActivity() {
                         val tab = tabs[i]
                         val icon = icons[tab.icon]
 
-                        val drawable = if (icon != null) icon.getDrawable(this) else ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
+                        val drawable = icon?.getDrawable(this) ?: ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
 
-                        if (tabIndex == -1 && tab.id == savedDefaultTab) {
+                        if(tabIndex == -1 && tab.id == savedDefaultTab) {
                             tabIndex = i
                         }
 
-                        nav.menu.add(0, i, 0, tab.title)
+                        nav.menu.add(0, i, 0, i18n<R.string>(tab.title) ?: tab.title)
                         nav.menu.getItem(i).setIcon(drawable)
                     }
 

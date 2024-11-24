@@ -19,8 +19,8 @@ import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
-import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.app.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.ThemeColorPalette_Values

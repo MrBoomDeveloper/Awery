@@ -1,8 +1,11 @@
 package com.mrboomdev.awery.app
 
 import android.content.Context
-import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.ext.data.CatalogFeed
+import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.Settings
 import com.mrboomdev.awery.ext.source.Source
@@ -12,16 +15,11 @@ import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.sources.yomi.tachiyomi.TachiyomiManager
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlin.reflect.KClass
 
 object ExtensionsManager {
@@ -31,6 +29,7 @@ object ExtensionsManager {
 		YomiManager.initYomiShit(context)
 
 		val maxValues = mutableMapOf<SourcesManager<*>, Long>()
+		val progresses = mutableMapOf<SourcesManager<*>, Long>()
 		val progress = Progress()
 
 		managers += listOf(
@@ -43,74 +42,116 @@ object ExtensionsManager {
 		)
 
 		coroutineScope {
-			for(manager in managers) {
-				manager.loadAll().onEach {
-					maxValues[manager] = it.max
-					progress.max = maxValues.values.sum()
-					progress.increment()
+			managers.map { manager ->
+				// This implementation lets us know a total number of
+				// installed extensions before even loading all of them.
+				manager to manager.loadAll().also { pendingTask ->
+					pendingTask.size?.also {
+						maxValues[manager] = it
+						progress.max = maxValues.values.sum()
+					}
+				}.data
+			}.forEach {(manager, task) ->
+				task.onEach {
+					if(manager !in maxValues) {
+						maxValues[manager] = it.max
+						progress.max = maxValues.values.sum()
+					}
+
+					progresses[manager] = it.value
+					progress.value = progresses.values.sum()
 					send(progress)
 				}.collect()
 			}
 
-			progress.isCompleted = true
+			progress.finish()
 			send(progress)
 		}
 	}
 
 	fun List<CatalogFeed>.loadAll() = channelFlow {
 		for(feed in this@loadAll) {
-			loadFeed(feed)
+			feed.load(this@channelFlow)
 		}
 	}
 
-	private suspend fun ProducerScope<CatalogFeed.Loaded>.loadFeed(feed: CatalogFeed) {
-		if(feed.managerId == "INTERNAL") {
-			when(feed.feedId) {
-				"AUTO_GENERATE" -> {
-					val feeds = managers.map { it.getAll() }.flatten().map { it.getFeeds() }.flatten().shuffled()
+	private suspend fun CatalogFeed.load(channel: SendChannel<CatalogFeed.Loaded>) {
+		if(managerId == "INTERNAL") {
+			when(feedId) {
+				"AUTO_GENERATE" -> managers.map { it.getAll() }
+					.flatten()
+					.map { it.getFeeds() }
+					.flatten()
+					.shuffled()
+					.forEach { it.load(channel) }
 
-					for(gotFeed in feeds) {
-						loadFeed(gotFeed)
+				"BOOKMARKS" -> {
+					for(list in database.listDao.all) {
+						val media = database.mediaProgressDao.getAllFromList(list.id)
+
+						if(media.isEmpty()) {
+							channel.send(CatalogFeed.Loaded(
+								throwable = ZeroResultsException("No bookmarks", R.string.no_media_found),
+								feed = CatalogFeed(
+									title = list.name,
+									hideIfEmpty = true
+								)
+							))
+
+							continue
+						}
+
+						channel.send(CatalogFeed.Loaded(
+							items = CatalogSearchResults(media.map {
+								database.mediaDao.get(it.globalId).toCatalogMedia()
+							}),
+
+							feed = CatalogFeed(
+								style = CatalogFeed.Style.ROW,
+								title = list.name,
+								hideIfEmpty = true
+							)
+						))
 					}
 				}
 
-				"BOOKMARKS" -> {
-					TODO()
-				}
+				else -> throw IllegalArgumentException("Unknown feed! $feedId")
 			}
 
 			return
 		}
 
-		val manager = getManager(feed.managerId)
-
-		if(manager == null) {
-			send(CatalogFeed.Loaded(
-				feed = feed,
-				throwable = ZeroResultsException("Source manager isn't installed! ${feed.managerId}")
+		val manager = managerId?.let {
+			getManager(it) ?: return channel.send(CatalogFeed.Loaded(
+				feed = this,
+				throwable = ZeroResultsException("Source manager isn't installed! $it")
 			))
+		} ?: return channel.send(CatalogFeed.Loaded(
+			feed = this,
+			throwable = UnsupportedOperationException("The feed cannot be loaded because no managerId was specified!")
+		))
 
-			return
-		}
-
-		val source = manager[feed.sourceId]
-
-		if(source == null) {
-			send(CatalogFeed.Loaded(
-				feed = feed,
-				throwable = ZeroResultsException("Source isn't installed! ${feed.sourceId}")
+		val source = sourceId?.let {
+			manager[it] ?: return channel.send(CatalogFeed.Loaded(
+				feed = this,
+				throwable = ZeroResultsException("Source isn't installed! $it")
 			))
+		} ?: return channel.send(CatalogFeed.Loaded(
+			feed = this,
+			throwable = UnsupportedOperationException("The feed cannot be loaded because no sourceId was specified!")
+		))
 
+		if(!source.isEnabled) {
 			return
 		}
 
 		try {
-			send(CatalogFeed.Loaded(
-				feed = feed,
+			channel.send(CatalogFeed.Loaded(
+				feed = this,
 				items = source.search(Source.Catalog.Media, Settings(
 					object : Setting() {
 						override val key: String = Source.FILTER_FEED
-						override var value: Any? = feed
+						override var value: Any? = this@load
 					},
 
 					object : Setting() {
@@ -120,8 +161,8 @@ object ExtensionsManager {
 				))
 			))
 		} catch(t: Throwable) {
-			send(CatalogFeed.Loaded(
-				feed = feed,
+			channel.send(CatalogFeed.Loaded(
+				feed = this,
 				throwable = t
 			))
 		}

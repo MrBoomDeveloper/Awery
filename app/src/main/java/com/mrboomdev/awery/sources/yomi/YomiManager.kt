@@ -13,7 +13,7 @@ import android.util.Log
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
 import com.mrboomdev.awery.app.ExtensionsManager.isEnabled
-import com.mrboomdev.awery.ext.source.DataSource
+import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
@@ -24,6 +24,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
@@ -58,7 +59,12 @@ abstract class YomiManager<S, T : YomiSource>(
 		sources[id] = createSource(id, true)
 	}
 
-	override suspend fun unload(id: String) {
+	override suspend fun unload(id: String, removeFromSource: Boolean) {
+		if(removeFromSource) {
+			sources.remove(id)
+			return
+		}
+
 		sources[id] = createSource(id, false)
 	}
 
@@ -76,33 +82,29 @@ abstract class YomiManager<S, T : YomiSource>(
 			}.toList()
 	}
 
-	override fun loadAll() = channelFlow {
-		val packages = getPackages(context)
+	override fun loadAll() = getPackages(context).let { packages ->
+		object : PendingTask<Flow<Progress>>() {
+			override val size = packages.size.toLong()
 
-		val progress = Progress(packages.size.toLong())
-		send(progress)
-
-		coroutineScope {
-			getPackages(context).map { pkg ->
-				async {
-					sources[pkg.packageName] = createSource(pkg.packageName, isEnabled(pkg.packageName))
-					progress.increment()
+			override val data: Flow<Progress>
+				get() = channelFlow {
+					val progress = Progress(packages.size.toLong())
 					send(progress)
+
+					coroutineScope {
+						getPackages(context).map { pkg ->
+							async {
+								sources[pkg.packageName] = createSource(pkg.packageName, isEnabled(pkg.packageName))
+								progress.increment()
+								send(progress)
+							}
+						}.awaitAll()
+
+						progress.finish()
+						send(progress)
+					}
 				}
-			}.awaitAll()
-
-			progress.isCompleted = true
-			send(progress)
 		}
-	}
-
-	override fun unloadAll() = flow {
-		val progress = Progress(sources.size.toLong())
-		emit(progress)
-
-		sources.clear()
-		progress.isCompleted = true
-		emit(progress)
 	}
 
 	abstract fun getSourceLongId(source: S): Long
@@ -188,7 +190,7 @@ abstract class YomiManager<S, T : YomiSource>(
 	): T
 
 	@Throws(ExtensionInstallException::class, CancellationException::class)
-	override suspend fun install(data: DataSource<InputStream>): T {
+	override suspend fun install(data: PendingTask<InputStream>): T {
 		val pi = context.packageManager.packageInstaller
 		val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
 			setSize(data.size ?: -1)

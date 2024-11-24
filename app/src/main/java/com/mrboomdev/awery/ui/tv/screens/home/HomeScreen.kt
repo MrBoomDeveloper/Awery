@@ -27,7 +27,7 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.ui.tv.Screens
-import com.mrboomdev.awery.ui.tv.screens.FeedsScreen
+import com.mrboomdev.awery.ui.tv.components.FeedsGroup
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.extensions.startActivity
 
@@ -37,7 +37,11 @@ fun HomeScreen(
 	viewModel: HomeViewModel = viewModel()
 ) {
 	LaunchedEffect(true) {
-		viewModel.loadData()
+		viewModel.loadTabsList()
+	}
+
+	LaunchedEffect(viewModel.currentTab.intValue) {
+		viewModel.loadTabIfRequired(viewModel.currentTab.intValue)
 	}
 
 	Row {
@@ -98,10 +102,13 @@ fun HomeScreen(
 				}
 			}
 		}) {
-			FeedsScreen(
+			val currentTab = viewModel.tabsState.getOrNull(viewModel.currentTab.intValue)
+
+			FeedsGroup(
 				listState = viewModel.listState,
-				sections = viewModel.sectionsState,
-				featuredItems = viewModel.featuredState,
+				isLoading = currentTab?.isLoading?.value ?: true,
+				sections = currentTab?.feeds,
+				failedSections = currentTab?.failedFeeds,
 				onItemSelected = {
 					navController.navigate(Screens.Media(media = it))
 				}

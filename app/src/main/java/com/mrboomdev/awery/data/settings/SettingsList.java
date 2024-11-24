@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.settings;
+package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;

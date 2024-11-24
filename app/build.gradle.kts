@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ApplicationBaseFlavor
 import com.android.build.api.dsl.ApplicationProductFlavor
 import java.util.Locale
 import com.squareup.moshi.Moshi
@@ -5,79 +6,52 @@ import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp").version("2.0.21-1.0.25")
-    kotlin("plugin.serialization") version "2.0.20"
+    alias(libs.plugins.android.app)
+    alias(libs.plugins.android.kotlin)
+    alias(libs.plugins.room)
     alias(libs.plugins.compose.compiler)
-    id("androidx.room").version(libs.versions.roomRuntime)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
-val useSdk = 35
-val releaseVersion = "1.0.5.2"
+val releaseVersion = "1.0.5.3"
 val packageName = "com.mrboomdev.awery"
 
-// Note: Please, don't edit it if you don't know what it does
-val startVersionCode = 2808
-val startMillis = 1719658313080
+fun ApplicationBaseFlavor.setupVersion() {
+    // Note: Please, don't edit it if you don't know what it does
+    val startVersionCode = 2808
+    val startMillis = 1719658313080
 
-val gitCommitHash = providers.exec {
-    commandLine("git", "rev-parse", "--short", "HEAD")
-}.standardOutput.asText.get().trim()
+    val gitCommitHash = providers.exec {
+        commandLine("git", "rev-parse", "--short", "HEAD")
+    }.standardOutput.asText.get().trim()
+
+    versionName = "$releaseVersion-$gitCommitHash"
+
+    versionCode = (startVersionCode + (System.currentTimeMillis() - startMillis) / 1000).let {
+        if(it.toInt() <= 0 || it >= Int.MAX_VALUE) {
+            throw IllegalStateException("We've reached an Integer limit! " +
+                    "Now Awery 2 must be released! Generated version code: $it")
+        }
+
+        it.toInt()
+    }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 
 android {
     namespace = packageName
-    compileSdk = useSdk
+    compileSdk = 35
 
     defaultConfig {
         applicationId = packageName
-        targetSdk = useSdk
+        targetSdk = 35
         minSdk = 25
-
-        buildConfigField("boolean", "IS_BETA",
-            "CHANNEL != ${packageName}.app.update.UpdatesChannel.STABLE")
-
-        /* Only one version can be published per second or else horrible things will happen.
-        *  After 70 years we'll be required to make Awery 2 because of an integer limit,
-        *  Date receiver from the test below:
-        *
-        *   3865053756028  :  2145398250  -  Mon Jun 23 15:02:36 YEKT 2092
-        *   3865747384956  :  2146091879  -  Tue Jul 01 15:43:04 YEKT 2092
-        *   3866441013884  :  2146785508  -  Wed Jul 09 16:23:33 YEKT 2092
-        *   3867134642812  :  2147479137  -  Thu Jul 17 17:04:02 YEKT 2092
-        *   3867828271740  :  -2146794530  -  Fri Jul 25 17:44:31 YEKT 2092
-        *  */
-        versionName = "$releaseVersion-$gitCommitHash"
-        versionCode = ((startVersionCode + ((System.currentTimeMillis() - startMillis) / 1000)).toInt())
-
-        /*long i = System.currentTimeMillis()
-        var a = new Date(i)
-        while(true) {
-            i += (1000 * 60 * 60 * 24 * 356)
-            a.setTime(i)
-
-            versionCode ((startVersionCode + ((i - startMillis) / 1000)) as int)
-
-            System.out.println("$i  :  $versionCode  -  ${a}")
-
-            if(versionCode < 0 || versionCode >= Integer.MAX_VALUE) {
-                throw new IllegalStateException("We've reached the end. Now Awery 2 must be released!" +
-                        " Input: $versionCode : ${a}")
-            }
-        }*/
-
-        if(versionCode!! < 0 || versionCode!! >= Int.MAX_VALUE) {
-            throw IllegalStateException("We've reached the end. " +
-                    "Now Awery 2 must be released! Input int: $versionCode")
-        }
-
+        setupVersion()
         buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}")
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "$projectDir/schemas"
-            }
-        }
     }
 
     androidResources {
@@ -88,10 +62,6 @@ android {
         get("main").apply {
             java.srcDirs(file("$projectDir/awery_gen/main/java"))
         }
-    }
-
-    room {
-        schemaDirectory("schemas")
     }
 
     buildTypes {
@@ -171,15 +141,16 @@ android {
 
 dependencies {
     // Core
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.fragment)
-    implementation(libs.androidx.core.google.shortcuts)
+    implementation(libs.androidx.shortcuts)
     implementation(libs.androidx.preference.ktx)
-    implementation(libs.xcrash.android.lib)
+    implementation(libs.xcrash.android)
     implementation(libs.deprecated.android.retrostreams)
+    implementation(libs.bundles.aniyomi)
     implementation(project(":ext"))
 
     // Database
@@ -229,29 +200,15 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
 
-    // Image Loading
+    // Networking
     api(libs.glide)
     ksp(libs.glide.compiler)
     implementation(libs.glide.annotations)
     implementation(libs.glide)
     implementation(libs.glide.okhttp3)
-
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-
-    // Networking
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-    implementation(libs.okhttp.dnsoverhttps)
-    implementation(libs.okhttp.brotli)
-
-    // Aniyomi
-    implementation(libs.quickjs.android)
-    implementation(libs.rx.java)
-    implementation(libs.rx.android)
-    implementation(libs.injekt)
-    implementation(libs.jsoup)
-    implementation(libs.java.nat.sort)
+    implementation(libs.bundles.okhttp)
 
     // Serialization
     implementation(files("../libs/safe-args-next.aar"))
@@ -361,9 +318,9 @@ fun generateSettingsClass(dir: File) {
     File(dir, "AwerySettings.java").writeText(buildString {
         append("package com.mrboomdev.awery.generated;\n")
         append("\n")
-        append("import com.mrboomdev.awery.app.data.settings.NicePreferences.*;\n")
-        append("import com.mrboomdev.awery.app.data.settings.NicePreferences;\n")
-        append("import com.mrboomdev.awery.app.data.settings.SettingsItem;\n")
+        append("import com.mrboomdev.awery.data.settings.NicePreferences.*;\n")
+        append("import com.mrboomdev.awery.data.settings.NicePreferences;\n")
+        append("import com.mrboomdev.awery.data.settings.SettingsItem;\n")
         append("\n")
         append("// Auto-generated class created during the compilation. Please, do not edit it.\n")
         append("public class AwerySettings {\n")

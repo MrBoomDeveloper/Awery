@@ -5,7 +5,7 @@ import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.setContentViewCompat;
 import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setHorizontalPadding;
@@ -34,9 +34,9 @@ import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.settings.NicePreferences;
-import com.mrboomdev.awery.app.data.settings.SettingsData;
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.settings.SettingsData;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.app.theme.ThemeManager;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
@@ -124,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		doIfNotNull(createView(item), view -> {
 			view.getRoot().setBackgroundColor(resolveAttrColor(this, android.R.attr.colorBackground));
-			setContentViewCompat(this, view);
+			setContentViewCompat(this, view.getRoot());
 		});
 	}
 

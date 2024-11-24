@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.db;
+package com.mrboomdev.awery.data.db;
 
 import androidx.annotation.NonNull;
 import androidx.room.AutoMigration;
@@ -8,17 +8,17 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.mrboomdev.awery.app.data.db.item.DBTab;
-import com.mrboomdev.awery.app.data.db.dao.CatalogListDao;
-import com.mrboomdev.awery.app.data.db.dao.CatalogMediaDao;
-import com.mrboomdev.awery.app.data.db.dao.CatalogMediaProgressDao;
-import com.mrboomdev.awery.app.data.db.dao.FeedsDao;
-import com.mrboomdev.awery.app.data.db.dao.RepositoryDao;
-import com.mrboomdev.awery.app.data.db.dao.TabsDao;
-import com.mrboomdev.awery.app.data.db.item.DBCatalogList;
-import com.mrboomdev.awery.app.data.db.item.DBCatalogMedia;
+import com.mrboomdev.awery.data.db.item.DBTab;
+import com.mrboomdev.awery.data.db.dao.CatalogListDao;
+import com.mrboomdev.awery.data.db.dao.CatalogMediaDao;
+import com.mrboomdev.awery.data.db.dao.CatalogMediaProgressDao;
+import com.mrboomdev.awery.data.db.dao.FeedsDao;
+import com.mrboomdev.awery.data.db.dao.RepositoryDao;
+import com.mrboomdev.awery.data.db.dao.TabsDao;
+import com.mrboomdev.awery.data.db.item.DBCatalogList;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
-import com.mrboomdev.awery.app.data.db.item.DBRepository;
+import com.mrboomdev.awery.data.db.item.DBRepository;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.util.ParserAdapter;
 

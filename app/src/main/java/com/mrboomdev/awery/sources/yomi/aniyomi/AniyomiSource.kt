@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import android.content.pm.PackageInfo
+import com.mrboomdev.awery.R
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
@@ -8,6 +9,7 @@ import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Settings
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.sources.yomi.YomiSource
+import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.AnimeSource
@@ -78,6 +80,10 @@ abstract class AniyomiSource(
 	override suspend fun <E, T : Catalog<E>> search(catalog: T, filters: Settings): CatalogSearchResults<E> {
 		return when(catalog) {
 			is Catalog.Media -> getAnimesPage(filters).let { page ->
+				if(page.animes.isEmpty()) {
+					throw ZeroResultsException("Zero media results!", R.string.no_media_found)
+				}
+
 				CatalogSearchResults(page.animes.map { anime ->
 					CatalogMedia(
 						globalId = "${AniyomiManager.ID};;;$id;;;${anime.url}",

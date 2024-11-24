@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.mobile.screens.player
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
-import android.app.PictureInPictureUiState
 import android.app.RemoteAction
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -47,8 +46,8 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.cancelDelayed
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.data.settings.SettingsItem
-import com.mrboomdev.awery.app.data.settings.SettingsList
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle
@@ -117,26 +116,24 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		super.onCreate(savedInstanceState)
 		loadSettings()
 
-		if(AwerySettings.EXPERIMENT_PIP_CONTROLS.value) {
-			PlayerPip.addCallback(this) { action ->
-				when(action) {
-					PlayerPip.Action.PLAY -> {
-						player?.play()
-						isVideoPaused = false
-					}
-
-					PlayerPip.Action.PAUSE -> {
-						player?.pause()
-						isVideoPaused = true
-					}
+		PlayerPip.addCallback(this) { action ->
+			when(action) {
+				PlayerPip.Action.PLAY -> {
+					player?.play()
+					isVideoPaused = false
 				}
 
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-					try {
-						setPictureInPictureParams(pipParams)
-					} catch(e: RuntimeException) {
-						Log.e(TAG, "Failed to update picture in picture params", e)
-					}
+				PlayerPip.Action.PAUSE -> {
+					player?.pause()
+					isVideoPaused = true
+				}
+			}
+
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				try {
+					setPictureInPictureParams(pipParams)
+				} catch(e: RuntimeException) {
+					Log.e(TAG, "Failed to update picture in picture params", e)
 				}
 			}
 		}
@@ -500,30 +497,28 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 				setTitle(if(video != null) video!!.title else null)
 			}
 
-			if(AwerySettings.EXPERIMENT_PIP_CONTROLS.value) {
-				val pauseTitle = if(!isVideoPaused) "Pause" else "Resume"
+			val pauseTitle = if(!isVideoPaused) "Pause" else "Resume"
 
-				setActions(
-					listOf(
-						RemoteAction(
-							(if(!isVideoPaused) R.drawable.ic_round_pause_24 else R.drawable.ic_play_filled).let { res ->
-								Icon.createWithResource(this@PlayerActivity, res)
-							},
+			setActions(
+				listOf(
+					RemoteAction(
+						(if(!isVideoPaused) R.drawable.ic_round_pause_24 else R.drawable.ic_play_filled).let { res ->
+							Icon.createWithResource(this@PlayerActivity, res)
+						},
 
-							pauseTitle,
-							pauseTitle,
+						pauseTitle,
+						pauseTitle,
 
-							PendingIntent.getBroadcast(
-								this@PlayerActivity,
-								0,
-								Intent(this@PlayerActivity, PlayerPip.Receiver::class.java).apply {
-									putExtra(PlayerPip.ACTION, (if(isVideoPaused) PlayerPip.Action.PLAY else PlayerPip.Action.PAUSE).name)
-								}, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-							)
+						PendingIntent.getBroadcast(
+							this@PlayerActivity,
+							0,
+							Intent(this@PlayerActivity, PlayerPip.Receiver::class.java).apply {
+								putExtra(PlayerPip.ACTION, (if(isVideoPaused) PlayerPip.Action.PLAY else PlayerPip.Action.PAUSE).name)
+							}, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 						)
 					)
 				)
-			}
+			)
 		}.build()
 
 	private fun setupPip() {

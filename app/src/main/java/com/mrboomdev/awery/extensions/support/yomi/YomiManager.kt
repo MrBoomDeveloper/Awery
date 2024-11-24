@@ -16,7 +16,7 @@ import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
-import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.extensions.Extension
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.ExtensionSettings
@@ -91,7 +91,7 @@ abstract class YomiManager : ExtensionsManager() {
 			initExtension(pkg, context)
 		}
 
-		getProgress().isCompleted = true
+		getProgress().finish()
 	}
 
 	private fun initExtension(pkg: PackageInfo, context: Context) {

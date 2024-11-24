@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.desktop.sources.yomi
 
-import com.mrboomdev.awery.ext.source.DataSource
+import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.Progress
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ abstract class YomiManager<T: YomiSource>: SourcesManager<T>() {
 		TODO("Not yet implemented")
 	}
 
-	override suspend fun install(data: DataSource<InputStream>): T {
+	override suspend fun install(data: PendingTask<InputStream>): T {
 		TODO("Not yet implemented")
 	}
 

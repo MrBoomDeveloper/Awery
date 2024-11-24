@@ -6,7 +6,7 @@
 		"description": "A lot of content, a feed with a selection of all installed extensions and a bunch of features!",
 		"tabs": [
 			{
-				"title": "Home",
+				"title": "home",
 				"icon": "home",
 				"id": "home",
 				"feeds": [
@@ -22,7 +22,7 @@
 					}
 				]
 			}, {
-				"title": "Library",
+				"title": "library",
 				"id": "library",
 				"icon": "bookmark",
 				"show_end": false,

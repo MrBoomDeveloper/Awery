@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.db.dao;
+package com.mrboomdev.awery.data.db.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;

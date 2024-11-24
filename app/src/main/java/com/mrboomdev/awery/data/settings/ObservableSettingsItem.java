@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.settings;
+package com.mrboomdev.awery.data.settings;
 
 import java.util.HashSet;
 import java.util.Set;

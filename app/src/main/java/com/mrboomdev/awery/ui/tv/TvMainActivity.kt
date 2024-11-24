@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.mrboomdev.awery.app.data.settings.NicePreferences
+import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.app.theme.TvTheme
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.AwerySettings

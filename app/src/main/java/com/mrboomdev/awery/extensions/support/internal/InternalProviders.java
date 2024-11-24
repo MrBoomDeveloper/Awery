@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;

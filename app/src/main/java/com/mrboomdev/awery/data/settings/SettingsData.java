@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.settings;
+package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -18,7 +18,7 @@ import androidx.core.os.LocaleListCompat;
 
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.data.Constants;
+import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;

@@ -1,12 +1,16 @@
 plugins {
-	kotlin("jvm")
-	id("org.jetbrains.compose") version "1.6.10"
-	id("org.jetbrains.kotlin.plugin.compose")
+	alias(libs.plugins.kotlin.jvm)
+	alias(libs.plugins.compose)
+	alias(libs.plugins.compose.compiler)
 }
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+	jvmToolchain(17)
 }
 
 dependencies {

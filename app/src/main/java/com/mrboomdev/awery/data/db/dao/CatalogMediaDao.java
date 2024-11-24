@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.db.dao;
+package com.mrboomdev.awery.data.db.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -9,7 +9,7 @@ import androidx.room.RawQuery;
 import androidx.room.Update;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
-import com.mrboomdev.awery.app.data.db.item.DBCatalogMedia;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
 
 import java.util.List;
 

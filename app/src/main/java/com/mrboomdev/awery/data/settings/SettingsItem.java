@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.settings;
+package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;

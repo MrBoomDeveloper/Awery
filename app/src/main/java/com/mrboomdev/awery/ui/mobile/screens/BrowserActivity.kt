@@ -22,7 +22,7 @@ import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
-import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.addOnBackPressedListener

@@ -4,7 +4,7 @@ import static com.mrboomdev.awery.util.extensions.DialogExtensionsKt.fix;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.formatClock;
 
 import android.animation.ObjectAnimator;

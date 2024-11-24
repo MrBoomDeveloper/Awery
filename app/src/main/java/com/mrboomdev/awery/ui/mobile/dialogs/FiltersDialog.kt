@@ -15,10 +15,10 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.data.settings.CustomSettingsItem
-import com.mrboomdev.awery.app.data.settings.SettingsItem
-import com.mrboomdev.awery.app.data.settings.SettingsItemType
-import com.mrboomdev.awery.app.data.settings.SettingsList
+import com.mrboomdev.awery.data.settings.CustomSettingsItem
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.SettingsItemType
+import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler

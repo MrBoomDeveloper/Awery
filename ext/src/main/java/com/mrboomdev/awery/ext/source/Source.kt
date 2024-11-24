@@ -19,6 +19,7 @@ abstract class Source {
 	abstract val exception: Throwable?
 	abstract val ageRating: String
 	abstract val icon: Image?
+	open val isEnabled: Boolean = true
 
 	open suspend fun getFeeds(): CatalogSearchResults<CatalogFeed> {
 		throw NotImplementedError("getFeeds() isn't implemented!")

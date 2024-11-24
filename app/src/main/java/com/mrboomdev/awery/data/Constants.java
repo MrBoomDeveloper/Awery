@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data;
+package com.mrboomdev.awery.data;
 
 import android.os.Build;
 

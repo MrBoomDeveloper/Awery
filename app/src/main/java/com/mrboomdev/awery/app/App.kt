@@ -36,9 +36,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.core.content.res.ResourcesCompat
 import androidx.room.Room.databaseBuilder
-import androidx.viewbinding.ViewBinding
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideCustomImageLoader
 import com.google.android.material.color.DynamicColors
@@ -53,11 +51,12 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.theme.ThemeManager.isDarkModeEnabled
-import com.mrboomdev.awery.app.data.Constants
-import com.mrboomdev.awery.app.data.db.AweryDB
-import com.mrboomdev.awery.app.data.db.item.DBCatalogList
-import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.data.db.AweryDB
+import com.mrboomdev.awery.data.db.item.DBCatalogList
+import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.app.theme.ThemeManager
+import com.mrboomdev.awery.app.update.UpdatesChannel
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
@@ -99,9 +98,9 @@ class App : Application() {
 	override fun onCreate() {
 		AweryNotifications.registerNotificationChannels()
 		ThemeManager.applyApp(this)
-		setupStrictMode()
 
 		super.onCreate()
+		setupStrictMode()
 		patchInjekt()
 		BigImageViewer.initialize(GlideCustomImageLoader.with(this))
 
@@ -261,6 +260,10 @@ class App : Application() {
 			return if(id == 0) null else i18n(id)
 		}
 
+		inline fun <reified T> i18n(resourceId: String): String? {
+			return i18n(T::class.java, resourceId)
+		}
+
 		@JvmStatic
 		fun i18n(@StringRes res: Int, vararg params: Any) =
 			ContextCompat.getContextForLanguage(appContext).getString(res, *params)
@@ -305,12 +308,6 @@ class App : Application() {
 				// at androidx.appcompat.app.AppCompatDelegateImpl.applyFixedSizeWindow(AppCompatDelegateImpl)
 				AweryLifecycle.postRunnable { setContentViewCompat(activity, view) }
 			}
-		}
-
-		@JvmStatic
-		@Deprecated("")
-		fun setContentViewCompat(activity: Activity, view: ViewBinding) {
-			setContentViewCompat(activity, view.root)
 		}
 
 		/**
@@ -453,11 +450,15 @@ class App : Application() {
 				.apply {
 					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 						penaltyListener({ it.run() }) { violation ->
-							runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>()!!)
-								.setTitle("StrictMode.VmPolicy Violation!")
-								.setMessage(Log.getStackTraceString(violation))
-								.setPositiveButton(R.string.ok) { it.dismiss() }
-								.show() }
+							try {
+								runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>()!!)
+									.setTitle("StrictMode.VmPolicy Violation!")
+									.setMessage(Log.getStackTraceString(violation))
+									.setPositiveButton(R.string.ok) { it.dismiss() }
+									.show() }
+							} catch(e: Throwable) {
+								Log.e(TAG, "Failed to warn about an strict mode violation!", e)
+							}
 						}
 					}
 				}.build())
@@ -543,7 +544,7 @@ class App : Application() {
 			val result = when(mRequirement) {
 				"material_you" -> DynamicColors.isDynamicColorAvailable()
 				"tv" -> isTv
-				"beta" -> BuildConfig.IS_BETA
+				"beta" -> BuildConfig.CHANNEL != UpdatesChannel.STABLE
 				"debug" -> BuildConfig.DEBUG
 				"never" -> false
 				else -> true

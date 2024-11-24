@@ -1,11 +1,8 @@
 package com.mrboomdev.awery.ui.tv.components
 
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width

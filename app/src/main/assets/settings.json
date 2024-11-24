@@ -199,9 +199,6 @@
 							"key": "experiment_splash_load_sources", "title": "Use new sources loader",
 							"type": "boolean", "boolean_value": false
 						}, {
-							"key": "experiment_pip_controls", "title": "Picture in picture player controls",
-							"type": "boolean", "boolean_value": false
-						}, {
 							"key": "experiment_tv_compose", "title": "Launch TV activity on startup",
 							"type": "boolean", "boolean_value": false
 						}, {

@@ -211,7 +211,7 @@ object CrashHandler {
 					it.dismiss()
 				}
 
-				if(file != null || message != null || oki != null) {
+				if(file?.exists() == true || message != null || oki != null) {
 					setNegativeButton(R.string.share) {
 						val mFile = file ?: File((mContext ?: appContext).filesDir, "crash_report.txt").apply {
 							delete()
@@ -237,9 +237,12 @@ object CrashHandler {
 						BottomSheetDialog(mContext?.activity ?: activity!!).apply {
 							setContentView(NestedScrollView(mContext!!).apply {
 								addView(MaterialTextView(mContext).apply {
-									text = (file?.readText() ?: oki?.print() ?: message ?: i18n(messageRes!!)).trim()
 									setTextIsSelectable(true)
 									setPadding(dpPx(16f))
+
+									text = if(file?.exists() == true) {
+										file.readText()
+									} else (oki?.print() ?: message ?: i18n(messageRes!!)).trim()
 								})
 							})
 						}.fixAndShow()

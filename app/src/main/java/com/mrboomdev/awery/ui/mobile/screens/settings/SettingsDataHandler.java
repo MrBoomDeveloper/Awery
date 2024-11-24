@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.mobile.screens.settings;
 
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItem;
 
 public interface SettingsDataHandler {
 	void onScreenLaunchRequest(SettingsItem item);

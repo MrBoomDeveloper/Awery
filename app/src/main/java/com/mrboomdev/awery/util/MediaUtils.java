@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.data.Constants.CATALOG_LIST_BLACKLIST;
+import static com.mrboomdev.awery.data.Constants.CATALOG_LIST_BLACKLIST;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
@@ -10,8 +10,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.db.item.DBCatalogMedia;
-import com.mrboomdev.awery.app.data.settings.NicePreferences;
+import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
+import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.ext.data.CatalogTag;

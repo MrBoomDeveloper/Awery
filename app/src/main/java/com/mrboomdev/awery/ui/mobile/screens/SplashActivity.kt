@@ -13,7 +13,6 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.isTv
@@ -21,8 +20,6 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.ExtensionsManager
-import com.mrboomdev.awery.app.data.settings.NicePreferences
-import com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.generated.AwerySettings
@@ -36,11 +33,8 @@ import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.startActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
@@ -124,7 +118,7 @@ class SplashActivity : AppCompatActivity() {
 					try {
 						ExtensionsManager.init(applicationContext).onEach {
 							launch(Dispatchers.Main) {
-								binding.status.text = getString(R.string.loading_extensions_n, it.progress, it.max)
+								binding.status.text = getString(R.string.loading_extensions_n, it.value, it.max)
 							}
 						}.collect()
 					} catch(t: Throwable) {
@@ -181,7 +175,7 @@ class SplashActivity : AppCompatActivity() {
 
 		for(manager in factory.managers) {
 			val managerProgress = manager.progress
-			progress += managerProgress.progress
+			progress += managerProgress.value
 			total += managerProgress.max
 		}
 

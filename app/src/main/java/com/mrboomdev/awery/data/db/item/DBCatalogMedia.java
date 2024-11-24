@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app.data.db.item;
+package com.mrboomdev.awery.data.db.item;
 
 import static com.mrboomdev.awery.util.NiceUtils.listToUniqueString;
 import static com.mrboomdev.awery.util.NiceUtils.parseEnum;

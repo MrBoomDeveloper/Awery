@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.mobile.screens.media
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -23,11 +22,11 @@ import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
-import com.mrboomdev.awery.app.data.Constants
-import com.mrboomdev.awery.app.data.settings.NicePreferences
-import com.mrboomdev.awery.app.data.settings.SettingsItem
-import com.mrboomdev.awery.app.data.settings.SettingsItemType
-import com.mrboomdev.awery.app.data.settings.SettingsList
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.data.settings.NicePreferences
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.SettingsItemType
+import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.ItemListDropdownBinding
 import com.mrboomdev.awery.databinding.LayoutWatchVariantsBinding
 import com.mrboomdev.awery.extensions.Extension
@@ -71,7 +70,6 @@ import com.mrboomdev.safeargsnext.util.rememberSafeArgs
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
 class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, OnEpisodeSelectedListener {
@@ -95,9 +93,13 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 	private var loadId = 0L
 	private var media: CatalogMedia? = null
 
-	private val queryFilter = SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY)
-	private val filters = SettingsList(queryFilter, SettingsItem(
-		SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0))
+	private val queryFilter =
+		SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY)
+	private val filters = SettingsList(
+		queryFilter, SettingsItem(
+			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0
+		)
+	)
 
 	class Args(val media: CatalogMedia)
 

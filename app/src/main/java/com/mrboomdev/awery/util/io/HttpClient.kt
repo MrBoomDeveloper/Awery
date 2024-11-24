@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.io
 
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
-import com.mrboomdev.awery.app.data.Constants
+import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.async.AsyncUtils

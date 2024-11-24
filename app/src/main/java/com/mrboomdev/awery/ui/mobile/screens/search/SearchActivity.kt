@@ -23,9 +23,9 @@ import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.data.settings.SettingsItem
-import com.mrboomdev.awery.app.data.settings.SettingsItemType
-import com.mrboomdev.awery.app.data.settings.SettingsList
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.SettingsItemType
+import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.GridMediaCatalogBinding
 import com.mrboomdev.awery.databinding.ScreenSearchBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider

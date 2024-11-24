@@ -2,9 +2,9 @@ package com.mrboomdev.awery.ext.data
 
 import java.util.LinkedList
 
-class Settings(
-	vararg items: Setting
-) : LinkedList<Setting>(items.toList()) {
+class Settings: LinkedList<Setting> {
+	constructor(items: Collection<Setting>): super(items)
+	constructor(vararg items: Setting): super(items.toList())
 
 	operator fun get(key: String, type: Setting.Type? = null): Setting? {
 		return find {

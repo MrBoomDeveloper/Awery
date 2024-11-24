@@ -21,9 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.LayoutHeaderSearchBinding;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;

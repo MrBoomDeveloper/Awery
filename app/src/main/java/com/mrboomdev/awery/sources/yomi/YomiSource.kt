@@ -6,7 +6,7 @@ import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.source.Source
 
 abstract class YomiSource(
-	val packageInfo: PackageInfo
+	packageInfo: PackageInfo
 ): Source() {
 	final override val id = packageInfo.packageName
 	abstract val feeds: CatalogSearchResults<CatalogFeed>?

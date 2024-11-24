@@ -7,8 +7,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.ext.data.CatalogTag;
 import com.mrboomdev.awery.extensions.data.CatalogComment;

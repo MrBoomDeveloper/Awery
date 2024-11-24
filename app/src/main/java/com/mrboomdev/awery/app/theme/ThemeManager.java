@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.app.theme;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
-import static com.mrboomdev.awery.app.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

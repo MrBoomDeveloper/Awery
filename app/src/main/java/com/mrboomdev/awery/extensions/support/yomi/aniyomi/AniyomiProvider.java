@@ -16,9 +16,9 @@ import androidx.preference.PreferenceScreen;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.data.settings.SettingsItem;
-import com.mrboomdev.awery.app.data.settings.SettingsItemType;
-import com.mrboomdev.awery.app.data.settings.SettingsList;
+import com.mrboomdev.awery.data.settings.SettingsItem;
+import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;

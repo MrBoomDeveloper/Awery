@@ -5,7 +5,6 @@ import com.squareup.moshi.JsonClass
 import java.io.Serial
 import java.io.Serializable
 
-@JsonClass(generateAdapter = true)
 @kotlinx.serialization.Serializable
 class CatalogMedia(
 	val globalId: String,

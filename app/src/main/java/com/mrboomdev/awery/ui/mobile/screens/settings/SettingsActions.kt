@@ -14,9 +14,9 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.data.Constants
-import com.mrboomdev.awery.app.data.Constants.DIRECTORY_IMAGE_CACHE
-import com.mrboomdev.awery.app.data.settings.SettingsItem
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
+import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.app.update.UpdatesManager
 import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog

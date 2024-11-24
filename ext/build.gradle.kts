@@ -1,8 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	id("java-library")
-	id("org.jetbrains.kotlin.jvm")
-	id("com.google.devtools.ksp") version "2.0.21-1.0.25"
-	kotlin("plugin.serialization") version "2.0.20"
+	alias(libs.plugins.kotlin.jvm)
+	alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -10,10 +11,11 @@ java {
 	targetCompatibility = JavaVersion.VERSION_17
 }
 
-dependencies {
-	// Preprocessing
-	ksp(libs.moshi.kotlin.codegen)
+kotlin {
+	jvmToolchain(17)
+}
 
+dependencies {
 	// Coroutines
 	api(libs.kotlinx.coroutines.core)
 
