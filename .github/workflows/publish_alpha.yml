@@ -102,7 +102,7 @@ jobs:
         with:
           name: "Alpha APK"
           retention-days: 90
-          path: "app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          path: "app/build/outputs/apk/alpha/release/awery-alpha.apk"
           
       - name: Upload APK to Discord and Telegram
         shell: bash
@@ -267,7 +267,7 @@ jobs:
         
             if [ "$SKIP_BUILD" != "true" ]; then
             curl -F "payload_json=${contentbody}" \
-                 -F "Awery_debug=@app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk" \
+                 -F "Awery_debug=@app/build/outputs/apk/alpha/release/awery-alpha.apk" \
                  ${{ secrets.DISCORD_WEBHOOK_URL }}
             else
             echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
@@ -294,7 +294,7 @@ jobs:
           echo "$telegram_dev_info"
 
           if [ "$SKIP_BUILD" != "true" ]; then
-          APK_PATH="app/build/outputs/apk/alpha/release/app-alpha-release-signed.apk"
+          APK_PATH="app/build/outputs/apk/alpha/release/awery-alpha.apk"
           response=$(curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
