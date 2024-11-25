@@ -142,7 +142,7 @@ jobs:
           done < <(echo "$COMMIT_LOG" | sed 's/%0A/\n/g' | grep -oP '(?<=~)[^[]*' | sort | uniq -c | sort -rn)
         
           echo "Debug: Fetching contributors from GitHub"
-          contributors=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors")
+          contributors=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors" | jq 'map(select(.login != "dependabot[bot]"))')
           echo "Debug: Contributors response:"
           echo "$contributors"
         
@@ -153,7 +153,7 @@ jobs:
           echo "$count|$login"
           done | sort -rn | cut -d'|' -f2)
         
-               developers=""
+          developers=""
           committers_count=0
           max_commits=0
           top_contributor=""
