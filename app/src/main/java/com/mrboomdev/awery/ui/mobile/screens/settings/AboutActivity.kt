@@ -86,7 +86,12 @@ private val LOCAL_DEVS = arrayOf(
         "https://avatars.githubusercontent.com/u/83452219?v=4"
     ),
     Contributor(
-        "Ichiro", arrayOf("App Icon"),
+        "MiRU", arrayOf("Discord and Telegram Moderator"),
+        "https://github.com/Mutsukikamishiro",
+        "https://avatars.githubusercontent.com/u/108610034?v=4"
+    ),
+    Contributor(
+        "Ichiro", arrayOf("Icon Designer"),
         "https://discord.com/channels/@me/1262060731981889536",
         "https://cdn.discordapp.com/avatars/778503249619058689/5e1cd37e9473c7bc8ca164fe4f985e87.webp?size=4096"
     )
