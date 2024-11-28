@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nothing selected"
+        android:textSize="18sp"
+        android:textColor="?attr/colorOnBackground"
+        android:id="@+id/searchStatus"
+        android:padding="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/ripple_rect_you" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        app:flexWrap="wrap">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:id="@+id/source_wrapper"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            app:layout_flexGrow="1"
+            android:layout_marginRight="8dp"
+            android:hint="@string/source">
+
+            <AutoCompleteTextView
+                android:hint="@string/source"
+                android:padding="14dp"
+                android:id="@+id/source_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:id="@+id/season_wrapper"
+            android:layout_width="180dp"
+            app:layout_flexGrow="1"
+            android:layout_marginRight="8dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:hint="@string/season">
+
+            <AutoCompleteTextView
+                android:hint="@string/season"
+                android:padding="14dp"
+                android:id="@+id/season_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:id="@+id/episode_wrapper"
+            android:layout_width="180dp"
+            android:layout_marginRight="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_flexGrow="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/episode">
+
+            <AutoCompleteTextView
+                android:id="@+id/episode_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:hint="@string/episode"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionDone|flagNoFullscreen"
+                android:lines="1"
+                android:padding="14dp"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:id="@+id/search_wrapper"
+            android:layout_width="180dp"
+            android:layout_marginRight="8dp"
+            app:layout_flexGrow="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/search">
+
+            <AutoCompleteTextView
+                android:hint="@string/search"
+                android:padding="14dp"
+                android:id="@+id/search_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+</LinearLayout>

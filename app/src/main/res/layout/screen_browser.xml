@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/appbar">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="4dp"
+            app:layout_scrollFlags="snap|scroll|enterAlways|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/exit"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_close"
+                app:tint="?attr/colorAccent" />
+
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="#00000000"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:lines="1"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:imeOptions="flagNoFullscreen|actionSearch"
+                android:inputType="textUri"
+                tools:text="https://awery.mrboomdev.ru"
+                android:paddingHorizontal="4dp" />
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="13dp"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_back"
+                app:tint="?attr/colorAccent" />
+
+            <ImageView
+                android:id="@+id/forward"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="13dp"
+                android:scaleX="-1"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_back"
+                app:tint="?attr/colorAccent" />
+
+            <ImageView
+                android:id="@+id/options"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_round_dots_vertical_24"
+                app:tint="?attr/colorAccent" />
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom"
+        android:max="100"
+        tools:progress="50"
+        tools:visibility="visible"
+        android:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

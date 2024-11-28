@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pages"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/navbar_material" />
+
+    <nl.joery.animatedbottombar.AnimatedBottomBar
+        android:id="@+id/navbar_bubble"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_width="300dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/bottom_side_barrier"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="26dp"
+        android:background="@drawable/ui_bubble_navbar_background"
+        android:elevation="4dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="16dp"
+        android:translationZ="12dp"
+        app:abb_animationDuration="300"
+        app:abb_animationInterpolator="@anim/over_shoot"
+        app:abb_badgeBackgroundColor="#F44336"
+        app:abb_indicatorColor="?attr/colorTertiary"
+        app:abb_indicatorLocation="bottom"
+        app:abb_indicatorMargin="28dp"
+        app:abb_selectedTabType="text"
+        app:abb_tabColor="?attr/colorOutline"
+        app:abb_tabColorDisabled="?attr/colorPrimaryContainer"
+        app:abb_tabColorSelected="?attr/colorPrimary"
+        app:abb_textAppearance="@style/NavBarText" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navbar_material"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:menu="@menu/manga_menu_detail"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:viewBindingType="com.google.android.material.navigation.NavigationBarView" />
+
+    <View
+        android:id="@+id/bottom_side_barrier"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

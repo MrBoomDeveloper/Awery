@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="expandableTextView" format="reference" />
+    <attr name="navbarColor" format="color" />
+
+    <declare-styleable name="OutlineTextView">
+        <attr name="outlineColor" format="color" />
+        <attr name="outlineWidth" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="GesturePreviewView">
+        <attr name="icon" format="reference" />
+        <attr name="progress" format="integer" />
+        <attr name="maxProgress" format="integer" />
+        <attr name="isVisible" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SocialView">
+        <attr name="socialLink" format="string" />
+        <attr name="socialName" format="string" />
+        <attr name="socialIcon" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="ContributorView">
+        <attr name="contributorRole" format="string" />
+        <attr name="contributorAvatar" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="TVTabView">
+        <attr name="android:text" format="string" />
+        <attr name="android:state_selected" format="boolean" />
+    </declare-styleable>
+
+<!--    <declare-styleable name="ExpandableTextView2">-->
+<!--        &lt;!&ndash; Number of lines to show &ndash;&gt;-->
+<!--        <attr name="collapsedLines" format="integer" />-->
+
+<!--        &lt;!&ndash; Animation duration in milliseconds &ndash;&gt;-->
+<!--        <attr name="animDuration" format="integer" />-->
+
+<!--        <attr name="readMoreText" format="string" />-->
+<!--        <attr name="readLessText" format="string" />-->
+<!--        <attr name="foregroundColor" format="color" />-->
+<!--        <attr name="isUnderlined" format="boolean" />-->
+<!--        <attr name="textIsExpanded" format="boolean" />-->
+<!--        <attr name="ellipsizeTextColor" format="color" />-->
+
+<!--        <attr name="expandType" format="integer">-->
+<!--            <enum name="EXPAND_TYPE_DEFAULT" value="0" />-->
+<!--            <enum name="EXPAND_TYPE_LAYOUT" value="1" />-->
+<!--            <enum name="EXPAND_TYPE_POPUP" value="2" />-->
+<!--        </attr>-->
+<!--    </declare-styleable>-->
+
+    <declare-styleable name="ExpandableTextView">
+        <!-- Number of lines to show -->
+        <attr name="collapsedLines" format="integer" />
+
+        <!-- Animation duration in milliseconds -->
+        <attr name="animDuration" format="integer" />
+
+        <attr name="readMoreText" format="string" />
+        <attr name="readLessText" format="string" />
+        <attr name="foregroundColor" format="color" />
+        <attr name="isUnderlined" format="boolean" />
+        <attr name="textIsExpanded" format="boolean" />
+        <attr name="ellipsizeTextColor" format="color" />
+
+        <attr name="expandType" format="integer">
+            <enum name="EXPAND_TYPE_DEFAULT" value="0" />
+            <enum name="EXPAND_TYPE_LAYOUT" value="1" />
+            <enum name="EXPAND_TYPE_POPUP" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="Xpandable">
+        <attr name="isExpanded" format="boolean"/>
+    </declare-styleable>
+</resources>

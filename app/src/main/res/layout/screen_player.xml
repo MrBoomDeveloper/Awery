@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    tools:background="#ff0000">
+
+    <androidx.media3.ui.AspectRatioFrameLayout
+        android:id="@+id/aspect_ratio_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <SurfaceView
+            android:id="@+id/surface_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.media3.ui.AspectRatioFrameLayout>
+
+    <View
+        android:id="@+id/dark_overlay"
+        android:alpha="0"
+        tools:alpha=".6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/doubleTapBackward"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:layout_marginLeft="-100dp"
+            tools:background="#550000ff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintDimensionRatio="H,1" />
+
+        <View
+            android:id="@+id/doubleTapForward"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:layout_marginRight="-100dp"
+            tools:background="#550000ff"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintDimensionRatio="H,1" />
+
+        <com.mrboomdev.awery.ui.mobile.components.GesturePreviewView
+            android:id="@+id/brightness_gesture"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            app:icon="@drawable/ic_brightness_medium_outlined"
+            app:maxProgress="25"
+            tools:progress="10"
+            app:isVisible="false"
+            tools:isVisible="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginVertical="85dp"
+            android:layout_marginLeft="50dp" />
+
+        <com.mrboomdev.awery.ui.mobile.components.GesturePreviewView
+            android:id="@+id/volume_gesture"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            app:icon="@drawable/ic_volume_up_outlined"
+            tools:maxProgress="10"
+            tools:progress="9"
+            app:isVisible="false"
+            tools:isVisible="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginVertical="85dp"
+            android:layout_marginRight="50dp" />
+
+        <!--<TextView
+            android:id="@+id/subtitles_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:gravity="center|bottom"
+            android:background="#000000"
+            android:paddingVertical="12sp"
+            android:paddingHorizontal="16sp"
+            app:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="50dp"
+            app:layout_constraintWidth_max="400dp"
+            android:layout_marginHorizontal="128dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="@tools:sample/lorem/random" />-->
+
+        <androidx.media3.ui.SubtitleView
+            android:id="@+id/subtitle_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|bottom"
+            app:layout_constraintVertical_bias="1"
+            android:layout_marginBottom="50dp"
+            app:layout_constraintWidth_max="400dp"
+            android:layout_marginHorizontal="128dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ui_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:alpha="0"
+        tools:alpha="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="6dp">
+
+            <ImageView
+                android:id="@+id/exit"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ripple_circle_white"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="11dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back"
+                app:tint="#ffffff" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="#fff"
+                android:textSize="18sp"
+                tools:text="@tools:sample/lorem/random" />
+
+            <ImageView
+                android:id="@+id/pip"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="11dp"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                app:tint="#fff"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_pip_outlined"
+                android:layout_marginLeft="6dp" />
+
+            <ImageView
+                android:id="@+id/subtitles"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="11dp"
+                android:alpha=".4"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/ic_subtitles_outlined"
+                android:layout_marginLeft="6dp"
+                app:tint="#fff" />
+
+            <ImageView
+                android:id="@+id/settings"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="11dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_settings_outlined"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="16dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
+                app:tint="#fff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:paddingTop="10dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/previous"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:padding="25dp"
+                android:alpha=".4"
+                android:focusable="true"
+                android:src="@drawable/ic_round_skip_previous_24" />
+
+            <ImageView
+                android:id="@+id/pause"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:padding="25dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/ripple_circle_white"
+                android:src="@drawable/anim_pause_to_play" />
+
+            <ImageView
+                android:id="@+id/next"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:padding="25dp"
+                android:alpha=".4"
+                android:focusable="true"
+                android:src="@drawable/ic_round_skip_next_24" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:paddingBottom="2dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="24dp">
+
+            <TextView
+                android:id="@+id/timer"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:fontFamily="@font/poppins"
+                android:text="00:00/00:00"
+                android:textColor="#fff"
+                tools:ignore="HardcodedText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/quick_skip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Skip 1:00"
+                app:backgroundTint="#fff"
+                android:textColor="#000"
+                app:icon="@drawable/ic_fast_forward_outlined"
+                app:iconTint="#222"
+                app:iconSize="24dp"
+                app:rippleColor="#55000000" />
+
+        </LinearLayout>
+
+        <androidx.media3.ui.DefaultTimeBar
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="10dp"
+            android:layout_height="wrap_content"
+            app:buffered_color="#aaffffff" />
+
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingCircle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:indeterminate="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/loadingStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent=".75"
+        android:textColor="#ffffff"
+        tools:text="@tools:sample/lorem/random"
+        android:gravity="center"
+        android:layout_marginTop="25dp"
+        android:textSize="15sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/loadingCircle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

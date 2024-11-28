@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="@drawable/ripple_rect_you"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingVertical="10dp"
+    android:paddingHorizontal="16dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/iconWrapper"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:cardCornerRadius="50dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:src="@tools:sample/avatars"
+            android:importantForAccessibility="no" />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:fontFamily="@font/poppins"
+        android:textColor="?attr/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toRightOf="@id/iconWrapper"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="MrBoomDev • 1 hour ago" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintLeft_toLeftOf="@id/name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        android:textColor="?attr/colorOnBackground"
+        tools:text="Hello everyone, my name is Markiplier and today we're going to play Minecraft!"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/likeIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_like_outlined"
+        tools:src="@drawable/ic_like_filled"
+        app:layout_constraintTop_toBottomOf="@id/message"
+        app:layout_constraintLeft_toLeftOf="@id/message"
+        android:contentDescription="Like" />
+
+    <TextView
+        android:id="@+id/likesCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon"
+        app:layout_constraintLeft_toRightOf="@id/likeIcon"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        tools:visibility="gone"
+        tools:text="0" />
+
+    <View
+        android:id="@+id/likeButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon"
+        app:layout_constraintLeft_toLeftOf="@id/likeIcon"
+        app:layout_constraintRight_toRightOf="@id/likeIcon" />
+
+    <ImageView
+        android:id="@+id/dislikeIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="18dp"
+        android:scaleType="fitCenter"
+        app:layout_goneMarginLeft="15dp"
+        android:src="@drawable/ic_dislike_outlined"
+        app:layout_constraintTop_toBottomOf="@id/message"
+        app:layout_constraintLeft_toRightOf="@id/likesCount"
+        android:contentDescription="Dislike" />
+
+    <TextView
+        android:id="@+id/dislikesCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
+        app:layout_constraintLeft_toRightOf="@id/dislikeIcon"
+        app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        tools:visibility="gone"
+        tools:text="0" />
+
+    <View
+        android:id="@+id/dislikeButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/dislikeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/dislikeIcon"
+        app:layout_constraintLeft_toLeftOf="@id/dislikeIcon"
+        app:layout_constraintRight_toRightOf="@id/dislikeIcon" />
+
+    <TextView
+        android:id="@+id/votesCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/dislikesCount"
+        app:layout_constraintLeft_toRightOf="@id/dislikesCount"
+        app:layout_constraintTop_toTopOf="@id/dislikesCount"
+        android:visibility="gone"
+        tools:text="0" />
+
+    <ImageView
+        android:id="@+id/commentIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:scaleType="fitCenter"
+        android:scaleX=".9"
+        android:scaleY=".9"
+        android:src="@drawable/ic_chat_outlined"
+        app:layout_constraintTop_toBottomOf="@id/message"
+        app:layout_constraintLeft_toRightOf="@id/votesCount"
+        android:contentDescription="Comment" />
+
+    <TextView
+        android:id="@+id/commentsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/commentIcon"
+        app:layout_constraintLeft_toRightOf="@id/commentIcon"
+        app:layout_constraintTop_toTopOf="@id/commentIcon"
+        tools:text="0" />
+
+    <View
+        android:id="@+id/commentButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:layout_constraintTop_toTopOf="@id/commentIcon"
+        app:layout_constraintBottom_toBottomOf="@id/commentIcon"
+        app:layout_constraintLeft_toLeftOf="@id/commentIcon"
+        app:layout_constraintRight_toRightOf="@id/commentIcon" />
+
+    <ImageView
+        android:id="@+id/editButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="7dp"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/ic_edit_outlined"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnPrimarySurface"
+        app:layout_constraintRight_toLeftOf="@id/deleteButton"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon" />
+
+    <ImageView
+        android:id="@+id/deleteButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="7dp"
+        android:src="@drawable/ic_delete_outlined"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/ripple_circle_white"
+        app:tint="?attr/colorOnPrimarySurface"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/likeIcon"
+        app:layout_constraintBottom_toBottomOf="@id/likeIcon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

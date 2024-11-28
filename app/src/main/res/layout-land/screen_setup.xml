@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--<ImageView
+        android:id="@+id/shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:tint="?attr/colorSecondaryContainer"
+        android:alpha=".5"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:src="@drawable/linear_gradient_bg"
+        android:importantForAccessibility="no" />-->
+
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="32dp"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:scaleX="1.5"
+        tools:scaleY="1.5"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:src="@mipmap/ic_launcher_foreground" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_to_app"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+        android:layout_marginTop="16dp"
+        app:layout_goneMarginTop="32dp"
+        android:layout_marginHorizontal="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/recycler"
+        app:layout_constraintTop_toBottomOf="@id/icon" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_max="425dp"
+        app:layout_constraintHorizontal_bias="0"
+        android:text="@string/welcome_to_app_description"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/recycler"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/actions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_end"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/recycler"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            style="@style/Widget.Material3.Button.TextButton"
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:paddingHorizontal="32dp"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/continueButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/continue_action"
+            android:paddingHorizontal="32dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp" />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:padding="32dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:spanCount="1"
+        tools:listitem="@layout/item_list_setting"
+        app:layout_constraintWidth_percent=".45"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
