@@ -66,7 +66,9 @@ private val EXCLUDE_GITHUB_IDS = arrayOf(
     175734244L, // SaarGirl
     171004872L, // Goko1
     119158637L, // Runkandel
-    22217419L   // rezaalmanda
+    22217419L,  // rezaalmanda
+    49699333,   // dependabot[bot] 
+    27347476    // dependabot
 )
 
 private val LOCAL_DEVS = arrayOf(
