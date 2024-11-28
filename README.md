@@ -1,6 +1,9 @@
-# Awery - The Best Mobile Anime App
-> Customize everything with Awery – tons of features, a **stylish** look, and ultimate flexibility at your fingertips.
+<div align="center">
+<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/refs/heads/master/app/src/prod/res/mipmap/ic_launcher.png" alt="Logo" height="100px" width="100px">
 
+# Awery - The Best Mobile Anime App
+Customize everything with Awery – tons of features, a **stylish** look, and ultimate flexibility at your fingertips.<br>
+`Note: This project is currently under development and is not ready for public use.`
 <p>
   <a href="https://github.com/MrBoomDeveloper/Awery/releases"><img src="https://img.shields.io/github/downloads/MrBoomDeveloper/Awery/total?label=Downloads&style=flat-square" alt="GitHub Downloads"></a>
   <a href="https://www.codefactor.io/repository/github/MrBoomDeveloper/Awery"><img src="https://img.shields.io/codefactor/grade/github/MrBoomDeveloper/Awery?style=flat-square&label=Codefactor" alt="CodeFactor"/></a>
@@ -16,6 +19,7 @@
    <a href="https://github.com/mrboomdeveloper/awery/releases"><img src="https://img.shields.io/github/v/release/mrboomdeveloper/awery?include_prereleases&display_name=tag&style=flat-square&logoColor=2c2c47&label=Beta&color=818cf8" alt="Latest Pre-release"/></a>
    <a href="https://github.com/itsmechinmoy/awery-updater/releases/latest"><img src="https://img.shields.io/github/v/release/itsmechinmoy/awery-updater?display_name=tag&style=flat-square&label=Alpha&color=e23629" alt="Latest Alpha Release"/></a>
 </p>
+</div>
 
 ## ⚠️ Disclaimer
 - Awery is a **tracking tool and search engine** that displays links to third-party content. **We do not host or control any content** and are not liable for its legality.
