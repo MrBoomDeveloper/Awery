@@ -493,7 +493,7 @@
     <string name="analytics_title">Vishleshan</string>
     <string name="generic_message">Is beta version mein, aap app ke through extensions directly install nahi kar sakte :(\nAbhi ke liye, aap inhe humare par download kar sakte hain:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="existing_custom_tabs_title">Mojuda custom tabs mile</string>
-    <string name="existing_custom_tabs_message">Template ka istemal karne ke liye, humein aapke sabhi custom tabs ko hataana hoga jinmein feeds hain. Agar aap aisa nahi chahte, to bas \"Koi nahi\" choose karein.</string>
+    <string name="existing_custom_tabs_message">Template ka istemal karne ke liye, humein aapke sabhi custom tabs ko hataana hoga jinmein feeds hain. Agar aap aisa nahi chahte, to bas Koi nahi choose karein.</string>
     <string name="analytics_message">TODO</string>
     <string name="dantotsu_message">Dantotsu template ko kam krne keliye kuch extensions ki jarurat he.\nIs beta version mein, aap app ke through extensions directly install nahi kar sakte :(\nAbhi ke liye, aap inhe humare par download kar sakte hain:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="automatically_send_reports">Swachalit roop se crash report bhejein</string>
