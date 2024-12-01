@@ -493,7 +493,7 @@
     <string name="analytics_title">Аналитика</string>
     <string name="generic_message">В этой бета-версии вы не можете устанавливать расширения напрямую через приложение :(\nВ данный момент вы можете скачать их на нашем:\nDiscord сервере: %1$s\nTelegram канале: %2$s</string>
     <string name="existing_custom_tabs_title">Найдены существующие пользовательские вкладки</string>
-    <string name="existing_custom_tabs_message">Чтобы использовать шаблон, нам нужно удалить все ваши пользовательские вкладки с лентами. Если вы не хотите этого, просто выберите \"Нет\".</string>
+    <string name="existing_custom_tabs_message">Чтобы использовать шаблон, нам нужно удалить все ваши пользовательские вкладки с лентами. Если вы не хотите этого, просто выберите Нет.</string>
     <string name="analytics_message">TODO</string>
     <string name="dantotsu_message">Шаблону Dantotsu требуется несколько расширений для работы.\nВ этой бета-версии вы не можете устанавливать расширения напрямую через приложение :(\nСейчас вы можете скачать их на нашем:\nDiscord сервере: %1$s\nTelegram канале: %2$s</string>
     <string name="automatically_send_reports">Автоматически отправлять отчёты об ошибках</string>

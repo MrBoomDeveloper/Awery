@@ -493,7 +493,7 @@
     <string name="analytics_title">विश्लेषण</string>
     <string name="generic_message">इस बीटा संस्करण में, आप ऐप के माध्यम से एक्सटेंशन्स सीधे इंस्टॉल नहीं कर सकते :(\nवर्तमान में, आप इन्हें हमारे पर डाउनलोड कर सकते हैं:\nDiscord सर्वर: %1$s\nTelegram चैनल: %2$s</string>
     <string name="existing_custom_tabs_title">मौजूदा कस्टम टैब्स मिले</string>
-    <string name="existing_custom_tabs_message">टेम्पलेट का उपयोग करने के लिए, हमें आपके सभी कस्टम टैब्स को हटाना होगा जिनमें फीड्स हैं। यदि आप ऐसा नहीं चाहते, तो बस \"कोई नहीं\" चुनें।</string>
+    <string name="existing_custom_tabs_message">टेम्पलेट का उपयोग करने के लिए, हमें आपके सभी कस्टम टैब्स को हटाना होगा जिनमें फीड्स हैं। यदि आप ऐसा नहीं चाहते, तो बस कोई नहीं चुनें।</string>
     <string name="analytics_message">TODO</string>
     <string name="dantotsu_message">Dantotsu टेम्पलेट को काम करने के लिए कुछ एक्सटेंशन्स की आवश्यकता है।\nइस बीटा संस्करण में, आप ऐप के माध्यम से एक्सटेंशन्स सीधे इंस्टॉल नहीं कर सकते :(\nवर्तमान में, आप इन्हें हमारे पर डाउनलोड कर सकते हैं:\nDiscord सर्वर: %1$s\nTelegram चैनल: %2$s</string>
     <string name="automatically_send_reports">स्वचालित रूप से क्रैश रिपोर्ट भेजें</string>
