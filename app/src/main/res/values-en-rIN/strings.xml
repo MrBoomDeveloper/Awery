@@ -463,7 +463,7 @@
     <string name="bad_request">Request galat hai</string>
     <string name="database_corrupted">Database kharab ho gaya hai!</string>
     <string name="checking_database">Database ki jaanch kar rahe hain</string>
-    <string name="failed_to_connect_to_server">Server se connect nahi ho paya!</string>
+    <string name="failed_to_connect_to_server">Server se jodne mein asafal!</string>
     <string name="server_internal_error">Server mein antarvarti galti aayi hai, kripya baad mein try karein.</string>
     <string name="unknown_net_error">Anjaani network galti</string>
     <string name="loading_extensions">Extensions load kar rahe hain</string>

@@ -103,7 +103,7 @@
     <string name="about">Über</string>
     <string name="devs">Entwickler</string>
     <string name="disclaimer">Haftungsausschluss</string>
-    <string name="full_disclaimer">- Awery bietet von sich aus nur einen Anime- und Manga-Tracker an und bietet keine Streaming- oder Download-Funktionen für Anime oder Manga.\n\n - Awery oder irgendeiner seiner Entwickler/mitarbeiter hostet keine der in Awery gefundenen Inhalte. Alle Bilder und Anime/Manga-Informationen, die in der App gefunden werden, stammen aus verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).\n\n - Darüber hinaus stammen alle Anime/Manga-Links, die in Awery gefunden werden, aus verschiedenen Drittanbieter-Plugins und haben keine Verbindung zu Awery oder seinen Mitarbeitern.\n\n - Awery oder seine Besitzer haften nicht für den Missbrauch der Inhalte, die innerhalb oder außerhalb der App gefunden werden, und können nicht für die Verbreitung der in der App gefundenen Inhalte verantwortlich gemacht werden.\n\n - Durch die Nutzung von Awery stimmen Sie der Tatsache zu, dass der Entwickler der App nicht für die in der App gefundenen Inhalte verantwortlich ist. Sie stimmen auch der Tatsache zu, dass Sie Awery nicht verwenden dürfen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.\n\n - Bei Fragen zu Urheberrechtsverletzungen wenden Sie sich bitte an die Quellwebsite. Der Entwickler übernimmt keine rechtliche Verantwortung.</string>
+    <string name="full_disclaimer">Awery von selbst bietet nur einen Anime und Manga Tracker und bietet keine Anime oder Manga Streaming oder Download-Funktionen.\n- Awery oder einer seiner Entwickler/Staffen hosten keine Inhalte innerhalb von Awery. Alle in der App gefundenen Bilder und Anime/Manga-Informationen stammen aus verschiedenen öffentlichen APIs (AniList, MyAnimeList, Kitsu).\n-Weiters werden alle Anime/Manga-Links, die in Awery gefunden wurden, aus verschiedenen 3rd Party Plugins genommen und haben keine Zugehörigkeit zu Awery oder seinem Personal\n-Awery oder seine Besitzer sind nicht haftbar für jeglichen Missbrauch von Inhalten, die innerhalb oder außerhalb der App gefunden wurden und für die Verteilung von Inhalten, die in der App gefunden wurden, nicht verantwortlich gemacht werden können.\n-Durch die Verwendung von Awery, entsprechen Sie der Tatsache, dass der App-Entwickler nicht verantwortlich für einen der Inhalte in der App gefunden. Sie erklären sich auch damit einverstanden, dass Sie Awery möglicherweise nicht benutzen, um urheberrechtlich geschützte Inhalte herunterzuladen oder zu streamen.\n- Wenn Probleme mit der Internetverletzung betroffen sind, wenden Sie sich bitte an die Quelle-Website. Der Entwickler übernimmt keine rechtliche Verantwortung.</string>
     <string name="video">Video</string>
     <string name="video_info_info">Zeigt die Auflösung des aktuell wiedergegebenen Videos an, nützlich für <b>„Multi Quality“</b> Server.</string>
     <string name="default_quality">Automatische Qualitätseinstellung</string>
@@ -129,7 +129,7 @@
     <string name="ask_update_progress_anime">Für jedes Medium „Einzeln“ fragen</string>
     <string name="ask_update_progress_info_ep">Wenn deaktiviert, wird der Fortschritt immer automatisch aktualisiert, wenn die Episode angesehen wird.</string>
     <string name="watch_complete_percentage">Wiedergabe-Update-Prozentsatz</string>
-    <string name="watch_complete_percentage_info">"Der Prozentsatz, bei dem Ihr Fortschritt nach dem Anschauen einer Episode aktualisiert werden soll.\n\nDies legt auch den  fest, wann Links für die nächste Episode vorgeladen werden sollen."</string>
+    <string name="watch_complete_percentage_info">Der Prozentsatz, bei dem Ihr Fortschritt nach dem Anschauen einer Episode aktualisiert werden soll.\nDies legt auch den %s fest, wann Links für die nächste Episode vorgeladen werden sollen.</string>
     <string name="behaviour">Verhalten</string>
     <string name="always_continue">Immer fortsetzen, wo Sie aufgehört haben</string>
     <string name="pause_video_focus">Pause bei Nicht-Fokus</string>
@@ -344,7 +344,7 @@
     <string name="request_invalid_detailed">Fehler 400. Die Anfrage war ungültig, bitte versuche es später erneut.</string>
     <string name="not_logged_detailed">Fehler 401. Du bist nicht eingeloggt, bitte melde dich an und versuche es erneut.</string>
     <string name="no_access_detailed">Fehler 403. Du hast keinen Zugriff auf diese Ressource, versuche, dich in dein Konto einzuloggen und es erneut zu versuchen.</string>
-    <string name="rate_limited_detailed">Fehler 429. Du hast das Rate-Limit überschritten, bitte versuche es später erneut.</string>
+    <string name="rate_limited_detailed">Sie haben die Grenze überschritten, bitte versuchen Sie es später noch einmal.</string>
     <string name="restart">Neu starten</string>
     <string name="restart_to_apply_settings">Um die Einstellungen anzuwenden, musst du die Anwendung neu starten</string>
     <string name="ok">OK</string>
@@ -474,29 +474,29 @@
     <string name="restore_success">Datensicherung erfolgreich wiederhergestellt!</string>
     <string name="update_available">Aktualisierung verfügbar</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="checking_database">Checking the database</string>
-    <string name="mark_not_watched">Remove from watched</string>
-    <string name="built_at">Built at</string>
-    <string name="failed_bypass_detailed">Your request has been blocked by %s. Try completing an captcha and refreshing to resolve this problem.</string>
-    <string name="see_error">See error</string>
+    <string name="checking_database">Überprüfung der Datenbank</string>
+    <string name="mark_not_watched">Von geschaut entfernen</string>
+    <string name="built_at">Baujahr</string>
+    <string name="failed_bypass_detailed">Ihre Anfrage wurde durch %s blockiert. Probieren Sie einen Captcha und aktualisieren, um dieses Problem zu lösen.</string>
+    <string name="see_error">Siehe Fehler</string>
     <string name="version">Version</string>
-    <string name="size">Size</string>
-    <string name="select_language">Select language</string>
-    <string name="dismiss">Dismiss</string>
-    <string name="setup_finished_description">Now you can go watch your favorite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)</string>
-    <string name="wallpaper_based_colors">The app\'s color will be based on your wallpaper!</string>
-    <string name="searching_episodes_for">Searching episodes for %s</string>
+    <string name="size">Größe</string>
+    <string name="select_language">Sprache auswählen</string>
+    <string name="dismiss">Verwerfen</string>
+    <string name="setup_finished_description">Jetzt können Sie Ihre Lieblings-Shows sehen. Wir hoffen, dass Sie diese App genießen! Wenn Sie wollen, können Sie uns eine Bewertung mit dem senden, was Ihnen gefällt :)</string>
+    <string name="wallpaper_based_colors">Die Farbe der App basiert auf deinem Hintergrundbild!</string>
+    <string name="searching_episodes_for">Suchsequenzen für %s</string>
     <string name="searching_for">Suche nach „%s“</string>
-    <string name="show_spoilers">Show spoilers</string>
-    <string name="download">Download</string>
-    <string name="welcome_to_app_description">The perfect app where you can customize everything, with tons of features and a stylish look.</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
+    <string name="show_spoilers">Show Spoiler</string>
+    <string name="download">Herunterladen</string>
+    <string name="welcome_to_app_description">Die perfekte App, in der Sie alles anpassen können, mit Tonnen von Features und einem stilvollen Look.</string>
+    <string name="analytics_title">Analytik</string>
+    <string name="generic_message">In dieser Beta-Version können Sie Erweiterungen nicht direkt über die App installieren :(\nDerzeit können Sie sie auf unserer:\nDiscord Server: %1$s\nTelegrammkanal: %2$s</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
+    <string name="dantotsu_message">Die Dantotsu Vorlage erfordert einige Erweiterungen zu arbeiten.\nIn dieser Beta-Version können Sie Erweiterungen nicht direkt über die App installieren :(\nDerzeit können Sie sie auf unserer:\nDiscord Server: %1$s\nTelegrammkanal: %2$s</string>
+    <string name="existing_custom_tabs_title">Benutzerdefinierte Registerkarten gefunden</string>
     <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="automatically_send_reports">Crashberichte automatisch senden</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>

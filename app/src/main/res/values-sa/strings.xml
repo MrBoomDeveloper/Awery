@@ -453,7 +453,7 @@
     <string name="awery_updated_description">नूतनाः किञ्चन अद्भुतानि उपक्रमणीयानि सन्ति!</string>
     <string name="copy_link_to_clipboard">लिंकं क्लिपबोर्डे प्रति कृतं कुरु</string>
     <string name="extension_load_failed">विस्तारम् लोड् कर्तुम् असफलम्!</string>
-    <string name="failed_to_connect_to_server">सर्वरस्य संयोजनं असफलम्!</string>
+    <string name="failed_to_connect_to_server">सर्वरस्य संयोजनं विफलम्!</string>
     <string name="server_internal_error">अन्तःसर्वरदोषः अभवत्, कृपया पुनः प्रयासं कुरु।</string>
     <string name="server_unavailable">सर्वरः अद्य उपलब्धः नास्ति, कृपया पुनः प्रयासं कुरु।</string>
     <string name="unknown_net_error">अज्ञातं जालदोषः</string>
@@ -471,13 +471,13 @@
     <string name="open_link_externally">बाह्यद्वारकत्वेन उद्घाटय</string>
     <string name="backup_success">सफलता सह प्रतिसङ्ग्रहः निर्मितः!</string>
     <string name="update_available">अद्यतनं उपलब्धम्!</string>
-    <string name="dismiss">त्यजतु</string>
+    <string name="dismiss">उत्सृज्यताम्</string>
     <string name="select_language">भाषाम् चयनं कुरु</string>
     <string name="see_error">दोषम् पश्यतु</string>
     <string name="built_at">निर्मितं</string>
     <string name="wallpaper_based_colors">एप् संस्तरणं भवतः पृष्टभूम्यां आधारितम्!</string>
-    <string name="size">आकारः</string>
-    <string name="download">अपनयतु</string>
+    <string name="size">परिमाणः</string>
+    <string name="download">अवारोप्यताम्</string>
     <string name="failed_bypass_detailed">%s द्वारा निवेदनं विहितं। समस्या समाधानाय कॅप्चा पूर्णं कृत्वा पुनः यतस्व।</string>
     <string name="version">संस्करणम्</string>
     <string name="awery_updated_title">Awery अद्यतनम् अभवत्!</string>
