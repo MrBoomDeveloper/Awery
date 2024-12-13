@@ -67,7 +67,7 @@
     <string name="synonyms">Sinonimi</string>
     <string name="trailer">Trailer</string>
     <string name="prequel">Prequel</string>
-    <string name="sequel">Sequel</string>
+    <string name="sequel">Seguito</string>
     <string name="settings">Impostazioni</string>
     <string name="extensions">Estensioni</string>
     <string name="player_settings">Impostazioni Lettore</string>
@@ -77,7 +77,7 @@
     <string name="ui">Interfaccia Utente</string>
     <string name="common">Comune</string>
     <string name="theme">Tema</string>
-    <string name="about">Informazioni</string>
+    <string name="about">Di</string>
     <string name="devs">Sviluppatori</string>
     <string name="disclaimer">Dichiarazione di Non Responsabilità</string>
     <string name="end_date">Data Fine</string>
@@ -86,7 +86,7 @@
     <string name="default_source">Fonte Predefinita</string>
     <string name="download_manager_select">Gestore Download</string>
     <string name="list_editor">Editor Lista</string>
-    <string name="ending">Ending</string>
+    <string name="ending">Fine</string>
     <string name="video_info_info">Mostra la risoluzione del video attualmente in riproduzione, utile per i server <b>\"Multi Quality\"</b>.</string>
     <string name="default_quality">Selezione Qualità Automatica</string>
     <string name="height">Altezza</string>
@@ -387,7 +387,7 @@
     <string name="global_excluded_tags">Escludi Tag Globalmente</string>
     <string name="new_list">Nuova Lista</string>
     <string name="no_media_found">Nessun media trovato. Prova a modificare la tua ricerca e i filtri.</string>
-    <string name="opening">Opening</string>
+    <string name="opening">Apertura</string>
     <string name="select_template">Seleziona un modello</string>
     <string name="custom_tabs">Tab Personalizzati</string>
     <string name="select_icon">Seleziona un\'icona</string>
@@ -455,11 +455,11 @@
     <string name="size">Dimensione</string>
     <string name="were_done">Fatto!</string>
     <string name="version">Versione</string>
-    <string name="dismiss">Sospeso</string>
+    <string name="dismiss">Chiudi</string>
     <string name="checking_database">Controllo del database</string>
-    <string name="mark_not_watched">Rimuovi da quelli osservati</string>
+    <string name="mark_not_watched">Rimuovi dai già visti</string>
     <string name="database_corrupted">Database danneggiato!</string>
-    <string name="bad_request">Richiesta negativa</string>
+    <string name="bad_request">Richiesta non valida</string>
     <string name="extension_load_failed">Impossibile caricare un\'estensione!</string>
     <string name="failed_to_connect_to_server">Connessione al server fallita!</string>
     <string name="server_internal_error">Si è verificato un errore interno del server. Riprova più tardi.</string>
@@ -469,34 +469,34 @@
     <string name="color_palette_description">I colori preferiti ti sollevano il morale :)</string>
     <string name="awery_updated_description">Abbiamo alcune nuove fantastiche cose da installare!</string>
     <string name="searching_episodes_for">Ricerca episodi per %s</string>
-    <string name="selected_s">Selezionato %s</string>
+    <string name="selected_s">Selezionati: %s</string>
     <string name="loading_videos_list">Caricamento elenco video</string>
-    <string name="buffering_video">Buffering video</string>
+    <string name="buffering_video">Video buffering</string>
     <string name="delete_confirmation">Eliminare %s?</string>
-    <string name="copy_link_to_clipboard">Copia il collegamento negli appunti</string>
+    <string name="copy_link_to_clipboard">Copia token negli Appunti</string>
     <string name="backup_success">Backup creato con successo!</string>
     <string name="restore_success">Backup ripristinato con successo!</string>
-    <string name="select_language">Seleziona lingua</string>
+    <string name="select_language">Seleziona Lingua</string>
     <string name="see_error">Vedi errore</string>
     <string name="built_at">Creato a</string>
-    <string name="download">Scaricare</string>
+    <string name="download">Scarica</string>
     <string name="server_unavailable">Il server non è al momento disponibile. Riprova più tardi.</string>
     <string name="unknown_net_error">Errore di rete sconosciuto</string>
     <string name="checking_if_crash_occurred">Controllare se si è verificato un arresto anomalo</string>
-    <string name="mark_watched">Contrassegna come visto</string>
+    <string name="mark_watched">Segna come visto</string>
     <string name="open_link_externally">Apri nel browser esterno</string>
     <string name="wallpaper_based_colors">Il colore dell\'app sarà basato sul tuo sfondo!</string>
     <string name="failed_bypass_detailed">La tua richiesta è stata bloccata da %s. Prova a completare un captcha e ad aggiornare per risolvere questo problema.</string>
     <string name="welcome_to_app_description">L\'app perfetta in cui puoi personalizzare tutto, con tantissime funzionalità e un aspetto elegante.</string>
     <string name="setup_finished_description">Ora puoi andare a guardare i tuoi programmi preferiti. Speriamo che questa app ti piaccia! Se vuoi, puoi inviarci una recensione con ciò che ti è piaciuto :)</string>
     <string name="app_name" translatable="false">Awery</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="analytics_title">Analitiche</string>
+    <string name="generic_message">In questa versione beta, non puoi installare le estensioni direttamente tramite l\'app :(\nAl momento, puoi scaricarle dal nostro:\nServer Discord: %1$s\nCanale Telegram: %2$s</string>
+    <string name="existing_custom_tabs_title">Schede personalizzate esistenti trovate</string>
+    <string name="existing_custom_tabs_message">Per utilizzare un modello, dobbiamo eliminare tutte le schede personalizzate con i feed. Se non lo desideri, seleziona semplicemente Nessuno.</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="automatically_send_reports">Automatically send crash reports</string>
+    <string name="dantotsu_message">Il modello Dantotsu richiede alcune estensioni per funzionare.\nIn questa versione beta, non puoi installare le estensioni direttamente tramite l\'app :(\nAttualmente puoi scaricarle dal nostro:\nServer Discord: %1$s\nCanale Telegram: %2$s</string>
+    <string name="automatically_send_reports">Invia automaticamente i rapporti sugli arresti anomali</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
 </resources>

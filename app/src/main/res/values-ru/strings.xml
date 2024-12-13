@@ -386,7 +386,7 @@
     <string name="enabled">Включено</string>
     <string name="show_only_it">Показать только это</string>
     <string name="adult_content">Контент для взрослых</string>
-    <string name="extension_installed_successfully">Расширение успешно установлено!</string>
+    <string name="extension_installed_successfully">Расширение установлено!</string>
     <string name="extension_installed_failed">Не удалось установить расширение!</string>
     <string name="select_template">Выберите шаблон</string>
     <string name="custom_tabs">Пользовательские вкладки</string>
@@ -450,11 +450,11 @@
     <string name="banned">Вы забанены</string>
     <string name="show_spoilers">Показать спойлеры</string>
     <string name="selected_s">Выбрано %s</string>
-    <string name="mark_not_watched">Удалить из просмотренного</string>
+    <string name="mark_not_watched">Убрать отметку</string>
     <string name="update_available">Доступно обновление!</string>
     <string name="bad_request">Плохой запрос</string>
     <string name="version">Версия</string>
-    <string name="mark_watched">Пометить как просмотренное</string>
+    <string name="mark_watched">Пометить проигранным</string>
     <string name="awery_updated_description">У нас есть несколько новых потрясающих вещей, которые нужно настроить!</string>
     <string name="awery_updated_title">Awery был обновлен!</string>
     <string name="were_done">Мы закончили!</string>
@@ -472,8 +472,8 @@
     <string name="delete_confirmation">Удалить %s?</string>
     <string name="open_link_externally">Открыть во внешнем браузере</string>
     <string name="backup_success">Резервная копия создана успешно!</string>
-    <string name="dismiss">Закрыть</string>
-    <string name="select_language">Выберите язык</string>
+    <string name="dismiss">Удалить</string>
+    <string name="select_language">Выбрать язык</string>
     <string name="see_error">Увидеть ошибку</string>
     <string name="built_at">Собрано</string>
     <string name="size">Размер</string>
@@ -485,7 +485,7 @@
     <string name="server_internal_error">Произошла внутренняя ошибка сервера, пожалуйста, повторите попытку позже.</string>
     <string name="color_palette_description">Любимые цвета поднимут вам настроение :)</string>
     <string name="wallpaper_based_colors">Цвет приложения будет зависеть от ваших обоев!</string>
-    <string name="copy_link_to_clipboard">Скопировать ссылку в буфер обмена</string>
+    <string name="copy_link_to_clipboard">Скопировать токен в буфер обмена</string>
     <string name="restore_success">Резервная копия успешно восстановлена!</string>
     <string name="setup_finished_description">Теперь вы можете смотреть свои любимые передачи. Мы надеемся, что вам понравится это приложение! Если хотите, вы можете отправить нам отзыв о том, что вам понравилось :)</string>
     <string name="welcome_to_app_description">Прекрасное приложение, в котором вы можете настроить все, с множеством функций и стильным внешним видом.</string>
