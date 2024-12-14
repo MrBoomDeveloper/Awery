@@ -22,6 +22,7 @@ import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.app.update.UpdatesManager
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.db.item.DBTab
@@ -38,7 +39,6 @@ import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.bottomMargin
 import com.mrboomdev.awery.util.extensions.bottomPadding
 import com.mrboomdev.awery.util.extensions.dpPx

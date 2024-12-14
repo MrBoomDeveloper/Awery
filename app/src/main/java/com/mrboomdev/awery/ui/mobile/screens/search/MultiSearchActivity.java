@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.mobile.screens.search;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -21,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 
+import com.mrboomdev.awery.app.theme.ThemeManager;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
@@ -31,9 +31,9 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.extensions.support.internal.InternalProviders;
 import com.mrboomdev.awery.generated.AwerySettings;
-import com.mrboomdev.awery.app.theme.ThemeManager;
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 
 import java.io.File;
 import java.io.Serializable;
@@ -44,8 +44,8 @@ public class MultiSearchActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
+		ThemeManager.INSTANCE.applyTheme(this);
+		ActivityExtensionsKt.enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		var fragmentView = new FragmentContainerView(this);

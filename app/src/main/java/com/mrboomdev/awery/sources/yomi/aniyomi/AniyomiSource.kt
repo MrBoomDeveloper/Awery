@@ -2,12 +2,15 @@ package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.ext.AndroidImage
+import com.mrboomdev.awery.ext.constants.AweryAgeRating
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
-import com.mrboomdev.awery.ext.data.Settings
-import com.mrboomdev.awery.ext.source.Source
+import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.data.get
+import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.YomiSource
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.mapOfNotNull
@@ -20,30 +23,25 @@ import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-abstract class AniyomiSource(
+class AniyomiSource(
 	packageInfo: PackageInfo,
+	isEnabled: Boolean,
+	manager: YomiManager<*>,
+	ageRating: AweryAgeRating?,
+	name: String,
+	exception: Throwable?,
+	icon: AndroidImage,
 	val source: AnimeSource?
-) : YomiSource(packageInfo) {
+) : YomiSource(
+	packageInfo = packageInfo,
+	isEnabled = isEnabled,
+	manager = manager,
+	name = name,
+	ageRating = ageRating,
+	icon = icon,
+	exception = exception,
 
-	override val feeds = if(source is AnimeCatalogueSource) {
-		CatalogSearchResults(listOfNotNull(
-			CatalogFeed(
-				managerId = AniyomiManager.ID,
-				sourceId = id,
-				feedId = FEED_POPULAR,
-				title = "Popular in ${source.name}"
-			),
-
-			if(!source.supportsLatest) null else CatalogFeed(
-				managerId = AniyomiManager.ID,
-				sourceId = id,
-				feedId = FEED_LATEST,
-				title = "Latest in ${source.name}"
-			)
-		))
-	} else null
-
-	override val features = mutableListOf<AweryFeature>().apply {
+	features = mutableListOf<AweryFeature>().apply {
 		if(source is AnimeCatalogueSource) {
 			add(AweryFeature.FEEDS)
 			add(AweryFeature.SEARCH_MEDIA)
@@ -53,8 +51,27 @@ abstract class AniyomiSource(
 			add(AweryFeature.CUSTOM_SETTINGS)
 		}
 	}.toTypedArray()
+) {
 
-	private suspend fun getAnimesPage(filters: Settings): AnimesPage {
+	override val feeds = if(source is AnimeCatalogueSource) {
+		CatalogSearchResults(listOfNotNull(
+			CatalogFeed(
+				managerId = AniyomiManager.ID,
+				sourceId = context.id,
+				feedId = FEED_POPULAR,
+				title = "Popular in ${source.name}"
+			),
+
+			if(!source.supportsLatest) null else CatalogFeed(
+				managerId = AniyomiManager.ID,
+				sourceId = context.id,
+				feedId = FEED_LATEST,
+				title = "Latest in ${source.name}"
+			)
+		))
+	} else null
+
+	private suspend fun getAnimesPage(filters: List<Setting>): AnimesPage {
 		return withContext(Dispatchers.IO) {
 			if(source is AnimeCatalogueSource) {
 				val feed = filters[FILTER_FEED]?.value as? String
@@ -77,7 +94,9 @@ abstract class AniyomiSource(
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	override suspend fun <E, T : Catalog<E>> search(catalog: T, filters: Settings): CatalogSearchResults<E> {
+	override suspend fun <E, T : Catalog<E>> search(
+		catalog: T, filters: List<Setting>
+	): CatalogSearchResults<E> {
 		return when(catalog) {
 			is Catalog.Media -> getAnimesPage(filters).let { page ->
 				if(page.animes.isEmpty()) {
@@ -86,7 +105,7 @@ abstract class AniyomiSource(
 
 				CatalogSearchResults(page.animes.map { anime ->
 					CatalogMedia(
-						globalId = "${AniyomiManager.ID};;;$id;;;${anime.url}",
+						globalId = "${AniyomiManager.ID};;;${context.id};;;${anime.url}",
 						titles = arrayOf(anime.title),
 						description = anime.description,
 						poster = anime.thumbnail_url,

@@ -11,6 +11,7 @@ import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.Set;
  * An utility class for working with shared preferences.
  * @author MrBoomDev
  */
+@Deprecated(forRemoval = true)
 public class NicePreferences implements SettingsDataHandler {
 	public static final String APP_SETTINGS = "Awery";
 	private static boolean shouldReloadMapValues;
@@ -28,6 +30,7 @@ public class NicePreferences implements SettingsDataHandler {
 	private final SharedPreferences prefs;
 	private SharedPreferences.Editor editor;
 
+	@Contract(pure = true)
 	private NicePreferences(SharedPreferences prefs) {
 		this.prefs = prefs;
 	}
@@ -65,6 +68,10 @@ public class NicePreferences implements SettingsDataHandler {
 	 */
 	public boolean contains(String key) {
 		return prefs.contains(key);
+	}
+	
+	public void remove(String key) {
+		checkEditorExistence().remove(key);
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {
@@ -327,69 +334,6 @@ public class NicePreferences implements SettingsDataHandler {
 		return getPrefs(APP_SETTINGS);
 	}
 
-	public String getValue(@NonNull StringSetting setting) {
-		return getString(setting.getKey());
-	}
-
-	public NicePreferences removeValue(@NonNull BaseSetting setting) {
-		checkEditorExistence().remove(setting.getKey());
-		return this;
-	}
-
-	public <T extends Enum<T> & EnumWithKey> NicePreferences setValue(@NonNull EnumSetting<T> setting, T value) {
-		return setValue(setting.getKey(), value != null ? value.getKey() : null);
-	}
-
-	public NicePreferences setValue(@NonNull StringSetting setting, String value) {
-		return setValue(setting.getKey(), value);
-	}
-
-	public NicePreferences setValue(@NonNull IntegerSetting setting, int value) {
-		return setValue(setting.getKey(), value);
-	}
-
-	public NicePreferences setValue(@NonNull BooleanSetting setting, boolean value) {
-		return setValue(setting.getKey(), value);
-	}
-
-	public String getValue(@NonNull StringSetting setting, String defaultValue) {
-		return getString(setting.getKey(), defaultValue);
-	}
-
-	public int getValue(@NonNull IntegerSetting setting) {
-		return getInteger(setting.getKey());
-	}
-
-	public boolean getValue(@NonNull BooleanSetting setting) {
-		return getBoolean(setting.getKey());
-	}
-
-	public Boolean getValue(@NonNull BooleanSetting setting, Boolean defaultValue) {
-		return getBoolean(setting.getKey(), defaultValue);
-	}
-
-	public boolean getValue(@NonNull BooleanSetting setting, boolean defaultValue) {
-		return getBoolean(setting.getKey(), defaultValue);
-	}
-
-	public Integer getValue(@NonNull IntegerSetting setting, Integer defaultValue) {
-		return getInteger(setting.getKey(), defaultValue);
-	}
-
-	@Nullable
-	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting) {
-		var value = getString(setting.getKey());
-		return parseEnum(value, setting.getValueClass());
-	}
-
-	@Nullable
-	public <T extends Enum<T> & EnumWithKey> T getValue(@NonNull EnumSetting<T> setting, T defaultValue) {
-		var value = getString(setting.getKey(), defaultValue != null ? defaultValue.getKey() : null);
-
-		var result = parseEnum(value, setting.getValueClass());
-		return result != null ? result : defaultValue;
-	}
-
 	private static <T extends Enum<T>> T parseEnum(@Nullable String string, @Nullable Class<T> enumClass) {
 		if(string == null || enumClass == null) return null;
 
@@ -453,91 +397,5 @@ public class NicePreferences implements SettingsDataHandler {
 			case MULTISELECT -> getStringSet(item.getKey());
 			case DIVIDER, ACTION, SCREEN, CATEGORY -> null;
 		};
-	}
-
-	public interface EnumWithKey {
-		String getKey();
-
-		default SettingsItem findSetting() {
-			return getSettingsMap().findItem(getKey());
-		}
-	}
-
-	public static class EnumSetting<T extends Enum<T> & EnumWithKey> implements BaseSetting {
-		private final String key;
-		private final Class<T> clazz;
-
-		public EnumSetting(String key, Class<T> clazz) {
-			this.key = key;
-			this.clazz = clazz;
-		}
-
-		@Nullable
-		public T getValue() {
-			return getPrefs().getValue(this);
-		}
-
-		public T getValue(T defaultValue) {
-			return getPrefs().getValue(this, defaultValue);
-		}
-
-		public Class<T> getValueClass() {
-			return clazz;
-		}
-
-		@Override
-		public String getKey() {
-			return key;
-		}
-	}
-
-	public interface StringSetting extends BaseSetting {
-
-		default String getValue() {
-			return getPrefs().getValue(this);
-		}
-
-		default String getValue(String defaultValue) {
-			return getPrefs().getValue(this, defaultValue);
-		}
-	}
-
-	public interface IntegerSetting extends BaseSetting {
-
-		default int getValue() {
-			return getPrefs().getValue(this);
-		}
-
-		default Integer getValue(Integer defaultValue) {
-			return getPrefs().getValue(this, defaultValue);
-		}
-	}
-
-	public interface BooleanSetting extends BaseSetting {
-
-		default boolean getValue() {
-			return getPrefs().getValue(this);
-		}
-
-		@Nullable
-		default Boolean getValue(Boolean defaultValue) {
-			return getPrefs().getValue(this, defaultValue);
-		}
-
-		default boolean getValue(boolean defaultValue) {
-			return getPrefs().getValue(this, defaultValue);
-		}
-	}
-
-	public interface BaseSetting {
-		String getKey();
-
-		default SettingsItem asSetting() {
-			return getSettingsMap().findItem(getKey());
-		}
-
-		default boolean exists() {
-			return getPrefs().contains(getKey());
-		}
 	}
 }

@@ -32,6 +32,7 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.app.theme.TvTheme
+import com.mrboomdev.awery.AwerySettings
 
 private val SHADOW_COLOR = Color(0xBB000000)
 
@@ -167,7 +168,11 @@ fun MediaScreen(media: CatalogMedia) {
 	device = "id:tv_720p"
 )
 fun MediaScreenPreview() {
-	TvTheme {
+	TvTheme(
+		palette = AwerySettings.ThemeColorPaletteValue.RED,
+		isDark = true,
+		isAmoled = false
+	) {
 		MediaScreen(CatalogMedia(
 			globalId = "MANAGER_ID;;;SOURCE_ID;;;MEDIA_ID",
 			description = "Lorem ipsum blah blah blah... ".repeat(10),

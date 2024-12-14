@@ -110,10 +110,6 @@ fun Activity.addOnBackPressedListener(callback: () -> Unit) {
     }
 }
 
-fun Activity.applyTheme() {
-    ThemeManager.apply(this)
-}
-
 /**
  * There is a bug in an appcompat library which sometimes throws an [NullPointerException].
  * This method tries to do it without throwing any exceptions.

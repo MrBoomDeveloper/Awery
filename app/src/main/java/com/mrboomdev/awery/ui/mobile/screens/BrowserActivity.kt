@@ -22,12 +22,12 @@ import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.cleanUrl
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.isValidUrl

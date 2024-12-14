@@ -3,7 +3,7 @@ package com.mrboomdev.awery.sources.yomi
 import android.app.Application
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
-import android.content.Context
+import android.content.Context as AndroidContext
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageInstaller
@@ -13,8 +13,12 @@ import android.util.Log
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.generateRequestCode
 import com.mrboomdev.awery.app.ExtensionsManager.isEnabled
+import com.mrboomdev.awery.ext.constants.AweryFeature
+import com.mrboomdev.awery.ext.source.Context
+import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.source.SourcesManager
+import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.util.UniqueIdGenerator
@@ -26,7 +30,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.addSingleton
@@ -35,11 +38,21 @@ import java.io.BufferedInputStream
 import java.io.InputStream
 import java.util.concurrent.CancellationException
 
-abstract class YomiManager<S, T : YomiSource>(
-	val context: Context
-): SourcesManager<T>() {
+abstract class YomiManager<S>(
+	val androidContext: AndroidContext,
+	id: String,
+	name: String,
+	icon: Image?
+): SourcesManager(object : Context() {
+	override val features = arrayOf(AweryFeature.INSTALL_REPOSITORY, AweryFeature.INSTALL_STORAGE)
+	override val id = id
+	override val isEnabled = true
+	override val name = name
+	override val exception = null
+	override val icon = icon
+}) {
 	private val pendingIntentIds = UniqueIdGenerator(Long.MIN_VALUE, UniqueIdGenerator.OverflowMode.RESET)
-	private val sources = HashMap<String, T>()
+	private val sources = HashMap<String, Source>()
 	abstract val minVersion: Double
 	abstract val maxVersion: Double
 	abstract val appLabelPrefix: String
@@ -47,19 +60,14 @@ abstract class YomiManager<S, T : YomiSource>(
 	abstract val requiredFeature: String
 	abstract val nsfwMeta: String
 
-	override fun get(id: String): T {
-		return sources[id] ?: throw NoSuchElementException(id)
-	}
-
-	override fun getAll(): List<T> {
-		return sources.values.toList()
-	}
+	override fun get(id: String) = sources[id] ?: throw NoSuchElementException(id)
+	override fun getAll() = sources.values.toMutableList()
 
 	override suspend fun load(id: String) {
 		sources[id] = createSource(id, true)
 	}
 
-	override suspend fun unload(id: String, removeFromSource: Boolean) {
+	override fun unload(id: String, removeFromSource: Boolean) {
 		if(removeFromSource) {
 			sources.remove(id)
 			return
@@ -68,8 +76,8 @@ abstract class YomiManager<S, T : YomiSource>(
 		sources[id] = createSource(id, false)
 	}
 
-	private fun getPackages(context: Context): List<PackageInfo> {
-		return context.packageManager.getInstalledPackages(PM_FLAGS)
+	private fun getPackages(): List<PackageInfo> {
+		return androidContext.packageManager.getInstalledPackages(PM_FLAGS)
 			.filter { info ->
 				if(info.reqFeatures == null) return@filter false
 
@@ -82,7 +90,7 @@ abstract class YomiManager<S, T : YomiSource>(
 			}.toList()
 	}
 
-	override fun loadAll() = getPackages(context).let { packages ->
+	override fun onLoad() = getPackages().let { packages ->
 		object : PendingTask<Flow<Progress>>() {
 			override val size = packages.size.toLong()
 
@@ -92,7 +100,7 @@ abstract class YomiManager<S, T : YomiSource>(
 					send(progress)
 
 					coroutineScope {
-						getPackages(context).map { pkg ->
+						getPackages().map { pkg ->
 							async {
 								sources[pkg.packageName] = createSource(pkg.packageName, isEnabled(pkg.packageName))
 								progress.increment()
@@ -100,8 +108,10 @@ abstract class YomiManager<S, T : YomiSource>(
 							}
 						}.awaitAll()
 
-						progress.finish()
-						send(progress)
+						if(!progress.isCompleted) {
+							progress.finish()
+							send(progress)
+						}
 					}
 				}
 		}
@@ -109,13 +119,13 @@ abstract class YomiManager<S, T : YomiSource>(
 
 	abstract fun getSourceLongId(source: S): Long
 
-	private fun createSource(packageName: String, init: Boolean): T {
+	private fun createSource(packageName: String, init: Boolean): Source {
 		var throwable: Throwable? = null
 
-		val packageInfo = context.packageManager.getPackageInfo(packageName,
+		val packageInfo = androidContext.packageManager.getPackageInfo(packageName,
 			PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA)
 
-		val label = packageInfo.applicationInfo!!.loadLabel(context.packageManager).let { appLabel ->
+		val label = packageInfo.applicationInfo!!.loadLabel(androidContext.packageManager).let { appLabel ->
 			if(appLabel.startsWith(appLabelPrefix)) {
 				return@let appLabel.substring(appLabelPrefix.length).trim { it <= ' ' }
 			} else appLabel
@@ -147,7 +157,7 @@ abstract class YomiManager<S, T : YomiSource>(
 		val classLoader = PathClassLoader(
 			packageInfo.applicationInfo!!.sourceDir,
 			null,
-			context.classLoader)
+			androidContext.classLoader)
 
 		val mainClassesString = packageInfo.applicationInfo!!.metaData.getString(mainClass)
 			?: throw NullPointerException("Main classes not found!")
@@ -187,16 +197,16 @@ abstract class YomiManager<S, T : YomiSource>(
 		packageInfo: PackageInfo,
 		sources: Array<Any>?,
 		exception: Throwable?
-	): T
+	): Source
 
 	@Throws(ExtensionInstallException::class, CancellationException::class)
-	override suspend fun install(data: PendingTask<InputStream>): T {
-		val pi = context.packageManager.packageInstaller
+	override suspend fun install(data: PendingTask<InputStream>): Source {
+		val pi = androidContext.packageManager.packageInstaller
 		val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
 			setSize(data.size ?: -1)
 
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-				setInstallerPackageName(context.packageName)
+				setInstallerPackageName(androidContext.packageName)
 				setRequestUpdateOwnership(true)
 			}
 
@@ -230,8 +240,8 @@ abstract class YomiManager<S, T : YomiSource>(
 		val operationId = pendingIntentIds.long
 		var result: Any? = null
 
-		val intentSender = PendingIntent.getBroadcast(context, generateRequestCode(),
-			Intent(context, PackageManagerReceiver::class.java).apply {
+		val intentSender = PendingIntent.getBroadcast(androidContext, generateRequestCode(),
+			Intent(androidContext, PackageManagerReceiver::class.java).apply {
 				putExtra(PackageManagerReceiver.ID_KEY, operationId)
 			}, PendingIntent.FLAG_IMMUTABLE).intentSender
 
@@ -291,12 +301,12 @@ abstract class YomiManager<S, T : YomiSource>(
 	}
 
 	override suspend fun uninstall(id: String) {
-		val pi = context.packageManager.packageInstaller
+		val pi = androidContext.packageManager.packageInstaller
 		val operationId = pendingIntentIds.long
 		var result: Any? = null
 
-		val intentSender = PendingIntent.getBroadcast(context, generateRequestCode(),
-			Intent(context, PackageManagerReceiver::class.java).apply {
+		val intentSender = PendingIntent.getBroadcast(androidContext, generateRequestCode(),
+			Intent(androidContext, PackageManagerReceiver::class.java).apply {
 				putExtra(PackageManagerReceiver.ID_KEY, operationId)
 			}, PendingIntent.FLAG_IMMUTABLE).intentSender
 
@@ -344,7 +354,7 @@ abstract class YomiManager<S, T : YomiSource>(
 	companion object {
 		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
 
-		fun initYomiShit(context: Context) {
+		fun initYomiShit(context: AndroidContext) {
 			Injekt.addSingleton<Application>(context.applicationContext as Application)
 			Injekt.addSingleton(NetworkHelper(context))
 
@@ -358,7 +368,7 @@ abstract class YomiManager<S, T : YomiSource>(
 	}
 
 	class PackageManagerReceiver: BroadcastReceiver() {
-		override fun onReceive(context: Context?, intent: Intent?) {
+		override fun onReceive(context: AndroidContext?, intent: Intent?) {
 			if(intent == null || !intent.hasExtra(ID_KEY)) return
 
 			val key = intent.getLongExtra(ID_KEY, 0)

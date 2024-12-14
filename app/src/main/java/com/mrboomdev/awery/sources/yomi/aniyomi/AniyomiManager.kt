@@ -2,20 +2,24 @@ package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import android.content.Context
 import android.content.pm.PackageInfo
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.ext.AndroidImage
 import com.mrboomdev.awery.ext.constants.AweryAgeRating
 import com.mrboomdev.awery.sources.yomi.YomiManager
-import com.mrboomdev.awery.util.AndroidImage
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
 import eu.kanade.tachiyomi.source.SourceFactory
 
 class AniyomiManager(
 	context: Context
-): YomiManager<AnimeSource, AniyomiSource>(context) {
+): YomiManager<AnimeSource>(
+	androidContext = context,
+	id = ID,
+	name = "Aniyomi",
+	icon = AndroidImage(R.drawable.logo_aniyomi)
+) {
 	override val minVersion = 12.0
 	override val maxVersion = 15.0
-	override val name = "Aniyomi"
-	override val id = ID
 
 	override val appLabelPrefix = "Aniyomi: "
 	override val nsfwMeta = "tachiyomi.animeextension.nsfw"
@@ -62,24 +66,22 @@ class AniyomiManager(
 		packageInfo: PackageInfo,
 		sources: Array<Any>?,
 		exception: Throwable?
-	): AniyomiSource {
-		val selectedSource = getSelected(sources)
+	) = getSelected(sources).let { selectedSource ->
+		AniyomiSource(
+			isEnabled = selectedSource != null,
+			source = selectedSource,
+			packageInfo = packageInfo,
+			manager = this,
+			exception = exception,
+			name = selectedSource?.name ?: label,
 
-		return object : AniyomiSource(packageInfo, selectedSource) {
-			override val manager = this@AniyomiManager
-			override val exception = exception
+			icon = AndroidImage(packageInfo.applicationInfo!!
+				.loadIcon(androidContext.packageManager)),
 
-			override val ageRating = (if(isNsfw) {
+			ageRating = if(isNsfw) {
 				AweryAgeRating.NSFW
-			} else AweryAgeRating.EVERYONE).toString()
-
-			override val icon = AndroidImage(packageInfo
-				.applicationInfo!!.loadIcon(context.packageManager))
-
-			override val name by lazy {
-				selectedSource?.name ?: label
-			}
-		}
+			} else null
+		)
 	}
 
 	override fun getSourceLongId(source: AnimeSource): Long {

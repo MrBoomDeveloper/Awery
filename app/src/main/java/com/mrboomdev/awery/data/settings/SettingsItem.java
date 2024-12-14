@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated(forRemoval = true)
 public class SettingsItem implements Serializable {
 	private static final String VAR_PREFIX = "${VAR.";
 	private String key, title, description, icon, behaviour;

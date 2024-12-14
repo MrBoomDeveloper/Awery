@@ -27,11 +27,11 @@ import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.openUrl
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenAboutBinding
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity.Contributor
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.bottomMargin
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge

@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,12 +35,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.get
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,6 +54,19 @@ fun FeedsGroup(
 	listState: LazyListState = rememberLazyListState(),
 	isLoading: Boolean = false
 ) {
+	val coroutineScope = rememberCoroutineScope()
+	var didWaitToFixScroll by remember { mutableStateOf(false) }
+	var didFixScroll by remember { mutableStateOf(false) }
+
+	if((sections?.size ?: 0) > 0 && !didWaitToFixScroll && !didFixScroll) {
+		didFixScroll = true
+
+		coroutineScope.launch {
+			delay(500L)
+			didWaitToFixScroll = true
+		}
+	}
+
 	// a bring into view spec that pivots around the center of the scrollable container
 	val customBringIntoViewSpec = object : BringIntoViewSpec {
 		val customAnimationSpec = tween<Float>(easing = LinearEasing)
@@ -88,9 +107,11 @@ fun FeedsGroup(
 			if(!isLoading && sections.isNullOrEmpty() && (failedSections.isNullOrEmpty() || failedSections.find { !it.feed.hideIfEmpty } == null)) {
 				item("empty") {
 					Column(
-						modifier = Modifier.fillMaxWidth()
+						modifier = Modifier
+							.fillMaxWidth()
 							.height(LocalConfiguration.current.screenHeightDp.dp)
-							.padding(bottom = 32.dp),
+							.padding(bottom = 32.dp)
+							.animateItem(),
 						horizontalAlignment = Alignment.CenterHorizontally,
 						verticalArrangement = Arrangement.Center
 					) {
@@ -126,8 +147,10 @@ fun FeedsGroup(
 
 					when(loaded.feed.style) {
 						CatalogFeed.Style.SLIDER -> FeaturedMediaCarousel(
+							modifier = Modifier
+								.height((LocalConfiguration.current.screenHeightDp - 50).dp)
+								.animateItem(),
 							content = loaded.items!!.toList(),
-							modifier = Modifier.height((LocalConfiguration.current.screenHeightDp - 50).dp),
 							onItemSelected = onItemSelected
 						)
 
@@ -136,11 +159,17 @@ fun FeedsGroup(
 						CatalogFeed.Style.UNSPECIFIED -> {
 							if(index == 0 && loaded.feed.filters?.get("first_large")?.value as? Boolean == true) {
 								FeaturedMediaCarousel(
+									modifier = Modifier
+										.height((LocalConfiguration.current.screenHeightDp - 50).dp)
+										.animateItem(),
 									content = loaded.items!!.toList(),
-									modifier = Modifier.height((LocalConfiguration.current.screenHeightDp - 50).dp),
 									onItemSelected = onItemSelected
 								)
 							} else {
+								if(index == 0) {
+									Spacer(Modifier.padding(8.dp))
+								}
+
 								MediaRow(
 									content = loaded,
 									onItemSelected = onItemSelected
@@ -148,18 +177,30 @@ fun FeedsGroup(
 							}
 						}
 
-						else -> MediaRow(
-							content = loaded,
-							onItemSelected = onItemSelected
-						)
+						else -> {
+							if(index == 0) {
+								Spacer(Modifier.padding(8.dp))
+							}
+
+							MediaRow(
+								content = loaded,
+								onItemSelected = onItemSelected
+							)
+						}
 					}
 				}
 			}
 
-			if(isLoading) {
+			if(isLoading && sections.isNullOrEmpty() || (!sections.isNullOrEmpty() && didWaitToFixScroll)) {
 				item("isLoading") {
+					if(sections.isNullOrEmpty()) {
+						Spacer(Modifier.padding(32.dp))
+					}
+
 					Row(
-						modifier = Modifier.fillMaxWidth().padding(top = 32.dp, bottom = 48.dp),
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(48.dp),
 						horizontalArrangement = Arrangement.Center
 					) {
 						CircularProgressIndicator()
@@ -167,13 +208,19 @@ fun FeedsGroup(
 				}
 			}
 
-			if(!failedSections.isNullOrEmpty()) {
-				items(
+			// Hide failed to load feeds before any feed would be loaded,
+			// so that ui won't jump to bottom upon it's load.
+			if(failedSections != null && (!isLoading || !sections.isNullOrEmpty())) {
+				itemsIndexed(
 					items = failedSections,
-					key = { it.feed }
-				) {
+					key = { _, item -> item.feed }
+				) { index, it ->
 					if(it.feed.hideIfEmpty && (it.throwable == null || it.throwable is ZeroResultsException)) {
-						return@items
+						return@itemsIndexed
+					}
+
+					if(index == 0 && sections.isNullOrEmpty() && !isLoading) {
+						Spacer(Modifier.padding(8.dp))
 					}
 
 					MediaRow(

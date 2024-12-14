@@ -50,16 +50,16 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.theme.ThemeManager.isDarkModeEnabled
+import com.mrboomdev.awery.app.AweryNotifications.registerNotificationChannels
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.db.AweryDB
 import com.mrboomdev.awery.data.db.item.DBCatalogList
 import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.app.theme.ThemeManager
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.app.update.UpdatesChannel
 import com.mrboomdev.awery.extensions.data.CatalogList
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.extensions.configuration
@@ -96,20 +96,20 @@ class App : Application() {
 	}
 
 	override fun onCreate() {
-		AweryNotifications.registerNotificationChannels()
-		ThemeManager.applyApp(this)
+		AndroidGlobals.applicationContext = this
+		registerNotificationChannels()
+		applyTheme()
 
 		super.onCreate()
 		setupStrictMode()
 		patchInjekt()
 		BigImageViewer.initialize(GlideCustomImageLoader.with(this))
 
-		// Note: I'm so sorry. I've just waste the whole day to try fixing THIS SHIT!!!!
-		// And in result in nothing! FUCKIN LIGHT THEME! WHY DOES IT EXIST!?!?!?!?!?!?!?!?!?!?
-		// SYKA BLYYYYYYAAAAAAAT
-		AwerySettings.USE_DARK_THEME.getValue(isDarkModeEnabled())
+		if(AwerySettings.USE_DARK_THEME.value == null) {
+			AwerySettings.USE_DARK_THEME.value = ThemeManager.isDarkModeEnabled
+		}
 
-		if(AwerySettings.LOG_NETWORK.value) {
+		if(AwerySettings.LOG_NETWORK.value == true) {
 			val logFile = File(getExternalFilesDir(null), "okhttp3_log.txt")
 			logFile.delete()
 
@@ -135,7 +135,7 @@ class App : Application() {
 			}
 		}
 
-		if(AwerySettings.LAST_OPENED_VERSION.value < 1) {
+		if(AwerySettings.LAST_OPENED_VERSION.value.let { it ?: -1 } < 1) {
 			CoroutineScope(Dispatchers.IO).launch {
 				database.listDao.insert(
 					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.currently_watching), "1")),
@@ -148,7 +148,7 @@ class App : Application() {
 					DBCatalogList.fromCatalogList(CatalogList("History", Constants.CATALOG_LIST_HISTORY))
 				)
 
-				getPrefs().setValue(AwerySettings.LAST_OPENED_VERSION, 1).saveSync()
+				AwerySettings.LAST_OPENED_VERSION.value = 1
 			}
 		}
 	}
@@ -255,16 +255,25 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		fun i18n(clazz: Class<*>, string: String?): String? {
+		@Deprecated("old shit", ReplaceWith(
+			"PlatformResources.i18n(string, *args)",
+			"com.mrboomdev.awery.platform.PlatformResources"))
+		fun i18n(clazz: Class<*>, string: String?, vararg args: Any): String? {
 			val id = getResourceId(clazz, string)
-			return if(id == 0) null else i18n(id)
+			return if(id == 0) null else i18n(id, *args)
 		}
 
-		inline fun <reified T> i18n(resourceId: String): String? {
-			return i18n(T::class.java, resourceId)
+		@Deprecated("old shit", ReplaceWith(
+			"PlatformResources.i18n(resourceId, *args)",
+			"com.mrboomdev.awery.platform.PlatformResources"))
+		inline fun <reified T> i18n(resourceId: String, vararg args: Any): String? {
+			return i18n(T::class.java, resourceId, *args)
 		}
 
 		@JvmStatic
+		@Deprecated("old shit", ReplaceWith(
+			"PlatformResources.i18n(res, *params)",
+			"com.mrboomdev.awery.platform.PlatformResources"))
 		fun i18n(@StringRes res: Int, vararg params: Any) =
 			ContextCompat.getContextForLanguage(appContext).getString(res, *params)
 
@@ -410,7 +419,7 @@ class App : Application() {
 
 			val customTabsIntent = CustomTabsIntent.Builder().apply {
 				setColorScheme(
-					if(isDarkModeEnabled()) CustomTabsIntent.COLOR_SCHEME_DARK
+					if(ThemeManager.isDarkModeEnabled) CustomTabsIntent.COLOR_SCHEME_DARK
 					else CustomTabsIntent.COLOR_SCHEME_LIGHT)
 			}.build().apply {
 				intent.data = Uri.parse(url)
@@ -469,9 +478,9 @@ class App : Application() {
 			get() = Resources.getSystem().configuration.orientation
 
 		@JvmStatic
-		val navigationStyle: NavigationStyle_Values
+		val navigationStyle: AwerySettings.NavigationStyleValue
 			get() = AwerySettings.NAVIGATION_STYLE.value.let {
-				if((it == null || isTv)) NavigationStyle_Values.MATERIAL else it
+				if((it == null || isTv)) AwerySettings.NavigationStyleValue.MATERIAL else it
 			}
 
 		@Deprecated(message = "java shit")

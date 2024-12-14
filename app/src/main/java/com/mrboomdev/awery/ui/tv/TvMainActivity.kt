@@ -5,36 +5,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.mrboomdev.awery.data.settings.NicePreferences
-import com.mrboomdev.awery.app.theme.TvTheme
+import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.data.settings.NicePreferences
+import com.mrboomdev.awery.platform.PlatformSetting
+import com.mrboomdev.awery.ui.mobile.components.MobileSetting
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
+import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.tv.screens.home.HomeScreen
 import com.mrboomdev.awery.ui.tv.screens.media.MediaScreen
-import com.mrboomdev.awery.ui.tv.screens.SettingsScreen
 import com.mrboomdev.awery.util.NavUtils
+import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
+import com.mrboomdev.awery.util.extensions.readAssets
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import java.io.File
 import kotlin.reflect.typeOf
 
 class TvMainActivity : ComponentActivity() {
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
-		setContent {
-			TvTheme {
-				Navigation()
-			}
+		enableEdgeToEdge()
+		setThemedContent {
+			Navigation()
 		}
 	}
 
+	@OptIn(ExperimentalSerializationApi::class, ExperimentalMaterial3AdaptiveApi::class)
 	@Composable
 	fun Navigation() {
 		val navController = rememberNavController()
@@ -55,7 +64,23 @@ class TvMainActivity : ComponentActivity() {
 			}
 
 			composable<Screens.Settings> {
-				SettingsScreen(screen = NicePreferences.getSettingsMap())
+				val settings = remember {
+					@Suppress("JSON_FORMAT_REDUNDANT")
+					Json {
+						decodeEnumsCaseInsensitive = true
+						isLenient = true
+					}.decodeFromString<PlatformSetting>(
+						File("app_settings.json").readAssets()
+					).apply {
+						restoreValues()
+					}
+				}
+
+				SettingsScreen(
+					setting = settings,
+					settingComposable = { setting, onOpenScreen, isSelected ->
+						MobileSetting(setting, onOpenScreen, isSelected) }
+				)
 			}
 		}
 	}
@@ -73,7 +98,7 @@ sealed class Screens {
 class TvExperimentsActivity: Activity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		SettingsActivity.start(this, AwerySettings.get("experiments"))
+		SettingsActivity.start(this, NicePreferences.getSettingsMap().findItem("experiments"))
 		finish()
 	}
 }

@@ -15,7 +15,7 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.ext.data.CatalogTag;
-import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.AwerySettings;
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity;
 import com.mrboomdev.safeargsnext.SafeArgsIntent;
 

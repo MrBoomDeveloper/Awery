@@ -46,6 +46,7 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.cancelDelayed
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.ScreenPlayerBinding
@@ -53,13 +54,11 @@ import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.AwerySettings.PlayerGesturesMode_Values
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.bottomMargin
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.leftMargin
@@ -103,10 +102,10 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 	var video: CatalogVideoFile? = null
 	@JvmField
 	var player: ExoPlayer? = null
-	private var doubleTapSeek = 0
+	private var doubleTapSeek by AwerySettings.PLAYER_DOUBLE_TAP_SEEK_LENGTH
 	private var bigSeek = 0
 	@JvmField
-	var gesturesMode: PlayerGesturesMode_Values? = null
+	var gesturesMode: AwerySettings.PlayerGesturesModeValue? = null
 	private var videoItem: MediaItem? = null
 
 	@SuppressLint("ClickableViewAccessibility", "UnspecifiedRegisterReceiverFlag")
@@ -338,7 +337,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 	}
 
 	override fun onPictureInPictureRequested(): Boolean {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && AwerySettings.PIP_ON_BACKGROUND.value) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && AwerySettings.PIP_ON_BACKGROUND.value == true) {
 			enterPictureInPictureMode(pipParams)
 		}
 
@@ -346,8 +345,8 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 	}
 
 	private fun loadSettings() {
-		doubleTapSeek = AwerySettings.PLAYER_DOUBLE_TAP_SEEK_LENGTH.value
-		bigSeek = AwerySettings.PLAYER_BIG_SEEK_LENGTH.value
+		doubleTapSeek =
+		bigSeek = AwerySettings.PLAYER_BIG_SEEK_LENGTH.value ?: 0
 		gesturesMode = AwerySettings.PLAYER_GESTURES_MODE.value
 	}
 

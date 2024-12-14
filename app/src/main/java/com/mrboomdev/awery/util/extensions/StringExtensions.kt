@@ -8,7 +8,6 @@ import java.io.File
 import java.net.MalformedURLException
 import java.net.URISyntaxException
 import java.net.URL
-import kotlin.math.min
 
 private val REMOVE_LAST_URL_CHARS = arrayOf("/", "?", "#", "&", " ")
 private const val FILE_SIZE_BORDER = 1000 / 1024

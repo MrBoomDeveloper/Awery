@@ -28,5 +28,4 @@ output.json
 
 #other
 scripts/
-app/awery_gen/
 /.kotlin/

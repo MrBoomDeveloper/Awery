@@ -17,14 +17,14 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.share
 import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogVideo
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.ui.FadeTransformer
@@ -58,7 +58,7 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 		}
 
 		binding.navigation.apply {
-			if(AwerySettings.USE_AMOLED_THEME.value) {
+			if(AwerySettings.USE_AMOLED_THEME.value == true) {
 				setBackgroundColor(0x00000000)
 			}
 
@@ -75,7 +75,7 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 			}
 
 			applyInsets(UI_INSETS, { view, insets ->
-				if(AwerySettings.USE_AMOLED_THEME.value) {
+				if(AwerySettings.USE_AMOLED_THEME.value == true) {
 					view.setBackgroundColor(-0x1000000)
 					window.navigationBarColor = if(isLandscape) 0 else -0x1000000
 				} else {

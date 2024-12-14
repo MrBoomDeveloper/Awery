@@ -72,19 +72,5 @@ object FileUtil {
 
 	@JvmStatic
 	@Throws(IOException::class)
-	fun readAssets(path: String?): String {
-		BufferedReader(
-			InputStreamReader(
-				appContext.assets.open(path!!), StandardCharsets.UTF_8
-			)
-		).use { reader ->
-			val builder = StringBuilder()
-			var line: String?
-
-			while((reader.readLine().also { line = it }) != null) {
-				builder.append(line)
-			}
-			return builder.toString()
-		}
-	}
+	fun readAssets(path: String) = appContext.assets.open(path).readBytes().decodeToString()
 }

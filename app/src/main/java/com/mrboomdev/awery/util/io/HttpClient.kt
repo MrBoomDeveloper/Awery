@@ -2,7 +2,7 @@ package com.mrboomdev.awery.util.io
 
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.async.AsyncUtils
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ object HttpClient {
 				Cache(it, 10 * 1024 * 1024 /* 10mb */)
 			})
 
-			if(AwerySettings.LOG_NETWORK.value) {
+			if(AwerySettings.LOG_NETWORK.value == true) {
 				addNetworkInterceptor(HttpLoggingInterceptor().apply {
 					level = HttpLoggingInterceptor.Level.BODY
 				})

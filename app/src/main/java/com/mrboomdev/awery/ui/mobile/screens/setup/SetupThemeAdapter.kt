@@ -18,16 +18,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.i18n
+import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
 import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.AwerySettings.ThemeColorPalette_Values
+import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.AwerySettings.ThemeColorPaletteValue
 import com.mrboomdev.awery.app.theme.ThemeManager
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
+import com.mrboomdev.awery.asSetting
+import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.findSetting
+import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.platform.PlatformResources.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.balloon
 import com.mrboomdev.awery.util.extensions.bottomPadding
 import com.mrboomdev.awery.util.extensions.dpPx
@@ -38,12 +44,12 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.skydoves.balloon.BalloonAlign
 
 class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Adapter<SetupThemeAdapter.ViewHolder?>() {
-	private val isAmoled = AwerySettings.USE_AMOLED_THEME.value
+	private val isAmoled = AwerySettings.USE_AMOLED_THEME.value == true
 	private val materialYouDrawable: Drawable?
 	private val selectedDrawable: Drawable
 	private val themes: MutableList<Theme> = ArrayList()
 	private val context: Context
-	private var didSuggestYou = AwerySettings.DID_SUGGEST_MATERIAL_YOU.getValue(false)
+	private var didSuggestYou = AwerySettings.DID_SUGGEST_MATERIAL_YOU.value == true
 	var selected: Theme?
 
 	/**
@@ -53,7 +59,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 	 * @author MrBoomDev
 	 */
 	init {
-		val palette = ThemeManager.getCurrentColorPalette()
+		val palette = ThemeManager.currentColorPalette
 		this.context = context
 
 		selectedDrawable = GradientDrawable().apply {
@@ -72,7 +78,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 				GradientDrawable().apply {
 					shape = GradientDrawable.OVAL
 					setColor(ContextThemeWrapper(context,
-						ThemeManager.getThemeRes(ThemeColorPalette_Values.MATERIAL_YOU, isAmoled)
+						ThemeManager.getThemeRes(ThemeColorPaletteValue.MATERIAL_YOU, isAmoled)
 					).resolveAttrColor(com.google.android.material.R.attr.colorPrimary))
 				},
 
@@ -80,11 +86,9 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			))
 		}
 
-		for(theme in ThemeColorPalette_Values.entries.toTypedArray()) {
-			val setting = theme.findSetting()
-			if(!setting.isVisible) continue
-
-			themes.add(Theme(theme, setting))
+		for(theme in ThemeColorPaletteValue.entries.toTypedArray()) {
+			if(theme == ThemeColorPaletteValue.MATERIAL_YOU && !DynamicColors.isDynamicColorAvailable()) continue
+			themes.add(Theme(theme, theme.findSetting()))
 		}
 
 		selected = themes.find { it.id == palette.key }
@@ -136,7 +140,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			binding.root.background = if(this.theme === selected) selectedDrawable
 			else ContextCompat.getDrawable(context, R.drawable.ui_button_popup_background)
 
-			if(theme.palette == ThemeColorPalette_Values.MATERIAL_YOU) {
+			if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU) {
 				binding.root.setImageDrawable(materialYouDrawable)
 			} else {
 				imageDrawable.setColor(ContextThemeWrapper(context,
@@ -147,15 +151,15 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 				binding.root.setImageDrawable(imageDrawable)
 			}
 
-			if(theme.palette == ThemeColorPalette_Values.MATERIAL_YOU && !didSuggestYou) {
-				binding.root.balloon(i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
+			if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU && !didSuggestYou) {
+				binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
 				didSuggestYou = true
-				getPrefs().setValue(AwerySettings.DID_SUGGEST_MATERIAL_YOU, true).saveAsync()
+				AwerySettings.DID_SUGGEST_MATERIAL_YOU.value = true
 			}
 
 			binding.root.setOnLongClickListener {
-				if(theme.palette == ThemeColorPalette_Values.MATERIAL_YOU) {
-					binding.root.balloon(i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
+				if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU) {
+					binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
 					return@setOnLongClickListener true
 				}
 
@@ -164,16 +168,16 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 		}
 	}
 
-	inner class Theme(val palette: ThemeColorPalette_Values, private val item: SettingsItem) {
+	inner class Theme(val palette: ThemeColorPaletteValue, private val item: Setting) {
 		val id: String
 			get() = palette.key
 
 		val name: String
-			get() = item.getTitle(context)
+			get() = item.title!!
 
 		@SuppressLint("PrivateResource", "RestrictedApi")
 		fun apply() {
-			getPrefs().setValue(AwerySettings.THEME_COLOR_PALETTE, palette).saveSync()
+			AwerySettings.THEME_COLOR_PALETTE.value = palette
 
 			for(activity in getActivities<AppCompatActivity>()) {
 				activity.recreate()
@@ -200,7 +204,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 					init {
 						items.add(AwerySettings.USE_DARK_THEME.asSetting())
 
-						if(AwerySettings.USE_DARK_THEME.value) {
+						if(AwerySettings.USE_DARK_THEME.value == true) {
 							items.add(AwerySettings.USE_AMOLED_THEME.asSetting())
 						}
 					}
@@ -219,7 +223,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 						getPrefs().setValue(item.key, (newValue as Boolean)).saveSync()
 
 						if(AwerySettings.USE_DARK_THEME.key == item.key) {
-							ThemeManager.applyApp(context)
+							appContext.applyTheme()
 							return
 						}
 
@@ -231,7 +235,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 
 					override fun restoreValue(item: SettingsItem): Any {
 						if(AwerySettings.USE_DARK_THEME.key == item.key) {
-							return getPrefs().getBoolean(item.key, ThemeManager.isDarkModeEnabled())
+							return getPrefs().getBoolean(item.key, ThemeManager.isDarkModeEnabled)
 						}
 
 						// NOTE: There are only boolean settings, so we don't expect other setting types.

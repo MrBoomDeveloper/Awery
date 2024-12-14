@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.mobile.screens.settings;
 
-import static com.mrboomdev.awery.app.App.enableEdgeToEdge;
 import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.setContentViewCompat;
@@ -34,14 +33,15 @@ import androidx.transition.TransitionManager;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.app.theme.ThemeManager;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
-import com.mrboomdev.awery.app.theme.ThemeManager;
+import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
 import com.mrboomdev.awery.util.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
-import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
+import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
@@ -84,8 +84,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		ThemeManager.apply(this);
-		enableEdgeToEdge(this);
+		ThemeManager.INSTANCE.applyTheme(this);
+		ActivityExtensionsKt.enableEdgeToEdge(this);
 		super.onCreate(savedInstanceState);
 
 		var itemJson = getIntent().getStringExtra(EXTRA_JSON);

@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import coil3.compose.AsyncImage
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.app.theme.TvTheme
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 
 /**
@@ -42,13 +44,14 @@ fun MediaCard(
 				.fillMaxWidth()
 				.weight(1f)
 		) {
-			Box {
+			Box(modifier = Modifier.fillMaxSize()) {
 				AsyncImage(
 					model = media.poster,
 					contentDescription = media.title,
-					contentScale = ContentScale.FillWidth,
+					contentScale = ContentScale.Crop,
 					modifier = Modifier
-						.background(Color(0xFF1D1D1D))
+						.fillMaxSize()
+						.background(Color(0xFF111111))
 				)
 			}
 		}
@@ -83,7 +86,11 @@ fun MediaCardPreview() {
 		titles = arrayOf("Attack on Titan")
 	)
 
-	TvTheme {
+	TvTheme(
+		palette = AwerySettings.ThemeColorPaletteValue.RED,
+		isDark = true,
+		isAmoled = false
+	) {
 		MediaCard(
 			media = media,
 			modifier = Modifier.width(175.dp).height(250.dp)

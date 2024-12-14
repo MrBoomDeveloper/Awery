@@ -204,7 +204,7 @@ class PagesFeedViewHolder private constructor(
 			binding.poster.setImageDrawable(null)
 			binding.banner.setImageDrawable(null)
 
-			if(ThemeManager.isDarkModeEnabled()) {
+			if(ThemeManager.isDarkModeEnabled) {
 				binding.metaSeparator.setShadowLayer(1f, 0f, 0f, Color.BLACK)
 				binding.tags.setShadowLayer(1f, 0f, 0f, Color.BLACK)
 				binding.status.setShadowLayer(1f, 0f, 0f, Color.BLACK)

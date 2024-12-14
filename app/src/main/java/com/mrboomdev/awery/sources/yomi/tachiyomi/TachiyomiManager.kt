@@ -2,21 +2,23 @@ package com.mrboomdev.awery.sources.yomi.tachiyomi
 
 import android.content.Context
 import android.content.pm.PackageInfo
+import com.mrboomdev.awery.R
+import com.mrboomdev.awery.ext.AndroidImage
 import com.mrboomdev.awery.ext.constants.AweryAgeRating
 import com.mrboomdev.awery.sources.yomi.YomiManager
-import com.mrboomdev.awery.util.AndroidImage
-import eu.kanade.tachiyomi.animesource.AnimeSource
-import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
 import eu.kanade.tachiyomi.source.MangaSource
 import eu.kanade.tachiyomi.source.SourceFactory
 
 class TachiyomiManager(
 	context: Context
-): YomiManager<MangaSource, TachiyomiSource>(context) {
+): YomiManager<MangaSource>(
+	androidContext = context,
+	id = ID,
+	name = "Tachiyomi",
+	icon = AndroidImage(R.drawable.logo_tachiyomi)
+) {
 	override val minVersion = 1.2
 	override val maxVersion = 1.5
-	override val name = "Tachiyomi"
-	override val id = ID
 
 	override val appLabelPrefix = "Tachiyomi: "
 	override val nsfwMeta = "tachiyomi.extension.nsfw"
@@ -63,24 +65,22 @@ class TachiyomiManager(
 		packageInfo: PackageInfo,
 		sources: Array<Any>?,
 		exception: Throwable?
-	): TachiyomiSource {
-		val selectedSource = getSelected(sources)
+	) = getSelected(sources).let { selectedSource ->
+		TachiyomiSource(
+			isEnabled = selectedSource != null,
+			source = selectedSource,
+			packageInfo = packageInfo,
+			manager = this,
+			exception = exception,
+			name = selectedSource?.name ?: label,
 
-		return object : TachiyomiSource(packageInfo, selectedSource) {
-			override val manager = this@TachiyomiManager
-			override val exception = exception
+			icon = AndroidImage(packageInfo.applicationInfo!!
+				.loadIcon(androidContext.packageManager)),
 
-			override val ageRating = (if(isNsfw) {
+			ageRating = if(isNsfw) {
 				AweryAgeRating.NSFW
-			} else AweryAgeRating.EVERYONE).toString()
-
-			override val icon = AndroidImage(packageInfo
-				.applicationInfo!!.loadIcon(context.packageManager))
-
-			override val name by lazy {
-				selectedSource?.name ?: label
-			}
-		}
+			} else null
+		)
 	}
 
 	override fun getSourceLongId(source: MangaSource): Long {

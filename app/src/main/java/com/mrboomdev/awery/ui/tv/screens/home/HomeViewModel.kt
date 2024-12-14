@@ -13,9 +13,8 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.ExtensionsManager.loadAll
-import com.mrboomdev.awery.data.serializaton.SettingsSerializer
 import com.mrboomdev.awery.ext.data.CatalogFeed
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.ensureSize
@@ -24,6 +23,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -82,7 +82,7 @@ class HomeViewModel : ViewModel() {
 				.fromJson(readAssets("icons.json"))!!
 
 			val dbTabs = /*if(template == "custom") database.tabsDao.allTabs else*/ run {
-				val selected = getMoshi(SettingsSerializer).adapter<List<__TabsTemplate__>>()
+				val selected = getMoshi().adapter<List<__TabsTemplate__>>()
 					.fromJson(readAssets("tabs_templates.json"))!!
 					.find { it.id == template }
 
@@ -118,9 +118,20 @@ class HomeViewModel : ViewModel() {
 
 			tabs[position].first.feeds.loadAll()
 				.onEach {
+					suspend fun fixBrokenScroll(list: List<*>) {
+						// If we'll add two items into the feed at the same time,
+						// list will scroll automatically for some reason,
+						// so we do add an delay to prevent this behaviour.
+						if(list.size == 1) {
+							delay(500L)
+						}
+					}
+
 					if(it.items.isNullOrEmpty() || it.throwable != null) {
+						fixBrokenScroll(failedFeeds)
 						failedFeeds.add(0, it)
 					} else {
+						fixBrokenScroll(feeds)
 						feeds.add(it)
 					}
 				}

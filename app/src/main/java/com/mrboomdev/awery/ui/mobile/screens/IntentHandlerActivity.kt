@@ -12,11 +12,12 @@ import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.app.services.BackupService
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.FileType
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.cleanUrl
 import com.mrboomdev.awery.util.extensions.startService
 import com.mrboomdev.awery.util.io.FileUtil.fileName
@@ -161,7 +162,7 @@ class IntentHandlerActivity : AppCompatActivity() {
 			"awery" -> {
 				when(uri.host) {
 					"experiments" -> {
-						SettingsActivity.start(this, AwerySettings.get("experiments"))
+						SettingsActivity.start(this, NicePreferences.getSettingsMap().findItem("experiments"))
 						finish()
 					}
 

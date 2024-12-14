@@ -9,16 +9,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActions
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupThemeAdapter.Companion.create
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
@@ -75,7 +75,7 @@ class SetupActivity : AppCompatActivity() {
 				binding.continueButton.setText(R.string.lets_begin)
 
 				binding.backButton.setOnClickListener {
-					SettingsActions.run(SettingsItem.Builder().setKey(AwerySettings.RESTORE).build())
+					SettingsActions.run(SettingsItem.Builder().setKey(AwerySettings.RESTORE.key).build())
 				}
 
 				binding.icon.setImageResource(R.mipmap.ic_launcher_foreground)
@@ -166,7 +166,7 @@ class SetupActivity : AppCompatActivity() {
 				val selected = (binding.recycler.adapter as SetupTabsAdapter).selected
 
 				if(selected == null) {
-					getPrefs().removeValue(AwerySettings.TABS_TEMPLATE).saveSync()
+					AwerySettings.TABS_TEMPLATE.value = null
 					startNextStep()
 					return
 				}
@@ -216,7 +216,7 @@ class SetupActivity : AppCompatActivity() {
 					}
 
 					runOnUiThread {
-						getPrefs().setValue(AwerySettings.TABS_TEMPLATE, selected.id).saveAsync()
+						AwerySettings.TABS_TEMPLATE.value = selected.id
 						startNextStep()
 						binding.continueButton.isEnabled = true
 						binding.backButton.isEnabled = true
@@ -243,7 +243,7 @@ class SetupActivity : AppCompatActivity() {
 			STEP_ANALYTICS -> STEP_FINISH
 
 			STEP_FINISH -> {
-				getPrefs().setValue(AwerySettings.SETUP_VERSION_FINISHED, SETUP_VERSION).saveSync()
+				AwerySettings.SETUP_VERSION_FINISHED.value = SETUP_VERSION
 				finishAffinity()
 				startActivity(SplashActivity::class)
 				return

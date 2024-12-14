@@ -23,6 +23,7 @@ import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.data.settings.SettingsItemType
 import com.mrboomdev.awery.data.settings.SettingsList
@@ -44,7 +45,6 @@ import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.applyTheme
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.inflater
@@ -121,13 +121,13 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 
-		savedInstanceState?.asSafeArgs<SavedState>().let {
+		savedInstanceState?.asSafeArgs<SavedState>().also {
 			filters = it?.filters ?: SettingsList()
 			items = it?.items ?: ArrayList()
 			didReachedEnd = it?.didReachedEnd ?: false
 		}
 
-		safeArgs?.let {
+		safeArgs?.also {
 			try {
 				this.source = ExtensionProvider.forGlobalId(it.sourceGlobalId!!)
 			} catch(e: ExtensionNotInstalledException) {

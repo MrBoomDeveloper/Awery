@@ -24,7 +24,7 @@ import androidx.tv.material3.NavigationDrawerItemColors
 import androidx.tv.material3.Text
 import androidx.tv.material3.contentColorFor
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.ui.tv.Screens
 import com.mrboomdev.awery.ui.tv.components.FeedsGroup
@@ -78,7 +78,7 @@ fun HomeScreen(
 
 						onClick = {
 							if(tab.id == "settings") {
-								if(AwerySettings.EXPERIMENT_SETTINGS2.value) {
+								if(AwerySettings.EXPERIMENT_SETTINGS2.value == true) {
 									navController.navigate(Screens.Settings)
 									return@NavigationDrawerItem
 								}

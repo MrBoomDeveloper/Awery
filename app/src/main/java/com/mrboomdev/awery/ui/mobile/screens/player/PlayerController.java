@@ -32,7 +32,7 @@ import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
-import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.AwerySettings;
 import com.mrboomdev.awery.util.ContentType;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -55,7 +55,7 @@ public class PlayerController {
 	private final PlayerActivity activity;
 	private final Runnable hideUiRunnable;
 	private boolean isUiFadeLocked, isUiVisible;
-	private final boolean dim = AwerySettings.PLAYER_DIM_SCREEN.getValue();
+	private final boolean dim = Boolean.TRUE.equals(AwerySettings.INSTANCE.getPLAYER_DIM_SCREEN().getValue());
 
 	public PlayerController(PlayerActivity activity) {
 		this.activity = activity;
@@ -172,7 +172,7 @@ public class PlayerController {
 	}
 
 	@OptIn(markerClass = UnstableApi.class)
-	public void setAspectRatio(@NonNull AwerySettings.VideoAspectRatio_Values aspectRatio) {
+	public void setAspectRatio(@NonNull AwerySettings.VideoAspectRatioValue aspectRatio) {
 		activity.binding.aspectRatioFrame.setResizeMode(switch(aspectRatio) {
 			case FIT -> AspectRatioFrameLayout.RESIZE_MODE_FIT;
 			case FILL -> AspectRatioFrameLayout.RESIZE_MODE_FILL;
@@ -198,10 +198,10 @@ public class PlayerController {
 			return binding;
 		});
 
-		var items = new LinkedHashMap<PopupItem, AwerySettings.VideoAspectRatio_Values>() {{
-			put(new PopupItem(R.string.fit), AwerySettings.VideoAspectRatio_Values.FIT);
-			put(new PopupItem(R.string.fill), AwerySettings.VideoAspectRatio_Values.FILL);
-			put(new PopupItem(R.string.zoom), AwerySettings.VideoAspectRatio_Values.ZOOM);
+		var items = new LinkedHashMap<PopupItem, AwerySettings.VideoAspectRatioValue>() {{
+			put(new PopupItem(R.string.fit), AwerySettings.VideoAspectRatioValue.FIT);
+			put(new PopupItem(R.string.fill), AwerySettings.VideoAspectRatioValue.FILL);
+			put(new PopupItem(R.string.zoom), AwerySettings.VideoAspectRatioValue.ZOOM);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -216,7 +216,7 @@ public class PlayerController {
 				}
 
 				setAspectRatio(ratio);
-				getPrefs().setValue(AwerySettings.VIDEO_ASPECT_RATIO, ratio).saveAsync();
+				AwerySettings.INSTANCE.getVIDEO_ASPECT_RATIO().setValue(ratio);
 			});
 		}, (item, holder) -> holder.bind(item), new ArrayList<>(items.keySet()), true);
 

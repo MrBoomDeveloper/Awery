@@ -1,13 +1,7 @@
 buildscript {
     repositories {
+		mavenCentral()
         google()
-        mavenCentral()
-		maven("https://jitpack.io")
-    }
-
-    dependencies {
-		classpath(libs.moshi)
-		classpath(libs.moshi.kotlin)
     }
 }
 

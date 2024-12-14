@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/refs/heads/master/app/src/prod/res/mipmap/ic_launcher.png" alt="Logo" height="100px" width="100px">
+<img src="https://raw.githubusercontent.com/MrBoomDeveloper/Awery/refs/heads/master/app/src/stable/res/mipmap/ic_launcher.png" alt="Logo" height="100px" width="100px">
 
 # Awery - The Best Mobile Anime App
 Customize everything with Awery – tons of features, a **stylish** look, and ultimate flexibility at your fingertips.<br>

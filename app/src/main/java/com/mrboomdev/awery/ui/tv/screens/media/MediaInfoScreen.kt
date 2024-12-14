@@ -128,7 +128,7 @@ fun MediaInfoScreen(
 
 				if(size < 3) {
 					add(ExtensionsManager.getSource(media.globalId)?.let {
-						return@let it.name
+						return@let it.context.name
 					} ?: "Source not installed")
 				}
 			}.joinToString("  •  ")
