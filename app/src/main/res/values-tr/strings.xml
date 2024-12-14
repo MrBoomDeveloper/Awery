@@ -112,7 +112,7 @@
     <string name="name">Ad</string>
     <string name="format">Format</string>
     <string name="status_title">Durum</string>
-    <string name="total_eps">Toplam Bölüm</string>
+    <string name="total_eps">Toplam Bölümler</string>
     <string name="total_chaps">Toplam Bölüm</string>
     <string name="ep_duration">Ortalama Süre</string>
     <string name="season">Sezon</string>

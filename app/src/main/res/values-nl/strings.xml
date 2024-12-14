@@ -14,7 +14,7 @@
     <string name="notifications">Meldingen</string>
     <string name="about">Over</string>
     <string name="devs">Ontwikkelaars</string>
-    <string name="disclaimer">Disclaimer</string>
+    <string name="disclaimer">Vrijwaring</string>
     <string name="ui">Gebruikersinterface</string>
     <string name="common">Algemeen</string>
     <string name="theme">Thema</string>
@@ -101,8 +101,8 @@
     <string name="synonyms">Synoniemen</string>
     <string name="trailer">Trailer</string>
     <string name="ending">Einde</string>
-    <string name="prequel">Prequel</string>
-    <string name="sequel">Sequel</string>
+    <string name="prequel">Voorloper</string>
+    <string name="sequel">Vervolg</string>
     <string name="downloads">Downloads</string>
     <string name="settings">Instellingen</string>
     <string name="extensions">Extensies</string>
@@ -173,7 +173,7 @@
     <string name="general">Algemeen</string>
     <string name="show_system_bars">Status- &amp; Navigatiebalken Weergeven</string>
     <string name="auto_detect_webtoon">Automatische Webtoon Detectie</string>
-    <string name="auto_detect_webtoon_info">Als de manga niet uit Japan komt, zal de lezer standaard naar de Webtoon-lezerinstellingen gaan.</string>
+    <string name="auto_detect_webtoon_info">Als de manga niet uit Japan komt, zal de lezer standaard naar de Webtoon-lezerinstellingen gaan</string>
     <string name="default_settings">Standaardinstellingen</string>
     <string name="horizontal_scroll_bar">Horizontale Scrollbalk</string>
     <string name="dual_page_info">Toont 2 afbeeldingen op 1 pagina, kan er raar uitzien als de afbeeldingen niet dezelfde grootte hebben</string>
@@ -231,7 +231,7 @@
     <string name="no_next_episode">Geen Volgende Aflevering Gevonden!</string>
     <string name="downloading">Downloaden…</string>
     <string name="next_chapter_not_found">Volgend Hoofdstuk Niet Gevonden</string>
-    <string name="started_downloading">Downloaden Gestart\n%1$s</string>
+    <string name="started_downloading">Downloaden Gestart %1$s</string>
     <string name="episode_not_found">Kon aflevering niet vinden: %1$s</string>
     <string name="list_updated">Lijst Bijgewerkt</string>
     <string name="deleted_from_list">Verwijderd uit Lijst</string>
@@ -468,7 +468,7 @@
     <string name="copy_link_to_clipboard">Verbinding met klembord</string>
     <string name="backup_success">Versterking gecreëerd!</string>
     <string name="open_link_externally">Open in externe browser</string>
-    <string name="setup_finished_description">Nu kun je je favoriete shows bekijken. We hopen dat je geniet van deze app! Als je wilt, kun je ons een beoordeling sturen met wat je leuk vond</string>
+    <string name="setup_finished_description">Nu kunt u uw favoriete programma\'s gaan bekijken. We hopen dat je deze app leuk vindt! Als je wilt, kun je ons een recensie sturen met wat je leuk vond :)</string>
     <string name="searching_episodes_for">Zoekende afleveringen voor %s</string>
     <string name="restore_success">Gerestaureerde back-up succesvol!</string>
     <string name="failed_bypass_detailed">Je verzoek is geblokkeerd door %s. Probeer een captcha te maken en verfrissend om dit probleem op te lossen.</string>
@@ -487,13 +487,13 @@
     <string name="color_palette_description">Favoriete kleuren tillen je geesten op</string>
     <string name="server_internal_error">Een inwendige server fout is gebeurd, probeer het later nog eens.</string>
     <string name="unknown_net_error">Onbekende netwerkfout</string>
-    <string name="loading_videos_list">Vertaling:</string>
+    <string name="loading_videos_list">Videolijst laden</string>
     <string name="loading_extensions">Loading verlenging</string>
     <string name="mark_not_watched">Verwijderen uit bekeken</string>
-    <string name="analytics_title">Analytics</string>
+    <string name="analytics_title">Analyse</string>
     <string name="generic_message">In deze beta versie, kun je geen verlengingen rechtstreeks door de app plaatsen.\nMomenteel kun je ze op onze:\nDiscordserver: %1$s\nTelegram kanaal: %2$s</string>
     <string name="existing_custom_tabs_title">Vermijden van gebruikstafels gevonden</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
+    <string name="existing_custom_tabs_message">Als u een sjabloon wilt gebruiken, moeten we al uw aangepaste tabbladen met feeds verwijderen. Als u dat niet wilt, selecteert u eenvoudigweg Geen.</string>
     <string name="analytics_message">TODO</string>
     <string name="dantotsu_message">De Dantotsu templade vereist verlenging.\nIn deze beta versie, kun je geen verlengingen rechtstreeks door de app plaatsen.\nMomenteel kun je ze op onze:\nDiscordserver: %1$s\nTelegram kanaal: %2$s</string>
     <string name="automatically_send_reports">Automatisch verstuurd verslagen</string>

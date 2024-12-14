@@ -73,7 +73,7 @@
     <string name="uninstall_extension">Uninstall Extension</string>
     <string name="select_icon">Select an icon</string>
     <string name="app_crash">Awery has crashed!</string>
-    <string name="type_contains">Contains</string>
+    <string name="type_contains">கொண்டுள்ளது</string>
     <string name="setting_progress">Setting progress to %1$d</string>
     <string name="russian">ரச்ய</string>
     <string name="get_recommendations">Watch/Read some Anime or Manga to get Recommendations</string>
@@ -132,13 +132,13 @@
     <string name="cleared_successfully">Cleared successfully!</string>
     <string name="searching_episodes_for">Searching episodes for %s</string>
     <string name="download_manager_select">இறக்கம் மேலாளர்</string>
-    <string name="user_agent">User Agent</string>
+    <string name="user_agent">பயனர் முகவர்</string>
     <string name="continue_watching">தொடர்ந்து பார்த்துக் கொள்ளுங்கள்</string>
     <string name="volume_and_brightness">Volume and Brightness</string>
     <string name="movies">திரைப்படங்கள்</string>
     <string name="manga">மாங்கா</string>
     <string name="next">அடுத்தது</string>
-    <string name="access_denied">Access denied!</string>
+    <string name="access_denied">அணுகல் மறுக்கப்பட்டது.</string>
     <string name="always_continue_shows">Always continue Shows</string>
     <string name="downloading">பதிவிறக்குகிறது…</string>
     <string name="default_video_quality">Default Video Quality</string>
@@ -147,7 +147,7 @@
     <string name="auto_play_next_episode">தன்னியக்க அடுத்த அத்தியாயம்</string>
     <string name="backup_success">Created backup successfully!</string>
     <string name="clear_images_cache">Clear images cache</string>
-    <string name="variant">Variant</string>
+    <string name="variant">மாற்று:</string>
     <string name="create">உருவாக்கு</string>
     <string name="clear_webview_cache">Clear WebView cache</string>
     <string name="not_implemented">Feature not implemented!</string>
@@ -203,7 +203,7 @@
     <string name="type_source">சான்று</string>
     <string name="no_chapter">No Chapter</string>
     <string name="check_app_updates">Auto check for App Updates</string>
-    <string name="update_available">Update available!</string>
+    <string name="update_available">புதுப்பிப்பு கிடைக்கிறது</string>
     <string name="no_subtitles_extensions">You have no installed subtitle extensions. Download them to see something new here!</string>
     <string name="failed_bypass_detailed">Your request has been blocked by %s. Try completing an captcha and refreshing to resolve this problem.</string>
     <string name="back_to_exit">Please perform back again to Exit</string>
@@ -228,12 +228,12 @@
     <string name="delayed">Delayed</string>
     <string name="true_colors_info">(32-bit color Mode) Reduces Banding on the images, may affect performance.</string>
     <string name="animations">Animations</string>
-    <string name="double_tap_seek">Double-tap to seek</string>
+    <string name="double_tap_seek">தேட இரட்டை தட்டு</string>
     <string name="us">USA</string>
     <string name="total_eps">Total Episodes</string>
     <string name="finish">முடிக்க</string>
     <string name="advanced">மேம்பட்ட</string>
-    <string name="github_repository">GitHub Repository</string>
+    <string name="github_repository">அறிவிலிமையம் களஞ்சியம்</string>
     <string name="built_at">Built at</string>
     <string name="select_language">மொழியைத் தேர்ந்தெடுக்கவும்</string>
     <string name="show_system_bars">Show Status &amp; Navigation Bars</string>
@@ -311,7 +311,7 @@
     <string name="no_relations_extensions">You have no installed relations extensions. Download them to see something new here!</string>
     <string name="auto_detect_webtoon">Auto Detect Webtoon</string>
     <string name="server_down">Server is down!</string>
-    <string name="default_speed">Default Speed</string>
+    <string name="default_speed">Default speed</string>
     <string name="dark_theme_description">I\'m Batman!</string>
     <string name="crash_report">Crash report</string>
     <string name="no_internet_connection">இணைய இணைப்பு இல்லை</string>
@@ -346,7 +346,7 @@
     <string name="most_favourited">Most Favourited</string>
     <string name="width">அகலம்</string>
     <string name="home">வீடு</string>
-    <string name="dark_theme">Dark Theme</string>
+    <string name="dark_theme">இருண்ட கருப்பொருள்</string>
     <string name="cancel">நிராகரி</string>
     <string name="quick_rewind">Quick Rewind</string>
     <string name="hour_short">h</string>
@@ -399,7 +399,7 @@
     <string name="please_report_bug_extension">Please send the following text to the extension developers!</string>
     <string name="grid">கட்டம்</string>
     <string name="show_skip_time_stamp_button">Show Skip Time Stamp Button</string>
-    <string name="status_not_yet_released">Not yet released</string>
+    <string name="status_not_yet_released">இன்னும் வெளியிடப்படவில்லை.</string>
     <string name="video">காணொளி</string>
     <string name="loading_extensions_n">Loading extensions %d/%d</string>
     <string name="you_reached_end_description">No more results was found. If you didn\'t found what wanted, then try changing the query and filters.</string>
