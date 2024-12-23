@@ -169,7 +169,7 @@
     <string name="auto_play_next_episode">Awtomatikong I-play ang Susunod na Episode</string>
     <string name="auto_skip_fillers">Awtomatikong Laktawan ang Fillers</string>
     <string name="auto_skip_fillers_info">Laktawan ang mga filler episodes kapag pupunta sa susunod na episode.</string>
-    <string name="watch_complete_percentage_info">"Ang porsyento kung saan dapat i-update ang iyong pag-usad pagkatapos manood ng episode.\n\nIse-set din nito ang  para sa pag-preload ng mga link para sa susunod na episode."</string>
+    <string name="watch_complete_percentage_info">Ang porsyento kung saan dapat ma-update ang iyong pag-unlad pagkatapos manood ng isang episode.\nItinatakda din nito ang %s kung kailan mag-preload ng mga link para sa susunod na episode.</string>
     <string name="always_continue">Palaging Magpatuloy mula sa lugar na iniwan mo</string>
     <string name="pause_video_focus">I-pause kapag wala sa Focus</string>
     <string name="gestures">Mga Gestures ng Volume &amp; Brightness</string>

@@ -152,7 +152,7 @@
     <string name="ask_update_progress_anime">પ્રત્યેક મીડિયા માટે \"વ્યક્તિગત\" માંગો</string>
     <string name="ask_update_progress_info_ep">બંદ કરવાથી એપિસોડ જોતી વખતે સ્વચાલિત રીતે પ્રગતિ સુધારાશે.</string>
     <string name="watch_complete_percentage">વાંચવું પૂર્ણ ટકાવારી</string>
-    <string name="watch_complete_percentage_info">એપિસોડ જોવા પછી તમારી પ્રગતિ ક્યારે સુધારવી તે ટકાવારી.\nઆ પણ એ સેટ કરે છે જ્યારે આગળની એપિસોડ માટે લિંક્સ પૂર્વલોડ કરવી છે.</string>
+    <string name="watch_complete_percentage_info">એપિસોડ જોયા પછી તમારી પ્રગતિ અપડેટ થવી જોઈએ તે ટકાવારી.\nઆ આગામી એપિસોડ માટે લિંક્સ ક્યારે પ્રીલોડ કરવી તે માટે %s પણ સેટ કરે છે.</string>
     <string name="secondary_sub_color_select">ઉપશીર્ષક આઉટલાઇન રંગ</string>
     <string name="secondary_sub_outline_type_select">ઉપશીર્ષક આઉટલાઇન પ્રકાર</string>
     <string name="sub_background_color_select">ઉપશીર્ષક પૃષ્ઠભૂમિ રંગ</string>
