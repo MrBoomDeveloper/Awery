@@ -229,7 +229,7 @@
     <string name="true_colors_info">(32-bit color Mode) Reduces Banding on the images, may affect performance.</string>
     <string name="animations">Animations</string>
     <string name="double_tap_seek">தேட இரட்டை தட்டு</string>
-    <string name="us">USA</string>
+    <string name="us">அமெரிக்கா</string>
     <string name="total_eps">Total Episodes</string>
     <string name="finish">முடிக்க</string>
     <string name="advanced">மேம்பட்ட</string>
@@ -329,7 +329,7 @@
     <string name="green">பச்சை</string>
     <string name="details">விவரங்கள்</string>
     <string name="watch_complete_percentage">Watch Update Percentage</string>
-    <string name="read_less">Read less</string>
+    <string name="read_less">குறைவாகப் படியுங்கள்</string>
     <string name="china">China</string>
     <string name="restart_to_apply_settings">To apply the settings, you must restart the application</string>
     <string name="buffering_video">Buffering video</string>
@@ -415,7 +415,7 @@
     <string name="no_comment_extensions">You have no installed comment extensions. Download them to see something new here!</string>
     <string name="status_title">நிலை</string>
     <string name="true_colors">True Colors</string>
-    <string name="color_picker">Color Picker</string>
+    <string name="color_picker">வண்ண தேர்வாளர்</string>
     <string name="checking_if_crash_occurred">Checking if an crash has occurred</string>
     <string name="tabs">பட்டைகள்</string>
     <string name="sort_by_release_date">Sort by Release Date</string>

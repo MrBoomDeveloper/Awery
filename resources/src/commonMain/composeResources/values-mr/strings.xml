@@ -117,7 +117,7 @@
     <string name="auto_skip_fillers_info">पुढील भागावर जाताना फिलर एपिसोड्स वगळते.</string>
     <string name="ask_update_progress_anime">प्रत्येक मीडिया वैयक्तिक विचारण्यासाठी</string>
     <string name="watch_complete_percentage">पाहा अद्ययावत टक्केवारी</string>
-    <string name="watch_complete_percentage_info">एपीसोड पाहिल्यावर प्रगती अद्ययावत केली जाणारी टक्केवारी.\nहे पुढील एपीसोडसाठी लिंक प्रीलोड करण्यासाठी % सेट करते.</string>
+    <string name="watch_complete_percentage_info">एपीसोड पाहिल्यावर प्रगती अद्ययावत केली जाणारी टक्केवारी.\nहे पुढील एपीसोडसाठी लिंक प्रीलोड करण्यासाठी %s सेट करते.</string>
     <string name="behaviour">वर्तन</string>
     <string name="ask_update_progress_info_ep">आणल्यास, एपीसोड पाहिल्यावर प्रगती आपोआप अद्ययावत होईल.</string>
     <string name="always_continue">सर्व वेळ थांबलेल्या ठिकाणाहून सुरू ठेवा</string>
