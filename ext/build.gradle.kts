@@ -1,17 +1,13 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-	`java-library`
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.maven.publish)
 }
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-}
+group = "ru.mrboomdev.awery"
+version = properties["awery.ext.version"].toString()
 
 kotlin {
 	jvmToolchain(17)
@@ -26,9 +22,6 @@ dependencies {
 	api(libs.moshi.kotlin)
 	api(libs.kotlinx.serialization.json)
 }
-
-group = "ru.mrboomdev.awery"
-version = properties["awery.ext.version"].toString()
 
 mavenPublishing {
 	coordinates(group.toString(), "ext-lib", version.toString())

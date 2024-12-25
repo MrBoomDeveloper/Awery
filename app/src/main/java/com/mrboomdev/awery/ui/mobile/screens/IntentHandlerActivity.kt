@@ -10,12 +10,11 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
-import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.data.settings.NicePreferences
+import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.FileType
 import com.mrboomdev.awery.util.extensions.cleanUrl
@@ -24,7 +23,6 @@ import com.mrboomdev.awery.util.io.FileUtil.fileName
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.jvm.Throws
 
 class IntentHandlerActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {

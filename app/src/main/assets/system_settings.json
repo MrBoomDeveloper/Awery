@@ -3,7 +3,8 @@
 	"items": [
 		{
 			"key": "did_suggest_material_you",
-			"type": "boolean"
+			"type": "boolean",
+			"value": false
 		},
 
 		{
@@ -13,13 +14,13 @@
 
 		{
 			"key": "last_opened_version",
-			"type": "integer", "value": 0
+			"type": "integer", "value": -1
 		},
 
 		{
 			"key": "setup_version_finished",
 			"type": "integer",
-			"value": 0
+			"value": -1
 		},
 
 		{
@@ -86,6 +87,7 @@
 		{
 			"key": "use_amoled_theme",
 			"type": "boolean",
+			"value": false,
 			"restart": true,
 			"title": "amoled",
 			"icon": "ic_contrast",
@@ -95,6 +97,7 @@
 		{
 			"key": "extract_banner_color",
 			"type": "boolean",
+			"value": true,
 			"title": "use_unique_theme_for_each_item",
 			"icon": "ic_round_movie_filter_24",
 			"show_if": ["never"]

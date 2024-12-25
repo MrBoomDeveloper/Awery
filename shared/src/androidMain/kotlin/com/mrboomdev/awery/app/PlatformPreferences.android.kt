@@ -69,20 +69,20 @@ actual object PlatformPreferences : Preferences {
 		}
 	}
 
-	override fun set(key: String, value: String) {
-		ensureEditorExistence().putString(key, value)
+	override fun set(key: String, value: String?) {
+		ensureEditorExistence().apply { value?.also { putString(key, it) } ?: remove(key) }
 	}
 
-	override fun set(key: String, value: Int) {
-		ensureEditorExistence().putInt(key, value)
+	override fun set(key: String, value: Int?) {
+		ensureEditorExistence().apply { value?.also { putInt(key, it) } ?: remove(key) }
 	}
 
-	override fun set(key: String, value: Boolean) {
-		ensureEditorExistence().putBoolean(key, value)
+	override fun set(key: String, value: Boolean?) {
+		ensureEditorExistence().apply { value?.also { putBoolean(key, it) } ?: remove(key) }
 	}
 
-	override fun set(key: String, value: Float) {
-		ensureEditorExistence().putFloat(key, value)
+	override fun set(key: String, value: Float?) {
+		ensureEditorExistence().apply { value?.also { putFloat(key, it) } ?: remove(key) }
 	}
 
 	override fun remove(key: String) {

@@ -31,7 +31,7 @@ class FailedFeedViewHolder private constructor(
 			if(isLandscape) {
 				view.rightMargin = insets.right + view.dpPx(16f)
 				view.leftMargin = view.dpPx(16f) +
-						(if(navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL) insets.left else 0)
+						(if(navigationStyle != AwerySettings.NavigationStyleValue.MATERIAL) insets.left else 0)
 			} else {
 				view.setHorizontalMargin(0)
 			}

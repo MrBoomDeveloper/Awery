@@ -12,7 +12,7 @@ import com.google.android.material.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.ItemListSettingBinding
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.clearImageTint
 import com.mrboomdev.awery.util.extensions.context

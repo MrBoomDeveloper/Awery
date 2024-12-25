@@ -4,30 +4,21 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.UiModeManager
-import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.AwerySettings
-import com.mrboomdev.awery.AwerySettings.ThemeColorPaletteValue
+import com.mrboomdev.awery.generated.AwerySettings
 
 object ThemeManager {
-	val currentColorPalette: ThemeColorPaletteValue
+	val currentColorPalette: AwerySettings.ThemeColorPaletteValue
 		get() = AwerySettings.THEME_COLOR_PALETTE.value ?: resetPalette()
 
 	val isDarkModeEnabled: Boolean
@@ -59,10 +50,10 @@ object ThemeManager {
 	}
 
 	fun Activity.applyTheme() {
-		val isAmoled = AwerySettings.USE_AMOLED_THEME.value == true
+		val isAmoled = AwerySettings.USE_AMOLED_THEME.value
 		val palette = currentColorPalette
 
-		if(palette == ThemeColorPaletteValue.MATERIAL_YOU) {
+		if(palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
 			return DynamicColors.applyToActivityIfAvailable(this,
 				DynamicColorsOptions.Builder().apply {
 					if(isAmoled) {
@@ -98,28 +89,41 @@ object ThemeManager {
 	}
 
 	@SuppressLint("PrivateResource")
-	fun getThemeRes(theme: ThemeColorPaletteValue, isAmoled: Boolean): Int {
+	fun getThemeRes(theme: AwerySettings.ThemeColorPaletteValue, isAmoled: Boolean): Int {
 		// Amoled theme breaks some colors in a light theme.
 		val isReallyAmoled = isAmoled && isDarkModeEnabled
 
 		return when(theme) {
-			ThemeColorPaletteValue.RED -> if(isReallyAmoled) R.style.Theme_Awery_Red_Amoled else R.style.Theme_Awery_Red
-			ThemeColorPaletteValue.PINK -> if(isReallyAmoled) R.style.Theme_Awery_Pink_Amoled else R.style.Theme_Awery_Pink
-			ThemeColorPaletteValue.PURPLE -> if(isReallyAmoled) R.style.Theme_Awery_Purple_Amoled else R.style.Theme_Awery_Purple
-			ThemeColorPaletteValue.BLUE -> if(isReallyAmoled) R.style.Theme_Awery_Blue_Amoled else R.style.Theme_Awery_Blue
-			ThemeColorPaletteValue.GREEN -> if(isReallyAmoled) R.style.Theme_Awery_Green_Amoled else R.style.Theme_Awery_Green
-			ThemeColorPaletteValue.MONOCHROME -> if(isReallyAmoled) R.style.Theme_Awery_Monochrome_Amoled else R.style.Theme_Awery_Monochrome
-			ThemeColorPaletteValue.MATERIAL_YOU -> com.google.android.material.R.style.Theme_Material3_DynamicColors_DayNight
+			AwerySettings.ThemeColorPaletteValue.RED -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Red_Amoled else R.style.Theme_Awery_Red
+			
+			AwerySettings.ThemeColorPaletteValue.PINK -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Pink_Amoled else R.style.Theme_Awery_Pink
+			
+			AwerySettings.ThemeColorPaletteValue.PURPLE -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Purple_Amoled else R.style.Theme_Awery_Purple
+			
+			AwerySettings.ThemeColorPaletteValue.BLUE -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Blue_Amoled else R.style.Theme_Awery_Blue
+			
+			AwerySettings.ThemeColorPaletteValue.GREEN -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Green_Amoled else R.style.Theme_Awery_Green
+			
+			AwerySettings.ThemeColorPaletteValue.MONOCHROME -> 
+				if(isReallyAmoled) R.style.Theme_Awery_Monochrome_Amoled else R.style.Theme_Awery_Monochrome
+			
+			AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU -> 
+				com.google.android.material.R.style.Theme_Material3_DynamicColors_DayNight
 		}
 	}
 
-	private fun resetPalette(): ThemeColorPaletteValue {
+	private fun resetPalette(): AwerySettings.ThemeColorPaletteValue {
 		val isMaterialYouSupported = DynamicColors.isDynamicColorAvailable()
 
 		val theme = if(isMaterialYouSupported) {
-			ThemeColorPaletteValue.MATERIAL_YOU
+			AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU
 		} else {
-			ThemeColorPaletteValue.RED
+			AwerySettings.ThemeColorPaletteValue.RED
 		}
 
 		AwerySettings.THEME_COLOR_PALETTE.value = theme

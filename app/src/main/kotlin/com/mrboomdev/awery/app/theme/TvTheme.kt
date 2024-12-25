@@ -2,12 +2,12 @@ package com.mrboomdev.awery.app.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
-import com.mrboomdev.awery.ui.Themes
 import com.mrboomdev.awery.app.App.Companion.isTv
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ui.Themes
+import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 
 @Composable
 fun TvTheme(

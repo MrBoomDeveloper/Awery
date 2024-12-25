@@ -20,19 +20,19 @@ actual object PlatformPreferences : Preferences {
 		TODO("Not yet implemented")
 	}
 
-	override fun set(key: String, value: String) {
+	override fun set(key: String, value: String?) {
 		TODO("Not yet implemented")
 	}
 
-	override fun set(key: String, value: Int) {
+	override fun set(key: String, value: Int?) {
 		TODO("Not yet implemented")
 	}
 
-	override fun set(key: String, value: Boolean) {
+	override fun set(key: String, value: Boolean?) {
 		TODO("Not yet implemented")
 	}
 
-	override fun set(key: String, value: Float) {
+	override fun set(key: String, value: Float?) {
 		TODO("Not yet implemented")
 	}
 

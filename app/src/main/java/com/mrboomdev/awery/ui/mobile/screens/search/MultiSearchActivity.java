@@ -75,7 +75,7 @@ public class MultiSearchActivity extends AppCompatActivity {
 						return false;
 					}
 
-					var adultMode = AwerySettings.ADULT_MODE.getValue();
+					var adultMode = AwerySettings.INSTANCE.getADULT_MODE().getValue();
 
 					if(adultMode != null) {
 						switch(adultMode) {

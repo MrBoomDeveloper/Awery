@@ -24,7 +24,6 @@ import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
-import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.mobile.screens.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -119,9 +118,9 @@ public class SettingsData {
 						.map(Selection.Selectable::getItem)
 						.collect(Collectors.toSet());
 
-				NicePreferences.getPrefs()
-						.setStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS, items)
-						.saveAsync();
+//				NicePreferences.getPrefs()
+//						.setStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS, items)
+//						.saveAsync();
 			}
 
 			default -> Log.e(TAG, "Failed to save tags list");

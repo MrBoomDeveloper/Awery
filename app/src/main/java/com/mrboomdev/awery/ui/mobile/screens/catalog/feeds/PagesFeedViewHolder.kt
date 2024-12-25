@@ -13,14 +13,14 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding
 import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.app.theme.ThemeManager
-import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
+import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.UniqueIdGenerator
 import com.mrboomdev.awery.util.extensions.UI_INSETS
@@ -120,7 +120,7 @@ class PagesFeedViewHolder private constructor(
 			binding.leftSideBarrier.applyInsets(UI_INSETS, { view, insets ->
 				if(isLandscape) {
 					view.leftMargin = view.dpPx(32f) + (if(
-						navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL
+						navigationStyle != AwerySettings.NavigationStyleValue.MATERIAL
 					) insets.left else 0)
 				} else {
 					view.rightMargin = 0

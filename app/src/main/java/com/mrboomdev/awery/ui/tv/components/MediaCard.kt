@@ -22,9 +22,9 @@ import androidx.tv.material3.Card
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
-import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.app.theme.TvTheme
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 
 /**

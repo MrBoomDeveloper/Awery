@@ -10,12 +10,10 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.platform.PlatformSettingHandler
 import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
-import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActions
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupThemeAdapter.Companion.create
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -65,7 +63,7 @@ class SetupActivity : AppCompatActivity() {
 
 		when(intent.getIntExtra("step", STEP_WELCOME)) {
 			STEP_WELCOME -> {
-				if(AwerySettings.SETUP_VERSION_FINISHED.value != 0) {
+				if(AwerySettings.SETUP_VERSION_FINISHED.value != -1) {
 					binding.title.setText(R.string.awery_updated_title)
 					binding.message.setText(R.string.awery_updated_description)
 					binding.backButton.visibility = View.GONE
@@ -75,7 +73,7 @@ class SetupActivity : AppCompatActivity() {
 				binding.continueButton.setText(R.string.lets_begin)
 
 				binding.backButton.setOnClickListener {
-					SettingsActions.run(SettingsItem.Builder().setKey(AwerySettings.RESTORE.key).build())
+					PlatformSettingHandler.handlePlatformClick(this, AwerySettings.RESTORE.asPlatformSetting())
 				}
 
 				binding.icon.setImageResource(R.mipmap.ic_launcher_foreground)
@@ -116,7 +114,7 @@ class SetupActivity : AppCompatActivity() {
 				val discordUrl = getString(R.string.discord_link)
 				val telegramUrl = getString(R.string.telegram_link)
 				
-				if (template == "dantotsu") {
+				if(template == "dantotsu") {
 				    binding.message.setMarkwon(getString(R.string.dantotsu_message, discordUrl, telegramUrl))
 				} else {
 				    binding.message.setMarkwon(getString(R.string.generic_message, discordUrl, telegramUrl))
@@ -166,7 +164,7 @@ class SetupActivity : AppCompatActivity() {
 				val selected = (binding.recycler.adapter as SetupTabsAdapter).selected
 
 				if(selected == null) {
-					AwerySettings.TABS_TEMPLATE.value = null
+					AwerySettings.TABS_TEMPLATE.value = "awery"
 					startNextStep()
 					return
 				}
@@ -272,20 +270,20 @@ class SetupActivity : AppCompatActivity() {
 			.position(Position.Relative(x, .3))
 			.build()
 	}
-
+	
 	companion object {
 		/**
 		 * Note: Please increment this value by one every time when a new step is being added
 		 */
-		const val SETUP_VERSION: Int = 2
-
-		const val EXTRA_STEP: String = "step"
-		const val EXTRA_FINISH_ON_COMPLETE: String = "finish_on_complete"
-		const val STEP_WELCOME: Int = 0
-		const val STEP_FINISH: Int = 1
-		const val STEP_TEMPLATE: Int = 2
-		const val STEP_THEMING: Int = 3
-		const val STEP_SOURCES: Int = 4
-		const val STEP_ANALYTICS: Int = 5
+		const val SETUP_VERSION = 2
+		
+		const val EXTRA_STEP = "step"
+		const val EXTRA_FINISH_ON_COMPLETE = "finish_on_complete"
+		const val STEP_WELCOME = 0
+		const val STEP_FINISH = 1
+		const val STEP_TEMPLATE = 2
+		const val STEP_THEMING = 3
+		const val STEP_SOURCES = 4
+		const val STEP_ANALYTICS = 5
 	}
 }

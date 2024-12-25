@@ -8,8 +8,8 @@ import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.databinding.FeedListBinding
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity
 import com.mrboomdev.awery.ui.mobile.screens.catalog.MediaCatalogAdapter
+import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity
 import com.mrboomdev.awery.util.WeakLazy
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -38,7 +38,7 @@ class ListFeedViewHolder private constructor(
 		binding.header.applyInsets(UI_INSETS, { view, insets ->
 			if(isLandscape) {
 				view.leftMargin = view.dpPx(16f) + (if(
-					navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL
+					navigationStyle != AwerySettings.NavigationStyleValue.MATERIAL
 				) insets.left else 0)
 
 				binding.header.rightMargin = insets.right + view.dpPx(16f)
@@ -52,7 +52,7 @@ class ListFeedViewHolder private constructor(
 		binding.recycler.applyInsets(UI_INSETS, { view, insets ->
 			if(isLandscape) {
 				view.leftPadding = view.dpPx(32f) + (if(
-					navigationStyle != AwerySettings.NavigationStyle_Values.MATERIAL
+					navigationStyle != AwerySettings.NavigationStyleValue.MATERIAL
 				) insets.left else 0)
 
 				view.rightPadding = insets.right + view.dpPx(32f)

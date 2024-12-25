@@ -179,49 +179,49 @@
 				{
 					"key": "player_double_tap_seek_length",
 					"type": "select",
-					"value": "10",
+					"value": 10,
 					"title": "double_tap_seek",
 					"icon": "ic_round_touch_app_24",
 					"description": "${VALUE}",
 					"show_if": ["!tv"],
 					"items": [
 						{
-							"key": "0",
+							"key": 0,
 							"title": "disabled"
 						},
 
 						{
-							"key": "3",
+							"key": 3,
 							"title": "3s"
 						},
 
 						{
-							"key": "5",
+							"key": 5,
 							"title": "5s"
 						},
 
 						{
-							"key": "10",
+							"key": 10,
 							"title": "10s"
 						},
 
 						{
-							"key": "15",
+							"key": 15,
 							"title": "15s"
 						},
 
 						{
-							"key": "30",
+							"key": 30,
 							"title": "30s"
 						},
 
 						{
-							"key": "60",
+							"key": 60,
 							"title": "60s"
 						},
 
 						{
-							"key": "120",
+							"key": 120,
 							"title": "120s"
 						}
 					]
@@ -230,43 +230,43 @@
 				{
 					"key": "player_big_seek_length",
 					"type": "select",
-					"value": "60",
+					"value": 60,
 					"title": "quick_rewind",
 					"icon": "ic_fast_forward_outlined",
 					"description": "${VALUE}",
 					"items": [
 						{
-							"key": "0",
+							"key": 0,
 							"title": "Disabled"
 						},
 
 						{
-							"key": "30",
+							"key": 30,
 							"title": "30s"
 						},
 
 						{
-							"key": "45",
+							"key": 45,
 							"title": "45s"
 						},
 
 						{
-							"key": "60",
+							"key": 60,
 							"title": "1m"
 						},
 
 						{
-							"key": "120",
+							"key": 120,
 							"title": "2m"
 						},
 
 						{
-							"key": "180",
+							"key": 180,
 							"title": "3m"
 						},
 
 						{
-							"key": "240",
+							"key": 240,
 							"title": "4m"
 						}
 					]
@@ -330,42 +330,42 @@
 						},
 
 						{
-							"key": "144",
+							"key": 144,
 							"title": "144p"
 						},
 
 						{
-							"key": "240",
+							"key": 240,
 							"title": "240p"
 						},
 
 						{
-							"key": "360",
+							"key": 360,
 							"title": "360p"
 						},
 
 						{
-							"key": "480",
+							"key": 480,
 							"title": "480p"
 						},
 
 						{
-							"key": "720",
+							"key": 720,
 							"title": "720p"
 						},
 
 						{
-							"key": "1080",
+							"key": 1080,
 							"title": "1080p"
 						},
 
 						{
-							"key": "1440",
+							"key": 1440,
 							"title": "1440p"
 						},
 
 						{
-							"key": "2160",
+							"key": 2160,
 							"title": "2160p"
 						}
 					]
@@ -520,6 +520,7 @@
 					"key": "log_network",
 					"type": "boolean",
 					"restart": true,
+					"value": false,
 					"title": "Verbose network logging"
 				},
 

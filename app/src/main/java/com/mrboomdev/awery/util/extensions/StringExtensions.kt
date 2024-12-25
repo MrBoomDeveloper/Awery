@@ -24,31 +24,31 @@ fun Long.formatFileSize(): String {
 	return "$gb b"
 }
 
-fun Uri.parseMimeType(): String {
+fun Uri.toMimeType(): String {
 	if(scheme == "content") {
 		appContext.contentResolver.query(
 			this, null, null, null, null
 		)?.use { cursor ->
 			return cursor.getString(cursor.getColumnIndexOrThrow(
 				OpenableColumns.DISPLAY_NAME
-			)).parseMimeType(true)
+			)).toMimeType(true)
 		}
 	}
 
 	return (lastPathSegment ?: toString().let {
 		it.substring(it.lastIndexOf("/") + 1)
-	}).parseMimeType(true)
+	}).toMimeType(true)
 }
 
-fun File.parseMimeType(): String {
-	return name.parseMimeType(true)
+fun File.toMimeType(): String {
+	return name.toMimeType(true)
 }
 
-fun String.parseMimeType(): String {
-	return parseMimeType(false)
+fun String.toMimeType(): String {
+	return toMimeType(false)
 }
 
-private fun String.parseMimeType(isName: Boolean): String {
+private fun String.toMimeType(isName: Boolean): String {
 	var fileName = if(isName) this
 	else File(this).name
 

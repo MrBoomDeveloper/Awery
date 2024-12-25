@@ -17,7 +17,6 @@ import com.google.android.material.navigationrail.NavigationRailView
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.App.Companion.toast
@@ -30,10 +29,12 @@ import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.AwerySettings.NavigationStyle_Values
+import com.mrboomdev.awery.platform.PlatformResources.i18n
+import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
+import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment
 import com.mrboomdev.awery.ui.mobile.screens.search.MultiSearchActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
-import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment
+import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity2
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.UI_INSETS
@@ -53,17 +54,18 @@ import com.mrboomdev.awery.util.extensions.setHorizontalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.util.io.FileUtil.readAssets
-import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
-import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity2
 import com.mrboomdev.awery.util.ui.FadeTransformer
+import com.mrboomdev.awery.utils.div
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 import java.io.IOException
 import java.io.Serializable
 import java.lang.ref.WeakReference
+
+private const val TAG = "MainActivity"
+private const val SAVED_TAB_INDEX = "was_tab"
 
 @OptIn(ExperimentalStdlibApi::class)
 class MainActivity : AppCompatActivity() {
@@ -93,9 +95,10 @@ class MainActivity : AppCompatActivity() {
         if(savedInstanceState != null) {
             tabIndex = savedInstanceState.getInt(SAVED_TAB_INDEX, -1)
         }
-
-        val template = AwerySettings.TABS_TEMPLATE.value
-        if(template == "custom") loadCustomTabs() else loadTemplateTabs(template)
+        
+        AwerySettings.TABS_TEMPLATE.value.also {
+            if(it == "custom") loadCustomTabs() else loadTemplateTabs(it)
+        }
 
         if(AwerySettings.AUTO_CHECK_APP_UPDATE.value) {
             lifecycleScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
@@ -143,19 +146,19 @@ class MainActivity : AppCompatActivity() {
             setupNavigation()
 
             when(navigationStyle) {
-                NavigationStyle_Values.BUBBLE -> {
+                AwerySettings.NavigationStyleValue.BUBBLE -> {
                     for(i in tabs.indices) {
                         val tab = tabs[i]
 
                         val drawable = icons[tab.icon]?.getDrawable(this)
                             ?: ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
 
-                        if (tabIndex == -1 && tab.id == savedDefaultTab) {
+                        if(tabIndex == -1 && tab.id == savedDefaultTab) {
                             tabIndex = i
                         }
 
                         binding!!.navbarBubble.addTab(binding!!.navbarBubble.createTab(
-                            drawable, i18n<R.string>(tab.title) ?: tab.title
+                            drawable, i18n(tab.title) ?: tab.title
                         ))
                     }
 
@@ -163,24 +166,25 @@ class MainActivity : AppCompatActivity() {
                     binding!!.navbarBubble.visibility = View.VISIBLE
                 }
 
-                NavigationStyle_Values.MATERIAL -> {
+                AwerySettings.NavigationStyleValue.MATERIAL -> {
                     val nav = binding!!.navbarMaterial
 
-                    for (i in tabs.indices) {
+                    for(i in tabs.indices) {
                         val tab = tabs[i]
                         val icon = icons[tab.icon]
 
-                        val drawable = icon?.getDrawable(this) ?: ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
+                        val drawable = icon?.getDrawable(this) 
+                            ?: ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
 
                         if(tabIndex == -1 && tab.id == savedDefaultTab) {
                             tabIndex = i
                         }
 
-                        nav.menu.add(0, i, 0, i18n<R.string>(tab.title) ?: tab.title)
+                        nav.menu.add(0, i, 0, i18n(tab.title) ?: tab.title)
                         nav.menu.getItem(i).setIcon(drawable)
                     }
 
-                    nav.selectedItemId = if (tabIndex != -1) tabIndex else 0
+                    nav.selectedItemId = if(tabIndex != -1) tabIndex else 0
                     nav.visibility = View.VISIBLE
                 }
             }
@@ -215,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         binding!!.pages.isUserInputEnabled = false
         binding!!.pages.setPageTransformer(FadeTransformer())
 
-        if(navigationStyle == NavigationStyle_Values.MATERIAL) {
+        if(navigationStyle == AwerySettings.NavigationStyleValue.MATERIAL) {
             if(AwerySettings.USE_AMOLED_THEME.value) {
                 binding!!.navbarMaterial.setBackgroundColor(-0x1000000)
                 @Suppress("DEPRECATION")
@@ -352,7 +356,7 @@ class MainActivity : AppCompatActivity() {
                     view.rightPadding = dpPx(32f) + insets.right
                     view.rightPadding = dpPx(32f) + insets.right
                     view.leftPadding = dpPx(32f) +
-                            (if(navigationStyle == NavigationStyle_Values.MATERIAL) 0 else insets.left)
+                            (if(navigationStyle == AwerySettings.NavigationStyleValue.MATERIAL) 0 else insets.left)
                 } else {
                     view.setHorizontalPadding(dpPx(16f))
                 }
@@ -362,7 +366,7 @@ class MainActivity : AppCompatActivity() {
 
             header = binding
 
-            if (isHeaderTransparent) {
+            if(isHeaderTransparent) {
                 updateHeader(false)
             }
 
@@ -373,14 +377,14 @@ class MainActivity : AppCompatActivity() {
             super.setContentBehindToolbarEnabled(isEnabled)
             isHeaderTransparent = isEnabled
 
-            if (header != null) {
+            if(header != null) {
                 updateHeader(isEnabled)
             }
         }
 
         private fun updateHeader(isTransparent: Boolean) {
-            if (isTransparent) {
-                if (header!!.searchBar != null) {
+            if(isTransparent) {
+                if(header!!.searchBar != null) {
                     header!!.logo.visibility = View.GONE
                     header!!.searchBar!!.visibility = View.GONE
                 }
@@ -391,32 +395,19 @@ class MainActivity : AppCompatActivity() {
                 header!!.title.visibility = View.VISIBLE
                 header!!.logo.visibility = View.VISIBLE
 
-                if (header!!.searchBar != null) {
+                if(header!!.searchBar != null) {
                     header!!.search.visibility = View.GONE
                     header!!.searchBar!!.visibility = View.VISIBLE
                 }
             }
         }
 
-        override fun getFilters(): SettingsList {
-            return SettingsList()
-        }
-
-        override fun getMaxLoadsAtSameTime(): Int {
-            return 1
-        }
-
-        override fun loadOnStartup(): Boolean {
-            return true
-        }
-
-        override fun getCacheFile(): File {
-            return File(requireContext().cacheDir, Constants.DIRECTORY_NET_CACHE + "/" + Constants.FILE_FEEDS_NET_CACHE)
-        }
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val SAVED_TAB_INDEX = "was_tab"
+        override fun getFilters() = SettingsList()
+        override fun getMaxLoadsAtSameTime() = 1
+        override fun loadOnStartup() = true
+        
+        override fun getCacheFile() = requireContext().cacheDir / 
+                Constants.DIRECTORY_NET_CACHE / 
+                Constants.FILE_FEEDS_NET_CACHE
     }
 }

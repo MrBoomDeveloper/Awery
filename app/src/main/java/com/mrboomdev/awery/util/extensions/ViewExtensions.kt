@@ -118,7 +118,7 @@ fun View.balloon(text: String, align: BalloonAlign) {
                 }
             )
             .setTextColor(context.resolveAttrColor(R.attr.colorSurface))
-            .setBackgroundColor(context.resolveAttrColor(R.attr.colorPrimary))
+            .setBackgroundColor(context.resolveAttrColor(R.attr.colorOnSurface))
             .setLifecycleOwner(context.activity as AppCompatActivity?)
             .build().showAlign(align, this)
     }, 1)

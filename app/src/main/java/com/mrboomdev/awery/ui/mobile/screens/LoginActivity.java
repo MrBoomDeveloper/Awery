@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		if(savedInstanceState != null) {
 			if(getArgument(savedInstanceState, SAVED_DID_LAUNCHED_BROWSER, Boolean.class)) {
-				toast(this, "Failed to login into an account!", 1);
+				toast("Failed to login into an account!", 1);
 				finish();
 				return;
 			}

@@ -149,27 +149,23 @@ public class CatalogFeed implements Serializable {
 							if(!provider.hasFeatures(ExtensionProvider.FEATURE_FEEDS)) {
 								return false;
 							}
-
-							var adultMode = AwerySettings.ADULT_MODE.getValue();
-
-							if(adultMode != null) {
-								switch(adultMode) {
-									case SAFE -> {
-										switch(provider.getAdultContentMode()) {
-											case ONLY, PARTIAL -> {
-												return false;
-											}
-										}
-									}
-
-									case ONLY -> {
-										if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
+							
+							switch(AwerySettings.INSTANCE.getADULT_MODE().getValue()) {
+								case SAFE -> {
+									switch(provider.getAdultContentMode()) {
+										case ONLY, PARTIAL -> {
 											return false;
 										}
 									}
 								}
+								
+								case ONLY -> {
+									if(provider.getAdultContentMode() == ExtensionProvider.AdultContent.NONE) {
+										return false;
+									}
+								}
 							}
-
+							
 							return true;
 						})
 						.map(provider -> AsyncUtils.<List<CatalogFeed>>awaitResult(breaker -> provider.getFeeds(new ExtensionProvider.ResponseCallback<>() {

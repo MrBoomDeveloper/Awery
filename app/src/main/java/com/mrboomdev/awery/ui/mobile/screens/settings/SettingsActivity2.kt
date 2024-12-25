@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.layout.windowInsetsStartWidth
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.getValue
@@ -51,7 +54,8 @@ class SettingsActivity2: ComponentActivity() {
 		}
 
 		setThemedContent {
-			val navigator = rememberListDetailPaneScaffoldNavigator<Setting>()
+			val scaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
+			val navigator = rememberListDetailPaneScaffoldNavigator<Setting>(scaffoldDirective)
 			val navigatorHistory = remember { navigator.historyState }
 			var didOpenAnyScreen by remember { mutableStateOf(false) }
 
@@ -61,6 +65,11 @@ class SettingsActivity2: ComponentActivity() {
 				try {
 					progress.collect()
 					navigator.navigateBack(BackNavigationBehavior.PopLatest)
+					
+					if(didOpenAnyScreen && navigatorHistory.isEmpty() && scaffoldDirective.maxHorizontalPartitions == 1) {
+						navigator.navigateTo(ListDetailPaneScaffoldRole.List, settings)
+						didOpenAnyScreen = false
+					}
 				} catch(_: CancellationException) {}
 			}
 

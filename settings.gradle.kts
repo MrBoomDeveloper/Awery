@@ -30,11 +30,15 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+}
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "Awery"
 include(":app")
 include(":desktop")
 include(":ext")
-include(":ext:lib")
+include(":ext:platform")
 include(":shared")

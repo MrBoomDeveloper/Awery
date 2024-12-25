@@ -16,6 +16,7 @@ java {
 kotlin {
 	jvmToolchain(17)
 
+	@OptIn(ExperimentalKotlinGradlePluginApi::class)
 	compilerOptions {
 		freeCompilerArgs = listOf("-Xexpect-actual-classes")
 	}
@@ -29,7 +30,7 @@ kotlin {
 		commonMain.dependencies {
 			// Used projects
 			api(projects.ext)
-			api(projects.ext.lib)
+			api(projects.ext.platform)
 
 			// Core
 			implementation(compose.foundation)
@@ -45,6 +46,10 @@ kotlin {
 			// Components
 			implementation(compose.material3)
 			implementation(libs.coil.compose)
+		}
+
+		desktopMain.dependencies {
+			implementation(compose.desktop.currentOs)
 		}
 
 		androidMain.dependencies {

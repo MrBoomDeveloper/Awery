@@ -1,19 +1,13 @@
-import com.mrboomdev.awery.gradle.forEachNode
-import com.mrboomdev.awery.gradle.toXmlString
-import com.mrboomdev.awery.gradle.query
-import com.mrboomdev.awery.gradle.queryAll
+import com.mrboomdev.awery.gradle.util.toXmlString
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-	`java-library`
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.maven.publish)
 }
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-}
+group = "ru.mrboomdev.awery"
+version = properties["awery.ext.version"].toString()
 
 kotlin {
 	jvmToolchain(17)
@@ -22,9 +16,6 @@ kotlin {
 dependencies {
 	implementation(projects.ext)
 }
-
-group = "ru.mrboomdev.awery"
-version = properties["awery.ext.version"].toString()
 
 mavenPublishing {
 	coordinates(group.toString(), "ext-platform", version.toString())

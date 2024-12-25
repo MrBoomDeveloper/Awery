@@ -119,7 +119,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 											.max().orElse(0) + 1;
 
 									dao.insert(tab);
-									getPrefs().setValue(AwerySettings.TABS_TEMPLATE, "custom").saveAsync();
+									getPrefs().setValue(AwerySettings.INSTANCE.getTABS_TEMPLATE().getKey(), "custom").saveAsync();
 
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
@@ -161,7 +161,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getKey() {
-				return AwerySettings.DEFAULT_HOME_TAB.getKey();
+				return AwerySettings.INSTANCE.getDEFAULT_HOME_TAB().getKey();
 			}
 
 			@Override
@@ -181,7 +181,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public List<? extends SettingsItem> getItems() {
-				var savedTemplate = AwerySettings.TABS_TEMPLATE.getValue();
+				var savedTemplate = AwerySettings.INSTANCE.getTABS_TEMPLATE().getValue();
 
 				if(!Objects.equals(savedTemplate, "custom")) {
 					try {

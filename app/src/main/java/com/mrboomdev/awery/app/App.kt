@@ -8,7 +8,9 @@ import android.app.Dialog
 import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -36,6 +38,9 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.room.Room.databaseBuilder
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideCustomImageLoader
@@ -51,17 +56,20 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryNotifications.registerNotificationChannels
-import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.db.AweryDB
-import com.mrboomdev.awery.data.db.item.DBCatalogList
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.app.update.UpdatesChannel
+import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.data.db.AweryDB
+import com.mrboomdev.awery.data.db.item.DBCatalogList
 import com.mrboomdev.awery.extensions.data.CatalogList
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.GeneratedSetting
+import com.mrboomdev.awery.platform.PlatformResources
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
+import com.mrboomdev.awery.ui.mobile.screens.IntentHandlerActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
+import com.mrboomdev.awery.ui.tv.TvExperimentsActivity
 import com.mrboomdev.awery.util.extensions.configuration
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
@@ -76,16 +84,11 @@ import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.html.HtmlPlugin
 import io.noties.markwon.image.glide.GlideImagesPlugin
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 import java.util.WeakHashMap
-import java.util.logging.Handler
-import java.util.logging.LogRecord
-import java.util.logging.Logger
 
 class App : Application() {
 
@@ -95,47 +98,40 @@ class App : Application() {
 		CrashHandler.setupCrashListener(this)
 	}
 
+	@OptIn(DelicateCoroutinesApi::class)
 	override fun onCreate() {
 		AndroidGlobals.applicationContext = this
-		registerNotificationChannels()
 		applyTheme()
-
 		super.onCreate()
 		setupStrictMode()
+		
+		GlobalScope.launch(Dispatchers.IO) { 
+			initSync() 
+		}
+	}
+	
+	/**
+	 * Long-time performing operations are performing here.
+	 * Don't forget to call this method to init everything!
+	 */
+	private fun initSync() {
+		didInit = false
+		
 		patchInjekt()
+		registerNotificationChannels()
 		BigImageViewer.initialize(GlideCustomImageLoader.with(this))
-
+		
+		// Material you isn't available on tv, so we do reset an value to something else.
+		if(AwerySettings.THEME_COLOR_PALETTE.value == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && isTv) {
+			AwerySettings.THEME_COLOR_PALETTE.value = AwerySettings.ThemeColorPaletteValue.RED
+		}
+		
+		// TODO: Replace this stupid fix when proper settings would be implemented everywhere.
 		if(AwerySettings.USE_DARK_THEME.value == null) {
 			AwerySettings.USE_DARK_THEME.value = ThemeManager.isDarkModeEnabled
 		}
-
-		if(AwerySettings.LOG_NETWORK.value == true) {
-			val logFile = File(getExternalFilesDir(null), "okhttp3_log.txt")
-			logFile.delete()
-
-			try {
-				logFile.createNewFile()
-
-				Logger.getLogger(OkHttpClient::class.java.name).addHandler(object : Handler() {
-					override fun publish(record: LogRecord) {
-						try {
-							FileWriter(logFile, true).use { writer ->
-								writer.write("[" + record.level + "] " + record.message + "\n")
-							}
-						} catch(e: IOException) {
-							Log.e(TAG, "Failed to write log file!", e)
-						}
-					}
-
-					override fun flush() {}
-					override fun close() {}
-				})
-			} catch(e: IOException) {
-				Log.e(TAG, "Failed to create log file!", e)
-			}
-		}
-
-		if(AwerySettings.LAST_OPENED_VERSION.value.let { it ?: -1 } < 1) {
+		
+		if(AwerySettings.LAST_OPENED_VERSION.value < 1) {
 			CoroutineScope(Dispatchers.IO).launch {
 				database.listDao.insert(
 					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.currently_watching), "1")),
@@ -147,15 +143,49 @@ class App : Application() {
 					DBCatalogList.fromCatalogList(CatalogList("Hidden", Constants.CATALOG_LIST_BLACKLIST)),
 					DBCatalogList.fromCatalogList(CatalogList("History", Constants.CATALOG_LIST_HISTORY))
 				)
-
+				
 				AwerySettings.LAST_OPENED_VERSION.value = 1
 			}
 		}
+		
+		// If any experiment is enabled, then crate an shortcut
+		if(AwerySettings.EXPERIMENTS.items.find { it is GeneratedSetting.Boolean && it.value == true } != null) {
+			if(isTv) {
+				// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
+				packageManager.setComponentEnabledSetting(
+					ComponentName(this, TvExperimentsActivity::class.java),
+					PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+			} else {
+				ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
+					ShortcutInfoCompat.Builder(this, "experiments")
+						.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
+						.setLongLabel("Open experimental settings")
+						.setShortLabel("Experiments")
+						.setLongLived(true)
+						.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
+							action = Intent.ACTION_VIEW
+							data = Uri.parse("awery://experiments")
+						}).build())
+			}
+		} else {
+			if(isTv) {
+				packageManager.setComponentEnabledSetting(
+					ComponentName(this, TvExperimentsActivity::class.java),
+					PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+			} else {
+				ShortcutManagerCompat.removeLongLivedShortcuts(applicationContext, listOf("experiments"))
+			}
+		}
+		
+		didInit = true
 	}
 
 	companion object {
 		private val backPressedCallbacks = WeakHashMap<Runnable, Any>()
 		private const val TAG = "App"
+		
+		var didInit = false 
+			private set
 
 		private val globalMoshi: Moshi by lazy {
 			Moshi.Builder()
@@ -260,14 +290,14 @@ class App : Application() {
 			"com.mrboomdev.awery.platform.PlatformResources"))
 		fun i18n(clazz: Class<*>, string: String?, vararg args: Any): String? {
 			val id = getResourceId(clazz, string)
-			return if(id == 0) null else i18n(id, *args)
+			return if(id == 0) null else PlatformResources.i18n(id, *args)
 		}
 
 		@Deprecated("old shit", ReplaceWith(
 			"PlatformResources.i18n(resourceId, *args)",
 			"com.mrboomdev.awery.platform.PlatformResources"))
 		inline fun <reified T> i18n(resourceId: String, vararg args: Any): String? {
-			return i18n(T::class.java, resourceId, *args)
+			return PlatformResources.i18n(resourceId, *args)
 		}
 
 		@JvmStatic
@@ -276,27 +306,21 @@ class App : Application() {
 			"com.mrboomdev.awery.platform.PlatformResources"))
 		fun i18n(@StringRes res: Int, vararg params: Any) =
 			ContextCompat.getContextForLanguage(appContext).getString(res, *params)
-
-		@JvmStatic
-		@JvmOverloads
-		fun toast(context: Context?, text: Any?, duration: Int = 0) {
-			runOnUiThread { Toast.makeText(context, text?.toString() ?: "null", duration).show() }
+		
+		private fun toastImpl(context: Context?, text: Any?, duration: Int = 0) {
+			runOnUiThread { Toast.makeText(context, text.toString(), duration).show() }
 		}
 
 		@JvmStatic
 		@JvmOverloads
 		fun toast(text: Any?, duration: Int = 0) {
-			toast(appContext, text, duration)
+			toastImpl(appContext, text, duration)
 		}
 
 		@JvmStatic
-		fun toast(@StringRes res: Int) {
-			toast(appContext.getString(res))
-		}
-
-		@JvmStatic
-		fun toast(@StringRes res: Int, duration: Int) {
-			toast(i18n(res), duration)
+		@JvmOverloads
+		fun toast(@StringRes res: Int, duration: Int = 0) {
+			toast(appContext.getString(res), duration)
 		}
 
 		/**
@@ -480,7 +504,7 @@ class App : Application() {
 		@JvmStatic
 		val navigationStyle: AwerySettings.NavigationStyleValue
 			get() = AwerySettings.NAVIGATION_STYLE.value.let {
-				if((it == null || isTv)) AwerySettings.NavigationStyleValue.MATERIAL else it
+				if(isTv) AwerySettings.NavigationStyleValue.MATERIAL else it
 			}
 
 		@Deprecated(message = "java shit")

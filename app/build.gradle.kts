@@ -1,8 +1,9 @@
 import com.android.build.api.dsl.ApplicationProductFlavor
 import com.mrboomdev.awery.gradle.ProjectVersion.generateVersionCode
 import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
-import com.mrboomdev.awery.gradle.SettingsClassGenerator.generatedSettingsDir
-import com.mrboomdev.awery.gradle.SettingsGenerateTask
+import com.mrboomdev.awery.gradle.settings.GenerateSettingsTask
+import com.mrboomdev.awery.gradle.settings.generatedSettingsKotlinDirectory
+import com.mrboomdev.awery.gradle.settings.generatedSettingsResourcesDirectory
 
 plugins {
     alias(libs.plugins.android.app)
@@ -38,13 +39,12 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
-
-    sourceSets {
-        get("main").apply {
-            java.srcDirs(layout.buildDirectory.file("generated/awery/kotlin"), generatedSettingsDir)
-        }
+    
+    sourceSets["main"].apply { 
+        kotlin.srcDir(generatedSettingsKotlinDirectory)
+        resources.srcDir(generatedSettingsResourcesDirectory)
     }
-
+    
     buildTypes {
         debug {
             isDebuggable = true
@@ -133,8 +133,8 @@ dependencies {
     implementation(libs.retrostreams)
     implementation(libs.bundles.aniyomi)
     implementation(projects.ext)
-
-    // Database
+	
+	// Database
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
 
@@ -163,6 +163,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.tv.material)
     implementation(libs.compose.tv.foundation)
+    implementation(libs.androidx.adaptive)
+    implementation(libs.androidx.adaptive.layout)
+    implementation(libs.androidx.adaptive.navigation)
 
     // Markdown
     implementation(libs.markwon.core)
@@ -204,12 +207,11 @@ dependencies {
     debugImplementation(libs.leakcanary)
 }
 
-tasks.register<SettingsGenerateTask>("generateClasses") {
-    outputFile = layout.buildDirectory.file("generated/awery/kotlin/com/mrboomdev/awery/AwerySettings.kt")
+tasks.register<GenerateSettingsTask>("generateSettings") {
+    packageName = "com.mrboomdev.awery.generated"
+    className = "AwerySettings"
     inputFiles = listOf(
         layout.projectDirectory.file("src/main/assets/app_settings.json"),
         layout.projectDirectory.file("src/main/assets/system_settings.json")
     )
-}
-
-tasks["preBuild"].dependsOn(tasks["generateClasses"])
+}.let { tasks["preBuild"].dependsOn(it) }

@@ -1,23 +1,14 @@
 package com.mrboomdev.awery.ui.mobile.screens
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.pm.ShortcutInfoCompat
-import androidx.core.content.pm.ShortcutManagerCompat
-import androidx.core.graphics.drawable.IconCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.mrboomdev.awery.AwerySettings
-import com.mrboomdev.awery.GeneratedSetting
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
@@ -25,9 +16,9 @@ import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.catalog.MainActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
-import com.mrboomdev.awery.ui.tv.TvExperimentsActivity
 import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
@@ -54,35 +45,6 @@ class SplashActivity : AppCompatActivity() {
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 
-		// If any experiment is enabled, then crate an shortcut
-		if(AwerySettings.EXPERIMENTS.items.find { it is GeneratedSetting.Boolean && it.value == true } != null) {
-			if(isTv) {
-				// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
-				packageManager.setComponentEnabledSetting(
-					ComponentName(this, TvExperimentsActivity::class.java),
-					PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
-			} else {
-				ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
-					ShortcutInfoCompat.Builder(this, "experiments")
-						.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
-						.setLongLabel("Open experimental settings")
-						.setShortLabel("Experiments")
-						.setLongLived(true)
-						.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
-							action = Intent.ACTION_VIEW
-							data = Uri.parse("awery://experiments")
-						}).build())
-			}
-		} else {
-			if(isTv) {
-				packageManager.setComponentEnabledSetting(
-					ComponentName(this, TvExperimentsActivity::class.java),
-					PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
-			} else {
-				ShortcutManagerCompat.removeLongLivedShortcuts(applicationContext, listOf("experiments"))
-			}
-		}
-
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
 			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
 			status.setText(R.string.checking_if_crash_occurred)
@@ -108,14 +70,17 @@ class SplashActivity : AppCompatActivity() {
 
 					return@launch
 				}
-
-				if(AwerySettings.SETUP_VERSION_FINISHED.value.let { it ?: -1 } < SetupActivity.SETUP_VERSION) {
+				
+				@Suppress("ControlFlowWithEmptyBody")
+				while(!App.didInit) {}
+				
+				if(AwerySettings.SETUP_VERSION_FINISHED.value < SetupActivity.SETUP_VERSION) {
 					startActivity(SetupActivity::class)
 					finish()
 					return@launch
 				}
 
-				if(AwerySettings.EXPERIMENT_SPLASH_LOAD_SOURCES.value == true) {
+				if(AwerySettings.EXPERIMENT_SPLASH_LOAD_SOURCES.value) {
 					try {
 						ExtensionsManager.init(applicationContext).data.onEach {
 							launch(Dispatchers.Main) {
@@ -134,7 +99,7 @@ class SplashActivity : AppCompatActivity() {
 						return@launch
 					}
 
-					startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value == true) TvMainActivity::class else MainActivity::class)
+					startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
 					finish()
 
 					return@launch
@@ -142,7 +107,7 @@ class SplashActivity : AppCompatActivity() {
 
 				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
 					override fun onSuccess(result: ExtensionsFactory) {
-						startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value == true) TvMainActivity::class else MainActivity::class)
+						startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
 						finish()
 					}
 

@@ -14,7 +14,7 @@ import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.ExtensionsManager.loadAll
 import com.mrboomdev.awery.ext.data.CatalogFeed
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.ensureSize

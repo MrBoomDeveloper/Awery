@@ -17,21 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.data.settings.SettingsItem
-import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
-import com.mrboomdev.awery.AwerySettings
-import com.mrboomdev.awery.AwerySettings.ThemeColorPaletteValue
 import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.asSetting
+import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
+import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.findSetting
+import com.mrboomdev.awery.ext.data.getRecursively
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.platform.PlatformResources
-import com.mrboomdev.awery.platform.PlatformResources.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
 import com.mrboomdev.awery.util.extensions.balloon
@@ -44,12 +41,10 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.skydoves.balloon.BalloonAlign
 
 class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Adapter<SetupThemeAdapter.ViewHolder?>() {
-	private val isAmoled = AwerySettings.USE_AMOLED_THEME.value == true
 	private val materialYouDrawable: Drawable?
 	private val selectedDrawable: Drawable
 	private val themes: MutableList<Theme> = ArrayList()
 	private val context: Context
-	private var didSuggestYou = AwerySettings.DID_SUGGEST_MATERIAL_YOU.value == true
 	var selected: Theme?
 
 	/**
@@ -67,8 +62,6 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			setColor(context.resolveAttrColor(com.google.android.material.R.attr.colorOnSecondary))
 		}
 
-
-
 		materialYouDrawable = run {
 			if(!DynamicColors.isDynamicColorAvailable()) {
 				return@run null
@@ -77,18 +70,18 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			LayerDrawable(arrayOf(
 				GradientDrawable().apply {
 					shape = GradientDrawable.OVAL
-					setColor(ContextThemeWrapper(context,
-						ThemeManager.getThemeRes(ThemeColorPaletteValue.MATERIAL_YOU, isAmoled)
-					).resolveAttrColor(com.google.android.material.R.attr.colorPrimary))
+					
+					val themeRes = ThemeManager.getThemeRes(AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU, AwerySettings.USE_AMOLED_THEME.value)
+					setColor(ContextThemeWrapper(context, themeRes).resolveAttrColor(com.google.android.material.R.attr.colorPrimary))
 				},
 
 				ContextCompat.getDrawable(context, R.drawable.ic_round_auto_awesome_24)
 			))
 		}
 
-		for(theme in ThemeColorPaletteValue.entries.toTypedArray()) {
-			if(theme == ThemeColorPaletteValue.MATERIAL_YOU && !DynamicColors.isDynamicColorAvailable()) continue
-			themes.add(Theme(theme, theme.findSetting()))
+		for(theme in AwerySettings.ThemeColorPaletteValue.entries.toTypedArray()) {
+			if(theme == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && !DynamicColors.isDynamicColorAvailable()) continue
+			themes.add(Theme(theme, AwerySettings.maps.SYSTEM_SETTINGS.items!!.getRecursively(theme.key)!!))
 		}
 
 		selected = themes.find { it.id == palette.key }
@@ -140,26 +133,22 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			binding.root.background = if(this.theme === selected) selectedDrawable
 			else ContextCompat.getDrawable(context, R.drawable.ui_button_popup_background)
 
-			if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU) {
+			if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
 				binding.root.setImageDrawable(materialYouDrawable)
 			} else {
-				imageDrawable.setColor(ContextThemeWrapper(context,
-					ThemeManager.getThemeRes(theme.palette, isAmoled
-					)).resolveAttrColor(com.google.android.material.R.attr.colorPrimary)
-				)
-
+				val themeRes = ThemeManager.getThemeRes(theme.palette, AwerySettings.USE_AMOLED_THEME.value)
+				imageDrawable.setColor(ContextThemeWrapper(context, themeRes).resolveAttrColor(com.google.android.material.R.attr.colorPrimary))
 				binding.root.setImageDrawable(imageDrawable)
 			}
 
-			if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU && !didSuggestYou) {
-				binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
-				didSuggestYou = true
+			if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && !AwerySettings.DID_SUGGEST_MATERIAL_YOU.value) {
+				binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
 				AwerySettings.DID_SUGGEST_MATERIAL_YOU.value = true
 			}
 
 			binding.root.setOnLongClickListener {
-				if(theme.palette == ThemeColorPaletteValue.MATERIAL_YOU) {
-					binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.END)
+				if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
+					binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
 					return@setOnLongClickListener true
 				}
 
@@ -168,7 +157,10 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 		}
 	}
 
-	inner class Theme(val palette: ThemeColorPaletteValue, private val item: Setting) {
+	inner class Theme(
+		val palette: AwerySettings.ThemeColorPaletteValue, 
+		private val item: Setting
+	) {
 		val id: String
 			get() = palette.key
 
@@ -186,7 +178,6 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 	}
 
 	companion object {
-		@JvmStatic
 		fun create(context: Context): ConcatAdapter {
 			return ConcatAdapter(
 				ConcatAdapter.Config.Builder()

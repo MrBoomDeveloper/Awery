@@ -16,6 +16,10 @@ dependencies {
 	implementation(kotlin("stdlib-jdk8"))
 
 	// Ui
+	implementation(compose.foundation)
+	implementation(compose.runtime)
+	implementation(compose.ui)
+	implementation(compose.components.resources)
 	implementation(compose.desktop.currentOs)
 	implementation(projects.shared)
 

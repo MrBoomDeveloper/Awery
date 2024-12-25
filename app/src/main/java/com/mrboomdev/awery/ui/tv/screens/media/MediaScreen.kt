@@ -29,10 +29,10 @@ import coil3.compose.SubcomposeAsyncImage
 import com.mrboomdev.awery.AweryDebug
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.toast
+import com.mrboomdev.awery.app.theme.TvTheme
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
-import com.mrboomdev.awery.app.theme.TvTheme
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
 
 private val SHADOW_COLOR = Color(0xBB000000)
 

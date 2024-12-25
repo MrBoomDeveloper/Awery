@@ -17,8 +17,6 @@ import com.mrboomdev.awery.app.update.UpdatesManager
 import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
-import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
@@ -46,55 +44,53 @@ object PlatformSettingHandler {
 	private const val TAG = "PlatformSettingHandler"
 
 	fun handlePlatformClick(context: Context, setting: PlatformSetting) {
-		if(setting.key == null) return
-
 		when(setting.key) {
-			AwerySettings.TRY_CRASH_NATIVE ->
+			AwerySettings.TRY_CRASH_NATIVE.key ->
 				XCrash.testNativeCrash(false)
 
-			AwerySettings.TRY_CRASH_JAVA ->
+			AwerySettings.TRY_CRASH_JAVA.key ->
 				XCrash.testJavaCrash(false)
 
-			AwerySettings.TRY_CRASH_NATIVE_ASYNC ->
+			AwerySettings.TRY_CRASH_NATIVE_ASYNC.key ->
 				thread { XCrash.testNativeCrash(false) }
 
-			AwerySettings.TRY_CRASH_JAVA_ASYNC ->
+			AwerySettings.TRY_CRASH_JAVA_ASYNC.key ->
 				thread { XCrash.testJavaCrash(false) }
 
-			AwerySettings.ABOUT ->
+			AwerySettings.ABOUT.key ->
 				context.startActivity(AboutActivity::class)
 
-			AwerySettings.START_ONBOARDING ->
+			AwerySettings.START_ONBOARDING.key ->
 				context.startActivity(SetupActivity::class)
 
-			AwerySettings.UI_LANGUAGE ->
+			AwerySettings.UI_LANGUAGE.key ->
 				AweryLocales.showPicker(context)
 
-			AwerySettings.PLAYER_SYSTEM_SUBTITLES ->
+			AwerySettings.PLAYER_SYSTEM_SUBTITLES.key ->
 				context.startActivity(action = Settings.ACTION_CAPTIONING_SETTINGS)
 
-			AwerySettings.SETUP_THEME ->
+			AwerySettings.SETUP_THEME.key ->
 				context.startActivity(SetupActivity::class, extras = mapOf(
 					SetupActivity.EXTRA_STEP to SetupActivity.STEP_THEMING,
 					SetupActivity.EXTRA_FINISH_ON_COMPLETE to true
 				))
 
-			AwerySettings.CLEAR_IMAGE_CACHE -> {
+			AwerySettings.CLEAR_IMAGE_CACHE.key -> {
 				File(context.cacheDir, DIRECTORY_IMAGE_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
-			AwerySettings.CLEAR_WEBVIEW_CACHE -> {
+			AwerySettings.CLEAR_WEBVIEW_CACHE.key -> {
 				File(context.cacheDir, Constants.DIRECTORY_WEBVIEW_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
-			AwerySettings.CLEAR_NET_CACHE -> {
+			AwerySettings.CLEAR_NET_CACHE.key -> {
 				File(context.cacheDir, Constants.DIRECTORY_NET_CACHE).deleteRecursively()
 				toast(R.string.cleared_successfully)
 			}
 
-			AwerySettings.BACKUP -> {
+			AwerySettings.BACKUP.key -> {
 				val activity = requireNotNull(context.activity) {
 					"This action can be called only from an activity!"
 				}
@@ -161,7 +157,7 @@ object PlatformSettingHandler {
 					})
 			}
 
-			AwerySettings.RESTORE -> {
+			AwerySettings.RESTORE.key -> {
 				val activity = requireNotNull(context.activity) {
 					"This action can be called only from an activity!"
 				}
@@ -192,7 +188,7 @@ object PlatformSettingHandler {
 				}
 
 				activity.startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).apply {
-					setType(ContentType.ANY.mimeType)
+					type = ContentType.ANY.mimeType
 				}.toChooser("Choose a backup file"), { resultCode, result ->
 					if(resultCode != Activity.RESULT_OK) return@startActivityForResult
 
@@ -202,7 +198,7 @@ object PlatformSettingHandler {
 				})
 			}
 
-			AwerySettings.CHECK_APP_UPDATE -> {
+			AwerySettings.CHECK_APP_UPDATE.key -> {
 				val window = showLoadingWindow()
 
 				val activity = requireNotNull(context.activity) {

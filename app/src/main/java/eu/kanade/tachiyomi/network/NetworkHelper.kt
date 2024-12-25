@@ -1,8 +1,8 @@
 package eu.kanade.tachiyomi.network
 
 import android.content.Context
-import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.data.Constants
+import com.mrboomdev.awery.generated.AwerySettings
 import eu.kanade.tachiyomi.network.interceptor.CloudflareInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UncaughtExceptionInterceptor
 import eu.kanade.tachiyomi.network.interceptor.UserAgentInterceptor
@@ -29,7 +29,7 @@ class NetworkHelper(context: Context) {
                 directory = File(context.cacheDir, Constants.DIRECTORY_NET_CACHE),
                 maxSize = 5L * 1024 * 1024, /* 5 MiB */))
 
-        if(AwerySettings.LOG_NETWORK.value == true) {
+        if(AwerySettings.LOG_NETWORK.value) {
             val httpLoggingInterceptor = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }

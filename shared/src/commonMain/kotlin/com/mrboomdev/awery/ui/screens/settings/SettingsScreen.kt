@@ -6,7 +6,6 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
@@ -66,10 +65,38 @@ fun SettingsScreen(
 		value = navigator.scaffoldValue,
 
 		listPane = {
-			AnimatedPane {
+			SettingScreen(
+				screen = setting,
+				selected = history.mapNotNull { it.content },
+				setting = settingComposable,
+
+				header = {
+					MediumTopAppBar(
+						colors = getTitleHeaderColors(),
+						title = {
+							Text(
+								text = setting.title?.let { title ->
+									setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
+								} ?: "",
+
+								overflow = TextOverflow.Ellipsis,
+								maxLines = 1
+							)
+						}
+					) 
+				},
+
+				onOpenScreen = {
+					navigator.historyState.clear()
+					navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
+				}
+			)
+		},
+
+		detailPane = {
+			navigator.currentDestination?.content?.let { currentScreen ->
 				SettingScreen(
-					screen = setting,
-					selected = history.mapNotNull { it.content },
+					screen = currentScreen,
 					setting = settingComposable,
 
 					header = {
@@ -77,51 +104,19 @@ fun SettingsScreen(
 							colors = getTitleHeaderColors(),
 							title = {
 								Text(
-									text = setting.title?.let { title ->
-										setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
+									text = currentScreen.title?.let { title ->
+										currentScreen.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
 									} ?: "",
 
 									overflow = TextOverflow.Ellipsis,
 									maxLines = 1
 								)
 							}
-						)
+						) 
 					},
 
-					onOpenScreen = {
-						navigator.historyState.clear()
-						navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
-					}
+					onOpenScreen = { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it) }
 				)
-			}
-		},
-
-		detailPane = {
-			AnimatedPane {
-				navigator.currentDestination?.content?.let { currentScreen ->
-					SettingScreen(
-						screen = currentScreen,
-						setting = settingComposable,
-
-						header = {
-							MediumTopAppBar(
-								colors = getTitleHeaderColors(),
-								title = {
-									Text(
-										text = currentScreen.title?.let { title ->
-											currentScreen.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
-										} ?: "",
-
-										overflow = TextOverflow.Ellipsis,
-										maxLines = 1
-									)
-								}
-							)
-						},
-
-						onOpenScreen = { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it) }
-					)
-				}
 			}
 		}
 	)

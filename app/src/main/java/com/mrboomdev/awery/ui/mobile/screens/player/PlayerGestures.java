@@ -34,7 +34,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesMode_Values.VOLUME_BRIGHTNESS) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesModeValue.VOLUME_BRIGHTNESS) {
 					isRightIgnored = true;
 					yield false;
 				}
@@ -96,7 +96,7 @@ public class PlayerGestures {
 					yield false;
 				}
 
-				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesMode_Values.VOLUME_BRIGHTNESS) {
+				if(event.getY() < GESTURE_START_Y || activity.gesturesMode != AwerySettings.PlayerGesturesModeValue.VOLUME_BRIGHTNESS) {
 					isLeftIgnored = true;
 					yield false;
 				}

@@ -21,7 +21,7 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogVideo
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -75,7 +75,7 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 			}
 
 			applyInsets(UI_INSETS, { view, insets ->
-				if(AwerySettings.USE_AMOLED_THEME.value == true) {
+				if(AwerySettings.USE_AMOLED_THEME.value) {
 					view.setBackgroundColor(-0x1000000)
 					window.navigationBarColor = if(isLandscape) 0 else -0x1000000
 				} else {

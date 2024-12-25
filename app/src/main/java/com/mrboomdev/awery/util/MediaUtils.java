@@ -14,8 +14,7 @@ import com.mrboomdev.awery.data.db.item.DBCatalogMedia;
 import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
-import com.mrboomdev.awery.ext.data.CatalogTag;
-import com.mrboomdev.awery.AwerySettings;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity;
 import com.mrboomdev.safeargsnext.SafeArgsIntent;
 
@@ -49,11 +48,11 @@ public class MediaUtils {
 
 	public static boolean isMediaFilteredSync(@NonNull CatalogMedia media) {
 		var prefs = NicePreferences.getPrefs();
-		var badTags = prefs.getStringSet(AwerySettings.GLOBAL_EXCLUDED_TAGS);
+		//var badTags = prefs.getStringSet(AwerySettings.INSTANCE.getGLOBAL_EXCLUDED_TAGS());
 		var saved = App.Companion.getDatabase().getMediaProgressDao().get(media.getGlobalId());
 
 		if(saved != null) {
-			if(AwerySettings.HIDE_LIBRARY_ENTRIES.getValue() && saved.getListsCount() > 0) {
+			if(Boolean.TRUE.equals(AwerySettings.INSTANCE.getHIDE_LIBRARY_ENTRIES().getValue()) && saved.getListsCount() > 0) {
 				return true;
 			}
 
@@ -61,10 +60,11 @@ public class MediaUtils {
 				return true;
 			}
 		}
-
-		return media.getTags() != null && stream(media.getTags())
-				.map(CatalogTag::getName)
-				.anyMatch(badTags::contains);
+		
+//		return media.getTags() != null && stream(media.getTags())
+//				.map(CatalogTag::getName)
+//				.anyMatch(badTags::contains);
+		return false;
 	}
 	
 	public interface Callback1<T> {

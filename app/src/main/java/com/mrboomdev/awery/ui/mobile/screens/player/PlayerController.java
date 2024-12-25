@@ -1,11 +1,10 @@
 package com.mrboomdev.awery.ui.mobile.screens.player;
 
-import static com.mrboomdev.awery.util.extensions.DialogExtensionsKt.fix;
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
-import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.formatClock;
+import static com.mrboomdev.awery.util.extensions.DialogExtensionsKt.fix;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -32,7 +31,7 @@ import com.mrboomdev.awery.databinding.PopupSimpleHeaderBinding;
 import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
-import com.mrboomdev.awery.AwerySettings;
+import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.util.ContentType;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;

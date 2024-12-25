@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.gradle
+package com.mrboomdev.awery.gradle.util
 
 import groovy.util.Node
 import groovy.util.NodeList

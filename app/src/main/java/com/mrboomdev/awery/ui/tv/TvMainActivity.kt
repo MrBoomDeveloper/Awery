@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.tv
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
@@ -15,9 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
-import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.AwerySettings
 import com.mrboomdev.awery.data.settings.NicePreferences
+import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.platform.PlatformSetting
 import com.mrboomdev.awery.ui.mobile.components.MobileSetting
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity

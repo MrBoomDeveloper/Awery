@@ -54,7 +54,7 @@ import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile
-import com.mrboomdev.awery.AwerySettings
+import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.explain
@@ -62,6 +62,7 @@ import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.bottomMargin
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.leftMargin
+import com.mrboomdev.awery.util.extensions.toMimeType
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import com.mrboomdev.safeargsnext.util.rememberSafeArgs
@@ -113,7 +114,6 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		applyTheme()
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
-		loadSettings()
 
 		PlayerPip.addCallback(this) { action ->
 			when(action) {
@@ -153,8 +153,8 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 			.build()
 
 		player = ExoPlayer.Builder(this)
-			.setSeekBackIncrementMs(doubleTapSeek * 1000L + 1)
-			.setSeekForwardIncrementMs(doubleTapSeek * 1000L + 1)
+			.setSeekBackIncrementMs(doubleTapSeek.key.toInt() * 1000L + 1)
+			.setSeekForwardIncrementMs(doubleTapSeek.key.toInt() * 1000L + 1)
 			.setAudioAttributes(audioAttributes, true)
 			.build().apply {
 				setVideoSurfaceView(binding.surfaceView)
@@ -178,7 +178,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		binding.doubleTapForward.setOnTouchListener { _, event -> gestures.onTouchEventRight(event) }
 
 		binding.doubleTapBackward.setOnClickListener {
-			if(doubleTapSeek == 0) {
+			if(doubleTapSeek.key.toInt() == 0) {
 				controller.toggleUiVisibility()
 				return@setOnClickListener
 			}
@@ -209,7 +209,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		}
 
 		binding.doubleTapForward.setOnClickListener {
-			if(doubleTapSeek == 0) {
+			if(doubleTapSeek.key.toInt() == 0) {
 				controller.toggleUiVisibility()
 				return@setOnClickListener
 			}
@@ -317,7 +317,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		loadData()
 		setButtonsClickability(false)
 
-		controller.setAspectRatio(AwerySettings.VIDEO_ASPECT_RATIO.value!!)
+		controller.setAspectRatio(AwerySettings.VIDEO_ASPECT_RATIO.value)
 		controller.showUiTemporarily()
 
 		addOnPictureInPictureModeChangedListener {
@@ -344,12 +344,6 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		return true
 	}
 
-	private fun loadSettings() {
-		doubleTapSeek =
-		bigSeek = AwerySettings.PLAYER_BIG_SEEK_LENGTH.value ?: 0
-		gesturesMode = AwerySettings.PLAYER_GESTURES_MODE.value
-	}
-
 	override fun onCues(cueGroup: CueGroup) {
 		binding.subtitleView.setCues(cueGroup.cues)
 	}
@@ -369,10 +363,8 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 			binding.subtitles.alpha = if(isEmpty) .4f else 1f
 			binding.subtitles.setImageResource(R.drawable.ic_subtitles_outlined)
 		} else {
-			val mimeType: String
-
-			try {
-				mimeType = NiceUtils.parseMimeType(subtitles.uri)
+			val mimeType = try {
+				subtitles.uri.toMimeType()
 			} catch(e: IllegalArgumentException) {
 				Log.e(TAG, "Unknown subtitles mime type! " + subtitles.uri, e)
 
