@@ -28,7 +28,7 @@
 					"to": 10,
 					"value": 0,
 					"title": "media_columns_count_land",
-					"description": "Auto if is 0"
+					"placeholder": "Leave blank to use an automatic value"
 				},
 
 				{
@@ -38,7 +38,7 @@
 					"to": 10,
 					"value": 0,
 					"title": "media_columns_count_port",
-					"description": "Auto if is 0",
+					"placeholder": "Leave blank to use an automatic value",
 					"show_if": ["!tv"]
 				},
 

@@ -15,8 +15,7 @@ java {
 
 kotlin {
 	jvmToolchain(17)
-
-	@OptIn(ExperimentalKotlinGradlePluginApi::class)
+	
 	compilerOptions {
 		freeCompilerArgs = listOf("-Xexpect-actual-classes")
 	}
@@ -28,15 +27,16 @@ kotlin {
 		val desktopMain by getting
 
 		commonMain.dependencies {
-			// Used projects
-			api(projects.ext)
-			api(projects.ext.platform)
-
 			// Core
+			implementation(projects.ext)
+			implementation(libs.kotlinx.serialization.json)
+			
+			// Ui
 			implementation(compose.foundation)
 			implementation(compose.runtime)
 			implementation(compose.ui)
 			implementation(compose.components.resources)
+			implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 			// Adaptive layout
 			implementation(libs.androidx.adaptive)

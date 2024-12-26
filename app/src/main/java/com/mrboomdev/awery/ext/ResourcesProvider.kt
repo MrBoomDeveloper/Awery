@@ -6,10 +6,10 @@ import java.io.File
 
 object ResourcesProvider {
 	fun getFile(source: Source, path: String): File {
-		throw UnsupportedOperationException("Stub1!")
+		throw NotImplementedError("TODO: Implement an Android implementation.")
 	}
 
 	fun createImage(file: File): Image {
-		throw UnsupportedOperationException("Stub1!")
+		throw NotImplementedError("TODO: Implement an Android implementation.")
 	}
 }

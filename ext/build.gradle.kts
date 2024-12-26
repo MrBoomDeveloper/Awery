@@ -18,9 +18,9 @@ dependencies {
 	api(libs.kotlinx.coroutines.core)
 
 	// Serialization
-	api(libs.moshi)
-	api(libs.moshi.kotlin)
-	api(libs.kotlinx.serialization.json)
+	implementation(libs.moshi)
+	implementation(libs.moshi.kotlin)
+	implementation(libs.kotlinx.serialization.json)
 }
 
 mavenPublishing {

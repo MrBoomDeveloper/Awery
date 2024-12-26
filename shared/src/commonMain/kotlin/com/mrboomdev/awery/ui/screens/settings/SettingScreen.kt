@@ -16,6 +16,7 @@ import com.mrboomdev.awery.ext.data.Setting
 
 @Composable
 fun SettingScreen(
+	modifier: Modifier = Modifier,
 	screen: Setting,
 	selected: Collection<Setting>? = null,
 	onOpenScreen: (Setting) -> Unit,
@@ -26,30 +27,32 @@ fun SettingScreen(
 		isSelected: Boolean
 	) -> Unit
 ) {
-	if(screen.items.isNullOrEmpty()) {
-		return Column(
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Center
-		) {
-			Text(
-				text = "There is nothing",
-				color = Color.White
-			)
-		}
-	}
-
-	LazyColumn {
+	LazyColumn(modifier = modifier) {
 		if(header != null) {
 			item("header") {
 				header()
 			}
 		}
-
-		items(
-			items = screen.items!!
-		) {
-			if(!it.isVisible) return@items
-			setting(it, onOpenScreen, selected != null && it in selected)
+		
+		if(screen.items.isNullOrEmpty()) {
+			item("empty") {
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.Center
+				) {
+					Text(
+						text = "There is nothing",
+						color = Color.White
+					)
+				}
+			}
+		} else {
+			items(
+				items = screen.items!!
+			) {
+				if(!it.isVisible) return@items
+				setting(it, onOpenScreen, selected != null && it in selected)
+			}
 		}
 
 		item("bottomPadding") {

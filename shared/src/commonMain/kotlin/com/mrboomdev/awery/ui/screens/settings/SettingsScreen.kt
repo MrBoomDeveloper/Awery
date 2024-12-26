@@ -1,8 +1,9 @@
 package com.mrboomdev.awery.ui.screens.settings
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -17,6 +18,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.platform.PlatformResources.i18n
 import com.mrboomdev.awery.platform.PlatformSetting
@@ -66,21 +68,19 @@ fun SettingsScreen(
 
 		listPane = {
 			SettingScreen(
+				modifier = Modifier.padding(horizontal = 8.dp),
 				screen = setting,
 				selected = history.mapNotNull { it.content },
 				setting = settingComposable,
 
 				header = {
-					MediumTopAppBar(
+					LargeTopAppBar(
 						colors = getTitleHeaderColors(),
 						title = {
 							Text(
 								text = setting.title?.let { title ->
 									setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
-								} ?: "",
-
-								overflow = TextOverflow.Ellipsis,
-								maxLines = 1
+								} ?: ""
 							)
 						}
 					) 
@@ -96,11 +96,12 @@ fun SettingsScreen(
 		detailPane = {
 			navigator.currentDestination?.content?.let { currentScreen ->
 				SettingScreen(
+					modifier = Modifier.padding(horizontal = 8.dp),
 					screen = currentScreen,
 					setting = settingComposable,
 
 					header = {
-						MediumTopAppBar(
+						LargeTopAppBar(
 							colors = getTitleHeaderColors(),
 							title = {
 								Text(

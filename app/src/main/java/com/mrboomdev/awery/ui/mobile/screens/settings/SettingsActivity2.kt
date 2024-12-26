@@ -72,7 +72,7 @@ class SettingsActivity2: ComponentActivity() {
 					}
 				} catch(_: CancellationException) {}
 			}
-
+	
 			Row(Modifier.fillMaxSize()) {
 				Spacer(Modifier.windowInsetsStartWidth(WindowInsets.safeContent))
 

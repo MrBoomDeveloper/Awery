@@ -248,10 +248,9 @@ class MainActivity : AppCompatActivity() {
 
         (fun(tab: Int) {
             binding!!.pages.setCurrentItem(tab, false)
-            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.get(tab)?.get()?.onFocus()
+            (binding!!.pages.adapter as? FeedsAdapter)?.fragments?.getOrNull(tab)?.get()?.onFocus()
         }).let {
             binding!!.navbarBubble.onTabSelected = { tab -> it(tab.id) }
-
             binding!!.navbarMaterial.setOnItemSelectedListener { tab ->
                 it(tab.itemId)
                 true

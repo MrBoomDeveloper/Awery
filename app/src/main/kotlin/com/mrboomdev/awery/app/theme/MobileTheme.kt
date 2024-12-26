@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.app.theme
 
 import android.os.Build
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -14,6 +15,39 @@ import com.mrboomdev.awery.generated.AwerySettings
 import com.mrboomdev.awery.ui.Themes
 
 @Composable
+private fun getOriginalColorScheme(
+	palette: AwerySettings.ThemeColorPaletteValue,
+	isDark: Boolean
+): ColorScheme {
+	if(palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+			throw UnsupportedOperationException("How did you even done that?")
+		}
+			
+		return with(LocalContext.current) {
+			if(isDark) dynamicDarkColorScheme(this)
+			else dynamicLightColorScheme(this)
+		}
+	}
+	
+	return when(palette) {
+		AwerySettings.ThemeColorPaletteValue.GREEN -> Themes.Green
+		AwerySettings.ThemeColorPaletteValue.BLUE -> Themes.Blue
+		else -> Themes.Red
+	}.let { if(isDark || isTv) {
+		darkColorScheme(
+			surface = it.dark.background,
+			background = it.dark.background
+		)
+	} else {
+		lightColorScheme(
+			surface = it.light.background,
+			background = it.light.background
+		)
+	}}
+}
+
+@Composable
 fun MobileTheme(
 	palette: AwerySettings.ThemeColorPaletteValue,
 	isDark: Boolean,
@@ -21,37 +55,7 @@ fun MobileTheme(
 	content: @Composable () -> Unit
 ) {
 	MaterialTheme(
-		colorScheme = when(palette) {
-			AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU -> {
-				if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-					throw UnsupportedOperationException("How did you even done that?")
-				}
-
-				with(LocalContext.current) {
-					if(isDark) {
-						dynamicDarkColorScheme(this)
-					} else {
-						dynamicLightColorScheme(this)
-					}
-				}
-			}
-
-			else -> when(palette) {
-				AwerySettings.ThemeColorPaletteValue.GREEN -> Themes.Green
-				AwerySettings.ThemeColorPaletteValue.BLUE -> Themes.Blue
-				else -> Themes.Red
-			}.let { if(isDark || isTv) {
-				darkColorScheme(
-					surface = it.dark.background,
-					background = it.dark.background
-				)
-			} else {
-				lightColorScheme(
-					surface = it.light.background,
-					background = it.light.background
-				)
-			}}
-		}.let {
+		colorScheme = getOriginalColorScheme(palette, isDark).let {
 			if(isAmoled) it.copy(
 				surface = Color.Black,
 				background = Color.Black

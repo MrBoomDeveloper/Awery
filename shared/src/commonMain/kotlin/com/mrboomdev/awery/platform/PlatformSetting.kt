@@ -18,6 +18,7 @@ class PlatformSetting(
 	override val key: String? = null,
 	override val title: String? = null,
 	override val description: String? = null,
+	val placeholder: String? = null,
 	override val items: List<PlatformSetting>? = null,
 	@Suppress("PrivatePropertyName") @SerialName("value")
 	private val __defaultValue: String? = null,
@@ -30,7 +31,7 @@ class PlatformSetting(
 	override val to: Float? = null,
 	@SerialName("icon_scale")
 	val iconScale: Float? = null
-): Setting() {
+): Setting(), java.io.Serializable {
 
 	@Transient
 	val defaultValue = __defaultValue?.let {
@@ -73,26 +74,28 @@ class PlatformSetting(
 
 	@Transient
 	override var value: Any? = null
-		get() = super.value
+		get() = field ?: super.value
 		set(value) {
 			field = value
-			saveValue()
+			saveValue(value)
 		}
 
-	private fun saveValue() {
-		if(key == null) return
-
+	private fun saveValue(newValue: Any?) {
+		requireNotNull(key)
+		
 		PlatformPreferences.apply {
-			when(val value = value) {
-				is Boolean -> set(key, value)
-				is String -> set(key, value)
-				is Int -> set(key, value)
-				is Float -> set(key, value)
-				is TriState -> set(key, value.name)
+			when(newValue) {
+				is Boolean -> set(key, newValue)
+				is String -> set(key, newValue)
+				is Int -> set(key, newValue)
+				is Float -> set(key, newValue)
+				is TriState -> set(key, newValue.name)
 				null -> remove(key)
 				else -> throw UnsupportedOperationException("Unsupported setting value type!")
 			}
-		}.save()
+		}
+		
+		PlatformPreferences.save()
 	}
 
 	override fun onClick() {

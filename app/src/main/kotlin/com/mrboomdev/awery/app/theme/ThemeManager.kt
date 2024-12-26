@@ -9,7 +9,14 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.mrboomdev.awery.R
@@ -69,20 +76,38 @@ object ThemeManager {
 	 * Set an composable component as activity's content and apply an current theme.
 	 */
 	fun ComponentActivity.setThemedContent(content: @Composable () -> Unit) {
-		val isReallyAmoled = isDarkModeEnabled && AwerySettings.USE_AMOLED_THEME.value == true
-
 		setContent {
-			MobileTheme(
-				palette = currentColorPalette,
-				isDark = isDarkModeEnabled,
-				isAmoled = isReallyAmoled
-			) {
-				TvTheme(
+			var isDarkMode by remember { mutableStateOf(isDarkModeEnabled) }
+			var isAmoledEnabled by remember { mutableStateOf(AwerySettings.USE_AMOLED_THEME.value) }
+			
+			val theme by remember { derivedStateOf { 
+				object : AweryTheme {
+					override var isDark: Boolean
+						get() = isDarkMode
+						set(value) { isDarkMode = value }
+					
+					override var isAmoled: Boolean
+						get() = isDarkMode && isAmoledEnabled
+						set(value) { isAmoledEnabled = value }
+					
+				}
+			}}
+			
+			CompositionLocalProvider(LocalAweryTheme provides theme) {
+				MobileTheme(
 					palette = currentColorPalette,
-					isDark = isDarkModeEnabled,
-					isAmoled = isReallyAmoled
+					isDark = theme.isDark,
+					isAmoled = theme.isAmoled
 				) {
-					content()
+					TvTheme(
+						palette = currentColorPalette,
+						isDark = theme.isDark,
+						isAmoled = theme.isAmoled
+					) {
+						Surface {
+							content()
+						}
+					}
 				}
 			}
 		}

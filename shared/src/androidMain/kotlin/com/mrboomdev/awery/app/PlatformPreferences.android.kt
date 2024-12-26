@@ -11,11 +11,7 @@ actual object PlatformPreferences : Preferences {
 	private val prefs = AndroidGlobals.applicationContext.getSharedPreferences("Awery", 0)
 	private var editor: SharedPreferences.Editor? = null
 
-	private fun ensureEditorExistence(): SharedPreferences.Editor {
-		return editor ?: prefs.edit().also {
-			editor = it
-		}
-	}
+	private fun ensureEditorExistence() = editor ?: prefs.edit().also { editor = it }
 
 	override fun getString(key: String): String? {
 		if(!prefs.contains(key)) {

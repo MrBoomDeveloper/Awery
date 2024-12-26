@@ -14,7 +14,7 @@ kotlin {
 }
 
 dependencies {
-	implementation(projects.ext)
+	api(projects.ext)
 }
 
 mavenPublishing {
