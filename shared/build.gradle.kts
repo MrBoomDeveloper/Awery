@@ -23,18 +23,18 @@ kotlin {
 	androidTarget()
 	jvm("desktop")
 
-	sourceSets {
-		val desktopMain by getting
+	applyDefaultHierarchyTemplate()
 
+	sourceSets {
 		commonMain.dependencies {
 			// Core
 			implementation(projects.ext)
+			implementation(compose.runtime)
 			implementation(libs.kotlinx.serialization.json)
 			
 			// Ui
-			implementation(compose.foundation)
-			implementation(compose.runtime)
 			implementation(compose.ui)
+			implementation(compose.foundation)
 			implementation(compose.components.resources)
 			implementation(libs.androidx.lifecycle.viewmodel.compose)
 
@@ -48,13 +48,15 @@ kotlin {
 			implementation(libs.coil.compose)
 		}
 
-		desktopMain.dependencies {
-			implementation(compose.desktop.currentOs)
-		}
-
 		androidMain.dependencies {
 			implementation(libs.androidx.core)
 			implementation(libs.material)
+		}
+
+		val desktopMain by getting {
+			dependencies {
+				implementation(compose.desktop.common)
+			}
 		}
 	}
 }

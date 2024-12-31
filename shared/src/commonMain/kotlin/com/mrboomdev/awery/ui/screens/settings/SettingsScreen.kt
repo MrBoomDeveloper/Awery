@@ -52,12 +52,8 @@ private fun getTitleHeaderColors() = TopAppBarColors(
 fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	setting: Setting,
-	settingComposable: @Composable (
-		setting: Setting,
-		onOpenScreen: (Setting) -> Unit,
-		isSelected: Boolean
-	) -> Unit,
-	navigator: ThreePaneScaffoldNavigator<Setting> = rememberListDetailPaneScaffoldNavigator<Setting>()
+	navigator: ThreePaneScaffoldNavigator<Setting> = rememberListDetailPaneScaffoldNavigator<Setting>(),
+	settingComposable: @Composable (setting: Setting, onOpenScreen: (Setting) -> Unit, isSelected: Boolean) -> Unit
 ) {
 	val history = remember { navigator.historyState }
 
