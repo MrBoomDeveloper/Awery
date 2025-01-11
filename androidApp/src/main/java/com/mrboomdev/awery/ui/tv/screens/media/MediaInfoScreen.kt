@@ -16,9 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,11 +36,14 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.util.extensions.plus
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.toCalendar
+import com.mrboomdev.awery.utils.buildIntent
+import org.jetbrains.compose.resources.stringResource
 import java.util.Calendar
 
 enum class MediaInfoAction {
@@ -61,7 +62,7 @@ fun MediaInfoScreen(
 	) {
 		Text(
 			modifier = Modifier.widthIn(max = maxTextWidth),
-			text = media.title ?: stringResource(R.string.no_title),
+			text = media.title ?: stringResource(Res.string.no_title),
 			maxLines = 2,
 			color = Color.White,
 			style = TextStyle(
@@ -82,20 +83,20 @@ fun MediaInfoScreen(
 			text = mutableListOf<String>().apply {
 				if(media.episodesCount != null) {
 					add(media.episodesCount + " " + stringResource(
-						if(media.episodesCount == 1) R.string.episode
-						else R.string.episodes)
+						if(media.episodesCount == 1) Res.string.episode
+						else Res.string.episodes)
 					)
 				}
 
 				if(media.duration != null) {
 					add(media.duration!!.let {
 						return@let if(it < 60) {
-							"$it${stringResource(R.string.minute_short)}"
+							"$it${stringResource(Res.string.minute_short)}"
 						} else {
-							"${it / 60}${stringResource(R.string.hour_short)} " +
-									"${it % 60}${stringResource(R.string.minute_short)}"
+							"${it / 60}${stringResource(Res.string.hour_short)} " +
+									"${it % 60}${stringResource(Res.string.minute_short)}"
 						}
-					} + " " + stringResource(R.string.duration))
+					} + " " + stringResource(Res.string.duration))
 				}
 
 				if(media.releaseDate != null) {
@@ -103,26 +104,27 @@ fun MediaInfoScreen(
 				}
 
 				if(media.country != null) {
-					add(AweryLocales.translateCountryName(
-						LocalContext.current, media.country!!))
+					add(AweryLocales.i18nCountryName(
+                        media.country!!
+                    ))
 				}
 
 				if(size < 3 && media.status != null) {
 					add(stringResource(when(media.status!!) {
 						CatalogMedia.Status.ONGOING ->
-							R.string.status_releasing
+							Res.string.status_releasing
 
 						CatalogMedia.Status.COMPLETED ->
-							R.string.status_finished
+							Res.string.status_finished
 
 						CatalogMedia.Status.COMING_SOON ->
-							R.string.status_not_yet_released
+							Res.string.status_not_yet_released
 
 						CatalogMedia.Status.PAUSED ->
-							R.string.status_hiatus
+							Res.string.status_hiatus
 
 						CatalogMedia.Status.CANCELLED ->
-							R.string.status_cancelled
+							Res.string.status_cancelled
 					}))
 				}
 
@@ -140,7 +142,7 @@ fun MediaInfoScreen(
 			modifier = Modifier.widthIn(max = maxTextWidth),
 			overflow = TextOverflow.Ellipsis,
 			maxLines = 3,
-			text = media.description ?: stringResource(R.string.no_description_available),
+			text = media.description ?: stringResource(Res.string.no_description_available),
 			color = Color.White,
 			style = TextStyle(
 				fontSize = 18.sp,
@@ -159,9 +161,9 @@ fun MediaInfoScreen(
 						fontSize = 17.sp,
 						text = when(media.type) {
 							CatalogMedia.Type.BOOK, CatalogMedia.Type.POST ->
-								stringResource(R.string.read_now)
+								stringResource(Res.string.read_now)
 
-							else -> stringResource(R.string.watch_now)
+							else -> stringResource(Res.string.watch_now)
 						}
 					)
 				}
@@ -186,7 +188,7 @@ fun MediaInfoScreen(
 					Icon(
 						modifier = Modifier.padding(8.dp),
 						painter = painterResource(R.drawable.ic_bookmark_filled),
-						contentDescription = stringResource(R.string.bookmark)
+						contentDescription = stringResource(Res.string.bookmark)
 					)
 				}
 
@@ -194,8 +196,8 @@ fun MediaInfoScreen(
 					Spacer(Modifier.width(10.dp))
 
 					IconButton(onClick = {
-						getAnyActivity<Activity>()!!.also {
-							it.startActivity(BrowserActivity::class, BrowserActivity.Extras(media.url!!))
+						getAnyActivity<Activity>()!!.apply {
+							startActivity(buildIntent(BrowserActivity::class, BrowserActivity.Extras(media.url!!)))
 						}
 					}) {
 						Icon(

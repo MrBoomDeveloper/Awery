@@ -39,7 +39,7 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 import com.squareup.moshi.Moshi;

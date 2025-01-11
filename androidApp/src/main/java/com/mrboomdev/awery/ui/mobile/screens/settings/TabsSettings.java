@@ -4,9 +4,9 @@ import static com.mrboomdev.awery.app.App.snackbar;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
-import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
 import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -32,6 +32,8 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
@@ -95,15 +97,15 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 													icon.set(item.getKey());
 												}).show());
 
-								binding.get().editText.setHint(R.string.enter_text);
+								binding.get().editText.setHint(i18n(String0_commonMainKt.getEnter_text(Res.string.INSTANCE)));
 								return binding.get().getRoot();
 							})
-							.setNegativeButton(R.string.cancel, BaseDialogBuilder::dismiss)
-							.setPositiveButton(R.string.create, dialog -> {
+							.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), BaseDialogBuilder::dismiss)
+							.setPositiveButton(i18n(String0_commonMainKt.getCreate(Res.string.INSTANCE)), dialog -> {
 								var text = binding.get().editText.getText();
 
 								if(text == null || text.toString().isBlank()) {
-									binding.get().editText.setError(context.getString(R.string.tab_name_empty_error));
+									binding.get().editText.setError(i18n(String0_commonMainKt.getTab_name_empty_error(Res.string.INSTANCE)));
 									return;
 								}
 
@@ -124,7 +126,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 									runOnUiThread(() -> {
 										if(items.size() == 2) {
 											var title = new SettingsItem.Builder(SettingsItemType.CATEGORY)
-													.setTitle(R.string.custom_tabs)
+													.setTitle(i18n(String0_commonMainKt.getCustom_tabs(Res.string.INSTANCE)))
 													.build();
 
 											items.add(title);

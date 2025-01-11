@@ -7,21 +7,26 @@ import androidx.core.content.FileProvider
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.generated.Res
+import com.mrboomdev.awery.generated.dismiss
+import com.mrboomdev.awery.generated.download
+import com.mrboomdev.awery.generated.size
+import com.mrboomdev.awery.generated.update_available
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.NiceUtils
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.formatFileSize
 import com.mrboomdev.awery.util.extensions.removeIndent
-import com.mrboomdev.awery.util.extensions.startActivityForResult
 import com.mrboomdev.awery.util.io.HttpClient.download
 import com.mrboomdev.awery.util.io.HttpClient.fetch
 import com.mrboomdev.awery.util.io.HttpRequest
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.startActivityForResult
 import com.squareup.moshi.Json
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CancellationException
@@ -43,15 +48,15 @@ object UpdatesManager {
 	fun showUpdateDialog(context: Activity, update: Update) {
 		runOnUiThread {
 			DialogBuilder(context)
-				.setTitle(R.string.update_available)
+				.setTitle(i18n(Res.string.update_available))
 				.setMessage("""
 					${update.title}
-					${i18n(R.string.size)}: ${update.size.formatFileSize()}
+					${i18n(Res.string.size)}: ${update.size.formatFileSize()}
 	
 					${update.body}
 				""".trim().removeIndent())
-				.setNeutralButton(R.string.dismiss) { it.dismiss() }
-				.setPositiveButton(R.string.download) { dialog ->
+				.setNeutralButton(i18n(Res.string.dismiss)) { it.dismiss() }
+				.setPositiveButton(i18n(Res.string.download)) { dialog ->
 					val window = showLoadingWindow()
 
 					CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, t ->

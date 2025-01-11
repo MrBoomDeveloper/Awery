@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ko">
+<resources>
     <string name="app_name" translatable="false">Awery</string>
     <string name="empty_library_title">라이브러리가 비어 있습니다</string>
     <string name="empty_library_message">카탈로그를 탐색하면 여기에 새로운 항목이 나타날 것입니다!</string>

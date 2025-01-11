@@ -37,10 +37,7 @@ plugins {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "Awery"
-include(":androidApp")
+include(":androidApp", ":androidApp:mobile", ":androidApp:tv")
 include(":desktopApp")
-include(":ext")
-include(":ext:platform")
+include(":ext", ":ext:platform")
 include(":shared")
-include(":androidApp:tv")
-include(":androidApp:mobile")

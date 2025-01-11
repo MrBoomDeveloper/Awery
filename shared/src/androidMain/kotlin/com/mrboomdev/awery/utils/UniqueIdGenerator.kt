@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util
+package com.mrboomdev.awery.utils
 
 /**
  * An support class, which helps with numbers generation. Useful for generating  unique ids.

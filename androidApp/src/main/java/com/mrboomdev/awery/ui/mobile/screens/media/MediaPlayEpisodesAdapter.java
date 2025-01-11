@@ -27,7 +27,7 @@ import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;

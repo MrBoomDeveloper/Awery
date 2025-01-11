@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui.mobile.screens.catalog
+package com.mrboomdev.awery
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigationrail.NavigationRailView
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.isLandscape
@@ -29,7 +28,9 @@ import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.platform.PlatformResources.i18n
+import com.mrboomdev.awery.generated.Res
+import com.mrboomdev.awery.generated.back_to_exit
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment
 import com.mrboomdev.awery.ui.mobile.screens.search.MultiSearchActivity
@@ -38,15 +39,12 @@ import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity2
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.UI_INSETS
-import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.bottomMargin
 import com.mrboomdev.awery.util.extensions.bottomPadding
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftPadding
-import com.mrboomdev.awery.util.extensions.removeOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.rightPadding
 import com.mrboomdev.awery.util.extensions.setContentViewCompat
@@ -55,7 +53,12 @@ import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.util.io.FileUtil.readAssets
 import com.mrboomdev.awery.util.ui.FadeTransformer
+import com.mrboomdev.awery.utils.addOnBackPressedListener
+import com.mrboomdev.awery.utils.buildIntent
 import com.mrboomdev.awery.utils.div
+import com.mrboomdev.awery.utils.dpPx
+import com.mrboomdev.awery.utils.inflater
+import com.mrboomdev.awery.utils.removeOnBackPressedListener
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             doubleBackToExitPressedOnce = true
-            toast(R.string.back_to_exit)
+            toast(Res.string.back_to_exit)
             runDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
     }
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         if(savedInstanceState != null) {
             tabIndex = savedInstanceState.getInt(SAVED_TAB_INDEX, -1)
         }
-        
+
         AwerySettings.TABS_TEMPLATE.value.also {
             if(it == "custom") loadCustomTabs() else loadTemplateTabs(it)
         }
@@ -173,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                         val tab = tabs[i]
                         val icon = icons[tab.icon]
 
-                        val drawable = icon?.getDrawable(this) 
+                        val drawable = icon?.getDrawable(this)
                             ?: ContextCompat.getDrawable(this, R.drawable.ic_view_cozy)!!
 
                         if(tabIndex == -1 && tab.id == savedDefaultTab) {
@@ -201,7 +204,7 @@ class MainActivity : AppCompatActivity() {
             "No tabs found",
             "Please selecting an template or either create your own tabs to see anything here.",
             "Go to settings"
-        ) { startActivity(clazz = SettingsActivity::class) }
+        ) { startActivity(buildIntent(SettingsActivity::class)) }
 
         setContentViewCompat(binding.root)
     }
@@ -404,9 +407,9 @@ class MainActivity : AppCompatActivity() {
         override fun getFilters() = SettingsList()
         override fun getMaxLoadsAtSameTime() = 1
         override fun loadOnStartup() = true
-        
-        override fun getCacheFile() = requireContext().cacheDir / 
-                Constants.DIRECTORY_NET_CACHE / 
+
+        override fun getCacheFile() = requireContext().cacheDir /
+                Constants.DIRECTORY_NET_CACHE /
                 Constants.FILE_FEEDS_NET_CACHE
     }
 }

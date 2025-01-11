@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="new_list">New List</string>
     <string name="hide_library_entries_description">Do not show these entries outside of the library</string>
     <string name="progress">முன்னேற்றம்</string>

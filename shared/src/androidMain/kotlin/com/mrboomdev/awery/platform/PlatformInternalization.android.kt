@@ -1,17 +1,36 @@
 package com.mrboomdev.awery.platform
 
-import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
-import com.mrboomdev.awery.app.AndroidGlobals
+import android.content.Context
+import android.content.res.Configuration
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.Density
+import org.jetbrains.compose.resources.DensityQualifier
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.LanguageQualifier
+import org.jetbrains.compose.resources.RegionQualifier
+import org.jetbrains.compose.resources.ResourceEnvironment
+import org.jetbrains.compose.resources.ThemeQualifier
 
 actual object PlatformResources {
-	private val stringClass = Class.forName("com.mrboomdev.awery.R\$string")
+	@OptIn(ExperimentalResourceApi::class)
+	internal actual var resourceEnvironment: ResourceEnvironment? = null
 
-	actual fun i18n(key: String, vararg args: Any): String? {
-		return i18n(getResourceId(stringClass, key) ?: return null, *args)
-	}
+	@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+	@OptIn(InternalResourceApi::class, ExperimentalResourceApi::class)
+	fun load(context: Context) {
+		val composeLocale = Locale.current
+		val composeDensity = Density(context)
 
-	fun i18n(@StringRes res: Int, vararg args: Any): String {
-		return ContextCompat.getContextForLanguage(AndroidGlobals.applicationContext).getString(res, *args)
+		val composeTheme = with(context.resources.configuration.uiMode) {
+			(this and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+		}
+
+		resourceEnvironment = ResourceEnvironment(
+			LanguageQualifier(composeLocale.language),
+			RegionQualifier(composeLocale.region),
+			ThemeQualifier.selectByValue(composeTheme),
+			DensityQualifier.selectByDensity(composeDensity.density)
+		)
 	}
 }

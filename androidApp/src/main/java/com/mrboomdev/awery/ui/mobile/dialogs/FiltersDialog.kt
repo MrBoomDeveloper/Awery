@@ -20,6 +20,8 @@ import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.data.settings.SettingsItemType
 import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
 import com.mrboomdev.awery.util.async.AsyncFuture
@@ -84,7 +86,7 @@ class FiltersDialog(
 				linear.addView(this, MATCH_PARENT, WRAP_CONTENT)
 
 				addView(MaterialButton(context).apply {
-					setText(R.string.cancel)
+					text = i18n(Res.string.cancel)
 					setOnClickListener { dismiss() }
 				}, 0, WRAP_CONTENT) { cancel ->
 					cancel.useLayoutParams<LinearLayoutCompat.LayoutParams> { it.weight = 1f }
@@ -92,7 +94,8 @@ class FiltersDialog(
 				}
 
 				addView(MaterialButton(context).apply {
-					setText(R.string.save)
+					text = i18n(Res.string.save)
+
 					setOnClickListener {
 						applyCallback.invoke(this@FiltersDialog.filters)
 						dismiss()

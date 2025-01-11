@@ -11,8 +11,9 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformSettingHandler
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupThemeAdapter.Companion.create
 import com.mrboomdev.awery.util.extensions.UI_INSETS
@@ -26,6 +27,10 @@ import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.dpPx
+import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
+import com.mrboomdev.safeargsnext.util.rememberSafeArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import nl.dionsegijn.konfetti.core.Party
@@ -37,8 +42,10 @@ import nl.dionsegijn.konfetti.core.models.Shape.Square
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-class SetupActivity : AppCompatActivity() {
+class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras> {
 	private lateinit var binding: ScreenSetupBinding
+
+	data class Extras(val step: Int, val finishOnComplete: Boolean = false)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		applyTheme()
@@ -56,21 +63,21 @@ class SetupActivity : AppCompatActivity() {
 		binding.continueButton.setOnClickListener { tryToStartNextStep() }
 		binding.backButton.setOnClickListener { finish() }
 
-		if(intent.getBooleanExtra(EXTRA_FINISH_ON_COMPLETE, false)) {
+		if(rememberSafeArgs?.finishOnComplete == true) {
 			binding.backButton.visibility = View.GONE
-			binding.continueButton.setText(R.string.done)
+			binding.continueButton.text = i18n(Res.string.done)
 		}
 
 		when(intent.getIntExtra("step", STEP_WELCOME)) {
 			STEP_WELCOME -> {
 				if(AwerySettings.SETUP_VERSION_FINISHED.value != -1) {
-					binding.title.setText(R.string.awery_updated_title)
-					binding.message.setText(R.string.awery_updated_description)
+					binding.title.text = i18n(Res.string.awery_updated_title)
+					binding.message.text = i18n(Res.string.awery_updated_description)
 					binding.backButton.visibility = View.GONE
 				}
 
-				binding.backButton.setText(R.string.restore_backup)
-				binding.continueButton.setText(R.string.lets_begin)
+				binding.backButton.text = i18n(Res.string.restore_backup)
+				binding.continueButton.text = i18n(Res.string.lets_begin)
 
 				binding.backButton.setOnClickListener {
 					PlatformSettingHandler.handlePlatformClick(this, AwerySettings.RESTORE.asPlatformSetting())
@@ -81,8 +88,8 @@ class SetupActivity : AppCompatActivity() {
 			}
 
 			STEP_THEMING -> {
-				binding.title.setText(R.string.color_palette)
-				binding.message.setText(R.string.color_palette_description)
+				binding.title.text = i18n(Res.string.color_palette)
+				binding.message.text = i18n(Res.string.color_palette_description)
 
 				binding.recycler.layoutManager = LinearLayoutManager(this)
 				binding.recycler.adapter = create(this)
@@ -96,8 +103,8 @@ class SetupActivity : AppCompatActivity() {
 			}
 
 			STEP_TEMPLATE -> {
-				binding.title.setText(R.string.select_template)
-				binding.message.text = getString(R.string.generic_message) 
+				binding.title.text = i18n(Res.string.select_template)
+				binding.message.text = i18n(Res.string.generic_message)
 
 				binding.recycler.layoutManager = LinearLayoutManager(this)
 				binding.recycler.addItemDecoration(RecyclerItemDecoration(dpPx(8f)))
@@ -110,29 +117,25 @@ class SetupActivity : AppCompatActivity() {
 			}
 
 			STEP_SOURCES -> {
-				val template = AwerySettings.TABS_TEMPLATE.value
-				val discordUrl = getString(R.string.discord_link)
-				val telegramUrl = getString(R.string.telegram_link)
-				
-				if(template == "dantotsu") {
-				    binding.message.setMarkwon(getString(R.string.dantotsu_message, discordUrl, telegramUrl))
+				if(AwerySettings.TABS_TEMPLATE.value == "dantotsu") {
+				    binding.message.setMarkwon(i18n(Res.string.dantotsu_message, "https://discord.com/invite/yspVzD4Kbm", "https://t.me/mrboomdev_awery"))
 				} else {
-				    binding.message.setMarkwon(getString(R.string.generic_message, discordUrl, telegramUrl))
+				    binding.message.setMarkwon(i18n(Res.string.generic_message, "https://discord.com/invite/yspVzD4Kbm", "https://t.me/mrboomdev_awery"))
 				}
 
-				binding.title.setText(R.string.extensions)
+				binding.title.text = i18n(Res.string.extensions)
 				binding.icon.visibility = View.VISIBLE
 				binding.icon.setImageResource(R.drawable.ic_extension_filled)
 				binding.icon.setImageTintAttr(com.google.android.material.R.attr.colorOnSecondaryContainer)
 			}
 
 			STEP_ANALYTICS -> {
-			    binding.title.text = getString(R.string.analytics_title)
-			    binding.message.text = getString(R.string.analytics_message)
+			    binding.title.text = i18n(Res.string.analytics_title)
+			    binding.message.text = i18n(Res.string.analytics_message)
 			    binding.recycler.visibility = View.VISIBLE
 			
 			    binding.recycler.adapter = SingleViewAdapter.fromView(MaterialSwitch(this).apply {
-			        text = getString(R.string.automatically_send_reports)
+			        text = i18n(Res.string.automatically_send_reports)
 			        isChecked = true
 			    })
 			}
@@ -143,9 +146,9 @@ class SetupActivity : AppCompatActivity() {
 					createParty(275, 225, 300, 200, 150, .4),
 					createParty(275, 225, 300, 200, 330, .6))
 
-				binding.title.setText(R.string.were_done)
-				binding.message.setText(R.string.setup_finished_description)
-				binding.continueButton.setText(R.string.finish)
+				binding.title.text = i18n(Res.string.were_done)
+				binding.message.text = i18n(Res.string.setup_finished_description)
+				binding.continueButton.text = i18n(Res.string.finish)
 
 				binding.icon.visibility = View.VISIBLE
 				binding.icon.setImageResource(R.drawable.ic_done)
@@ -159,7 +162,7 @@ class SetupActivity : AppCompatActivity() {
 	}
 
 	private fun tryToStartNextStep() {
-		when(intent.getIntExtra(EXTRA_STEP, STEP_WELCOME)) {
+		when(rememberSafeArgs?.step ?: STEP_WELCOME) {
 			STEP_TEMPLATE -> {
 				val selected = (binding.recycler.adapter as SetupTabsAdapter).selected
 
@@ -183,16 +186,16 @@ class SetupActivity : AppCompatActivity() {
 
 						runOnUiThread {
 							DialogBuilder(this@SetupActivity)
-							    .setTitle(getString(R.string.existing_custom_tabs_title))
-							    .setMessage(getString(R.string.existing_custom_tabs_message))
+							    .setTitle(i18n(Res.string.existing_custom_tabs_title))
+							    .setMessage(i18n(Res.string.existing_custom_tabs_message))
 							    .setOnDismissListener {
 							        if (!didDeleted.get()) {
 							            binding.backButton.isEnabled = true
 							            binding.continueButton.isEnabled = true
 							        }
 							    }
-								.setNegativeButton(R.string.cancel) { it.dismiss() }
-								.setPositiveButton(R.string.delete) { dialog ->
+								.setNegativeButton(i18n(Res.string.cancel)) { it.dismiss() }
+								.setPositiveButton(i18n(Res.string.delete)) { dialog ->
 									didDeleted.set(true)
 									dialog.dismiss()
 
@@ -227,13 +230,13 @@ class SetupActivity : AppCompatActivity() {
 	}
 
 	private fun startNextStep() {
-		if(intent.getBooleanExtra(EXTRA_FINISH_ON_COMPLETE, false)) {
+		if(rememberSafeArgs?.finishOnComplete == true) {
 			setResult(RESULT_OK)
 			finish()
 			return
 		}
 
-		val nextStep = when(intent.getIntExtra(EXTRA_STEP, STEP_WELCOME)) {
+		val nextStep = when(rememberSafeArgs?.step ?: STEP_WELCOME) {
 			STEP_WELCOME -> STEP_THEMING
 			STEP_THEMING -> STEP_TEMPLATE
 			STEP_TEMPLATE -> STEP_SOURCES
@@ -243,20 +246,14 @@ class SetupActivity : AppCompatActivity() {
 			STEP_FINISH -> {
 				AwerySettings.SETUP_VERSION_FINISHED.value = SETUP_VERSION
 				finishAffinity()
-				startActivity(SplashActivity::class)
+				startActivity(buildIntent(SplashActivity::class))
 				return
 			}
 
 			else -> throw IllegalArgumentException("Unknown step!")
 		}
 
-		startStep(nextStep)
-	}
-
-	private fun startStep(step: Int) {
-		val intent = Intent(this, SetupActivity::class.java)
-		intent.putExtra(EXTRA_STEP, step)
-		startActivity(intent)
+		startActivity(buildIntent(SetupActivity::class, Extras(nextStep)))
 	}
 
 	private fun createParty(durationMs: Int, amountPerSec: Int, delayMs: Int, spread: Int, angle: Int, x: Double): Party {
@@ -272,13 +269,9 @@ class SetupActivity : AppCompatActivity() {
 	}
 	
 	companion object {
-		/**
-		 * Note: Please increment this value by one every time when a new step is being added
-		 */
+		// Note: Please increment this value by one every time when a new step is being added
 		const val SETUP_VERSION = 2
-		
-		const val EXTRA_STEP = "step"
-		const val EXTRA_FINISH_ON_COMPLETE = "finish_on_complete"
+
 		const val STEP_WELCOME = 0
 		const val STEP_FINISH = 1
 		const val STEP_TEMPLATE = 2

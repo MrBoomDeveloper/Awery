@@ -13,7 +13,7 @@
         android:paddingHorizontal="32dp"
         android:paddingVertical="18dp"
         android:textSize="16sp"
-        android:text="@string/select_quality"
+        android:text="select_quality"
         android:textColor="?attr/colorOnBackground" />
 
     <com.google.android.material.divider.MaterialDivider

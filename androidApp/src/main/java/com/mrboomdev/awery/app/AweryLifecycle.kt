@@ -6,7 +6,6 @@ import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,10 +13,10 @@ import android.util.Log
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.util.UniqueIdGenerator
+import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import org.jetbrains.annotations.Contract
 import java.lang.ref.WeakReference
 import java.lang.reflect.InvocationTargetException
@@ -43,6 +42,8 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 	override fun onActivityStarted(activity: Activity) {}
 
 	override fun onActivityResumed(activity: Activity) {
+		PlatformResources.load(activity)
+
 		getActivityInfo(activity).apply {
 			isPaused = false
 			lastActiveTime = System.currentTimeMillis()
@@ -61,43 +62,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 
 	override fun onActivityDestroyed(activity: Activity) {
 		getActivityInfo(activity).isPaused = true
-	}
-
-	/**
-	 * DO NOT EVER USE DIRECTLY THIS CLASS!
-	 * It was made just for the Android Framework to work properly!
-	 */
-	@Suppress("OVERRIDE_DEPRECATION")
-	internal class CallbackFragment : Fragment() {
-		internal lateinit var fragmentManager: FragmentManager
-		internal var requestCode: Int = 0
-		internal var activityResultCallback: ((Int, Intent?) -> Unit)? = null
-		internal var permissionsResultCallback: ((didGranted: Boolean) -> Unit)? = null
-
-		override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-			if(requestCode != this.requestCode) return
-			activityResultCallback?.invoke(resultCode, data)
-			finish()
-		}
-
-		override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-			if(requestCode != this.requestCode) return
-
-			if(permissions.isEmpty()) {
-				permissionsResultCallback?.invoke(false)
-			} else if(permissions.size == 1) {
-				permissionsResultCallback?.invoke(grantResults[0] == PackageManager.PERMISSION_GRANTED)
-			} else {
-				throw IllegalStateException("Somehow you've requested multiple permissions at once. This behaviour isn't supported.")
-			}
-
-			finish()
-		}
-
-		private fun finish() {
-			fragmentManager.beginTransaction().remove(this).commit()
-			fragmentManager.executePendingTransactions()
-		}
 	}
 
 	private class ActivityInfo<A : Activity?>(activity: A) : Comparable<ActivityInfo<A>?> {
@@ -173,14 +137,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		private const val TAG = "AweryLifecycle"
 		private var handler: Handler? = null
 
-		private val activityRequestCodes = UniqueIdGenerator(
-			1, UniqueIdGenerator.OverflowMode.RESET)
-
-		@JvmStatic
-		fun generateRequestCode(): Int {
-			return activityRequestCodes.integer
-		}
-
 		@JvmStatic
 		fun restartApp() {
 			Log.i(TAG, "restartApp() has been invoked!")
@@ -201,50 +157,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 
 			if(activity != null) activity.finishAffinity()
 			else Runtime.getRuntime().exit(0)
-		}
-
-		@MainThread
-		fun addActivityResultListener(
-			activity: Activity,
-			requestCode: Int,
-			activityResultCallback: ((resultCode: Int, data: Intent?) -> Unit)?,
-			permissionsResultCallback: ((didGranted: Boolean) -> Unit)?
-		): Fragment {
-			if(activity is FragmentActivity) {
-				return activity.supportFragmentManager.let { fragmentManager ->
-					val fragment = CallbackFragment().apply {
-						this.fragmentManager = fragmentManager
-						this.requestCode = requestCode
-						this.activityResultCallback = activityResultCallback
-						this.permissionsResultCallback = permissionsResultCallback
-					}
-
-					fragmentManager.beginTransaction().add(fragment, null).commit()
-					fragmentManager.executePendingTransactions()
-					return@let fragment
-				}
-			} else {
-				throw IllegalArgumentException("Activity must be an instance of FragmentActivity!")
-			}
-		}
-
-		/**
-		 * This method is a little bit hacky so after library update it may break.
-		 * @param context Context from the [FragmentActivity]
-		 * @author MrBoomDev
-		 */
-		@JvmStatic
-		@Suppress("deprecation")
-		@MainThread
-		@JvmOverloads
-		fun startActivityForResult(
-			context: Activity,
-			intent: Intent,
-			activityResultCallback: ((resultCode: Int, data: Intent?) -> Unit),
-			requestCode: Int = generateRequestCode()
-		) {
-			addActivityResultListener(context, requestCode, activityResultCallback, null)
-				.startActivityForResult(intent, requestCode)
 		}
 
 		@JvmStatic

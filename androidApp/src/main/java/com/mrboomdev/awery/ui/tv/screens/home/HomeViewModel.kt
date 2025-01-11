@@ -11,12 +11,12 @@ import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.ExtensionsManager.loadAll
 import com.mrboomdev.awery.ext.data.CatalogFeed
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.IconStateful
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.ensureSize
 import com.mrboomdev.awery.util.io.FileUtil.readAssets
 import com.squareup.moshi.Json
@@ -92,12 +92,12 @@ class HomeViewModel : ViewModel() {
 			}!!
 
 			tabs.addAll(dbTabs.map {
-				it.title = i18n<R.string>(it.title) ?: it.title
+				it.title = i18n(it.title) ?: it.title
 				it to (icons[it.icon] ?: IconStateful(activeId = R.drawable.ic_view_cozy))
 			})
 
 			tabs.add(__DBTab__().apply {
-				title = i18n(R.string.settings)
+				title = i18n(Res.string.settings)
 				id = "settings"
 			} to IconStateful(activeId = R.drawable.ic_settings_filled))
 

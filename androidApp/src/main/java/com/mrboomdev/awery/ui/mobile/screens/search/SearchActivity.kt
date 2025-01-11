@@ -1,9 +1,7 @@
 package com.mrboomdev.awery.ui.mobile.screens.search
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle
@@ -31,33 +28,33 @@ import com.mrboomdev.awery.databinding.GridMediaCatalogBinding
 import com.mrboomdev.awery.databinding.ScreenSearchBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.ui.mobile.dialogs.FiltersDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.Selection
-import com.mrboomdev.awery.util.UniqueIdGenerator
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.rightMargin
-import com.mrboomdev.awery.util.extensions.screenWidth
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topMargin
 import com.mrboomdev.awery.util.extensions.useLayoutParams
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.dpPx
+import com.mrboomdev.awery.utils.inflater
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import com.mrboomdev.safeargsnext.util.asSafeArgs
 import com.mrboomdev.safeargsnext.util.putSafeArgs
@@ -238,11 +235,11 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 				dpPx(24f))
 
 			if(isLandscape && autoColumnsCountLand) {
-				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
+				val freeSpace = (resources.displayMetrics.widthPixels - dpPx(16f) - insets.left - insets.right).toFloat()
 				columnsCountLand.set((freeSpace / dpPx(110f)).toInt())
 				layoutManager.spanCount = columnsCountLand.get()
 			} else if(!isLandscape && autoColumnsCountPort) {
-				val freeSpace = (screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
+				val freeSpace = (resources.displayMetrics.widthPixels - dpPx(16f) - insets.left - insets.right).toFloat()
 				columnsCountPort.set((freeSpace / dpPx(110f)).toInt())
 				layoutManager.spanCount = columnsCountPort.get()
 			}
@@ -433,8 +430,8 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 			runOnUiThread {
 				if(wasSearchId != searchId.toLong()) return@runOnUiThread
 				this@SearchActivity.didReachedEnd = true
-				binding.title.setText(R.string.you_reached_end)
-				binding.message.setText(R.string.you_reached_end_description)
+				binding.title.text = i18n(Res.string.you_reached_end)
+				binding.message.text = i18n(Res.string.you_reached_end_description)
 
 				binding.progressBar.visibility = View.GONE
 				binding.info.visibility = View.VISIBLE
@@ -477,7 +474,7 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 
 				MediaUtils.filterMedia(items) { filteredItems ->
 					if(filteredItems.isEmpty()) {
-						throw ZeroResultsException("No media was found", R.string.no_media_found)
+						throw ZeroResultsException("No media was found", i18n(Res.string.no_media_found))
 					}
 					for(item in filteredItems) {
 						ids[item] = idGenerator.long
@@ -560,12 +557,15 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 
 			binding.root.setOnClickListener {
 				if(Action.PICK_MEDIA == safeArgs?.action) {
-					setResult(0, Intent().putExtra(RESULT_EXTRA_MEDIA, viewHolder.item as Parcelable))
+					setResult(0, buildIntent {
+						putExtra(RESULT_EXTRA_MEDIA, viewHolder.item)
+					})
+
 					finish()
 					return@setOnClickListener
 				}
 
-				startActivity(MediaActivity::class, MediaActivity.Extras(viewHolder.item!!))
+				startActivity(buildIntent(MediaActivity::class, MediaActivity.Extras(viewHolder.item!!)))
 			}
 
 			binding.root.setOnLongClickListener {

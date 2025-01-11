@@ -30,6 +30,7 @@ import com.mrboomdev.awery.ui.tv.Screens
 import com.mrboomdev.awery.ui.tv.components.FeedsGroup
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.utils.buildIntent
 
 @Composable
 fun HomeScreen(
@@ -83,7 +84,10 @@ fun HomeScreen(
 									return@NavigationDrawerItem
 								}
 
-								getAnyActivity<Activity>()!!.startActivity(SettingsActivity::class)
+								getAnyActivity<Activity>()!!.apply {
+									startActivity(buildIntent(SettingsActivity::class))
+								}
+
 								return@NavigationDrawerItem
 							}
 

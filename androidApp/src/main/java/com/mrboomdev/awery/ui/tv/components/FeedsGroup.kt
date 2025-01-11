@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,7 @@ import androidx.tv.material3.Text
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.get
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -54,14 +55,13 @@ fun FeedsGroup(
 	listState: LazyListState = rememberLazyListState(),
 	isLoading: Boolean = false
 ) {
-	val coroutineScope = rememberCoroutineScope()
 	var didWaitToFixScroll by remember { mutableStateOf(false) }
 	var didFixScroll by remember { mutableStateOf(false) }
 
 	if((sections?.size ?: 0) > 0 && !didWaitToFixScroll && !didFixScroll) {
 		didFixScroll = true
 
-		coroutineScope.launch {
+		LaunchedEffect(true) {
 			delay(500L)
 			didWaitToFixScroll = true
 		}

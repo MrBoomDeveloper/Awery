@@ -2,6 +2,7 @@ package com.mrboomdev.awery.util.ui.dialog;
 
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.postRunnable;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setOnApplyUiInsetsListener;
 import static com.mrboomdev.awery.util.ui.ViewUtil.setPadding;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mrboomdev.awery.R;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.IconStateful;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public abstract class IconPickerDialog<T> extends BaseDialogBuilder<IconPickerDi
 	public IconPickerDialog(Context context) {
 		super(context);
 
-		setNegativeButton(R.string.cancel, IconPickerDialog::dismiss);
+		setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), IconPickerDialog::dismiss);
 	}
 
 	public IconPickerDialog<T> setSelectionListener(SelectionListener<T> selectCallback) {

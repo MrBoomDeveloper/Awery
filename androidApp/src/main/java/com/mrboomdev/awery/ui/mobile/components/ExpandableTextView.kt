@@ -17,6 +17,8 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.R
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import java.lang.Integer.min
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -167,8 +169,8 @@ class ExpandableTextView @JvmOverloads constructor(
             try {
                 mCollapsedLines = getInt(R.styleable.ExpandableTextView_collapsedLines, COLLAPSED_MAX_LINES)
                 mAnimationDuration = getInt(R.styleable.ExpandableTextView_animDuration, DEFAULT_ANIM_DURATION)
-                mReadMoreText = getString(R.styleable.ExpandableTextView_readMoreText) ?: "   ${context.getString(R.string.read_more)}"
-                mReadLessText = getString(R.styleable.ExpandableTextView_readLessText) ?: "   ${context.getString(R.string.read_less)}"
+                mReadMoreText = getString(R.styleable.ExpandableTextView_readMoreText) ?: "   ${i18n(Res.string.read_more)}"
+                mReadLessText = getString(R.styleable.ExpandableTextView_readLessText) ?: "   ${i18n(Res.string.read_less)}"
                 foregroundColor = getColor(R.styleable.ExpandableTextView_foregroundColor, Color.TRANSPARENT)
                 isUnderlined = getBoolean(R.styleable.ExpandableTextView_isUnderlined, false)
                 isExpanded = getBoolean(R.styleable.ExpandableTextView_textIsExpanded, false)
@@ -182,12 +184,9 @@ class ExpandableTextView @JvmOverloads constructor(
     }
 
     private fun setEllipsizedText(isExpanded: Boolean) {
-        if(initialText.isBlank())
-            return
+        if(initialText.isBlank()) return
 
-        text = if(collapsedVisibleText.isAllTextVisible()) {
-            initialText
-        } else {
+        text = if(collapsedVisibleText.isAllTextVisible()) initialText else {
              if(isExpanded) getExpandText() else getCollapseText()
         }
     }
@@ -199,7 +198,6 @@ class ExpandableTextView @JvmOverloads constructor(
     }
 
     private fun getCollapseText(): SpannableStringBuilder {
-
         val ellipseTextLength = ((mReadMoreText.length + DEFAULT_ELLIPSIZED_TEXT.length) * ELLIPSIZE_TEXT_LENGTH_MULTIPLIER).roundToInt()
         val textAvailableLength = max(0, collapsedVisibleText.length - ellipseTextLength)
         val ellipsizeAvailableLength = min(collapsedVisibleText.length, DEFAULT_ELLIPSIZED_TEXT.length)
@@ -225,7 +223,7 @@ class ExpandableTextView @JvmOverloads constructor(
             } else {
                 return initialText
             }
-        } catch (e: Exception) {
+        } catch(e: Exception) {
             e.printStackTrace()
             return initialText
         }

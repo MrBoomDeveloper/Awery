@@ -26,11 +26,6 @@ public class EditTextField extends FancyField<TextInputLayout> {
 	private int type = EditorInfo.TYPE_CLASS_TEXT;
 	private int lines;
 
-	public EditTextField(@NonNull Context context, @StringRes int hint) {
-		this.hint = ContextCompat.getString(context, hint);
-		this.context = context;
-	}
-
 	public EditTextField(Context context, String hint) {
 		this.hint = hint;
 		this.context = context;
@@ -46,10 +41,6 @@ public class EditTextField extends FancyField<TextInputLayout> {
 		if(editText != null) {
 			editText.setHint(hint);
 		}
-	}
-
-	public void setError(@StringRes int res) {
-		setError(context.getString(res));
 	}
 
 	public void setError(@Nullable String error) {

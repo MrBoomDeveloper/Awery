@@ -2,17 +2,17 @@ package com.mrboomdev.awery.app
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.sources.BootstrapManager
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.channelFlow
 import kotlin.reflect.KClass
@@ -49,7 +49,7 @@ object ExtensionsManager {
 
 						if(media.isEmpty()) {
 							channel.send(CatalogFeed.Loaded(
-								throwable = ZeroResultsException("No bookmarks", R.string.no_media_found),
+								throwable = ZeroResultsException("No bookmarks", i18n(Res.string.no_media_found)),
 								feed = CatalogFeed(
 									title = list.name,
 									hideIfEmpty = true
@@ -146,7 +146,8 @@ object ExtensionsManager {
 	 * @author MrBoomDev
 	 */
 	fun SourcesManager.setEnabled(sourceId: String, enable: Boolean) {
-		getPrefs().setValue("ext_${context.id}_${sourceId}", enable).saveSync()
+		PlatformPreferences["ext_${context.id}_${sourceId}"] = enable
+		PlatformPreferences.save()
 	}
 
 	/**
@@ -154,9 +155,7 @@ object ExtensionsManager {
 	 * This function just checks the settings and doesn't check if an extension is loaded or not.
 	 * @author MrBoomDev
 	 */
-	fun SourcesManager.isEnabled(sourceId: String): Boolean {
-		return getPrefs().getBoolean("ext_${context.id}_${sourceId}", true)
-	}
+	fun SourcesManager.isEnabled(sourceId: String) = PlatformPreferences.getBoolean("ext_${context.id}_${sourceId}") ?: true
 
 	private fun SourcesManager.getAllManagers(): List<SourcesManager> {
 		return mutableListOf<SourcesManager>().apply {

@@ -16,14 +16,16 @@ import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.ui.mobile.screens.catalog.MainActivity
+import com.mrboomdev.awery.MainActivity
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.utils.buildIntent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -47,14 +49,14 @@ class SplashActivity : AppCompatActivity() {
 
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
 			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))
-			status.setText(R.string.checking_if_crash_occurred)
+			status.text = i18n(Res.string.checking_if_crash_occurred)
 		}
 
 		window.navigationBarColor = resolveAttrColor(android.R.attr.colorBackground)
 		setContentView(binding.root)
 
 		CrashHandler.showDialogIfCrashHappened(this) {
-			binding.status.setText(R.string.checking_database)
+			binding.status.text = i18n(Res.string.checking_database)
 
 			lifecycleScope.launch(Dispatchers.IO) {
 				try {
@@ -64,7 +66,7 @@ class SplashActivity : AppCompatActivity() {
 
 					CrashHandler.showDialog(
 						context = this@SplashActivity,
-						titleRes = R.string.database_corrupted,
+						title = i18n(Res.string.database_corrupted),
 						throwable = e,
 						dismissCallback = ::exitApp)
 
@@ -75,7 +77,7 @@ class SplashActivity : AppCompatActivity() {
 				while(!App.didInit) {}
 				
 				if(AwerySettings.SETUP_VERSION_FINISHED.value < SetupActivity.SETUP_VERSION) {
-					startActivity(SetupActivity::class)
+					startActivity(buildIntent(SetupActivity::class))
 					finish()
 					return@launch
 				}
@@ -84,7 +86,7 @@ class SplashActivity : AppCompatActivity() {
 					try {
 						ExtensionsManager.init(applicationContext).data.onEach {
 							launch(Dispatchers.Main) {
-								binding.status.text = getString(R.string.loading_extensions_n, it.value, it.max)
+								binding.status.text = i18n(Res.string.loading_extensions_n, it.value, it.max)
 							}
 						}.collect()
 					} catch(t: Throwable) {
@@ -99,7 +101,7 @@ class SplashActivity : AppCompatActivity() {
 						return@launch
 					}
 
-					startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
+					startActivity(buildIntent(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class))
 					finish()
 
 					return@launch
@@ -107,7 +109,7 @@ class SplashActivity : AppCompatActivity() {
 
 				ExtensionsFactory.getInstance().addCallback(object : AsyncFuture.Callback<ExtensionsFactory?> {
 					override fun onSuccess(result: ExtensionsFactory) {
-						startActivity(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class)
+						startActivity(buildIntent(if(/*isTv*/AwerySettings.EXPERIMENT_TV_COMPOSE.value) TvMainActivity::class else MainActivity::class))
 						finish()
 					}
 
@@ -132,7 +134,7 @@ class SplashActivity : AppCompatActivity() {
 		val factory = ExtensionsFactory.getInstanceNow()
 
 		if(factory == null) {
-			binding.status.setText(R.string.loading_extensions)
+			binding.status.text = i18n(Res.string.loading_extensions)
 			return
 		}
 
@@ -145,7 +147,7 @@ class SplashActivity : AppCompatActivity() {
 			total += managerProgress.max
 		}
 
-		binding.status.text = getString(R.string.loading_extensions_n, progress, total)
+		binding.status.text = i18n(Res.string.loading_extensions_n, progress, total)
 		runDelayed({ this.update() }, 100)
 	}
 

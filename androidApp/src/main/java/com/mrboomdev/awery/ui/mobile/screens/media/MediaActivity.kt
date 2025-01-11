@@ -21,7 +21,8 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogVideo
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -115,7 +116,7 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 		) {
 			binding.navigation.menu.findItem(R.id.watch).apply {
 				setIcon(R.drawable.ic_book)
-				setTitle(R.string.read)
+				title = i18n(Res.string.read)
 			}
 		}
 	}
@@ -171,10 +172,10 @@ class MediaActivity : AppCompatActivity(), SafeArgsActivity<MediaActivity.Extras
 			val popup = PopupMenu(context, anchor)
 
 			if(media.url != null) {
-				popup.menu.add(0, 0, 0, R.string.share)
+				popup.menu.add(0, 0, 0, i18n(Res.string.share))
 			}
 
-			popup.menu.add(0, 1, 0, R.string.blacklist)
+			popup.menu.add(0, 1, 0, i18n(Res.string.blacklist))
 
 			popup.setOnMenuItemClickListener { item ->
 				when(item.itemId) {

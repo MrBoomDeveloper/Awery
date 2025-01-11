@@ -24,14 +24,14 @@
             android:layout_marginHorizontal="32dp"
             android:textSize="16sp"
             android:textColor="?attr/colorOnSurface"
-            android:text="@string/add_to_bookmarks" />
+            android:text="add_to_bookmarks" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/create"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/new_list"
+            android:text="new_list"
             android:paddingHorizontal="32dp"
             app:icon="@drawable/ic_add" />
 

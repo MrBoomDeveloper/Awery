@@ -63,18 +63,16 @@ import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.db.AweryDB
 import com.mrboomdev.awery.data.db.item.DBCatalogList
 import com.mrboomdev.awery.extensions.data.CatalogList
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.GeneratedSetting
-import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.ui.mobile.screens.IntentHandlerActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.ui.tv.TvExperimentsActivity
-import com.mrboomdev.awery.util.extensions.configuration
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.util.ui.markdown.LinkifyPlugin
 import com.mrboomdev.awery.util.ui.markdown.SpoilerPlugin
+import com.mrboomdev.awery.utils.buildIntent
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dev.mihon.injekt.patchInjekt
@@ -88,6 +86,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import java.util.WeakHashMap
 
 class App : Application() {
@@ -130,16 +130,16 @@ class App : Application() {
 		if(AwerySettings.USE_DARK_THEME.value == null) {
 			AwerySettings.USE_DARK_THEME.value = ThemeManager.isDarkModeEnabled
 		}
-		
+
 		if(AwerySettings.LAST_OPENED_VERSION.value < 1) {
 			CoroutineScope(Dispatchers.IO).launch {
 				database.listDao.insert(
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.currently_watching), "1")),
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.planning_watch), "2")),
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.delayed), "3")),
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.completed), "4")),
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.dropped), "5")),
-					DBCatalogList.fromCatalogList(CatalogList(getString(R.string.favourites), "6")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.currently_watching), "1")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.planning_watch), "2")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.delayed), "3")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.completed), "4")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.dropped), "5")),
+					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.favourites), "6")),
 					DBCatalogList.fromCatalogList(CatalogList("Hidden", Constants.CATALOG_LIST_BLACKLIST)),
 					DBCatalogList.fromCatalogList(CatalogList("History", Constants.CATALOG_LIST_HISTORY))
 				)
@@ -244,7 +244,7 @@ class App : Application() {
 			// Android 13 and higher shows a visual confirmation of copied contents
 			// https://developer.android.com/about/versions/13/features/copy-paste
 			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-				toast(R.string.copied_to_clipboard)
+				toast(i18n(Res.string.copied_to_clipboard))
 			}
 		}
 
@@ -257,6 +257,7 @@ class App : Application() {
 		}
 
 		@JvmStatic
+		@Deprecated("Old java shit")
 		fun getResourceId(type: Class<*>, res: String?): Int {
 			if(res == null) return 0
 
@@ -280,33 +281,6 @@ class App : Application() {
 			}
 		}
 
-		inline fun <reified T> getResourceId(res: String?): Int {
-			return getResourceId(T::class.java, res)
-		}
-
-		@JvmStatic
-		@Deprecated("old shit", ReplaceWith(
-			"PlatformResources.i18n(string, *args)",
-			"com.mrboomdev.awery.platform.PlatformResources"))
-		fun i18n(clazz: Class<*>, string: String?, vararg args: Any): String? {
-			val id = getResourceId(clazz, string)
-			return if(id == 0) null else PlatformResources.i18n(id, *args)
-		}
-
-		@Deprecated("old shit", ReplaceWith(
-			"PlatformResources.i18n(resourceId, *args)",
-			"com.mrboomdev.awery.platform.PlatformResources"))
-		inline fun <reified T> i18n(resourceId: String, vararg args: Any): String? {
-			return PlatformResources.i18n(resourceId, *args)
-		}
-
-		@JvmStatic
-		@Deprecated("old shit", ReplaceWith(
-			"PlatformResources.i18n(res, *params)",
-			"com.mrboomdev.awery.platform.PlatformResources"))
-		fun i18n(@StringRes res: Int, vararg params: Any) =
-			ContextCompat.getContextForLanguage(appContext).getString(res, *params)
-		
 		private fun toastImpl(context: Context?, text: Any?, duration: Int = 0) {
 			runOnUiThread { Toast.makeText(context, text.toString(), duration).show() }
 		}
@@ -315,12 +289,6 @@ class App : Application() {
 		@JvmOverloads
 		fun toast(text: Any?, duration: Int = 0) {
 			toastImpl(appContext, text, duration)
-		}
-
-		@JvmStatic
-		@JvmOverloads
-		fun toast(@StringRes res: Int, duration: Int = 0) {
-			toast(appContext.getString(res), duration)
 		}
 
 		/**
@@ -415,7 +383,7 @@ class App : Application() {
 
 		@JvmStatic
 		fun isLandscape(context: Context): Boolean {
-			return context.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+			return context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 		}
 
 		@JvmStatic
@@ -435,10 +403,10 @@ class App : Application() {
 
 		@JvmStatic
 		@JvmOverloads
-		fun openUrl(context: Context, url: String, forceInternal: Boolean = false) {
+		fun openUrl(context: Context, url: String, forceInternal: Boolean = false) = with(context) {
 			if(forceInternal) {
-				context.startActivity(BrowserActivity::class, BrowserActivity.Extras(url))
-				return
+				startActivity(buildIntent(BrowserActivity::class, BrowserActivity.Extras(url)))
+				return@with
 			}
 
 			val customTabsIntent = CustomTabsIntent.Builder().apply {
@@ -449,11 +417,11 @@ class App : Application() {
 				intent.data = Uri.parse(url)
 			}
 
-			customTabsIntent.intent.resolveActivity(context.packageManager)?.also {
-				context.startActivity(customTabsIntent.intent, customTabsIntent.startAnimationBundle)
+			customTabsIntent.intent.resolveActivity(packageManager)?.also {
+				startActivity(customTabsIntent.intent, customTabsIntent.startAnimationBundle)
 			} ?: run {
 				Log.e(TAG, "No external browser was found, launching a internal one.")
-				context.startActivity(BrowserActivity::class, BrowserActivity.Extras(url))
+				startActivity(buildIntent(BrowserActivity::class, BrowserActivity.Extras(url)))
 			}
 		}
 
@@ -487,7 +455,7 @@ class App : Application() {
 								runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>()!!)
 									.setTitle("StrictMode.VmPolicy Violation!")
 									.setMessage(Log.getStackTraceString(violation))
-									.setPositiveButton(R.string.ok) { it.dismiss() }
+									.setPositiveButton(i18n(Res.string.ok)) { it.dismiss() }
 									.show() }
 							} catch(e: Throwable) {
 								Log.e(TAG, "Failed to warn about an strict mode violation!", e)
@@ -506,26 +474,6 @@ class App : Application() {
 			get() = AwerySettings.NAVIGATION_STYLE.value.let {
 				if(isTv) AwerySettings.NavigationStyleValue.MATERIAL else it
 			}
-
-		@Deprecated(message = "java shit")
-		fun getConfiguration(context: Context): Configuration {
-			return context.configuration
-		}
-
-		val configuration: Configuration
-			get() = anyContext.configuration
-
-		@JvmStatic
-		@JvmOverloads
-		fun snackbar(
-			activity: Activity,
-			@StringRes title: Int,
-			@StringRes button: Int,
-			buttonCallback: Runnable?,
-			duration: Int = Snackbar.LENGTH_SHORT
-		) {
-			snackbar(activity, activity.getString(title), activity.getString(button), buttonCallback, duration)
-		}
 
 		@JvmStatic
 		fun snackbar(activity: Activity, title: Any?, button: Any?, buttonCallback: Runnable?, duration: Int) {

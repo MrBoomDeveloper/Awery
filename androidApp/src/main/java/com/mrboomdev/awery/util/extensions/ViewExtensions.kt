@@ -23,6 +23,9 @@ import androidx.viewbinding.ViewBinding
 import com.google.android.material.R
 import com.mrboomdev.awery.app.App.Companion.getMarkwon
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
+import com.mrboomdev.awery.utils.activity
+import com.mrboomdev.awery.utils.dpPx
+import com.mrboomdev.awery.utils.spPx
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAlign

@@ -49,6 +49,7 @@ kotlin {
 		}
 
 		androidMain.dependencies {
+			implementation(files("../libs/safe-args-next.aar"))
 			implementation(libs.androidx.core)
 			implementation(libs.material)
 		}

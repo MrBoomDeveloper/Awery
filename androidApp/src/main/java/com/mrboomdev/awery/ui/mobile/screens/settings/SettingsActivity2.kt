@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.mobile.screens.settings
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.PredictiveBackHandler
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.platform.PlatformResources
 import com.mrboomdev.awery.platform.PlatformSetting
 import com.mrboomdev.awery.ui.mobile.components.MobileSetting
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen

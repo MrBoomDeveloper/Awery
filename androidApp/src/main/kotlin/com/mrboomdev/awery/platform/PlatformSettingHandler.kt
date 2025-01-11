@@ -17,19 +17,19 @@ import com.mrboomdev.awery.app.update.UpdatesManager
 import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.exceptions.explain
-import com.mrboomdev.awery.util.extensions.activity
-import com.mrboomdev.awery.util.extensions.hasPermission
-import com.mrboomdev.awery.util.extensions.requestPermission
-import com.mrboomdev.awery.util.extensions.startActivity
-import com.mrboomdev.awery.util.extensions.startActivityForResult
-import com.mrboomdev.awery.util.extensions.startService
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.activity
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.getPackageUri
+import com.mrboomdev.awery.utils.hasPermission
+import com.mrboomdev.awery.utils.requestPermission
+import com.mrboomdev.awery.utils.startActivityForResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +43,7 @@ import kotlin.concurrent.thread
 object PlatformSettingHandler {
 	private const val TAG = "PlatformSettingHandler"
 
-	fun handlePlatformClick(context: Context, setting: PlatformSetting) {
+	fun handlePlatformClick(context: Context, setting: PlatformSetting): Unit = with(context) {
 		when(setting.key) {
 			AwerySettings.TRY_CRASH_NATIVE.key ->
 				XCrash.testNativeCrash(false)
@@ -58,36 +58,36 @@ object PlatformSettingHandler {
 				thread { XCrash.testJavaCrash(false) }
 
 			AwerySettings.ABOUT.key ->
-				context.startActivity(AboutActivity::class)
+				startActivity(buildIntent(AboutActivity::class))
 
 			AwerySettings.START_ONBOARDING.key ->
-				context.startActivity(SetupActivity::class)
+				startActivity(buildIntent(SetupActivity::class))
 
 			AwerySettings.UI_LANGUAGE.key ->
 				AweryLocales.showPicker(context)
 
 			AwerySettings.PLAYER_SYSTEM_SUBTITLES.key ->
-				context.startActivity(action = Settings.ACTION_CAPTIONING_SETTINGS)
+				startActivity(buildIntent(Settings.ACTION_CAPTIONING_SETTINGS))
 
 			AwerySettings.SETUP_THEME.key ->
-				context.startActivity(SetupActivity::class, extras = mapOf(
-					SetupActivity.EXTRA_STEP to SetupActivity.STEP_THEMING,
-					SetupActivity.EXTRA_FINISH_ON_COMPLETE to true
-				))
+				startActivity(buildIntent(SetupActivity::class, SetupActivity.Extras(
+					step = SetupActivity.STEP_THEMING,
+					finishOnComplete = true
+				)))
 
 			AwerySettings.CLEAR_IMAGE_CACHE.key -> {
 				File(context.cacheDir, DIRECTORY_IMAGE_CACHE).deleteRecursively()
-				toast(R.string.cleared_successfully)
+				toast(i18n(Res.string.cleared_successfully))
 			}
 
 			AwerySettings.CLEAR_WEBVIEW_CACHE.key -> {
 				File(context.cacheDir, Constants.DIRECTORY_WEBVIEW_CACHE).deleteRecursively()
-				toast(R.string.cleared_successfully)
+				toast(i18n(Res.string.cleared_successfully))
 			}
 
 			AwerySettings.CLEAR_NET_CACHE.key -> {
 				File(context.cacheDir, Constants.DIRECTORY_NET_CACHE).deleteRecursively()
-				toast(R.string.cleared_successfully)
+				toast(i18n(Res.string.cleared_successfully))
 			}
 
 			AwerySettings.BACKUP.key -> {
@@ -124,37 +124,34 @@ object PlatformSettingHandler {
 							DialogBuilder(context).apply {
 								setTitle("Permission required!")
 								setMessage("Sorry, but you cannot create files without an storage permission.")
-								setNegativeButton(R.string.dismiss) { dismiss() }
+								setNegativeButton(i18n(Res.string.dismiss)) { dismiss() }
 
 								setPositiveButton("Open settings") {
-									context.startActivity(
-										action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-										data = Uri.parse("package:${context.packageName}")
-									)
-
+									startActivity(buildIntent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, getPackageUri()))
 									dismiss()
 								}
 							}.show()
 						}
 					})
 
-					return
+					return@with
 				}
 
-				activity.startActivityForResult(
+				activity.startActivityForResult(buildIntent(
 					action = Intent.ACTION_CREATE_DOCUMENT,
-					type = ContentType.ANY.mimeType,
-					categories = arrayOf(Intent.CATEGORY_OPENABLE),
-					extras = mapOf(Intent.EXTRA_TITLE to fileName),
-					callback = { resultCode, result ->
-						if(resultCode != Activity.RESULT_OK) {
-							return@startActivityForResult
-						}
+					type = ContentType.ANY.mimeType
+				) {
+					addCategory(Intent.CATEGORY_OPENABLE)
+					putExtra(Intent.EXTRA_TITLE, fileName)
+				}, { resultCode, result ->
+					if(resultCode != Activity.RESULT_OK) {
+						return@startActivityForResult
+					}
 
-						context.startService(
-							BackupService::class, BackupService.Args(
-							BackupService.Action.BACKUP, result!!.data!!))
-					})
+					startService(buildIntent(
+						BackupService::class, BackupService.Args(
+							BackupService.Action.BACKUP, result!!.data!!)))
+				})
 			}
 
 			AwerySettings.RESTORE.key -> {
@@ -170,13 +167,13 @@ object PlatformSettingHandler {
 							DialogBuilder(context).apply {
 								setTitle("Permission required!")
 								setMessage("Sorry, but you cannot select files without an storage permission.")
-								setNegativeButton(R.string.dismiss) { dismiss() }
+								setNegativeButton(i18n(Res.string.dismiss)) { dismiss() }
 
 								setPositiveButton("Open settings") {
-									context.startActivity(
-										action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-										data = Uri.parse("package:${context.packageName}")
-									)
+									startActivity(buildIntent(
+										Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+										Uri.parse("package:${context.packageName}")
+									))
 
 									dismiss()
 								}
@@ -192,9 +189,8 @@ object PlatformSettingHandler {
 				}.toChooser("Choose a backup file"), { resultCode, result ->
 					if(resultCode != Activity.RESULT_OK) return@startActivityForResult
 
-					context.startService(
-						BackupService::class, BackupService.Args(
-						BackupService.Action.RESTORE, result!!.data!!))
+					startService(buildIntent(BackupService::class, BackupService.Args(
+						BackupService.Action.RESTORE, result!!.data!!)))
 				})
 			}
 
@@ -216,7 +212,7 @@ object PlatformSettingHandler {
 
 					CrashHandler.showDialog(
 						title = "Failed to check for updates",
-						messagePrefixRes = R.string.please_report_bug_app,
+						messagePrefix = i18n(Res.string.please_report_bug_app),
 						throwable = t)
 				}).launch {
 					val update = UpdatesManager.fetchLatestAppUpdate()

@@ -153,7 +153,7 @@
             tools:ignore="DiscouragedApi" />
 
         <activity
-            android:name=".ui.mobile.screens.catalog.MainActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 

@@ -62,7 +62,7 @@
                 app:iconPadding="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/watch"
+                android:text="watch"
                 android:paddingRight="36dp"
                 android:layout_marginRight="8dp">
 
@@ -79,7 +79,7 @@
                 app:iconSize="25dp"
                 app:iconPadding="8dp"
                 app:icon="@drawable/ic_sync"
-                android:text="@string/tracking" />
+                android:text="tracking" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.IconButton"
@@ -111,7 +111,7 @@
         android:id="@+id/description_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/description"
+        android:text="description"
         android:layout_marginTop="12dp"
         android:textSize="16sp"
         android:fontFamily="@font/poppins_semi_bold"
@@ -141,7 +141,7 @@
         android:id="@+id/tags_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/tags"
+        android:text="tags"
         android:layout_marginTop="16dp"
         android:textSize="16sp"
         android:fontFamily="@font/poppins_semi_bold"

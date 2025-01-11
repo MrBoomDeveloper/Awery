@@ -32,10 +32,10 @@
             android:layout_height="wrap_content"
             app:layout_flexGrow="1"
             android:layout_marginRight="8dp"
-            android:hint="@string/source">
+            android:hint="Source">
 
             <AutoCompleteTextView
-                android:hint="@string/source"
+                android:hint="Source"
                 android:padding="14dp"
                 android:id="@+id/source_dropdown"
                 android:layout_width="match_parent"
@@ -56,10 +56,10 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             tools:visibility="visible"
-            android:hint="@string/season">
+            android:hint="Season">
 
             <AutoCompleteTextView
-                android:hint="@string/season"
+                android:hint="Season"
                 android:padding="14dp"
                 android:id="@+id/season_dropdown"
                 android:layout_width="match_parent"
@@ -80,14 +80,14 @@
             tools:visibility="visible"
             app:layout_flexGrow="1"
             android:layout_height="wrap_content"
-            android:hint="@string/episode">
+            android:hint="Episode">
 
             <AutoCompleteTextView
                 android:id="@+id/episode_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:hint="@string/episode"
+                android:hint="Episode"
                 android:inputType="numberDecimal"
                 android:imeOptions="actionDone|flagNoFullscreen"
                 android:lines="1"
@@ -103,10 +103,10 @@
             android:layout_marginRight="8dp"
             app:layout_flexGrow="1"
             android:layout_height="wrap_content"
-            android:hint="@string/search">
+            android:hint="Search">
 
             <AutoCompleteTextView
-                android:hint="@string/search"
+                android:hint="Search"
                 android:padding="14dp"
                 android:id="@+id/search_dropdown"
                 android:layout_width="match_parent"

@@ -8,17 +8,18 @@ import com.mrboomdev.awery.app.App.Companion.navigationStyle
 import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.databinding.FeedFailedBinding
 import com.mrboomdev.awery.extensions.ExtensionProvider
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.context
 import com.mrboomdev.awery.util.extensions.dpPx
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.rightMargin
 import com.mrboomdev.awery.util.extensions.setHorizontalMargin
+import com.mrboomdev.awery.utils.inflater
 
 class FailedFeedViewHolder private constructor(
 	private val binding: FeedFailedBinding, parent: ViewGroup
@@ -75,7 +76,7 @@ class FailedFeedViewHolder private constructor(
 		if(feed.throwable != null) {
 			binding.errorMessage.text = feed.throwable!!.explain().print()
 		} else {
-			binding.errorMessage.text = binding.context.getString(R.string.nothing_found)
+			binding.errorMessage.text = i18n(Res.string.nothing_found)
 		}
 
 		if(feed.isLoading) {

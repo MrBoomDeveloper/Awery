@@ -41,7 +41,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/welcome_to_app"
+        android:text="welcome_to_app"
         android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
@@ -53,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintWidth_max="425dp"
-        android:text="@string/welcome_to_app_description"
+        android:text="welcome_to_app_description"
         android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="32dp"
@@ -74,7 +74,7 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/back"
+            android:text="back"
             android:layout_marginTop="8dp" />
 
         <Space
@@ -86,7 +86,7 @@
             android:id="@+id/continueButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/continue_action"
+            android:text="continue_action"
             android:paddingHorizontal="32dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp" />

@@ -460,17 +460,6 @@ public class PlayerController {
 		private String title;
 		private int id, icon;
 
-		public PopupItem(@StringRes int title, @DrawableRes int icon) {
-			this.title = activity.getString(title);
-			this.icon = icon;
-		}
-
-		public PopupItem(@StringRes int title) {
-			this.title = activity.getString(title);
-		}
-
-		public PopupItem() {}
-
 		public PopupItem setTitle(String title) {
 			this.title = title;
 			return this;

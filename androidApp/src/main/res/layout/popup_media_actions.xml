@@ -67,7 +67,7 @@
         android:paddingHorizontal="0dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/watch"
+        android:text="Watch"
         app:icon="@drawable/ic_play_outlined" />
 
     <Button
@@ -79,7 +79,7 @@
         app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintRight_toRightOf="@id/title"
         android:paddingHorizontal="0dp"
-        android:text="@string/bookmark"
+        android:text="Bookmark"
         app:iconSize="24dp"
         app:iconPadding="25dp"
         android:paddingLeft="16dp"
@@ -94,7 +94,7 @@
         android:paddingHorizontal="0dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/share"
+        android:text="Share"
         app:icon="@drawable/ic_share_outlined" />
 
     <Button
@@ -106,7 +106,7 @@
         android:paddingHorizontal="0dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/hide"
+        android:text="Hide"
         app:icon="@drawable/ic_block_outlined" />
 
     <ImageView

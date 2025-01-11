@@ -1,18 +1,18 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.App.i18n;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
+import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActions;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
@@ -259,7 +259,7 @@ public class SettingsItem implements Serializable {
 	}
 
 	public String getTitle(Context context) {
-		var got = i18n(R.string.class, title);
+		var got = i18n(title);
 		return got != null ? got : title;
 	}
 
@@ -426,11 +426,6 @@ public class SettingsItem implements Serializable {
 
 		public Builder setValue(Selection.State state) {
 			item.excludableValue = state;
-			return this;
-		}
-
-		public Builder setTitle(@StringRes int title) {
-			item.title = getAnyContext().getString(title);
 			return this;
 		}
 

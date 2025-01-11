@@ -9,7 +9,7 @@ import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedViewHolder
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedViewHolder.Feed
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.ListFeedViewHolder
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.PagesFeedViewHolder
-import com.mrboomdev.awery.util.UniqueIdGenerator
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import java.util.WeakHashMap
 
 class MediaCategoriesAdapter : RecyclerView.Adapter<FeedViewHolder>() {

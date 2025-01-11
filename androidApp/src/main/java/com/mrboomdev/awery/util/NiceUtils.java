@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
 import com.mrboomdev.awery.util.io.FileUtil;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

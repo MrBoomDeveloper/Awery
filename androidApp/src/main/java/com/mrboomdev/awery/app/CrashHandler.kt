@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.setPadding
@@ -14,21 +13,20 @@ import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.BuildConfig
-import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
-import com.mrboomdev.awery.util.extensions.activity
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.fixAndShow
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.activity
 import xcrash.Errno
 import xcrash.XCrash
 import xcrash.XCrash.InitParameters
@@ -55,7 +53,8 @@ object CrashHandler {
 
 			// This library doesn't check if an ANR has happened
 			// properly on Android TV, so we disable it.
-			setAnrCheckProcessState(!isTv)
+			// Also while debugging an ANR may be triggered, so we disable it in the dev build.
+			setAnrCheckProcessState(!isTv && !BuildConfig.DEBUG)
 
 			// Crash logs are too long so we do strip all non-relevant dumps.
 			setJavaDumpNetworkInfo(false)
@@ -100,14 +99,14 @@ object CrashHandler {
 	}
 
 	private fun handleError(type: CrashType, message: String?) {
-		toast(appContext.getString(when(type) {
+		toast(i18n(when(type) {
 			CrashType.ANR -> {
 				Log.e(TAG, "ANR error has happened. $message")
-				R.string.app_not_responding_restart
+				Res.string.app_not_responding_restart
 			}
 
-			CrashType.JAVA -> R.string.app_crash
-			CrashType.NATIVE -> R.string.something_terrible_happened
+			CrashType.JAVA -> Res.string.app_crash
+			CrashType.NATIVE -> Res.string.something_terrible_happened
 		}), 1)
 
 		restartApp()
@@ -147,9 +146,8 @@ object CrashHandler {
 		files.forEachIndexed { index, file ->
 			showDialog(
 				context = context,
-				titleRes = if(files.size == 1) R.string.app_crash else null,
-				title = if(files.size == 1) null else "Awery crash report #${index + 1}",
-				messagePrefixRes = R.string.please_report_bug_app,
+				title = i18n(Res.string.app_crash),
+				messagePrefix = i18n(Res.string.please_report_bug_app),
 				file = file,
 				dismissCallback = if(index == 0) {{
 					crashLogsDirectory.delete()
@@ -162,11 +160,8 @@ object CrashHandler {
 	fun showDialog(
 		context: Context? = null,
 		title: String? = null,
-		@StringRes titleRes: Int? = null,
 		message: String? = null,
-		@StringRes messageRes: Int? = null,
 		messagePrefix: String? = null,
-		@StringRes messagePrefixRes: Int? = null,
 		throwable: Throwable? = null,
 		file: File? = null,
 		dismissCallback: () -> Unit = {}
@@ -177,7 +172,7 @@ object CrashHandler {
 
 		runOnUiThread {
 			DialogBuilder(mContext?.activity ?: activity!!).apply {
-				setTitle(title ?: titleRes?.let { i18n(it) } ?: oki?.title)
+				setTitle(title ?: oki?.title)
 
 				setMessage(buildString {
 					if(messagePrefix != null) {
@@ -185,18 +180,8 @@ object CrashHandler {
 						append("\n\n")
 					}
 
-					if(messagePrefixRes != null) {
-						append(i18n(messagePrefixRes))
-						append("\n\n")
-					}
-
 					if(message != null) {
 						append(message.trim())
-						append("\n\n")
-					}
-
-					if(messageRes != null) {
-						append(i18n(messageRes))
 						append("\n\n")
 					}
 
@@ -210,12 +195,12 @@ object CrashHandler {
 					dismissCallback()
 				}
 
-				setPositiveButton(R.string.ok) {
+				setPositiveButton(i18n(Res.string.ok)) {
 					it.dismiss()
 				}
 
 				if(file?.exists() == true || message != null || oki != null) {
-					setNegativeButton(R.string.share) {
+					setNegativeButton(i18n(Res.string.share)) {
 						val mFile = file ?: File((mContext ?: appContext).filesDir, "crash_report.txt").apply {
 							delete()
 							createNewFile()
@@ -255,7 +240,7 @@ object CrashHandler {
 						}.also { (mContext ?: appContext).startActivity(it) }
 					}
 
-					setNeutralButton(R.string.see_error) {
+					setNeutralButton(i18n(Res.string.see_error)) {
 						BottomSheetDialog(mContext?.activity ?: activity!!).apply {
 							setContentView(NestedScrollView(mContext!!).apply {
 								addView(MaterialTextView(mContext).apply {
@@ -264,7 +249,7 @@ object CrashHandler {
 
 									text = if(file?.exists() == true) {
 										file.readText()
-									} else (oki?.print() ?: message ?: i18n(messageRes!!)).trim()
+									} else (oki?.print() ?: message!!).trim()
 								})
 							})
 						}.fixAndShow()
@@ -293,16 +278,6 @@ object CrashHandler {
 				return this
 			}
 
-			fun setMessage(@StringRes prefix: Int): Builder {
-				report.message = anyContext.getString(prefix)
-				return this
-			}
-
-			fun setPrefix(@StringRes prefix: Int): Builder {
-				report.prefix = anyContext.getString(prefix)
-				return this
-			}
-
 			fun setThrowable(throwable: Throwable?): Builder {
 				report.throwable = throwable
 				return this
@@ -310,11 +285,6 @@ object CrashHandler {
 
 			fun setTitle(title: String?): Builder {
 				report.title = title
-				return this
-			}
-
-			fun setTitle(@StringRes title: Int): Builder {
-				report.title = anyContext.getString(title)
 				return this
 			}
 

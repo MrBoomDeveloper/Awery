@@ -41,7 +41,6 @@ import androidx.media3.ui.TimeBar.OnScrubListener
 import com.bumptech.glide.Glide
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.copyToClipboard
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.cancelDelayed
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
@@ -54,7 +53,8 @@ import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.explain
@@ -290,7 +290,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 
 		if(bigSeek > 0) {
 			val time = NiceUtils.formatTimer(bigSeek * 1000L)
-			binding.quickSkip.text = "${i18n(R.string.skip)} $time"
+			binding.quickSkip.text = "${i18n(Res.string.skip)} $time"
 
 			setupButton(binding.quickSkip) {
 				player?.seekTo(player!!.currentPosition + bigSeek * 1000L)
@@ -370,9 +370,9 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 
 				CrashHandler.showDialog(
 					context = this,
-					titleRes = R.string.unknown_file_type,
-					messageRes = R.string.unknown_file_type_description,
-					messagePrefixRes = R.string.please_report_bug_app,
+					title = i18n(Res.string.unknown_file_type),
+					message = i18n(Res.string.unknown_file_type_description),
+					messagePrefix = i18n(Res.string.please_report_bug_app),
 					throwable = e
 				)
 
@@ -417,14 +417,14 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 				finish()
 			} catch(e: ActivityNotFoundException) {
 				DialogBuilder(this)
-					.setTitle(R.string.torrent_usupported)
+					.setTitle(i18n(Res.string.torrent_usupported))
 					.setCancelable(false)
-					.setMessage(R.string.torrent_unsupported_message)
-					.setPositiveButton(R.string.ok) { dialog: DialogBuilder ->
+					.setMessage(i18n(Res.string.torrent_unsupported_message))
+					.setPositiveButton(i18n(Res.string.ok)) { dialog ->
 						dialog.dismiss()
 						finish()
 					}
-					.setNeutralButton(R.string.copy) { copyToClipboard(uri) }
+					.setNeutralButton(i18n(Res.string.copy)) { copyToClipboard(uri) }
 					.show()
 			}
 
@@ -440,7 +440,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 
 	private fun loadData() {
 		onPlaybackStateChanged(Player.STATE_BUFFERING)
-		binding.loadingStatus.setText(R.string.loading_videos_list)
+		binding.loadingStatus.text = i18n(Res.string.loading_videos_list)
 
 		this.episode = rememberSafeArgs!!.episode
 
@@ -560,7 +560,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 			Player.STATE_BUFFERING -> {
 				isVideoBuffering = true
 
-				binding.loadingStatus.setText(R.string.buffering_video)
+				binding.loadingStatus.text = i18n(Res.string.buffering_video)
 
 				binding.loadingCircle.visibility = View.VISIBLE
 				binding.loadingStatus.visibility = View.VISIBLE
@@ -580,11 +580,11 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 		Log.e(TAG, "Player error has occurred", e)
 
 		toast(when(e.errorCode) {
-			PlaybackException.ERROR_CODE_TIMEOUT -> getString(R.string.connection_timeout)
+			PlaybackException.ERROR_CODE_TIMEOUT -> i18n(Res.string.connection_timeout)
 			PlaybackException.ERROR_CODE_DECODING_FAILED -> "Video decoding failed, please try again later"
 			PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> "Video not found, please try again later"
-			PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS, PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> getString(R.string.connection_error)
-			else -> getString(R.string.unknown_error)
+			PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS, PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> i18n(Res.string.connection_error)
+			else -> i18n(Res.string.unknown_error) + " (${e.errorCode})"
 		}, 1)
 
 		finish()

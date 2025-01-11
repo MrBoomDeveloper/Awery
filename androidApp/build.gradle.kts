@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.kotlin)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.room)
 }
@@ -166,6 +167,7 @@ dependencies {
     implementation(libs.androidx.adaptive)
     implementation(libs.androidx.adaptive.layout)
     implementation(libs.androidx.adaptive.navigation)
+    implementation(compose.components.resources)
 
     // Markdown
     implementation(libs.markwon.core)

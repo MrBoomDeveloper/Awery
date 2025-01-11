@@ -8,6 +8,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.sidesheet.SideSheetDialog
+import com.mrboomdev.awery.utils.dpPx
 import com.google.android.material.R as MaterialR
 
 private const val MAX_SIDE_WIDTH = 400f
@@ -39,7 +40,7 @@ fun Dialog.fix() {
         /* If we'll try to do this shit with the SideSheetDialog, it will get centered,
 			   so we use different approaches for different dialog types.*/
 
-        if(context.configuration.screenWidthDp > MAX_WIDTH) {
+        if(context.resources.configuration.screenWidthDp > MAX_WIDTH) {
             window.setLayout(context.dpPx(MAX_WIDTH), MATCH_PARENT)
         }
     }

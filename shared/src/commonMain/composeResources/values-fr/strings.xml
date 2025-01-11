@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
+<resources>
     <string name="empty_library_title">La bibliothèque est vide</string>
     <string name="empty_library_message">Commencez à parcourir le catalogue et de nouvelles choses apparaîtront ici !</string>
     <string name="login">Se connecter</string>

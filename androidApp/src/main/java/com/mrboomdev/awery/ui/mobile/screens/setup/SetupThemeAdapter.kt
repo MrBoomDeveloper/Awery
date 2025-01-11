@@ -27,8 +27,9 @@ import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.getRecursively
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
 import com.mrboomdev.awery.util.extensions.balloon
@@ -38,6 +39,7 @@ import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.setHorizontalMargin
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
+import com.mrboomdev.awery.utils.dpPx
 import com.skydoves.balloon.BalloonAlign
 
 class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Adapter<SetupThemeAdapter.ViewHolder?>() {
@@ -142,13 +144,13 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			}
 
 			if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && !AwerySettings.DID_SUGGEST_MATERIAL_YOU.value) {
-				binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
+				binding.root.balloon(i18n(Res.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
 				AwerySettings.DID_SUGGEST_MATERIAL_YOU.value = true
 			}
 
 			binding.root.setOnLongClickListener {
 				if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
-					binding.root.balloon(PlatformResources.i18n(R.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
+					binding.root.balloon(i18n(Res.string.wallpaper_based_colors), BalloonAlign.BOTTOM)
 					return@setOnLongClickListener true
 				}
 

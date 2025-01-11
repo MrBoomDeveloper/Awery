@@ -2,7 +2,7 @@ package com.mrboomdev.awery.util.ui.dialog;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.mrboomdev.awery.app.App.i18n;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
 
 import android.content.Context;
@@ -72,7 +72,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 
 		for(var item : items) {
 			var originalTitle = Selection.Selectable.getTitle(item.getKey());
-			var title = Objects.requireNonNullElse(i18n(R.string.class, originalTitle), originalTitle);
+			var title = Objects.requireNonNullElse(i18n(originalTitle), originalTitle);
 
 			var radio = new MaterialRadioButton(getContext());
 			radio.setText(title);
@@ -141,12 +141,6 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 	}
 
 	public SelectionDialog<T> setPositiveButton(String label, SelectionListener<T> listener) {
-		return setPositiveButton(label, dialog -> {
-			if(listener != null) listener.onSelected(this, getSelection());
-		});
-	}
-
-	public SelectionDialog<T> setPositiveButton(@StringRes int label, SelectionListener<T> listener) {
 		return setPositiveButton(label, dialog -> {
 			if(listener != null) listener.onSelected(this, getSelection());
 		});

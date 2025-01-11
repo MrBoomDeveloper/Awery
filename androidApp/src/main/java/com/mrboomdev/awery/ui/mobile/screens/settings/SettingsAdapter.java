@@ -49,7 +49,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
@@ -387,7 +387,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							}).show();
 
 					if(setting.getBehaviour() != null) {
-						SettingsData.getSelectionList(context, setting.getBehaviour(), (items, e) -> {
+						SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
 							if(!dialog.isShown()) return;
 
 							if(e != null) {
@@ -455,7 +455,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.show();
 
 					if(setting.getBehaviour() != null) {
-						SettingsData.getSelectionList(context, setting.getBehaviour(), (items, e) -> {
+						SettingsData.getSelectionList(setting.getBehaviour(), (items, e) -> {
 							if(!dialog.isShown()) return;
 
 							if(e != null) {

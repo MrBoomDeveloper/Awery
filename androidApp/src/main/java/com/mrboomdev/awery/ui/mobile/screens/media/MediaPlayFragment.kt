@@ -21,9 +21,7 @@ import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
 import com.mrboomdev.awery.data.Constants
-import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.data.settings.SettingsItemType
 import com.mrboomdev.awery.data.settings.SettingsList
@@ -33,18 +31,19 @@ import com.mrboomdev.awery.extensions.Extension
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.extensions.data.CatalogVideo
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.player.PlayerActivity
 import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaPlayEpisodesAdapter.OnEpisodeSelectedListener
-import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.adapters.MediaAdapter
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.exceptions.isNetworkException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -53,7 +52,6 @@ import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.get
 import com.mrboomdev.awery.util.extensions.leftPadding
 import com.mrboomdev.awery.util.extensions.rightPadding
-import com.mrboomdev.awery.util.extensions.screenWidth
 import com.mrboomdev.awery.util.extensions.setImageTintColor
 import com.mrboomdev.awery.util.extensions.setVerticalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
@@ -64,6 +62,8 @@ import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.startActivityForResult
 import com.mrboomdev.safeargsnext.SafeArgsIntent
 import com.mrboomdev.safeargsnext.owner.SafeArgsFragment
 import com.mrboomdev.safeargsnext.util.rememberSafeArgs
@@ -83,7 +83,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 	private var episodesAdapter: MediaPlayEpisodesAdapter? = null
 	private var recycler: RecyclerView? = null
 	private var selectedSource: ExtensionProvider? = null
-	private var viewMode: ViewMode? = null
+	private var viewMode: AwerySettings.EpisodesDisplayModeValue? = null
 	private var searchId: String? = null
 	private var searchTitle: String? = null
 	private var autoChangeSource = true
@@ -93,13 +93,8 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 	private var loadId = 0L
 	private var media: CatalogMedia? = null
 
-	private val queryFilter =
-		SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY)
-	private val filters = SettingsList(
-		queryFilter, SettingsItem(
-			SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0
-		)
-	)
+	private val queryFilter = SettingsItem(SettingsItemType.STRING, ExtensionProvider.FILTER_QUERY)
+	private val filters = SettingsList(queryFilter, SettingsItem(SettingsItemType.INTEGER, ExtensionProvider.FILTER_PAGE, 0))
 
 	class Args(val media: CatalogMedia)
 
@@ -137,15 +132,14 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		if(Constants.alwaysTrue()) return
 
 		if(changeSettings) {
-			val prefs = NicePreferences.getPrefs()
-			val viewMode = NiceUtils.parseEnum(prefs.getString("settings_ui_episodes_mode"), ViewMode.LIST)!!
+			val viewMode = AwerySettings.EPISODES_DISPLAY_MODE.value
 
 			if(viewMode != this.viewMode) {
 				this.viewMode = viewMode
 
 				recycler!!.layoutManager = when(viewMode) {
-					ViewMode.LIST -> LinearLayoutManager(requireContext())
-					ViewMode.GRID -> {
+					AwerySettings.EpisodesDisplayModeValue.LIST -> LinearLayoutManager(requireContext())
+					AwerySettings.EpisodesDisplayModeValue.GRID -> {
 						val columnsCount = AtomicInteger(3)
 						val layoutManager = GridLayoutManager(requireContext(), columnsCount.get())
 
@@ -155,7 +149,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 							view.rightPadding = insets.right + dpPx(8f)
 
 							val columnSize = dpPx(80f)
-							val freeSpace = (requireContext().screenWidth - dpPx(16f) - insets.left - insets.right).toFloat()
+							val freeSpace = (requireContext().resources.displayMetrics.widthPixels - dpPx(16f) - insets.left - insets.right).toFloat()
 							columnsCount.set((freeSpace / columnSize).toInt())
 							layoutManager.spanCount = columnsCount.get()
 							true
@@ -177,7 +171,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		changeSettings = false
 	}
 
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(view.context) {
 		if(media == null) {
 			media = rememberSafeArgs!!.media
 		}
@@ -237,7 +231,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 			}
 		}
 
-		val more = getString(R.string.manual_search)
+		val more = i18n(Res.string.manual_search)
 		val titles = media!!.titles!!.toMutableList()
 		titles.add(more)
 
@@ -284,12 +278,11 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 				if(title == more) {
 					binding.searchDropdown.setText(queryFilter.stringValue, false)
 
-					startActivityForResult(requireActivity(), SafeArgsIntent(
-						requireContext(), SearchActivity::class, SearchActivity.Extras(
-							action = SearchActivity.Action.PICK_MEDIA,
-							sourceGlobalId = selectedSource!!.globalId,
-							filters = filters
-						)), { _, result ->
+					requireActivity().startActivityForResult(buildIntent(SearchActivity::class, SearchActivity.Extras(
+						action = SearchActivity.Action.PICK_MEDIA,
+						sourceGlobalId = selectedSource!!.globalId,
+						filters = filters
+					)), { _, result ->
 						if(result == null) return@startActivityForResult
 						val media = result.get<CatalogMedia>(SearchActivity.RESULT_EXTRA_MEDIA) ?: return@startActivityForResult
 
@@ -299,7 +292,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 						binding.searchDropdown.setText(media.title, false)
 						queryFilter.setValue(media.title)
 
-						placeholderAdapter!!.getBinding { placeholder: EmptyStateView ->
+						placeholderAdapter!!.getBinding { placeholder ->
 							placeholder.startLoading()
 							placeholderAdapter!!.isEnabled = true
 							episodesAdapter!!.setItems(media, emptyList())
@@ -327,7 +320,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		queryFilter.setValue(media!!.title)
 
 		if(providers?.isEmpty() == true) {
-			handleExceptionUi(ZeroResultsException("No extensions was found", R.string.no_extensions_found))
+			handleExceptionUi(ZeroResultsException("No extensions was found", i18n(Res.string.no_extensions_found)))
 			variantsAdapter!!.isEnabled = false
 			return
 		}
@@ -409,7 +402,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 		variantsAdapter!!.getBinding { binding ->
 			runOnUiThread {
-				binding.searchStatus.text = getString(R.string.searching_episodes_for, media.title)
+				binding.searchStatus.text = i18n(Res.string.searching_episodes_for, media.title)
 				binding.searchStatus.setOnClickListener {
 					startActivity(MediaActivity::class, MediaActivity.Extras(media)) }
 			}
@@ -449,7 +442,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 				runOnUiThread {
 					variantsAdapter!!.getBinding { binding ->
-						binding.searchStatus.text = getString(R.string.selected_s, media.title)
+						binding.searchStatus.text = i18n(Res.string.selected_s, media.title)
 					}
 
 					placeholderAdapter!!.isEnabled = false
@@ -515,7 +508,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 						variantsAdapter!!.getBinding { binding ->
 							runOnUiThread {
-								binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
+								binding.searchStatus.text = i18n(Res.string.searching_for, queryFilter.stringValue)
 								binding.searchStatus.setOnClickListener(null)
 							}
 						}
@@ -539,7 +532,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		if(searchId != null) {
 			variantsAdapter!!.getBinding { binding ->
 				runOnUiThread {
-					binding.searchStatus.text = getString(R.string.searching_for, searchTitle)
+					binding.searchStatus.text = i18n(Res.string.searching_for, searchTitle)
 					binding.searchStatus.setOnClickListener(null)
 				}
 			}
@@ -556,7 +549,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 					variantsAdapter!!.getBinding { binding ->
 						runOnUiThread {
-							binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
+							binding.searchStatus.text = i18n(Res.string.searching_for, queryFilter.stringValue)
 							binding.searchStatus.setOnClickListener(null)
 						}
 					}
@@ -567,7 +560,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		} else {
 			variantsAdapter!!.getBinding { binding ->
 				runOnUiThread {
-					binding.searchStatus.text = getString(R.string.searching_for, queryFilter.stringValue)
+					binding.searchStatus.text = i18n(Res.string.searching_for, queryFilter.stringValue)
 					binding.searchStatus.setOnClickListener(null)
 				}
 			}

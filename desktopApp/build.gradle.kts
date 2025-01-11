@@ -22,7 +22,7 @@ kotlin {
 				implementation(projects.shared)
 
 				// Ui
-				implementation("org.jetbrains.compose.ui:ui-desktop:1.6.10")
+				implementation("org.jetbrains.compose.ui:ui-desktop:1.6.11")
 				implementation(compose.foundation)
 				implementation(compose.components.resources)
 				implementation(compose.desktop.currentOs)

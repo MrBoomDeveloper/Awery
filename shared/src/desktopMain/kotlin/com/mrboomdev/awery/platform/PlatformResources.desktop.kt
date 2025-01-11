@@ -1,7 +1,13 @@
 package com.mrboomdev.awery.platform
 
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.ResourceEnvironment
+
 actual object PlatformResources {
-	actual fun i18n(key: String, vararg args: Any): String? {
-		TODO("Not yet implemented")
+	@OptIn(ExperimentalResourceApi::class)
+	internal actual var resourceEnvironment: ResourceEnvironment? = null
+
+	fun load() {
+		throw NotImplementedError()
 	}
 }

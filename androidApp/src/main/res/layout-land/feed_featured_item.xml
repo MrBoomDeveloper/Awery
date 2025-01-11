@@ -80,7 +80,7 @@
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
+        android:text="app_name"
         android:textSize="15sp"
         android:alpha=".95"
         android:shadowColor="#000000"
@@ -151,7 +151,7 @@
         android:layout_marginBottom="16dp"
         app:icon="@drawable/ic_round_play_arrow_24"
         app:iconSize="26dp"
-        android:text="@string/watch_now" />
+        android:text="watch_now" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.IconButton.Filled"

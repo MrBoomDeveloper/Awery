@@ -15,12 +15,14 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.FileType
 import com.mrboomdev.awery.util.extensions.cleanUrl
-import com.mrboomdev.awery.util.extensions.startService
 import com.mrboomdev.awery.util.io.FileUtil.fileName
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.buildIntent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -64,14 +66,13 @@ class IntentHandlerActivity : AppCompatActivity() {
 			when(FileType.test(it)) {
 				FileType.DANTOTSU_BACKUP -> {
 					(DialogBuilder(this).apply {
-						setTitle(R.string.restore_backup)
+						setTitle(i18n(Res.string.restore_backup))
 						setMessage("Are you sure want to restore an backup from Dantotsu? All your current data will be erased!")
 						setCancelable(false)
-						setNegativeButton(R.string.cancel) { finish() }
-
-						setPositiveButton(R.string.confirm) {
-							startService(BackupService::class, BackupService.Args(
-								BackupService.Action.RESTORE, uri, FileType.DANTOTSU_BACKUP))
+						setNegativeButton(i18n(Res.string.cancel)) { finish() }
+						setPositiveButton(i18n(Res.string.confirm)) {
+							startService(buildIntent(BackupService::class, BackupService.Args(
+								BackupService.Action.RESTORE, uri, FileType.DANTOTSU_BACKUP)))
 
 							dialog.dismiss()
 						}
@@ -82,14 +83,13 @@ class IntentHandlerActivity : AppCompatActivity() {
 
 				FileType.YOMI_BACKUP -> {
 					(DialogBuilder(this).apply {
-						setTitle(R.string.restore_backup)
+						setTitle(i18n(Res.string.restore_backup))
 						setMessage("Are you sure want to restore an backup from Tachiyomi? All your current data will be erased!")
 						setCancelable(false)
-						setNegativeButton(R.string.cancel) { finish() }
-
-						setPositiveButton(R.string.confirm) {
-							startService(BackupService::class, BackupService.Args(
-								BackupService.Action.RESTORE, uri, FileType.YOMI_BACKUP))
+						setNegativeButton(i18n(Res.string.cancel)) { finish() }
+						setPositiveButton(i18n(Res.string.confirm)) {
+							startService(buildIntent(BackupService::class, BackupService.Args(
+								BackupService.Action.RESTORE, uri, FileType.YOMI_BACKUP)))
 
 							dialog.dismiss()
 						}
@@ -105,14 +105,13 @@ class IntentHandlerActivity : AppCompatActivity() {
 
 				FileType.AWERY_BACKUP -> {
 					(DialogBuilder(this).apply {
-						setTitle(R.string.restore_backup)
+						setTitle(i18n(Res.string.restore_backup))
 						setMessage("Are you sure want to restore an saved backup? All your current data will be erased!")
 						setCancelable(false)
-						setNegativeButton(R.string.cancel) { finish() }
-
-						setPositiveButton(R.string.confirm) {
-							startService(BackupService::class, BackupService.Args(
-								BackupService.Action.RESTORE, uri))
+						setNegativeButton(i18n(Res.string.cancel)) { finish() }
+						setPositiveButton(i18n(Res.string.confirm)) {
+							startService(buildIntent(BackupService::class, BackupService.Args(
+								BackupService.Action.RESTORE, uri)))
 
 							dialog.dismiss()
 						}

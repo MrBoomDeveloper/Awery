@@ -52,17 +52,9 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		return (T) this;
 	}
 
-	public T setTitle(@StringRes int res) {
-		return setTitle(context.getString(res));
-	}
-
 	public T setMessage(String message) {
 		this.message = message;
 		return (T) this;
-	}
-
-	public T setMessage(@StringRes int res) {
-		return setMessage(context.getString(res));
 	}
 
 	public T setPositiveButton(String label, OnButtonClickListener<T> listener) {
@@ -75,18 +67,10 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		void run(T arg);
 	}
 
-	public T setPositiveButton(@StringRes int label, OnButtonClickListener<T> listener) {
-		return setPositiveButton(context.getString(label), listener);
-	}
-
 	public T setNeutralButton(String label, OnButtonClickListener<T> listener) {
 		this.neutralListener = listener;
 		this.neutralButtonLabel = label;
 		return (T) this;
-	}
-
-	public T setNeutralButton(@StringRes int label, OnButtonClickListener<T> listener) {
-		return setNeutralButton(context.getString(label), listener);
 	}
 
 	public T setCancelable(boolean isCancelable) {
@@ -116,10 +100,6 @@ public abstract class BaseDialogBuilder<T extends BaseDialogBuilder<?>> {
 		this.cancelListener = listener;
 		this.cancelButtonLabel = label;
 		return (T) this;
-	}
-
-	public T setNegativeButton(@StringRes int label, OnButtonClickListener<T> listener) {
-		return setNegativeButton(context.getString(label), listener);
 	}
 
 	public T setOnDismissListener(Callback1<T> listener) {

@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.platform.PlatformResources.i18n
 import com.mrboomdev.awery.platform.PlatformSetting
+import com.mrboomdev.awery.platform.i18n
 
 private val defaultNavigatorClass = Class.forName(
 	"androidx.compose.material3.adaptive.navigation.DefaultThreePaneScaffoldNavigator"

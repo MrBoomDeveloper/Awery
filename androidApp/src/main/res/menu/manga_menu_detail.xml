@@ -4,11 +4,11 @@
         android:id="@+id/info"
         android:enabled="true"
         android:icon="@drawable/ic_info_filled"
-        android:title="@string/info" />
+        android:title="info" />
 
     <item
         android:id="@+id/read"
         android:enabled="true"
         android:icon="@drawable/ic_round_import_contacts_24"
-        android:title="@string/read" />
+        android:title="read" />
 </menu>

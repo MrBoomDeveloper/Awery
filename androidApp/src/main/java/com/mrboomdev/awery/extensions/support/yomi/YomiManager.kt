@@ -12,10 +12,10 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.startActivityForResult
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.extensions.Extension
 import com.mrboomdev.awery.extensions.ExtensionProvider
@@ -24,12 +24,16 @@ import com.mrboomdev.awery.extensions.ExtensionsManager
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.ext.util.Progress
+import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.async.AsyncUtils
 import com.mrboomdev.awery.util.async.ControllableAsyncFuture
-import com.mrboomdev.awery.util.extensions.activity
 import com.mrboomdev.awery.util.io.HttpClient.fetchSync
 import com.mrboomdev.awery.util.io.HttpRequest
+import com.mrboomdev.awery.utils.activity
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.getPackageUri
+import com.mrboomdev.awery.utils.startActivityForResult
 import com.squareup.moshi.adapter
 import dalvik.system.PathClassLoader
 import java.io.FileOutputStream
@@ -37,34 +41,25 @@ import java.io.IOException
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicReference
 
+private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
+private const val TAG = "YomiManager"
+
 abstract class YomiManager : ExtensionsManager() {
 	private val extensions: MutableMap<String, Extension> = HashMap()
-
 	private var progress: Progress? = null
-
 	abstract val mainClassMeta: String?
-
 	abstract val nsfwMeta: String?
-
 	abstract val requiredFeature: String
-
 	abstract val prefix: String
-
 	abstract val minVersion: Double
-
 	abstract val maxVersion: Double
-
 	abstract val baseFeatures: Set<String?>?
 
 	abstract fun createProviders(extension: Extension?, main: Any?): List<ExtensionProvider?>
 
-	override fun getExtension(id: String): Extension {
-		return extensions[id]!!
-	}
+	override fun getExtension(id: String) = extensions[id]!!
 
-	override fun getAllExtensions(): Collection<Extension> {
-		return extensions.values
-	}
+	override fun getAllExtensions() = extensions.values
 
 	override fun getProgress(): Progress {
 		if(progress == null) {
@@ -245,7 +240,7 @@ abstract class YomiManager : ExtensionsManager() {
 		}
 	}
 
-	private fun installApk(context: Context, uri: Uri, future: ControllableAsyncFuture<Extension>) {
+	private fun installApk(context: Context, uri: Uri, future: ControllableAsyncFuture<Extension>) = with(context.activity) {
 		val tempFile = NiceUtils.getTempFile()
 
 		try {
@@ -258,45 +253,42 @@ abstract class YomiManager : ExtensionsManager() {
 						os.write(buffer, 0, read)
 					}
 
+					val info = packageManager.getPackageArchiveInfo(tempFile.path, PM_FLAGS) ?: run {
+						future.fail(ExtensionInstallException("Failed to parse an APK!"))
+						return@with
+					}
+
 					runOnUiThread {
-						val intent = Intent(Intent.ACTION_VIEW)
-						intent.putExtra(Intent.EXTRA_RETURN_RESULT, true)
-						intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-						intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.packageName)
-						intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-						intent.setDataAndType(uri, ContentType.APK.mimeType)
+						startActivityForResult(buildIntent(
+							action = Intent.ACTION_VIEW,
+							data = uri,
+							type = ContentType.APK.mimeType
+						) {
+							putExtra(Intent.EXTRA_RETURN_RESULT, true)
+							putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+							putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, packageName)
+							addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+						  }, { resultCode, _ ->
+							when(resultCode) {
+								Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
+									try {
+										val got = packageManager.getPackageInfo(info.packageName, PM_FLAGS)
 
-						val pm = context.packageManager
-						val info = pm.getPackageArchiveInfo(tempFile.path, PM_FLAGS)
-
-						if(info == null) {
-							future.fail(NullPointerException("Failed to parse an APK!"))
-							return@runOnUiThread
-						}
-
-						runOnUiThread {
-							startActivityForResult(context.activity, intent, { resultCode, _ ->
-								when(resultCode) {
-									Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
-										try {
-											val got = pm.getPackageInfo(info.packageName, PM_FLAGS)
-
-											if(info.versionCode != got.versionCode) {
-												future.fail(IllegalStateException("Failed to install an APK!"))
-												return@startActivityForResult
-											}
-
-											initExtension(got, context)
-											future.complete(getExtension(info.packageName))
-										} catch(e: Throwable) {
-											future.fail(e)
+										if(info.versionCode != got.versionCode) {
+											future.fail(IllegalStateException("Failed to install an APK!"))
+											return@startActivityForResult
 										}
-									}
 
-									Activity.RESULT_CANCELED -> future.fail(CancellationException("Install cancelled"))
+										initExtension(got, context)
+										future.complete(getExtension(info.packageName))
+									} catch(e: Throwable) {
+										future.fail(e)
+									}
 								}
-							})
-						}
+
+								Activity.RESULT_CANCELED -> future.fail(CancellationException("Install cancelled"))
+							}
+						})
 					}
 				}
 			}
@@ -305,16 +297,15 @@ abstract class YomiManager : ExtensionsManager() {
 		}
 	}
 
-	override fun installExtension(context: Context, uri: Uri): AsyncFuture<Extension> {
-		return AsyncUtils.controllableFuture { future ->
+	override fun installExtension(context: Context, uri: Uri) = with(context.activity) {
+		return@with AsyncUtils.controllableFuture { future ->
 			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O || context.packageManager.canRequestPackageInstalls()) {
 				installApk(context, uri, future)
 				return@controllableFuture
 			}
-			val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-			settingsIntent.setData(Uri.parse("package:" + context.packageName))
+
 			runOnUiThread {
-				startActivityForResult(context.activity, settingsIntent, { resultCode, _ ->
+				startActivityForResult(buildIntent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, getPackageUri()), { resultCode, _ ->
 					when(resultCode) {
 						Activity.RESULT_OK -> AsyncUtils.thread { installApk(context, uri, future) }
 						Activity.RESULT_CANCELED -> future.fail(CancellationException("Permission denied!"))
@@ -325,12 +316,10 @@ abstract class YomiManager : ExtensionsManager() {
 		}
 	}
 
-	override fun uninstallExtension(context: Context, id: String): AsyncFuture<Boolean> {
-		return AsyncUtils.controllableFuture { future ->
-			val intent = Intent(Intent.ACTION_DELETE)
-			intent.setData(Uri.parse("package:$id"))
+	override fun uninstallExtension(context: Context, id: String) = with(context.activity) {
+		return@with AsyncUtils.controllableFuture { future ->
 			runOnUiThread {
-				startActivityForResult(context.activity, intent, { _, _ ->
+				startActivityForResult(buildIntent(Intent.ACTION_DELETE, getPackageUri()), { _, _ ->
 					//Ignore the resultCode, it always equal to 0
 
 					try {
@@ -351,10 +340,5 @@ abstract class YomiManager : ExtensionsManager() {
 				})
 			}
 		}
-	}
-
-	companion object {
-		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
-		private const val TAG = "YomiManager"
 	}
 }

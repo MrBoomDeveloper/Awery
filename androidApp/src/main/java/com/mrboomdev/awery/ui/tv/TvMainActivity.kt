@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ui.tv
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.navigation.toRoute
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.platform.PlatformResources
 import com.mrboomdev.awery.platform.PlatformSetting
 import com.mrboomdev.awery.ui.mobile.components.MobileSetting
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity

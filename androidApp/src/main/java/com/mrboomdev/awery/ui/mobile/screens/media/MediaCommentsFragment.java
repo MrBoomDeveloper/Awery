@@ -56,7 +56,7 @@ import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;

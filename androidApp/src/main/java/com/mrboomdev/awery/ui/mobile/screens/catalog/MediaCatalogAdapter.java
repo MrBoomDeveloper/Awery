@@ -20,7 +20,7 @@ import com.mrboomdev.awery.databinding.GridMediaCatalogBinding;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog;
 import com.mrboomdev.awery.util.MediaUtils;
-import com.mrboomdev.awery.util.UniqueIdGenerator;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import java.util.List;
 import java.util.WeakHashMap;

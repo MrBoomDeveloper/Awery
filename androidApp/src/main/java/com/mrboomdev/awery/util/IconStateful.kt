@@ -8,7 +8,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.graphics.drawable.StateListDrawableCompat
 import androidx.core.content.ContextCompat
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.getResourceId
+import com.mrboomdev.awery.app.App
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -66,7 +66,7 @@ class IconStateful(
 				}
 
 				if(active != null) {
-					activeId = getResourceId<R.drawable>(active)
+					activeId = App.getResourceId(R.drawable::class.java, active)
 					return activeId!!
 				}
 			}
@@ -77,7 +77,7 @@ class IconStateful(
 				}
 
 				if(inActive != null) {
-					inActiveId = getResourceId<R.drawable>(inActive)
+					inActiveId = App.getResourceId(R.drawable::class.java, inActive)
 					return inActiveId!!
 				}
 			}

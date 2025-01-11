@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:src="@drawable/ic_back"
-        android:contentDescription="@string/back" />
+        android:contentDescription="Back" />
 
     <ImageView
         android:id="@+id/clear"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toLeftOf="@id/filters"
         android:src="@drawable/ic_close"
-        android:contentDescription="@string/clear" />
+        android:contentDescription="Clear" />
 
     <ImageView
         android:id="@+id/filters"
@@ -50,7 +50,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:src="@drawable/ic_filter_list"
-        android:contentDescription="@string/filter" />
+        android:contentDescription="Filter" />
 
     <EditText
         android:id="@+id/edittext"
@@ -62,7 +62,7 @@
         app:layout_constraintRight_toLeftOf="@id/clear"
         android:background="@null"
         android:autofillHints="searchQuery"
-        android:hint="@string/search"
+        android:hint="Search"
         android:maxLines="1"
         android:textSize="14sp"
         android:paddingLeft="8dp"

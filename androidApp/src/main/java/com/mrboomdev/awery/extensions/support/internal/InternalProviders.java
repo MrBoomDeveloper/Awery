@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.extensions.support.internal;
 
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 
@@ -8,13 +9,15 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import java.util.Set;
 
@@ -51,7 +54,7 @@ public class InternalProviders {
 				var progresses = App.Companion.getDatabase().getMediaProgressDao().getAllFromList(feed);
 
 				if(progresses.isEmpty()) {
-					throw new ZeroResultsException("No bookmarks", R.string.no_media_found);
+					throw new ZeroResultsException("No bookmarks", i18n(String0_commonMainKt.getNo_media_found(Res.string.INSTANCE)));
 				}
 
 				return CatalogSearchResults.of(stream(progresses)

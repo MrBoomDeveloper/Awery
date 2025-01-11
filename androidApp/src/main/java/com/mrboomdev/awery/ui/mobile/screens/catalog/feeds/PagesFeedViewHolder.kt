@@ -17,21 +17,22 @@ import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.databinding.FeedFeaturedItemBinding
 import com.mrboomdev.awery.databinding.FeedFeaturedWrapperBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.util.MediaUtils
-import com.mrboomdev.awery.util.UniqueIdGenerator
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.dpPx
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.limit
 import com.mrboomdev.awery.util.extensions.rightMargin
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topMargin
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.inflater
 import org.jetbrains.annotations.Contract
 import java.util.WeakHashMap
 import kotlin.math.min
@@ -83,13 +84,13 @@ class PagesFeedViewHolder private constructor(
 			val holder = PagerViewHolder(binding)
 
 			binding.root.setOnClickListener {
-				parent.context.startActivity(MediaActivity::class, MediaActivity.Extras(
-					media = holder.item!!, action = MediaActivity.Action.INFO))
+				parent.context.startActivity(parent.context.buildIntent(MediaActivity::class, MediaActivity.Extras(
+					media = holder.item!!, action = MediaActivity.Action.INFO)))
 			}
 
 			binding.watch.setOnClickListener {
-				parent.context.startActivity(MediaActivity::class, MediaActivity.Extras(
-					media = holder.item!!, action = MediaActivity.Action.WATCH))
+				parent.context.startActivity(parent.context.buildIntent(MediaActivity::class, MediaActivity.Extras(
+					media = holder.item!!, action = MediaActivity.Action.WATCH)))
 			}
 
 			binding.bookmark.setOnClickListener {
@@ -179,12 +180,12 @@ class PagesFeedViewHolder private constructor(
 
 			when(item.type ?: CatalogMedia.Type.TV) {
 				CatalogMedia.Type.TV, CatalogMedia.Type.MOVIE -> {
-					binding.watch.setText(R.string.watch_now)
+					binding.watch.text = i18n(Res.string.watch_now)
 					binding.watch.setIconResource(R.drawable.ic_play_filled)
 				}
 
 				CatalogMedia.Type.BOOK, CatalogMedia.Type.POST -> {
-					binding.watch.setText(R.string.read_now)
+					binding.watch.text = i18n(Res.string.read_now)
 					binding.watch.setIconResource(R.drawable.ic_book_filled)
 				}
 			}

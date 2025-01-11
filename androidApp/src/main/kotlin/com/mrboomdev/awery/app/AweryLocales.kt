@@ -7,8 +7,9 @@ import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getResourceId
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.Selection
-import com.mrboomdev.awery.util.extensions.letWith
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
 import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
@@ -16,31 +17,29 @@ import java.util.Locale
 object AweryLocales {
 	private const val ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
 
-	fun translateCountryName(context: Context, input: String): String {
+	fun i18nCountryName(input: String): String {
 		return when(input.lowercase(Locale.ROOT)) {
-			"us", "usa" -> context.getString(R.string.us)
-			"china", "cn", "ch", "chinese", "zh" -> context.getString(R.string.china)
-			"ja", "jp", "japan", "jpn", "jap" -> context.getString(R.string.japan)
-			"ru", "russia", "rus" -> context.getString(R.string.russia)
-			"ko", "korea", "kor", "kr" -> context.getString(R.string.korea)
-
-			else -> Locale.forLanguageTag(input).letWith {
-				displayCountry.replaceFirstChar { it.uppercase(this) }
-			}
+			"us", "usa" -> Locale.US
+			"china", "cn", "ch", "chinese", "zh" -> Locale.CHINA
+			"ja", "jp", "japan", "jpn", "jap" -> Locale.JAPAN
+			"ru", "russia", "rus" -> Locale.forLanguageTag("ru")
+			"ko", "korea", "kor", "kr" -> Locale.KOREA
+			else -> Locale.forLanguageTag(input)
+		}.let { locale ->
+			locale.displayCountry.replaceFirstChar { it.uppercase(locale) }
 		}
 	}
 
-	fun translateLangName(context: Context, input: String): String {
+	fun i18nLanguageName(input: String): String {
 		return when(input.lowercase(Locale.ROOT)) {
-			"en", "us-US", "eng", "english" -> context.getString(R.string.english)
-			"zh", "chs", "chinese" -> context.getString(R.string.chinese)
-			"ja", "jp", "japanese" -> context.getString(R.string.japanese)
-			"ru", "rus", "russian" -> context.getString(R.string.russian)
-			"ko", "kor", "korean" -> context.getString(R.string.korean)
-
-			else -> Locale.forLanguageTag(input).letWith {
-				displayLanguage.replaceFirstChar { it.uppercase(this) }
-			}
+			"en", "us-US", "eng", "english" -> Locale.ENGLISH
+			"zh", "chs", "chinese" -> Locale.CHINESE
+			"ja", "jp", "japanese" -> Locale.JAPANESE
+			"ru", "rus", "russian" -> Locale.forLanguageTag("ru")
+			"ko", "kor", "korean" -> Locale.KOREAN
+			else -> Locale.forLanguageTag(input)
+		}.let { locale ->
+			locale.displayLanguage.replaceFirstChar { it.uppercase(locale) }
 		}
 	}
 
@@ -73,8 +72,8 @@ object AweryLocales {
 		SelectionDialog.single(context, Selection(availableLocales.map {
 			Selection.Selectable(it.first, it.first.toString(), it.second,
 				if(it.first.areMostlySame(currentLocale)) Selection.State.SELECTED else Selection.State.UNSELECTED)
-		})).setTitle(R.string.select_language)
-			.setPositiveButton(R.string.save) { dialog, selection ->
+		})).setTitle(i18n(Res.string.select_language))
+			.setPositiveButton(i18n(Res.string.save)) { dialog, selection ->
 				selection.get(Selection.State.SELECTED)?.let {
 					AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(it.item))
 					restartApp()
@@ -82,7 +81,7 @@ object AweryLocales {
 
 				dialog.dismiss()
 			}
-			.setNegativeButton(R.string.cancel) { it.dismiss() }
+			.setNegativeButton(i18n(Res.string.cancel)) { it.dismiss() }
 			.show()
 	}
 
@@ -90,7 +89,7 @@ object AweryLocales {
 		return mutableListOf<MutablePair<Locale, String>>().apply {
 			// All locales are being stored in this little file.
 			// It is being auto-generated, so we need to use some reflection.
-			val fileId = getResourceId<R.xml>("_generated_res_locale_config")
+			val fileId = getResourceId(R.xml::class.java, "_generated_res_locale_config")
 
 			context.resources.getXml(fileId).use {
 				while(it.eventType != XmlPullParser.END_DOCUMENT) {
@@ -100,7 +99,9 @@ object AweryLocales {
 						XmlPullParser.START_TAG -> {
 							if(it.name == "locale") {
 								val value = it.getAttributeValue(ANDROID_NAMESPACE, "name")
-								add(MutablePair(Locale.forLanguageTag(value), translateLangName(context, value)))
+								add(MutablePair(Locale.forLanguageTag(value), i18nLanguageName(
+									value
+								)))
 							}
 						}
 					}

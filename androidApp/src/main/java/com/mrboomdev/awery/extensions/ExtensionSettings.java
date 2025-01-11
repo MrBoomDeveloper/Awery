@@ -6,6 +6,7 @@ import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.cleanString;
 import static com.mrboomdev.awery.util.NiceUtils.cleanUrl;
 import static com.mrboomdev.awery.util.NiceUtils.compareVersions;
@@ -42,6 +43,8 @@ import com.mrboomdev.awery.data.settings.LazySettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -129,7 +132,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								public void onSuccess(@NonNull String s) {
 									runOnUiThread(() -> new DialogBuilder(activity)
 											.setTitle(extension.getVersion() + " Changelog")
-											.setPositiveButton(R.string.ok, DialogBuilder::dismiss)
+											.setPositiveButton(i18n(String0_commonMainKt.getNo(Res.string.INSTANCE)), DialogBuilder::dismiss)
 											.setMessage(cleanString(s))
 											.show());
 								}
@@ -151,7 +154,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					Log.e(TAG, "Failed to install an extension!", t);
 					
 					CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
-							.setTitle(R.string.extension_installed_failed)
+							.setTitle(i18n(String0_commonMainKt.getExtension_installed_failed(Res.string.INSTANCE)))
 							.setThrowable(t)
 							.build());
 				}
@@ -166,25 +169,25 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 			@Override
 			public void onClick(Context context) {
-				var inputField = new EditTextField(context, R.string.repository_url);
+				var inputField = new EditTextField(context, i18n(String0_commonMainKt.getRepository_url(Res.string.INSTANCE)));
 				inputField.setLinesCount(1);
 
 				currentDialog = new DialogBuilder(context)
-						.setTitle(R.string.add_extension)
+						.setTitle(i18n(String0_commonMainKt.getAdd_extension(Res.string.INSTANCE)))
 						.addView(inputField.getView())
 						.setOnDismissListener(dialog -> currentDialog = dialog)
-						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-						.setNeutralButton(R.string.pick_from_storage, dialog -> pickLauncher.launch("*/*"))
-						.setPositiveButton(R.string.ok, dialog -> {
+						.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), DialogBuilder::dismiss)
+						.setNeutralButton(i18n(String0_commonMainKt.getPick_from_storage(Res.string.INSTANCE)), dialog -> pickLauncher.launch("*/*"))
+						.setPositiveButton(i18n(String0_commonMainKt.getOk(Res.string.INSTANCE)), dialog -> {
 							var text = cleanUrl(inputField.getText());
 
 							if(text.isBlank()) {
-								inputField.setError(R.string.text_cant_empty);
+								inputField.setError(i18n(String0_commonMainKt.getText_cant_empty(Res.string.INSTANCE)));
 								return;
 							}
 
 							if(!isUrlValid(text)) {
-								inputField.setError(R.string.invalid_url);
+								inputField.setError(i18n(String0_commonMainKt.getInvalid_url(Res.string.INSTANCE)));
 								return;
 							}
 
@@ -256,7 +259,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 		}
 
 		copyFrom(new Builder(SettingsItemType.SCREEN)
-				.setTitle(manager.getName() + " " + activity.getString(R.string.extensions))
+				.setTitle(i18n(String0_commonMainKt.getExtensions(Res.string.INSTANCE)))
 				.setItems(items)
 				.build());
 	}
@@ -316,7 +319,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				},
 
 				new CustomSettingsItem(new SettingsItem.Builder(SettingsItemType.ACTION)
-						.setTitle(R.string.delete).setIcon(R.drawable.ic_delete_outlined).build()) {
+						.setTitle(i18n(String0_commonMainKt.getDelete(Res.string.INSTANCE))).setIcon(R.drawable.ic_delete_outlined).build()) {
 
 					@Override
 					public void onClick(Context context) {
@@ -398,7 +401,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							@Override
 							public void onSuccess(@NonNull Extension result) {
 								window.dismiss();
-								toast(R.string.extension_installed_successfully);
+								toast(i18n(String0_commonMainKt.getExtension_installed_successfully(Res.string.INSTANCE)));
 								runOnUiThread(() -> ((RepositorySetting) RepositoryItem.this.getParent()).onSettingChange(RepositoryItem.this));
 							}
 
@@ -416,7 +419,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								var dialog = new DialogBuilder()
 										.setTitle("Failed to install an extension")
 										.setNeutralButton("Dismiss", DialogBuilder::dismiss)
-										.setPositiveButton(R.string.uninstall_extension, d -> {
+										.setPositiveButton(i18n(String0_commonMainKt.getUninstall_extension(Res.string.INSTANCE)), d -> {
 											var window1 = showLoadingWindow();
 
 											manager.uninstallExtension(context, extension.getId()).addCallback(new AsyncFuture.Callback<>() {
@@ -614,7 +617,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 				@Override
 				public String getTitle(android.content.Context context) {
-					return context.getString(R.string.uninstall_extension);
+					return i18n(String0_commonMainKt.getUninstall_extension(Res.string.INSTANCE));
 				}
 
 				@Override
@@ -651,7 +654,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 							CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
 									.setTitle("Failed to uninstall an extension")
-									.setPrefix(R.string.please_report_bug_app)
+									.setPrefix(i18n(String0_commonMainKt.getPlease_report_bug_app(Res.string.INSTANCE)))
 									.setThrowable(e)
 									.build());
 						}

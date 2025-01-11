@@ -19,6 +19,9 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.mrboomdev.awery.desktop.ui.components.StatusBar
+import com.mrboomdev.awery.generated.about
+import com.mrboomdev.awery.generated.Res
+import org.jetbrains.compose.resources.stringResource
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.SystemColor.window

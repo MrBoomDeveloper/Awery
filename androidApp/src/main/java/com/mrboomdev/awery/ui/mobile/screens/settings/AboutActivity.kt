@@ -24,11 +24,12 @@ import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenAboutBinding
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity.Contributor
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -111,8 +112,8 @@ class AboutActivity : AppCompatActivity() {
             back.setOnClickListener { finish() }
 
             version.text = arrayOf(
-                "${i18n(R.string.version)}: ${BuildConfig.VERSION_NAME}",
-                "${i18n(R.string.built_at)}: ${Date(BuildConfig.BUILD_TIME)}"
+                "${i18n(Res.string.version)}: ${BuildConfig.VERSION_NAME}",
+                "${i18n(Res.string.built_at)}: ${Date(BuildConfig.BUILD_TIME)}"
             ).joinToString("\n")
 
             info.fundMessage.setMarkwon(

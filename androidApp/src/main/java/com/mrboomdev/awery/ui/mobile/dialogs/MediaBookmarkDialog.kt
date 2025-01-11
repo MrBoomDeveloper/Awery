@@ -10,7 +10,6 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.data.Constants.HIDDEN_LISTS
@@ -20,12 +19,15 @@ import com.mrboomdev.awery.databinding.PopupMediaBookmarkBinding
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.dpPx
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.setImageTintAttr
 import com.mrboomdev.awery.util.extensions.setPadding
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.util.ui.fields.EditTextField
+import com.mrboomdev.awery.utils.dpPx
+import com.mrboomdev.awery.utils.inflater
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -128,18 +130,18 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
         private const val TAG = "MediaBookmarkDialog"
 
         fun requestCreateNewList(context: Context, callback: (list: CatalogList) -> Unit) {
-            val input = EditTextField(context, R.string.list_name)
+            val input = EditTextField(context, i18n(Res.string.list_name))
             input.setLinesCount(1)
 
             val dialog = DialogBuilder(context)
-                .setTitle(R.string.create_list)
+                .setTitle(i18n(Res.string.create_list))
                 .addView(input.view)
-                .setNegativeButton(R.string.cancel) { it.dismiss() }
-                .setPositiveButton(R.string.create) { dialog ->
+                .setNegativeButton(i18n(Res.string.cancel)) { it.dismiss() }
+                .setPositiveButton(i18n(Res.string.create)) { dialog ->
                     val text = input.text.trim { it <= ' ' }
 
                     if(text.isBlank()) {
-                        input.setError(R.string.text_cant_empty)
+                        input.setError(i18n(Res.string.text_cant_empty))
                         return@setPositiveButton
                     }
 
@@ -163,10 +165,10 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
 
         fun requestDeleteList(context: Context, list: CatalogList, callback: () -> Unit) {
             DialogBuilder(context)
-                .setTitle(i18n(R.string.delete_confirmation, list.title))
-                .setMessage(R.string.sure_delete_list_description)
-                .setNegativeButton(R.string.cancel) { it.dismiss() }
-                .setPositiveButton(R.string.delete) { dialog ->
+                .setTitle(i18n(Res.string.delete_confirmation, list.title))
+                .setMessage(i18n(Res.string.sure_delete_list_description))
+                .setNegativeButton(i18n(Res.string.cancel)) { it.dismiss() }
+                .setPositiveButton(i18n(Res.string.delete)) { dialog ->
                     val window = showLoadingWindow()
 
                     CoroutineScope(Dispatchers.IO).launch {

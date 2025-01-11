@@ -10,9 +10,12 @@ import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.get
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.generated.Res
+import com.mrboomdev.awery.generated.no_media_found
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.YomiSource
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.AnimeSource
@@ -100,7 +103,7 @@ class AniyomiSource(
 		return when(catalog) {
 			is Catalog.Media -> getAnimesPage(filters).let { page ->
 				if(page.animes.isEmpty()) {
-					throw ZeroResultsException("Zero media results!", R.string.no_media_found)
+					throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
 				}
 
 				CatalogSearchResults(page.animes.map { anime ->

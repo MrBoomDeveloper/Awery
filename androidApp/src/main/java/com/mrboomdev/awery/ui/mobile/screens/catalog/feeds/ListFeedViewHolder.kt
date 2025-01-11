@@ -14,7 +14,6 @@ import com.mrboomdev.awery.util.WeakLazy
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.dpPx
-import com.mrboomdev.awery.util.extensions.inflater
 import com.mrboomdev.awery.util.extensions.leftMargin
 import com.mrboomdev.awery.util.extensions.leftPadding
 import com.mrboomdev.awery.util.extensions.rightMargin
@@ -22,6 +21,8 @@ import com.mrboomdev.awery.util.extensions.rightPadding
 import com.mrboomdev.awery.util.extensions.setHorizontalMargin
 import com.mrboomdev.awery.util.extensions.setHorizontalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.inflater
 import org.jetbrains.annotations.Contract
 
 class ListFeedViewHolder private constructor(
@@ -74,12 +75,12 @@ class ListFeedViewHolder private constructor(
 				binding.header.isClickable = true
 
 				binding.expand.setOnClickListener { v ->
-					v.context.startActivity(
+					v.context.startActivity(v.context.buildIntent(
 						SearchActivity::class, args = SearchActivity.Extras(
 						sourceGlobalId = feed.sourceFeed.providerGlobalId,
 						filters = feed.sourceFeed.filters,
 						preloadedItems = feed.items
-					))
+					)))
 				}
 			} else {
 				binding.header.isClickable = false

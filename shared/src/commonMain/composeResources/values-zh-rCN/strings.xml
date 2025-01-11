@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="zh-rCN">
+<resources>
     <string name="empty_library_title">没有图书馆</string>
     <string name="empty_library_message">开始浏览目录，有新内容会出现！</string>
     <string name="login">登录</string>

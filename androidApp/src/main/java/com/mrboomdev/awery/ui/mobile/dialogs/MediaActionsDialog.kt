@@ -9,13 +9,13 @@ import com.mrboomdev.awery.databinding.PopupMediaActionsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.util.MediaUtils
-import com.mrboomdev.awery.util.extensions.inflater
-import com.mrboomdev.awery.util.extensions.startActivity
+import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.inflater
 
 class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
     var updateCallback: (() -> Unit)? = null
 
-    override fun getView(context: Context): View {
+    override fun getView(context: Context) = with(context) {
         val binding = PopupMediaActionsBinding.inflate(context.inflater)
         if(media.url == null) binding.share.visibility = View.GONE
         binding.title.text = media.title
@@ -26,10 +26,8 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
         binding.close.setOnClickListener { dismiss() }
 
         binding.play.setOnClickListener {
-            context.startActivity(
-				MediaActivity::class, MediaActivity.Extras(
-                media = media, action = MediaActivity.Action.WATCH
-            ))
+            context.startActivity(buildIntent(MediaActivity::class,
+                MediaActivity.Extras(media, MediaActivity.Action.WATCH)))
 
             dismiss()
         }
@@ -47,6 +45,6 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
                 .into(binding.poster)
         }
 
-        return binding.root
+        return@with binding.root
     }
 }

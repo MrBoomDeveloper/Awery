@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="ja">
+<resources>
     <string name="empty_library_title">ライブラリは空です</string>
     <string name="empty_library_message">カタログをブラウズし始めると、新しいものがここに表示されます！</string>
     <string name="login">ログイン</string>

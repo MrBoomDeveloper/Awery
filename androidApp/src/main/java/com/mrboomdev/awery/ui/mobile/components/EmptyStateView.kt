@@ -11,7 +11,7 @@ import androidx.annotation.StringRes
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding
-import com.mrboomdev.awery.util.extensions.inflater
+import com.mrboomdev.awery.utils.inflater
 
 class EmptyStateView(private val binding: LayoutLoadingBinding) : ViewBinding {
 	val title: TextView = binding.title

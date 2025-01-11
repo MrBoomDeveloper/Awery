@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.AssistChip
@@ -32,7 +31,8 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.theme.TvTheme
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import org.jetbrains.compose.resources.stringResource
 
 private val SHADOW_COLOR = Color(0xBB000000)
 
@@ -101,7 +101,7 @@ fun MediaScreen(media: CatalogMedia) {
 							.fillMaxWidth(),
 						style = MaterialTheme.typography.titleLarge,
 						color = Color.White,
-						text = stringResource(R.string.genres)
+						text = stringResource(Res.string.genres)
 					)
 				}
 
@@ -134,7 +134,7 @@ fun MediaScreen(media: CatalogMedia) {
 							.fillMaxWidth(),
 						style = MaterialTheme.typography.titleLarge,
 						color = Color.White,
-						text = stringResource(R.string.tags)
+						text = stringResource(Res.string.tags)
 					)
 				}
 

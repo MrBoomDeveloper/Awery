@@ -18,9 +18,8 @@ import com.github.piasy.biv.view.GlideImageViewFactory
 import com.github.piasy.biv.view.ImageSaveCallback
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mrboomdev.awery.app.App
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.screenHeight
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import com.mrboomdev.safeargsnext.util.rememberSafeArgs
 import java.io.File
@@ -57,7 +56,7 @@ class GalleryActivity : AppCompatActivity(), SafeArgsActivity<GalleryActivity.Ex
 		val imageView = BigImageView(this)
 		imageView.setImageViewFactory(GlideImageViewFactory())
 		imageView.transitionName = "poster"
-		linear.addView(imageView, ViewGroup.LayoutParams.MATCH_PARENT, screenHeight)
+		linear.addView(imageView, ViewGroup.LayoutParams.MATCH_PARENT, resources.displayMetrics.heightPixels)
 
 		val progress = CircularProgressIndicator(this)
 		progress.foregroundGravity = Gravity.CENTER

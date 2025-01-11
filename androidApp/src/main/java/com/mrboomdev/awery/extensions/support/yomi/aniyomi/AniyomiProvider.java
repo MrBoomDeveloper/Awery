@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
 import static com.mrboomdev.awery.app.App.toast;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
@@ -20,6 +21,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
@@ -28,11 +30,12 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.adapters.MediaAdapter;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -222,7 +225,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 			var episodes = AniyomiKotlinBridge.getEpisodesList(source, AniyomiMediaKt.toSAnime(media)).await();
 
 			if(episodes == null || episodes.isEmpty()) {
-				throw new ZeroResultsException("Aniyomi: No episodes found", R.string.no_episodes_found);
+				throw new ZeroResultsException("Aniyomi: No episodes found", i18n(String0_commonMainKt.getNo_episodes_found(Res.string.INSTANCE)));
 			}
 
 			return stream(episodes)

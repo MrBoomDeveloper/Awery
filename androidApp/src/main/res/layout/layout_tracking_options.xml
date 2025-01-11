@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="?attr/colorOnBackground"
-                android:text="@string/status_title"
+                android:text="status_title"
                 android:textSize="16sp" />
 
             <include android:id="@+id/status"
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="?attr/colorOnBackground"
-                android:text="@string/progress"
+                android:text="progress"
                 android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="?attr/colorOnBackground"
-                android:text="@string/score"
+                android:text="score"
                 android:textSize="16sp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -245,7 +245,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="?attr/colorOnBackground"
-                android:text="@string/list_private"
+                android:text="list_private"
                 android:textSize="16sp" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -273,7 +273,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/delete"
+                android:text="delete"
                 android:enabled="false" />
 
             <Space
@@ -286,7 +286,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/save"
+                android:text="save"
                 android:enabled="false" />
 
         </LinearLayout>

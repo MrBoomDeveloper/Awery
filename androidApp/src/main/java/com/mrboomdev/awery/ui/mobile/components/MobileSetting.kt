@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.ImeAction
@@ -40,12 +39,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.platform.PlatformResources.i18n
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformSetting
 import com.mrboomdev.awery.platform.PlatformSettingHandler
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.components.MaterialDialog
 import com.mrboomdev.awery.utils.compareTo
 import com.mrboomdev.awery.utils.toStrippedString
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -206,7 +207,7 @@ fun MobileSetting(
 			
 			dismissButton = {
 				TextButton(onClick = this@MaterialDialog::requestDismiss) {
-					Text(text = stringResource(R.string.cancel))
+					Text(text = stringResource(Res.string.cancel))
 				}
 			},
 			
@@ -216,7 +217,7 @@ fun MobileSetting(
 					setting.value = newValue
 					requestDismiss()
 				}) {
-					Text(text = stringResource(R.string.confirm))
+					Text(text = stringResource(Res.string.confirm))
 				}
 			}
 		) {

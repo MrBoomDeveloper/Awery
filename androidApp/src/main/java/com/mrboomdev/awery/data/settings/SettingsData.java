@@ -2,12 +2,12 @@ package com.mrboomdev.awery.data.settings;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.getFileSize;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.MainThread;
@@ -19,15 +19,17 @@ import androidx.core.os.LocaleListCompat;
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.Constants;
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.ExtensionsManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.ui.mobile.screens.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 
 import org.jetbrains.annotations.Contract;
 
@@ -58,7 +60,6 @@ public class SettingsData {
 	}
 
 	public static void getSelectionList(
-			Context context,
 			@NonNull String listId,
 			Errorable<Selection<Selection.Selectable<String>>, Throwable> callback
 	) {
@@ -186,7 +187,7 @@ public class SettingsData {
 				}
 			});
 		} else {
-			callback.onError(new ZeroResultsException("Can't find any items", R.string.no));
+			callback.onError(new ZeroResultsException("Can't find any items", i18n(String0_commonMainKt.getNo(Res.string.INSTANCE))));
 		}
 	}
 }

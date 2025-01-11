@@ -25,16 +25,18 @@ import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.UI_INSETS
-import com.mrboomdev.awery.util.extensions.addOnBackPressedListener
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.cleanUrl
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.isValidUrl
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.setMargin
-import com.mrboomdev.awery.util.extensions.startActivityForResult
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
+import com.mrboomdev.awery.utils.addOnBackPressedListener
+import com.mrboomdev.awery.utils.startActivityForResult
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import eu.kanade.tachiyomi.util.system.WebViewClientCompat
 import java.net.URISyntaxException
@@ -87,8 +89,8 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 
 		binding.options.setOnClickListener { v ->
 			PopupMenu(this, v).apply {
-				menu.add(0, 0, 0, R.string.copy_link_to_clipboard)
-				menu.add(0, 1, 0, R.string.open_link_externally)
+				menu.add(0, 0, 0, i18n(Res.string.copy_link_to_clipboard))
+				menu.add(0, 1, 0, i18n(Res.string.open_link_externally))
 
 				setOnMenuItemClickListener { item -> when(item.itemId) {
 					0 -> {
@@ -226,7 +228,7 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 					setTitle("\"$url\" says:")
 					setMessage(message)
 
-					setPositiveButton(R.string.ok) { dialog ->
+					setPositiveButton(i18n(Res.string.ok)) { dialog ->
 						result.confirm()
 						didPressButton = true
 						dialog.dismiss()

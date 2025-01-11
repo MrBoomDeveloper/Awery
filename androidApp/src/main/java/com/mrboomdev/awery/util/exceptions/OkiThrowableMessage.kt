@@ -2,12 +2,14 @@ package com.mrboomdev.awery.util.exceptions
 
 import android.util.Log
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.i18n
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
+import com.mrboomdev.awery.ext.util.LocaleAware
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import eu.kanade.tachiyomi.network.HttpException
-import java9.util.Objects
 import kotlinx.coroutines.CancellationException
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -36,58 +38,55 @@ class OkiThrowableMessage(
 
 	val title: String
 		get() = (when(t) {
-			is LocalizedException -> t.getTitle(appContext)
-			is SocketTimeoutException -> i18n(R.string.timed_out)
-			is SSLHandshakeException -> i18n(R.string.failed_handshake)
+			is SocketTimeoutException -> i18n(Res.string.timed_out)
+			is SSLHandshakeException -> i18n(Res.string.failed_handshake)
 			is SocketException -> t.message
 			is UnknownHostException -> t.message
-			is BotSecurityBypassException -> i18n(R.string.failed_to_bypass, t.blockerName)
-			is ExtensionInstallException -> i18n(R.string.extension_installed_failed)
-			is ExtensionLoadException -> i18n(R.string.extension_load_failed)
+			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, t.blockerName)
+			is ExtensionInstallException -> i18n(Res.string.extension_installed_failed)
+			is ExtensionLoadException -> i18n(Res.string.extension_load_failed)
 			is CancellationException -> "Operation cancelled"
 			is UnsupportedOperationException -> "Unsupported action"
 			is NotImplementedError -> "Unsupported action"
 
 			is HttpException -> when(t.code) {
-				400, 422 -> i18n(R.string.bad_request)
-				403 -> i18n(R.string.access_denied)
-				404 -> i18n(R.string.nothing_found)
-				429 -> i18n(R.string.too_much_requests)
-				500, 503 -> i18n(R.string.server_down)
-				504 -> i18n(R.string.timed_out)
-				else -> i18n(R.string.unknown_net_error)
+				400, 422 -> i18n(Res.string.bad_request)
+				403 -> i18n(Res.string.access_denied)
+				404 -> i18n(Res.string.nothing_found)
+				429 -> i18n(Res.string.too_much_requests)
+				500, 503 -> i18n(Res.string.server_down)
+				504 -> i18n(Res.string.timed_out)
+				else -> i18n(Res.string.unknown_net_error)
 			}
 
 			else -> null
 		}) ?: run {
 			if(t.message?.contains(ROOM_EXCEPTION) == true) {
-				return i18n(R.string.database_corrupted)
+				return i18n(Res.string.database_corrupted)
 			}
 
-			return@run i18n(R.string.something_went_wrong)
+			return@run i18n(Res.string.something_went_wrong)
 		}
 
 	val message: String
 		get() = when(t) {
-			is LocalizedException -> t.getDescription(appContext)
-			is SocketTimeoutException -> i18n(R.string.connection_timeout)
-			is BotSecurityBypassException -> i18n(R.string.failed_bypass_detailed, t.blockerName)
-			is SocketException -> i18n(R.string.failed_to_connect_to_server)
-			is SSLHandshakeException -> i18n(R.string.failed_to_connect_to_server)
+			is LocaleAware -> t.localizedMessage
+			is SocketTimeoutException -> i18n(Res.string.connection_timeout)
+			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, t.blockerName)
+			is SocketException -> i18n(Res.string.failed_to_connect_to_server)
+			is SSLHandshakeException -> i18n(Res.string.failed_to_connect_to_server)
 			is NotImplementedError -> t.message
-			is ExtensionInstallException -> t.userReadableMessage
-			is ExtensionLoadException -> t.userReadableMessage
 
 			is HttpException -> "(${t.code}) " + when(t.code) {
-				400, 422 -> i18n(R.string.request_invalid_detailed)
-				401 -> i18n(R.string.not_logged_detailed)
-				403 -> i18n(R.string.no_access_detailed)
-				404 -> i18n(R.string.not_found_detailed)
-				429 -> i18n(R.string.rate_limited_detailed)
-				500 -> i18n(R.string.server_internal_error)
-				503 -> i18n(R.string.server_unavailable)
-				504 -> i18n(R.string.connection_timeout)
-				else -> i18n(R.string.unknown_error)
+				400, 422 -> i18n(Res.string.request_invalid_detailed)
+				401 -> i18n(Res.string.not_logged_detailed)
+				403 -> i18n(Res.string.no_access_detailed)
+				404 -> i18n(Res.string.not_found_detailed)
+				429 -> i18n(Res.string.rate_limited_detailed)
+				500 -> i18n(Res.string.server_internal_error)
+				503 -> i18n(Res.string.server_unavailable)
+				504 -> i18n(Res.string.connection_timeout)
+				else -> i18n(Res.string.unknown_error)
 			}
 
 			else -> null
@@ -150,13 +149,13 @@ private val Throwable.mayDescribe: Boolean
 			|| this is UnsupportedOperationException
 			|| this is HttpException
 			|| this is CancellationException
-			|| this is LocalizedException
 			|| this is NotImplementedError
 			|| this is SocketTimeoutException
 			|| this is BotSecurityBypassException
 			|| this is SSLHandshakeException
 			|| this is SocketException
 			|| this is UnknownHostException
+			|| this is LocaleAware
 
 private val Throwable.isNetworkExceptionImpl
 	get() = this is SocketTimeoutException ||

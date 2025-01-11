@@ -48,10 +48,10 @@
             android:layout_height="wrap_content"
             app:layout_flexGrow="1"
             android:layout_marginRight="8dp"
-            android:hint="@string/source">
+            android:hint="source">
 
             <AutoCompleteTextView
-                android:hint="@string/source"
+                android:hint="source"
                 android:padding="14dp"
                 android:id="@+id/source_dropdown"
                 android:layout_width="match_parent"
@@ -72,10 +72,10 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             tools:visibility="visible"
-            android:hint="@string/season">
+            android:hint="season">
 
             <AutoCompleteTextView
-                android:hint="@string/season"
+                android:hint="season"
                 android:padding="14dp"
                 android:id="@+id/season_dropdown"
                 android:layout_width="match_parent"
@@ -96,10 +96,10 @@
             tools:visibility="visible"
             app:layout_flexGrow="1"
             android:layout_height="wrap_content"
-            android:hint="@string/variant">
+            android:hint="variant">
 
             <AutoCompleteTextView
-                android:hint="@string/variant"
+                android:hint="variant"
                 android:padding="14dp"
                 android:id="@+id/variant_dropdown"
                 android:layout_width="match_parent"
@@ -118,10 +118,10 @@
             android:layout_marginRight="8dp"
             app:layout_flexGrow="1"
             android:layout_height="wrap_content"
-            android:hint="@string/search">
+            android:hint="search">
 
             <AutoCompleteTextView
-                android:hint="@string/search"
+                android:hint="search"
                 android:padding="14dp"
                 android:id="@+id/search_dropdown"
                 android:layout_width="match_parent"

@@ -22,6 +22,8 @@ import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.extensions.ExtensionProvider
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.GalleryActivity
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity.Companion.handleOptionsClick
 import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity
@@ -57,9 +59,9 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		val title = media.title ?: "No title"
 		val meta = generateGeneralMetaString(media)
 
-		binding.details.play.setText(when(type) {
-			CatalogMedia.Type.TV, CatalogMedia.Type.MOVIE -> R.string.watch
-			CatalogMedia.Type.BOOK, CatalogMedia.Type.POST -> R.string.read
+		binding.details.play.text = i18n(when(type) {
+			CatalogMedia.Type.TV, CatalogMedia.Type.MOVIE -> Res.string.watch
+			CatalogMedia.Type.BOOK, CatalogMedia.Type.POST -> Res.string.read
 		})
 
 		binding.details.play.icon = ContextCompat.getDrawable(requireContext(), when(type) {
@@ -146,7 +148,7 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 				spoilerChip.chipBackgroundColor = requireContext().resolveAttrColor(
 					com.google.android.material.R.attr.colorSecondaryContainer).toColorState()
 
-				spoilerChip.setText(R.string.show_spoilers)
+				spoilerChip.text = i18n(Res.string.show_spoilers)
 				binding.details.tags.addView(spoilerChip)
 
 				spoilerChip.setOnClickListener {
@@ -186,21 +188,21 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		val metas = mutableListOf<String>()
 
 		if(media.episodesCount != null) {
-			metas.add(media.episodesCount + " " + getString(
-				if(media.episodesCount == 1) R.string.episode
-				else R.string.episodes)
+			metas.add(media.episodesCount + " " + i18n(
+				if(media.episodesCount == 1) Res.string.episode
+				else Res.string.episodes)
 			)
 		}
 
 		if(media.duration != null) {
 			metas.add(media.duration!!.let {
 				return@let if(it < 60) {
-					"$it${getString(R.string.minute_short)}"
+					"$it${i18n(Res.string.minute_short)}"
 				} else {
-					"${it / 60}${getString(R.string.hour_short)} " +
-							"${it % 60}${getString(R.string.minute_short)}"
+					"${it / 60}${i18n(Res.string.hour_short)} " +
+							"${it % 60}${i18n(Res.string.minute_short)}"
 				}
-			} + " " + getString(R.string.duration))
+			} + " " + i18n(Res.string.duration))
 		}
 
 		if(media.releaseDate != null) {
@@ -208,16 +210,16 @@ class MediaInfoFragment: Fragment(), SafeArgsFragment<MediaInfoFragment.Args> {
 		}
 
 		if(media.country != null) {
-			metas.add(AweryLocales.translateCountryName(requireContext(), media.country!!))
+			metas.add(AweryLocales.i18nCountryName(media.country!!))
 		}
 
 		if(metas.size < 4 && media.status != null) {
-			metas.add(getString(when(media.status!!) {
-				CatalogMedia.Status.ONGOING -> R.string.status_releasing
-				CatalogMedia.Status.COMPLETED -> R.string.status_finished
-				CatalogMedia.Status.COMING_SOON -> R.string.status_not_yet_released
-				CatalogMedia.Status.PAUSED -> R.string.status_hiatus
-				CatalogMedia.Status.CANCELLED -> R.string.status_cancelled
+			metas.add(i18n(when(media.status!!) {
+				CatalogMedia.Status.ONGOING -> Res.string.status_releasing
+				CatalogMedia.Status.COMPLETED -> Res.string.status_finished
+				CatalogMedia.Status.COMING_SOON -> Res.string.status_not_yet_released
+				CatalogMedia.Status.PAUSED -> Res.string.status_hiatus
+				CatalogMedia.Status.CANCELLED -> Res.string.status_cancelled
 			}))
 		}
 

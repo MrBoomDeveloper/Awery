@@ -10,6 +10,8 @@ import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.FileType
 import com.mrboomdev.awery.util.io.unzipFiles
 import com.mrboomdev.awery.util.io.zipFiles
@@ -71,7 +73,7 @@ class BackupService : SafeArgsService<BackupService.Args>() {
 				else -> TODO("Unsupported backup type: $fileType")
 			}
 
-			toast(R.string.backup_success)
+			toast(i18n(Res.string.backup_success))
 			runOnUiThread { popup.dismiss() }
 			stopSelf()
 		}
@@ -97,7 +99,7 @@ class BackupService : SafeArgsService<BackupService.Args>() {
 				else -> TODO("Unsupported restore type: $fileType")
 			}
 
-			toast(R.string.restore_success)
+			toast(i18n(Res.string.restore_success))
 			restartApp()
 			stopSelf()
 		}
