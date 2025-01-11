@@ -32,6 +32,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 	}
 
 	override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+		PlatformResources.load(activity)
 		if(infos.contains(activity)) return
 
 		infos[activity] = ActivityInfo(activity).apply {

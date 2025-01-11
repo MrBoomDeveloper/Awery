@@ -111,7 +111,7 @@ public final class SelectionDialog<T> extends BaseDialogBuilder<SelectionDialog<
 			var contextWrapper = new ContextThemeWrapper(getContext(), style);
 
 			var originalTitle = Selection.Selectable.getTitle(item.getKey());
-			var title = Objects.requireNonNullElse(i18n(R.string.class, originalTitle), originalTitle);
+			var title = Objects.requireNonNullElse(i18n(originalTitle), originalTitle);
 
 			var chip = new Chip(contextWrapper);
 			chip.setCheckable(true);

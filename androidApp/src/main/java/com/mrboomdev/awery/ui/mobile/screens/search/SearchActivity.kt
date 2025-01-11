@@ -39,7 +39,6 @@ import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.Selection
 import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.util.async.AsyncFuture
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -50,6 +49,7 @@ import com.mrboomdev.awery.util.extensions.rightMargin
 import com.mrboomdev.awery.util.extensions.topMargin
 import com.mrboomdev.awery.util.extensions.useLayoutParams
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
+import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
 import com.mrboomdev.awery.utils.buildIntent
@@ -426,7 +426,7 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 	}
 
 	private fun reachedEnd(wasSearchId: Long) {
-		loadingAdapter!!.getBinding { binding: EmptyStateView ->
+		loadingAdapter!!.getBinding { binding ->
 			runOnUiThread {
 				if(wasSearchId != searchId.toLong()) return@runOnUiThread
 				this@SearchActivity.didReachedEnd = true
@@ -501,7 +501,7 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 			override fun onFailure(e: Throwable) {
 				if(wasSearchId != searchId) return
 
-				val error = ExceptionDescriptor(e)
+				val error = e.explain()
 				Log.e(TAG, "Failed to search", e)
 
 				runOnUiThread {
@@ -516,8 +516,8 @@ class SearchActivity : AppCompatActivity(), SafeArgsActivity<SearchActivity.Extr
 						if(e is ZeroResultsException && page != 0) {
 							reachedEnd(wasSearchId.toLong())
 						} else {
-							binding.title.text = error.getTitle(this@SearchActivity)
-							binding.message.text = error.getMessage(this@SearchActivity)
+							binding.title.text = error.title
+							binding.message.text = error.message
 						}
 
 						binding.progressBar.visibility = View.GONE

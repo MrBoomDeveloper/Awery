@@ -64,7 +64,6 @@ import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter.BindingSingleViewAdapter
 import com.mrboomdev.awery.utils.buildIntent
 import com.mrboomdev.awery.utils.startActivityForResult
-import com.mrboomdev.safeargsnext.SafeArgsIntent
 import com.mrboomdev.safeargsnext.owner.SafeArgsFragment
 import com.mrboomdev.safeargsnext.util.rememberSafeArgs
 import com.squareup.moshi.adapter
@@ -612,7 +611,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 
 		placeholderAdapter!!.getBinding { binding ->
 			runOnUiThread {
-				if(error.t is BotSecurityBypassException && source != null && (media?.url != null || source.previewUrl != null)) {
+				if(error.unwrapped is BotSecurityBypassException && source != null && (media?.url != null || source.previewUrl != null)) {
 					binding.setInfo(
 						title = error.title,
 						message = error.message,

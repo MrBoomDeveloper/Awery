@@ -1,8 +1,6 @@
 package com.mrboomdev.awery.util.exceptions
 
 import android.util.Log
-import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.ext.util.LocaleAware
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException
@@ -23,7 +21,7 @@ class OkiThrowableMessage(
 	throwable: Throwable,
 	unwrapper: ((throwable: Throwable) -> Boolean) = { it.mayDescribe }
 ) {
-	val t = throwable.unwrap(unwrapper)
+	val unwrapped = throwable.unwrap(unwrapper)
 
 	fun print(): String {
 		val title = this.title
@@ -37,19 +35,19 @@ class OkiThrowableMessage(
 	}
 
 	val title: String
-		get() = (when(t) {
+		get() = (when(unwrapped) {
 			is SocketTimeoutException -> i18n(Res.string.timed_out)
 			is SSLHandshakeException -> i18n(Res.string.failed_handshake)
-			is SocketException -> t.message
-			is UnknownHostException -> t.message
-			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, t.blockerName)
+			is SocketException -> unwrapped.message
+			is UnknownHostException -> unwrapped.message
+			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, unwrapped.blockerName)
 			is ExtensionInstallException -> i18n(Res.string.extension_installed_failed)
 			is ExtensionLoadException -> i18n(Res.string.extension_load_failed)
 			is CancellationException -> "Operation cancelled"
 			is UnsupportedOperationException -> "Unsupported action"
 			is NotImplementedError -> "Unsupported action"
 
-			is HttpException -> when(t.code) {
+			is HttpException -> when(unwrapped.code) {
 				400, 422 -> i18n(Res.string.bad_request)
 				403 -> i18n(Res.string.access_denied)
 				404 -> i18n(Res.string.nothing_found)
@@ -61,7 +59,7 @@ class OkiThrowableMessage(
 
 			else -> null
 		}) ?: run {
-			if(t.message?.contains(ROOM_EXCEPTION) == true) {
+			if(unwrapped.message?.contains(ROOM_EXCEPTION) == true) {
 				return i18n(Res.string.database_corrupted)
 			}
 
@@ -69,15 +67,15 @@ class OkiThrowableMessage(
 		}
 
 	val message: String
-		get() = when(t) {
-			is LocaleAware -> t.localizedMessage
+		get() = when(unwrapped) {
+			is LocaleAware -> unwrapped.localizedMessage
 			is SocketTimeoutException -> i18n(Res.string.connection_timeout)
-			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, t.blockerName)
+			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, unwrapped.blockerName)
 			is SocketException -> i18n(Res.string.failed_to_connect_to_server)
 			is SSLHandshakeException -> i18n(Res.string.failed_to_connect_to_server)
-			is NotImplementedError -> t.message
+			is NotImplementedError -> unwrapped.message
 
-			is HttpException -> "(${t.code}) " + when(t.code) {
+			is HttpException -> "(${unwrapped.code}) " + when(unwrapped.code) {
 				400, 422 -> i18n(Res.string.request_invalid_detailed)
 				401 -> i18n(Res.string.not_logged_detailed)
 				403 -> i18n(Res.string.no_access_detailed)
@@ -91,22 +89,22 @@ class OkiThrowableMessage(
 
 			else -> null
 		} ?: run {
-			if(t.message?.contains(ROOM_EXCEPTION) == true) {
+			if(unwrapped.message?.contains(ROOM_EXCEPTION) == true) {
 				return@run """
 		Yeah, you've hear right. The database has been corrupted!
 		How can you fix it? Clear app data.
 		
 		Please, do not use alpha versions to keep your library. Use them only to test new things.
 		
-		${Log.getStackTraceString(t)}
+		${Log.getStackTraceString(unwrapped)}
 		""".trimIndent()
 			}
 
-			return@run Log.getStackTraceString(t)
+			return@run Log.getStackTraceString(unwrapped)
 		}
 
 	val category: Category
-		get() = when(t) {
+		get() = when(unwrapped) {
 			is SocketTimeoutException -> Category.TIMEOUT
 			is SSLHandshakeException -> Category.FAILED_TO_CONNECT
 			is ZeroResultsException -> Category.NO_RESULTS

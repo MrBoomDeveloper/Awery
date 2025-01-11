@@ -476,7 +476,8 @@ class App : Application() {
 			}
 
 		@JvmStatic
-		fun snackbar(activity: Activity, title: Any?, button: Any?, buttonCallback: Runnable?, duration: Int) {
+		@JvmOverloads
+		fun snackbar(activity: Activity, title: Any?, button: Any?, buttonCallback: Runnable?, duration: Int = Snackbar.LENGTH_LONG) {
 			runOnUiThread {
 				val titleText = title?.toString() ?: "null"
 				val buttonText = button?.toString() ?: "null"

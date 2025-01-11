@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.mobile.screens.catalog.feeds;
 
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.useLayoutParams;
 import static java.util.Objects.requireNonNull;
@@ -30,15 +31,17 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.data.settings.SettingsList;
 import com.mrboomdev.awery.databinding.ScreenFeedBinding;
+import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.data.CatalogFeed;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.ui.mobile.screens.catalog.MediaCategoriesAdapter;
 import com.mrboomdev.awery.util.MediaUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException;
-import com.mrboomdev.awery.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 
@@ -135,14 +138,14 @@ public abstract class FeedsFragment extends Fragment {
 		loadFeed(feed, new AsyncFuture.Callback<>() {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
-			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) {
+			public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) throws ZeroResultsException {
 				if(currentLoadId != loadId) return;
 
 				var filtered = MediaUtils.filterMediaSync(searchResults);
 				var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
 
 				if(filteredResults.isEmpty()) {
-					throw new ZeroResultsException("All results were filtered out.", R.string.no_media_found);
+					throw new ZeroResultsException("All results were filtered out.", i18n(String0_commonMainKt.getNo_media_found(Res.string.INSTANCE)));
 				}
 
 				runOnUiThread(() -> {
@@ -181,14 +184,14 @@ public abstract class FeedsFragment extends Fragment {
 							loadFeed(feed, new AsyncFuture.Callback<>() {
 								@SuppressLint("NotifyDataSetChanged")
 								@Override
-								public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) {
+								public void onSuccess(@NonNull CatalogSearchResults<? extends CatalogMedia> searchResults) throws ZeroResultsException {
 									if(currentLoadId != loadId) return;
 
 									var filtered = MediaUtils.filterMediaSync(searchResults);
 									var filteredResults = CatalogSearchResults.of(filtered, searchResults.hasNextPage());
 
 									if(filteredResults.isEmpty()) {
-										throw new ZeroResultsException("All results were filtered out.", R.string.no_media_found);
+										throw new ZeroResultsException("All results were filtered out.", i18n(String0_commonMainKt.getNo_media_found(Res.string.INSTANCE)));
 									}
 
 									runOnUiThread(() -> {
@@ -296,7 +299,7 @@ public abstract class FeedsFragment extends Fragment {
 		} else {
 			emptyStateAdapter.getBinding(binding -> runOnUiThread(() -> {
 				if(tab == null || tab.showEnd) {
-					binding.setInfo(R.string.you_reached_end, R.string.you_reached_end_description);
+					binding.setInfo(i18n(String0_commonMainKt.getYou_reached_end(Res.string.INSTANCE)), i18n(String0_commonMainKt.getYou_reached_end_description(Res.string.INSTANCE)));
 					emptyStateAdapter.setEnabled(true);
 				} else {
 					binding.hideAll();

@@ -7,6 +7,7 @@ import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.parseDate;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
@@ -55,10 +56,12 @@ import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.NiceUtils;
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.async.AsyncFuture;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
@@ -230,8 +233,8 @@ public class MediaCommentsFragment extends Fragment {
 
 		if(sources == null || sources.isEmpty()) {
 			loadingAdapter.getBinding(binding -> {
-				binding.title.setText(R.string.nothing_found);
-				binding.message.setText(R.string.no_comment_extensions);
+				binding.title.setText(i18n(String0_commonMainKt.getNothing_found(Res.string.INSTANCE)));
+				binding.message.setText(i18n(String0_commonMainKt.getNo_comment_extensions(Res.string.INSTANCE)));
 
 				binding.info.setVisibility(View.VISIBLE);
 				binding.progressBar.setVisibility(View.GONE);
@@ -315,9 +318,9 @@ public class MediaCommentsFragment extends Fragment {
 						return;
 					}
 
-					var descriptor = new ExceptionDescriptor(e);
-					binding.title.setText(descriptor.getTitle(getContext()));
-					binding.message.setText(descriptor.getMessage(getContext()));
+					var descriptor = OkiThrowableMessageKt.explain(e);
+					binding.title.setText(descriptor.getTitle());
+					binding.message.setText(descriptor.getMessage());
 
 					binding.info.setVisibility(View.VISIBLE);
 					binding.progressBar.setVisibility(View.GONE);
@@ -341,8 +344,8 @@ public class MediaCommentsFragment extends Fragment {
 		loadingAdapter.getBinding(binding -> {
 			binding.info.setVisibility(View.VISIBLE);
 			binding.progressBar.setVisibility(View.GONE);
-			binding.title.setText(R.string.you_reached_end);
-			binding.message.setText(R.string.you_reached_end_description);
+			binding.title.setText(i18n(String0_commonMainKt.getYou_reached_end(Res.string.INSTANCE)));
+			binding.message.setText(i18n(String0_commonMainKt.getYou_reached_end_description(Res.string.INSTANCE)));
 			loadingAdapter.setEnabled(true);
 		});
 	}
@@ -547,7 +550,7 @@ public class MediaCommentsFragment extends Fragment {
 							CrashHandler.showErrorDialog(requireContext(), new CrashHandler.CrashReport.Builder()
 									.setTitle("Failed to edit an comment")
 									.setThrowable(t)
-									.setPrefix(R.string.please_report_bug_extension)
+									.setPrefix(i18n(String0_commonMainKt.getPlease_report_bug_extension(Res.string.INSTANCE)))
 									.build());
 
 							sendBinding.loadingIndicator.setVisibility(View.GONE);
@@ -752,10 +755,10 @@ public class MediaCommentsFragment extends Fragment {
 				new DialogBuilder(requireContext())
 						.setTitle("Delete the comment?")
 						.setMessage("You'll be unable to undo this action later.")
-						.setPositiveButton(R.string.confirm, dialog -> {
+						.setPositiveButton(i18n(String0_commonMainKt.getConfirm(Res.string.INSTANCE)), dialog -> {
 							selectedProvider.deleteComment(comment).addCallback(new AsyncFuture.Callback<>() {
 								@Override
-								public void onSuccess(Boolean success) {
+								public void onSuccess(@NonNull Boolean success) {
 									var context = getContext();
 									if(context == null) return;
 
@@ -768,13 +771,13 @@ public class MediaCommentsFragment extends Fragment {
 								}
 
 								@Override
-								public void onFailure(Throwable t) {
+								public void onFailure(@NonNull Throwable t) {
 									var context = getContext();
 									if(context == null) return;
 
 									CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
 											.setTitle("Failed to delete an comment")
-											.setPrefix(R.string.please_report_bug_extension)
+											.setPrefix(i18n(String0_commonMainKt.getPlease_report_bug_extension(Res.string.INSTANCE)))
 											.setThrowable(t)
 											.build());
 								}
@@ -782,7 +785,7 @@ public class MediaCommentsFragment extends Fragment {
 
 							dialog.dismiss();
 						})
-						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
+						.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), DialogBuilder::dismiss)
 						.show();
 			});
 
@@ -844,7 +847,7 @@ public class MediaCommentsFragment extends Fragment {
 
 						CrashHandler.showErrorDialog(new CrashHandler.CrashReport.Builder()
 								.setTitle("Failed to vote")
-								.setPrefix(R.string.please_report_bug_extension)
+								.setPrefix(i18n(String0_commonMainKt.getPlease_report_bug_extension(Res.string.INSTANCE)))
 								.setThrowable(t)
 								.build());
 					}

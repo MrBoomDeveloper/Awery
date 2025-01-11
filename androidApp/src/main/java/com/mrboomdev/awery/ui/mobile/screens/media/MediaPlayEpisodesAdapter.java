@@ -4,6 +4,7 @@ import static com.mrboomdev.awery.app.App.openUrl;
 import static com.mrboomdev.awery.app.App.share;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -27,6 +28,8 @@ import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
@@ -154,12 +157,12 @@ public class MediaPlayEpisodesAdapter extends RecyclerView.Adapter<MediaPlayEpis
 					0, com.google.android.material.R.style.Widget_Material3_PopupMenu), v);
 
 			menu.getMenu().add(0, 0, 0, progress != 0
-					? R.string.mark_not_watched : R.string.mark_watched);
+					? i18n(String0_commonMainKt.getMark_not_watched(Res.string.INSTANCE)) : i18n(String0_commonMainKt.getMark_watched(Res.string.INSTANCE)));
 
-			menu.getMenu().add(0, 1, 0, R.string.comments);
+			menu.getMenu().add(0, 1, 0, i18n(String0_commonMainKt.getComments(Res.string.INSTANCE)));
 //			menu.getMenu().add(0, 2, 0, "Download");
-			menu.getMenu().add(0, 3, 0, R.string.share);
-			menu.getMenu().add(0, 4, 0, R.string.open_link_externally);
+			menu.getMenu().add(0, 3, 0, i18n(String0_commonMainKt.getShare(Res.string.INSTANCE)));
+			menu.getMenu().add(0, 4, 0, i18n(String0_commonMainKt.getOpen_link_externally(Res.string.INSTANCE)));
 //			menu.getMenu().add(0, 5, 0, "Hide");
 
 			menu.setOnMenuItemClickListener(item -> switch(item.getItemId()) {

@@ -244,7 +244,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 					source, AniyomiEpisode.fromEpisode(episode)).await();
 
 			if(videos == null || videos.isEmpty()) {
-				throw new ZeroResultsException("Aniyomi: No videos found", R.string.nothing_found);
+				throw new ZeroResultsException("Aniyomi: No videos found", i18n(String0_commonMainKt.getNothing_found(Res.string.INSTANCE)));
 			}
 
 			return stream(videos).map(item -> new CatalogVideoFile(
@@ -278,13 +278,13 @@ public abstract class AniyomiProvider extends YomiProvider {
 	}
 
 	@Contract("null -> fail")
-	private void checkSearchResults(AnimesPage page) {
+	private void checkSearchResults(AnimesPage page) throws ZeroResultsException {
 		if(page == null) {
 			throw new NullPointerException("page is null!");
 		}
 
 		if(page.getAnimes().isEmpty()) {
-			throw new ZeroResultsException("No media was found", R.string.no_media_found);
+			throw new ZeroResultsException("No media was found", i18n(String0_commonMainKt.getNo_media_found(Res.string.INSTANCE)));
 		}
 	}
 
@@ -294,7 +294,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 			setUrl(id);
 		}}).then(anime -> {
 			if(anime == null) {
-				throw new ZeroResultsException("Anime not found", R.string.no_media_found);
+				throw new ZeroResultsException("Anime not found", i18n(String0_commonMainKt.getNo_media_found(Res.string.INSTANCE)));
 			}
 
 			// Manually set values if they wasn't been by an extension

@@ -12,6 +12,7 @@ import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
+import static com.mrboomdev.awery.utils.IntentUtilsKt.buildIntent;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +42,9 @@ import com.mrboomdev.awery.util.TabsTemplate;
 import com.mrboomdev.awery.util.ui.dialog.BaseDialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
+import com.mrboomdev.awery.utils.ActivityUtilsKt;
+import com.mrboomdev.awery.utils.ContextUtilsKt;
+import com.mrboomdev.awery.utils.IntentUtilsKt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +55,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import kotlin.Unit;
+import kotlin.jvm.JvmClassMappingKt;
 
 public class TabsSettings extends SettingsItem implements ObservableSettingsItem {
 	private final Map<String, IconStateful> icons;
@@ -77,7 +82,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					var icon = new AtomicReference<>("catalog");
 
 					new DialogBuilder(context)
-							.setTitle(R.string.create_tab)
+							.setTitle(i18n(String0_commonMainKt.getCreate_tab(Res.string.INSTANCE)))
 							.addView(parent -> {
 								binding.set(WidgetIconEdittextBinding.inflate(
 										LayoutInflater.from(context),
@@ -90,7 +95,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 												return item.getValue();
 											}
 										}
-												.setTitle(R.string.select_icon)
+												.setTitle(i18n(String0_commonMainKt.getSelect_icon(Res.string.INSTANCE)))
 												.setItems(icons.entrySet())
 												.setSelectionListener(item -> {
 													binding.get().icon.setImageResource(item.getValue().getResourceId(IconStateful.State.ACTIVE));
@@ -168,12 +173,12 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getTitle(Context context) {
-				return context.getString(R.string.startUpTab);
+				return i18n(String0_commonMainKt.getStartUpTab(Res.string.INSTANCE));
 			}
 
 			@Override
 			public String getDescription(Context context) {
-				return context.getString(R.string.default_tab_description);
+				return i18n(String0_commonMainKt.getDefault_tab_description(Res.string.INSTANCE));
 			}
 
 			@Override
@@ -217,7 +222,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getTitle(Context context) {
-				return context.getString(R.string.select_template);
+				return i18n(String0_commonMainKt.getSelect_template(Res.string.INSTANCE));
 			}
 
 			@Override
@@ -227,11 +232,15 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public void onClick(Context context) {
-				var intent = new Intent(context, SetupActivity.class);
-				intent.putExtra(SetupActivity.EXTRA_STEP, SetupActivity.STEP_TEMPLATE);
-				intent.putExtra(SetupActivity.EXTRA_FINISH_ON_COMPLETE, true);
-				
-				startActivityForResult(requireNonNull(getActivity(context)), intent, (resultCode, data) -> {
+				ActivityUtilsKt.startActivityForResult(ContextUtilsKt.getActivity(context), buildIntent(
+						context,
+						JvmClassMappingKt.getKotlinClass(SetupActivity.class),
+						new SetupActivity.Extras(SetupActivity.STEP_TEMPLATE, true),
+						null,
+						null,
+						null,
+						null),
+						(resultCode, data) -> {
 					if(resultCode != SetupActivity.RESULT_OK) return Unit.INSTANCE;
 					
 					for(int i = items.size() - 1; i >= 0; i--) {
@@ -243,7 +252,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					}
 					
 					snackbar(Objects.requireNonNull(getActivity(context)),
-							R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
+							i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), AweryLifecycle::restartApp);
 					
 					return Unit.INSTANCE;
 				});
@@ -258,7 +267,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 		if(!tabs.isEmpty()) {
 			items.add(new SettingsItem.Builder(SettingsItemType.CATEGORY)
-					.setTitle(R.string.custom_tabs)
+					.setTitle(i18n(String0_commonMainKt.getCustom_tabs(Res.string.INSTANCE)))
 					.build());
 
 			this.items.addAll(stream(tabs)
@@ -269,7 +278,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 	@Override
 	public String getTitle(@NonNull Context context) {
-		return context.getString(R.string.tabs);
+		return i18n(String0_commonMainKt.getTabs(Res.string.INSTANCE));
 	}
 
 	@Override
@@ -289,7 +298,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 			@Override
 			public String getTitle(Context context) {
-				return context.getString(R.string.delete);
+				return i18n(String0_commonMainKt.getDelete(Res.string.INSTANCE));
 			}
 
 			@Override
@@ -300,10 +309,10 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 			@Override
 			public void onClick(Context context) {
 				new DialogBuilder(context)
-						.setTitle(R.string.are_you_sure)
+						.setTitle(i18n(String0_commonMainKt.getAre_you_sure(Res.string.INSTANCE)))
 						.setMessage("You won't be able to revert the deletion.")
-						.setNegativeButton(R.string.cancel, DialogBuilder::dismiss)
-						.setPositiveButton(R.string.confirm, dialog -> thread(() -> {
+						.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), DialogBuilder::dismiss)
+						.setPositiveButton(i18n(String0_commonMainKt.getDelete(Res.string.INSTANCE)), dialog -> thread(() -> {
 							var tabsDao = App.Companion.getDatabase().getTabsDao();
 							var feedsDao = App.Companion.getDatabase().getFeedsDao();
 

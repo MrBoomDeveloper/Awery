@@ -8,6 +8,7 @@ import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.isTrue;
 import static com.mrboomdev.awery.util.NiceUtils.isUrlValid;
 import static com.mrboomdev.awery.util.NiceUtils.requireNonNullElse;
@@ -48,6 +49,8 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -243,8 +246,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
 							.addView(inputField.getView())
-							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton(R.string.ok, _dialog -> {
+							.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), DialogBuilder::dismiss)
+							.setPositiveButton(i18n(String0_commonMainKt.getOk(Res.string.INSTANCE)), _dialog -> {
 								handler.saveValue(setting, inputField.getText());
 								setting.setValue(inputField.getText());
 
@@ -282,11 +285,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 							.setTitle(setting.getTitle(context).trim())
 							.setMessage(setting.getDescription(context).trim())
 							.addView(field instanceof FancyField<?> fancy ? fancy.getView() : (View) field)
-							.setNegativeButton(context.getString(R.string.cancel), DialogBuilder::dismiss)
-							.setPositiveButton(R.string.ok, _dialog -> {
+							.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), DialogBuilder::dismiss)
+							.setPositiveButton(i18n(String0_commonMainKt.getOk(Res.string.INSTANCE)), _dialog -> {
 								if(field instanceof EditTextField inputField) {
 									if(inputField.getText().isBlank()) {
-										inputField.setError(R.string.text_cant_empty);
+										inputField.setError(i18n(String0_commonMainKt.getText_cant_empty(Res.string.INSTANCE)));
 										return;
 									}
 
@@ -308,7 +311,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 										handler.saveValue(setting, number);
 										setting.setValue(number);
 									} catch(NumberFormatException e) {
-										inputField.setError(R.string.this_not_number);
+										inputField.setError(i18n(String0_commonMainKt.getThis_not_number(Res.string.INSTANCE)));
 										return;
 									}
 								} else {
@@ -333,8 +336,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case SELECT, SELECT_INTEGER -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.SINGLE)
 							.setTitle(setting.getTitle(context))
-							.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
-							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
+							.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), SelectionDialog::dismiss)
+							.setPositiveButton(i18n(String0_commonMainKt.getConfirm(Res.string.INSTANCE)), (_dialog, selection) -> {
 								if(setting instanceof CustomSettingsItem customSetting) {
 									var item = selection.get(Selection.State.SELECTED);
 
@@ -426,8 +429,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 				case MULTISELECT -> {
 					var dialog = new SelectionDialog<Selection.Selectable<String>>(context, SelectionDialog.Mode.MULTI)
 							.setTitle(setting.getTitle(parent.getContext()))
-							.setNegativeButton(R.string.cancel, SelectionDialog::dismiss)
-							.setPositiveButton(R.string.confirm, (_dialog, selection) -> {
+							.setNegativeButton(i18n(String0_commonMainKt.getCancel(Res.string.INSTANCE)), SelectionDialog::dismiss)
+							.setPositiveButton(i18n(String0_commonMainKt.getConfirm(Res.string.INSTANCE)), (_dialog, selection) -> {
 								var items = selection.getAll(Selection.State.SELECTED);
 								if(items == null) return;
 
@@ -494,7 +497,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	private static void suggestToRestart(Context context) {
 		snackbar(Objects.requireNonNull(getActivity(context)),
-				R.string.restart_to_apply_settings, R.string.restart, AweryLifecycle::restartApp);
+				i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), AweryLifecycle::restartApp);
 	}
 
 	@Override
@@ -562,8 +565,8 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 					case INTEGER, SELECT_INTEGER -> String.valueOf(value);
 					case STRING -> (String) value;
 
-					case BOOLEAN, SCREEN_BOOLEAN -> context.getString(
-							isTrue(value) ? R.string.enabled : R.string.disabled);
+					case BOOLEAN, SCREEN_BOOLEAN -> i18n(
+							isTrue(value) ? String0_commonMainKt.getEnabled(Res.string.INSTANCE) : String0_commonMainKt.getDisabled(Res.string.INSTANCE));
 
 					case SELECT -> {
 						if(item.getItems() == null) {

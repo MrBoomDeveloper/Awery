@@ -283,7 +283,7 @@ public class SettingsItem implements Serializable {
 					+ description.substring(endIndex + 1);
 		}
 
-		var got = i18n(R.string.class, description);
+		var got = i18n(description);
 		return got != null ? got : description;
 	}
 

@@ -13,6 +13,7 @@ import org.jetbrains.compose.resources.getPlatformResourceReader
 import org.jetbrains.compose.resources.getResourceItemByEnvironment
 import org.jetbrains.compose.resources.getStringItem
 import org.jetbrains.compose.resources.replaceWithArgs
+import org.jetbrains.compose.resources.stringResource
 
 private val stringResourcesClass = Class.forName("com.mrboomdev.awery.generated.CommonMainString0")
 
@@ -24,7 +25,9 @@ expect object PlatformResources {
 @Suppress("UNCHECKED_CAST")
 fun i18n(key: String, vararg args: Any?): String? {
 	val lazy = try {
-		stringResourcesClass.getDeclaredField("$key\$delegate")[null] as? Lazy<StringResource>
+		val field = stringResourcesClass.getDeclaredField("$key\$delegate")
+		field.isAccessible = true
+		field[null] as? Lazy<StringResource>
 	} catch(e: NoSuchFieldException) { null } ?: return null
 
 	return i18n(lazy.value, *args)

@@ -283,6 +283,11 @@ object CrashHandler {
 				return this
 			}
 
+			fun setPrefix(prefix: String?): Builder {
+				report.prefix = prefix
+				return this
+			}
+
 			fun setTitle(title: String?): Builder {
 				report.title = title
 				return this

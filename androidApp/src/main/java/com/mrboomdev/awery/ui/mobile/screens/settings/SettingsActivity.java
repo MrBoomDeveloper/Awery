@@ -39,8 +39,8 @@ import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.utils.UniqueIdGenerator;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
 import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 import com.squareup.moshi.Moshi;
 
@@ -279,7 +279,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			SettingsData.getScreen(this, item, (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
-					toast(ExceptionDescriptor.getTitle(ExceptionDescriptor.unwrap(e), this), 0);
+					toast(OkiThrowableMessageKt.explain(e).getTitle(), 0);
 					finish();
 					return;
 				}

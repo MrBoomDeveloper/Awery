@@ -49,7 +49,8 @@ import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.ExceptionDescriptor;
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage;
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.mrboomdev.awery.util.io.HttpRequest;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
@@ -224,7 +225,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								@Override
 								public void onFailure(@NonNull Throwable t) {
 									Log.e(TAG, "Failed to get a repository!", t);
-									runOnUiThread(() -> inputField.setError(ExceptionDescriptor.getTitle(t, context)));
+									runOnUiThread(() -> inputField.setError(OkiThrowableMessageKt.explain(t).getTitle()));
 									loadingWindow.dismiss();
 								}
 							});
@@ -456,13 +457,13 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								
 								switch(getUpdateStatus()) {
 									case DOWNGRADE -> dialog.setMessage("It looks like you're trying to install an older version of an extension. Try uninstalling an old version and retry again."
-											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+											+ "\n\nException:\n" + OkiThrowableMessageKt.explain(t).getMessage()).show();
 
 									case UPDATE -> dialog.setMessage("It look's like you're trying to update an extension from a different repository. Try uninstalling an old version and retry again."
-											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+											+ "\n\nException:\n" + OkiThrowableMessageKt.explain(t).getMessage()).show();
 
 									default -> dialog.setMessage("Something just went wrong. We don't know what, and we don't know why."
-											+ "\n\nException:\n" + ExceptionDescriptor.getMessage(t, context)).show();
+											+ "\n\nException:\n" + OkiThrowableMessageKt.explain(t).getMessage()).show();
 								}
 							}
 						});
@@ -472,7 +473,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					public void onFailure(@NonNull Throwable t) {
 						Log.e(TAG, "Failed to download an extension!", t);
 						window.dismiss();
-						toast(ExceptionDescriptor.getTitle(t, context));
+						toast(OkiThrowableMessageKt.explain(t).getTitle());
 					}
 				});
 

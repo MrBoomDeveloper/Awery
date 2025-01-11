@@ -2,7 +2,7 @@ package com.mrboomdev.awery.ui.mobile.screens.player;
 
 import static com.mrboomdev.awery.app.AweryLifecycle.cancelDelayed;
 import static com.mrboomdev.awery.app.AweryLifecycle.runDelayed;
-import static com.mrboomdev.awery.app.AweryLifecycle.startActivityForResult;
+import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.formatClock;
 import static com.mrboomdev.awery.util.extensions.DialogExtensionsKt.fix;
 
@@ -32,9 +32,13 @@ import com.mrboomdev.awery.databinding.PopupSimpleItemBinding;
 import com.mrboomdev.awery.extensions.data.CatalogSubtitle;
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.generated.AwerySettings;
+import com.mrboomdev.awery.generated.Res;
+import com.mrboomdev.awery.generated.String0_commonMainKt;
 import com.mrboomdev.awery.util.ContentType;
+import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
 import com.mrboomdev.awery.util.ui.adapter.SimpleAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
+import com.mrboomdev.awery.utils.ActivityUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -193,14 +197,14 @@ public class PlayerController {
 		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = activity.getLayoutInflater();
 			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
-			binding.text.setText(R.string.aspect_ratio);
+			binding.text.setText(i18n(String0_commonMainKt.getAspect_ratio(Res.string.INSTANCE)));
 			return binding;
 		});
 
 		var items = new LinkedHashMap<PopupItem, AwerySettings.VideoAspectRatioValue>() {{
-			put(new PopupItem(R.string.fit), AwerySettings.VideoAspectRatioValue.FIT);
-			put(new PopupItem(R.string.fill), AwerySettings.VideoAspectRatioValue.FILL);
-			put(new PopupItem(R.string.zoom), AwerySettings.VideoAspectRatioValue.ZOOM);
+			put(new PopupItem(i18n(String0_commonMainKt.getFit(Res.string.INSTANCE))), AwerySettings.VideoAspectRatioValue.FIT);
+			put(new PopupItem(i18n(String0_commonMainKt.getFill(Res.string.INSTANCE))), AwerySettings.VideoAspectRatioValue.FILL);
+			put(new PopupItem(i18n(String0_commonMainKt.getZoom(Res.string.INSTANCE))), AwerySettings.VideoAspectRatioValue.ZOOM);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -253,10 +257,10 @@ public class PlayerController {
 
 		var items = new LinkedHashMap<PopupItem, Action>() {{
 			if(activity.episode != null && activity.episode.getVideos() != null && activity.episode.getVideos().size() > 1) {
-				put(new PopupItem(R.string.video_quality, R.drawable.ic_round_high_quality_24), Action.QUALITY);
+				put(new PopupItem(i18n(String0_commonMainKt.getVideo_quality(Res.string.INSTANCE)), R.drawable.ic_round_high_quality_24), Action.QUALITY);
 			}
 
-			put(new PopupItem(R.string.aspect_ratio, R.drawable.ic_fullscreen), Action.ASPECT);
+			put(new PopupItem(i18n(String0_commonMainKt.getAspect_ratio(Res.string.INSTANCE)), R.drawable.ic_fullscreen), Action.ASPECT);
 		}};
 
 		var itemsAdapter = new SimpleAdapter<>(parent -> {
@@ -297,14 +301,14 @@ public class PlayerController {
 		var subtitles = activity.video.getSubtitles();
 		if(subtitles == null) return;
 
-		var picker = new PopupItem(R.string.pick_from_storage);
+		var picker = new PopupItem(i18n(String0_commonMainKt.getPick_from_storage(Res.string.INSTANCE)));
 
 		var items = new LinkedHashMap<PopupItem, CatalogSubtitle>();
-		items.put(new PopupItem(R.string.none), null);
+		items.put(new PopupItem(i18n(String0_commonMainKt.getNone(Res.string.INSTANCE))), null);
 		items.put(picker, null);
 
 		for(var subtitle : subtitles) {
-			items.put(new PopupItem().setTitle(subtitle.getTitle()), subtitle);
+			items.put(new PopupItem(subtitle.getTitle()), subtitle);
 		}
 
 		final var dialog = new AtomicReference<Dialog>();
@@ -319,7 +323,7 @@ public class PlayerController {
 		var headerAdapter = SingleViewAdapter.fromBindingDynamic(parent -> {
 			var inflater = activity.getLayoutInflater();
 			var binding = PopupSimpleHeaderBinding.inflate(inflater, parent, false);
-			binding.text.setText(R.string.subtitles);
+			binding.text.setText(i18n(String0_commonMainKt.getSubtitles(Res.string.INSTANCE)));
 			return binding;
 		});
 
@@ -329,7 +333,7 @@ public class PlayerController {
 				intent.setType(ContentType.ANY.getMimeType());
 				var chooser = Intent.createChooser(intent, "Pick subtitles file");
 
-				startActivityForResult(activity, chooser, (resultCode, result) -> {
+				ActivityUtilsKt.startActivityForResult(activity, chooser, (resultCode, result) -> {
 					if(resultCode != PlayerActivity.RESULT_OK) return Unit.INSTANCE;
 
 					var uri = Objects.requireNonNull(result.getData());
@@ -341,9 +345,9 @@ public class PlayerController {
 							return uri;
 						}
 					});
-					
-					return Unit.INSTANCE;
-				});
+
+                    return null;
+                });
 
 				dialog.get().dismiss();
 				return;
@@ -375,7 +379,7 @@ public class PlayerController {
 		var items = new LinkedHashMap<PopupItem, CatalogVideoFile>();
 
 		for(var video : videos) {
-			items.put(new PopupItem().setTitle(video.getTitle()), video);
+			items.put(new PopupItem(video.getTitle()), video);
 		}
 
 		final var dialog = new AtomicReference<Dialog>();
@@ -459,6 +463,15 @@ public class PlayerController {
 	public class PopupItem {
 		private String title;
 		private int id, icon;
+
+		public PopupItem(String title, @DrawableRes int icon) {
+			this.title = title;
+			this.icon = icon;
+		}
+
+		public PopupItem(String title) {
+			this.title = title;
+		}
 
 		public PopupItem setTitle(String title) {
 			this.title = title;
