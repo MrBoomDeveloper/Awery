@@ -15,6 +15,7 @@ java {
 
 kotlin {
 	jvmToolchain(17)
+	applyDefaultHierarchyTemplate()
 	
 	compilerOptions {
 		freeCompilerArgs = listOf("-Xexpect-actual-classes")
@@ -23,11 +24,10 @@ kotlin {
 	androidTarget()
 	jvm("desktop")
 
-	applyDefaultHierarchyTemplate()
-
 	sourceSets {
 		commonMain.dependencies {
 			// Core
+			implementation(projects.resources)
 			implementation(projects.ext)
 			implementation(compose.runtime)
 			implementation(libs.kotlinx.serialization.json)
@@ -60,11 +60,6 @@ kotlin {
 			}
 		}
 	}
-}
-
-compose.resources {
-	packageOfResClass = "com.mrboomdev.awery.generated"
-	publicResClass = true
 }
 
 android {

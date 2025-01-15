@@ -213,7 +213,8 @@ object PlatformSettingHandler {
 					CrashHandler.showDialog(
 						title = "Failed to check for updates",
 						messagePrefix = i18n(Res.string.please_report_bug_app),
-						throwable = t)
+						throwable = t
+					)
 				}).launch {
 					val update = UpdatesManager.fetchLatestAppUpdate()
 					showUpdateDialog(activity, update)

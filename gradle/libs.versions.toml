@@ -2,7 +2,7 @@
 android-gradle-plugin = "8.7.3"
 androidx-adaptive = "1.0.0"
 kotlinx-serialization = "1.7.3"
-kotlin = "2.0.20"
+kotlin = "2.1.0"
 lifecycle-viewmodel-compose = "2.8.7"
 media3 = "1.5.1"
 markwon = "4.6.2"
@@ -14,11 +14,6 @@ glide = "4.16.0"
 moshi = "1.15.2"
 okhttp = "5.0.0-alpha.14"
 bigimageviewer = "1.8.1"
-ui-tooling-preview-desktop = "1.7.0"
-junit = "4.13.2"
-junit-version = "1.1.5"
-espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.8.7"
 
 [libraries]
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
@@ -56,12 +51,15 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 # Compose
-androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.3" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.12.01" }
-androidx-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.4.0-alpha05" }
+androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.5" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version = "1.7.6" }
-androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version = "1.7.6" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 
 # Database
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -123,15 +121,6 @@ okhttp-dnsoverhttps = { module = "com.squareup.okhttp3:okhttp-dnsoverhttps", ver
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
-androidx-ui-tooling-preview-desktop = { group = "androidx.compose.ui", name = "ui-tooling-preview-desktop", version.ref = "ui-tooling-preview-desktop" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 
 [bundles]
 okhttp = ["okhttp", "okhttp-brotli", "okhttp-dnsoverhttps", "okhttp-logging"]
@@ -148,7 +137,7 @@ android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 # Kotlin
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.0.20-1.0.25" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.1.0-1.0.29" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

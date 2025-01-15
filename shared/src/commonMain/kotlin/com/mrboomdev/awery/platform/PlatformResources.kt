@@ -2,49 +2,61 @@
 
 package com.mrboomdev.awery.platform
 
-import com.mrboomdev.awery.platform.PlatformResources.resourceEnvironment
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.ResourceEnvironment
-import org.jetbrains.compose.resources.StringItem
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getPlatformResourceReader
-import org.jetbrains.compose.resources.getResourceItemByEnvironment
-import org.jetbrains.compose.resources.getStringItem
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.replaceWithArgs
-import org.jetbrains.compose.resources.stringResource
-
-private val stringResourcesClass = Class.forName("com.mrboomdev.awery.generated.CommonMainString0")
 
 expect object PlatformResources {
 	@OptIn(ExperimentalResourceApi::class)
 	internal var resourceEnvironment: ResourceEnvironment?
 }
 
-@Suppress("UNCHECKED_CAST")
-fun i18n(key: String, vararg args: Any?): String? {
-	val lazy = try {
-		val field = stringResourcesClass.getDeclaredField("$key\$delegate")
-		field.isAccessible = true
-		field[null] as? Lazy<StringResource>
-	} catch(e: NoSuchFieldException) { null } ?: return null
+private val stringValueCache = mutableMapOf<String, String>()
+private val stringResClass = Class.forName("com.mrboomdev.awery.generated.CommonMainString0")
 
-	return i18n(lazy.value, *args)
+internal fun clearCache() {
+	stringValueCache.clear()
 }
 
-@OptIn(ExperimentalResourceApi::class, InternalResourceApi::class)
-fun i18n(res: StringResource, vararg args: Any?): String {
-	val resourceReader = getPlatformResourceReader()
-	val environment = requireNotNull(resourceEnvironment) { "PlatformResources.resourceEnvironment wasn't been loaded!" }
-
-	val resourceItem = res.getResourceItemByEnvironment(environment)
-	val item = runBlocking { getStringItem(resourceItem, resourceReader) as StringItem.Value }
-	val text = item.text
-
-	if(args.isNotEmpty()) {
-		return text.replaceWithArgs(args.map { it.toString() })
+@Suppress("UNCHECKED_CAST")
+fun i18n(key: String): String? {
+	stringValueCache[key]?.also {
+		return it
 	}
+	
+	// Do reflection magic
+	return try {
+		val delegate = stringResClass.getDeclaredField("$key\$delegate").apply {
+			isAccessible = true
+		}[null] as Lazy<StringResource>
+		
+		return i18n(delegate.value)
+	} catch(_: NoSuchFieldException) { null }
+}
 
-	return text
+fun i18n(key: String, vararg args: Any?): String? {
+	return i18n(key)?.replaceWithArgs(args.map { it.toString() })
+}
+
+@OptIn(ExperimentalResourceApi::class)
+fun i18n(res: StringResource): String {
+	stringValueCache[res.key]?.also {
+		return it
+	}
+	
+	return runBlocking {
+		PlatformResources.resourceEnvironment?.let { env ->
+			getString(env, res)
+		} ?: getString(res)
+	}.also { result ->
+		// Cache result, so that we don't have to load it again later.
+		stringValueCache[res.key] = result
+	}
+}
+
+fun i18n(res: StringResource, vararg args: Any?): String {
+	return i18n(res).replaceWithArgs(args.map { it.toString() })
 }

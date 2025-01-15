@@ -14,6 +14,7 @@ import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
 import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
 
+// TODO: Move all methods to PlatformResources.kt in :shared
 object AweryLocales {
 	private const val ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
 

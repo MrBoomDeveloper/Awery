@@ -3,7 +3,6 @@ package com.mrboomdev.awery.sources.yomi
 import android.app.Application
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
-import android.content.Context as AndroidContext
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageInstaller
@@ -15,9 +14,9 @@ import com.mrboomdev.awery.app.ExtensionsManager.isEnabled
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
-import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.Image
+import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.utils.UniqueIdGenerator
@@ -30,6 +29,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.addSingleton
@@ -37,6 +38,7 @@ import uy.kohesive.injekt.api.addSingletonFactory
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.util.concurrent.CancellationException
+import android.content.Context as AndroidContext
 
 abstract class YomiManager<S>(
 	val androidContext: AndroidContext,
@@ -102,7 +104,19 @@ abstract class YomiManager<S>(
 					coroutineScope {
 						getPackages().map { pkg ->
 							async {
-								sources[pkg.packageName] = createSource(pkg.packageName, isEnabled(pkg.packageName))
+								sources[pkg.packageName] = try {
+									// Some extensions may try invoke network requests during initialization.
+									// This is a VERY bad practice, so we do limit initialization time,
+									// because timeout may happen after a LONG time, which user doesn't have.
+									withTimeout(5000) {
+										runInterruptible {
+											createSource(pkg.packageName, isEnabled(pkg.packageName))
+										}
+									}
+								} catch(_: Throwable) {
+									createSource(pkg.packageName, false)
+								}
+								
 								progress.increment()
 								send(progress)
 							}
@@ -122,35 +136,30 @@ abstract class YomiManager<S>(
 	private fun createSource(packageName: String, init: Boolean): Source {
 		var throwable: Throwable? = null
 
-		val packageInfo = androidContext.packageManager.getPackageInfo(packageName,
-			PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA)
+		val packageInfo = androidContext.packageManager.getPackageInfo(
+			packageName, PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
+		)
 
-		val label = packageInfo.applicationInfo!!.loadLabel(androidContext.packageManager).let { appLabel ->
-			if(appLabel.startsWith(appLabelPrefix)) {
-				return@let appLabel.substring(appLabelPrefix.length).trim { it <= ' ' }
-			} else appLabel
-		}.toString()
+		val sources = if(!init) null else try {
+			checkSupportedVersionBounds(packageInfo.versionName!!)
+			instantiateMains(packageInfo)
+		} catch(t: Throwable) {
+			throwable = t
+			null
+		}
 
-		val isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1
-
-		val sources = if(init) {
-			try {
-				checkSupportedVersionBounds(packageInfo.versionName!!)
-
-				try {
-					instantiateMains(packageInfo)
-				} catch(e: Throwable) {
-					throwable = e
-					null
-				}
-			} catch(e: UnsupportedOperationException) {
-				throwable = e
-				null
-			}
-
-		} else null
-
-		return createSourceWrapper(label, isNsfw, packageInfo, sources, throwable)
+		return createSourceWrapper(
+			isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1,
+			packageInfo = packageInfo,
+			sources = sources,
+			exception = throwable,
+			
+			label = packageInfo.applicationInfo!!.loadLabel(androidContext.packageManager).let { appLabel ->
+				if(appLabel.startsWith(appLabelPrefix)) {
+					return@let appLabel.substring(appLabelPrefix.length).trim { it <= ' ' }
+				} else appLabel
+			}.toString()
+		)
 	}
 
 	private fun instantiateMains(packageInfo: PackageInfo): Array<Any> {

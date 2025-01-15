@@ -134,6 +134,7 @@ dependencies {
     implementation(libs.retrostreams)
     implementation(libs.bundles.aniyomi)
     implementation(projects.ext)
+    implementation(projects.resources)
 	
 	// Database
     ksp(libs.androidx.room.compiler)

@@ -105,7 +105,7 @@ class App : Application() {
 		super.onCreate()
 		setupStrictMode()
 		
-		GlobalScope.launch(Dispatchers.IO) { 
+		GlobalScope.launch(Dispatchers.Default) { 
 			initSync() 
 		}
 	}

@@ -98,7 +98,7 @@ object UpdatesManager {
 
 	suspend fun fetchLatestAppUpdate(): Update {
 		if(BuildConfig.DEBUG) {
-			throw ZeroResultsException("Updates in the debug mode are disabled!")
+			throw ZeroResultsException("Updates in debug mode are disabled!")
 		}
 
 		val response = HttpRequest(UPDATES_ENDPOINT).apply {

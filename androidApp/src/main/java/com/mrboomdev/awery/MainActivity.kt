@@ -27,9 +27,7 @@ import com.mrboomdev.awery.data.db.item.DBTab
 import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
-import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.generated.Res
-import com.mrboomdev.awery.generated.back_to_exit
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment
@@ -85,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             doubleBackToExitPressedOnce = true
-            toast(Res.string.back_to_exit)
+            toast(i18n(Res.string.back_to_exit))
             runDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
     }

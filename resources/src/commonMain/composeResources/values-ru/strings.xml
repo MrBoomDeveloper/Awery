@@ -133,7 +133,7 @@
     <string name="ask_update_progress_anime">Запрашивать для каждого медиа \"Индивидуально\"</string>
     <string name="ask_update_progress_info_ep">Отключение будет всегда автоматически обновлять прогресс при просмотре эпизода.</string>
     <string name="watch_complete_percentage">Процент завершенного просмотра</string>
-    <string name="watch_complete_percentage_info">Процент, при котором ваш прогресс должен обновляться после просмотра эпизода. \nЭто также устанавливает %s для того, когда следует предварительно загружать ссылки для следующего эпизода.</string>
+    <string name="watch_complete_percentage_info">Процент, при котором ваш прогресс должен обновляться после просмотра эпизода. \nЭто также устанавливает %1$s для того, когда следует предварительно загружать ссылки для следующего эпизода.</string>
     <string name="behaviour">Поведение</string>
     <string name="always_continue">Всегда продолжать с того места, где вы остановились</string>
     <string name="pause_video_focus">Пауза при потере фокуса</string>
@@ -212,7 +212,7 @@
     <string name="sort_by_release_date">Сортировать по дате выпуска</string>
     <string name="crop_borders">Обрезать границы</string>
     <string name="error_loading_data">Ошибка загрузки данных %1$s</string>
-    <string name="saved_to_path">Сохранено по пути:\n%s</string>
+    <string name="saved_to_path">Сохранено по пути:\n%1$s</string>
     <string name="setting_progress">Установка прогресса на %1$d</string>
     <string name="back_to_exit">Пожалуйста, нажмите назад снова для выхода</string>
     <string name="no_internet_connection">Нет подключения к интернету</string>
@@ -449,7 +449,7 @@
     <string name="connection_failed">Не удалось подключиться</string>
     <string name="banned">Вы забанены</string>
     <string name="show_spoilers">Показать спойлеры</string>
-    <string name="selected_s">Выбрано %s</string>
+    <string name="selected_s">Выбрано %1%s</string>
     <string name="mark_not_watched">Убрать отметку</string>
     <string name="update_available">Доступно обновление!</string>
     <string name="bad_request">Плохой запрос</string>
@@ -462,14 +462,14 @@
     <string name="extension_load_failed">Не удалось загрузить расширение!</string>
     <string name="failed_to_connect_to_server">Не удалось подключиться к серверу!</string>
     <string name="server_unavailable">Сервер в данный момент недоступен, пожалуйста, повторите попытку позже.</string>
-    <string name="loading_extensions_n">Загрузка расширений %d/%d</string>
+    <string name="loading_extensions_n">Загрузка расширений %1$d/%1$d</string>
     <string name="loading_extensions">Загрузка расширений</string>
     <string name="checking_if_crash_occurred">Проверка, не произошел ли сбой</string>
-    <string name="searching_episodes_for">Поиск эпизодов для %s</string>
-    <string name="searching_for">Поиск %s</string>
+    <string name="searching_episodes_for">Поиск эпизодов для %1$s</string>
+    <string name="searching_for">Поиск %1$s</string>
     <string name="loading_videos_list">Загрузка списка видео</string>
     <string name="buffering_video">Буферизация видео</string>
-    <string name="delete_confirmation">Удалить %s?</string>
+    <string name="delete_confirmation">Удалить %1$s?</string>
     <string name="open_link_externally">Открыть во внешнем браузере</string>
     <string name="backup_success">Резервная копия создана успешно!</string>
     <string name="dismiss">Удалить</string>
@@ -478,9 +478,9 @@
     <string name="built_at">Собрано</string>
     <string name="size">Размер</string>
     <string name="download">Скачать</string>
-    <string name="failed_bypass_detailed">Ваш запрос был заблокирован %s. Попробуйте пройти капчу и перезагрузитесь, чтобы устранить эту проблему.</string>
+    <string name="failed_bypass_detailed">Ваш запрос был заблокирован %1$s. Попробуйте пройти капчу и перезагрузитесь, чтобы устранить эту проблему.</string>
     <string name="database_corrupted">База данных повреждена!</string>
-    <string name="failed_to_bypass">Не удалось обойти %s</string>
+    <string name="failed_to_bypass">Не удалось обойти %1$s</string>
     <string name="unknown_net_error">Неизвестная сетевая ошибка</string>
     <string name="server_internal_error">Произошла внутренняя ошибка сервера, пожалуйста, повторите попытку позже.</string>
     <string name="color_palette_description">Любимые цвета поднимут вам настроение :)</string>

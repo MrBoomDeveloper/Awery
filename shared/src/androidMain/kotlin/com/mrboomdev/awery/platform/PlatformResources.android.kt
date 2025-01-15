@@ -19,6 +19,8 @@ actual object PlatformResources {
 	@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 	@OptIn(InternalResourceApi::class, ExperimentalResourceApi::class)
 	fun load(context: Context) {
+		clearCache()
+		
 		val composeLocale = Locale.current
 		val composeDensity = Density(context)
 

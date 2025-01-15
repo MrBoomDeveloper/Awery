@@ -8,6 +8,7 @@ actual object PlatformResources {
 	internal actual var resourceEnvironment: ResourceEnvironment? = null
 
 	fun load() {
+		clearCache()
 		throw NotImplementedError()
 	}
 }
