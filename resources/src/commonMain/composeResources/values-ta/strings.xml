@@ -179,7 +179,7 @@
     <string name="status_finished">முடிந்தது</string>
     <string name="apply">இடு</string>
     <string name="filler">நிரப்பி</string>
-    <string name="copy" tools:ignore="PrivateResource">நகலெடு</string>
+    <string name="copy">நகலெடு</string>
     <string name="no_media_found">No media was found. Try changing your query and filters.</string>
     <string name="full_disclaimer">Awery by itself only provides an anime and manga tracker and does not provide any anime or manga streaming or downloading capabilities.\n- Awery or any of its developers/staff don\'t host any content inside Awery. Any images and anime/manga information found in the app are taken from various public APIs (AniList, MyAnimeList, Kitsu).\n-Furthermore, all of the anime/manga links found in Awery are taken from various 3rd party plugins and have no affiliation with Awery or its staff\n-Awery or its owners aren\'t liable for any misuse of any of the contents found inside or outside of the app and cannot be held accountable for the distribution of any of the contents found inside the app.\n-By using Awery, you comply with the fact that the app developer is not responsible for any of the contents found in the app. You also agree to the fact that you may not use Awery to download or stream any copyrighted content.\n-If internet infringement issues are involved, please contact the source website. The developer does not assume any legal responsibility.</string>
     <string name="type_adaptation">Adaptation</string>
@@ -256,7 +256,7 @@
     <string name="version">பதிப்பு</string>
     <string name="searching_for">%s ஐத் தேடுங்கள்</string>
     <string name="no_next_episode">No next Episode Found!</string>
-    <string name="selected" tools:ignore="PrivateResource">தேர்ந்தெடுக்கப்பட்டது</string>
+    <string name="selected">தேர்ந்தெடுக்கப்பட்டது</string>
     <string name="pick_from_storage">Pick from storage</string>
     <string name="first_episode">This is the 1st Episode!</string>
     <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
