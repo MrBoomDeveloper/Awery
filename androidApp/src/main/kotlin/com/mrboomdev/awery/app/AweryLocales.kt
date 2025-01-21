@@ -6,8 +6,8 @@ import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getResourceId
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.restartApp
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.Selection
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog

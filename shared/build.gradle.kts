@@ -1,11 +1,15 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
 	alias(libs.plugins.kotlin.multiplatform)
+	alias(libs.plugins.kotlin.serialization)
+	alias(libs.plugins.kotlin.ksp)
+	alias(libs.plugins.android.library)
 	alias(libs.plugins.compose)
 	alias(libs.plugins.compose.compiler)
-	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.android.library)
+	alias(libs.plugins.room)
+}
+
+room {
+	schemaDirectory("${projectDir}/../schemas")
 }
 
 java {
@@ -30,13 +34,23 @@ kotlin {
 			implementation(projects.resources)
 			implementation(projects.ext)
 			implementation(compose.runtime)
+			
+			// Data
 			implementation(libs.kotlinx.serialization.json)
+			implementation(libs.androidx.room.runtime)
 			
 			// Ui
 			implementation(compose.ui)
 			implementation(compose.foundation)
 			implementation(compose.components.resources)
 			implementation(libs.androidx.lifecycle.viewmodel.compose)
+			
+			// Navigation
+			implementation(libs.navigation)
+			api(libs.voyager.navigator)
+			api(libs.voyager.screenmodel)
+			api(libs.voyager.tab.navigator)
+			api(libs.voyager.transitions)
 
 			// Adaptive layout
 			implementation(libs.androidx.adaptive)
@@ -49,9 +63,10 @@ kotlin {
 		}
 
 		androidMain.dependencies {
-			implementation(files("../libs/safe-args-next.aar"))
+			implementation(libs.safeargsnext)
 			implementation(libs.androidx.core)
 			implementation(libs.material)
+			implementation(libs.xcrash)
 		}
 
 		val desktopMain by getting {
@@ -60,6 +75,10 @@ kotlin {
 			}
 		}
 	}
+}
+
+dependencies {
+	ksp(libs.androidx.room.compiler)
 }
 
 android {
@@ -73,4 +92,8 @@ android {
 	buildFeatures {
 		buildConfig = true
 	}
+}
+
+compose.resources {
+	generateResClass = never
 }

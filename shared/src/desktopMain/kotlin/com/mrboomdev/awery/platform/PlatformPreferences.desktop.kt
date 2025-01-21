@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.app
+package com.mrboomdev.awery.platform
 
 import com.mrboomdev.awery.ext.source.Preferences
 

@@ -1,12 +1,12 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
 
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
@@ -322,7 +322,7 @@ public class NicePreferences implements SettingsDataHandler {
 	 */
 	@NonNull
 	public static NicePreferences getPrefs(String fileName) {
-		return new NicePreferences(getAppContext().getSharedPreferences(fileName, 0));
+		return new NicePreferences(AndroidGlobals.applicationContext.getSharedPreferences(fileName, 0));
 	}
 
 	/**

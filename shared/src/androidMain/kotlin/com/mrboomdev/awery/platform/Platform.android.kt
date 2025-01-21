@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.core.content.getSystemService
 import com.google.android.material.color.DynamicColors
-import com.mrboomdev.awery.app.AndroidGlobals
+import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.shared.BuildConfig
 
 actual object Platform {

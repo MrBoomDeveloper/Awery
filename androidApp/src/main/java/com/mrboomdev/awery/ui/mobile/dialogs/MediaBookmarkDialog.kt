@@ -11,7 +11,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.data.Constants.HIDDEN_LISTS
 import com.mrboomdev.awery.data.db.item.DBCatalogList
 import com.mrboomdev.awery.data.db.item.DBCatalogMedia
@@ -20,6 +19,7 @@ import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.setImageTintAttr

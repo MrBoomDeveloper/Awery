@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.mobile.screens.settings;
 import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.snackbar;
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.getActivity;
 import static com.mrboomdev.awery.app.AweryLifecycle.getAnyContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
@@ -51,12 +50,13 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.util.Selection;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 import com.mrboomdev.awery.util.ui.fields.FancyField;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -395,7 +395,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							if(e != null) {
 								dialog.dismiss();
-								toast(e.getMessage());
+								AndroidGlobals.INSTANCE.toast(e.getMessage(), 0);
 								return;
 							}
 
@@ -463,7 +463,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							if(e != null) {
 								dialog.dismiss();
-								toast(e.getMessage());
+								AndroidGlobals.INSTANCE.toast(e.getMessage(), 0);
 								return;
 							}
 
@@ -497,7 +497,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	private static void suggestToRestart(Context context) {
 		snackbar(Objects.requireNonNull(getActivity(context)),
-				i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), AweryLifecycle::restartApp);
+				i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), () -> AndroidGlobals.INSTANCE.restartApp());
 	}
 
 	@Override

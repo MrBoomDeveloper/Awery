@@ -16,12 +16,12 @@ import com.google.android.material.navigationrail.NavigationRailView
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.share
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.UI_INSETS

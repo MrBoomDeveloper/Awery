@@ -16,13 +16,13 @@ import com.mrboomdev.awery.app.App.Companion.getMarkwon
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.openUrl
 import com.mrboomdev.awery.app.App.Companion.orientation
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.databinding.MediaDetailsOverviewLayoutBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.GalleryActivity
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity.Companion.handleOptionsClick

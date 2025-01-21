@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.mobile.screens;
 
 import static com.mrboomdev.awery.app.App.openUrl;
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.getArgument;
 import static com.mrboomdev.awery.util.NiceUtils.requireArgument;
 
@@ -12,6 +11,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 
 public class LoginActivity extends AppCompatActivity {
 	public static final String ACTION_OPEN_BROWSER = "OPEN_BROWSER";
@@ -32,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 				setResult(Activity.RESULT_OK, intent);
 				finish();
 			} else {
-				toast("You haven't logged it!");
+				AndroidGlobals.INSTANCE.toast("You haven't logged it!", 0);
 				finish();
 			}
 		}
@@ -54,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		if(savedInstanceState != null) {
 			if(getArgument(savedInstanceState, SAVED_DID_LAUNCHED_BROWSER, Boolean.class)) {
-				toast("Failed to login into an account!", 1);
+				AndroidGlobals.INSTANCE.toast("Failed to login into an account!", 1);
 				finish();
 				return;
 			}

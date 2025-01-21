@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.sources
 
-import android.content.Context as AndroidContext
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Context
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectIndexed
 import java.io.InputStream
+import android.content.Context as AndroidContext
 
 /**
  * This is an pre-installed extensions manager, which does control ALL extensions.

@@ -3,7 +3,6 @@ package com.mrboomdev.awery.ui.mobile.screens.settings;
 import static com.mrboomdev.awery.app.App.isLandscape;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
 import static com.mrboomdev.awery.app.App.setContentViewCompat;
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.util.NiceUtils.doIfNotNull;
 import static com.mrboomdev.awery.util.ui.ViewUtil.dpPx;
@@ -38,10 +37,11 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
@@ -115,7 +115,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					if(item == null) throw new IllegalArgumentException("Failed to parse settings");
 				} catch(IOException e) {
 					Log.e(TAG, "Failed to parse settings", e);
-					toast("Failed to get settings", 0);
+					AndroidGlobals.INSTANCE.toast("Failed to get settings", 0);
 					finish();
 					return;
 				}
@@ -279,7 +279,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			SettingsData.getScreen(this, item, (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
-					toast(OkiThrowableMessageKt.explain(e).getTitle(), 0);
+					AndroidGlobals.INSTANCE.toast(OkiThrowableMessageKt.explain(e).getTitle(), 0);
 					finish();
 					return;
 				}

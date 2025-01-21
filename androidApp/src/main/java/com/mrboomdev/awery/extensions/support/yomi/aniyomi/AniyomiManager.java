@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_SEARCH;
 import static com.mrboomdev.awery.extensions.ExtensionProvider.FEATURE_MEDIA_WATCH;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -10,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.support.yomi.YomiManager;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 
 import java.util.Collections;
 import java.util.List;
@@ -89,8 +89,8 @@ public class AniyomiManager extends YomiManager {
 					})
 					.toList();
 		}
-
-		toast("Failed to create an Aniyomi provider!");
+		
+		AndroidGlobals.INSTANCE.toast("Failed to create an Aniyomi provider!", 0);
 		return Collections.emptyList();
 	}
 }

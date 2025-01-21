@@ -5,7 +5,6 @@ import static com.mrboomdev.awery.app.App.addOnBackPressedListener;
 import static com.mrboomdev.awery.app.App.getMarkwon;
 import static com.mrboomdev.awery.app.App.removeOnBackPressedListener;
 import static com.mrboomdev.awery.app.App.resolveAttrColor;
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.parseDate;
@@ -48,24 +47,25 @@ import com.mrboomdev.awery.databinding.LayoutCommentsHeaderBinding;
 import com.mrboomdev.awery.databinding.LayoutLoadingBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentBinding;
 import com.mrboomdev.awery.databinding.WidgetCommentSendBinding;
+import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.Extension;
 import com.mrboomdev.awery.extensions.ExtensionProvider;
 import com.mrboomdev.awery.extensions.ExtensionsFactory;
 import com.mrboomdev.awery.extensions.data.CatalogComment;
-import com.mrboomdev.awery.ext.data.CatalogMedia;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.util.NiceUtils;
-import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
 import com.mrboomdev.awery.util.async.AsyncFuture;
+import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
+import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -763,7 +763,7 @@ public class MediaCommentsFragment extends Fragment {
 									if(context == null) return;
 
 									if(!success) {
-										toast("Failed to delete comment");
+										AndroidGlobals.INSTANCE.toast("Failed to delete comment", 0);
 										return;
 									}
 

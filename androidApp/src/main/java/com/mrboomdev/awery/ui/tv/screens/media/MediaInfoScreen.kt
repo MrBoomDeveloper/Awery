@@ -31,12 +31,12 @@ import androidx.tv.material3.Text
 import androidx.tv.material3.lightColorScheme
 import com.mrboomdev.awery.AweryDebug
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.ExtensionsManager
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.util.extensions.plus

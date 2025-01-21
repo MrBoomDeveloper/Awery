@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.setPadding
@@ -13,13 +11,11 @@ import androidx.core.widget.NestedScrollView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
 import com.mrboomdev.awery.BuildConfig
-import com.mrboomdev.awery.app.App.Companion.isTv
-import com.mrboomdev.awery.app.App.Companion.toast
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.restartApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.CrashHandler
+import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
 import com.mrboomdev.awery.util.extensions.dpPx
@@ -27,89 +23,13 @@ import com.mrboomdev.awery.util.extensions.fixAndShow
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.utils.activity
-import xcrash.Errno
-import xcrash.XCrash
-import xcrash.XCrash.InitParameters
 import java.io.File
 
+@Deprecated("Use com.mrboomdev.awery.platform.CrashHandler instead!")
 object CrashHandler {
-	private const val TAG = "CrashHandler"
 
 	private val crashLogsDirectory by lazy {
-		File(appContext.filesDir, "tombstones")
-	}
-
-	private enum class CrashType {
-		ANR, JAVA, NATIVE
-	}
-
-	internal fun setupCrashListener(context: Context) {
-		when(XCrash.init(context, InitParameters().apply {
-			setAppVersion(BuildConfig.VERSION_NAME)
-
-			// Sometimes exoplayer does throw some native exceptions in the background
-			// and XCrash catches it for no reason, so we don't catch any native exceptions.
-			disableNativeCrashHandler()
-
-			// This library doesn't check if an ANR has happened
-			// properly on Android TV, so we disable it.
-			// Also while debugging an ANR may be triggered, so we disable it in the dev build.
-			setAnrCheckProcessState(!isTv && !BuildConfig.DEBUG)
-
-			// Crash logs are too long so we do strip all non-relevant dumps.
-			setJavaDumpNetworkInfo(false)
-			setJavaDumpFds(false)
-			setJavaDumpAllThreads(false)
-
-			setAnrDumpFds(false)
-			setAnrDumpNetwork(false)
-
-			setNativeDumpFds(false)
-			setNativeDumpMap(false)
-			setNativeDumpNetwork(false)
-			setNativeDumpElfHash(false)
-			setNativeDumpAllThreads(false)
-
-			// Logcat? There is only some shit...
-			setJavaLogcatMainLines(0)
-			setJavaLogcatEventsLines(0)
-			setJavaLogcatSystemLines(0)
-
-			setAnrLogcatMainLines(0)
-			setAnrLogcatEventsLines(0)
-			setAnrLogcatSystemLines(0)
-
-			setNativeLogcatMainLines(0)
-			setNativeLogcatEventsLines(0)
-			setNativeLogcatSystemLines(0)
-
-			// Setup crash handlers
-			setJavaCallback { _, message -> handleError(CrashType.JAVA, message) }
-			setNativeCallback { _, message -> handleError(CrashType.NATIVE, message) }
-			setAnrCallback { _, message -> handleError(CrashType.ANR, message) }
-		})) {
-			Errno.INIT_LIBRARY_FAILED -> "Failed to initialize XCrash library!"
-			Errno.LOAD_LIBRARY_FAILED -> "Failed to load XCrash library!"
-			else -> ""
-		}.let {
-			if(it.isBlank()) return
-			toast(it, Toast.LENGTH_LONG)
-			Log.e(TAG, it)
-		}
-	}
-
-	private fun handleError(type: CrashType, message: String?) {
-		toast(i18n(when(type) {
-			CrashType.ANR -> {
-				Log.e(TAG, "ANR error has happened. $message")
-				Res.string.app_not_responding_restart
-			}
-
-			CrashType.JAVA -> Res.string.app_crash
-			CrashType.NATIVE -> Res.string.something_terrible_happened
-		}), 1)
-
-		restartApp()
+		File(AndroidGlobals.applicationContext.filesDir, "tombstones")
 	}
 
 	@JvmStatic
@@ -131,29 +51,33 @@ object CrashHandler {
 			messagePrefix = report.prefix
 		)
 	}
+	
+	private val crashFiles: List<File>
+		get() = crashLogsDirectory.listFiles()?.sortedBy { it.lastModified() }?.reversed() ?: emptyList()
 
 	fun showDialogIfCrashHappened(
 		context: Context,
 		continuationCallback: () -> Unit = {}
 	) {
-		val files = crashLogsDirectory.listFiles()?.sortedBy { it.lastModified() }?.reversed()
-
-		if(files.isNullOrEmpty()) {
-			continuationCallback()
-			return
-		}
-
-		files.forEachIndexed { index, file ->
-			showDialog(
-				context = context,
-				title = i18n(Res.string.app_crash),
-				messagePrefix = i18n(Res.string.please_report_bug_app),
-				file = file,
-				dismissCallback = if(index == 0) {{
-					crashLogsDirectory.delete()
-					continuationCallback()
-				}} else {{}}
-			)
+		crashFiles.apply {
+			if(isEmpty()) {
+				continuationCallback()
+				return@showDialogIfCrashHappened
+			}
+			
+			forEachIndexed { index, file ->
+				showDialog(
+					context = context,
+					title = i18n(Res.string.app_crash),
+					messagePrefix = i18n(Res.string.please_report_bug_app),
+					file = file,
+					
+					dismissCallback = if(index == 0) {{
+						crashLogsDirectory.delete()
+						continuationCallback()
+					}} else {{}}
+				)
+			}
 		}
 	}
 
@@ -201,7 +125,7 @@ object CrashHandler {
 
 				if(file?.exists() == true || message != null || oki != null) {
 					setNegativeButton(i18n(Res.string.share)) {
-						val mFile = file ?: File((mContext ?: appContext).filesDir, "crash_report.txt").apply {
+						val mFile = file ?: File((mContext ?: AndroidGlobals.applicationContext).filesDir, "crash_report.txt").apply {
 							delete()
 							createNewFile()
 
@@ -220,14 +144,14 @@ object CrashHandler {
 							putExtra(Intent.EXTRA_SUBJECT, "Awery Crashed")
 							putExtra(Intent.EXTRA_EMAIL, arrayOf("awery-support@mrboomdev.ru"))
 							putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-								mContext ?: appContext, BuildConfig.FILE_PROVIDER, mFile))
+								mContext ?: AndroidGlobals.applicationContext, BuildConfig.FILE_PROVIDER, mFile))
 						}
 
 						val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
 							data = Uri.parse("mailto:")
 						}
 
-						val activityInfo = (mContext ?: appContext).packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_ALL).map {
+						val activityInfo = (mContext ?: AndroidGlobals.applicationContext).packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_ALL).map {
 							it.activityInfo.packageName
 						}.toTypedArray()
 
@@ -237,7 +161,7 @@ object CrashHandler {
 
 						emailIntent.toChooser("Share Awery crash report").apply {
 							putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
-						}.also { (mContext ?: appContext).startActivity(it) }
+						}.also { (mContext ?: AndroidGlobals.applicationContext).startActivity(it) }
 					}
 
 					setNeutralButton(i18n(Res.string.see_error)) {

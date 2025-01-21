@@ -8,7 +8,6 @@ import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
@@ -17,6 +16,7 @@ import com.mrboomdev.awery.generated.dismiss
 import com.mrboomdev.awery.generated.download
 import com.mrboomdev.awery.generated.size
 import com.mrboomdev.awery.generated.update_available
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.ContentType
 import com.mrboomdev.awery.util.NiceUtils

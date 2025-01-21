@@ -27,11 +27,11 @@ import androidx.tv.material3.Text
 import coil3.compose.SubcomposeAsyncImage
 import com.mrboomdev.awery.AweryDebug
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.theme.TvTheme
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import org.jetbrains.compose.resources.stringResource
 
 private val SHADOW_COLOR = Color(0xBB000000)

@@ -218,11 +218,6 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.mobile.screens.ReaderActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
-
-        <activity
             android:name=".ui.mobile.screens.settings.SettingsActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />

@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -17,12 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.isTv
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
 
 object ThemeManager {
 	val currentColorPalette: AwerySettings.ThemeColorPaletteValue
@@ -104,7 +106,9 @@ object ThemeManager {
 						isDark = theme.isDark,
 						isAmoled = theme.isAmoled
 					) {
-						Surface {
+						Surface(
+							modifier = Modifier.fillMaxSize()
+						) {
 							content()
 						}
 					}

@@ -19,7 +19,6 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.openUrl
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.settings.SettingsItem
@@ -36,6 +35,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.player.PlayerActivity
 import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity

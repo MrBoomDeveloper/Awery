@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extensions.support.yomi.aniyomi;
 
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.find;
 import static com.mrboomdev.awery.util.NiceUtils.findIndex;
@@ -15,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceScreen;
 
-import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
@@ -32,6 +30,7 @@ import com.mrboomdev.awery.extensions.data.CatalogVideoFile;
 import com.mrboomdev.awery.extensions.support.yomi.YomiProvider;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.adapters.MediaAdapter;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -211,8 +210,8 @@ public abstract class AniyomiProvider extends YomiProvider {
 					.setTitle(string)
 					.buildCustom();
 		}
-
-		toast("Found an unknown filter! " + filter.getClass().getName(), 1);
+		
+		AndroidGlobals.INSTANCE.toast("Found an unknown filter! " + filter.getClass().getName(), 1);
 		return null;
 	}
 
@@ -415,7 +414,7 @@ public abstract class AniyomiProvider extends YomiProvider {
 					@SuppressWarnings("unchecked") var animeFiltersGroup = (List<AnimeFilter<?>>) group.getState();
 					applyFilters(animeFiltersGroup, found.getItems());
 				} catch(ClassCastException e) {
-					toast("Unknown type of the filter group.");
+					AndroidGlobals.INSTANCE.toast("Unknown type of the filter group.", 0);
 					Log.e(TAG, "Unknown type of the filter group.", e);
 				}
 			}

@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.extensions;
 
-import static com.mrboomdev.awery.app.App.toast;
-import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 
 import android.app.Application;
@@ -14,6 +12,7 @@ import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.ext.util.Progress;
 import com.mrboomdev.awery.extensions.support.internal.InternalManager;
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.sources.yomi.YomiManager;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -58,7 +57,7 @@ public class ExtensionsFactory {
 		}
 
 		return pendingFuture = AsyncUtils.controllableFuture(future -> {
-			new ExtensionsFactory(getAppContext());
+			new ExtensionsFactory(AndroidGlobals.applicationContext);
 			pendingFuture = null;
 			future.complete(instance);
 		});
@@ -98,7 +97,7 @@ public class ExtensionsFactory {
 
 			Log.e(TAG, "");
 			Log.e(TAG, text);
-			toast(text);
+			AndroidGlobals.INSTANCE.toast(text, 0);
 		}
 
 		Log.d(TAG, "Finished loading");

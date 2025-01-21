@@ -26,6 +26,7 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -103,7 +104,7 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 							data = Uri.parse(binding.webview.url)
 
 							if(resolveActivity(packageManager) == null) {
-								App.toast("No external browser was found :(", 1)
+								toast("No external browser was found :(", 1)
 								return@setOnMenuItemClickListener true
 							}
 						})
@@ -253,14 +254,14 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 				defaultValue: String,
 				result: JsPromptResult
 			): Boolean {
-				App.toast("Prompts are currently not supported")
+				toast("Prompts are currently not supported")
 				return false
 			}
 
 			override fun onPermissionRequest(
 				request: PermissionRequest
 			) {
-				App.toast("Permissions are currently not supported")
+				toast("Permissions are currently not supported")
 				request.deny()
 			}
 
@@ -268,7 +269,7 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 				origin: String,
 				callback: GeolocationPermissions.Callback
 			) {
-				App.toast("Geolocation is currently not supported")
+				toast("Geolocation is currently not supported")
 				callback.invoke(origin, false, false)
 			}
 
@@ -278,7 +279,7 @@ class BrowserActivity : AppCompatActivity(), SafeArgsActivity<BrowserActivity.Ex
 				message: String,
 				result: JsResult
 			): Boolean {
-				App.toast("Confirmations are currently not supported")
+				toast("Confirmations are currently not supported")
 				return false
 			}
 

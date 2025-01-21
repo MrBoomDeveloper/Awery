@@ -55,9 +55,9 @@ fun MobileSetting(
 	onOpenScreen: (Setting) -> Unit,
 	isSelected: Boolean = false
 ) {
-	var triState by remember { mutableStateOf(setting.value as? Setting.TriState ?: Setting.TriState.EMPTY) }
-	var isChecked by remember { mutableStateOf(setting.value == true) }
-	var isDialogShown by remember { mutableStateOf(false) }
+	var triState by remember(setting) { mutableStateOf(setting.value as? Setting.TriState ?: Setting.TriState.EMPTY) }
+	var isChecked by remember(setting) { mutableStateOf(setting.value == true) }
+	var isDialogShown by remember(setting) { mutableStateOf(false) }
 	val context = LocalContext.current
 
 	Surface(

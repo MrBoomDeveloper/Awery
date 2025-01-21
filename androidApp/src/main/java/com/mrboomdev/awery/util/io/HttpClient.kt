@@ -1,8 +1,8 @@
 package com.mrboomdev.awery.util.io
 
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.async.AsyncUtils
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ object HttpClient {
 	val client: OkHttpClient by lazy {
 		OkHttpClient.Builder().apply {
 			cache(Cache(
-				directory = File(appContext.cacheDir, Constants.DIRECTORY_NET_CACHE), 
+				directory = File(AndroidGlobals.applicationContext.cacheDir, Constants.DIRECTORY_NET_CACHE), 
 				maxSize = 10 * 1024 * 1024 /* 10mb */
 			))
 

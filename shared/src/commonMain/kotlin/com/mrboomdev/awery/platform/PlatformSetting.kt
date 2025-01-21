@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.platform
 
-import com.mrboomdev.awery.app.PlatformPreferences
+import com.mrboomdev.awery.platform.PlatformPreferences
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.utils.parseEnum
 import kotlinx.serialization.SerialName

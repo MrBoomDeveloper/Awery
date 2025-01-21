@@ -9,13 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.services.BackupService
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.util.FileType
@@ -25,6 +25,8 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.utils.buildIntent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
+private const val TAG = "IntentHandlerActivity"
 
 class IntentHandlerActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,9 +176,5 @@ class IntentHandlerActivity : AppCompatActivity() {
 	private fun exit(message: String) {
 		toast(message, 1)
 		finish()
-	}
-
-	companion object {
-		private const val TAG = "IntentHandlerActivity"
 	}
 }

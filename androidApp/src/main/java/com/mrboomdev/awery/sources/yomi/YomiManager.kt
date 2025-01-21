@@ -9,7 +9,6 @@ import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.ExtensionsManager.isEnabled
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.Context
@@ -19,6 +18,7 @@ import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.utils.generateRequestCode
 import dalvik.system.PathClassLoader

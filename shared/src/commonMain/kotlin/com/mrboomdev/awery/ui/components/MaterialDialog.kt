@@ -2,7 +2,6 @@ package com.mrboomdev.awery.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -15,7 +14,6 @@ interface DialogScope {
 	fun requestDismiss()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialDialog(
 	modifier: Modifier = Modifier,

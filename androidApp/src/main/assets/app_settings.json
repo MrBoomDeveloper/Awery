@@ -512,6 +512,13 @@
 							"title": "Remastered settings",
 							"type": "boolean",
 							"value": false
+						},
+
+						{
+							"key": "experiment_compose_ui",
+							"title": "Compose UI",
+							"type": "boolean",
+							"value": false
 						}
 					]
 				},

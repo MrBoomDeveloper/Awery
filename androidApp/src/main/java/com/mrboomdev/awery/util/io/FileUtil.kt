@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.MediaStore
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
+import com.mrboomdev.awery.platform.android.AndroidGlobals
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -72,5 +72,5 @@ object FileUtil {
 
 	@JvmStatic
 	@Throws(IOException::class)
-	fun readAssets(path: String) = appContext.assets.open(path).readBytes().decodeToString()
+	fun readAssets(path: String) = AndroidGlobals.applicationContext.assets.open(path).readBytes().decodeToString()
 }

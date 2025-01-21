@@ -9,7 +9,6 @@ import android.provider.Settings
 import android.util.Log
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.services.BackupService
@@ -18,6 +17,7 @@ import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.util.ContentType

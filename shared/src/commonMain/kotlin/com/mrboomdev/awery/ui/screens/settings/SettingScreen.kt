@@ -48,7 +48,9 @@ fun SettingScreen(
 			}
 		} else {
 			items(
-				items = screen.items!!
+				items = screen.items!!,
+				key = { it.key ?: it },
+				contentType = { it.type }
 			) {
 				if(!it.isVisible) return@items
 				setting(it, onOpenScreen, selected != null && it in selected)

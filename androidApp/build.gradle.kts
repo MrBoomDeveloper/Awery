@@ -19,7 +19,7 @@ val releaseVersion = properties["awery.app.version"].toString()
 val packageName = "com.mrboomdev.awery"
 
 room {
-    schemaDirectory("$projectDir/schemas")
+    schemaDirectory("${projectDir}/../schemas")
 }
 
 android {
@@ -130,8 +130,6 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.shortcuts)
     implementation(libs.androidx.preference)
-    implementation(libs.xcrash)
-    implementation(libs.retrostreams)
     implementation(libs.bundles.aniyomi)
     implementation(projects.ext)
     implementation(projects.resources)
@@ -192,7 +190,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     // Serialization
-    implementation(files("../libs/safe-args-next.aar"))
+    implementation(libs.safeargsnext)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json.okio)
     implementation(libs.kotlinx.serialization.protobuf)
@@ -204,9 +202,11 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.glide.okhttp3)
     implementation(libs.bundles.okhttp)
+    implementation(libs.retrostreams)
 
 	// Debugging
     implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.xcrash)
     debugImplementation(libs.leakcanary)
 }
 

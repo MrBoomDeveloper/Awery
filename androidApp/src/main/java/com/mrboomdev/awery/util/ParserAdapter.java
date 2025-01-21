@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.util;
 
-import static com.mrboomdev.awery.app.App.toast;
 import static com.mrboomdev.awery.util.NiceUtils.listToUniqueString;
 import static com.mrboomdev.awery.util.NiceUtils.parseDate;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
@@ -14,6 +13,7 @@ import androidx.room.TypeConverter;
 
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsList;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
@@ -66,7 +66,7 @@ public class ParserAdapter {
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
-			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
+			AndroidGlobals.INSTANCE.toast("Your data has been corrupted! Sorry, but we can't do anything with it :(", 0);
 			Log.e(TAG, "Failed to parse string to map", e);
 			return Collections.emptyMap();
 		}
@@ -91,7 +91,7 @@ public class ParserAdapter {
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
-			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
+			AndroidGlobals.INSTANCE.toast("Your data has been corrupted! Sorry, but we can't do anything with it :(", 0);
 			Log.e(TAG, "Failed to parse string to map", e);
 			return new SettingsList();
 		}
@@ -128,7 +128,7 @@ public class ParserAdapter {
 		try {
 			return adapter.fromJson(value);
 		} catch(IOException e) {
-			toast("Your data has been corrupted! Sorry, but we can't do anything with it :(");
+			AndroidGlobals.INSTANCE.toast("Your data has been corrupted! Sorry, but we can't do anything with it :(", 0);
 			Log.e(TAG, "Failed to parse string to map", e);
 			return Collections.emptyMap();
 		}

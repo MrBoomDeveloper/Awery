@@ -2,12 +2,14 @@
 
 package com.mrboomdev.awery.platform
 
+import androidx.compose.runtime.Composable
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.ResourceEnvironment
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.replaceWithArgs
+import org.jetbrains.compose.resources.stringResource
 
 expect object PlatformResources {
 	@OptIn(ExperimentalResourceApi::class)

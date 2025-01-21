@@ -31,12 +31,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.AttrRes
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -52,7 +50,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryNotifications.registerNotificationChannels
@@ -64,6 +61,10 @@ import com.mrboomdev.awery.data.db.AweryDB
 import com.mrboomdev.awery.data.db.item.DBCatalogList
 import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.CrashHandler
+import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.ui.mobile.screens.IntentHandlerActivity
@@ -86,21 +87,21 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import java.util.WeakHashMap
+
+private const val TAG = "App"
+private val backPressedCallbacks = WeakHashMap<Runnable, Any>()
 
 class App : Application() {
 
 	override fun attachBaseContext(base: Context) {
-		appContext = this
+		AndroidGlobals.applicationContext = this
 		super.attachBaseContext(base)
-		CrashHandler.setupCrashListener(this)
+		CrashHandler.setup()
 	}
 
 	@OptIn(DelicateCoroutinesApi::class)
 	override fun onCreate() {
-		AndroidGlobals.applicationContext = this
 		applyTheme()
 		super.onCreate()
 		setupStrictMode()
@@ -181,9 +182,6 @@ class App : Application() {
 	}
 
 	companion object {
-		private val backPressedCallbacks = WeakHashMap<Runnable, Any>()
-		private const val TAG = "App"
-		
 		var didInit = false 
 			private set
 
@@ -194,7 +192,7 @@ class App : Application() {
 		}
 
 		val database: AweryDB by lazy {
-			databaseBuilder(appContext, AweryDB::class.java, "db")
+			databaseBuilder(AndroidGlobals.applicationContext, AweryDB::class.java, "db")
 				.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
 				.build()
 		}
@@ -239,7 +237,7 @@ class App : Application() {
 		}
 
 		fun copyToClipboard(clipData: ClipData) {
-			appContext.getSystemService<ClipboardManager>()!!.setPrimaryClip(clipData)
+			AndroidGlobals.applicationContext.getSystemService<ClipboardManager>()!!.setPrimaryClip(clipData)
 
 			// Android 13 and higher shows a visual confirmation of copied contents
 			// https://developer.android.com/about/versions/13/features/copy-paste
@@ -279,16 +277,6 @@ class App : Application() {
 					"Generated resource id filed cannot be private! Check if the provided class is the R class", e
 				)
 			}
-		}
-
-		private fun toastImpl(context: Context?, text: Any?, duration: Int = 0) {
-			runOnUiThread { Toast.makeText(context, text.toString(), duration).show() }
-		}
-
-		@JvmStatic
-		@JvmOverloads
-		fun toast(text: Any?, duration: Int = 0) {
-			toastImpl(appContext, text, duration)
 		}
 
 		/**
@@ -388,18 +376,7 @@ class App : Application() {
 
 		@JvmStatic
 		val isLandscape: Boolean
-			get() = isLandscape(appContext)
-
-		@Suppress("DEPRECATION")
-		@JvmStatic
-		val isTv by lazy {
-			with(appContext) {
-				packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-						|| packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
-						|| getSystemService<UiModeManager>()!!.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
-						|| !packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)
-			}
-		}
+			get() = isLandscape(AndroidGlobals.applicationContext)
 
 		@JvmStatic
 		@JvmOverloads

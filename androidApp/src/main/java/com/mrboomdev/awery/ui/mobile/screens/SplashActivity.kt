@@ -3,13 +3,20 @@ package com.mrboomdev.awery.ui.mobile.screens
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.mrboomdev.awery.R
+import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
+import cafe.adriel.voyager.navigator.LocalNavigatorSaver
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
+import cafe.adriel.voyager.navigator.parcelableNavigatorSaver
+import cafe.adriel.voyager.transitions.FadeTransition
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.Companion.database
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.exitApp
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.app.ExtensionsManager
@@ -17,10 +24,15 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.MainActivity
+import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.exitApp
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
+import com.mrboomdev.awery.ui.routes.SplashRoute
+import com.mrboomdev.awery.ui.screens.SplashScreen
 import com.mrboomdev.awery.ui.tv.TvMainActivity
+import com.mrboomdev.awery.ui.utils.KSerializerNavigatorSaver
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
@@ -34,18 +46,42 @@ import kotlinx.coroutines.launch
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 	private lateinit var binding: ScreenSplashBinding
-
+	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
 
-		try {
-			applyTheme()
-		} catch(e: Exception) {
-			Log.e(TAG, "Failed to apply an theme!", e)
+		if(!AwerySettings.EXPERIMENT_COMPOSE_UI.value) {
+			try { // Isn't necessary in Compose
+				applyTheme()
+			} catch(e: Exception) {
+				Log.e(TAG, "Failed to apply an theme!", e)
+			}
 		}
 
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
+		
+		if(AwerySettings.EXPERIMENT_COMPOSE_UI.value) {
+			setThemedContent {
+				@OptIn(ExperimentalVoyagerApi::class)
+				CompositionLocalProvider(
+					LocalNavigatorSaver provides KSerializerNavigatorSaver()
+				) {
+					Navigator(
+						screen = SplashRoute(),
+						disposeBehavior = NavigatorDisposeBehavior(disposeSteps = false)
+					) { navigator ->
+						@OptIn(ExperimentalVoyagerApi::class)
+						FadeTransition(
+							navigator = navigator,
+							disposeScreenAfterTransitionEnd = true
+						)
+					}
+				}
+			}
+			
+			return
+		}
 
 		binding = ScreenSplashBinding.inflate(layoutInflater).apply {
 			root.setBackgroundColor(resolveAttrColor(android.R.attr.colorBackground))

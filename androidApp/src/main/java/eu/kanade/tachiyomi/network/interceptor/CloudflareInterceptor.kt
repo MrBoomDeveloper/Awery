@@ -3,9 +3,7 @@ package eu.kanade.tachiyomi.network.interceptor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.webkit.WebView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
 import eu.kanade.tachiyomi.network.AndroidCookieJar
 import eu.kanade.tachiyomi.util.system.WebViewClientCompat

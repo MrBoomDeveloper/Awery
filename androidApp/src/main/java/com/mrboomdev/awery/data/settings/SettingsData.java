@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.app.AweryLifecycle.getAppContext;
 import static com.mrboomdev.awery.app.AweryLifecycle.runOnUiThread;
 import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 
 import com.mrboomdev.awery.BuildConfig;
-import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.data.Constants;
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException;
 import com.mrboomdev.awery.extensions.ExtensionSettings;
@@ -27,6 +25,7 @@ import com.mrboomdev.awery.extensions.support.yomi.aniyomi.AniyomiManager;
 import com.mrboomdev.awery.extensions.support.yomi.tachiyomi.TachiyomiManager;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
+import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.ui.mobile.screens.settings.TabsSettings;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -47,13 +46,13 @@ public class SettingsData {
 			case "APP_VERSION" -> BuildConfig.VERSION_NAME;
 
 			case "IMAGE_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
-					getAppContext().getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE)));
+					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE)));
 
 			case "NET_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
-					getAppContext().getCacheDir(), Constants.DIRECTORY_NET_CACHE)));
+					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_NET_CACHE)));
 
 			case "WEBVIEW_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
-					getAppContext().getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE)));
+					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE)));
 
 			default -> throw new IllegalArgumentException(key + " was not found!");
 		};

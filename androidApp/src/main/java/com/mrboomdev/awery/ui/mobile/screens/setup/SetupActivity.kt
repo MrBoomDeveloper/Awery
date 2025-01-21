@@ -60,6 +60,8 @@ class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras
 			false
 		})
 
+		binding.backButton.text = i18n(Res.string.back)
+		binding.continueButton.text = i18n(Res.string.continue_action)
 		binding.continueButton.setOnClickListener { tryToStartNextStep() }
 		binding.backButton.setOnClickListener { finish() }
 
@@ -74,6 +76,9 @@ class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras
 					binding.title.text = i18n(Res.string.awery_updated_title)
 					binding.message.text = i18n(Res.string.awery_updated_description)
 					binding.backButton.visibility = View.GONE
+				} else {
+					binding.title.text = i18n(Res.string.welcome_to_app)
+					binding.message.text = i18n(Res.string.welcome_to_app_description)
 				}
 
 				binding.backButton.text = i18n(Res.string.restore_backup)
@@ -104,8 +109,11 @@ class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras
 
 			STEP_TEMPLATE -> {
 				binding.title.text = i18n(Res.string.select_template)
-				binding.message.text = i18n(Res.string.generic_message)
-
+				
+				binding.message.text = i18n(Res.string.generic_message, 
+					"https://discord.com/invite/yspVzD4Kbm", 
+					"https://t.me/mrboomdev_awery")
+				
 				binding.recycler.layoutManager = LinearLayoutManager(this)
 				binding.recycler.addItemDecoration(RecyclerItemDecoration(dpPx(8f)))
 				binding.recycler.adapter = SetupTabsAdapter()
@@ -118,9 +126,13 @@ class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras
 
 			STEP_SOURCES -> {
 				if(AwerySettings.TABS_TEMPLATE.value == "dantotsu") {
-				    binding.message.setMarkwon(i18n(Res.string.dantotsu_message, "https://discord.com/invite/yspVzD4Kbm", "https://t.me/mrboomdev_awery"))
+				    binding.message.setMarkwon(i18n(Res.string.dantotsu_message, 
+						"https://discord.com/invite/yspVzD4Kbm", 
+						"https://t.me/mrboomdev_awery"))
 				} else {
-				    binding.message.setMarkwon(i18n(Res.string.generic_message, "https://discord.com/invite/yspVzD4Kbm", "https://t.me/mrboomdev_awery"))
+				    binding.message.setMarkwon(i18n(Res.string.generic_message, 
+						"https://discord.com/invite/yspVzD4Kbm", 
+						"https://t.me/mrboomdev_awery"))
 				}
 
 				binding.title.text = i18n(Res.string.extensions)

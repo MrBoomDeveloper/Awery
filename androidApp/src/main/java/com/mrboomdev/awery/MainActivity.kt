@@ -18,7 +18,6 @@ import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.isLandscape
 import com.mrboomdev.awery.app.App.Companion.navigationStyle
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.app.update.UpdatesManager
@@ -28,6 +27,7 @@ import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.databinding.LayoutHeaderHomeBinding
 import com.mrboomdev.awery.databinding.ScreenMainBinding
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment

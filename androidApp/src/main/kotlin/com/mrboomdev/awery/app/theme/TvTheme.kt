@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
-import com.mrboomdev.awery.app.App.Companion.isTv
-import com.mrboomdev.awery.generated.AwerySettings
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
 import com.mrboomdev.awery.ui.Themes
 import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 

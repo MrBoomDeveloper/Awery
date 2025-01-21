@@ -14,8 +14,9 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.mrboomdev.awery.app.App.Companion.toast
 import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.utils.UniqueIdGenerator
 import org.jetbrains.annotations.Contract
 import java.lang.ref.WeakReference
@@ -137,28 +138,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		private val infos = WeakHashMap<Activity, ActivityInfo<Activity>>()
 		private const val TAG = "AweryLifecycle"
 		private var handler: Handler? = null
-
-		@JvmStatic
-		fun restartApp() {
-			Log.i(TAG, "restartApp() has been invoked!")
-
-			app!!.startActivity(Intent.makeRestartActivityTask(
-				app!!.packageManager.getLaunchIntentForPackage(app!!.packageName)!!.component
-			).apply {
-				setPackage(app!!.packageName)
-			})
-
-			app = null
-			exitProcess(0)
-		}
-
-		fun exitApp() {
-			val activity = getAnyActivity(Activity::class.java)
-			app = null
-
-			if(activity != null) activity.finishAffinity()
-			else Runtime.getRuntime().exit(0)
-		}
 
 		@JvmStatic
 		@Deprecated(message = "Java")
@@ -322,7 +301,7 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 					if(activity != null) return activity
 				} catch(ignored: IndexOutOfBoundsException) { }
 
-				return appContext
+				return AndroidGlobals.applicationContext
 			}
 
 		@get:SuppressLint("PrivateApi", "DiscouragedPrivateApi")
@@ -361,32 +340,6 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 				return null
 			}
 		}
-
-		private var app: App? = null
-
-		@JvmStatic
-		var appContext: App
-			get() {
-				contextUsingPrivateApi.let {
-					if(it != null) {
-						app = it
-						return it
-					}
-				}
-
-				getAnyActivity(Activity::class.java)?.let {
-					app = it.applicationContext as App
-					return app!!
-				}
-
-				return app!!
-			}
-
-			set(value) {
-				app = value
-				value.registerActivityLifecycleCallbacks(AweryLifecycle())
-				handler = Handler(Looper.getMainLooper())
-			}
 
 		@JvmStatic
 		fun cancelDelayed(runnable: Runnable?) {

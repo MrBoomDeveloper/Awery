@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.appContext
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
 import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
@@ -29,6 +28,7 @@ import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformResources
+import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
@@ -216,7 +216,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 						getPrefs().setValue(item.key, (newValue as Boolean)).saveSync()
 
 						if(AwerySettings.USE_DARK_THEME.key == item.key) {
-							appContext.applyTheme()
+							AndroidGlobals.applicationContext.applyTheme()
 							return
 						}
 
