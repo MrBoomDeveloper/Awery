@@ -18,7 +18,7 @@ import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.extensions.ensureSize
-import com.mrboomdev.awery.util.io.FileUtil.readAssets
+import com.mrboomdev.awery.utils.readAssets
 import com.squareup.moshi.Json
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineScope

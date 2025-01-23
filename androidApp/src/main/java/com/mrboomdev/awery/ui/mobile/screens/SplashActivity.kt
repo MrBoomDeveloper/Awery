@@ -25,6 +25,7 @@ import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.MainActivity
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
+import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.exitApp
 import com.mrboomdev.awery.platform.i18n
@@ -38,10 +39,13 @@ import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.tryOr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+
+private const val TAG = "SplashActivity"
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -49,17 +53,14 @@ class SplashActivity : AppCompatActivity() {
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
-
+		
+		// TODO: Remove after Compose migration finished
 		if(!AwerySettings.EXPERIMENT_COMPOSE_UI.value) {
-			try { // Isn't necessary in Compose
-				applyTheme()
-			} catch(e: Exception) {
-				Log.e(TAG, "Failed to apply an theme!", e)
-			}
+			tryOr({ applyTheme() }) { Log.e(TAG, "Failed to apply an theme!", it) }
 		}
-
-		enableEdgeToEdge()
+		
 		super.onCreate(savedInstanceState)
+		enableEdgeToEdge()
 		
 		if(AwerySettings.EXPERIMENT_COMPOSE_UI.value) {
 			setThemedContent {
@@ -174,8 +175,8 @@ class SplashActivity : AppCompatActivity() {
 			return
 		}
 
-		var progress: Long = 0
-		var total: Long = 0
+		var progress = 0L
+		var total = 0L
 
 		for(manager in factory.managers) {
 			val managerProgress = manager.progress
@@ -185,9 +186,5 @@ class SplashActivity : AppCompatActivity() {
 
 		binding.status.text = i18n(Res.string.loading_extensions_n, progress, total)
 		runDelayed({ this.update() }, 100)
-	}
-
-	companion object {
-		private const val TAG = "SplashActivity"
 	}
 }

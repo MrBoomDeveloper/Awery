@@ -5,7 +5,6 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.mrboomdev.awery.BuildConfig
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
@@ -18,7 +17,7 @@ import com.mrboomdev.awery.generated.size
 import com.mrboomdev.awery.generated.update_available
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
-import com.mrboomdev.awery.util.ContentType
+import com.mrboomdev.awery.data.ContentType
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.extensions.formatFileSize
 import com.mrboomdev.awery.util.extensions.removeIndent

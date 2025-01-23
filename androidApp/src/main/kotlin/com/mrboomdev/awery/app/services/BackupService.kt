@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
@@ -12,7 +11,7 @@ import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.restartApp
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
-import com.mrboomdev.awery.util.FileType
+import com.mrboomdev.awery.data.FileType
 import com.mrboomdev.awery.util.io.unzipFiles
 import com.mrboomdev.awery.util.io.zipFiles
 import com.mrboomdev.safeargsnext.owner.SafeArgsService

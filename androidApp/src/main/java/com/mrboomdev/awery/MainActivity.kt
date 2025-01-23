@@ -49,13 +49,13 @@ import com.mrboomdev.awery.util.extensions.setContentViewCompat
 import com.mrboomdev.awery.util.extensions.setHorizontalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
-import com.mrboomdev.awery.util.io.FileUtil.readAssets
 import com.mrboomdev.awery.util.ui.FadeTransformer
 import com.mrboomdev.awery.utils.addOnBackPressedListener
 import com.mrboomdev.awery.utils.buildIntent
 import com.mrboomdev.awery.utils.div
 import com.mrboomdev.awery.utils.dpPx
 import com.mrboomdev.awery.utils.inflater
+import com.mrboomdev.awery.utils.readAssets
 import com.mrboomdev.awery.utils.removeOnBackPressedListener
 import com.squareup.moshi.adapter
 import kotlinx.coroutines.CoroutineExceptionHandler

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
-import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
@@ -24,7 +23,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.Toast
 import android.window.OnBackInvokedCallback
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -106,8 +104,8 @@ class App : Application() {
 		super.onCreate()
 		setupStrictMode()
 		
-		GlobalScope.launch(Dispatchers.Default) { 
-			initSync() 
+		GlobalScope.launch(Dispatchers.Default) {
+			initSync()
 		}
 	}
 	
@@ -149,33 +147,22 @@ class App : Application() {
 			}
 		}
 		
-		// If any experiment is enabled, then crate an shortcut
-		if(AwerySettings.EXPERIMENTS.items.find { it is GeneratedSetting.Boolean && it.value == true } != null) {
-			if(isTv) {
-				// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
-				packageManager.setComponentEnabledSetting(
-					ComponentName(this, TvExperimentsActivity::class.java),
-					PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
-			} else {
-				ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
-					ShortcutInfoCompat.Builder(this, "experiments")
-						.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
-						.setLongLabel("Open experimental settings")
-						.setShortLabel("Experiments")
-						.setLongLived(true)
-						.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
-							action = Intent.ACTION_VIEW
-							data = Uri.parse("awery://experiments")
-						}).build())
-			}
+		if(isTv) {
+			// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
+			packageManager.setComponentEnabledSetting(
+				ComponentName(this, TvExperimentsActivity::class.java),
+				PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
 		} else {
-			if(isTv) {
-				packageManager.setComponentEnabledSetting(
-					ComponentName(this, TvExperimentsActivity::class.java),
-					PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
-			} else {
-				ShortcutManagerCompat.removeLongLivedShortcuts(applicationContext, listOf("experiments"))
-			}
+			ShortcutManagerCompat.pushDynamicShortcut(applicationContext,
+				ShortcutInfoCompat.Builder(this, "experiments")
+					.setIcon(IconCompat.createWithResource(this, R.drawable.ic_experiment_outlined))
+					.setLongLabel("Open experimental settings")
+					.setShortLabel("Experiments")
+					.setLongLived(true)
+					.setIntent(Intent(this, IntentHandlerActivity::class.java).apply {
+						action = Intent.ACTION_VIEW
+						data = Uri.parse("awery://experiments")
+					}).build())
 		}
 		
 		didInit = true
@@ -196,11 +183,13 @@ class App : Application() {
 				.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
 				.build()
 		}
-
+		
+		@Deprecated("Use kotlin serialization instead!")
 		fun getMoshi(): Moshi {
 			return globalMoshi
 		}
 
+		@Deprecated("Use kotlin serialization instead!")
 		fun getMoshi(vararg adapters: Any): Moshi {
 			if(adapters.isEmpty()) {
 				return globalMoshi
@@ -284,7 +273,7 @@ class App : Application() {
 		 * This method tries to do it without throwing any exceptions.
 		 */
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		fun setContentViewCompat(activity: Activity, view: View) {
 			try {
 				activity.setContentView(view)
@@ -306,7 +295,7 @@ class App : Application() {
 		 * @author MrBoomDev
 		 */
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		fun enableEdgeToEdge(context: ComponentActivity) {
 			try {
 				context.enableEdgeToEdge()
@@ -317,7 +306,7 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		fun removeOnBackPressedListener(activity: Activity, callback: Runnable) {
 			val onBackInvokedCallback = backPressedCallbacks.remove(callback) ?: return
 
@@ -332,7 +321,7 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		fun addOnBackPressedListener(activity: Activity, callback: Runnable) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 				val onBackInvokedCallback = OnBackInvokedCallback { callback.run() }
@@ -357,13 +346,13 @@ class App : Application() {
 		}
 
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		fun resolveAttrColor(context: Context, @AttrRes res: Int): Int {
 			return MaterialColors.getColor(context, res, Color.BLACK)
 		}
 
 		@JvmStatic
-		@Deprecated("")
+		@Deprecated("Old java shit")
 		@SuppressLint("RestrictedApi")
 		fun resolveAttr(context: Context?, @AttrRes res: Int): TypedValue? {
 			return MaterialAttributes.resolve(context!!, res)

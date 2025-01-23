@@ -17,7 +17,6 @@ import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.clearImageTint
 import com.mrboomdev.awery.util.extensions.context
 import com.mrboomdev.awery.util.extensions.dpPx
-import com.mrboomdev.awery.util.extensions.readAssets
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.resolveDrawable
 import com.mrboomdev.awery.util.extensions.scale
@@ -25,6 +24,7 @@ import com.mrboomdev.awery.util.extensions.setImageTintAttr
 import com.mrboomdev.awery.util.extensions.topMargin
 import com.mrboomdev.awery.utils.dpPx
 import com.mrboomdev.awery.utils.inflater
+import com.mrboomdev.awery.utils.readAssets
 import com.squareup.moshi.adapter
 import java.io.File
 
@@ -43,7 +43,7 @@ class SetupTabsAdapter : RecyclerView.Adapter<SetupTabsAdapter.ViewHolder?>() {
 		}});*/
 
 		templates.addAll(getMoshi(SettingsList.ADAPTER).adapter<List<TabsTemplate>>()
-			.fromJson(File("tabs_templates.json").readAssets())!!)
+			.fromJson(readAssets("tabs_templates.json"))!!)
 
 		val savedSelected = AwerySettings.TABS_TEMPLATE.value
 		selected = templates.find { it.id == savedSelected }

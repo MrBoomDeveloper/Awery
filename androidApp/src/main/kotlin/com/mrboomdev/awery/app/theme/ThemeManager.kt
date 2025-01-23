@@ -106,9 +106,7 @@ object ThemeManager {
 						isDark = theme.isDark,
 						isAmoled = theme.isAmoled
 					) {
-						Surface(
-							modifier = Modifier.fillMaxSize()
-						) {
+						Surface(modifier = Modifier.fillMaxSize()) {
 							content()
 						}
 					}

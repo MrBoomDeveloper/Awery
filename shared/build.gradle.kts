@@ -72,13 +72,15 @@ kotlin {
 		val desktopMain by getting {
 			dependencies {
 				implementation(compose.desktop.common)
+				implementation("androidx.sqlite:sqlite-bundled-jvm:2.5.0-alpha12")
 			}
 		}
 	}
 }
 
 dependencies {
-	ksp(libs.androidx.room.compiler)
+	add("kspDesktop", libs.androidx.room.compiler)
+	add("kspAndroid", libs.androidx.room.compiler)
 }
 
 android {
@@ -92,6 +94,12 @@ android {
 	buildFeatures {
 		buildConfig = true
 	}
+}
+
+composeCompiler {
+	stabilityConfigurationFiles.add(
+		rootProject.layout.projectDirectory.file(
+			"compose-stability.txt"))
 }
 
 compose.resources {

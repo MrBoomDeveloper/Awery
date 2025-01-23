@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
-import com.mrboomdev.awery.util.io.FileUtil;
 import com.mrboomdev.awery.utils.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
@@ -78,7 +77,7 @@ public class NiceUtils {
 		var file = new File(root, "temp/" + fileIdGenerator.getLong());
 
 		if(file.exists()) {
-			FileUtil.deleteFile(file);
+			kotlin.io.FilesKt.deleteRecursively(file);
 		} else {
 			requireNonNull(file.getParentFile()).mkdirs();
 		}

@@ -204,6 +204,9 @@
 						}, {
 							"key": "experiment_settings2", "title": "Remastered settings",
 							"type": "boolean", "boolean_value": false
+						}, {
+							"key": "experiment_compose_ui", "title": "Compose UI",
+							"type": "boolean", "boolean_value": false
 						}
 					]
 				},

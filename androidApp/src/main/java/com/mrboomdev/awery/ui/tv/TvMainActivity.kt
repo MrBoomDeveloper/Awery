@@ -26,7 +26,7 @@ import com.mrboomdev.awery.ui.tv.screens.home.HomeScreen
 import com.mrboomdev.awery.ui.tv.screens.media.MediaScreen
 import com.mrboomdev.awery.util.NavUtils
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.readAssets
+import com.mrboomdev.awery.utils.readAssets
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -69,9 +69,7 @@ class TvMainActivity : ComponentActivity() {
 					Json {
 						decodeEnumsCaseInsensitive = true
 						isLenient = true
-					}.decodeFromString<PlatformSetting>(
-						File("app_settings.json").readAssets()
-					).apply {
+					}.decodeFromString<PlatformSetting>(readAssets("app_settings.json")).apply {
 						restoreValues()
 					}
 				}

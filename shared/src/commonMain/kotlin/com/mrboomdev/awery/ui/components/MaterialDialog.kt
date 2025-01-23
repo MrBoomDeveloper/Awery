@@ -8,11 +8,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.app.theme.LocalAweryTheme
 
 interface DialogScope {
 	fun requestDismiss()
 }
+
+val DEFAULT_DIALOG_PADDING = 8.dp
 
 @Composable
 fun MaterialDialog(

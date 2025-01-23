@@ -7,14 +7,12 @@ import static com.mrboomdev.awery.data.Constants.alwaysTrue;
 import static com.mrboomdev.awery.data.settings.NicePreferences.getPrefs;
 import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.find;
-import static com.mrboomdev.awery.util.NiceUtils.requireNonNull;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
-import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
+import static com.mrboomdev.awery.utils.FileExtensionsAndroid.readAssets;
 import static com.mrboomdev.awery.utils.IntentUtilsKt.buildIntent;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 
@@ -24,7 +22,6 @@ import androidx.core.content.ContextCompat;
 
 import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
-import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.db.item.DBTab;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
@@ -44,7 +41,6 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.IconPickerDialog;
 import com.mrboomdev.awery.utils.ActivityUtilsKt;
 import com.mrboomdev.awery.utils.ContextUtilsKt;
-import com.mrboomdev.awery.utils.IntentUtilsKt;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -155,9 +151,8 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 	public TabsSettings() {
 		try {
-			var json = readAssets("icons.json");
 			var adapter = Parser.<Map<String, IconStateful>>getAdapter(Map.class, String.class, IconStateful.class);
-			icons = Parser.fromString(adapter, json);
+			icons = Parser.fromString(adapter, readAssets("icons.json"));
 		} catch(IOException e) {
 			throw new RuntimeException("Failed to read an icons atlas!", e);
 		}
@@ -192,10 +187,8 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 
 				if(!Objects.equals(savedTemplate, "custom")) {
 					try {
-						var templatesJson = readAssets("tabs_templates.json");
 						var adapter = Parser.<List<TabsTemplate>>getAdapter(List.class, TabsTemplate.class);
-						var templates = Parser.fromString(adapter, templatesJson);
-
+						var templates = Parser.fromString(adapter, readAssets("tabs_templates.json"));
 						var selected = find(templates, template -> template.id.equals(savedTemplate));
 
 						if(selected != null) {

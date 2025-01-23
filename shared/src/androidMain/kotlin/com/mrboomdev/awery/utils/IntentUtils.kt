@@ -68,8 +68,7 @@ internal fun buildIntentImpl(
     builder: (Intent.() -> Unit)?
 ): Intent {
     intent.action = action
-    intent.data = data
-    intent.type = type
+    intent.setDataAndType(data, type)
     builder?.invoke(intent)
     return intent
 }

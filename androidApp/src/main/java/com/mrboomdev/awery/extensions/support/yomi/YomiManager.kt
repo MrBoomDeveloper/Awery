@@ -12,16 +12,14 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.mrboomdev.awery.app.App.Companion.getMoshi
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.extensions.Extension
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.extensions.ExtensionSettings
 import com.mrboomdev.awery.extensions.ExtensionsManager
-import com.mrboomdev.awery.util.ContentType
+import com.mrboomdev.awery.data.ContentType
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
@@ -36,6 +34,7 @@ import com.mrboomdev.awery.utils.getPackageUri
 import com.mrboomdev.awery.utils.startActivityForResult
 import com.squareup.moshi.adapter
 import dalvik.system.PathClassLoader
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.CancellationException
@@ -57,7 +56,7 @@ abstract class YomiManager : ExtensionsManager() {
 
 	abstract fun createProviders(extension: Extension?, main: Any?): List<ExtensionProvider?>
 
-	override fun getExtension(id: String) = extensions[id]!!
+	override fun getExtension(id: String) = extensions[id]
 
 	override fun getAllExtensions() = extensions.values
 
@@ -248,49 +247,49 @@ abstract class YomiManager : ExtensionsManager() {
 				FileOutputStream(tempFile).use { os ->
 					val buffer = ByteArray(1024 * 5)
 					var read: Int
-
+					
 					while((inputStream!!.read(buffer).also { read = it }) != -1) {
 						os.write(buffer, 0, read)
 					}
-
-					val info = packageManager.getPackageArchiveInfo(tempFile.path, PM_FLAGS) ?: run {
-						future.fail(ExtensionInstallException("Failed to parse an APK!"))
-						return@with
-					}
-
-					runOnUiThread {
-						startActivityForResult(buildIntent(
-							action = Intent.ACTION_VIEW,
-							data = uri,
-							type = ContentType.APK.mimeType
-						) {
-							putExtra(Intent.EXTRA_RETURN_RESULT, true)
-							putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-							putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, packageName)
-							addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-						  }, { resultCode, _ ->
-							when(resultCode) {
-								Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
-									try {
-										val got = packageManager.getPackageInfo(info.packageName, PM_FLAGS)
-
-										if(info.versionCode != got.versionCode) {
-											future.fail(IllegalStateException("Failed to install an APK!"))
-											return@startActivityForResult
-										}
-
-										initExtension(got, context)
-										future.complete(getExtension(info.packageName))
-									} catch(e: Throwable) {
-										future.fail(e)
-									}
-								}
-
-								Activity.RESULT_CANCELED -> future.fail(CancellationException("Install cancelled"))
-							}
-						})
-					}
 				}
+			}
+
+			val info = packageManager.getPackageArchiveInfo(tempFile.path, PM_FLAGS) ?: run {
+				future.fail(ExtensionInstallException("Failed to parse an APK!"))
+				return@with
+			}
+
+			runOnUiThread {
+				startActivityForResult(buildIntent(
+					action = Intent.ACTION_VIEW,
+					data = uri,
+					type = ContentType.APK.mimeType
+				) {
+					putExtra(Intent.EXTRA_RETURN_RESULT, true)
+					putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+					putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, packageName)
+					addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+				}, { resultCode, _ ->
+					when(resultCode) {
+						Activity.RESULT_OK, Activity.RESULT_FIRST_USER -> {
+							try {
+								val got = packageManager.getPackageInfo(info.packageName, PM_FLAGS)
+								
+								if(info.versionCode != got.versionCode) {
+									future.fail(IllegalStateException("Failed to install an APK!"))
+									return@startActivityForResult
+								}
+								
+								initExtension(got, context)
+								future.complete(getExtension(info.packageName))
+							} catch(e: Throwable) {
+								future.fail(e)
+							}
+						}
+						
+						Activity.RESULT_CANCELED -> future.fail(CancellationException("Install cancelled"))
+					}
+				})
 			}
 		} catch(e: IOException) {
 			future.fail(e)

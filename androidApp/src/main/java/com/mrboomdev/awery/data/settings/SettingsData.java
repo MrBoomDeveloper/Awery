@@ -5,7 +5,7 @@ import static com.mrboomdev.awery.platform.PlatformResourcesKt.i18n;
 import static com.mrboomdev.awery.util.NiceUtils.formatFileSize;
 import static com.mrboomdev.awery.util.NiceUtils.stream;
 import static com.mrboomdev.awery.util.async.AsyncUtils.thread;
-import static com.mrboomdev.awery.util.io.FileUtil.getFileSize;
+import static com.mrboomdev.awery.utils.FileExtensionsKt.getTotalSize;
 
 import android.util.Log;
 
@@ -45,13 +45,13 @@ public class SettingsData {
 		return switch(key) {
 			case "APP_VERSION" -> BuildConfig.VERSION_NAME;
 
-			case "IMAGE_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
+			case "IMAGE_CACHE_SIZE" -> formatFileSize(getTotalSize(new File(
 					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_IMAGE_CACHE)));
 
-			case "NET_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
+			case "NET_CACHE_SIZE" -> formatFileSize(getTotalSize(new File(
 					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_NET_CACHE)));
 
-			case "WEBVIEW_CACHE_SIZE" -> formatFileSize(getFileSize(new File(
+			case "WEBVIEW_CACHE_SIZE" -> formatFileSize(getTotalSize(new File(
 					AndroidGlobals.applicationContext.getCacheDir(), Constants.DIRECTORY_WEBVIEW_CACHE)));
 
 			default -> throw new IllegalArgumentException(key + " was not found!");

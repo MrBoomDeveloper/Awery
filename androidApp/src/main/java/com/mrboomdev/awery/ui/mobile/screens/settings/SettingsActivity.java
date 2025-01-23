@@ -72,14 +72,18 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 
 		return pool;
 	}
-
-	public static void start(Context context, SettingsItem item) {
+	
+	public static Intent createSettingsIntent(Context context, SettingsItem item) {
 		var id = payloadIdGenerator.getLong();
 		payloads.put(id, item);
-
+		
 		var intent = new Intent(context, SettingsActivity.class);
 		intent.putExtra(EXTRA_PAYLOAD_ID, id);
-		context.startActivity(intent);
+		return intent;
+	}
+
+	public static void start(Context context, SettingsItem item) {
+		context.startActivity(createSettingsIntent(context, item));
 	}
 
 	@Override

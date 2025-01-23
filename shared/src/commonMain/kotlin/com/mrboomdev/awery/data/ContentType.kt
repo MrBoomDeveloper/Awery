@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.util
+package com.mrboomdev.awery.data
 
 enum class FileType(val extension: String) {
     DANTOTSU_BACKUP(".ani"),

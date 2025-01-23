@@ -29,12 +29,11 @@ import com.mrboomdev.awery.ui.mobile.components.MobileSetting
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.historyState
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
-import com.mrboomdev.awery.util.extensions.readAssets
+import com.mrboomdev.awery.utils.readAssets
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.collect
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import java.io.File
 
 class SettingsActivity2: ComponentActivity() {
 
@@ -47,9 +46,7 @@ class SettingsActivity2: ComponentActivity() {
 		val settings = Json {
 			decodeEnumsCaseInsensitive = true
 			isLenient = true
-		}.decodeFromString<PlatformSetting>(
-			File("app_settings.json").readAssets()
-		).apply {
+		}.decodeFromString<PlatformSetting>(readAssets("app_settings.json")).apply {
 			restoreValues()
 		}
 

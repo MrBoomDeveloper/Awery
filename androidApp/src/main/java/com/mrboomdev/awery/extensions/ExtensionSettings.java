@@ -49,7 +49,6 @@ import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.async.AsyncUtils;
-import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage;
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.util.io.HttpClient;
 import com.mrboomdev.awery.util.io.HttpRequest;
@@ -478,7 +477,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 				});
 
 				HttpClient.download(new HttpRequest(extension.getFileUrl()), new File(context.getCacheDir(),
-								"download/extension/" + manager.getId() + "/" + extension.getId())
+								"download/extension/" + manager.getId() + "/" + extension.getId() + ".apk")
 				).addCallback(downloadedCallback.get());
 			}
 

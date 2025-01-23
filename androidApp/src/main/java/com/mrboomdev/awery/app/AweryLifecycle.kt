@@ -5,22 +5,16 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.MainThread
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.mrboomdev.awery.platform.PlatformResources
 import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
-import com.mrboomdev.awery.utils.UniqueIdGenerator
 import org.jetbrains.annotations.Contract
 import java.lang.ref.WeakReference
-import java.lang.reflect.InvocationTargetException
 import java.util.Objects
 import java.util.WeakHashMap
 import kotlin.system.exitProcess
@@ -137,7 +131,10 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 	companion object {
 		private val infos = WeakHashMap<Activity, ActivityInfo<Activity>>()
 		private const val TAG = "AweryLifecycle"
-		private var handler: Handler? = null
+		
+		private val handler by lazy {
+			Handler(Looper.getMainLooper())
+		}
 
 		@JvmStatic
 		@Deprecated(message = "Java")
@@ -261,12 +258,13 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 
 		@JvmStatic
 		fun postRunnable(runnable: Runnable): Runnable? {
-			return if(handler!!.post(runnable)) runnable else null
+			return if(handler.post(runnable)) runnable else null
 		}
 
 		@JvmStatic
+		@Deprecated("Use coroutines")
 		fun runOnUiThread(runnable: Runnable): Runnable {
-			if(!isMainThread) handler!!.post(runnable)
+			if(!isMainThread) handler.post(runnable)
 			else runnable.run()
 
 			return runnable
@@ -282,10 +280,11 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 		 * @return May be a different callback depending on the state of the RecyclerView, so that you can cancel it.
 		 */
 		@JvmStatic
+		@Deprecated("Use coroutines")
 		fun runOnUiThread(callback: Runnable, recycler: RecyclerView): Runnable {
 			if(!isMainThread || recycler.isComputingLayout) {
 				return Runnable { runOnUiThread(callback, recycler) }
-					.also { handler!!.post(it) }
+					.also { handler.post(it) }
 			}
 
 			return callback.also { it.run() }
@@ -304,57 +303,23 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 				return AndroidGlobals.applicationContext
 			}
 
-		@get:SuppressLint("PrivateApi", "DiscouragedPrivateApi")
-		private val contextUsingPrivateApi: App?
-			get() {
-				var context = invokeMethod(
-					"android.app.ActivityThread",
-					"currentApplication"
-				) as App?
-
-				if(context != null) {
-					return context
-				}
-
-				context = invokeMethod(
-					"android.app.AppGlobals",
-					"getInitialApplication"
-				) as App?
-
-				return context
-			}
-
-		private fun invokeMethod(className: String, methodName: String): Any? {
-			try {
-				val clazz = Class.forName(className)
-				val method = clazz.getMethod(methodName)
-				method.isAccessible = true
-				return method.invoke(null)
-			} catch(e: ClassNotFoundException) {
-				return null
-			} catch(e: IllegalAccessException) {
-				return null
-			} catch(e: InvocationTargetException) {
-				return null
-			} catch(e: NoSuchMethodException) {
-				return null
-			}
-		}
-
 		@JvmStatic
+		@Deprecated("Use coroutines")
 		fun cancelDelayed(runnable: Runnable?) {
-			handler!!.removeCallbacks(runnable!!)
+			handler.removeCallbacks(runnable!!)
 		}
 
 		@JvmStatic
+		@Deprecated("Use coroutines")
 		fun runDelayed(runnable: Runnable?, delay: Long) {
-			handler!!.postDelayed(runnable!!, delay)
+			handler.postDelayed(runnable!!, delay)
 		}
 
 		@JvmStatic
+		@Deprecated("Use coroutines")
 		fun runDelayed(runnable: Runnable, delay: Long, recycler: RecyclerView): Runnable {
 			val result = Runnable { runOnUiThread(runnable, recycler) }
-			handler!!.postDelayed(result, delay)
+			handler.postDelayed(result, delay)
 			return result
 		}
 	}

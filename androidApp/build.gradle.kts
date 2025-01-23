@@ -210,6 +210,12 @@ dependencies {
     debugImplementation(libs.leakcanary)
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file(
+            "compose-stability.txt"))
+}
+
 tasks.register<GenerateSettingsTask>("generateSettings") {
     packageName = "com.mrboomdev.awery.generated"
     className = "AwerySettings"

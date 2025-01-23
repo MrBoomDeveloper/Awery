@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.data.settings;
 
-import static com.mrboomdev.awery.util.io.FileUtil.readAssets;
+import static com.mrboomdev.awery.utils.FileExtensionsAndroid.readAssets;
 
 import android.content.SharedPreferences;
 
@@ -50,11 +50,8 @@ public class NicePreferences implements SettingsDataHandler {
 		}
 
 		try {
-			var json = readAssets("settings.json");
-
-			settingsMapInstance = Parser.fromString(SettingsItem.class, json);
+			settingsMapInstance = Parser.fromString(SettingsItem.class, readAssets("settings.json"));
 			settingsMapInstance.setAsParentForChildren();
-
 			reloadSettingsMapValues();
 			return settingsMapInstance;
 		} catch(IOException e) {

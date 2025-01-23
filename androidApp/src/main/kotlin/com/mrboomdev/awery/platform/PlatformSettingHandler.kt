@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.app.CrashHandler
@@ -20,7 +19,7 @@ import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
-import com.mrboomdev.awery.util.ContentType
+import com.mrboomdev.awery.data.ContentType
 import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder

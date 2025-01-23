@@ -20,14 +20,13 @@ import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getActivities
 import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
-import com.mrboomdev.awery.asSetting
+import com.mrboomdev.awery.asDeprecatedSetting
 import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.data.settings.SettingsItem
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.PlatformResources
 import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
@@ -195,10 +194,10 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 					private val items: MutableList<SettingsItem> = ArrayList()
 
 					init {
-						items.add(AwerySettings.USE_DARK_THEME.asSetting())
+						items.add(AwerySettings.USE_DARK_THEME.asDeprecatedSetting())
 
 						if(AwerySettings.USE_DARK_THEME.value == true) {
-							items.add(AwerySettings.USE_AMOLED_THEME.asSetting())
+							items.add(AwerySettings.USE_AMOLED_THEME.asDeprecatedSetting())
 						}
 					}
 
