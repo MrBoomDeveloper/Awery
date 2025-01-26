@@ -3,8 +3,10 @@ package com.mrboomdev.awery.platform.android
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import com.mrboomdev.awery.utils.SerializableRequired
 import com.mrboomdev.safeargsnext.SafeArgsIntent
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
+import com.mrboomdev.safeargsnext.value.serializableFunction
 
 class ExecutorActivity: Activity(), SafeArgsActivity<ExecutorActivity.Args> {
 	data class Args(
@@ -29,6 +31,15 @@ class ExecutorActivity: Activity(), SafeArgsActivity<ExecutorActivity.Args> {
 	}
 }
 
-fun Context.execute(command: ExecutorActivity.() -> Unit) {
-	startActivity(SafeArgsIntent(this, ExecutorActivity::class, ExecutorActivity.Args(command)))
+/**
+ * Function has to be serializable! Use [serializableFunction] to do so.
+ */
+@SerializableRequired
+fun Context.executeInActivity(action: (Activity) -> Unit) {
+	if(this is Activity) {
+		action(this)
+		return
+	}
+	
+	startActivity(SafeArgsIntent(this, ExecutorActivity::class, ExecutorActivity.Args(action)))
 }

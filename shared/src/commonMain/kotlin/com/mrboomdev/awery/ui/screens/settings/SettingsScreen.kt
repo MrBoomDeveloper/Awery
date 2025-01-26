@@ -7,8 +7,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -19,8 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.mrboomdev.awery.data.settings.ComposableSetting
+import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.platform.PlatformSetting
 import com.mrboomdev.awery.platform.i18n
 
 private val defaultNavigatorClass = Class.forName(
@@ -39,7 +40,7 @@ val <T> ThreePaneScaffoldNavigator<T>.historyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun getTitleHeaderColors() = TopAppBarColors(
+fun getTitleHeaderColors() = TopAppBarColors(
 	containerColor = Color.Transparent,
 	scrolledContainerColor = Color.Transparent,
 	navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
@@ -51,9 +52,8 @@ private fun getTitleHeaderColors() = TopAppBarColors(
 @Composable
 fun SettingsScreen(
 	modifier: Modifier = Modifier,
-	setting: Setting,
-	navigator: ThreePaneScaffoldNavigator<Setting> = rememberListDetailPaneScaffoldNavigator<Setting>(),
-	settingComposable: @Composable (setting: Setting, onOpenScreen: (Setting) -> Unit, isSelected: Boolean) -> Unit
+	screen: Setting,
+	navigator: ThreePaneScaffoldNavigator<Setting> = rememberListDetailPaneScaffoldNavigator<Setting>()
 ) {
 	val history = remember { navigator.historyState }
 
@@ -63,57 +63,62 @@ fun SettingsScreen(
 		value = navigator.scaffoldValue,
 
 		listPane = {
-			SettingScreen(
-				modifier = Modifier.padding(horizontal = 8.dp),
-				screen = setting,
-				selected = history.mapNotNull { it.content },
-				setting = settingComposable,
-
-				header = {
-					LargeTopAppBar(
-						colors = getTitleHeaderColors(),
-						title = {
-							Text(
-								text = setting.title?.let { title ->
-									setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
-								} ?: ""
-							)
-						}
-					) 
-				},
-
-				onOpenScreen = {
-					navigator.historyState.clear()
-					navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
+			AnimatedPane {
+				if(screen is ComposableSetting) {
+					screen.Content()
+					return@AnimatedPane
 				}
-			)
-		},
-
-		detailPane = {
-			navigator.currentDestination?.content?.let { currentScreen ->
+				
 				SettingScreen(
 					modifier = Modifier.padding(horizontal = 8.dp),
-					screen = currentScreen,
-					setting = settingComposable,
-
+					screen = screen,
+					selected = history.mapNotNull { it.content },
+					
 					header = {
 						LargeTopAppBar(
 							colors = getTitleHeaderColors(),
 							title = {
 								Text(
-									text = currentScreen.title?.let { title ->
-										currentScreen.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
-									} ?: "",
-
-									overflow = TextOverflow.Ellipsis,
-									maxLines = 1
+									text = screen.title?.let { title ->
+										screen.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
+									} ?: ""
 								)
 							}
-						) 
-					},
-
-					onOpenScreen = { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it) }
+						)
+					}
 				)
+			}
+		},
+
+		detailPane = {
+			AnimatedPane {
+				navigator.currentDestination?.content?.let { currentScreen ->
+					if(currentScreen is ComposableSetting) {
+						currentScreen.Content()
+						return@let
+					}
+					
+					SettingScreen(
+						modifier = Modifier.padding(horizontal = 8.dp),
+						screen = currentScreen,
+						
+						header = {
+							LargeTopAppBar(
+								colors = getTitleHeaderColors(),
+								title = {
+									Text(
+										text = currentScreen.title?.let { title ->
+											currentScreen.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
+										} ?: "",
+										
+										overflow = TextOverflow.Ellipsis,
+										maxLines = 1
+									)
+								}
+							)
+						}
+					)
+				}
 			}
 		}
 	)

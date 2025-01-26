@@ -13,19 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ui.components.SettingsItem
 
 @Composable
 fun SettingScreen(
 	modifier: Modifier = Modifier,
 	screen: Setting,
 	selected: Collection<Setting>? = null,
-	onOpenScreen: (Setting) -> Unit,
-	header: (@Composable () -> Unit)? = null,
-	setting: @Composable (
-		item: Setting,
-		onOpenScreen: (Setting) -> Unit,
-		isSelected: Boolean
-	) -> Unit
+	header: (@Composable () -> Unit)? = null
 ) {
 	LazyColumn(modifier = modifier) {
 		if(header != null) {
@@ -53,7 +48,11 @@ fun SettingScreen(
 				contentType = { it.type }
 			) {
 				if(!it.isVisible) return@items
-				setting(it, onOpenScreen, selected != null && it in selected)
+				
+				SettingsItem(
+					setting = it, 
+					isSelected = selected != null && it in selected
+				)
 			}
 		}
 

@@ -12,8 +12,6 @@ import android.util.Log;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.os.LocaleListCompat;
 
 import com.mrboomdev.awery.BuildConfig;
 import com.mrboomdev.awery.data.Constants;
@@ -33,7 +31,6 @@ import com.mrboomdev.awery.util.async.AsyncFuture;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import java9.util.stream.Collectors;
 import kotlin.NotImplementedError;
@@ -63,20 +60,6 @@ public class SettingsData {
 			Errorable<Selection<Selection.Selectable<String>>, Throwable> callback
 	) {
 		switch(listId) {
-			case "languages" -> callback.onResult(new Selection<>(new ArrayList<>() {{
-				var locales = LocaleListCompat.getAdjustedDefault();
-
-				for(int i = 0; i < locales.size(); i++) {
-					var locale = locales.get(i);
-					if(locale == null) continue;
-
-					add(new Selection.Selectable<>(
-							locale.toLanguageTag(),
-							locale.getDisplayLanguage(),
-							i == 0 ? Selection.State.SELECTED : Selection.State.UNSELECTED));
-				}
-			}}), null);
-
 			case "excluded_tags" -> {
 				/*var flags = switch(AwerySettings.ADULT_MODE.getValue()) {
 					case DISABLED -> AnilistTagsQuery.SAFE;
@@ -105,14 +88,6 @@ public class SettingsData {
 
 	public static void saveSelectionList(@NonNull String listId, Selection<Selection.Selectable<String>> list) {
 		switch(listId) {
-			case "languages" -> {
-				var found = list.get(Selection.State.SELECTED);
-				if(found == null) return;
-
-				var locale = LocaleListCompat.forLanguageTags(found.getId());
-				AppCompatDelegate.setApplicationLocales(locale);
-			}
-
 			case "excluded_tags" -> {
 				var items = stream(list.getAll(Selection.State.SELECTED))
 						.map(Selection.Selectable::getItem)
@@ -149,6 +124,14 @@ public class SettingsData {
 
 		if(behaviourId != null) {
 			if(behaviourId.startsWith("extensions_")) {
+				var route = switch(behaviourId) {
+					case "extensions_aniyomi" -> "extensions/aniyomi";
+					case "extensions_tachiyomi" -> "extensions/tachiyomi";
+					default -> null;
+				};
+				
+				// TODO: Redirect to the new settings screen after it'll be done by using the route
+				
 				var manager = ExtensionsFactory.getManager__Deprecated((Class<? extends ExtensionsManager>) switch(behaviourId) {
 					case "extensions_aniyomi" -> AniyomiManager.class;
 					case "extensions_tachiyomi" -> TachiyomiManager.class;

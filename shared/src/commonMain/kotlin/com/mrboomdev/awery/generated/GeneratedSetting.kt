@@ -2,7 +2,7 @@ package com.mrboomdev.awery.generated
 
 import com.mrboomdev.awery.platform.PlatformPreferences
 import com.mrboomdev.awery.ext.data.getRecursively
-import com.mrboomdev.awery.platform.PlatformSetting
+import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.utils.parseEnum
 import kotlin.reflect.KProperty
 

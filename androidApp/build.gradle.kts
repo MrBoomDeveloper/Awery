@@ -36,10 +36,6 @@ android {
         versionName = "$releaseVersion-${getGitCommitHash(project)}"
         buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}")
     }
-
-    androidResources {
-        generateLocaleConfig = true
-    }
     
     sourceSets["main"].apply { 
         kotlin.srcDir(generatedSettingsKotlinDirectory)
@@ -83,7 +79,7 @@ android {
         freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform", "-opt-in=kotlin.ExperimentalStdlibApi")
     }
 
-    flavorDimensions += listOf("channel")
+    flavorDimensions += "channel"
 
     productFlavors {
         fun ApplicationProductFlavor.createChannelProductFlavor(id: String, title: String) {
@@ -217,7 +213,6 @@ composeCompiler {
 }
 
 tasks.register<GenerateSettingsTask>("generateSettings") {
-    packageName = "com.mrboomdev.awery.generated"
     className = "AwerySettings"
     inputFiles = listOf(
         layout.projectDirectory.file("src/main/assets/app_settings.json"),

@@ -38,4 +38,7 @@ actual object Platform {
 
 		return if(invert) !result else result
 	}
+	
+	actual fun exitApp() = AndroidGlobals.exitApp()
+	actual fun restartApp() = AndroidGlobals.restartApp()
 }

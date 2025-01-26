@@ -8,7 +8,10 @@ import com.mrboomdev.awery.ui.screens.MainScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-class MainRoute: Screen {
+expect class MainRoute(): DefaultMainRoute
+
+@Serializable
+open class DefaultMainRoute: Screen {
 	@Composable
 	override fun Content() {
 		MainScreen(

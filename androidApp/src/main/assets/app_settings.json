@@ -102,22 +102,24 @@
 					"items": [
 						{
 							"type": "screen",
-							"is_lazy": true,
 							"key": "extensions_aniyomi",
 							"title": "Aniyomi",
 							"icon": "logo_aniyomi",
 							"icon_scale": 1.2,
-							"description": "It seems there is only Anime here?"
+							"description": "It seems there is only Anime here?",
+							"lazy_factory": "com.mrboomdev.awery.sources.SourcesSettingsFactory",
+							"lazy_suspend": false
 						}
 					]
 				},
 
 				{
 					"type": "screen",
-					"is_lazy": true,
 					"key": "tabs",
 					"title": "tabs",
-					"icon": "ic_list"
+					"icon": "ic_list",
+					"lazy_factory": "TODO!",
+					"lazy_suspend": true
 				},
 
 				{

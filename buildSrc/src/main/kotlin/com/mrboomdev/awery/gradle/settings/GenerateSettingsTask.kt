@@ -20,9 +20,6 @@ abstract class GenerateSettingsTask: DefaultTask() {
 	abstract val inputFiles: ListProperty<RegularFile>
 	
 	@get:Input
-	abstract val packageName: Property<String>
-	
-	@get:Input
 	abstract val className: Property<String>
 	
 	@TaskAction
@@ -32,6 +29,6 @@ abstract class GenerateSettingsTask: DefaultTask() {
 			mkdirs()
 		}
 		
-		SettingsGeneratorImpl.generate(this)
+		GenerateSettingsImpl.generate(this)
 	}
 }

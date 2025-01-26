@@ -21,12 +21,12 @@ kotlin {
 	jvmToolchain(17)
 	applyDefaultHierarchyTemplate()
 	
+	androidTarget()
+	jvm("desktop")
+	
 	compilerOptions {
 		freeCompilerArgs = listOf("-Xexpect-actual-classes")
 	}
-
-	androidTarget()
-	jvm("desktop")
 
 	sourceSets {
 		commonMain.dependencies {
@@ -38,12 +38,13 @@ kotlin {
 			// Data
 			implementation(libs.kotlinx.serialization.json)
 			implementation(libs.androidx.room.runtime)
+			implementation(libs.androidx.lifecycle.viewmodel.compose)
 			
 			// Ui
 			implementation(compose.ui)
 			implementation(compose.foundation)
-			implementation(compose.components.resources)
-			implementation(libs.androidx.lifecycle.viewmodel.compose)
+			api(compose.components.resources)
+			api(libs.sonner)
 			
 			// Navigation
 			implementation(libs.navigation)
@@ -68,7 +69,7 @@ kotlin {
 			implementation(libs.material)
 			implementation(libs.xcrash)
 		}
-
+		
 		val desktopMain by getting {
 			dependencies {
 				implementation(compose.desktop.common)

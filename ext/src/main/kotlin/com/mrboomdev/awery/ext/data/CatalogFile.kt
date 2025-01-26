@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 open class CatalogFile(
-	val url: String,
-	val title: String? = null,
-	val headers: Map<String, String>? = null,
-	val locale: String? = null
+	open val url: String,
+	open val title: String? = null,
+	open val headers: Map<String, String>? = null,
+	open val locale: String? = null
 )
 
 @Serializable

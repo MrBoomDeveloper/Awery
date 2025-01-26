@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.ui.tv
 
 import android.app.Activity
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
@@ -17,9 +16,7 @@ import androidx.navigation.toRoute
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.platform.PlatformResources
-import com.mrboomdev.awery.platform.PlatformSetting
-import com.mrboomdev.awery.ui.mobile.components.MobileSetting
+import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.tv.screens.home.HomeScreen
@@ -30,7 +27,6 @@ import com.mrboomdev.awery.utils.readAssets
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.File
 import kotlin.reflect.typeOf
 
 class TvMainActivity : ComponentActivity() {
@@ -75,9 +71,7 @@ class TvMainActivity : ComponentActivity() {
 				}
 
 				SettingsScreen(
-                    setting = settings,
-                    settingComposable = { setting, onOpenScreen, isSelected ->
-                        MobileSetting(setting, onOpenScreen, isSelected) }
+                    screen = settings
 				)
 			}
 		}

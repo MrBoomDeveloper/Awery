@@ -15,6 +15,8 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import cafe.adriel.voyager.navigator.parcelableNavigatorSaver
 import cafe.adriel.voyager.transitions.FadeTransition
+import com.dokar.sonner.Toaster
+import com.dokar.sonner.rememberToasterState
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
@@ -24,33 +26,47 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
 import com.mrboomdev.awery.MainActivity
+import com.mrboomdev.awery.app.theme.LocalAweryTheme
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
+import com.mrboomdev.awery.data.settings.PlatformSetting
+import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.platform.LocalSettingHandler
+import com.mrboomdev.awery.platform.PlatformSettingHandler
+import com.mrboomdev.awery.platform.SettingHandler
 import com.mrboomdev.awery.platform.android.AndroidGlobals.exitApp
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
+import com.mrboomdev.awery.ui.routes.SettingsRoute
 import com.mrboomdev.awery.ui.routes.SplashRoute
 import com.mrboomdev.awery.ui.screens.SplashScreen
 import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.ui.utils.KSerializerNavigatorSaver
+import com.mrboomdev.awery.ui.utils.LocalToaster
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.utils.buildIntent
+import com.mrboomdev.awery.utils.readAssets
 import com.mrboomdev.awery.utils.tryOr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 
 private const val TAG = "SplashActivity"
+const val SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE = "enable_compose"
+const val SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS = "redirect_settings"
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 	private lateinit var binding: ScreenSplashBinding
 	
+	@OptIn(ExperimentalSerializationApi::class)
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
 		
@@ -62,20 +78,55 @@ class SplashActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 		enableEdgeToEdge()
 		
-		if(AwerySettings.EXPERIMENT_COMPOSE_UI.value) {
+		if(AwerySettings.EXPERIMENT_COMPOSE_UI.value || intent.getBooleanExtra(SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE, false)) {
+			val initialRoute = when {
+				intent.getBooleanExtra(SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS, false) -> {
+					@Suppress("JSON_FORMAT_REDUNDANT")
+					SettingsRoute(Json {
+						decodeEnumsCaseInsensitive = true
+						isLenient = true
+					}.decodeFromString<PlatformSetting>(readAssets("app_settings.json")).apply {
+						restoreValues()
+					})
+				}
+				
+				else -> SplashRoute()
+			}
+			
 			setThemedContent {
 				@OptIn(ExperimentalVoyagerApi::class)
-				CompositionLocalProvider(
-					LocalNavigatorSaver provides KSerializerNavigatorSaver()
-				) {
+				CompositionLocalProvider(LocalNavigatorSaver provides KSerializerNavigatorSaver()) {
 					Navigator(
-						screen = SplashRoute(),
+						screen = initialRoute,
 						disposeBehavior = NavigatorDisposeBehavior(disposeSteps = false)
 					) { navigator ->
-						@OptIn(ExperimentalVoyagerApi::class)
-						FadeTransition(
-							navigator = navigator,
-							disposeScreenAfterTransitionEnd = true
+						val toasterState = rememberToasterState()
+						
+						CompositionLocalProvider(LocalToaster provides toasterState) {
+							CompositionLocalProvider(LocalSettingHandler provides object : SettingHandler {
+								override fun openScreen(screen: Setting) {
+									navigator.push(SettingsRoute(screen))
+								}
+								
+								override fun handleClick(setting: Setting) {
+									if(setting is PlatformSetting) {
+										PlatformSettingHandler.handlePlatformClick(this@SplashActivity, setting)
+									} else {
+										throw UnsupportedOperationException("${setting::class.qualifiedName} click handle isn't supported!")
+									}
+								}
+							}) {
+								@OptIn(ExperimentalVoyagerApi::class)
+								FadeTransition(
+									navigator = navigator,
+									disposeScreenAfterTransitionEnd = true
+								)
+							}
+						}
+						
+						Toaster(
+							state = toasterState,
+							darkTheme = LocalAweryTheme.current.isDark
 						)
 					}
 				}

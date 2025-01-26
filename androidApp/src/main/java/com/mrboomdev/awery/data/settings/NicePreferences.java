@@ -12,7 +12,6 @@ import com.mrboomdev.awery.util.Parser;
 import com.mrboomdev.awery.util.Selection;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -76,7 +75,6 @@ public class NicePreferences implements SettingsDataHandler {
 	}
 
 	/**
-	 * @see #getBoolean(String)
 	 * @return the value of the specified key, or the default value if the key does not exist
 	 * @author MrBoomDev
 	 */
@@ -90,32 +88,18 @@ public class NicePreferences implements SettingsDataHandler {
 			saveSync();
 			return defaultValue;
 		}
-
-		return prefs.getBoolean(key, defaultValue != null && defaultValue);
-	}
-
-	/**
-	 * @see #getBoolean(String, Boolean)
-	 * @return the value of the specified key or false if the key does not exist
-	 * @author MrBoomDev
-	 */
-	public Boolean getBoolean(String key) {
-		if(contains(key)) {
-			return getBoolean(key, null);
+		
+		try {
+			return prefs.getBoolean(key, defaultValue != null && defaultValue);
+		} catch(ClassCastException e) {
+			checkEditorExistence().remove(key);
+			saveSync();
+			return defaultValue != null && defaultValue;
 		}
-
-		var found = getSettingsMap().findItem(key);
-
-		if(found != null) {
-			var value = found.getBooleanValue();
-			if(value != null) return value;
-		}
-
-		return getBoolean(key, null);
 	}
 
 	public NicePreferences setValue(String key, boolean value) {
-		checkEditorExistence().putBoolean(key, value);
+		checkEditorExistence().remove(key).putBoolean(key, value);
 		return this;
 	}
 
@@ -130,7 +114,13 @@ public class NicePreferences implements SettingsDataHandler {
 			return defaultValue;
 		}
 
-		return prefs.getInt(key, defaultValue != null ? defaultValue : 0);
+		try {
+			return prefs.getInt(key, defaultValue != null ? defaultValue : 0);
+		} catch(ClassCastException e) {
+			checkEditorExistence().remove(key);
+			saveSync();
+			return defaultValue != null ? defaultValue : 0;
+		}
 	}
 
 	public Long getLong(String key, Long defaultValue) {
@@ -143,51 +133,28 @@ public class NicePreferences implements SettingsDataHandler {
 			saveSync();
 			return defaultValue;
 		}
-
-		return prefs.getLong(key, defaultValue != null ? defaultValue : 0);
-	}
-
-	public Float getFloat(String key, Float defaultValue) {
-		if(!prefs.contains(key)) {
-			if(defaultValue == null) {
-				return null;
-			}
-
-			checkEditorExistence().putFloat(key, defaultValue);
+		
+		try {
+			return prefs.getLong(key, defaultValue != null ? defaultValue : 0);
+		} catch(ClassCastException e) {
+			checkEditorExistence().remove(key);
 			saveSync();
-			return defaultValue;
+			return defaultValue != null ? defaultValue : 0;
 		}
-
-		return prefs.getFloat(key, defaultValue != null ? defaultValue : 0);
-	}
-
-	public Integer getInteger(String key) {
-		if(contains(key)) {
-			return getInteger(key, null);
-		}
-
-		var found = getSettingsMap().findItem(key);
-
-		if(found != null) {
-			var value = found.getIntegerValue();
-			if(value != null) return value;
-		}
-
-		return getInteger(key, null);
 	}
 
 	public NicePreferences setValue(String key, int value) {
-		checkEditorExistence().putInt(key, value);
+		checkEditorExistence().remove(key).putInt(key, value);
 		return this;
 	}
 
 	public NicePreferences setValue(String key, float value) {
-		checkEditorExistence().putFloat(key, value);
+		checkEditorExistence().remove(key).putFloat(key, value);
 		return this;
 	}
 
 	public NicePreferences setValue(String key, long value) {
-		checkEditorExistence().putLong(key, value);
+		checkEditorExistence().remove(key).putLong(key, value);
 		return this;
 	}
 
@@ -201,8 +168,14 @@ public class NicePreferences implements SettingsDataHandler {
 			saveSync();
 			return defaultValue;
 		}
-
-		return prefs.getString(key, defaultValue);
+		
+		try {
+			return prefs.getString(key, defaultValue);
+		} catch(ClassCastException e) {
+			checkEditorExistence().remove(key);
+			saveSync();
+			return defaultValue;
+		}
 	}
 
 	public String getString(String key) {
@@ -221,58 +194,12 @@ public class NicePreferences implements SettingsDataHandler {
 		return this;
 	}
 
-	public <T extends Enum<T>> T getEnum(String key, T defaultValue, Class<T> enumClass) {
-		if(defaultValue != null && !prefs.contains(key)) {
-			checkEditorExistence().putString(key, defaultValue.name());
-			saveSync();
-			return defaultValue;
-		}
-
-		var result = prefs.getString(key, defaultValue == null ? null : defaultValue.name());
-		if(result == null) return null;
-
-		try {
-			return Enum.valueOf(enumClass, result);
-		} catch(IllegalArgumentException e) {
-			// Enum types were changed, but the saved value links to an enum that no longer exists
-
-			if(defaultValue != null) {
-				checkEditorExistence().putString(key, defaultValue.name());
-				saveSync();
-			}
-
-			return defaultValue;
-		}
-	}
-
-	public <T extends Enum<T>> T getEnum(String key, Class<T> enumClass) {
-		var found = getSettingsMap().findItem(key);
-
-		if(found != null) {
-			var value = found.getStringValue();
-			if(value != null) return Enum.valueOf(enumClass, value);
-		}
-
-		var saved = getEnum(key, null, enumClass);
-
-		if(saved == null && found != null) {
-			return Enum.valueOf(enumClass, found.getStringValue());
-		}
-
-		return saved;
-	}
-
 	public Set<String> getStringSet(String name) {
 		if(contains(name)) {
 			return prefs.getStringSet(name, null);
 		}
 
 		return prefs.getStringSet(name, new HashSet<>());
-	}
-
-	public NicePreferences setStringSet(String key, Set<String> value) {
-		checkEditorExistence().putStringSet(key, value);
-		return this;
 	}
 
 	private SharedPreferences.Editor checkEditorExistence() {
@@ -329,16 +256,6 @@ public class NicePreferences implements SettingsDataHandler {
 	@NonNull
 	public static NicePreferences getPrefs() {
 		return getPrefs(APP_SETTINGS);
-	}
-
-	private static <T extends Enum<T>> T parseEnum(@Nullable String string, @Nullable Class<T> enumClass) {
-		if(string == null || enumClass == null) return null;
-
-		try {
-			return T.valueOf(enumClass, string);
-		} catch(IllegalArgumentException | NullPointerException e) {
-			return null;
-		}
 	}
 
 	@Override

@@ -14,22 +14,22 @@ glide = "4.16.0"
 moshi = "1.15.2"
 okhttp = "5.0.0-alpha.14"
 bigimageviewer = "1.8.1"
+sonner = "0.3.8"
 voyager-navigator = "1.1.0-beta02"
 
 [libraries]
-safeargsnext = { group = "ru.mrboomdev.safeargsnext", name = "safeargsnext", version = "1.0.0" }
+safeargsnext = { group = "ru.mrboomdev.safeargsnext", name = "safeargsnext", version = "1.0.1" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.9.0" }
-retrostreams = { module = "net.sourceforge.streamsupport:android-retrostreams", version = "1.7.4" }
 balloon = { module = "com.github.skydoves:balloon", version = "1.6.11" }
 colorpickerview = { module = "com.github.skydoves:colorpickerview", version = "2.3.0" }
 animatedbottombar = { module = "nl.joery.animatedbottombar:library", version = "1.1.0" }
 bigimageviewer = { module = "com.github.piasy:BigImageViewer", version.ref = "bigimageviewer" }
 ebook-reader = { module = "com.github.VipulOG:ebook-reader", version = "0.1.6" }
 pageindicatorview = { module = "com.github.emilaleborn:PageIndicatorView", version = "905cd4e2ab" }
+retrostreams = { module = "net.sourceforge.streamsupport:android-retrostreams", version = "1.7.4" }
 
 # Android
-android-build-tools = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin"}
 androidx-core = { group = "androidx.core", name = "core-ktx", version = "1.15.0" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.0" }
 androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
@@ -37,9 +37,9 @@ androidx-shortcuts = { module = "androidx.core:core-google-shortcuts", version =
 androidx-browser = { module = "androidx.browser:browser", version = "1.8.0" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-webkit = { module = "androidx.webkit:webkit", version = "1.12.1" }
-android-builder = { module = "com.android.tools.build:builder", version = "8.7.3" }
 material = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 hauler = { module = "app.futured.hauler:hauler", version = "5.0.0" }
+sonner = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager-navigator" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager-navigator" }
 voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager-navigator" }
@@ -63,10 +63,7 @@ androidx-compose-activity = { module = "androidx.activity:activity-compose", ver
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.5" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 
 # Database
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

@@ -319,13 +319,13 @@ abstract class YomiManager : ExtensionsManager() {
 		return@with AsyncUtils.controllableFuture { future ->
 			runOnUiThread {
 				startActivityForResult(buildIntent(Intent.ACTION_DELETE, getPackageUri()), { _, _ ->
-					//Ignore the resultCode, it always equal to 0
+					// Ignore the resultCode, it always equal to 0
 
 					try {
 						context.packageManager.getPackageInfo(id, 0)
 						future.complete(false)
 					} catch(e: PackageManager.NameNotFoundException) {
-						//App info is no longer available, so it is uninstalled.
+						// App info is no longer available, so it is uninstalled.
 						extensions.remove(id)
 
 						try {

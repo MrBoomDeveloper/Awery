@@ -4,20 +4,16 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
-import com.mrboomdev.awery.R
-import com.mrboomdev.awery.app.App.Companion.getResourceId
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.restartApp
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.Selection
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
-import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
 
-// TODO: Move all methods to PlatformResources.kt in :shared
+// TODO: Move all this shit to the :shared module
 object AweryLocales {
-	private const val ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
-
+	
 	fun i18nCountryName(input: String): String {
 		return when(input.lowercase(Locale.ROOT)) {
 			"us", "usa" -> Locale.US
@@ -44,16 +40,7 @@ object AweryLocales {
 		}
 	}
 
-	fun showPicker(context: Context) {
-		// So uhm... There is some strange shit happening on some devices which doesn't show you all the settings
-		// (English Indian) for example on ColorOS, so we do show an custom picker.
-		/*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			context.startActivity(action = Settings.ACTION_APP_LOCALE_SETTINGS,
-				data = Uri.parse("package:${context.packageName}"))
-		} else {
-			*/showCustomPicker(context)
-		/*}*/
-	}
+	fun showPicker(context: Context) = showCustomPicker(context)
 
 	private fun showCustomPicker(context: Context) {
 		val currentLocales = LocaleManagerCompat.getApplicationLocales(context).let {
@@ -64,7 +51,7 @@ object AweryLocales {
 			return@let it
 		}.toList()
 
-		val availableLocales = getAvailableLocales(context).sortedBy { it.second }
+		val availableLocales = availableLocales.sortedBy { it.second }
 
 		val currentLocale = currentLocales.find { currentLocale ->
 			availableLocales.containsLocale(currentLocale)
@@ -86,30 +73,12 @@ object AweryLocales {
 			.show()
 	}
 
-	private fun getAvailableLocales(context: Context): List<Pair<Locale, String>> {
-		return mutableListOf<MutablePair<Locale, String>>().apply {
-			// All locales are being stored in this little file.
-			// It is being auto-generated, so we need to use some reflection.
-			val fileId = getResourceId(R.xml::class.java, "_generated_res_locale_config")
-
-			context.resources.getXml(fileId).use {
-				while(it.eventType != XmlPullParser.END_DOCUMENT) {
-					when(it.eventType) {
-						XmlPullParser.START_DOCUMENT -> {}
-
-						XmlPullParser.START_TAG -> {
-							if(it.name == "locale") {
-								val value = it.getAttributeValue(ANDROID_NAMESPACE, "name")
-								add(MutablePair(Locale.forLanguageTag(value), i18nLanguageName(
-									value
-								)))
-							}
-						}
-					}
-
-					it.next()
-				}
-			}
+	
+	private val availableLocales: List<Pair<Locale, String>>
+		get() = mutableListOf<MutablePair<Locale, String>>().apply {
+			addAll(AweryConfigurations.locales.map {
+				MutablePair(Locale.forLanguageTag(it), i18nLanguageName(it))
+			})
 
 			for(locale in this) {
 				for(locale2 in this) {
@@ -124,7 +93,6 @@ object AweryLocales {
 		}.map {
 			it.first to it.second
 		}
-	}
 
 	private fun LocaleListCompat.toList(): List<Locale> {
 		return mutableListOf<Locale>().also { list ->

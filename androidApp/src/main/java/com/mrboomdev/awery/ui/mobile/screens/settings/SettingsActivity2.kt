@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.mobile.screens.settings
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.PredictiveBackHandler
@@ -16,18 +17,24 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.dokar.sonner.Toaster
+import com.dokar.sonner.rememberToasterState
+import com.mrboomdev.awery.app.theme.LocalAweryTheme
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
+import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.platform.PlatformSetting
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
-import com.mrboomdev.awery.ui.mobile.components.MobileSetting
+import com.mrboomdev.awery.ui.mobile.screens.SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE
+import com.mrboomdev.awery.ui.mobile.screens.SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS
+import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.historyState
+import com.mrboomdev.awery.ui.utils.LocalToaster
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.utils.readAssets
 import kotlinx.coroutines.CancellationException
@@ -42,6 +49,17 @@ class SettingsActivity2: ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		enableEdgeToEdge()
+		
+		// Always true
+		if("0".toInt() == 0) {
+			startActivity(Intent(this, SplashActivity::class.java).apply {
+				putExtra(SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE, true)
+				putExtra(SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS, true)
+			})
+			
+			finish()
+			return
+		}
 
 		val settings = Json {
 			decodeEnumsCaseInsensitive = true
@@ -51,11 +69,12 @@ class SettingsActivity2: ComponentActivity() {
 		}
 
 		setThemedContent {
+			var didOpenAnyScreen by remember { mutableStateOf(false) }
 			val scaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
 			val navigator = rememberListDetailPaneScaffoldNavigator<Setting>(scaffoldDirective)
 			val navigatorHistory = remember { navigator.historyState }
-			var didOpenAnyScreen by remember { mutableStateOf(false) }
-
+			val toaster = rememberToasterState()
+			
 			PredictiveBackHandler(
 				(didOpenAnyScreen && !navigatorHistory.isEmpty()) || navigator.canNavigateBack(BackNavigationBehavior.PopLatest)
 			) { progress ->
@@ -69,37 +88,46 @@ class SettingsActivity2: ComponentActivity() {
 					}
 				} catch(_: CancellationException) {}
 			}
+			
+			CompositionLocalProvider(LocalToaster provides toaster) {
+				Row(Modifier.fillMaxSize()) {
+					Spacer(Modifier.windowInsetsStartWidth(WindowInsets.safeContent))
+					
+					SettingsScreen(
+						modifier = Modifier.weight(1f),
+						screen = settings,
+						navigator = navigator,
+						
+						/*settingComposable = { setting, onOpenScreen, isSelected ->
+							MobileSetting(
+								setting = setting,
+								isSelected = isSelected,
 	
-			Row(Modifier.fillMaxSize()) {
-				Spacer(Modifier.windowInsetsStartWidth(WindowInsets.safeContent))
-
-				SettingsScreen(
-                    modifier = Modifier.weight(1f),
-                    setting = settings,
-                    navigator = navigator,
-
-                    settingComposable = { setting, onOpenScreen, isSelected ->
-                        MobileSetting(
-                            setting = setting,
-                            isSelected = isSelected,
-
-                            onOpenScreen = {
-                                if(it is PlatformSetting && it.isLazy) {
-                                    toast("TODO: IMPLEMENT LAZY SCREEN LOADING")
-                                }
-
-                                if(!didOpenAnyScreen) {
-                                    didOpenAnyScreen = true
-                                }
-
-                                onOpenScreen(it)
-                            }
-                        )
-                    }
-				)
-
-				Spacer(Modifier.windowInsetsEndWidth(WindowInsets.safeContent))
+								onOpenScreen = {
+									coroutineScope.cancel()
+									
+									if(it is PlatformSetting && it.isLazy) {
+										toast("TODO: IMPLEMENT LAZY SCREEN LOADING")
+									}
+	
+									if(!didOpenAnyScreen) {
+										didOpenAnyScreen = true
+									}
+	
+									onOpenScreen(it)
+								}
+							)
+						}*/
+					)
+					
+					Spacer(Modifier.windowInsetsEndWidth(WindowInsets.safeContent))
+				}
 			}
+			
+			Toaster(
+				state = toaster,
+				darkTheme = LocalAweryTheme.current.isDark
+			)
 		}
 	}
 }

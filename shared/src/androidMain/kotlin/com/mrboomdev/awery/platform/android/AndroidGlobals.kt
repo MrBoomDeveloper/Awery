@@ -10,6 +10,8 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import com.mrboomdev.awery.utils.SerializableRequired
+import com.mrboomdev.safeargsnext.value.serializableFunction
 import kotlin.system.exitProcess
 
 private const val TAG = "AndroidGlobals"
@@ -54,8 +56,9 @@ object AndroidGlobals {
 	}
 	
 	fun exitApp() {
-		applicationContext.execute { 
-			finishAffinity()
-		}
+		@OptIn(SerializableRequired::class)
+		applicationContext.executeInActivity(serializableFunction { activity ->
+			activity.finishAffinity()
+		})
 	}
 }

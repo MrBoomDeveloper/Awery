@@ -3,13 +3,14 @@
 package com.mrboomdev.awery.platform
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.ResourceEnvironment
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.replaceWithArgs
-import org.jetbrains.compose.resources.stringResource
 
 expect object PlatformResources {
 	@OptIn(ExperimentalResourceApi::class)
@@ -18,6 +19,17 @@ expect object PlatformResources {
 
 private val stringValueCache = mutableMapOf<String, String>()
 private val stringResClass = Class.forName("com.mrboomdev.awery.generated.CommonMainString0")
+private val drawableResClass = Class.forName("com.mrboomdev.awery.generated.CommonMainDrawable0")
+
+@Suppress("UNCHECKED_CAST")
+@Composable
+fun drawableResource(key: String) = remember(key) {
+	try {
+		drawableResClass.getDeclaredField("$key\$delegate").apply {
+			isAccessible = true
+		}[null] as Lazy<DrawableResource>
+	} catch(_: NoSuchFieldException) { null }?.value
+}
 
 internal fun clearCache() {
 	stringValueCache.clear()
