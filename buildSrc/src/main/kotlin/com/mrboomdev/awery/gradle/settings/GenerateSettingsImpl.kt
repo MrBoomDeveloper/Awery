@@ -9,78 +9,33 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
-import org.gradle.api.file.Directory
 import java.io.File
 import java.util.Locale
+
+private const val packageName = "com.mrboomdev.awery.generated"
 
 internal object GenerateSettingsImpl {
 	
 	fun generate(task: GenerateSettingsTask) {
 		task.outputDirectory.also { output ->
-			val packageName = "com.mrboomdev.awery.generated"
 			val path = packageName.replace(".", "/")
 			val files = task.inputFiles.get().map { it.asFile }
-			
-			createKotlin(files, packageName, output.file("kotlin/$path/${task.className.get()}.kt").get().asFile)
-			createResources(files, output.dir("resources/$path").get())
-		}
-	}
-	
-	private fun createResources(inputFiles: List<File>, outputDirectory: Directory) {
-		outputDirectory.asFile.mkdirs()
-		
-		for(file in inputFiles) {
-			file.copyTo(outputDirectory.file("${file.name}.json").asFile, true)
+			createKotlin(files, output.file("kotlin/$path/${task.className.get()}.kt").get().asFile)
 		}
 	}
 	
 	@Suppress("JSON_FORMAT_REDUNDANT")
 	@OptIn(ExperimentalSerializationApi::class)
-	private fun createKotlin(inputFiles: List<File>, packageName: String, outputFile: File) {
+	private fun createKotlin(inputFiles: List<File>, outputFile: File) {
 		outputFile.parentFile.mkdirs()
 		
 		outputFile.writeText(buildString {
 			append("package $packageName\n")
 			append("\n")
-			
-			for(importDeclaration in arrayOf(
-				"com.mrboomdev.awery.data.settings.PlatformSetting",
-				"kotlinx.serialization.ExperimentalSerializationApi",
-				"kotlinx.serialization.json.Json"
-			)) {
-				append("import ")
-				append(importDeclaration)
-				append("\n")
-			}
-			
-			append("\n")
 			append("// This class has been auto-generated, so please, don't edit it.\n")
 			append("object ")
 			append(outputFile.nameWithoutExtension)
 			append(" {\n")
-			
-			// Declare an private settings json file format
-			append("\t@OptIn(ExperimentalSerializationApi::class)\n")
-			append("\tprivate val MAP_JSON_FORMAT = Json {\n")
-			append("\t\tdecodeEnumsCaseInsensitive = true\n")
-			append("\t\tisLenient = true\n")
-			append("\t}\n")
-			append("\n")
-			append("\tobject maps {\n")
-			
-			for(file in inputFiles) {
-				append("\t\tval ")
-				append(file.nameWithoutExtension.uppercase())
-				append(" = MAP_JSON_FORMAT.decodeFromString<PlatformSetting>(")
-				append(outputFile.nameWithoutExtension)
-				append("::class.java.classLoader!!.getResourceAsStream(\"")
-				append(packageName.replace(".", "/"))
-				append("/")
-				append(file.name)
-				append(".json\")!!.use { it.readBytes().toString(Charsets.UTF_8) })\n")
-			}
-			
-			append("\t}\n\n")
 			
 			for(file in inputFiles) {
 				val text = file.readText()
@@ -188,9 +143,6 @@ internal object GenerateSettingsImpl {
 				else -> throw UnsupportedOperationException("Unsupported default value type at \"${setting["key"]}\"!")
 			}
 			
-			append(", maps.")
-			append(originalFile.uppercase())
-
 			append(")")
 		}
 	}

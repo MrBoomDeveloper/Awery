@@ -3,6 +3,9 @@ package com.mrboomdev.awery.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -78,14 +81,17 @@ fun SplashScreen(
 	}
 	
 	if(crashLogs.isNotEmpty()) {
-		val (file, content) = crashLogs[crashLogs.size - 1]
-		
 		MaterialDialog(
 			modifier = Modifier.padding(horizontal = 8.dp),
 			title = { Text(i18n(Res.string.app_crash) + " #${crashLogs.size}") },
 			
 			content = {
-				Text(content)
+				SelectionContainer {
+					Text(
+						modifier = Modifier.verticalScroll(rememberScrollState()),
+						text = crashLogs.last().second
+					)
+				}
 			},
 			
 			confirmButton = {
@@ -95,7 +101,7 @@ fun SplashScreen(
 			},
 			
 			onDismissRequest = {
-				file.delete()
+				crashLogs.last().first.delete()
 				crashLogs.removeLast()
 				
 				if(crashLogs.isEmpty()) {
@@ -109,8 +115,6 @@ fun SplashScreen(
 		ModalBottomSheet(
 			onDismissRequest = { share = false },
 			content = {
-				val (file, content) = crashLogs[crashLogs.size - 1]
-				
 				
 			}
 		)

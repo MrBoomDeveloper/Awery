@@ -16,7 +16,7 @@ import com.mrboomdev.awery.ext.data.Setting
  */
 abstract class Source(
 	final override val context: Context.SourceContext
-): AbstractSource() {
+): AbstractSource(), Context.SourceContext by context {
 	open suspend fun getFeeds(): CatalogSearchResults<CatalogFeed> {
 		throw NotImplementedError("getFeeds() isn't implemented!")
 	}

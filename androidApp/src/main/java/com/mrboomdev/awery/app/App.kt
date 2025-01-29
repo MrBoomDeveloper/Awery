@@ -95,7 +95,10 @@ class App : Application() {
 	override fun attachBaseContext(base: Context) {
 		AndroidGlobals.applicationContext = this
 		super.attachBaseContext(base)
-		CrashHandler.setup()
+		
+		if(AwerySettings.ENABLE_CRASH_HANDLER.value) {
+			CrashHandler.setup()
+		}
 	}
 
 	@OptIn(DelicateCoroutinesApi::class)

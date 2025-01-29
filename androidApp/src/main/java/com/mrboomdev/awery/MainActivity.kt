@@ -30,10 +30,12 @@ import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
+import com.mrboomdev.awery.ui.mobile.screens.SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE
+import com.mrboomdev.awery.ui.mobile.screens.SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS
+import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
 import com.mrboomdev.awery.ui.mobile.screens.catalog.feeds.FeedsFragment
 import com.mrboomdev.awery.ui.mobile.screens.search.MultiSearchActivity
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
-import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity2
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.TabsTemplate
 import com.mrboomdev.awery.util.extensions.UI_INSETS
@@ -343,7 +345,10 @@ class MainActivity : AppCompatActivity() {
 
             binding.settingsWrapper.setOnClickListener {
                 if(AwerySettings.EXPERIMENT_SETTINGS2.value) {
-                    startActivity(SettingsActivity2::class)
+                    startActivity(requireContext().buildIntent(SplashActivity::class) {
+                        putExtra(SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE, true)
+                        putExtra(SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS, true)
+                    })
                 } else {
                     startActivity(SettingsActivity::class)
                 }

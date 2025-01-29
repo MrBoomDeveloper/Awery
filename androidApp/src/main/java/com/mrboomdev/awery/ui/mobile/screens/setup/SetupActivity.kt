@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.mobile.screens.setup
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +9,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
+import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.databinding.ScreenSetupBinding
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformSettingHandler
@@ -18,12 +18,10 @@ import com.mrboomdev.awery.ui.mobile.screens.SplashActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupThemeAdapter.Companion.create
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
-import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
 import com.mrboomdev.awery.util.extensions.setImageTintAttr
 import com.mrboomdev.awery.util.extensions.setMarkwon
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.ui.RecyclerItemDecoration
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
@@ -85,7 +83,7 @@ class SetupActivity : AppCompatActivity(), SafeArgsActivity<SetupActivity.Extras
 				binding.continueButton.text = i18n(Res.string.lets_begin)
 
 				binding.backButton.setOnClickListener {
-					PlatformSettingHandler.handlePlatformClick(this, AwerySettings.RESTORE.asPlatformSetting())
+					PlatformSettingHandler.handlePlatformClick(this, PlatformSetting(key = "restore"))
 				}
 
 				binding.icon.setImageResource(R.mipmap.ic_launcher_foreground)

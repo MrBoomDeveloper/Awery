@@ -4,11 +4,17 @@ import androidx.compose.ui.Modifier
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
 import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
 import java.net.URLEncoder
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun WindowSizeClass.isWidthAtLeast(clazz: WindowWidthSizeClass) = windowWidthSizeClass.isAtLeast(clazz)
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun WindowSizeClass.isHeightAtLeast(clazz: WindowHeightSizeClass) = windowHeightSizeClass.isAtLeast(clazz)
 
 fun WindowWidthSizeClass.isAtLeast(clazz: WindowWidthSizeClass) = when(clazz) {
 	WindowWidthSizeClass.COMPACT -> true
@@ -35,16 +41,15 @@ fun WindowHeightSizeClass.isAtLeast(clazz: WindowHeightSizeClass) = when(clazz) 
 }
 
 /**
- * Returns a new modifier received from the function or itself if nothing was returned.
+ * Returns an modified modifier from the function or itself if nothing was returned.
  */
-fun Modifier.update(scope: Modifier.() -> Modifier?) = scope() ?: this
+inline fun Modifier.update(scope: Modifier.() -> Modifier?) = scope() ?: this
 
 @Suppress("DEPRECATION")
 inline fun <reified T> getSerializableNavType(): NavType<T> {
 	return object : NavType<T>(
 		isNullableAllowed = true
 	) {
-		
 		override fun get(bundle: Bundle, key: String): T? {
 			return bundle[key] as? T
 		}

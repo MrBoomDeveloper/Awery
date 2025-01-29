@@ -11,7 +11,7 @@ import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.app.ExtensionsManager.loadAll
+import com.mrboomdev.awery.sources.ExtensionsManager.loadAll
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
@@ -74,6 +74,7 @@ class HomeViewModel : ViewModel() {
 	var drawerState: DrawerState = DrawerState(DrawerValue.Closed)
 	var listState: LazyListState = LazyListState()
 
+	@OptIn(ExperimentalStdlibApi::class)
 	fun loadTabsList() {
 		if(tabs.isEmpty()) {
 			val template = AwerySettings.TABS_TEMPLATE.value

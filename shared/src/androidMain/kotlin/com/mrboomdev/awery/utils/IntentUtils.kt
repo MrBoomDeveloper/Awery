@@ -14,7 +14,7 @@ fun buildIntent(
     action: String? = null,
     data: Uri? = null,
     type: String? = null,
-    builder: (Intent.() -> Unit)? = null
+    builder: Intent.() -> Unit = {}
 ) = buildIntentImpl(
     intent = Intent(),
     action = action,
@@ -31,7 +31,7 @@ fun Context.buildIntent(
     action: String? = null,
     data: Uri? = null,
     type: String? = null,
-    builder: (Intent.() -> Unit)? = null
+    builder: Intent.() -> Unit = {}
 ) = buildIntentImpl(
     intent = Intent(this, clazz.java),
     action = action,
@@ -49,7 +49,7 @@ fun <A: SafeArgsOwner<B>, B : Any> Context.buildIntent(
     action: String? = null,
     data: Uri? = null,
     type: String? = null,
-    builder: (Intent.() -> Unit)? = null
+    builder: Intent.() -> Unit = {}
 ) = buildIntent(
     clazz = clazz,
     action = action,
@@ -57,18 +57,18 @@ fun <A: SafeArgsOwner<B>, B : Any> Context.buildIntent(
     type = type
 ) {
     putSafeArgs(args)
-    builder?.invoke(this)
+    builder(this)
 }
 
-internal fun buildIntentImpl(
+internal inline fun buildIntentImpl(
     intent: Intent,
     action: String?,
     data: Uri?,
     type: String?,
-    builder: (Intent.() -> Unit)?
+    builder: (Intent.() -> Unit)
 ): Intent {
     intent.action = action
     intent.setDataAndType(data, type)
-    builder?.invoke(intent)
+    builder(intent)
     return intent
 }

@@ -1,9 +1,6 @@
 import com.android.build.api.dsl.ApplicationProductFlavor
 import com.mrboomdev.awery.gradle.ProjectVersion.generateVersionCode
 import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
-import com.mrboomdev.awery.gradle.settings.GenerateSettingsTask
-import com.mrboomdev.awery.gradle.settings.generatedSettingsKotlinDirectory
-import com.mrboomdev.awery.gradle.settings.generatedSettingsResourcesDirectory
 
 plugins {
     alias(libs.plugins.android.app)
@@ -35,11 +32,6 @@ android {
         versionCode = generateVersionCode()
         versionName = "$releaseVersion-${getGitCommitHash(project)}"
         buildConfigField("long", "BUILD_TIME", "${System.currentTimeMillis()}")
-    }
-    
-    sourceSets["main"].apply { 
-        kotlin.srcDir(generatedSettingsKotlinDirectory)
-        resources.srcDir(generatedSettingsResourcesDirectory)
     }
     
     buildTypes {
@@ -76,10 +68,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform", "-opt-in=kotlin.ExperimentalStdlibApi")
+        freeCompilerArgs = listOf("-Xcontext-receivers", "-Xmulti-platform")
     }
 
-    flavorDimensions += "channel"
+    flavorDimensions += listOf("channel", "platform")
 
     productFlavors {
         fun ApplicationProductFlavor.createChannelProductFlavor(id: String, title: String) {
@@ -114,6 +106,15 @@ android {
             manifestPlaceholders["appLabel"] = "Awery"
             applicationIdSuffix = null
         }
+        
+        register("mobile") {
+            isDefault = true
+            dimension = "platform"
+        }
+        
+        register("tv") {
+            dimension = "platform"
+        }
     }
 }
 
@@ -126,13 +127,16 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.shortcuts)
     implementation(libs.androidx.preference)
-    implementation(libs.bundles.aniyomi)
     implementation(projects.ext)
     implementation(projects.resources)
+    
+    // Yomi
+    implementation(libs.bundles.yomi)
+    implementation(libs.bundles.okhttp)
 	
 	// Database
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.runtime)
 
     // UI
     implementation(libs.androidx.splashscreen)
@@ -152,16 +156,16 @@ dependencies {
 	implementation(projects.shared)
 
 	// Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.activity)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.activity)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.tv.material)
     implementation(libs.compose.tv.foundation)
-    implementation(libs.androidx.adaptive)
-    implementation(libs.androidx.adaptive.layout)
-    implementation(libs.androidx.adaptive.navigation)
+    implementation(libs.adaptive)
+    implementation(libs.adaptive.layout)
+    implementation(libs.adaptive.navigation)
     implementation(compose.components.resources)
 
     // Markdown
@@ -174,12 +178,12 @@ dependencies {
     implementation(libs.markwon.linkify)
 
     // Exoplayer
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.hls)
-    implementation(libs.androidx.media3.exoplayer.dash)
-    implementation(libs.androidx.media3.datasource.okhttp)
-    implementation(libs.androidx.media3.session)
-    implementation(libs.androidx.media3.ui)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.dash)
+    implementation(libs.media3.datasource.okhttp)
+    implementation(libs.media3.session)
+    implementation(libs.media3.ui)
 
     // Networking
     implementation(libs.coil.compose)
@@ -197,11 +201,10 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.glide)
     implementation(libs.glide.okhttp3)
-    implementation(libs.bundles.okhttp)
     implementation(libs.retrostreams)
 
 	// Debugging
-    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling)
     implementation(libs.xcrash)
     debugImplementation(libs.leakcanary)
 }
@@ -211,11 +214,3 @@ composeCompiler {
         rootProject.layout.projectDirectory.file(
             "compose-stability.txt"))
 }
-
-tasks.register<GenerateSettingsTask>("generateSettings") {
-    className = "AwerySettings"
-    inputFiles = listOf(
-        layout.projectDirectory.file("src/main/assets/app_settings.json"),
-        layout.projectDirectory.file("src/main/assets/system_settings.json")
-    )
-}.let { tasks["preBuild"].dependsOn(it) }

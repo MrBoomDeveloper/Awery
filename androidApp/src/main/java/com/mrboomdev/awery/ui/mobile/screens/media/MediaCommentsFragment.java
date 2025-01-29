@@ -65,7 +65,7 @@ import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter;
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter;
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

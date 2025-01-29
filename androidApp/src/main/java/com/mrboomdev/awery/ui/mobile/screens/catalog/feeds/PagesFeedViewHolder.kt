@@ -23,7 +23,7 @@ import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.util.MediaUtils
-import com.mrboomdev.awery.utils.UniqueIdGenerator
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
 import com.mrboomdev.awery.util.extensions.dpPx

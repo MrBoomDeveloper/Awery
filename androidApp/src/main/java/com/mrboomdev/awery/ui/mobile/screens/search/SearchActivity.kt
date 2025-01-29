@@ -37,7 +37,7 @@ import com.mrboomdev.awery.ui.mobile.dialogs.FiltersDialog
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaActionsDialog
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.Selection
-import com.mrboomdev.awery.utils.UniqueIdGenerator
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.exceptions.ExtensionNotInstalledException
 import com.mrboomdev.awery.util.extensions.UI_INSETS

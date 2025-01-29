@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.theme.overlay.MaterialThemeOverlay;
-import com.mrboomdev.awery.R;
 import com.mrboomdev.awery.app.App;
 import com.mrboomdev.awery.databinding.ItemListEpisodeBinding;
 import com.mrboomdev.awery.ext.data.CatalogMedia;
@@ -30,7 +29,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress;
 import com.mrboomdev.awery.extensions.data.CatalogVideo;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -7,9 +7,13 @@ import androidx.core.content.getSystemService
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.shared.BuildConfig
+import java.io.File
 
 actual object Platform {
 	actual val NAME = "Android"
+	
+	actual val CACHE_DIRECTORY: File
+		get() = AndroidGlobals.applicationContext.cacheDir
 
 	@Suppress("DEPRECATION")
 	val TV by lazy { AndroidGlobals.applicationContext.let {

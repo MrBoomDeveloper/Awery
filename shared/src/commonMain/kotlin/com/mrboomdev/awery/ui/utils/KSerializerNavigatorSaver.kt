@@ -50,7 +50,7 @@ class KSerializerNavigatorSaver(
 			val decoded = items.map { 
 				Json.parseToJsonElement(it).let { json ->
 					Json.decodeFromString(
-						serializer(Class.forName(json.jsonObject["class"]!!.jsonPrimitive.contentOrNull!!)),
+						kotlinx.serialization.serializer(Class.forName(json.jsonObject["class"]!!.jsonPrimitive.contentOrNull!!)),
 						json.jsonObject["it"]!!.jsonPrimitive.contentOrNull!!
 					)
 				}

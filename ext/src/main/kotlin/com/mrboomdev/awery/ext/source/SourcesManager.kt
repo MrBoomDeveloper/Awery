@@ -15,7 +15,7 @@ import java.io.InputStream
  */
 abstract class SourcesManager(
 	override val context: Context
-): AbstractSource() {
+): AbstractSource(), Context by context {
 	abstract operator fun get(id: String): AbstractSource?
 	abstract fun getAll(): List<AbstractSource>
 
@@ -46,10 +46,10 @@ abstract class SourcesManager(
 	protected abstract fun unload(id: String, removeFromSource: Boolean)
 	fun unload(id: String) = unload(id, false)
 
-	open override fun onUnload()  {
+	override fun onUnload()  {
 		getAll().also { all ->
 			for(source in all) {
-				unload(source.context.id, true)
+				unload(source.id, true)
 			}
 		}
 	}

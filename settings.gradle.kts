@@ -42,3 +42,5 @@ include(":desktopApp")
 include(":ext", ":ext:platform")
 include(":shared")
 include(":resources")
+include(":compat")
+ 

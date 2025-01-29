@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.animesource.online
 
-import com.mrboomdev.awery.sources.yomi.YomiManager
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
 import eu.kanade.tachiyomi.animesource.model.AnimesPage

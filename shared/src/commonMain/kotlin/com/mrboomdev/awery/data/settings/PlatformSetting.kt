@@ -1,11 +1,10 @@
 package com.mrboomdev.awery.data.settings
 
-import androidx.compose.runtime.Composable
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.platform.PlatformPreferences
 import com.mrboomdev.awery.platform.areRequirementsMet
-import com.mrboomdev.awery.utils.parseEnum
+import com.mrboomdev.awery.utils.toEnum
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -65,7 +64,7 @@ class PlatformSetting(
 				Type.BOOLEAN, Type.SCREEN_BOOLEAN -> PlatformPreferences.getBoolean(key) ?: defaultValue as Boolean?
 
 				Type.TRI_STATE -> PlatformPreferences.getString(key).let { saved ->
-					saved?.parseEnum<TriState>()?.also { return@let it }
+					saved?.toEnum<TriState>()?.also { return@let it }
 					defaultValue as TriState?
 				}
 

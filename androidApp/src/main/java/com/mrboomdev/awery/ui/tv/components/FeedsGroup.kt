@@ -38,9 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import com.mrboomdev.awery.data.settings.get
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.ext.data.get
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

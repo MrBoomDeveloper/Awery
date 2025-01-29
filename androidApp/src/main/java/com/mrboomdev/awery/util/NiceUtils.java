@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MimeTypes;
 
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -221,6 +221,7 @@ public class NiceUtils {
 	 * @see #uniqueStringToList(String)
 	 */
 	@NotNull
+	@Deprecated(forRemoval = true)
 	public static String listToUniqueString(@NotNull Iterable<String> iterable) {
 		var builder = new StringBuilder(";;;");
 		
@@ -237,6 +238,7 @@ public class NiceUtils {
 	 * @param uniqueString - String of format ";;;value1;;;value2;;;value3;;;";;;
 	 */
 	@NotNull
+	@Deprecated(forRemoval = true)
 	public static @Unmodifiable List<String> uniqueStringToList(@NotNull String uniqueString) {
 		if(uniqueString.length() <= 3) return Collections.emptyList();
 		return List.of(uniqueString.substring(3, uniqueString.length() - 3).split(";;;"));

@@ -33,14 +33,13 @@ import com.mrboomdev.awery.AweryDebug
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLocales
-import com.mrboomdev.awery.app.ExtensionsManager
+import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.util.extensions.plus
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.toCalendar
 import com.mrboomdev.awery.utils.buildIntent
 import org.jetbrains.compose.resources.stringResource

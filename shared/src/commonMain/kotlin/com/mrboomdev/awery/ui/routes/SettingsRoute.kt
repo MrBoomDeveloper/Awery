@@ -26,8 +26,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import cafe.adriel.voyager.core.screen.Screen
 import com.mrboomdev.awery.data.settings.PlatformSetting
+import com.mrboomdev.awery.data.settings.get
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.ext.data.get
 import com.mrboomdev.awery.platform.LocalSettingHandler
 import com.mrboomdev.awery.platform.SettingHandler
 import com.mrboomdev.awery.platform.i18n
@@ -48,7 +48,7 @@ private class SettingSerializer: ReflectionSerializer<Setting>()
 class SettingsRoute(
 	val screen: @Serializable(SettingSerializer::class) Setting,
 	val initialPath: List<String>? = null
-): Screen {
+): BaseRoute() {
 	@OptIn(ExperimentalMaterial3Api::class)
 	@Composable
 	override fun Content() {

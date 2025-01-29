@@ -11,7 +11,7 @@ import androidx.core.app.NotificationChannelGroupCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 
 import org.jetbrains.annotations.Contract;
 

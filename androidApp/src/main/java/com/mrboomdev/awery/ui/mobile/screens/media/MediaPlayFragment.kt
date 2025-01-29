@@ -170,6 +170,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		changeSettings = false
 	}
 
+	@OptIn(ExperimentalStdlibApi::class)
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(view.context) {
 		if(media == null) {
 			media = rememberSafeArgs!!.media
@@ -396,6 +397,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 		variantsAdapter!!.getBinding { binding -> binding.variantWrapper.visibility = View.GONE }
 	}
 
+	@OptIn(ExperimentalStdlibApi::class)
 	private fun loadEpisodesFromSource(source: ExtensionProvider, media: CatalogMedia) {
 		val myId = ++loadId
 

@@ -1,6 +1,7 @@
 package com.mrboomdev.awery.ext.data
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 open class CatalogFile(
@@ -12,15 +13,15 @@ open class CatalogFile(
 
 @Serializable
 class CatalogVideoFile private constructor(
-	private val _url: String,
-	private val _title: String?,
-	private val _headers: Map<String, String>?,
-	private val _locale: String?,
+	@Transient private val _url: String = "",
+	@Transient private val _title: String? = null,
+	@Transient private val _headers: Map<String, String>? = null,
+	@Transient private val _locale: String? = null,
 	val quality: Int?,
 	val audioTracks: List<CatalogFile>?,
 	val videoTracks: List<CatalogFile>?,
 	val subtitleTracks: List<CatalogFile>?,
-	private val __UNIQUE_CONSTRUCTOR_QUALIFIER__: Boolean
+	@Transient private val __UNIQUE_CONSTRUCTOR_QUALIFIER__: Boolean = false
 ): CatalogFile(
 	_url, _title, _headers, _locale
 ) {

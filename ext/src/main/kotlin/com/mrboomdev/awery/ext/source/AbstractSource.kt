@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ext.source
 
-abstract class AbstractSource {
+abstract class AbstractSource: Context {
 	abstract val context: Context
 
 	/**

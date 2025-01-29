@@ -3,17 +3,14 @@ package com.mrboomdev.awery.ui.mobile.screens
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import cafe.adriel.voyager.core.annotation.ExperimentalVoyagerApi
 import cafe.adriel.voyager.navigator.LocalNavigatorSaver
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
-import cafe.adriel.voyager.navigator.parcelableNavigatorSaver
 import cafe.adriel.voyager.transitions.FadeTransition
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
@@ -21,7 +18,7 @@ import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.App.Companion.database
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runDelayed
 import com.mrboomdev.awery.app.CrashHandler
-import com.mrboomdev.awery.app.ExtensionsManager
+import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.databinding.ScreenSplashBinding
 import com.mrboomdev.awery.extensions.ExtensionsFactory
@@ -30,7 +27,6 @@ import com.mrboomdev.awery.app.theme.LocalAweryTheme
 import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.LocalSettingHandler
 import com.mrboomdev.awery.platform.PlatformSettingHandler
@@ -40,23 +36,22 @@ import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.ui.routes.SettingsRoute
 import com.mrboomdev.awery.ui.routes.SplashRoute
-import com.mrboomdev.awery.ui.screens.SplashScreen
 import com.mrboomdev.awery.ui.tv.TvMainActivity
 import com.mrboomdev.awery.ui.utils.KSerializerNavigatorSaver
 import com.mrboomdev.awery.ui.utils.LocalToaster
 import com.mrboomdev.awery.util.async.AsyncFuture
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.util.extensions.resolveAttrColor
-import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.utils.buildIntent
-import com.mrboomdev.awery.utils.readAssets
 import com.mrboomdev.awery.utils.tryOr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 private const val TAG = "SplashActivity"
 const val SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE = "enable_compose"
@@ -66,7 +61,7 @@ const val SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS = "redirect_settings"
 class SplashActivity : AppCompatActivity() {
 	private lateinit var binding: ScreenSplashBinding
 	
-	@OptIn(ExperimentalSerializationApi::class)
+	@OptIn(ExperimentalSerializationApi::class, ExperimentalResourceApi::class)
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
 		
@@ -81,13 +76,18 @@ class SplashActivity : AppCompatActivity() {
 		if(AwerySettings.EXPERIMENT_COMPOSE_UI.value || intent.getBooleanExtra(SPLASH_EXTRA_BOOLEAN_ENABLE_COMPOSE, false)) {
 			val initialRoute = when {
 				intent.getBooleanExtra(SPLASH_EXTRA_BOOLEAN_REDIRECT_SETTINGS, false) -> {
+					val settings = runBlocking {
+						Res.readBytes("files/app_settings.json").toString(Charsets.UTF_8)
+					}.let {
+						@Suppress("JSON_FORMAT_REDUNDANT")
+						Json {
+							decodeEnumsCaseInsensitive = true
+							isLenient = true
+						}.decodeFromString<PlatformSetting>(it).apply { restoreValues() }
+					}
+					
 					@Suppress("JSON_FORMAT_REDUNDANT")
-					SettingsRoute(Json {
-						decodeEnumsCaseInsensitive = true
-						isLenient = true
-					}.decodeFromString<PlatformSetting>(readAssets("app_settings.json")).apply {
-						restoreValues()
-					})
+					SettingsRoute(settings)
 				}
 				
 				else -> SplashRoute()

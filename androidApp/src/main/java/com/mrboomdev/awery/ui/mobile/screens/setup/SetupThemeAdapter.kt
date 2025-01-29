@@ -23,9 +23,9 @@ import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.asDeprecatedSetting
 import com.mrboomdev.awery.data.settings.NicePreferences.getPrefs
 import com.mrboomdev.awery.data.settings.SettingsItem
+import com.mrboomdev.awery.data.settings.getRecursively
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.ext.data.Setting
-import com.mrboomdev.awery.ext.data.getRecursively
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.platform.i18n
@@ -80,12 +80,12 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 			))
 		}
 
-		for(theme in AwerySettings.ThemeColorPaletteValue.entries.toTypedArray()) {
+		for(theme in AwerySettings.ThemeColorPaletteValue.entries) {
 			if(theme == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && !DynamicColors.isDynamicColorAvailable()) continue
-			themes.add(Theme(theme, AwerySettings.maps.SYSTEM_SETTINGS.items!!.getRecursively(theme.key)!!))
+			themes.add(Theme(theme))
 		}
 
-		selected = themes.find { it.id == palette.key }
+		selected = themes.find { it.palette.key == palette.key }
 		setHasStableIds(true)
 	}
 
@@ -131,7 +131,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 		fun bind(theme: Theme) {
 			this.theme = theme
 
-			binding.root.background = if(this.theme === selected) selectedDrawable
+			binding.root.background = if(this.theme == selected) selectedDrawable
 			else ContextCompat.getDrawable(context, R.drawable.ui_button_popup_background)
 
 			if(theme.palette == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU) {
@@ -158,20 +158,10 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 		}
 	}
 
-	inner class Theme(
-		val palette: AwerySettings.ThemeColorPaletteValue, 
-		private val item: Setting
-	) {
-		val id: String
-			get() = palette.key
-
-		val name: String
-			get() = item.title!!
-
-		@SuppressLint("PrivateResource", "RestrictedApi")
+	@JvmInline
+	value class Theme(val palette: AwerySettings.ThemeColorPaletteValue) {
 		fun apply() {
 			AwerySettings.THEME_COLOR_PALETTE.value = palette
-
 			for(activity in getActivities<AppCompatActivity>()) {
 				activity.recreate()
 			}

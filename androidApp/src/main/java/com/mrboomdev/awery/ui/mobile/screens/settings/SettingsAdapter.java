@@ -41,7 +41,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.slider.Slider;
 import com.mrboomdev.awery.R;
-import com.mrboomdev.awery.app.AweryLifecycle;
 import com.mrboomdev.awery.data.settings.CustomSettingsItem;
 import com.mrboomdev.awery.data.settings.ObservableSettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsData;
@@ -56,7 +55,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
 import com.mrboomdev.awery.util.ui.fields.EditTextField;
 import com.mrboomdev.awery.util.ui.fields.FancyField;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 
 import java.util.ArrayList;
 import java.util.Collections;

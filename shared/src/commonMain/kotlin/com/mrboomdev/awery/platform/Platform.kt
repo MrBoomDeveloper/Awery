@@ -1,7 +1,10 @@
 package com.mrboomdev.awery.platform
 
+import java.io.File
+
 expect object Platform {
 	val NAME: String
+	val CACHE_DIRECTORY: File
 	fun exitApp()
 	fun restartApp()
 	fun isRequirementMet(requirement: String): Boolean

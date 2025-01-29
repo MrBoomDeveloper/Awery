@@ -41,7 +41,7 @@ import com.mrboomdev.awery.platform.android.AndroidGlobals;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
-import com.mrboomdev.awery.utils.UniqueIdGenerator;
+import com.mrboomdev.awery.ui.utils.UniqueIdGenerator;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
