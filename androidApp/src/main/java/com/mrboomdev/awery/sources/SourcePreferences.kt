@@ -5,5 +5,4 @@ import com.mrboomdev.awery.ext.source.Preferences
 
 abstract class SourcePreferences(
 	val source: AbstractSource
-): Preferences {
-}
+): Preferences
