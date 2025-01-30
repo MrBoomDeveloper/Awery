@@ -1,4 +1,3 @@
 package com.mrboomdev.awery.sources.kaguya
 
-class KaguyaSource {
-}
+class KaguyaSource
