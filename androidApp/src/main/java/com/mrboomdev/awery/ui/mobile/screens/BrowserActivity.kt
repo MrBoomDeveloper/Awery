@@ -20,13 +20,12 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.databinding.ScreenBrowserBinding
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.UI_INSETS
 import com.mrboomdev.awery.util.extensions.applyInsets
@@ -39,7 +38,7 @@ import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.utils.addOnBackPressedListener
 import com.mrboomdev.awery.utils.startActivityForResult
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
-import eu.kanade.tachiyomi.util.system.WebViewClientCompat
+import com.mrboomdev.awery.utils.WebViewClientCompat
 import java.net.URISyntaxException
 
 private const val TAG = "BrowserActivity"

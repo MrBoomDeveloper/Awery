@@ -30,7 +30,7 @@ import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity
 import com.mrboomdev.awery.ui.mobile.dialogs.FiltersDialog

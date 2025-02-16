@@ -1,32 +1,27 @@
 package com.mrboomdev.awery.sources.yomi.tachiyomi
 
 import com.mrboomdev.awery.ext.data.CatalogMedia
-import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.ext.util.createGlobalId
-import com.mrboomdev.awery.extensions.support.yomi.YomiProvider
-import com.mrboomdev.awery.util.extensions.mapOfNotNull
+import com.mrboomdev.awery.sources.yomi.YomiSource
+import com.mrboomdev.awery.utils.arrayOfNotNull
 import eu.kanade.tachiyomi.animesource.model.SAnime
-import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.model.SMangaImpl
 import eu.kanade.tachiyomi.source.online.HttpSource
 
-fun SManga.toMedia(source: TachiyomiSource) = CatalogMedia(
+private const val EXTRA_TACHIYOMI_URL = "TACHIYOMI_URL"
+
+fun SManga.toMedia(source: TachiyomiSource) = CatalogMedia.create(
 	globalId = source.createGlobalId(url),
-	type = CatalogMedia.Type.BOOK,
-	titles = arrayOf(title),
+	type = "comic",
+	title = title,
 	poster = thumbnail_url,
 	description = description,
-	extra = url,
-
-	authors = mapOfNotNull(
-		Pair("Author", author),
-		Pair("Artist", artist)
-	),
-
-	url = if(source.source !is HttpSource) null
-	else YomiProvider.concatLink(source.source.baseUrl, url),
-
+	extras = mapOf(EXTRA_TACHIYOMI_URL to url),
+	authors = arrayOfNotNull(author, artist),
+	
+	shareUrl = if(source.source !is HttpSource) null
+	else YomiSource.concatLink(source.source.baseUrl, url),
+	
 	status = when(status) {
 		SManga.COMPLETED, SManga.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
 		SManga.ONGOING -> CatalogMedia.Status.ONGOING
@@ -34,36 +29,29 @@ fun SManga.toMedia(source: TachiyomiSource) = CatalogMedia(
 		SManga.CANCELLED -> CatalogMedia.Status.CANCELLED
 		else -> null
 	},
-
+	
 	genres = genre?.split(", ".toRegex())?.dropLastWhile { it.isEmpty() }?.toTypedArray()
 		?.map { genre -> genre.trim { it <= ' ' } }
 		?.filter { it.isNotBlank() }
 		?.toTypedArray()
 )
 
-fun CatalogMedia.toSManga(): SManga {
-	return SMangaImpl().also { manga ->
-		manga.title = title ?: "No title"
-		manga.description = description
-		manga.thumbnail_url = poster
-		manga.url = extra!!
-
-		if(authors != null) {
-			manga.author = authors!!["Author"]
-			manga.artist = authors!!["Artist"]
-		}
-
-		manga.status = when(status) {
-			CatalogMedia.Status.ONGOING -> SAnime.ONGOING
-			CatalogMedia.Status.COMPLETED -> SAnime.COMPLETED
-			CatalogMedia.Status.PAUSED -> SAnime.ON_HIATUS
-			CatalogMedia.Status.CANCELLED -> SAnime.CANCELLED
-			else -> 0
-		}
-
-		manga.genre = genres
-			?.map { genre -> genre.trim { it <= ' ' } }
-			?.filter { it.isNotBlank() }
-			?.joinToString(", ")
+fun CatalogMedia.toSManga() = SManga.create().apply {
+	title = this@toSManga.title
+	description = extras[CatalogMedia.EXTRA_DESCRIPTION]
+	thumbnail_url = extras[CatalogMedia.EXTRA_POSTER] ?: extras[CatalogMedia.EXTRA_BANNER]
+	url = extras[EXTRA_TACHIYOMI_URL] ?: globalId.itemId!!
+	
+	status = when(this@toSManga.status) {
+		CatalogMedia.Status.ONGOING -> SAnime.ONGOING
+		CatalogMedia.Status.COMPLETED -> SAnime.COMPLETED
+		CatalogMedia.Status.PAUSED -> SAnime.ON_HIATUS
+		CatalogMedia.Status.CANCELLED -> SAnime.CANCELLED
+		else -> 0
 	}
+	
+	genre = this@toSManga.genres
+		?.map { genre -> genre.trim { it <= ' ' } }
+		?.filter { it.isNotBlank() }
+		?.joinToString(", ")
 }

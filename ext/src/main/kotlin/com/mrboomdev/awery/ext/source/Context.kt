@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ext.source
 
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.util.Image
 
@@ -14,6 +14,6 @@ interface Context {
 
 	interface SourceContext: Context {
 		val manager: SourcesManager
-		val ageRating: AweryAgeRating?
+		val ageRating: AgeRating?
 	}
 }

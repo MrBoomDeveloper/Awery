@@ -22,7 +22,7 @@ import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.GalleryActivity
 import com.mrboomdev.awery.ui.mobile.screens.media.MediaActivity.Companion.handleOptionsClick

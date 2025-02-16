@@ -1,5 +1,12 @@
 package eu.kanade.tachiyomi.animesource
 
+import com.mrboomdev.awery.utils.ExtensionSdk
+import eu.kanade.tachiyomi.animesource.model.AnimeFilterList
+import eu.kanade.tachiyomi.animesource.model.AnimesPage
+import eu.kanade.tachiyomi.util.awaitSingle
+import rx.Observable
+
+@ExtensionSdk
 interface AnimeCatalogueSource: AnimeSource {
 	val lang: String
 	val supportsLatest: Boolean

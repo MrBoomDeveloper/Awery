@@ -31,7 +31,7 @@ import com.mrboomdev.awery.app.theme.TvTheme
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogTag
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import org.jetbrains.compose.resources.stringResource
 
 private val SHADOW_COLOR = Color(0xBB000000)

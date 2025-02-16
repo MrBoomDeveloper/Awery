@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.mrboomdev.awery.generated.AwerySettings
-import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
+import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.ui.Themes
 
 @Composable
@@ -34,7 +34,7 @@ private fun getOriginalColorScheme(
 		AwerySettings.ThemeColorPaletteValue.GREEN -> Themes.Green
 		AwerySettings.ThemeColorPaletteValue.BLUE -> Themes.Blue
 		else -> Themes.Red
-	}.let { if(isDark || isTv) {
+	}.let { if(isDark || Platform.TV) {
 		darkColorScheme(
 			surface = it.dark.background,
 			background = it.dark.background

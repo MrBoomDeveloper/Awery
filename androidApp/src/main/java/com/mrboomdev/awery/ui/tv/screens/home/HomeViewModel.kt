@@ -11,11 +11,11 @@ import androidx.tv.material3.DrawerState
 import androidx.tv.material3.DrawerValue
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.App.Companion.getMoshi
-import com.mrboomdev.awery.sources.ExtensionsManager.loadAll
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
+import com.mrboomdev.awery.sources.loadAll
 import com.mrboomdev.awery.util.IconStateful
 import com.mrboomdev.awery.util.extensions.ensureSize
 import com.mrboomdev.awery.utils.readAssets

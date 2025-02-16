@@ -5,8 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -16,9 +14,6 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import android.os.StrictMode.VmPolicy
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -29,11 +24,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.AttrRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ShareCompat.IntentBuilder
-import androidx.core.content.getSystemService
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -48,39 +41,31 @@ import com.google.android.material.snackbar.Snackbar
 import com.mrboomdev.awery.BuildConfig
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
-import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.AweryNotifications.registerNotificationChannels
 import com.mrboomdev.awery.app.theme.ThemeManager
 import com.mrboomdev.awery.app.theme.ThemeManager.applyTheme
 import com.mrboomdev.awery.app.update.UpdatesChannel
-import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.db.AweryDB
-import com.mrboomdev.awery.data.db.item.DBCatalogList
-import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.CrashHandler
-import com.mrboomdev.awery.platform.android.AndroidGlobals
-import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.Platform.TV
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
+import com.mrboomdev.awery.platform.init
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.ui.mobile.screens.IntentHandlerActivity
-import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.ui.tv.TvExperimentsActivity
-import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.util.ui.markdown.LinkifyPlugin
 import com.mrboomdev.awery.util.ui.markdown.SpoilerPlugin
 import com.mrboomdev.awery.utils.buildIntent
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import dev.mihon.injekt.patchInjekt
 import io.noties.markwon.Markwon
 import io.noties.markwon.SoftBreakAddsNewLinePlugin
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.html.HtmlPlugin
 import io.noties.markwon.image.glide.GlideImagesPlugin
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -93,21 +78,17 @@ private val backPressedCallbacks = WeakHashMap<Runnable, Any>()
 class App : Application() {
 
 	override fun attachBaseContext(base: Context) {
-		AndroidGlobals.applicationContext = this
+		Platform.attachBaseContext(this)
 		super.attachBaseContext(base)
-		
-		if(AwerySettings.ENABLE_CRASH_HANDLER.value) {
-			CrashHandler.setup()
-		}
 	}
 
 	@OptIn(DelicateCoroutinesApi::class)
 	override fun onCreate() {
 		applyTheme()
 		super.onCreate()
-		setupStrictMode()
 		
 		GlobalScope.launch(Dispatchers.Default) {
+			Platform.init()
 			initSync()
 		}
 	}
@@ -119,12 +100,11 @@ class App : Application() {
 	private fun initSync() {
 		didInit = false
 		
-		patchInjekt()
 		registerNotificationChannels()
 		BigImageViewer.initialize(GlideCustomImageLoader.with(this))
 		
 		// Material you isn't available on tv, so we do reset an value to something else.
-		if(AwerySettings.THEME_COLOR_PALETTE.value == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && isTv) {
+		if(AwerySettings.THEME_COLOR_PALETTE.value == AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU && TV) {
 			AwerySettings.THEME_COLOR_PALETTE.value = AwerySettings.ThemeColorPaletteValue.RED
 		}
 		
@@ -132,25 +112,8 @@ class App : Application() {
 		if(AwerySettings.USE_DARK_THEME.value == null) {
 			AwerySettings.USE_DARK_THEME.value = ThemeManager.isDarkModeEnabled
 		}
-
-		if(AwerySettings.LAST_OPENED_VERSION.value < 1) {
-			CoroutineScope(Dispatchers.IO).launch {
-				database.listDao.insert(
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.currently_watching), "1")),
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.planning_watch), "2")),
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.delayed), "3")),
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.completed), "4")),
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.dropped), "5")),
-					DBCatalogList.fromCatalogList(CatalogList(i18n(Res.string.favourites), "6")),
-					DBCatalogList.fromCatalogList(CatalogList("Hidden", Constants.CATALOG_LIST_BLACKLIST)),
-					DBCatalogList.fromCatalogList(CatalogList("History", Constants.CATALOG_LIST_HISTORY))
-				)
-				
-				AwerySettings.LAST_OPENED_VERSION.value = 1
-			}
-		}
 		
-		if(isTv) {
+		if(TV) {
 			// Tv doesn't show up any shortcuts, so we have to show an separate app launcher.
 			packageManager.setComponentEnabledSetting(
 				ComponentName(this, TvExperimentsActivity::class.java),
@@ -182,7 +145,7 @@ class App : Application() {
 		}
 
 		val database: AweryDB by lazy {
-			databaseBuilder(AndroidGlobals.applicationContext, AweryDB::class.java, "db")
+			databaseBuilder(Platform.applicationContext, AweryDB::class.java, "db")
 				.addMigrations(AweryDB.MIGRATION_2_3, AweryDB.MIGRATION_3_4)
 				.build()
 		}
@@ -220,20 +183,9 @@ class App : Application() {
 				.build()
 		}
 
-		fun copyToClipboard(content: Uri) {
-			copyToClipboard(ClipData.newRawUri(null, content))
-		}
-
-		fun copyToClipboard(content: String) {
-			copyToClipboard(ClipData.newPlainText(null, content))
-		}
-
-		fun copyToClipboard(clipData: ClipData) {
-			AndroidGlobals.applicationContext.getSystemService<ClipboardManager>()!!.setPrimaryClip(clipData)
-
-			// Android 13 and higher shows a visual confirmation of copied contents
-			// https://developer.android.com/about/versions/13/features/copy-paste
-			if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+		@Deprecated("You should to display an toast message by yourself!")
+		fun copyToClipboard(string: String) {
+			if(!Platform.copyToClipboard(string)) {
 				toast(i18n(Res.string.copied_to_clipboard))
 			}
 		}
@@ -368,7 +320,7 @@ class App : Application() {
 
 		@JvmStatic
 		val isLandscape: Boolean
-			get() = isLandscape(AndroidGlobals.applicationContext)
+			get() = isLandscape(Platform)
 
 		@JvmStatic
 		@JvmOverloads
@@ -394,46 +346,6 @@ class App : Application() {
 			}
 		}
 
-		/**
-		 * Fuck you, Android. It's not my problem that some people do install A LOT of extensions,
-		 * so that app stops responding.
-		 */
-		private fun setupStrictMode() {
-			if(!BuildConfig.DEBUG) {
-				StrictMode.setThreadPolicy(ThreadPolicy.LAX)
-				StrictMode.setVmPolicy(VmPolicy.LAX)
-				return
-			}
-
-			StrictMode.setThreadPolicy(ThreadPolicy.Builder()
-				.detectCustomSlowCalls()
-				.detectNetwork()
-				.penaltyLog()
-				.penaltyDialog()
-				.build())
-
-			StrictMode.setVmPolicy(VmPolicy.Builder()
-				.setClassInstanceLimit(SettingsActivity::class.java, 10)
-				.detectActivityLeaks()
-				.detectLeakedRegistrationObjects()
-				.penaltyLog()
-				.apply {
-					if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-						penaltyListener({ it.run() }) { violation ->
-							try {
-								runOnUiThread { DialogBuilder(getAnyActivity<AppCompatActivity>()!!)
-									.setTitle("StrictMode.VmPolicy Violation!")
-									.setMessage(Log.getStackTraceString(violation))
-									.setPositiveButton(i18n(Res.string.ok)) { it.dismiss() }
-									.show() }
-							} catch(e: Throwable) {
-								Log.e(TAG, "Failed to warn about an strict mode violation!", e)
-							}
-						}
-					}
-				}.build())
-		}
-
 		@JvmStatic
 		val orientation: Int
 			get() = Resources.getSystem().configuration.orientation
@@ -441,11 +353,12 @@ class App : Application() {
 		@JvmStatic
 		val navigationStyle: AwerySettings.NavigationStyleValue
 			get() = AwerySettings.NAVIGATION_STYLE.value.let {
-				if(isTv) AwerySettings.NavigationStyleValue.MATERIAL else it
+				if(TV) AwerySettings.NavigationStyleValue.MATERIAL else it
 			}
 
 		@JvmStatic
 		@JvmOverloads
+		@Deprecated("Use Compose Toaster instead!")
 		fun snackbar(activity: Activity, title: Any?, button: Any?, buttonCallback: Runnable?, duration: Int = Snackbar.LENGTH_LONG) {
 			runOnUiThread {
 				val titleText = title?.toString() ?: "null"
@@ -494,7 +407,7 @@ class App : Application() {
 
 			val result = when(mRequirement) {
 				"material_you" -> DynamicColors.isDynamicColorAvailable()
-				"tv" -> isTv
+				"tv" -> TV
 				"beta" -> BuildConfig.CHANNEL != UpdatesChannel.STABLE
 				"debug" -> BuildConfig.DEBUG
 				"never" -> false

@@ -3,7 +3,7 @@ package com.mrboomdev.awery.util.extensions
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.media3.common.MimeTypes
-import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.Platform
 import java.io.File
 import java.net.MalformedURLException
 import java.net.URISyntaxException
@@ -26,7 +26,7 @@ fun Long.formatFileSize(): String {
 
 fun Uri.toMimeType(): String {
 	if(scheme == "content") {
-		AndroidGlobals.applicationContext.contentResolver.query(
+		Platform.contentResolver.query(
 			this, null, null, null, null
 		)?.use { cursor ->
 			return cursor.getString(cursor.getColumnIndexOrThrow(

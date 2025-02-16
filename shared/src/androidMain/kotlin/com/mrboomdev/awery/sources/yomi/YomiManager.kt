@@ -9,24 +9,23 @@ import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import com.mrboomdev.awery.sources.ExtensionsManager.isEnabled
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
-import com.mrboomdev.awery.ext.util.Image
+import com.mrboomdev.awery.ext.util.GlobalId
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
-import com.mrboomdev.awery.platform.android.AndroidGlobals
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.Platform.toast
+import com.mrboomdev.awery.sources.ExtensionsManager.isEnabled
 import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
 import com.mrboomdev.awery.utils.generateRequestCode
 import dalvik.system.PathClassLoader
 import eu.kanade.tachiyomi.network.NetworkHelper
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -44,14 +43,7 @@ import android.content.Context as AndroidContext
 abstract class YomiManager<S>(
 	id: String,
 	name: String
-): SourcesManager(object : Context {
-	override val features = arrayOf(AweryFeature.INSTALL_REPOSITORY, AweryFeature.INSTALL_STORAGE)
-	override val id = id
-	override val isEnabled = true
-	override val name = name
-	override val exception = null
-	override val icon = null
-}) {
+): SourcesManager() {
 	private val pendingIntentIds = UniqueIdGenerator(Long.MIN_VALUE, UniqueIdGenerator.OverflowMode.RESET)
 	private val sources = HashMap<String, Source>()
 	abstract val minVersion: Double
@@ -60,6 +52,17 @@ abstract class YomiManager<S>(
 	abstract val mainClass: String
 	abstract val requiredFeature: String
 	abstract val nsfwMeta: String
+	
+	init {
+		attachContext(object : Context {
+			override val features = arrayOf(AweryFeature.INSTALL_REPOSITORY, AweryFeature.INSTALL_STORAGE)
+			override val id = id
+			override val isEnabled = true
+			override val name = name
+			override val exception = null
+			override val icon = null
+		})
+	}
 
 	override fun get(id: String) = sources[id] ?: throw NoSuchElementException(id)
 	override fun getAll() = sources.values.toMutableList()
@@ -78,7 +81,7 @@ abstract class YomiManager<S>(
 	}
 
 	private fun getPackages(): List<PackageInfo> {
-		return AndroidGlobals.applicationContext.packageManager.getInstalledPackages(PM_FLAGS)
+		return Platform.packageManager.getInstalledPackages(PM_FLAGS)
 			.filter { info ->
 				if(info.reqFeatures == null) return@filter false
 
@@ -99,32 +102,30 @@ abstract class YomiManager<S>(
 				get() = channelFlow {
 					val progress = Progress(packages.size.toLong())
 					send(progress)
-
-					coroutineScope {
-						getPackages().map { pkg ->
-							async {
-								sources[pkg.packageName] = try {
-									// Some extensions may try invoke network requests during initialization.
-									// This is a VERY bad practice, so we do limit initialization time,
-									// because timeout may happen after a LONG time, which user doesn't have.
-									withTimeout(5000) {
-										runInterruptible {
-											createSource(pkg.packageName, isEnabled(pkg.packageName))
-										}
+					
+					getPackages().map { pkg ->
+						async {
+							sources[pkg.packageName] = try {
+								// Some extensions may try invoke network requests during initialization.
+								// This is a VERY bad practice, so we do limit initialization time,
+								// because timeout may happen after a LONG time, which user doesn't have.
+								withTimeout(5000) {
+									runInterruptible {
+										createSource(pkg.packageName, GlobalId(context.id, pkg.packageName).isEnabled)
 									}
-								} catch(_: Throwable) {
-									createSource(pkg.packageName, false)
 								}
-								
-								progress.increment()
-								send(progress)
+							} catch(_: Throwable) {
+								createSource(pkg.packageName, false)
 							}
-						}.awaitAll()
-
-						if(!progress.isCompleted) {
-							progress.finish()
+								
+							progress.increment()
 							send(progress)
 						}
+					}.awaitAll()
+
+					if(!progress.isCompleted) {
+						progress.finish()
+						send(progress)
 					}
 				}
 		}
@@ -135,7 +136,7 @@ abstract class YomiManager<S>(
 	private fun createSource(packageName: String, init: Boolean): Source {
 		var throwable: Throwable? = null
 
-		val packageInfo = AndroidGlobals.applicationContext.packageManager.getPackageInfo(
+		val packageInfo = Platform.packageManager.getPackageInfo(
 			packageName, PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
 		)
 
@@ -153,7 +154,7 @@ abstract class YomiManager<S>(
 			sources = sources,
 			exception = throwable,
 			
-			label = packageInfo.applicationInfo!!.loadLabel(AndroidGlobals.applicationContext.packageManager).let { appLabel ->
+			label = packageInfo.applicationInfo!!.loadLabel(Platform.packageManager).let { appLabel ->
 				if(appLabel.startsWith(appLabelPrefix)) {
 					return@let appLabel.substring(appLabelPrefix.length).trim { it <= ' ' }
 				} else appLabel
@@ -165,7 +166,7 @@ abstract class YomiManager<S>(
 		val classLoader = PathClassLoader(
 			packageInfo.applicationInfo!!.sourceDir,
 			null,
-			AndroidGlobals.applicationContext.classLoader)
+			Platform.classLoader)
 
 		val mainClassesString = packageInfo.applicationInfo!!.metaData.getString(mainClass)
 			?: throw NullPointerException("Main classes not found!")
@@ -209,12 +210,12 @@ abstract class YomiManager<S>(
 
 	@Throws(ExtensionInstallException::class, CancellationException::class)
 	override suspend fun install(data: PendingTask<InputStream>): Source {
-		val pi = AndroidGlobals.applicationContext.packageManager.packageInstaller
+		val pi = Platform.packageManager.packageInstaller
 		val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
 			setSize(data.size ?: -1)
 
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-				setInstallerPackageName(AndroidGlobals.applicationContext.packageName)
+				setInstallerPackageName(Platform.packageName)
 				setRequestUpdateOwnership(true)
 			}
 
@@ -248,8 +249,8 @@ abstract class YomiManager<S>(
 		val operationId = pendingIntentIds.long
 		var result: Any? = null
 
-		val intentSender = PendingIntent.getBroadcast(AndroidGlobals.applicationContext, generateRequestCode(),
-			Intent(AndroidGlobals.applicationContext, PackageManagerReceiver::class.java).apply {
+		val intentSender = PendingIntent.getBroadcast(Platform, generateRequestCode(),
+			Intent(Platform, PackageManagerReceiver::class.java).apply {
 				putExtra(PackageManagerReceiver.ID_KEY, operationId)
 			}, PendingIntent.FLAG_IMMUTABLE).intentSender
 		
@@ -315,12 +316,12 @@ abstract class YomiManager<S>(
 	}
 
 	override suspend fun uninstall(id: String) {
-		val pi = AndroidGlobals.applicationContext.packageManager.packageInstaller
+		val pi = Platform.packageManager.packageInstaller
 		val operationId = pendingIntentIds.long
 		var result: Any? = null
 
-		val intentSender = PendingIntent.getBroadcast(AndroidGlobals.applicationContext, generateRequestCode(),
-			Intent(AndroidGlobals.applicationContext, PackageManagerReceiver::class.java).apply {
+		val intentSender = PendingIntent.getBroadcast(Platform, generateRequestCode(),
+			Intent(Platform, PackageManagerReceiver::class.java).apply {
 				putExtra(PackageManagerReceiver.ID_KEY, operationId)
 			}, PendingIntent.FLAG_IMMUTABLE).intentSender
 		
@@ -371,9 +372,9 @@ abstract class YomiManager<S>(
 	companion object {
 		private const val PM_FLAGS = PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
 
-		fun initYomiShit(context: AndroidContext) {
-			Injekt.addSingleton<Application>(context.applicationContext as Application)
-			Injekt.addSingleton(NetworkHelper(context))
+		fun initYomiShit() {
+			Injekt.addSingleton<Application>(Platform.applicationContext)
+			Injekt.addSingleton(NetworkHelper)
 
 			Injekt.addSingletonFactory {
 				Json {

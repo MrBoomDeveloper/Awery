@@ -1,29 +1,23 @@
 package com.mrboomdev.awery.sources.yomi.tachiyomi
 
 import android.content.pm.PackageInfo
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.data.settings.get
-import com.mrboomdev.awery.ext.AndroidImage
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.data.CatalogFeed
-import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.YomiSource
-import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
-import com.mrboomdev.awery.util.extensions.awaitSingle
-import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.ConfigurableSource
-import eu.kanade.tachiyomi.source.MangaSource
+import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.model.MangasPage
-import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.util.awaitSingle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,11 +25,11 @@ class TachiyomiSource(
 	packageInfo: PackageInfo,
 	isEnabled: Boolean,
 	manager: YomiManager<*>,
-	ageRating: AweryAgeRating?,
+	ageRating: AgeRating?,
 	name: String,
 	exception: Throwable?,
-	icon: AndroidImage,
-	val source: MangaSource?
+	icon: Image,
+	val source: Source?
 ): YomiSource(
 	packageInfo = packageInfo,
 	isEnabled = isEnabled,
@@ -107,35 +101,7 @@ class TachiyomiSource(
 					throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
 				}
 
-				CatalogSearchResults(page.mangas.map { manga ->
-					CatalogMedia(
-						globalId = "${AniyomiManager.ID};;;${context.id};;;${manga.url}",
-						titles = arrayOf(manga.title),
-						description = manga.description,
-						poster = manga.thumbnail_url,
-						extra = manga.url,
-						type = CatalogMedia.Type.BOOK,
-
-						genres = manga.genre?.split(", ")?.toTypedArray(),
-
-						url = if(source is HttpSource) {
-							concatLink(source.baseUrl, manga.url)
-						} else null,
-
-						status = when(manga.status) {
-							SManga.COMPLETED, SManga.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
-							SManga.ON_HIATUS -> CatalogMedia.Status.PAUSED
-							SManga.ONGOING -> CatalogMedia.Status.ONGOING
-							SManga.CANCELLED -> CatalogMedia.Status.CANCELLED
-							else -> null
-						},
-
-						authors = mapOfNotNull(
-							"Artist" to manga.artist,
-							"Author" to manga.author
-						)
-					)
-				}, page.hasNextPage)
+				CatalogSearchResults(page.mangas.map { manga -> manga.toMedia(this) }, page.hasNextPage)
 			} as CatalogSearchResults<E>
 
 			else -> throw UnsupportedOperationException("Unsupported catalog! $catalog")

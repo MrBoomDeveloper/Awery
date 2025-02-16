@@ -1,15 +1,15 @@
 package eu.kanade.tachiyomi
 
+import com.mrboomdev.awery.generated.*
+import com.mrboomdev.awery.utils.ExtensionSdk
+
+@ExtensionSdk
 object AppInfo {
-	/**
-	 * @since extension-lib 13
-	 */
-	// TODO: Use an value from the generated BuildConfig
-	fun getVersionCode(): Int = 1
+
+	@ExtensionSdk
+	fun getVersionCode(): Int = BuildKonfig.VERSION_CODE
 	
-	/**
-	 * @since extension-lib 13
-	 */
-	// TODO: Use an value from the generated BuildConfig
-	fun getVersionName(): String = "1.0.0"
+
+	@ExtensionSdk
+	fun getVersionName(): String = BuildKonfig.VERSION_NAME
 }

@@ -11,3 +11,5 @@ actual typealias DialogPreference = androidx.preference.DialogPreference
 actual typealias EditTextPreference = androidx.preference.EditTextPreference
 actual typealias ListPreference = androidx.preference.ListPreference
 actual typealias MultiSelectListPreference = androidx.preference.MultiSelectListPreference
+actual typealias AndroidUri = android.net.Uri
+actual typealias SharedPreferences = android.content.SharedPreferences

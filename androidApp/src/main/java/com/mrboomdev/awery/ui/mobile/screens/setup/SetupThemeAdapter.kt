@@ -27,7 +27,7 @@ import com.mrboomdev.awery.data.settings.getRecursively
 import com.mrboomdev.awery.databinding.WidgetCircleButtonBinding
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler
@@ -205,7 +205,7 @@ class SetupThemeAdapter private constructor(context: Context) : RecyclerView.Ada
 						getPrefs().setValue(item.key, (newValue as Boolean)).saveSync()
 
 						if(AwerySettings.USE_DARK_THEME.key == item.key) {
-							AndroidGlobals.applicationContext.applyTheme()
+							Platform.applicationContext.applyTheme()
 							return
 						}
 

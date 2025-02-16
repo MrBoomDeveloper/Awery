@@ -19,7 +19,7 @@ import com.github.piasy.biv.view.ImageSaveCallback
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.mrboomdev.awery.app.App
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.safeargsnext.owner.SafeArgsActivity
 import com.mrboomdev.safeargsnext.util.rememberSafeArgs

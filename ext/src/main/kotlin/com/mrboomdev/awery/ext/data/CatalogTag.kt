@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ext.data
 
-import com.squareup.moshi.JsonClass
 import java.io.Serial
 import java.io.Serializable
 
@@ -13,6 +12,6 @@ class CatalogTag @JvmOverloads constructor(
 ) : Serializable {
 	companion object {
 		@Serial
-		private val serialVersionUID: Long = 1
+		private val serialVersionUID = 1L
 	}
 }

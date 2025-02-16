@@ -24,7 +24,7 @@ import com.google.android.material.color.DynamicColorsOptions
 import com.mrboomdev.awery.R
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.anyContext
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
+import com.mrboomdev.awery.platform.Platform.TV
 
 object ThemeManager {
 	val currentColorPalette: AwerySettings.ThemeColorPaletteValue
@@ -40,7 +40,7 @@ object ThemeManager {
 		var isDarkModeEnabled = AwerySettings.USE_DARK_THEME.value
 
 		// Light theme on tv is really a bad thing.
-		if(isTv) isDarkModeEnabled = true
+		if(TV) isDarkModeEnabled = true
 
 		if(isDarkModeEnabled != null) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

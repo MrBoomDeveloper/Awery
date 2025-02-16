@@ -21,7 +21,7 @@ import com.mrboomdev.awery.databinding.ScreenMediaDetailsBinding
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.MediaUtils
 import com.mrboomdev.awery.util.extensions.UI_INSETS

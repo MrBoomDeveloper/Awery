@@ -17,10 +17,10 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
 
     override fun getView(context: Context) = with(context) {
         val binding = PopupMediaActionsBinding.inflate(context.inflater)
-        if(media.url == null) binding.share.visibility = View.GONE
+        if(media.extras[CatalogMedia.EXTRA_SHARE] == null) binding.share.visibility = View.GONE
         binding.title.text = media.title
 
-        binding.share.setOnClickListener { media.url?.let { share(it) } }
+        binding.share.setOnClickListener { media.extras[CatalogMedia.EXTRA_SHARE]?.let { share(it) } }
 
         binding.bookmark.setOnClickListener { MediaBookmarkDialog(media).show(context) }
         binding.close.setOnClickListener { dismiss() }
@@ -36,8 +36,8 @@ class MediaActionsDialog(val media: CatalogMedia) : BasePanelDialog() {
             MediaUtils.blacklistMedia(media, updateCallback)
             dismiss()
         }
-
-        media.poster.let {
+        
+        media.extras[CatalogMedia.EXTRA_POSTER].let {
             if(it == null) binding.poster.visibility = View.GONE
             else Glide.with(context)
                 .load(it)

@@ -4,7 +4,7 @@ import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
-import com.mrboomdev.awery.sources.ExtensionsManager.getAllManagers
+import com.mrboomdev.awery.sources.ExtensionsManager.allManagers
 import com.mrboomdev.awery.sources.ExtensionsManager.getManager
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.channelFlow
@@ -19,7 +19,7 @@ fun List<CatalogFeed>.loadAll() = channelFlow {
 private suspend fun CatalogFeed.load(channel: SendChannel<CatalogFeed.Loaded>) {
 	if(managerId == "INTERNAL") {
 		when(feedId) {
-			"AUTO_GENERATE" -> getAllManagers().map { it.getAll() }
+			"AUTO_GENERATE" -> allManagers.map { it.getAll() }
 				.flatten()
 				.filterIsInstance<Source>()
 				.map { it.getFeeds() }

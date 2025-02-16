@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.util.io
 
 import android.net.Uri
-import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.Platform
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -35,13 +35,13 @@ fun zipFiles(paths: Map<String, File>, into: OutputStream) {
 }
 
 fun zipFiles(paths: Map<String, File>, into: Uri) {
-	AndroidGlobals.applicationContext.contentResolver.openOutputStream(into).use { out ->
+	Platform.contentResolver.openOutputStream(into).use { out ->
 		zipFiles(paths, out!!)
 	}
 }
 
 fun unzipFiles(input: Uri, output: File) {
-	AndroidGlobals.applicationContext.contentResolver.openInputStream(input).use { stream ->
+	Platform.contentResolver.openInputStream(input).use { stream ->
 		unzipFiles(stream!!, output)
 	}
 }

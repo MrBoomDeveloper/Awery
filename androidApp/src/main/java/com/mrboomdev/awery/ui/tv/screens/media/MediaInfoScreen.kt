@@ -36,7 +36,7 @@ import com.mrboomdev.awery.app.AweryLocales
 import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.ui.mobile.dialogs.MediaBookmarkDialog
 import com.mrboomdev.awery.ui.mobile.screens.BrowserActivity
 import com.mrboomdev.awery.util.extensions.plus

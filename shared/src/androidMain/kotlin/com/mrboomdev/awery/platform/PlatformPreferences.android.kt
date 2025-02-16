@@ -2,14 +2,13 @@ package com.mrboomdev.awery.platform
 
 import android.content.SharedPreferences
 import android.util.Log
-import com.mrboomdev.awery.platform.android.AndroidGlobals
 import com.mrboomdev.awery.ext.source.Preferences
 
 private const val TAG = "AppPreferences"
 private const val SAME_KEY_DIFFERENT_TYPE = "An existing value with same key, but different type was found!"
 
 actual object PlatformPreferences : Preferences {
-	private val prefs = AndroidGlobals.applicationContext.getSharedPreferences("Awery", 0)
+	private val prefs = Platform.getSharedPreferences("Awery")
 	private var editor: SharedPreferences.Editor? = null
 	
 	private fun ensureEditorExistence() = editor ?: prefs.edit().also { editor = it }

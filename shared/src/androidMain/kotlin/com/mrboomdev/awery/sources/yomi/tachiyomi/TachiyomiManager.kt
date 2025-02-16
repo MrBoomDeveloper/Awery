@@ -1,15 +1,14 @@
 package com.mrboomdev.awery.sources.yomi.tachiyomi
 
-import android.content.Context
 import android.content.pm.PackageInfo
-import com.mrboomdev.awery.R
-import com.mrboomdev.awery.ext.AndroidImage
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.asImage
 import com.mrboomdev.awery.sources.yomi.YomiManager
-import eu.kanade.tachiyomi.source.MangaSource
+import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceFactory
 
-class TachiyomiManager: YomiManager<MangaSource>(
+class TachiyomiManager: YomiManager<Source>(
 	id = ID,
 	name = "Tachiyomi"
 ) {
@@ -21,12 +20,12 @@ class TachiyomiManager: YomiManager<MangaSource>(
 	override val mainClass = "tachiyomi.extension.class"
 	override val requiredFeature = "tachiyomi.extension"
 
-	private fun getSelected(it: Any?): MangaSource? {
+	private fun getSelected(it: Any?): Source? {
 		if(it == null) {
 			return null
 		}
 
-		if(it is MangaSource) {
+		if(it is Source) {
 			return it
 		}
 
@@ -44,7 +43,7 @@ class TachiyomiManager: YomiManager<MangaSource>(
 					return getSelected(i.createSources())
 				}
 
-				if(i is MangaSource) {
+				if(i is Source) {
 					// TODO: Return an source selected by the user.
 					return i
 				}
@@ -70,16 +69,17 @@ class TachiyomiManager: YomiManager<MangaSource>(
 			exception = exception,
 			name = selectedSource?.name ?: label,
 
-			icon = AndroidImage(packageInfo.applicationInfo!!
-				.loadIcon(androidContext.packageManager)),
+			icon = Platform.packageManager.let { pm ->
+				packageInfo.applicationInfo!!.loadIcon(pm).asImage()
+			},
 
 			ageRating = if(isNsfw) {
-				AweryAgeRating.NSFW
+				AgeRating.NSFW
 			} else null
 		)
 	}
 
-	override fun getSourceLongId(source: MangaSource): Long {
+	override fun getSourceLongId(source: Source): Long {
 		return source.id
 	}
 

@@ -8,10 +8,10 @@ import com.mrboomdev.awery.app.App.Companion.showLoadingWindow
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.app.CrashHandler
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.restartApp
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.data.FileType
+import com.mrboomdev.awery.platform.Platform.restartApp
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.util.io.unzipFiles
 import com.mrboomdev.awery.util.io.zipFiles
 import com.mrboomdev.safeargsnext.owner.SafeArgsService

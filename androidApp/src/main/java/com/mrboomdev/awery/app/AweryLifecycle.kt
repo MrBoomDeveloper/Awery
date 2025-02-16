@@ -10,9 +10,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.PlatformResources
-import com.mrboomdev.awery.platform.android.AndroidGlobals
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import org.jetbrains.annotations.Contract
 import java.lang.ref.WeakReference
 import java.util.Objects
@@ -298,9 +298,9 @@ open class AweryLifecycle private constructor() : ActivityLifecycleCallbacks {
 				try {
 					activity = getAnyActivity(Activity::class.java)
 					if(activity != null) return activity
-				} catch(ignored: IndexOutOfBoundsException) { }
+				} catch(_: IndexOutOfBoundsException) {}
 
-				return AndroidGlobals.applicationContext
+				return Platform
 			}
 
 		@JvmStatic

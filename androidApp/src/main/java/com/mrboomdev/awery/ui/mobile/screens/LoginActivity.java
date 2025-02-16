@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 
 public class LoginActivity extends AppCompatActivity {
 	public static final String ACTION_OPEN_BROWSER = "OPEN_BROWSER";
@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 				setResult(Activity.RESULT_OK, intent);
 				finish();
 			} else {
-				AndroidGlobals.INSTANCE.toast("You haven't logged it!", 0);
+				Platform.INSTANCE.toast("You haven't logged it!", 0);
 				finish();
 			}
 		}
@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		if(savedInstanceState != null) {
 			if(getArgument(savedInstanceState, SAVED_DID_LAUNCHED_BROWSER, Boolean.class)) {
-				AndroidGlobals.INSTANCE.toast("Failed to login into an account!", 1);
+				Platform.INSTANCE.toast("Failed to login into an account!", 1);
 				finish();
 				return;
 			}

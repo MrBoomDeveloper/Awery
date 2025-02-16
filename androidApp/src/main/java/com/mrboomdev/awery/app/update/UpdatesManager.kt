@@ -15,9 +15,9 @@ import com.mrboomdev.awery.generated.dismiss
 import com.mrboomdev.awery.generated.download
 import com.mrboomdev.awery.generated.size
 import com.mrboomdev.awery.generated.update_available
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.data.ContentType
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.extensions.formatFileSize
 import com.mrboomdev.awery.util.extensions.removeIndent

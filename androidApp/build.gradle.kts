@@ -129,6 +129,7 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(projects.ext)
     implementation(projects.resources)
+    implementation(libs.bundles.exoplayer)
     
     // Yomi
     implementation(libs.bundles.yomi)
@@ -145,7 +146,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.ebook.reader)
     implementation(libs.pageindicatorview)
-    implementation(libs.colorpickerview)
     implementation(libs.balloon)
     implementation(libs.bigimageviewer)
     implementation(libs.glide.imageloader)
@@ -176,14 +176,6 @@ dependencies {
     implementation(libs.markwon.image)
     implementation(libs.markwon.image.glide)
     implementation(libs.markwon.linkify)
-
-    // Exoplayer
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.exoplayer.hls)
-    implementation(libs.media3.exoplayer.dash)
-    implementation(libs.media3.datasource.okhttp)
-    implementation(libs.media3.session)
-    implementation(libs.media3.ui)
 
     // Networking
     implementation(libs.coil.compose)

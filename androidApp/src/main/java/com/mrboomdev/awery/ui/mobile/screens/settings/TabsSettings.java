@@ -31,7 +31,7 @@ import com.mrboomdev.awery.databinding.WidgetIconEdittextBinding;
 import com.mrboomdev.awery.generated.AwerySettings;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity;
 import com.mrboomdev.awery.util.IconStateful;
 import com.mrboomdev.awery.util.Parser;
@@ -70,7 +70,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					// TODO: Remove this temp block
 
 					if(alwaysTrue()) {
-						AndroidGlobals.INSTANCE.toast("This this isn't done yet. Come back later!", 0);
+						Platform.INSTANCE.toast("This this isn't done yet. Come back later!", 0);
 						return;
 					}
 
@@ -140,7 +140,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 										onSettingAddition(newSetting, items.size() - 1);
 
 										dialog.dismiss();
-										AndroidGlobals.INSTANCE.toast("Tab created successfully!", 0);
+										Platform.INSTANCE.toast("Tab created successfully!", 0);
 									});
 								});
 							})
@@ -245,7 +245,7 @@ public class TabsSettings extends SettingsItem implements ObservableSettingsItem
 					}
 					
 					snackbar(Objects.requireNonNull(getActivity(context)),
-							i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), () -> AndroidGlobals.INSTANCE.restartApp());
+							i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), () -> Platform.INSTANCE.restartApp());
 					
 					return Unit.INSTANCE;
 				});

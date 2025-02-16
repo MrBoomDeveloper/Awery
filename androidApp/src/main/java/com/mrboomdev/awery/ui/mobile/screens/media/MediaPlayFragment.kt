@@ -35,7 +35,7 @@ import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.extensions.data.CatalogSearchResults
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.player.PlayerActivity
 import com.mrboomdev.awery.ui.mobile.screens.search.SearchActivity
@@ -57,7 +57,7 @@ import com.mrboomdev.awery.util.extensions.setVerticalPadding
 import com.mrboomdev.awery.util.extensions.startActivity
 import com.mrboomdev.awery.util.extensions.topPadding
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView
-import com.mrboomdev.awery.util.exceptions.BotSecurityBypassException
+import com.mrboomdev.awery.utils.exceptions.BotSecurityBypassException
 import com.mrboomdev.awery.util.ui.adapter.DropdownAdapter
 import com.mrboomdev.awery.util.ui.adapter.DropdownBindingAdapter
 import com.mrboomdev.awery.util.ui.adapter.SingleViewAdapter
@@ -116,7 +116,7 @@ class MediaPlayFragment: Fragment(), SafeArgsFragment<MediaPlayFragment.Args>, O
 			progress.lastWatchSource = selectedSource!!.id
 
 			val foundMedia = episodesAdapter!!.media
-			progress.lastId = foundMedia.id
+			progress.lastId = foundMedia.mediaId
 			progress.lastTitle = foundMedia.title
 			dao.insert(progress)
 		}

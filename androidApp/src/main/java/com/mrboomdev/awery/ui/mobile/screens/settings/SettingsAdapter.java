@@ -49,7 +49,7 @@ import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.databinding.ItemListSettingBinding;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 import com.mrboomdev.awery.util.Selection;
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder;
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog;
@@ -394,7 +394,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							if(e != null) {
 								dialog.dismiss();
-								AndroidGlobals.INSTANCE.toast(e.getMessage(), 0);
+								Platform.INSTANCE.toast(e.getMessage(), 0);
 								return;
 							}
 
@@ -462,7 +462,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 							if(e != null) {
 								dialog.dismiss();
-								AndroidGlobals.INSTANCE.toast(e.getMessage(), 0);
+								Platform.INSTANCE.toast(e.getMessage(), 0);
 								return;
 							}
 
@@ -496,7 +496,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
 
 	private static void suggestToRestart(Context context) {
 		snackbar(Objects.requireNonNull(getActivity(context)),
-				i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), () -> AndroidGlobals.INSTANCE.restartApp());
+				i18n(String0_commonMainKt.getRestart_to_apply_settings(Res.string.INSTANCE)), i18n(String0_commonMainKt.getRestart(Res.string.INSTANCE)), () -> Platform.INSTANCE.restartApp());
 	}
 
 	@Override

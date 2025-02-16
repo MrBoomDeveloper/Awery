@@ -3,9 +3,7 @@ package com.mrboomdev.awery.platform
 import android.util.Log
 import android.widget.Toast
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals
-import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.shared.BuildConfig
 import xcrash.Errno
 import xcrash.XCrash
@@ -20,14 +18,14 @@ actual object CrashHandler {
 	}
 	
 	actual fun setup() {
-		when(XCrash.init(AndroidGlobals.applicationContext, XCrash.InitParameters().apply {
+		when(XCrash.init(Platform, XCrash.InitParameters().apply {
 			// Sometimes exoplayer does throw some native exceptions in the background
 			// and XCrash catches it for no reason, so we don't catch any native exceptions.
 			disableNativeCrashHandler()
 			
 			// This library doesn't check if an ANR has happened
 			// properly on Android TV, so we disable it.
-			setAnrCheckProcessState(!isTv)
+			setAnrCheckProcessState(!Platform.TV)
 			
 			// Crash logs are too long so we do strip all non-relevant dumps.
 			setJavaDumpNetworkInfo(false)
@@ -89,11 +87,11 @@ actual object CrashHandler {
 			CrashType.NATIVE -> Res.string.something_terrible_happened
 		}), 1)
 		
-		AndroidGlobals.restartApp()
+		Platform.restartApp()
 	}
 	
 	private val crashLogsDirectory: File
-		get() = File(AndroidGlobals.applicationContext.filesDir, "tombstones")
+		get() = File(Platform.filesDir, "tombstones")
 	
 	actual val crashLogs: List<File>
 		get() = crashLogsDirectory.listFiles()?.sortedBy { it.lastModified() }?.reversed() ?: emptyList()

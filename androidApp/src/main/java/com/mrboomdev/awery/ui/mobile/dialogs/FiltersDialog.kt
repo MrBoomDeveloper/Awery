@@ -20,7 +20,7 @@ import com.mrboomdev.awery.data.settings.SettingsItemType
 import com.mrboomdev.awery.data.settings.SettingsList
 import com.mrboomdev.awery.extensions.ExtensionProvider
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsAdapter
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler

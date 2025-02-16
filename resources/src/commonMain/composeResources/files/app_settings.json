@@ -426,16 +426,6 @@
 
 		{
 			"type": "screen",
-			"show_if": ["debug"],
-			"title": "reader",
-			"icon": "ic_menu_book_filled",
-			"items": [
-
-			]
-		},
-
-		{
-			"type": "screen",
 			"title": "storage",
 			"icon": "ic_storage",
 			"items": [
@@ -519,38 +509,7 @@
 					"type": "screen",
 					"title": "Experiments",
 					"icon": "ic_experiment_outlined",
-					"items": [
-						{
-							"key": "experiment_splash_load_sources",
-							"title": "Use new sources loader",
-							"type": "boolean",
-							"value": false,
-							"restart": true
-						},
-
-						{
-							"key": "experiment_tv_compose",
-							"title": "Launch TV activity on startup",
-							"type": "boolean",
-							"value": false,
-							"restart": true
-						},
-
-						{
-							"key": "experiment_settings2",
-							"title": "Remastered settings",
-							"type": "boolean",
-							"value": false
-						},
-
-						{
-							"key": "experiment_compose_ui",
-							"title": "Compose UI",
-							"type": "boolean",
-							"value": false,
-							"restart": true
-						}
-					]
+					"items": []
 				},
 
 				{

@@ -7,6 +7,7 @@ import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
+import com.mrboomdev.awery.utils.exceptions.BotSecurityBypassException
 import eu.kanade.tachiyomi.network.HttpException
 import kotlinx.coroutines.CancellationException
 import java.net.SocketException
@@ -40,7 +41,7 @@ class OkiThrowableMessage(
 			is SSLHandshakeException -> i18n(Res.string.failed_handshake)
 			is SocketException -> unwrapped.message
 			is UnknownHostException -> unwrapped.message
-			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, unwrapped.blockerName)
+			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, unwrapped.blocker)
 			is ExtensionInstallException -> i18n(Res.string.extension_installed_failed)
 			is ExtensionLoadException -> i18n(Res.string.extension_load_failed)
 			is CancellationException -> "Operation cancelled"
@@ -70,7 +71,7 @@ class OkiThrowableMessage(
 		get() = when(unwrapped) {
 			is LocaleAware -> unwrapped.localizedMessage
 			is SocketTimeoutException -> i18n(Res.string.connection_timeout)
-			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, unwrapped.blockerName)
+			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, unwrapped.blocker)
 			is SocketException -> i18n(Res.string.failed_to_connect_to_server)
 			is SSLHandshakeException -> i18n(Res.string.failed_to_connect_to_server)
 			is NotImplementedError -> unwrapped.message

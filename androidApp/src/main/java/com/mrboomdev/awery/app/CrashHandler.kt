@@ -15,7 +15,7 @@ import com.mrboomdev.awery.app.AweryLifecycle.Companion.getAnyActivity
 import com.mrboomdev.awery.app.AweryLifecycle.Companion.runOnUiThread
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.CrashHandler
-import com.mrboomdev.awery.platform.android.AndroidGlobals
+import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessage
 import com.mrboomdev.awery.util.extensions.dpPx
@@ -23,13 +23,14 @@ import com.mrboomdev.awery.util.extensions.fixAndShow
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
 import com.mrboomdev.awery.utils.activity
+import com.mrboomdev.awery.utils.div
 import java.io.File
 
 @Deprecated("Use com.mrboomdev.awery.platform.CrashHandler instead!")
 object CrashHandler {
 
 	private val crashLogsDirectory by lazy {
-		File(AndroidGlobals.applicationContext.filesDir, "tombstones")
+		File(Platform.filesDir, "tombstones")
 	}
 
 	@JvmStatic
@@ -125,7 +126,7 @@ object CrashHandler {
 
 				if(file?.exists() == true || message != null || oki != null) {
 					setNegativeButton(i18n(Res.string.share)) {
-						val mFile = file ?: File((mContext ?: AndroidGlobals.applicationContext).filesDir, "crash_report.txt").apply {
+						val mFile = file ?: (Platform.filesDir / "crash_report.txt").apply {
 							delete()
 							createNewFile()
 
@@ -144,16 +145,16 @@ object CrashHandler {
 							putExtra(Intent.EXTRA_SUBJECT, "Awery Crashed")
 							putExtra(Intent.EXTRA_EMAIL, arrayOf("awery-support@mrboomdev.ru"))
 							putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-								mContext ?: AndroidGlobals.applicationContext, BuildConfig.FILE_PROVIDER, mFile))
+								Platform, BuildConfig.FILE_PROVIDER, mFile))
 						}
 
 						val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
 							data = Uri.parse("mailto:")
 						}
 
-						val activityInfo = (mContext ?: AndroidGlobals.applicationContext).packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_ALL).map {
-							it.activityInfo.packageName
-						}.toTypedArray()
+						val activityInfo = Platform.packageManager.queryIntentActivities(
+							emailIntent, PackageManager.MATCH_ALL
+						).map { it.activityInfo.packageName }.toTypedArray()
 
 						val intents = activityInfo.map {
 							Intent(intent).setPackage(it)
@@ -161,7 +162,7 @@ object CrashHandler {
 
 						emailIntent.toChooser("Share Awery crash report").apply {
 							putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toTypedArray())
-						}.also { (mContext ?: AndroidGlobals.applicationContext).startActivity(it) }
+						}.also { Platform.startActivity(it) }
 					}
 
 					setNeutralButton(i18n(Res.string.see_error)) {

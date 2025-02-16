@@ -1,28 +1,22 @@
 package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import android.content.pm.PackageInfo
-import com.mrboomdev.awery.R
 import com.mrboomdev.awery.data.settings.get
-import com.mrboomdev.awery.ext.AndroidImage
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.data.CatalogFeed
-import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
-import com.mrboomdev.awery.generated.Res
-import com.mrboomdev.awery.generated.no_media_found
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import com.mrboomdev.awery.sources.yomi.YomiSource
-import com.mrboomdev.awery.util.extensions.mapOfNotNull
 import eu.kanade.tachiyomi.animesource.AnimeCatalogueSource
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource
 import eu.kanade.tachiyomi.animesource.model.AnimesPage
-import eu.kanade.tachiyomi.animesource.model.SAnime
-import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -30,10 +24,10 @@ class AniyomiSource(
 	packageInfo: PackageInfo,
 	isEnabled: Boolean,
 	manager: YomiManager<*>,
-	ageRating: AweryAgeRating?,
+	ageRating: AgeRating?,
 	name: String,
 	exception: Throwable?,
-	icon: AndroidImage,
+	icon: Image,
 	val source: AnimeSource?
 ) : YomiSource(
 	packageInfo = packageInfo,
@@ -106,35 +100,7 @@ class AniyomiSource(
 					throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
 				}
 
-				CatalogSearchResults(page.animes.map { anime ->
-					CatalogMedia(
-						globalId = "${AniyomiManager.ID};;;${context.id};;;${anime.url}",
-						titles = arrayOf(anime.title),
-						description = anime.description,
-						poster = anime.thumbnail_url,
-						extra = anime.url,
-						type = CatalogMedia.Type.TV,
-
-						genres = anime.genre?.split(", ")?.toTypedArray(),
-
-						url = if(source is AnimeHttpSource) {
-							concatLink(source.baseUrl, anime.url)
-						} else null,
-
-						status = when(anime.status) {
-							SAnime.COMPLETED, SAnime.PUBLISHING_FINISHED -> CatalogMedia.Status.COMPLETED
-							SAnime.ON_HIATUS -> CatalogMedia.Status.PAUSED
-							SAnime.ONGOING -> CatalogMedia.Status.ONGOING
-							SAnime.CANCELLED -> CatalogMedia.Status.CANCELLED
-							else -> null
-						},
-
-						authors = mapOfNotNull(
-							"Artist" to anime.artist,
-							"Author" to anime.author
-						)
-					)
-				}, page.hasNextPage)
+				CatalogSearchResults(page.animes.map { anime -> anime.toMedia(this) }, page.hasNextPage)
 			} as CatalogSearchResults<E>
 
 			else -> throw UnsupportedOperationException("Unsupported type!")

@@ -2,6 +2,7 @@
 
 package eu.kanade.tachiyomi.network
 
+import com.mrboomdev.awery.utils.ExtensionSdk
 import okhttp3.CacheControl
 import okhttp3.FormBody
 import okhttp3.Headers
@@ -15,6 +16,7 @@ private val DEFAULT_CACHE_CONTROL = CacheControl.Builder().maxAge(10, MINUTES).b
 private val DEFAULT_HEADERS = Headers.Builder().build()
 private val DEFAULT_BODY: RequestBody = FormBody.Builder().build()
 
+@ExtensionSdk
 fun GET(
     url: String,
     headers: Headers = DEFAULT_HEADERS,
@@ -24,6 +26,7 @@ fun GET(
 /**
  * @since extensions-lib 1.4
  */
+@ExtensionSdk
 fun GET(
     url: HttpUrl,
     headers: Headers = DEFAULT_HEADERS,
@@ -36,6 +39,7 @@ fun GET(
         .build()
 }
 
+@ExtensionSdk
 fun POST(
     url: String,
     headers: Headers = DEFAULT_HEADERS,
@@ -50,6 +54,7 @@ fun POST(
         .build()
 }
 
+@ExtensionSdk
 fun PUT(
     url: String,
     headers: Headers = DEFAULT_HEADERS,
@@ -64,6 +69,7 @@ fun PUT(
         .build()
 }
 
+@ExtensionSdk
 fun DELETE(
     url: String,
     headers: Headers = DEFAULT_HEADERS,

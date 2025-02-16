@@ -32,7 +32,7 @@ fun MediaCard(
 		Card(modifier = Modifier.weight(1f)) {
 			Box {
 				AsyncImage(
-					model = media.poster,
+					model = media.extras[CatalogMedia.EXTRA_POSTER],
 					contentDescription = media.title,
 					contentScale = ContentScale.Crop,
 					modifier = Modifier
@@ -40,23 +40,21 @@ fun MediaCard(
 				)
 			}
 		}
+		
+		Text(
+			color = Color.White,
+			text = media.title,
+			fontSize = 16.sp,
 
-		if(media.title != null) {
-			Text(
-				color = Color.White,
-				text = media.title!!,
-				fontSize = 16.sp,
+			style = TextStyle(
+				shadow = Shadow(
+					color = Color.Black,
+					blurRadius = 4f
+				)
+			),
 
-				style = TextStyle(
-					shadow = Shadow(
-						color = Color.Black,
-						blurRadius = 4f
-					)
-				),
-
-				modifier = Modifier
-					.padding(8.dp, 16.dp, 8.dp, 0.dp)
-			)
-		}
+			modifier = Modifier
+				.padding(8.dp, 16.dp, 8.dp, 0.dp)
+		)
 	}
 }

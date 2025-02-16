@@ -1,4 +1,9 @@
+
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 import com.mrboomdev.awery.gradle.GenerateConfigurationsTask
+import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
 import com.mrboomdev.awery.gradle.generatedConfigurationsDirectory
 import com.mrboomdev.awery.gradle.settings.GenerateSettingsTask
 import com.mrboomdev.awery.gradle.settings.generatedSettingsDirectory
@@ -13,6 +18,7 @@ plugins {
 	alias(libs.plugins.compose)
 	alias(libs.plugins.compose.compiler)
 	alias(libs.plugins.room)
+	alias(libs.plugins.buildkonfig)
 }
 
 room {
@@ -26,17 +32,25 @@ java {
 
 val generations = listOf(
 	tasks.register<GenerateConfigurationsTask>("generateConfigurations") {
-		inputDirectory = rootProject.layout.projectDirectory.dir("resources/src/commonMain/composeResources")
+		inputDirectory = rootProject.layout.projectDirectory.dir(
+			"resources/src/commonMain/composeResources")
 	} to generatedConfigurationsDirectory,
 	
 	tasks.register<GenerateSettingsTask>("generateSettings") {
 		className = "AwerySettings"
 		inputFiles = listOf(
-			rootProject.layout.projectDirectory.file("resources/src/commonMain/composeResources/files/app_settings.json"),
-			rootProject.layout.projectDirectory.file("resources/src/commonMain/composeResources/files/system_settings.json")
+			rootProject.layout.projectDirectory.file(
+				"resources/src/commonMain/composeResources/files/app_settings.json"),
+			
+			rootProject.layout.projectDirectory.file(
+				"resources/src/commonMain/composeResources/files/system_settings.json")
 		)
 	} to generatedSettingsDirectory
-)
+).onEach {
+	tasks.withType<KotlinCompile>().configureEach {
+		dependsOn(it.first)
+	}
+}
 
 kotlin {
 	jvmToolchain(17)
@@ -59,7 +73,6 @@ kotlin {
 				// Core
 				implementation(projects.resources)
 				implementation(projects.ext)
-				implementation(compose.runtime)
 				
 				// Yomi
 				implementation(libs.bundles.yomi)
@@ -74,11 +87,11 @@ kotlin {
 				implementation("androidx.sqlite:sqlite:2.4.0")
 				implementation("androidx.sqlite:sqlite-bundled:2.5.0-alpha12")
 				
-				// Ui
-				implementation(compose.ui)
-				implementation(compose.foundation)
+				// Compose Core
+				implementation(libs.compose.runtime)
+				implementation(libs.compose.ui)
+				implementation(libs.compose.foundation)
 				api(compose.components.resources)
-				api(libs.sonner)
 				
 				// Navigation
 				implementation(libs.androidx.navigation)
@@ -93,8 +106,9 @@ kotlin {
 				implementation(libs.adaptive.navigation)
 				
 				// Components
-				implementation(compose.material3)
+				implementation(libs.compose.material3)
 				implementation(libs.coil.compose)
+				api(libs.sonner)
 			}
 		}
 
@@ -104,6 +118,8 @@ kotlin {
 			implementation(libs.material)
 			implementation(libs.xcrash)
 			implementation(libs.androidx.preference)
+			implementation(libs.quickjs.android)
+			implementation(libs.bundles.exoplayer)
 		}
 		
 		@OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -117,6 +133,7 @@ kotlin {
 		val desktopMain by getting {
 			dependencies {
 				implementation(compose.desktop.common)
+				implementation("wang.harlon.quickjs:wrapper-java:2.4.3")
 				
 				// Android platform classes ported to jvm
 				implementation(projects.compat)
@@ -166,8 +183,28 @@ compose.resources {
 	generateResClass = never
 }
 
-generations.forEach {
-	tasks.withType<KotlinCompile>().configureEach {
-		dependsOn(it.first)
+buildkonfig {
+	packageName = "com.mrboomdev.awery.generated"
+	exposeObjectWithName = "BuildKonfig"
+	
+	defaultConfigs {
+		field("CHANNEL", "STABLE")
+		field("GIT_COMMIT", getGitCommitHash(project))
+		field("VERSION_NAME", rootProject.ext["versionName"]!!.toString())
+		field("VERSION_CODE", rootProject.ext["versionCode"]!!.toString().toInt())
+	}
+	
+	defaultConfigs("alpha") {
+		field("CHANNEL", "ALPHA")
+	}
+	
+	defaultConfigs("beta") {
+		field("CHANNEL", "BETA")
 	}
 }
+
+fun TargetConfigDsl.field(name: String, value: String) = 
+	buildConfigField(STRING, name, value, const = true)
+
+fun TargetConfigDsl.field(name: String, value: Int) = 
+	buildConfigField(INT, name, value.toString(), const = true)

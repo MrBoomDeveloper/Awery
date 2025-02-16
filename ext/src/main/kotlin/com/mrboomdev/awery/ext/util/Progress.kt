@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ext.util
 
-class Progress @JvmOverloads constructor(
+data class Progress(
 	var max: Long = 0,
 	var value: Long = 0
 ) {

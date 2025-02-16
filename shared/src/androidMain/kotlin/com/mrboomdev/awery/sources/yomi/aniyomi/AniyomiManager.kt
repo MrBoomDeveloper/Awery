@@ -1,14 +1,12 @@
 package com.mrboomdev.awery.sources.yomi.aniyomi
 
-import android.content.Context
 import android.content.pm.PackageInfo
-import com.mrboomdev.awery.R
-import com.mrboomdev.awery.ext.AndroidImage
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.asImage
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
-import eu.kanade.tachiyomi.source.SourceFactory
 
 class AniyomiManager: YomiManager<AnimeSource>(
 	id = ID,
@@ -71,11 +69,12 @@ class AniyomiManager: YomiManager<AnimeSource>(
 			exception = exception,
 			name = selectedSource?.name ?: label,
 
-			icon = AndroidImage(packageInfo.applicationInfo!!
-				.loadIcon(androidContext.packageManager)),
+			icon = Platform.packageManager.let { pm ->
+				packageInfo.applicationInfo!!.loadIcon(pm).asImage()
+			},
 
 			ageRating = if(isNsfw) {
-				AweryAgeRating.NSFW
+				AgeRating.NSFW
 			} else null
 		)
 	}

@@ -44,7 +44,7 @@ import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.data.settings.SettingsItemType;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity;
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsDataHandler;
 import com.mrboomdev.awery.util.async.AsyncFuture;
@@ -102,7 +102,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					var newItem = new ExtensionSetting(activity, extension);
 
 					if(hasExisted) {
-						AndroidGlobals.INSTANCE.toast("Extension updated successfully!", 0);
+						Platform.INSTANCE.toast("Extension updated successfully!", 0);
 
 						var oldItem = find(getItems(), item ->
 								item instanceof ExtensionSetting setting &&
@@ -110,7 +110,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 						runOnUiThread(() -> onSettingChange(newItem, oldItem));
 					} else {
-						AndroidGlobals.INSTANCE.toast("Extension installed successfully!", 0);
+						Platform.INSTANCE.toast("Extension installed successfully!", 0);
 
 						runOnUiThread(() -> {
 							if(extensions.size() == 1) {
@@ -198,7 +198,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								@Override
 								public void onSuccess(@NonNull List<Extension> result) {
 									if(find(repos, item -> Objects.equals(item.url, text)) != null) {
-										AndroidGlobals.INSTANCE.toast("Repository already exists!", 0);
+										Platform.INSTANCE.toast("Repository already exists!", 0);
 										loadingWindow.dismiss();
 										return;
 									}
@@ -217,7 +217,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 
 										dialog.dismiss();
 										loadingWindow.dismiss();
-										AndroidGlobals.INSTANCE.toast("Repository added successfully!", 0);
+										Platform.INSTANCE.toast("Repository added successfully!", 0);
 									});
 								}
 
@@ -401,7 +401,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							@Override
 							public void onSuccess(@NonNull Extension result) {
 								window.dismiss();
-								AndroidGlobals.INSTANCE.toast(i18n(String0_commonMainKt.getExtension_installed_successfully(Res.string.INSTANCE)), 0);
+								Platform.INSTANCE.toast(i18n(String0_commonMainKt.getExtension_installed_successfully(Res.string.INSTANCE)), 0);
 								runOnUiThread(() -> ((RepositorySetting) RepositoryItem.this.getParent()).onSettingChange(RepositoryItem.this));
 							}
 
@@ -410,7 +410,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 								window.dismiss();
 
 								if(t instanceof CancellationException) {
-									AndroidGlobals.INSTANCE.toast(t.getMessage(), 0);
+									Platform.INSTANCE.toast(t.getMessage(), 0);
 									return;
 								}
 								
@@ -442,7 +442,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 													d.dismiss();
 
 													if(t instanceof CancellationException) {
-														AndroidGlobals.INSTANCE.toast(t.getMessage(), 0);
+														Platform.INSTANCE.toast(t.getMessage(), 0);
 														return;
 													}
 
@@ -472,7 +472,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 					public void onFailure(@NonNull Throwable t) {
 						Log.e(TAG, "Failed to download an extension!", t);
 						window.dismiss();
-						AndroidGlobals.INSTANCE.toast(OkiThrowableMessageKt.explain(t).getTitle(), 0);
+						Platform.INSTANCE.toast(OkiThrowableMessageKt.explain(t).getTitle(), 0);
 					}
 				});
 
@@ -630,7 +630,7 @@ public class ExtensionSettings extends SettingsItem implements SettingsDataHandl
 							window.dismiss();
 
 							if(result) {
-								AndroidGlobals.INSTANCE.toast("Uninstalled successfully", 0);
+								Platform.INSTANCE.toast("Uninstalled successfully", 0);
 
 								doIfNotNull(getActivity(context), activity -> {
 									extensions = List.copyOf(manager.getAllExtensions());

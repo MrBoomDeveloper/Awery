@@ -9,7 +9,7 @@ class JvmEntry(
 	val name: String?,
 	val icon: String?,
 	val type: Type,
-	val ageRating: String?,
+	val ageRating: Int?,
 	val features: Array<String>
 ) {
 	enum class Type {

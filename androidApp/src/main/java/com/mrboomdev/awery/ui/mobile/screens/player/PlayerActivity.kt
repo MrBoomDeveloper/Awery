@@ -53,7 +53,7 @@ import com.mrboomdev.awery.extensions.data.CatalogSubtitle
 import com.mrboomdev.awery.extensions.data.CatalogVideo
 import com.mrboomdev.awery.extensions.data.CatalogVideoFile
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.NiceUtils
 import com.mrboomdev.awery.util.async.AsyncFuture
@@ -424,7 +424,7 @@ class PlayerActivity : AppCompatActivity(), SafeArgsActivity<PlayerActivity.Extr
 						dialog.dismiss()
 						finish()
 					}
-					.setNeutralButton(i18n(Res.string.copy)) { copyToClipboard(uri) }
+					.setNeutralButton(i18n(Res.string.copy)) { copyToClipboard(uri.toString()) }
 					.show()
 			}
 

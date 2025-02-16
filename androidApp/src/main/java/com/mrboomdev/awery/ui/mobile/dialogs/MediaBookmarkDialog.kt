@@ -19,7 +19,7 @@ import com.mrboomdev.awery.extensions.data.CatalogList
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.extensions.data.CatalogMediaProgress
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.extensions.dpPx
 import com.mrboomdev.awery.util.extensions.setImageTintAttr
@@ -43,8 +43,8 @@ class MediaBookmarkDialog(val media: CatalogMedia): BasePanelDialog() {
             val lists = database.listDao.all
                 .filter { !HIDDEN_LISTS.contains(it.id) }
 
-            val progress = database.mediaProgressDao[media.globalId]
-                ?: CatalogMediaProgress(media.globalId)
+            val progress = database.mediaProgressDao[media.globalId.value]
+                ?: CatalogMediaProgress(media.globalId.value)
 
             fun createListView(item: CatalogList) {
                 val linear = LinearLayoutCompat(context).apply {

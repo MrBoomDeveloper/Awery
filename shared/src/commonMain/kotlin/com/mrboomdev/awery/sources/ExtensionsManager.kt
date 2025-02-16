@@ -3,7 +3,9 @@ package com.mrboomdev.awery.sources
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Context
+import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
+import com.mrboomdev.awery.ext.util.GlobalId
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.platform.PlatformPreferences
@@ -22,42 +24,40 @@ object ExtensionsManager {
 			getManager(it[0])?.get(it[1].split(":")[0])
 		}
 	}
-
-	/**
-	 * The user has decided to either enable or disable an extension.
-	 * This function just writes an value to settings and doesn't load or unload an actual extension.
-	 * @author MrBoomDev
-	 */
-	fun SourcesManager.setEnabled(sourceId: String, enable: Boolean) {
-		PlatformPreferences["ext_${id}_${sourceId}"] = enable
-		PlatformPreferences.save()
-	}
-
-	/**
-	 * Checks if the user has decided to let this extension to be enabled or not.
-	 * This function just checks the settings and doesn't check if an extension is loaded or not.
-	 * @author MrBoomDev
-	 */
-	fun SourcesManager.isEnabled(sourceId: String) = PlatformPreferences.getBoolean("ext_${id}_${sourceId}") ?: true
-
-	private fun SourcesManager.getAllManagers(): List<SourcesManager> = buildList {
+	
+	var GlobalId.isEnabled
+		get() = PlatformPreferences.getBoolean("ext_${managerId}_${sourceId}") ?: true
+		set(value) {
+			PlatformPreferences["ext_${managerId}_${sourceId}"] = value
+			PlatformPreferences.save()
+		}
+	
+	private fun SourcesManager.getAllRecursive(): List<AbstractSource> = buildList {
 		for(abstractSource in getAll()) {
+			add(abstractSource)
+			
 			if(abstractSource is SourcesManager) {
-				add(abstractSource)
-				addAll(abstractSource.getAllManagers())
+				addAll(abstractSource.getAllRecursive())
 			}
 		}
 	}
-
+	
 	/**
-	 * This method will collect all nested managers from all the places that it could find.
+	 * All nested [SourcesManager] collected into a single list
 	 */
-	fun getAllManagers() = BootstrapManager.getAllManagers()
+	val allManagers: List<SourcesManager> 
+		get() = BootstrapManager.getAllRecursive().filterIsInstance<SourcesManager>()
+	
+	/**
+	 * All nested [Source] collected into a single list
+	 */
+	val allSources: List<Source> 
+		get() = BootstrapManager.getAllRecursive().filterIsInstance<Source>()
 
 	private fun SourcesManager.getManager(managerId: String): SourcesManager? {
 		for(abstractSource in getAll()) {
 			if(abstractSource is SourcesManager) {
-				if(abstractSource.id == managerId) {
+				if(abstractSource.context.id == managerId) {
 					return abstractSource
 				}
 
@@ -88,15 +88,19 @@ object ExtensionsManager {
 	 * Every manager may have nested managers, so this one is the ROOT of all.
 	 * @author MrBoomDev
 	 */
-	internal object BootstrapManager: SourcesManager(object : Context {
-		override val features = arrayOf<AweryFeature>()
-		override val id = "BOOTSTRAP"
-		override val isEnabled = true
-		override val name = "Bootstrap Sources Manager"
-		override val exception = null
-		override val icon = null
-	}) {
+	internal object BootstrapManager: SourcesManager() {
 		private val managers = mutableMapOf<String, SourcesManager>()
+		
+		init {
+			attachContext(object : Context {
+				override val features = arrayOf<AweryFeature>()
+				override val id = "BOOTSTRAP"
+				override val isEnabled = true
+				override val name = "Bootstrap Sources Manager"
+				override val exception = null
+				override val icon = null
+			})
+		}
 		
 		override fun get(id: String): AbstractSource? = managers[id]
 		override fun getAll(): List<AbstractSource> = managers.values.toList()
@@ -105,7 +109,7 @@ object ExtensionsManager {
 			var totalSize = 0L
 			
 			for(manager in createPlatformSourceManagers()) {
-				managers[manager.id] = manager
+				managers[manager.context.id] = manager
 			}
 			
 			val pendingTasks = managers.values.map { manager ->

@@ -57,7 +57,7 @@ import com.mrboomdev.awery.extensions.request.PostMediaCommentRequest;
 import com.mrboomdev.awery.extensions.request.ReadMediaCommentsRequest;
 import com.mrboomdev.awery.generated.Res;
 import com.mrboomdev.awery.generated.String0_commonMainKt;
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 import com.mrboomdev.awery.util.NiceUtils;
 import com.mrboomdev.awery.util.async.AsyncFuture;
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
@@ -763,7 +763,7 @@ public class MediaCommentsFragment extends Fragment {
 									if(context == null) return;
 
 									if(!success) {
-										AndroidGlobals.INSTANCE.toast("Failed to delete comment", 0);
+										Platform.INSTANCE.toast("Failed to delete comment", 0);
 										return;
 									}
 

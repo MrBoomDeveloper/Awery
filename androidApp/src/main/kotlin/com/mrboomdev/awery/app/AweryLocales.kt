@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.LocaleListCompat
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.restartApp
+import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.util.Selection
 import com.mrboomdev.awery.util.ui.dialog.SelectionDialog
@@ -64,7 +64,7 @@ object AweryLocales {
 			.setPositiveButton(i18n(Res.string.save)) { dialog, selection ->
 				selection.get(Selection.State.SELECTED)?.let {
 					AppCompatDelegate.setApplicationLocales(LocaleListCompat.create(it.item))
-					restartApp()
+					Platform.restartApp()
 				}
 
 				dialog.dismiss()

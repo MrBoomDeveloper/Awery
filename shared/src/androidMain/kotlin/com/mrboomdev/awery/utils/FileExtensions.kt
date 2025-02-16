@@ -8,20 +8,19 @@ import android.provider.MediaStore
 import androidx.core.net.toFile
 import com.mrboomdev.awery.data.FileType
 import com.mrboomdev.awery.platform.Platform
-import com.mrboomdev.awery.platform.android.AndroidGlobals
 
 val Uri.fileType: FileType?
 	get() = fileName?.let { FileType.test(it) }
 
-fun readClasspath(path: String) = Platform::class.java.classLoader
+fun readClasspath(path: String) = Platform::class.java.classLoader!!
 	.getResourceAsStream(path.normalizeFilePath())!!.use { it.readBytes() }
 
 fun readAssets(path: String) = 
-	AndroidGlobals.applicationContext.assets.open(path).readBytes().decodeToString()
+	Platform.assets.open(path).readBytes().decodeToString()
 
 @get:SuppressLint("Range")
 val Uri.fileName: String?
-	get() = with(AndroidGlobals.applicationContext.contentResolver) {
+	get() = with(Platform.contentResolver) {
 		query(
 			this@fileName,
 			arrayOf(MediaStore.MediaColumns.DISPLAY_NAME),

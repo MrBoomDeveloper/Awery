@@ -45,16 +45,16 @@ enum class NavigationTemplates {
 				
 				navigationBar = listOf(
 					NavigationExperience.Item(
-						name = i18n(Res.string.anime),
-						activeIcon = Res.drawable.ic_movie_filled,
-						inActiveIcon = Res.drawable.ic_movie_outlined,
+						name = i18n(Res.string.home),
+						activeIcon = Res.drawable.ic_home_filled,
+						inActiveIcon = Res.drawable.ic_home_outlined,
 						route = NavigationRoute.Feed()
 					),
 					
 					NavigationExperience.Item(
-						name = i18n(Res.string.home),
-						activeIcon = Res.drawable.ic_home_filled,
-						inActiveIcon = Res.drawable.ic_home_outlined,
+						name = i18n(Res.string.anime),
+						activeIcon = Res.drawable.ic_movie_filled,
+						inActiveIcon = Res.drawable.ic_movie_outlined,
 						route = NavigationRoute.Feed()
 					),
 					

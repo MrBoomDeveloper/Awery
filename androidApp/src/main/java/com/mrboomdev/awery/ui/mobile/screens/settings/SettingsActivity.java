@@ -37,7 +37,7 @@ import com.mrboomdev.awery.data.settings.NicePreferences;
 import com.mrboomdev.awery.data.settings.SettingsData;
 import com.mrboomdev.awery.data.settings.SettingsItem;
 import com.mrboomdev.awery.databinding.ScreenSettingsBinding;
-import com.mrboomdev.awery.platform.android.AndroidGlobals;
+import com.mrboomdev.awery.platform.Platform;
 import com.mrboomdev.awery.ui.mobile.components.EmptyStateView;
 import com.mrboomdev.awery.util.exceptions.OkiThrowableMessageKt;
 import com.mrboomdev.awery.util.extensions.ActivityExtensionsKt;
@@ -119,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 					if(item == null) throw new IllegalArgumentException("Failed to parse settings");
 				} catch(IOException e) {
 					Log.e(TAG, "Failed to parse settings", e);
-					AndroidGlobals.INSTANCE.toast("Failed to get settings", 0);
+					Platform.INSTANCE.toast("Failed to get settings", 0);
 					finish();
 					return;
 				}
@@ -283,7 +283,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsDataH
 			SettingsData.getScreen(this, item, (screen, e) -> {
 				if(e != null) {
 					Log.e(TAG, "Failed to get settings", e);
-					AndroidGlobals.INSTANCE.toast(OkiThrowableMessageKt.explain(e).getTitle(), 0);
+					Platform.INSTANCE.toast(OkiThrowableMessageKt.explain(e).getTitle(), 0);
 					finish();
 					return;
 				}

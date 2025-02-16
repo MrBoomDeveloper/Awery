@@ -8,14 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import java.io.InputStream
 
 /**
- * You MUST create an constructor with the context as an argument,
- * otherwise your extension won't be loaded!
  * An context will be created by the manager,
  * so that you won't need to repeat same values multiple times.
  */
-abstract class SourcesManager(
-	override val context: Context
-): AbstractSource(), Context by context {
+abstract class SourcesManager: AbstractSource() {
 	abstract operator fun get(id: String): AbstractSource?
 	abstract fun getAll(): List<AbstractSource>
 
@@ -49,7 +45,7 @@ abstract class SourcesManager(
 	override fun onUnload()  {
 		getAll().also { all ->
 			for(source in all) {
-				unload(source.id, true)
+				unload(source.context.id, true)
 			}
 		}
 	}

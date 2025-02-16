@@ -1,5 +1,13 @@
 package eu.kanade.tachiyomi.animesource
 
+import com.mrboomdev.awery.utils.ExtensionSdk
+import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SEpisode
+import eu.kanade.tachiyomi.animesource.model.Video
+import eu.kanade.tachiyomi.util.awaitSingle
+import rx.Observable
+
+@ExtensionSdk
 interface AnimeSource {
 	val id: Long
 	val name: String

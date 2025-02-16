@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.isTv
+import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.ui.Themes
 import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 
@@ -19,7 +19,7 @@ fun TvTheme(
 	TvMaterialTheme(
 		colorScheme = when(palette) {
 			AwerySettings.ThemeColorPaletteValue.MATERIAL_YOU -> {
-				if(isTv) {
+				if(Platform.TV) {
 					throw UnsupportedOperationException("How did you even done that?")
 				}
 
@@ -30,7 +30,7 @@ fun TvTheme(
 				AwerySettings.ThemeColorPaletteValue.GREEN -> Themes.Green
 				AwerySettings.ThemeColorPaletteValue.BLUE -> Themes.Blue
 				else -> Themes.Red
-			}.let { if(isDark || isTv) {
+			}.let { if(isDark || Platform.TV) {
 				darkColorScheme(
 					surface = if(isAmoled) Color.Black else it.dark.background,
 					background = if(isAmoled) Color.Black else it.dark.background

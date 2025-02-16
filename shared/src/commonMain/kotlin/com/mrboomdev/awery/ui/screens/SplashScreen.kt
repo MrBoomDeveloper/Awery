@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,13 +29,24 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.CrashHandler
+import com.mrboomdev.awery.platform.Platform
+import com.mrboomdev.awery.platform.didInit
 import com.mrboomdev.awery.platform.i18n
+import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.ui.components.MaterialDialog
 import com.mrboomdev.awery.ui.routes.MainRoute
+import com.mrboomdev.awery.utils.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 
 private sealed interface LoadingStatus {
+	data object InitializingApp: LoadingStatus
 	data object CheckingCrashes: LoadingStatus
 	data object CheckingDatabase: LoadingStatus
 	data class LoadingExtensions(val progress: Progress?): LoadingStatus
@@ -46,13 +58,26 @@ private sealed interface LoadingStatus {
 fun SplashScreen(
 	modifier: Modifier = Modifier
 ) {
-	var loadingStatus by remember { mutableStateOf<LoadingStatus>(LoadingStatus.CheckingCrashes) }
+	var loadingStatus by remember { mutableStateOf<LoadingStatus>(LoadingStatus.InitializingApp) }
 	val crashLogs = remember { mutableStateListOf<Pair<File, String>>() }
 	var share by remember { mutableStateOf(false) }
+	val coroutineScope = rememberCoroutineScope()
 	val navigator = LocalNavigator.currentOrThrow
-		
+	
 	LaunchedEffect(loadingStatus) {
-		when(loadingStatus) {
+		when(val status = loadingStatus) {
+			LoadingStatus.InitializingApp -> {
+				if(Platform.didInit) {
+					loadingStatus = LoadingStatus.CheckingCrashes
+					return@LaunchedEffect
+				}
+				
+				coroutineScope.launch {
+					await { Platform.didInit }
+					loadingStatus = LoadingStatus.CheckingCrashes
+				}
+			}
+			
 			LoadingStatus.CheckingCrashes -> {
 				val crashes = CrashHandler.crashLogs
 				
@@ -70,8 +95,17 @@ fun SplashScreen(
 			}
 			
 			is LoadingStatus.LoadingExtensions -> {
-				// TODO: Load extensions
-				loadingStatus = LoadingStatus.Finished
+				if(status.progress != null) return@LaunchedEffect
+				
+				coroutineScope.launch(Dispatchers.Default) {
+					ExtensionsManager.init().data.onEach {
+						// Compose doesn't want to rerender because we do use the same Progress instance,
+						// so to fix that problem we do copy it. Not the best memory management. ik.
+						loadingStatus = LoadingStatus.LoadingExtensions(it.copy())
+					}.onCompletion {
+						loadingStatus = LoadingStatus.Finished
+					}.buffer(10).collect()
+				}
 			}
 			
 			LoadingStatus.Finished -> {
@@ -121,7 +155,7 @@ fun SplashScreen(
 	}
 		
 	Column(
-		modifier = modifier,
+		modifier = modifier.padding(32.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
 	) {
@@ -134,6 +168,8 @@ fun SplashScreen(
 			textAlign = TextAlign.Center,
 			color = MaterialTheme.colorScheme.primary,
 			text = when(val status = loadingStatus) {
+				LoadingStatus.InitializingApp -> "Initializing app"
+				
 				LoadingStatus.CheckingCrashes -> stringResource(
 					Res.string.checking_if_crash_occurred)
 					
@@ -153,7 +189,7 @@ fun SplashScreen(
 				}
 				
 				LoadingStatus.Finished -> stringResource(Res.string.status_finished)
-			} + "\nWARNING! EVERYTHING IS STILL IN EARLY STAGES!"
+			}
 		)
 	}
 }

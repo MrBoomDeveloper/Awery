@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.sources.yomi
 
 import android.content.pm.PackageInfo
-import com.mrboomdev.awery.ext.constants.AweryAgeRating
+import com.mrboomdev.awery.ext.constants.AgeRating
 import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
@@ -12,25 +12,28 @@ import com.mrboomdev.awery.ext.util.Image
 abstract class YomiSource(
 	manager: YomiManager<*>,
 	name: String,
-	ageRating: AweryAgeRating?,
+	ageRating: AgeRating?,
 	features: Array<AweryFeature>,
 	packageInfo: PackageInfo,
 	isEnabled: Boolean,
 	exception: Throwable?,
 	icon: Image
-): Source(object : Context.SourceContext() {
-	override val manager = manager
-	override val ageRating = ageRating
-	override val features = features
-	override val id = packageInfo.packageName
-	override val isEnabled = isEnabled
-	override val name = name
-	override val exception = exception
-	override val icon = icon
-
-}) {
+): Source() {
 	abstract val feeds: CatalogSearchResults<CatalogFeed>?
 
+	init {
+		attachContext(object : Context.SourceContext {
+			override val manager = manager
+			override val ageRating = ageRating
+			override val features = features
+			override val id = packageInfo.packageName
+			override val isEnabled = isEnabled
+			override val name = name
+			override val exception = exception
+			override val icon = icon
+		})
+	}
+	
 	final override suspend fun getFeeds(): CatalogSearchResults<CatalogFeed> {
 		return feeds!!
 	}

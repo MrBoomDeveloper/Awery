@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +43,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dokar.sonner.TextToastAction
 import com.mrboomdev.awery.data.settings.PlatformSetting
 import com.mrboomdev.awery.ext.data.Setting
@@ -139,7 +143,7 @@ fun SettingsItem(
 		}
 	) {
 		Row(
-			modifier = Modifier.padding(horizontal = 16.dp).heightIn(min = 64.dp),
+			modifier = Modifier.padding(horizontal = 16.dp).heightIn(min = 56.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			val painter = if(setting is PlatformSetting) {
@@ -149,15 +153,15 @@ fun SettingsItem(
 			} else null
 			
 			when {
-				// Only VectorPainter is looking with with applied tinting
+				// Only VectorPainter is looking good with with applied tinting
 				painter is VectorPainter -> Icon(
-					modifier = Modifier.padding(end = 16.dp).size(32.dp),
+					modifier = Modifier.padding(end = 16.dp).size(28.dp),
 					painter = painter,
 					contentDescription = null
 				)
 				
 				painter != null -> Image(
-					modifier = Modifier.padding(end = 16.dp).size(36.dp),
+					modifier = Modifier.padding(end = 16.dp).size(32.dp),
 					painter = painter,
 					contentDescription = null
 				)
@@ -168,25 +172,34 @@ fun SettingsItem(
 			) {
 				(setting.title ?: (if(setting.description == null) setting.key else null))?.let { title ->
 					Text(
-						style = MaterialTheme.typography.bodyLarge,
+						style = MaterialTheme.typography.bodyMedium,
 						text = setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
 					)
 				}
 				
 				setting.description?.let { description ->
 					if(setting.title != null) {
-						Spacer(Modifier.padding(3.dp))
+						Spacer(Modifier.height(5.dp))
 					}
 					
 					Text(
-						style = if(setting.title == null) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-						color = if(setting.type == Setting.Type.CATEGORY) MaterialTheme.colorScheme.primary else Color.Unspecified,
+						style = if(setting.title == null) {
+							MaterialTheme.typography.bodyMedium
+						} else MaterialTheme.typography.bodySmall,
+						
+						color = if(setting.type == Setting.Type.CATEGORY) {
+							MaterialTheme.colorScheme.primary
+						} else Color.Unspecified,
+						
+						lineHeight = 20.sp,
 						text = setting.takeIf { it is PlatformSetting }?.let { i18n(description) } ?: description
 					)
 				}
 			}
 			
 			if(setting.type == Setting.Type.TRI_STATE) {
+				Spacer(Modifier.width(15.dp))
+				
 				TriStateCheckbox(
 					state = triState.asToggleableState(),
 					onClick = {
@@ -201,6 +214,8 @@ fun SettingsItem(
 			}
 			
 			if(setting.type == Setting.Type.BOOLEAN || setting.type == Setting.Type.SCREEN_BOOLEAN) {
+				Spacer(Modifier.width(15.dp))
+				
 				Switch(
 					checked = isChecked,
 					onCheckedChange = {
@@ -292,144 +307,134 @@ fun SettingsItem(
 				}
 			}
 		) {
-			Column {
-				if(setting.description != null) {
-					val description = setting.description!!
-					
-					Text(
-						text = setting.takeIf { it is PlatformSetting }
-							?.let { i18n(description) } ?: description
+			when(setting.type) {
+				Setting.Type.STRING -> {
+					OutlinedTextField(
+						isError = isValidValue.first,
+						label = if(isValidValue.first) null else {{
+							Text(isValidValue.second)
+						}},
+							
+						placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
+							Text(setting.placeholder)
+						}} else null,
+							
+						singleLine = true,
+						value = newValue?.toString() ?: "",
+						onValueChange = { newValue = it },
+						keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+						keyboardActions = KeyboardActions(onDone = {
+							if(!isValidValue.first) return@KeyboardActions
+							setting.value = newValue
+							requestDismiss()
+						})
 					)
 				}
-				
-				when(setting.type) {
-					Setting.Type.STRING -> {
-						OutlinedTextField(
-							isError = isValidValue.first,
-							label = if(isValidValue.first) null else {{
-								Text(isValidValue.second)
-							}},
-							
-							placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
-								Text(setting.placeholder)
-							}} else null,
-							
-							singleLine = true,
-							value = newValue?.toString() ?: "",
-							onValueChange = { newValue = it },
-							keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-							keyboardActions = KeyboardActions(onDone = {
-								if(!isValidValue.first) return@KeyboardActions
-								setting.value = newValue
-								requestDismiss()
-							})
-						)
-					}
 					
-					Setting.Type.INTEGER -> {
-						OutlinedTextField(
-							isError = !isValidValue.first,
-							label = if(isValidValue.first) null else {{
-								Text(isValidValue.second)
-							}},
+				Setting.Type.INTEGER -> {
+					OutlinedTextField(
+						isError = !isValidValue.first,
+						label = if(isValidValue.first) null else {{
+							Text(isValidValue.second)
+						}},
 							
-							placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
-								Text(setting.placeholder)
-							}} else null,
+						placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
+							Text(setting.placeholder)
+						}} else null,
 							
-							singleLine = true,
-							value = newValue?.toString() ?: "",
+						singleLine = true,
+						value = newValue?.toString() ?: "",
 							
-							onValueChange = {
-								newValue = if(it.isBlank()) null else try {
-									it.toInt()
-								} catch(e: NumberFormatException) { it }
-							},
+						onValueChange = {
+							newValue = if(it.isBlank()) null else try {
+								it.toInt()
+							} catch(e: NumberFormatException) { it }
+						},
 							
-							keyboardOptions = KeyboardOptions(
-								keyboardType = KeyboardType.Phone,
-								imeAction = ImeAction.Done
-							),
+						keyboardOptions = KeyboardOptions(
+							keyboardType = KeyboardType.Phone,
+							imeAction = ImeAction.Done
+						),
 							
-							keyboardActions = KeyboardActions(onDone = {
-								if(!isValidValue.first) return@KeyboardActions
-								setting.value = newValue
-								requestDismiss()
-							})
-						)
-					}
+						keyboardActions = KeyboardActions(onDone = {
+							if(!isValidValue.first) return@KeyboardActions
+							setting.value = newValue
+							requestDismiss()
+						})
+					)
+				}
 					
-					Setting.Type.FLOAT -> {
-						OutlinedTextField(
-							isError = !isValidValue.first,
-							label = if(isValidValue.first) null else {{
-								Text(isValidValue.second)
-							}},
+				Setting.Type.FLOAT -> {
+					OutlinedTextField(
+						isError = !isValidValue.first,
+						label = if(isValidValue.first) null else {{
+							Text(isValidValue.second)
+						}},
 							
-							placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
-								Text(setting.placeholder)
-							}} else null,
+						placeholder = if(setting is PlatformSetting && setting.placeholder != null) {{
+							Text(setting.placeholder)
+						}} else null,
 							
-							singleLine = true,
-							value = newValue?.toString() ?: "",
+						singleLine = true,
+						value = newValue?.toString() ?: "",
 							
-							onValueChange = {
-								newValue = if(it.isBlank()) null else try {
-									it.toFloat()
-								} catch(e: NumberFormatException) { it }
-							},
+						onValueChange = {
+							newValue = if(it.isBlank()) null else try {
+								it.toFloat()
+							} catch(e: NumberFormatException) { it } 
+						},
 							
-							keyboardOptions = KeyboardOptions(
-								keyboardType = KeyboardType.Decimal,
-								imeAction = ImeAction.Done
-							),
+						keyboardOptions = KeyboardOptions(
+							keyboardType = KeyboardType.Decimal,
+							imeAction = ImeAction.Done
+						),
 							
-							keyboardActions = KeyboardActions(onDone = {
-								setting.value = newValue
-								requestDismiss()
-							})
-						)
-					}
+						keyboardActions = KeyboardActions(onDone = {
+							setting.value = newValue
+							requestDismiss()
+						})
+					)
+				}
 					
-					Setting.Type.SELECT -> {
-						Column(modifier = Modifier.selectableGroup()) {
-							for(item in setting.items!!) {
-								Row(modifier = Modifier
+				Setting.Type.SELECT -> {
+					LazyColumn(modifier = Modifier.selectableGroup()) {
+						items(setting.items!!) { item ->
+							Row(
+								modifier = Modifier
 									.clip(RoundedCornerShape(8.dp))
 									.fillMaxWidth()
 									.height(56.dp)
 									.selectable(
 										selected = newValue == item.key,
 										onClick = { newValue = item.key },
-										role = Role.RadioButton
-									),
-									verticalAlignment = Alignment.CenterVertically
-								) {
-									RadioButton(
-										selected = newValue == item.key,
-										onClick = null
-									)
+										role = Role.RadioButton),
+								
+								verticalAlignment = Alignment.CenterVertically,
+							) {
+								RadioButton(
+									selected = newValue == item.key,
+									onClick = null
+								)
 									
-									Text(
-										text = item.title?.let { title ->
-											setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
-										} ?: item.key ?: "No title",
+								Text(
+									text = item.title?.let { title ->
+										setting.takeIf { it is PlatformSetting }?.let { i18n(title) } ?: title
+									} ?: item.key ?: "No title",
 										
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier.padding(start = 16.dp)
-									)
-								}
+									style = MaterialTheme.typography.bodyLarge,
+									modifier = Modifier.padding(start = 16.dp)
+								)
 							}
 						}
 					}
+				}
 					
-					else -> {
-						Text(
-							style = MaterialTheme.typography.bodyLarge,
-							color = Color.Red,
-							text = "Unsupported setting type!"
-						)
-					}
+				else -> {
+					Text(
+						style = MaterialTheme.typography.bodyLarge,
+						color = Color.Red,
+						text = "Unsupported setting type!"
+					)
 				}
 			}
 		}

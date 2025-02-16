@@ -26,13 +26,13 @@ import com.mrboomdev.awery.app.theme.ThemeManager.setThemedContent
 import com.mrboomdev.awery.data.db.item.DBRepository
 import com.mrboomdev.awery.data.settings.NicePreferences
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.sources.yomi.aniyomi.AniyomiManager
 import com.mrboomdev.awery.sources.yomi.tachiyomi.TachiyomiManager
 import com.mrboomdev.awery.ui.components.DEFAULT_DIALOG_PADDING
 import com.mrboomdev.awery.ui.components.MaterialDialog
 import com.mrboomdev.awery.ui.mobile.screens.settings.SettingsActivity
 import com.mrboomdev.awery.data.FileType
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.util.extensions.cleanUrl
 import com.mrboomdev.awery.util.extensions.enableEdgeToEdge
 import com.mrboomdev.awery.utils.tryOr
@@ -132,7 +132,6 @@ class IntentHandlerActivity : AppCompatActivity() {
 										}
 										
 										database.repositoryDao.add(DBRepository(action.url, action.type.managerId))
-										database.close()
 										toast("Repository added successfully", 1)
 										finish()
 									}

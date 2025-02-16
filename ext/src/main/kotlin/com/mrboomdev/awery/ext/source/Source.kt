@@ -6,6 +6,7 @@ import com.mrboomdev.awery.ext.data.CatalogFile
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
+import javax.xml.catalog.Catalog
 
 /**
  * Source is the provider of feeds, media, subtitles and more...
@@ -14,9 +15,10 @@ import com.mrboomdev.awery.ext.data.Setting
  * An context will be created by the manager,
  * so that you won't need to repeat same values multiple times.
  */
-abstract class Source(
-	final override val context: Context.SourceContext
-): AbstractSource(), Context.SourceContext by context {
+abstract class Source: AbstractSource() {
+	override val context: Context.SourceContext
+		get() = super.context as Context.SourceContext
+	
 	open suspend fun getFeeds(): CatalogSearchResults<CatalogFeed> {
 		throw NotImplementedError("getFeeds() isn't implemented!")
 	}

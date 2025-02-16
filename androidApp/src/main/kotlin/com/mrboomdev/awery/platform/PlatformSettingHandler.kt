@@ -16,11 +16,11 @@ import com.mrboomdev.awery.app.update.UpdatesManager.showUpdateDialog
 import com.mrboomdev.awery.data.Constants
 import com.mrboomdev.awery.data.Constants.DIRECTORY_IMAGE_CACHE
 import com.mrboomdev.awery.generated.*
-import com.mrboomdev.awery.platform.android.AndroidGlobals.toast
 import com.mrboomdev.awery.ui.mobile.screens.settings.AboutActivity
 import com.mrboomdev.awery.ui.mobile.screens.setup.SetupActivity
 import com.mrboomdev.awery.data.ContentType
 import com.mrboomdev.awery.data.settings.PlatformSetting
+import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.util.exceptions.explain
 import com.mrboomdev.awery.util.extensions.toChooser
 import com.mrboomdev.awery.util.ui.dialog.DialogBuilder
