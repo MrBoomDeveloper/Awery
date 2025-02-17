@@ -119,25 +119,25 @@ jobs:
 
       - name: Rename APK File
         run: |
-          mv app/build/outputs/apk/alpha/release/app-alpha-mobile-release-signed.apk app/build/outputs/apk/alpha/release/awery-mobile-alpha.apk
+          mv app/build/outputs/apk/alphaMobile/release/app-alpha-mobile-release-signed.apk app/build/outputs/apk/alphaMobile/release/awery-mobile-alpha.apk
           
       - name: Rename Tv APK File
         run: |
-          mv app/build/outputs/apk/alpha/release/app-alpha-tv-release-signed.apk app/build/outputs/apk/alpha/release/awery-tv-alpha.apk
+          mv app/build/outputs/apk/alphaTv/release/app-alpha-tv-release-signed.apk app/build/outputs/apk/alphaTv/release/awery-tv-alpha.apk
       
       - name: Upload Alpha APK
         uses: actions/upload-artifact@v4
         with:
           name: "Alpha APK"
           retention-days: 90
-          path: "app/build/outputs/apk/alpha/mobile/release/awery-mobile-alpha.apk"
+          path: "app/build/outputs/apk/alphaMobile/release/awery-mobile-alpha.apk"
           
       - name: Upload Tv Alpha APK
         uses: actions/upload-artifact@v4
         with:
           name: "Tv Alpha APK"
           retention-days: 90
-          path: "app/build/outputs/apk/alpha/tv/release/awery-tv-alpha.apk"
+          path: "app/build/outputs/apk/alphaTv/tv/release/awery-tv-alpha.apk"
           
       - name: Upload APK to Discord and Telegram
         shell: bash
@@ -302,7 +302,7 @@ jobs:
         
             if [ "$SKIP_BUILD" != "true" ]; then
             curl -F "payload_json=${contentbody}" \
-                 -F "Awery_debug=@app/build/outputs/apk/alpha/release/awery-alpha.apk" \
+                 -F "Awery_debug=@app/build/outputs/apk/alphaMobile/release/awery-mobile-alpha.apk" \
                  ${{ secrets.DISCORD_WEBHOOK_URL }}
             else
             echo "Skipping APK upload to Discord due to SKIP_BUILD being set to true"
@@ -329,7 +329,7 @@ jobs:
           echo "$telegram_dev_info"
 
           if [ "$SKIP_BUILD" != "true" ]; then
-          APK_PATH="app/build/outputs/apk/alpha/release/awery-alpha.apk"
+          APK_PATH="app/build/outputs/apk/alphaMobile/release/awery-mobile-alpha.apk"
           response=$(curl -sS -f -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument" \
             -F "chat_id=-1002206819738" \
