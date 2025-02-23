@@ -14,12 +14,7 @@ kotlin {
 }
 
 dependencies {
-	// Coroutines
-	api(libs.kotlinx.coroutines.core)
-
-	// Serialization
-	implementation(libs.moshi)
-	implementation(libs.moshi.kotlin)
+	implementation(libs.kotlinx.coroutines.core)
 	implementation(libs.kotlinx.serialization.json)
 }
 

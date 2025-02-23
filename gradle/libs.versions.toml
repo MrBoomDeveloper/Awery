@@ -8,13 +8,7 @@ media3 = "1.5.1"
 markwon = "4.6.2"
 room = "2.7.0-beta01"
 coil = "3.0.4"
-
-# For removal
-glide = "4.16.0"
-moshi = "1.15.2"
 okhttp = "5.0.0-alpha.14"
-bigimageviewer = "1.8.1"
-sonner = "0.3.8"
 voyager-navigator = "1.1.0-beta02"
 
 [libraries]
@@ -22,11 +16,7 @@ safeargsnext = { group = "ru.mrboomdev.safeargsnext", name = "safeargsnext", ver
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.9.0" }
 balloon = { module = "com.github.skydoves:balloon", version = "1.6.11" }
-animatedbottombar = { module = "nl.joery.animatedbottombar:library", version = "1.1.0" }
-bigimageviewer = { module = "com.github.piasy:BigImageViewer", version.ref = "bigimageviewer" }
 ebook-reader = { module = "com.github.VipulOG:ebook-reader", version = "0.1.6" }
-pageindicatorview = { module = "com.github.emilaleborn:PageIndicatorView", version = "905cd4e2ab" }
-retrostreams = { module = "net.sourceforge.streamsupport:android-retrostreams", version = "1.7.4" }
 
 # Android
 androidx-core = { group = "androidx.core", name = "core-ktx", version = "1.15.0" }
@@ -38,7 +28,7 @@ androidx-preference = { module = "androidx.preference:preference-ktx", version =
 androidx-webkit = { module = "androidx.webkit:webkit", version = "1.12.1" }
 material = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 hauler = { module = "app.futured.hauler:hauler", version = "5.0.0" }
-sonner = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
+sonner = { module = "io.github.dokar3:sonner", version = "0.3.8" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager-navigator" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager-navigator" }
 voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager-navigator" }
@@ -111,23 +101,6 @@ okhttp-dnsoverhttps = { module = "com.squareup.okhttp3:okhttp-dnsoverhttps", ver
 # For removal (The same fucking thing. Delete later after voyager navigation would be done)
 androidx-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.8.0-alpha10"}
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.7" }
-
-# For removal (Use compose components instead)
-konfetti-xml = { module = "nl.dionsegijn:konfetti-xml", version = "2.0.5" }
-androidx-fragment = { module = "androidx.fragment:fragment-ktx", version = "1.8.6" }
-androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version = "1.4.0" }
-androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version = "1.1.0" }
-
-# For removal (Use coil instead)
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glide-imageloader = { module = "com.github.piasy:GlideImageLoader", version.ref = "bigimageviewer" }
-glide-imageViewFactory = { module = "com.github.piasy:GlideImageViewFactory", version.ref = "bigimageviewer" }
-glide-okhttp3 = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "glide" }
-
-# For removal (Use kotlin serialization instead)
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
-moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 
 [bundles]
 okhttp = ["okhttp", "okhttp-brotli", "okhttp-dnsoverhttps", "okhttp-logging"]

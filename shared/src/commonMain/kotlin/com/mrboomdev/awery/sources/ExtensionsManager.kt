@@ -106,7 +106,7 @@ object ExtensionsManager {
 		override fun getAll(): List<AbstractSource> = managers.values.toList()
 		
 		override fun onLoad(): PendingTask<Flow<Progress>> {
-			var totalSize = 0L
+			val progresses = mutableMapOf<SourcesManager, Progress>()
 			
 			for(manager in createPlatformSourceManagers()) {
 				managers[manager.context.id] = manager
@@ -114,26 +114,26 @@ object ExtensionsManager {
 			
 			val pendingTasks = managers.values.map { manager ->
 				val task = manager.onLoad()
-				task.size?.let { totalSize += it }
+				task.size?.let { progresses[manager] = Progress(it) }
 				manager to task
 			}
 			
+			val progress = Progress(progresses.values.sumOf { it.max })
+			
 			return object : PendingTask<Flow<Progress>>() {
-				override val size = totalSize
+				override val size = progress.max
 				
 				override val data: Flow<Progress>
 					get() = channelFlow {
-						val progresses = mutableMapOf<SourcesManager, Long>()
-						val progress = Progress(totalSize)
-						
 						for((manager, task) in pendingTasks) {
 							task.data.collectIndexed { index, it ->
+								progresses[manager] = it
+								
 								if(index == 0) {
-									progress.max += it.max
+									progress.max = progresses.values.sumOf { it.max }
 								}
 								
-								progresses[manager] = it.value
-								progress.value = progresses.values.sum()
+								progress.value = progresses.values.sumOf { it.value }
 								send(progress)
 							}
 						}

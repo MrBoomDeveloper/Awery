@@ -48,7 +48,7 @@ jobs:
         run: ./gradlew assemble${{ inputs.channel }}TvRelease -Pbuildkonfig.flavor=${{ inputs.channel }}
 
 #      - name: Build Exe
-#        id: build_alpha_exe
+#        id: build_exe
 #        run: ./gradlew packageExe -Pbuildkonfig.flavor=${{ inputs.channel }}
 
       - name: Sign Mobile Apk
@@ -95,4 +95,4 @@ jobs:
         with:
           name: "Tv Apk"
           retention-days: 90
-          path: "app/build/outputs/apk/${{ inputs.channel }}Tv/tv/release/awery-tv-${{ inputs.channel }}.apk"
+          path: "app/build/outputs/apk/${{ inputs.channel }}Tv/release/awery-tv-${{ inputs.channel }}.apk"

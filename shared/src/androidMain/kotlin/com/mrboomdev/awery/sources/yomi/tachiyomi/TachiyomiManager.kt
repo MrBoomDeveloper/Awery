@@ -52,8 +52,7 @@ class TachiyomiManager: YomiManager<Source>(
 
 		throw UnsupportedOperationException("Unsupported source type!")
 	}
-
-	@Throws(IllegalArgumentException::class)
+	
 	override fun createSourceWrapper(
 		label: String,
 		isNsfw: Boolean,

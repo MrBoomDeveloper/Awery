@@ -67,7 +67,6 @@ kotlin {
 			implementation(libs.androidx.appcompat)
 			implementation(libs.androidx.splashscreen)
 			
-			implementation(libs.androidx.recyclerview)
 			implementation(libs.material)
 			implementation(libs.bundles.exoplayer)
 			implementation(libs.safeargsnext)
