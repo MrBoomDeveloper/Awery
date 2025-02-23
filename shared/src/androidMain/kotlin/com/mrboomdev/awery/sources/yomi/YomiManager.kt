@@ -114,8 +114,8 @@ abstract class YomiManager<S>(
 										createSource(pkg.packageName, GlobalId(context.id, pkg.packageName).isEnabled)
 									}
 								}
-							} catch(_: Throwable) {
-								createSource(pkg.packageName, false)
+							} catch(t: Throwable) {
+								createSource(pkg.packageName, false, t)
 							}
 								
 							progress.increment()
@@ -133,8 +133,12 @@ abstract class YomiManager<S>(
 
 	abstract fun getSourceLongId(source: S): Long
 
-	private fun createSource(packageName: String, init: Boolean): Source {
-		var throwable: Throwable? = null
+	private fun createSource(
+		packageName: String, 
+		init: Boolean,
+		throwable: Throwable? = null
+	): Source {
+		var t = throwable
 
 		val packageInfo = Platform.packageManager.getPackageInfo(
 			packageName, PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
@@ -143,8 +147,8 @@ abstract class YomiManager<S>(
 		val sources = if(!init) null else try {
 			checkSupportedVersionBounds(packageInfo.versionName!!)
 			instantiateMains(packageInfo)
-		} catch(t: Throwable) {
-			throwable = t
+		} catch(th: Throwable) {
+			t = th
 			null
 		}
 
@@ -152,7 +156,7 @@ abstract class YomiManager<S>(
 			isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1,
 			packageInfo = packageInfo,
 			sources = sources,
-			exception = throwable,
+			exception = t,
 			
 			label = packageInfo.applicationInfo!!.loadLabel(Platform.packageManager).let { appLabel ->
 				if(appLabel.startsWith(appLabelPrefix)) {

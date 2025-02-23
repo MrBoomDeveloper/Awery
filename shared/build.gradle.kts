@@ -73,6 +73,7 @@ kotlin {
 				// Core
 				implementation(projects.resources)
 				implementation(projects.ext)
+				implementation(kotlin("reflect"))
 				
 				// Yomi
 				implementation(libs.bundles.yomi)

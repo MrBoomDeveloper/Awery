@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     
     <uses-permission android:name="android.permission.ENFORCE_UPDATE_OWNERSHIP" />
-    
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
     <application>
         <activity 
             android:name="com.mrboomdev.awery.platform.ExecutorActivity"

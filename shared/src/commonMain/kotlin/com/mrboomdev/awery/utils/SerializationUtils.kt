@@ -7,6 +7,8 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.jvm.jvmErasure
 
 @Serializable
 private data class JsonValueWrapper(
@@ -42,12 +44,27 @@ abstract class ReflectionSerializer<T: Any>: KSerializer<T> {
 
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> KClass<T>.serializerByReflection(): KSerializer<T> {
-	val companionClass = Class.forName("$qualifiedName\$Companion", true, java.classLoader)
-	val companionInstance = java.getField("Companion")[null]
+	try {
+		// Is this class directly marked as serializable?
+		companionObjectInstance?.serializer?.also {
+			return it as KSerializer<T>
+		}
+	} catch(_: NoSuchMethodException) {}
 	
-	return companionClass.getMethod("serializer").apply {
+	for(superType in supertypes) {
+		// Maybe one of it's parents is serializable?
+		try {
+			return superType.jvmErasure.serializerByReflection() as KSerializer<T>
+		} catch(_: IllegalStateException) { }
+	}
+	
+	throw IllegalStateException("$qualifiedName and it's super types aren't serializable!")
+}
+
+private val Any.serializer get() = this::class.java.let { clazz ->
+	clazz.getMethod("serializer").apply {
 		isAccessible = true
-	}.invoke(companionInstance) as KSerializer<T>
+	}.invoke(this) as KSerializer<*>
 }
 
 @RequiresOptIn(

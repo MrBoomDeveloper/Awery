@@ -8,7 +8,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import cafe.adriel.voyager.navigator.NavigatorSaver
-import com.mrboomdev.awery.ui.routes.SettingsRoute
 import com.mrboomdev.awery.utils.serializerByReflection
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -20,11 +19,7 @@ import kotlinx.serialization.json.put
 
 @OptIn(ExperimentalVoyagerApi::class)
 class KSerializerNavigatorSaver(
-	val serializer: (Any) -> KSerializer<out Any> = shit@{
-		if(it is SettingsRoute) {
-			return@shit SettingsRoute.serializer()
-		}
-		
+	val serializer: (Any) -> KSerializer<out Any> = {
 		it::class.serializerByReflection()
 	}
 ): NavigatorSaver<Any> {
@@ -47,11 +42,15 @@ class KSerializerNavigatorSaver(
 		},
 		
 		restore = { items ->
-			val decoded = items.map { 
-				Json.parseToJsonElement(it).let { json ->
+			val decoded = items.map { json ->
+				Json.parseToJsonElement(json).let { jsonElement ->
+					val deserializer = jsonElement.jsonObject["class"]!!.jsonPrimitive.contentOrNull!!.let {
+						Class.forName(it).kotlin.serializerByReflection()
+					}
+					
 					Json.decodeFromString(
-						kotlinx.serialization.serializer(Class.forName(json.jsonObject["class"]!!.jsonPrimitive.contentOrNull!!)),
-						json.jsonObject["it"]!!.jsonPrimitive.contentOrNull!!
+						deserializer,
+						jsonElement.jsonObject["it"]!!.jsonPrimitive.contentOrNull!!
 					)
 				}
 			}
