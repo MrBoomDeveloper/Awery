@@ -1,0 +1,98 @@
+name: Build Awery
+
+on:
+  workflow_dispatch:
+    inputs: 
+      channel:
+        description: "Channel"
+        default: "alpha"
+        type: choice
+        options:
+          - alpha
+          - beta
+          - stable
+  workflow_call: 
+    inputs:
+      channel:
+        description: "Channel"
+        default: "alpha"
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup JDK 17
+        if: ${{ env.SKIP_BUILD != 'true' }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Build Mobile Apk
+        id: build_mobile_apk
+        run: ./gradlew assemble${{ inputs.channel }}MobileRelease -Pbuildkonfig.flavor=${{ inputs.channel }}
+
+      - name: Build TV Apk
+        id: build_tv_apk
+        run: ./gradlew assemble${{ inputs.channel }}TvRelease -Pbuildkonfig.flavor=${{ inputs.channel }}
+
+#      - name: Build Exe
+#        id: build_alpha_exe
+#        run: ./gradlew packageExe -Pbuildkonfig.flavor=${{ inputs.channel }}
+
+      - name: Sign Mobile Apk
+        if: success()
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/${{ inputs.channel }}Mobile/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Sign Tv Apk
+        if: success()
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/${{ inputs.channel }}Tv/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+          
+      - name: Rename Mobile Apk File
+        run: |
+          mv app/build/outputs/apk/${{ inputs.channel }}Mobile/release/app-${{ inputs.channel }}-mobile-release-signed.apk app/build/outputs/apk/${{ inputs.channel }}Mobile/release/awery-mobile-${{ inputs.channel }}.apk
+
+      - name: Rename Tv Apk File
+        run: |
+          mv app/build/outputs/apk/${{ inputs.channel }}Tv/release/app-${{ inputs.channel }}-tv-release-signed.apk app/build/outputs/apk/${{ inputs.channel }}Tv/release/awery-tv-${{ inputs.channel }}.apk
+
+      - name: Upload Mobile Apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Mobile Apk"
+          retention-days: 90
+          path: "app/build/outputs/apk/${{ inputs.channel }}Mobile/release/awery-mobile-${{ inputs.channel }}.apk"
+
+      - name: Upload Tv Apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Tv Apk"
+          retention-days: 90
+          path: "app/build/outputs/apk/${{ inputs.channel }}Tv/tv/release/awery-tv-${{ inputs.channel }}.apk"
