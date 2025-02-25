@@ -7,6 +7,7 @@ import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
 import com.mrboomdev.awery.gradle.generatedConfigurationsDirectory
 import com.mrboomdev.awery.gradle.settings.GenerateSettingsTask
 import com.mrboomdev.awery.gradle.settings.generatedSettingsDirectory
+import com.mrboomdev.awery.gradle.util.plusAssign
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -64,6 +65,10 @@ kotlin {
 	}
 
 	sourceSets {
+		all {
+			languageSettings.optIn("androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi")
+		}
+		
 		commonMain {
 			for((_, generatedDirectory) in generations) {
 				kotlin.srcDir(generatedDirectory.dir("kotlin"))

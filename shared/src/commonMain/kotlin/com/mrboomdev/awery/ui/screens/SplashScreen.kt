@@ -188,7 +188,7 @@ fun SplashScreen(
 					}
 				}
 				
-				LoadingStatus.Finished -> stringResource(Res.string.status_finished)
+				LoadingStatus.Finished -> ""
 			}
 		)
 	}

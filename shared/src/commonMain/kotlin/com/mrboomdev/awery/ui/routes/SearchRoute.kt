@@ -36,14 +36,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.saveable
 import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.ui.utils.LocalToaster
+import com.mrboomdev.awery.ui.utils.screenModel
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -61,12 +63,12 @@ open class DefaultSearchRoute(
 	@Composable
 	override fun Content() {
 		val navigation = LocalNavigator.currentOrThrow
-		val model = rememberScreenModel { SearchModel() }
+		val screenModel = screenModel { SearchModel(it) }
 		val queryFocusRequested = remember { FocusRequester() }
 		
 		val foundSources by remember { derivedStateOf {
 			ExtensionsManager.allSources.filter { source ->
-				model.query.text.trim().let { text ->
+				screenModel.query.text.trim().let { text ->
 					source.context.name?.contains(text) == true || source.context.id.contains(text)
 				}
 			}.sortedBy { it.context.name ?: it.context.id }
@@ -103,7 +105,7 @@ open class DefaultSearchRoute(
 						.padding(4.dp)
 						.fillMaxWidth(),
 					
-					state = model.query,
+					state = screenModel.query,
 					lineLimits = TextFieldLineLimits.SingleLine,
 					cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
 					
@@ -168,6 +170,6 @@ open class DefaultSearchRoute(
 	}
 }
 
-private class SearchModel: ScreenModel {
-	val query = TextFieldState()
+private class SearchModel(savedState: SavedStateHandle): ScreenModel {
+	val query by savedState.saveable(saver = TextFieldState.Saver) { TextFieldState() }
 }
