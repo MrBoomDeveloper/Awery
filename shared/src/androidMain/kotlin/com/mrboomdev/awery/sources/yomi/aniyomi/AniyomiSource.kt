@@ -3,10 +3,13 @@ package com.mrboomdev.awery.sources.yomi.aniyomi
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.data.settings.get
 import com.mrboomdev.awery.ext.constants.AgeRating
-import com.mrboomdev.awery.ext.constants.AweryFeature
+import com.mrboomdev.awery.ext.constants.AweryFilters
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.source.module.CatalogModule
+import com.mrboomdev.awery.ext.source.module.Module
+import com.mrboomdev.awery.ext.source.module.SettingsModule
 import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
@@ -36,74 +39,68 @@ class AniyomiSource(
 	name = name,
 	ageRating = ageRating,
 	icon = icon,
-	exception = exception,
-
-	features = mutableListOf<AweryFeature>().apply {
-		if(source is AnimeCatalogueSource) {
-			add(AweryFeature.FEEDS)
-			add(AweryFeature.SEARCH_MEDIA)
-		}
-
-		if(source is ConfigurableAnimeSource) {
-			add(AweryFeature.CUSTOM_SETTINGS)
-		}
-	}.toTypedArray()
+	exception = exception
 ) {
-
-	override val feeds = if(source is AnimeCatalogueSource) {
-		CatalogSearchResults(listOfNotNull(
-			CatalogFeed(
-				managerId = AniyomiManager.ID,
-				sourceId = context.id,
-				feedId = FEED_POPULAR,
-				title = "Popular in ${source.name}"
-			),
-
-			if(!source.supportsLatest) null else CatalogFeed(
-				managerId = AniyomiManager.ID,
-				sourceId = context.id,
-				feedId = FEED_LATEST,
-				title = "Latest in ${source.name}"
-			)
-		))
-	} else null
-
-	private suspend fun getAnimesPage(filters: List<Setting>): AnimesPage {
-		return withContext(Dispatchers.IO) {
-			if(source is AnimeCatalogueSource) {
-				val feed = filters[FILTER_FEED]?.value as? String
-				val query = filters[FILTER_QUERY]?.value as? String ?: ""
-				val page = filters[FILTER_PAGE]?.value as? Int ?: 0
-
-				return@withContext when(feed) {
-					FEED_POPULAR -> source.getPopularAnime(page)
-					FEED_LATEST -> source.getLatestUpdates(page)
-
-					else -> {
-						// TODO: Apply filters
-						source.getSearchAnime(page, query, source.getFilterList())
+	
+	override fun createModules(): List<Module> = listOfNotNull(
+		if(source is AnimeCatalogueSource) {
+			object : CatalogModule {
+				override suspend fun createFeeds() = CatalogSearchResults(listOfNotNull(
+					CatalogFeed(
+						managerId = AniyomiManager.ID,
+						sourceId = context.id,
+						feedId = FEED_POPULAR,
+						title = "Popular in ${source.name}"
+					),
+					
+					if(!source.supportsLatest) null else CatalogFeed(
+						managerId = AniyomiManager.ID,
+						sourceId = context.id,
+						feedId = FEED_LATEST,
+						title = "Latest in ${source.name}"
+					)
+				))
+				
+				override suspend fun search(filters: List<Setting>) = getAnimesPage(filters).let { page ->
+					if(page.animes.isEmpty()) {
+						throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
 					}
+						
+					CatalogSearchResults(page.animes.map { anime -> 
+						anime.toMedia(this@AniyomiSource) 
+					}, page.hasNextPage)
 				}
 			}
+		} else null,
+		
+		if(source is ConfigurableAnimeSource) {
+			object : SettingsModule {
+				override fun getSettings(): List<Setting> {
+					TODO("Not yet implemented")
+				}
+			}
+		} else null
+	)
 
+	private suspend fun getAnimesPage(filters: List<Setting>): AnimesPage {
+		if(source !is AnimeCatalogueSource) {
 			throw UnsupportedOperationException("This source doesn't support browsing!")
 		}
-	}
+		
+		return withContext(Dispatchers.IO) {
+			val feed = filters[AweryFilters.FEED]?.value as? String
+			val query = filters[AweryFilters.QUERY]?.value as? String ?: ""
+			val page = filters[AweryFilters.PAGE]?.value as? Int ?: 0
+			
+			return@withContext when(feed) {
+				FEED_POPULAR -> source.getPopularAnime(page)
+				FEED_LATEST -> source.getLatestUpdates(page)
 
-	@Suppress("UNCHECKED_CAST")
-	override suspend fun <E, T : Catalog<E>> search(
-		catalog: T, filters: List<Setting>
-	): CatalogSearchResults<E> {
-		return when(catalog) {
-			is Catalog.Media -> getAnimesPage(filters).let { page ->
-				if(page.animes.isEmpty()) {
-					throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
+				else -> {
+					// TODO: Apply filters
+					source.getSearchAnime(page, query, source.getFilterList())
 				}
-
-				CatalogSearchResults(page.animes.map { anime -> anime.toMedia(this) }, page.hasNextPage)
-			} as CatalogSearchResults<E>
-
-			else -> throw UnsupportedOperationException("Unsupported type!")
+			}
 		}
 	}
 }

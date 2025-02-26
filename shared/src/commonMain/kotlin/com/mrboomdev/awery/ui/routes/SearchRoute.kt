@@ -63,7 +63,7 @@ open class DefaultSearchRoute(
 	@Composable
 	override fun Content() {
 		val navigation = LocalNavigator.currentOrThrow
-		val screenModel = screenModel { SearchModel(it) }
+		val screenModel = screenModel { SearchScreenModel(it) }
 		val queryFocusRequested = remember { FocusRequester() }
 		
 		val foundSources by remember { derivedStateOf {
@@ -170,6 +170,6 @@ open class DefaultSearchRoute(
 	}
 }
 
-private class SearchModel(savedState: SavedStateHandle): ScreenModel {
+private class SearchScreenModel(savedState: SavedStateHandle): ScreenModel {
 	val query by savedState.saveable(saver = TextFieldState.Saver) { TextFieldState() }
 }

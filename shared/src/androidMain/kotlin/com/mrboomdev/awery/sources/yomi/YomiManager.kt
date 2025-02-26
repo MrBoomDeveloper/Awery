@@ -9,7 +9,6 @@ import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
@@ -55,7 +54,6 @@ abstract class YomiManager<S>(
 	
 	init {
 		attachContext(object : Context {
-			override val features = arrayOf(AweryFeature.INSTALL_REPOSITORY, AweryFeature.INSTALL_STORAGE)
 			override val id = id
 			override val isEnabled = true
 			override val name = name

@@ -1,6 +1,9 @@
 package com.mrboomdev.awery.generated
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import com.mrboomdev.awery.platform.PlatformPreferences
+import com.mrboomdev.awery.utils.AweryInternals
 import com.mrboomdev.awery.utils.toEnum
 import kotlin.reflect.KProperty
 
@@ -13,7 +16,15 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 	): GeneratedSetting(key)
 	
 	interface WithValue<T> {
+		@Suppress("FunctionName")
+		@AweryInternals
+		fun _setValue(value: Any?) {
+			@Suppress("UNCHECKED_CAST")
+			this.value = value as T
+		}
+		
 		var value: T
+		val state: State<T>
 		operator fun getValue(thisRef: Any?, property: KProperty<*>): T = this.value
 		operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) { this.value = value }
 	}
@@ -27,7 +38,23 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 			set(value) = PlatformPreferences.let {
 				it[key] = value?.name
 				it.save()
+				_state.value = value
 			}
+		
+		@AweryInternals
+		override fun _setValue(value: Any?) {
+			if(value == null) {
+				this.value = null
+			} else if(value is kotlin.String) {
+				@Suppress("UNCHECKED_CAST")
+				this.value = value.toEnum(clazz.javaClass as Class<T>)
+			} else {
+				throw UnsupportedOperationException("Unsupported value type! ${value::class.qualifiedName}")
+			}
+		}
+		
+		private val _state = mutableStateOf(value)
+		override val state: State<T?> = _state
 		
 		class NotNull<T: Enum<T>>(
 			key: kotlin.String,
@@ -39,7 +66,22 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 				set(value) = PlatformPreferences.let {
 					it[key] = value.name
 					it.save()
+					_state.value = value
 				}
+			
+			@AweryInternals
+			override fun _setValue(value: Any?) {
+				if(value == null) {
+					throw UnsupportedOperationException("Null values aren't supported for this setting!")
+				} else if(value is kotlin.String) {
+					this.value = value.toEnum(clazz)!!
+				} else {
+					throw UnsupportedOperationException("Unsupported value type! ${value::class.qualifiedName}")
+				}
+			}
+			
+			private val _state = mutableStateOf(value)
+			override val state: State<T> = _state
 		}
 	}
 
@@ -49,7 +91,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 			set(value) = PlatformPreferences.let {
 				it[key] = value
 				it.save()
+				_state.value = value
 			}
+		
+		private val _state = mutableStateOf(value)
+		override val state: State<Int?> = _state
 		
 		class NotNull(
 			key: kotlin.String,
@@ -60,7 +106,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 				set(value) = PlatformPreferences.let {
 					it[key] = value
 					it.save()
+					_state.value = value
 				}
+			
+			private val _state = mutableStateOf(value)
+			override val state: State<Int> = _state
 		}
 	}
 
@@ -70,7 +120,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 			set(value) = PlatformPreferences.let {
 				it[key] = value
 				it.save()
+				_state.value = value
 			}
+		
+		private val _state = mutableStateOf(value)
+		override val state: State<kotlin.Boolean?> = _state
 		
 		class NotNull(
 			key: kotlin.String,
@@ -81,7 +135,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 				set(value) = PlatformPreferences.let {
 					it[key] = value
 					it.save()
+					_state.value = value
 				}
+			
+			private val _state = mutableStateOf(value)
+			override val state: State<kotlin.Boolean> = _state
 		}
 	}
 
@@ -91,7 +149,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 			set(value) = PlatformPreferences.let {
 				it[key] = value
 				it.save()
+				_state.value = value
 			}
+		
+		private val _state = mutableStateOf(value)
+		override val state: State<kotlin.String?> = _state
 		
 		class NotNull(
 			key: kotlin.String,
@@ -102,7 +164,11 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 				set(value) = PlatformPreferences.let {
 					it[key] = value
 					it.save()
+					_state.value = value
 				}
+			
+			private val _state = mutableStateOf(value)
+			override val state: State<kotlin.String> = _state
 		}
 	}
 }

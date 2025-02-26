@@ -46,7 +46,6 @@
 					"key": "navigation_style",
 					"type": "select",
 					"value": "MATERIAL",
-					"restart": true,
 					"show_if": ["!tv"],
 					"title": "Navigation style",
 					"items": [
@@ -66,7 +65,6 @@
 					"key": "navigation_label",
 					"type": "select",
 					"value": "ALWAYS",
-					"restart": true,
 					"show_if": ["!tv"],
 					"title": "Show navigation bar labels",
 					"items": [
@@ -156,7 +154,6 @@
 							"key": "adult_mode",
 							"type": "select",
 							"value": "SAFE",
-							"restart": true,
 							"title": "adult_content",
 							"description": "${VALUE}",
 							"icon": "ic_round_report",

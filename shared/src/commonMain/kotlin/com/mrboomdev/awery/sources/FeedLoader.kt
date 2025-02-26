@@ -1,11 +1,13 @@
 package com.mrboomdev.awery.sources
 
+import com.mrboomdev.awery.ext.constants.AweryFilters
 import com.mrboomdev.awery.ext.data.CatalogFeed
+import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.source.Source
+import com.mrboomdev.awery.ext.source.module.CatalogModule
+import com.mrboomdev.awery.ext.util.GlobalId
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
-import com.mrboomdev.awery.sources.ExtensionsManager.allManagers
-import com.mrboomdev.awery.sources.ExtensionsManager.getManager
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.channelFlow
 
@@ -19,10 +21,11 @@ fun List<CatalogFeed>.loadAll() = channelFlow {
 private suspend fun CatalogFeed.load(channel: SendChannel<CatalogFeed.Loaded>) {
 	if(managerId == "INTERNAL") {
 		when(feedId) {
-			"AUTO_GENERATE" -> allManagers.map { it.getAll() }
+			"AUTO_GENERATE" -> ExtensionsManager.allSources
+				.map { it.createModules() }
 				.flatten()
-				.filterIsInstance<Source>()
-				.map { it.getFeeds() }
+				.filterIsInstance<CatalogModule>()
+				.map { it.createFeeds() }
 				.flatten()
 				.shuffled()
 				.forEach { it.load(channel) }
@@ -65,29 +68,31 @@ private suspend fun CatalogFeed.load(channel: SendChannel<CatalogFeed.Loaded>) {
 		return
 	}
 	
-	val manager = managerId?.let {
-		getManager(it) ?: return channel.send(
+	if(managerId == null) {
+		return channel.send(
 			CatalogFeed.Loaded(
-			feed = this,
-			throwable = ZeroResultsException("Source manager isn't installed! $it")
-		))
-	} ?: return channel.send(
-		CatalogFeed.Loaded(
-		feed = this,
-		throwable = UnsupportedOperationException("The feed cannot be loaded because no managerId was specified!")
-	))
+				feed = this,
+				throwable = UnsupportedOperationException("The feed cannot be loaded because no managerId was specified!")
+			)
+		)
+	}
 	
-	val source = sourceId?.let {
-		manager[it] ?: return channel.send(
+	if(sourceId == null) {
+		return channel.send(
 			CatalogFeed.Loaded(
-			feed = this,
-			throwable = ZeroResultsException("Source isn't installed! $it")
-		))
-	} ?: return channel.send(
-		CatalogFeed.Loaded(
-		feed = this,
-		throwable = UnsupportedOperationException("The feed cannot be loaded because no sourceId was specified!")
-	))
+				feed = this,
+				throwable = UnsupportedOperationException("The feed cannot be loaded because no sourceId was specified!")
+			)
+		)
+	}
+	
+	val source = ExtensionsManager.getSource(GlobalId(managerId!!, sourceId!!)).let {
+		it ?: return channel.send(
+			CatalogFeed.Loaded(
+				feed = this,
+				throwable = ZeroResultsException("Source isn't installed! $it")
+			))
+	}
 	
 	if(source !is Source) {
 		return channel.send(
@@ -104,17 +109,20 @@ private suspend fun CatalogFeed.load(channel: SendChannel<CatalogFeed.Loaded>) {
 	try {
 		channel.send(CatalogFeed.Loaded(
 			feed = this,
-			items = source.search(Source.Catalog.Media, listOf(
-				object : Setting() {
-					override val key: String = Source.FILTER_FEED
-					override var value: Any? = this@load
-				},
-				
-				object : Setting() {
-					override val key: String = Source.FILTER_PAGE
-					override var value: Any? = 0
-				}
-			))
+			items = source.createModules()
+				.filterIsInstance<CatalogModule>()
+				.map { it.search(listOf(
+					object : Setting() {
+						override val key = AweryFilters.FEED
+						override var value: Any? = this@load
+					},
+						
+					object : Setting() {
+						override val key = AweryFilters.PAGE
+						override var value: Any? = 0
+					}
+				)
+			) }.flatten().let { CatalogSearchResults(it) }
 		))
 	} catch(t: Throwable) {
 		channel.send(

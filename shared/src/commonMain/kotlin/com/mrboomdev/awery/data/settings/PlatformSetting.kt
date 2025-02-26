@@ -2,8 +2,10 @@ package com.mrboomdev.awery.data.settings
 
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.ext.util.Image
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformPreferences
 import com.mrboomdev.awery.platform.areRequirementsMet
+import com.mrboomdev.awery.utils.AweryInternals
 import com.mrboomdev.awery.utils.toEnum
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -57,7 +59,7 @@ class PlatformSetting(
 
 	fun restoreValues() {
 		if(key != null) {
-			value = when(type) {
+			_value = when(type) {
 				Type.STRING, Type.SELECT -> PlatformPreferences.getString(key) ?: defaultValue as String?
 				Type.FLOAT -> PlatformPreferences.getFloat(key) ?: defaultValue as Float?
 				Type.INTEGER -> PlatformPreferences.getInt(key) ?: defaultValue as Int?
@@ -81,12 +83,21 @@ class PlatformSetting(
 
 	override val isVisible: Boolean
 		get() = showIf?.let { areRequirementsMet(it) } ?: true
-
+	
 	@Transient
-	override var value: Any? = null
+	private var _value: Any? = null
+
+	@OptIn(AweryInternals::class)
+	override var value: Any?
+		get() = _value
 		set(value) {
-			field = value
-			saveValue(value)
+			_value = value
+			
+			(AwerySettings.all[key] as? GeneratedSetting.WithValue<*>)?.also {
+				it._setValue(value)
+			} ?: run {
+				saveValue(value)
+			}
 		}
 
 	private fun saveValue(newValue: Any?) {

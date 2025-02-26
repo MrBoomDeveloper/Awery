@@ -3,10 +3,13 @@ package com.mrboomdev.awery.sources.yomi.tachiyomi
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.data.settings.get
 import com.mrboomdev.awery.ext.constants.AgeRating
-import com.mrboomdev.awery.ext.constants.AweryFeature
+import com.mrboomdev.awery.ext.constants.AweryFilters
 import com.mrboomdev.awery.ext.data.CatalogFeed
 import com.mrboomdev.awery.ext.data.CatalogSearchResults
 import com.mrboomdev.awery.ext.data.Setting
+import com.mrboomdev.awery.ext.source.module.CatalogModule
+import com.mrboomdev.awery.ext.source.module.Module
+import com.mrboomdev.awery.ext.source.module.SettingsModule
 import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.generated.*
@@ -37,74 +40,68 @@ class TachiyomiSource(
 	name = name,
 	ageRating = ageRating,
 	icon = icon,
-	exception = exception,
-
-	features = mutableListOf<AweryFeature>().apply {
-		if(source is CatalogueSource) {
-			add(AweryFeature.FEEDS)
-			add(AweryFeature.SEARCH_MEDIA)
-		}
-
-		if(source is ConfigurableSource) {
-			add(AweryFeature.CUSTOM_SETTINGS)
-		}
-	}.toTypedArray()
+	exception = exception
 ) {
-
-	override val feeds = if(source is CatalogueSource) {
-		CatalogSearchResults(listOfNotNull(
-			CatalogFeed(
-				managerId = TachiyomiManager.ID,
-				sourceId = context.id,
-				feedId = FEED_POPULAR,
-				title = "Popular in ${source.name}"
-			),
-
-			if(!source.supportsLatest) null else CatalogFeed(
-				managerId = TachiyomiManager.ID,
-				sourceId = context.id,
-				feedId = FEED_LATEST,
-				title = "Latest in ${source.name}"
-			)
-		))
-	} else null
+	
+	override fun createModules(): List<Module> = listOfNotNull(
+		if(source is CatalogueSource) {
+			object : CatalogModule {
+				override suspend fun createFeeds() = CatalogSearchResults(listOfNotNull(
+					CatalogFeed(
+						managerId = TachiyomiManager.ID,
+						sourceId = context.id,
+						feedId = FEED_POPULAR,
+						title = "Popular in ${source.name}"
+					),
+					
+					if(!source.supportsLatest) null else CatalogFeed(
+						managerId = TachiyomiManager.ID,
+						sourceId = context.id,
+						feedId = FEED_LATEST,
+						title = "Latest in ${source.name}"
+					)
+				))
+				
+				override suspend fun search(filters: List<Setting>) = getMangasPage(filters).let { page ->
+					if(page.mangas.isEmpty()) {
+						throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
+					}
+					
+					CatalogSearchResults(page.mangas.map { manga -> 
+						manga.toMedia(this@TachiyomiSource) 
+					}, page.hasNextPage)
+				}
+			}
+		} else null,
+		
+		if(source is ConfigurableSource) {
+			object : SettingsModule {
+				override fun getSettings(): List<Setting> {
+					TODO("Not yet implemented")
+				}
+			}
+		} else null
+	)
 
 	private suspend fun getMangasPage(filters: List<Setting>): MangasPage {
-		return withContext(Dispatchers.IO) {
-			if(source is CatalogueSource) {
-				val feed = filters[FILTER_FEED]?.value as? String
-				val query = filters[FILTER_QUERY]?.value as? String ?: ""
-				val page = filters[FILTER_PAGE]?.value as? Int ?: 0
-
-				return@withContext when(feed) {
-					FEED_POPULAR -> source.fetchPopularManga(page)
-					FEED_LATEST -> source.fetchLatestUpdates(page)
-
-					else -> {
-						// TODO: Apply filters
-						source.fetchSearchManga(page, query, source.getFilterList())
-					}
-				}.awaitSingle()
-			}
-
+		if(source !is CatalogueSource) {
 			throw UnsupportedOperationException("This source doesn't support browsing!")
 		}
-	}
-
-	@Suppress("UNCHECKED_CAST")
-	override suspend fun <E, T : Catalog<E>> search(
-		catalog: T, filters: List<Setting>
-	): CatalogSearchResults<E> {
-		return when(catalog) {
-			Catalog.Media -> getMangasPage(filters).let { page ->
-				if(page.mangas.isEmpty()) {
-					throw ZeroResultsException("Zero media results!", i18n(Res.string.no_media_found))
+		
+		return withContext(Dispatchers.IO) {
+			val feed = filters[AweryFilters.FEED]?.value as? String
+			val query = filters[AweryFilters.QUERY]?.value as? String ?: ""
+			val page = filters[AweryFilters.PAGE]?.value as? Int ?: 0
+				
+			return@withContext when(feed) {
+				FEED_POPULAR -> source.fetchPopularManga(page)
+				FEED_LATEST -> source.fetchLatestUpdates(page)
+					
+				else -> {
+					// TODO: Apply filters
+					source.fetchSearchManga(page, query, source.getFilterList())
 				}
-
-				CatalogSearchResults(page.mangas.map { manga -> manga.toMedia(this) }, page.hasNextPage)
-			} as CatalogSearchResults<E>
-
-			else -> throw UnsupportedOperationException("Unsupported catalog! $catalog")
+			}.awaitSingle()
 		}
 	}
 }

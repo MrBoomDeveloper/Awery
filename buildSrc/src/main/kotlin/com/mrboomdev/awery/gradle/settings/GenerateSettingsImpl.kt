@@ -37,6 +37,8 @@ internal object GenerateSettingsImpl {
 			append(outputFile.nameWithoutExtension)
 			append(" {\n")
 			
+			val usedKeys = mutableListOf<String>()
+			
 			for(file in inputFiles) {
 				val text = file.readText()
 				
@@ -46,8 +48,27 @@ internal object GenerateSettingsImpl {
 					ignoreUnknownKeys = true
 				}.parseToJsonElement(text) as JsonObject
 				
-				appendSetting(file.nameWithoutExtension, settings, this)
+				appendSetting(usedKeys, file.nameWithoutExtension, settings, this)
 			}
+			
+			append("\n\tval all = mapOf(\n")
+			usedKeys.iterator().apply {
+				while(hasNext()) {
+					val key = next()
+					
+					append("\t\t\"")
+					append(key)
+					append("\" to ")
+					append(key.uppercase())
+					
+					if(hasNext()) {
+						append(",")
+					}
+					
+					append("\n")
+				}
+			}
+			append("\t)\n")
 			
 			append("}")
 		})
@@ -147,9 +168,16 @@ internal object GenerateSettingsImpl {
 		}
 	}
 
-	private fun appendSetting(originalFile: String, setting: JsonObject, output: StringBuilder) {
+	private fun appendSetting(
+		usedKeys: MutableList<String>,
+		originalFile: String, 
+		setting: JsonObject, 
+		output: StringBuilder
+	) {
 		if(!setting["key"].isNull && !setting["type"].isNull) {
 			with(output) {
+				usedKeys += setting["key"]!!.textContent!!
+				
 				append("\tval ")
 				append(setting["key"]!!.textContent!!.uppercase())
 				append(" = ")
@@ -181,7 +209,7 @@ internal object GenerateSettingsImpl {
 		
 		setting["items"]?.items?.forEach { item ->
 			require(item is JsonObject) { "An item is required to be an object!" }
-			appendSetting(originalFile, item, output)
+			appendSetting(usedKeys, originalFile, item, output)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package com.mrboomdev.awery.sources.jvm
 
 import com.mrboomdev.awery.ext.constants.AgeRating
-import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.SourcesManager
@@ -27,7 +26,6 @@ open class JvmManager(
 	init {
 		rootDirectory.mkdirs()
 		attachContext(context ?: object : Context {
-			override val features = arrayOf(AweryFeature.INSTALL_STORAGE)
 			override val id = ID
 			override val isEnabled = true
 			override val name = "Awery Extensions"
@@ -72,10 +70,6 @@ open class JvmManager(
 
 					override val icon: Image?
 						get() = null //TODO: Load an icon
-
-					override val features = entry.features.mapNotNull {
-						runCatching { AweryFeature.valueOf(it) }.getOrNull()
-					}.toTypedArray()
 				}
 
 				JvmEntry.Type.SOURCE -> object : Context.SourceContext {
@@ -95,10 +89,6 @@ open class JvmManager(
 					override val ageRating = entry.ageRating?.let {
 						AgeRating(it)
 					}
-
-					override val features = entry.features.mapNotNull {
-						runCatching { AweryFeature.valueOf(it) }.getOrNull()
-					}.toTypedArray()
 				}
 			}
 
@@ -130,10 +120,6 @@ open class JvmManager(
 					
 					override val icon: Image?
 						get() = null //TODO: Load an icon
-					
-					override val features = entry?.features?.mapNotNull {
-						runCatching { AweryFeature.valueOf(it) }.getOrNull()
-					}?.toTypedArray() ?: arrayOf()
 				})
 			}
 		}

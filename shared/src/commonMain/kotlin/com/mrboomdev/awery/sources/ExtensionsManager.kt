@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.sources
 
-import com.mrboomdev.awery.ext.constants.AweryFeature
 import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
@@ -17,13 +16,9 @@ import kotlin.reflect.KClass
 
 object ExtensionsManager {
 	fun init() = BootstrapManager.onLoad()
-
-	fun getSource(globalId: String): AbstractSource? {
-		return globalId.split(";;;").let {
-			// Due to compatibility we have to trim all shit after :
-			getManager(it[0])?.get(it[1].split(":")[0])
-		}
-	}
+	
+	fun getSource(globalId: GlobalId): AbstractSource? =
+		globalId.sourceId?.let { getManager(globalId.managerId)?.get(it) }
 	
 	var GlobalId.isEnabled
 		get() = PlatformPreferences.getBoolean("ext_${managerId}_${sourceId}") ?: true
@@ -93,7 +88,6 @@ object ExtensionsManager {
 		
 		init {
 			attachContext(object : Context {
-				override val features = arrayOf<AweryFeature>()
 				override val id = "BOOTSTRAP"
 				override val isEnabled = true
 				override val name = "Bootstrap Sources Manager"
