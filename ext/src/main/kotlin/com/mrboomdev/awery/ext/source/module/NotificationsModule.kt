@@ -1,4 +1,3 @@
 package com.mrboomdev.awery.ext.source.module
 
-interface NotificationsModule: Module {
-}
+interface NotificationsModule: Module
