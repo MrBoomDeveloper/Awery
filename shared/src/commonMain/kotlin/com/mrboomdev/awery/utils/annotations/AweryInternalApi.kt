@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.utils
+package com.mrboomdev.awery.utils.annotations
 
 @RequiresOptIn(
 	message = "Warning! Direct usage of this api is a bad practice and may lead to crashes! " +
@@ -12,4 +12,4 @@ package com.mrboomdev.awery.utils
 	AnnotationTarget.CONSTRUCTOR,
 	AnnotationTarget.FUNCTION,
 	AnnotationTarget.PROPERTY_SETTER)
-annotation class AweryInternals
+annotation class AweryInternalApi

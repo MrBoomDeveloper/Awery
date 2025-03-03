@@ -4,6 +4,7 @@ import com.mrboomdev.awery.ext.source.AbstractSource
 import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
+import com.mrboomdev.awery.ext.source.module.Module
 import com.mrboomdev.awery.ext.util.GlobalId
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
@@ -15,6 +16,21 @@ import java.io.InputStream
 import kotlin.reflect.KClass
 
 object ExtensionsManager {
+	private val cachedModules = mutableMapOf<Source, List<Module>>()
+	
+	/**
+	 * Will return an cached list of created modules by an source.
+	 */
+	fun getSourceModules(source: Source): List<Module> {
+		return cachedModules[source] ?: source.createModules().also {
+			cachedModules[source] = it
+		}
+	}
+	
+	inline fun <reified T> getAllModules(): List<T> = allSources
+		.flatMap { getSourceModules(it) }
+		.filterIsInstance<T>()
+	
 	fun init() = BootstrapManager.onLoad()
 	
 	fun getSource(globalId: GlobalId): AbstractSource? =
@@ -135,6 +151,10 @@ object ExtensionsManager {
 						if(!progress.isCompleted) {
 							progress.finish()
 							send(progress)
+						}
+						
+						for(source in allSources) {
+							cachedModules[source] = source.createModules()
 						}
 					}
 			}

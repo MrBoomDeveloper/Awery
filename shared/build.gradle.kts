@@ -7,7 +7,6 @@ import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
 import com.mrboomdev.awery.gradle.generatedConfigurationsDirectory
 import com.mrboomdev.awery.gradle.settings.GenerateSettingsTask
 import com.mrboomdev.awery.gradle.settings.generatedSettingsDirectory
-import com.mrboomdev.awery.gradle.util.plusAssign
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -78,15 +77,14 @@ kotlin {
 				// Core
 				implementation(projects.resources)
 				implementation(projects.ext)
+				
+				// Language extensions
+				implementation(libs.kotlinx.serialization.json)
 				implementation(kotlin("reflect"))
 				
 				// Yomi
 				implementation(libs.bundles.yomi)
 				implementation(libs.bundles.okhttp)
-				
-				// Data
-				implementation(libs.kotlinx.serialization.json)
-				implementation(libs.lifecycle.viewmodel.compose)
 				
 				// Database
 				implementation(libs.room.runtime)
@@ -114,6 +112,7 @@ kotlin {
 				// Components
 				implementation(libs.compose.material3)
 				implementation(libs.coil.compose)
+				implementation(libs.coil.network.okhttp)
 				api(libs.sonner)
 			}
 		}
@@ -126,6 +125,7 @@ kotlin {
 			implementation(libs.androidx.preference)
 			implementation(libs.quickjs.android)
 			implementation(libs.bundles.exoplayer)
+			implementation("com.google.accompanist:accompanist-drawablepainter:0.37.2")
 		}
 		
 		@OptIn(ExperimentalKotlinGradlePluginApi::class)

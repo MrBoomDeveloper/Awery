@@ -11,7 +11,6 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
 import java.util.WeakHashMap
 
 private val backPressedCallbacks = WeakHashMap<() -> Unit, Any>()

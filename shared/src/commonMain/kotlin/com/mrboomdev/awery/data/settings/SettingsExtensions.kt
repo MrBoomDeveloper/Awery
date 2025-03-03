@@ -2,6 +2,16 @@ package com.mrboomdev.awery.data.settings
 
 import com.mrboomdev.awery.ext.data.Setting
 
+fun setting(
+	type: Setting.Type? = null,
+	key: String? = null,
+	value: Any? = null
+) = object : Setting() {
+	override val key = key
+	override val type = type
+	override var value: Any? = value
+}
+
 operator fun List<Setting>.get(key: String, type: Setting.Type? = null): Setting? {
 	return find {
 		if(type != null) {

@@ -1,7 +1,7 @@
 package com.mrboomdev.awery.ui.routes
 
 import cafe.adriel.voyager.core.screen.Screen
-import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import kotlinx.serialization.Serializable
 
 /**

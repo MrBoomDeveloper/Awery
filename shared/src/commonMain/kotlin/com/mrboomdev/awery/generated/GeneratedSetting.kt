@@ -3,7 +3,7 @@ package com.mrboomdev.awery.generated
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.mrboomdev.awery.platform.PlatformPreferences
-import com.mrboomdev.awery.utils.AweryInternals
+import com.mrboomdev.awery.utils.annotations.AweryInternalApi
 import com.mrboomdev.awery.utils.toEnum
 import kotlin.reflect.KProperty
 
@@ -17,7 +17,7 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 	
 	interface WithValue<T> {
 		@Suppress("FunctionName")
-		@AweryInternals
+		@AweryInternalApi
 		fun _setValue(value: Any?) {
 			@Suppress("UNCHECKED_CAST")
 			this.value = value as T
@@ -41,7 +41,7 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 				_state.value = value
 			}
 		
-		@AweryInternals
+		@AweryInternalApi
 		override fun _setValue(value: Any?) {
 			if(value == null) {
 				this.value = null
@@ -69,7 +69,7 @@ sealed class GeneratedSetting(val key: kotlin.String) {
 					_state.value = value
 				}
 			
-			@AweryInternals
+			@AweryInternalApi
 			override fun _setValue(value: Any?) {
 				if(value == null) {
 					throw UnsupportedOperationException("Null values aren't supported for this setting!")

@@ -13,13 +13,15 @@ import com.mrboomdev.awery.ext.source.Context
 import com.mrboomdev.awery.ext.source.Source
 import com.mrboomdev.awery.ext.source.SourcesManager
 import com.mrboomdev.awery.ext.util.GlobalId
+import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
 import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.platform.Platform.toast
+import com.mrboomdev.awery.platform.PlatformImage
 import com.mrboomdev.awery.sources.ExtensionsManager.isEnabled
-import com.mrboomdev.awery.ui.utils.UniqueIdGenerator
+import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.utils.generateRequestCode
 import dalvik.system.PathClassLoader
 import eu.kanade.tachiyomi.network.NetworkHelper
@@ -160,7 +162,9 @@ abstract class YomiManager<S>(
 				if(appLabel.startsWith(appLabelPrefix)) {
 					return@let appLabel.substring(appLabelPrefix.length).trim { it <= ' ' }
 				} else appLabel
-			}.toString()
+			}.toString(),
+			
+			icon = PlatformImage(packageInfo.applicationInfo!!.loadIcon(Platform.packageManager))
 		)
 	}
 
@@ -203,6 +207,7 @@ abstract class YomiManager<S>(
 
 	@Throws(IllegalArgumentException::class)
 	abstract fun createSourceWrapper(
+		icon: Image,
 		label: String,
 		isNsfw: Boolean,
 		packageInfo: PackageInfo,

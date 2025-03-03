@@ -1,6 +1,12 @@
 package com.mrboomdev.awery.ui.utils
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -9,6 +15,36 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
 import java.net.URLEncoder
+
+@Composable
+operator fun PaddingValues.plus(paddingValues: PaddingValues): PaddingValues {
+	val direction = LocalLayoutDirection.current
+	
+	return PaddingValues(
+		start = calculateStartPadding(direction) + paddingValues.calculateStartPadding(direction),
+		end = calculateEndPadding(direction) + paddingValues.calculateEndPadding(direction),
+		top = calculateTopPadding() + paddingValues.calculateTopPadding(),
+		bottom = calculateBottomPadding() + paddingValues.calculateBottomPadding()
+	)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+@Composable
+inline fun PaddingValues.only(
+	start: Boolean = true, 
+	top: Boolean = true, 
+	end: Boolean = true, 
+	bottom: Boolean = true
+): PaddingValues { 
+	val direction = LocalLayoutDirection.current
+	
+	return PaddingValues(
+		start = if(start) calculateStartPadding(direction) else 0.dp,
+		end = if(end) calculateEndPadding(direction) else 0.dp,
+		top = if(top) calculateTopPadding() else 0.dp,
+		bottom = if(bottom) calculateBottomPadding() else 0.dp
+	) 
+}
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun WindowSizeClass.isWidthAtLeast(clazz: WindowWidthSizeClass) = windowWidthSizeClass.isAtLeast(clazz)

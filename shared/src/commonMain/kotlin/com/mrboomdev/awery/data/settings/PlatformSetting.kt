@@ -5,7 +5,7 @@ import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformPreferences
 import com.mrboomdev.awery.platform.areRequirementsMet
-import com.mrboomdev.awery.utils.AweryInternals
+import com.mrboomdev.awery.utils.annotations.AweryInternalApi
 import com.mrboomdev.awery.utils.toEnum
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -87,7 +87,7 @@ class PlatformSetting(
 	@Transient
 	private var _value: Any? = null
 
-	@OptIn(AweryInternals::class)
+	@OptIn(AweryInternalApi::class)
 	override var value: Any?
 		get() = _value
 		set(value) {

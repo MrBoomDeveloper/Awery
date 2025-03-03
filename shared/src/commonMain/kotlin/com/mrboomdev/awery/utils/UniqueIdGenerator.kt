@@ -1,10 +1,10 @@
-package com.mrboomdev.awery.ui.utils
+package com.mrboomdev.awery.utils
 
 /**
  * An support class, which helps with numbers generation. Useful for generating  unique ids.
  * By default crashes after an overflow.
  */
-class UniqueIdGenerator @JvmOverloads constructor(
+class UniqueIdGenerator(
     private val initialValue: Long = 0,
     private val overflowMode: OverflowMode = OverflowMode.THROW
 ) {
@@ -52,6 +52,10 @@ class UniqueIdGenerator @JvmOverloads constructor(
 
     enum class OverflowMode {
         RESET, THROW
+    }
+    
+    companion object {
+        fun loopLong() = UniqueIdGenerator(Long.MIN_VALUE, OverflowMode.RESET)
     }
 }
 

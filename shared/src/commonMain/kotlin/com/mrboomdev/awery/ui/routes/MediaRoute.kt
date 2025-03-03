@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class MediaRoute(
 	val media: CatalogMedia,
-	val initialTab: MediaScreenTab
+	val initialTab: MediaScreenTab = MediaScreenTab.INFO
 ): BaseRoute() {
 	@Composable
 	override fun Content() {

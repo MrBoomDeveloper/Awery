@@ -2,8 +2,7 @@ package com.mrboomdev.awery.sources.yomi.aniyomi
 
 import android.content.pm.PackageInfo
 import com.mrboomdev.awery.ext.constants.AgeRating
-import com.mrboomdev.awery.platform.Platform
-import com.mrboomdev.awery.platform.asImage
+import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.sources.yomi.YomiManager
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.AnimeSourceFactory
@@ -55,6 +54,7 @@ class AniyomiManager: YomiManager<AnimeSource>(
 
 	@Throws(IllegalArgumentException::class)
 	override fun createSourceWrapper(
+		icon: Image,
 		label: String,
 		isNsfw: Boolean,
 		packageInfo: PackageInfo,
@@ -68,11 +68,7 @@ class AniyomiManager: YomiManager<AnimeSource>(
 			manager = this,
 			exception = exception,
 			name = selectedSource?.name ?: label,
-
-			icon = Platform.packageManager.let { pm ->
-				packageInfo.applicationInfo!!.loadIcon(pm).asImage()
-			},
-
+			icon = icon,
 			ageRating = if(isNsfw) {
 				AgeRating.NSFW
 			} else null
