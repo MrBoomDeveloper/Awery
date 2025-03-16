@@ -7,12 +7,12 @@ import com.mrboomdev.awery.ui.screens.SplashScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SplashRoute: BaseRoute() {
-	@Composable
-	override fun Content() {
-		SplashScreen(
-			modifier = Modifier
-				.fillMaxSize()
-		)
-	}
+data object SplashRoute
+
+@Composable
+fun SplashRoute.Content() {
+	SplashScreen(
+		modifier = Modifier
+			.fillMaxSize()
+	)
 }

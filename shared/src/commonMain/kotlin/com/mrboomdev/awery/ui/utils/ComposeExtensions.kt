@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.utils
 
+import androidx.annotation.IntDef
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -9,7 +10,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
-import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import kotlinx.serialization.json.Json
@@ -46,34 +46,33 @@ inline fun PaddingValues.only(
 	) 
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun WindowSizeClass.isWidthAtLeast(clazz: WindowWidthSizeClass) = windowWidthSizeClass.isAtLeast(clazz)
+@IntDef(WINDOW_SIZE_COMPACT, WINDOW_SIZE_MEDIUM, WINDOW_SIZE_EXPANDED)
+annotation class WindowSizeClassValue
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun WindowSizeClass.isHeightAtLeast(clazz: WindowHeightSizeClass) = windowHeightSizeClass.isAtLeast(clazz)
+const val WINDOW_SIZE_COMPACT = 1
+const val WINDOW_SIZE_MEDIUM = 2
+const val WINDOW_SIZE_EXPANDED = 3
 
-fun WindowWidthSizeClass.isAtLeast(clazz: WindowWidthSizeClass) = when(clazz) {
-	WindowWidthSizeClass.COMPACT -> true
-	
-	WindowWidthSizeClass.MEDIUM -> this == WindowWidthSizeClass.MEDIUM 
-			|| this == WindowWidthSizeClass.EXPANDED
-	
-	WindowWidthSizeClass.EXPANDED -> this == WindowWidthSizeClass.EXPANDED
-	
-	// Undefined behaviour
-	else -> false
-}
-
-fun WindowHeightSizeClass.isAtLeast(clazz: WindowHeightSizeClass) = when(clazz) {
-	WindowHeightSizeClass.COMPACT -> true
-	
-	WindowHeightSizeClass.MEDIUM -> this == WindowHeightSizeClass.MEDIUM
-			|| this == WindowHeightSizeClass.EXPANDED
-	
-	WindowHeightSizeClass.EXPANDED -> this == WindowHeightSizeClass.EXPANDED
-	
-	// Undefined behaviour
-	else -> false
+operator fun WindowSizeClass.compareTo(@WindowSizeClassValue windowSizeClass: Int): Int {
+	return when(windowWidthSizeClass) {
+		WindowWidthSizeClass.COMPACT -> when(windowSizeClass) {
+			WINDOW_SIZE_COMPACT -> 0
+			else -> -1
+		}
+		
+		WindowWidthSizeClass.MEDIUM -> when(windowSizeClass) {
+			WINDOW_SIZE_COMPACT -> 1
+			WINDOW_SIZE_MEDIUM -> 0
+			else -> -1
+		}
+		
+		WindowWidthSizeClass.EXPANDED -> when(windowSizeClass) {
+			WINDOW_SIZE_EXPANDED -> 0
+			else -> 1
+		}
+		
+		else -> throw IllegalStateException("Unsupported window size class!")
+	}
 }
 
 /**

@@ -18,10 +18,8 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import com.google.android.material.color.DynamicColors
-import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.shared.BuildConfig
 import com.mrboomdev.awery.utils.SerializableRequired
 import com.mrboomdev.awery.utils.tryOrTry
@@ -150,40 +148,8 @@ actual object Platform: ContextWrapper(null) {
 	 * Initialize platform-related stuff
 	 */
 	internal actual suspend fun platformInit() {
-		setupStrictMode()
-	}
-	
-	/**
-	 * Fuck you, Android. It's not my problem that some people do install A LOT of extensions,
-	 * so that app stops responding.
-	 */
-	private fun setupStrictMode() {
-		if(!BuildConfig.DEBUG) {
-			StrictMode.setThreadPolicy(ThreadPolicy.LAX)
-			StrictMode.setVmPolicy(VmPolicy.LAX)
-			return
-		}
-		
-		StrictMode.setThreadPolicy(
-			ThreadPolicy.Builder()
-			.detectCustomSlowCalls()
-			.detectNetwork()
-			.penaltyLog()
-			.penaltyDialog()
-			.build())
-		
-		StrictMode.setVmPolicy(
-			VmPolicy.Builder()
-			.detectActivityLeaks()
-			.detectLeakedRegistrationObjects()
-			.penaltyLog()
-			.apply {
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-					penaltyListener({ it.run() }) { violation ->
-						toast("An VM Policy has benn violated!")
-						Log.e(TAG, "An VM Policy has benn violated!", violation)
-					}
-				}
-			}.build())
+		// A lot of extensions do violate StrictMode, so we simply disable it.
+		StrictMode.setThreadPolicy(ThreadPolicy.LAX)
+		StrictMode.setVmPolicy(VmPolicy.LAX)
 	}
 }

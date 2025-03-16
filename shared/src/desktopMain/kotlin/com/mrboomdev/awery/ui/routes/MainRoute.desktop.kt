@@ -1,6 +1,6 @@
 package com.mrboomdev.awery.ui.routes
 
-import kotlinx.serialization.Serializable
+import androidx.compose.runtime.Composable
 
-@Serializable
-actual class MainRoute : DefaultMainRoute()
+@Composable
+actual fun MainRoute.Content(viewModel: MainRouteViewModel) = DefaultMainRouteContent(viewModel)

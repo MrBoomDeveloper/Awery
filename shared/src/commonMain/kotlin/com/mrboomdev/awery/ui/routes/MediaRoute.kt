@@ -7,14 +7,14 @@ import com.mrboomdev.awery.ui.screens.MediaScreenTab
 import kotlinx.serialization.Serializable
 
 @Serializable
-class MediaRoute(
+data class MediaRoute(
 	val media: CatalogMedia,
 	val initialTab: MediaScreenTab = MediaScreenTab.INFO
-): BaseRoute() {
-	@Composable
-	override fun Content() {
-		MediaScreen(
-			media, initialTab
-		)
-	}
+)
+
+@Composable
+fun MediaRoute.Companion.Content(args: MediaRoute) {
+	MediaScreen(
+		args.media, args.initialTab
+	)
 }

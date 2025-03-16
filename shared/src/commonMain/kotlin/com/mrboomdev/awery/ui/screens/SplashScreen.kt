@@ -24,8 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.CrashHandler
@@ -34,6 +32,7 @@ import com.mrboomdev.awery.platform.didInit
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.sources.ExtensionsManager
 import com.mrboomdev.awery.ui.components.MaterialDialog
+import com.mrboomdev.awery.ui.navigation.LocalNavHostController
 import com.mrboomdev.awery.ui.routes.MainRoute
 import com.mrboomdev.awery.utils.await
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +61,7 @@ fun SplashScreen(
 	val crashLogs = remember { mutableStateListOf<Pair<File, String>>() }
 	var share by remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
-	val navigator = LocalNavigator.currentOrThrow
+	val navigator = LocalNavHostController.current
 	
 	LaunchedEffect(loadingStatus) {
 		when(val status = loadingStatus) {
@@ -109,7 +108,8 @@ fun SplashScreen(
 			}
 			
 			LoadingStatus.Finished -> {
-				navigator.replace(MainRoute())
+				navigator.popBackStack()
+				navigator.navigate(MainRoute)
 			}
 		}
 	}

@@ -16,14 +16,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.data.CatalogVideoFile
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.i18n
 import com.mrboomdev.awery.ui.components.VideoPlayer
 import com.mrboomdev.awery.ui.components.rememberVideoPlayerState
+import com.mrboomdev.awery.ui.navigation.LocalNavHostController
 import com.mrboomdev.awery.ui.utils.ControlInsets
 import com.mrboomdev.awery.ui.utils.InsetsVisibility
 import org.jetbrains.compose.resources.painterResource
@@ -44,7 +43,7 @@ fun PlayerScreen(
 		}
 	})
 ) {
-	val navigator = LocalNavigator.currentOrThrow
+	val navigator = LocalNavHostController.current
 	val currentEpisode = episodes[viewModel.currentEpisode]
 	
 	ControlInsets(InsetsVisibility.HIDDEN)
@@ -61,7 +60,7 @@ fun PlayerScreen(
 		Column {
 			Row {
 				IconButton(
-					onClick = { navigator.pop() }
+					onClick = { navigator.popBackStack() }
 				) {
 					Icon(
 						painter = painterResource(Res.drawable.ic_language),

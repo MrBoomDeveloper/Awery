@@ -21,7 +21,7 @@ class MainActivity: ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		
 		val initialRoute = when {
-			else -> SplashRoute()
+			else -> SplashRoute
 		}
 		
 		setContent {

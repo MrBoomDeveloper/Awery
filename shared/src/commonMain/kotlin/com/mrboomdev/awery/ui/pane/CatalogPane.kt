@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,13 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -42,84 +41,111 @@ import com.mrboomdev.awery.sources.LoadedFeed
 import com.mrboomdev.awery.sources.loadAll
 import com.mrboomdev.awery.sources.processFeeds
 import com.mrboomdev.awery.ui.components.SmallCard
+import com.mrboomdev.awery.ui.utils.ScrollFixer
 import com.mrboomdev.awery.ui.utils.only
 import com.mrboomdev.awery.utils.UniqueIdGenerator
 import com.mrboomdev.awery.utils.exceptions.explain
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-private sealed interface State {
-	object Loading: State
-	object End: State
-	data class Failed(val throwable: Throwable): State
+sealed interface CatalogPaneLoadingState {
+	data object Loading: CatalogPaneLoadingState
+	data object End: CatalogPaneLoadingState
 }
 
+class CatalogPaneState(
+	val loadedFeeds: SnapshotStateList<Pair<Long, LoadedFeed>> = mutableStateListOf(),
+	private val coroutineScope: CoroutineScope
+) {
+	val loadingState = mutableStateOf<CatalogPaneLoadingState>(CatalogPaneLoadingState.Loading)
+	internal val isRefreshing = mutableStateOf(false)
+	internal var listState: LazyListState? = null
+	private val idGenerator = UniqueIdGenerator.loopLong()
+	private var job: Job? = null
+	
+	fun load(feeds: List<CatalogFeed>) {
+		loadedFeeds.clear()
+		
+		job?.also {
+			if(it.isActive) {
+				it.cancel()
+			}
+		}
+		
+		job = coroutineScope.launch {
+			val scrollFixer = ScrollFixer()
+			
+			feeds.processFeeds()
+				.loadAll()
+				.buffer(3)
+				.onStart { loadingState.value = CatalogPaneLoadingState.Loading }
+				.onEach { loadedFeed ->
+					if(isRefreshing.value) isRefreshing.value = false
+					loadedFeeds += idGenerator.long to loadedFeed
+					listState?.also { scrollFixer.fix(it) }
+				}.onCompletion {
+					if(isRefreshing.value) isRefreshing.value = false
+					loadingState.value = CatalogPaneLoadingState.End 
+				}.collect()
+		}
+	}
+}
+
+/**
+ * Please note that this composable does not load any data automatically.
+ * You have to manually call [CatalogPaneState.load] to show any content.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogPane(
 	modifier: Modifier = Modifier,
 	contentPadding: PaddingValues = PaddingValues(),
-	feeds: List<CatalogFeed>,
+	state: CatalogPaneState,
 	onSectionClick: (feed: CatalogFeed, results: CatalogSearchResults<CatalogMedia>) -> Unit,
-	onMediaClick: (CatalogMedia) -> Unit
+	onMediaClick: (CatalogMedia) -> Unit,
+	onReload: (() -> Unit)? = null
 ) {
-	val loadedFeeds = remember(feeds) { mutableStateListOf<Pair<Long, LoadedFeed>>() }
-	val idGenerator = remember(feeds) { UniqueIdGenerator.loopLong() }
-	val coroutineScope = rememberCoroutineScope { Dispatchers.Default }
-	var isRefreshing by remember(feeds) { mutableStateOf(false) }
-	var state by remember { mutableStateOf<State>(State.Loading) }
+	val listState = rememberLazyListState()
 	
-	suspend fun load() {
-		state = State.Loading
-		feeds.processFeeds()
-			.loadAll()
-			.buffer(3)
-			.collect { loadedFeeds += idGenerator.long to it }
-	}
-	
-	LaunchedEffect(feeds) {
-		coroutineScope.launch { 
-			load()
+	DisposableEffect(state) {
+		// Provide an list state to fix scrolling issues
+		state.listState = listState
+		
+		onDispose { 
+			// We don't want leaks :)
+			state.listState = null
 		}
 	}
 	
-	PullToRefreshBox(
-		modifier = modifier,
-		isRefreshing = isRefreshing,
-		onRefresh = {
-			isRefreshing = true
-			
-			if(coroutineScope.isActive) {
-				coroutineScope.cancel()
-			}
-			
-			coroutineScope.launch { 
-				load()
-			}
-		}
-	) {
+	val content = @Composable {
 		LazyColumn(
+			state = listState,
 			contentPadding = contentPadding
-		) { 
+		) {
 			items(
-				items = loadedFeeds,
+				items = state.loadedFeeds,
 				key = { it.first },
-				contentType = { when {
-					it.second.items != null -> 2
-					it.second.throwable != null -> 1
-					else -> 0
-				} }
+				contentType = {
+					when {
+						it.second.items != null -> 2
+						it.second.throwable != null -> 1
+						else -> 0
+					}
+				}
 			) { (_, feed) ->
 				Row(
 					modifier = Modifier
 						.padding(contentPadding.only(top = false, bottom = false))
 						.padding(vertical = 8.dp),
 					verticalAlignment = Alignment.CenterVertically
-				) { 
+				) {
 					Text(
 						style = MaterialTheme.typography.titleLarge,
 						fontWeight = FontWeight.SemiBold,
@@ -180,39 +206,56 @@ fun CatalogPane(
 						.animateItem(),
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
-					when(val mState = state) {
-						State.Loading -> CircularProgressIndicator()
+					when(val mState = state.loadingState.value) {
+						CatalogPaneLoadingState.Loading -> CircularProgressIndicator()
 						
-						State.End -> {
+						CatalogPaneLoadingState.End -> {
 							Text(
 								style = MaterialTheme.typography.headlineSmall,
 								text = stringResource(Res.string.you_reached_end)
 							)
-								
+							
 							Text(
 								modifier = Modifier.padding(8.dp),
 								textAlign = TextAlign.Center,
 								text = stringResource(Res.string.you_reached_end_description)
 							)
 						}
-						
-						is State.Failed -> {
-							val explained = remember(state) { mState.throwable.explain() }
-							
-							Text(
-								style = MaterialTheme.typography.headlineSmall,
-								text = explained.title
-							)
-							
-							Text(
-								modifier = Modifier.padding(8.dp),
-								textAlign = TextAlign.Center,
-								text = explained.message
-							)
-						}
+
+//						is CatalogPaneLoadingState.Failed -> {
+//							val explained = remember(state) { mState.throwable.explain() }
+//							
+//							Text(
+//								style = MaterialTheme.typography.headlineSmall,
+//								text = explained.title
+//							)
+//							
+//							Text(
+//								modifier = Modifier.padding(8.dp),
+//								textAlign = TextAlign.Center,
+//								text = explained.message
+//							)
+//						}
 					}
 				}
 			}
 		}
+	}
+	
+	if(onReload != null) {
+		// We may handle reloading, so display an swipe-to-refresh box.
+		PullToRefreshBox(
+			modifier = modifier,
+			isRefreshing = state.isRefreshing.value,
+			onRefresh = {
+				state.isRefreshing.value = true
+				onReload()
+			}
+		) {
+			content()
+		}
+	} else {
+		// We doesn't handle reloading, so just show the list.
+		content()
 	}
 }

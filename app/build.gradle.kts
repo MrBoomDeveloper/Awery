@@ -43,13 +43,7 @@ kotlin {
 				implementation(compose.foundation)
 				api(compose.components.resources)
 				api(libs.sonner)
-				
-				// Navigation
 				implementation(libs.androidx.navigation)
-				api(libs.voyager.navigator)
-				api(libs.voyager.screenmodel)
-				api(libs.voyager.tab.navigator)
-				api(libs.voyager.transitions)
 				
 				// Adaptive layout
 				implementation(libs.adaptive)

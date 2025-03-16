@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.ui.routes
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -42,155 +41,151 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.saveable
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mrboomdev.awery.ext.data.Setting
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.PlatformImage
 import com.mrboomdev.awery.sources.ExtensionsManager
+import com.mrboomdev.awery.ui.navigation.LocalNavHostController
 import com.mrboomdev.awery.ui.utils.LocalToaster
-import com.mrboomdev.awery.ui.utils.screenModel
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class SearchRoute(
-	initialFilters: List<@Contextual Setting>? = null
-): DefaultSearchRoute(initialFilters)
-
 @Serializable
-open class DefaultSearchRoute(
-	private val initialFilters: List<@Contextual Setting>? = null
-): BaseRoute() {
-	@OptIn(ExperimentalFoundationApi::class)
-	@Composable
-	override fun Content() {
-		val navigation = LocalNavigator.currentOrThrow
-		val screenModel = screenModel { SearchScreenModel(it) }
-		val queryFocusRequested = remember { FocusRequester() }
+data class SearchRoute(
+	val initialFilters: List<@Contextual Setting>? = null
+)
+
+@Composable
+fun SearchRoute.Companion.Content(
+	args: SearchRoute,
+	viewModel: SearchRouteViewModel = viewModel()
+) {
+	val navigation = LocalNavHostController.current
+	val queryFocusRequested = remember { FocusRequester() }
 		
-		val foundSources by remember { derivedStateOf {
-			ExtensionsManager.allSources.filter { source ->
-				screenModel.query.text.trim().let { text ->
-					source.context.name?.contains(text) == true || source.context.id.contains(text)
-				}
-			}.sortedBy { it.context.name ?: it.context.id }
-		} }
+	val foundSources by remember { derivedStateOf {
+		ExtensionsManager.allSources.filter { source ->
+			viewModel.query.text.trim().let { text ->
+				source.context.name?.contains(text) == true || source.context.id.contains(text)
+			}
+		}.sortedBy { it.context.name ?: it.context.id }
+	} }
 		
-		LaunchedEffect(true) {
-			queryFocusRequested.requestFocus()
-		}
+	LaunchedEffect(true) {
+		queryFocusRequested.requestFocus()
+	}
 		
-		Column {
-			Row(
-				modifier = Modifier.windowInsetsPadding(
-					WindowInsets.safeDrawing.only(
-						WindowInsetsSides.Horizontal + WindowInsetsSides.Top
-					)
-				),
-				verticalAlignment = Alignment.CenterVertically
+	Column {
+		Row(
+			modifier = Modifier.windowInsetsPadding(
+				WindowInsets.safeDrawing.only(
+					WindowInsetsSides.Horizontal + WindowInsetsSides.Top
+				)
+			),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			IconButton(
+				onClick = { navigation.popBackStack() }
 			) {
-				IconButton(
-					onClick = { navigation.pop() }
-				) {
-					Icon(
-						modifier = Modifier
-							.size(64.dp)
-							.padding(9.dp),
-						painter = painterResource(Res.drawable.ic_back),
-						contentDescription = stringResource(Res.string.back)
-					)
-				}
-				
-				TextField(
+				Icon(
 					modifier = Modifier
-						.focusRequester(queryFocusRequested)
-						.fillMaxWidth(),
-					state = screenModel.query,
-					placeholder = { Text(stringResource(Res.string.search)) },
-					lineLimits = TextFieldLineLimits.SingleLine,
-					contentPadding = PaddingValues(4.dp),
-					colors = TextFieldDefaults.colors(
-						focusedContainerColor = Color.Transparent,
-						unfocusedContainerColor = Color.Transparent,
-						unfocusedIndicatorColor = Color.Transparent,
-						focusedIndicatorColor = Color.Transparent
-					)
+						.size(64.dp)
+						.padding(9.dp),
+					painter = painterResource(Res.drawable.ic_back),
+					contentDescription = stringResource(Res.string.back)
 				)
 			}
+				
+			TextField(
+				modifier = Modifier
+					.focusRequester(queryFocusRequested)
+					.fillMaxWidth(),
+				state = viewModel.query,
+				placeholder = { Text(stringResource(Res.string.search)) },
+				lineLimits = TextFieldLineLimits.SingleLine,
+				contentPadding = PaddingValues(4.dp),
+				colors = TextFieldDefaults.colors(
+					focusedContainerColor = Color.Transparent,
+					unfocusedContainerColor = Color.Transparent,
+					unfocusedIndicatorColor = Color.Transparent,
+					focusedIndicatorColor = Color.Transparent
+				)
+			)
+		}
 			
-			LazyColumn(
-				modifier = Modifier.fillMaxWidth(),
-				contentPadding = WindowInsets.safeDrawing.only(
-					WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-				).asPaddingValues()
-			) {
-				items(
-					items = foundSources,
-					key = { it.context.manager.context.id + it.context.id }
-				) { source ->
-					val toaster = LocalToaster.current
+		LazyColumn(
+			modifier = Modifier.fillMaxWidth(),
+			contentPadding = WindowInsets.safeDrawing.only(
+				WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+			).asPaddingValues()
+		) {
+			items(
+				items = foundSources,
+				key = { it.context.manager.context.id + it.context.id }
+			) { source ->
+				val toaster = LocalToaster.current
 					
-					Row(
+				Row(
+					modifier = Modifier
+						.fillMaxWidth()
+						.clickable {
+							toaster.show("This action isn't done yet!")
+						}.padding(8.dp)
+						.animateItem(),
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					source.context.icon?.let { icon ->
+						if(icon is PlatformImage) {
+							Image(
+								modifier = Modifier
+									.size(42.dp)
+									.clip(RoundedCornerShape(8.dp)),
+								painter = icon.rememberPainter(),
+								contentDescription = null
+							)
+								
+							Spacer(Modifier.width(10.dp))
+						}
+					}
+						
+					Text(
+						style = MaterialTheme.typography.bodyLarge,
+						text = source.context.name ?: source.context.id
+					)
+				}
+			}
+				
+			if(foundSources.isEmpty()) {
+				item("empty") {
+					Column(
 						modifier = Modifier
 							.fillMaxWidth()
-							.clickable {
-								toaster.show("This action isn't done yet!")
-							}.padding(8.dp)
-							.animateItemPlacement(),
-						verticalAlignment = Alignment.CenterVertically
+							.padding(32.dp, 64.dp)
+							.animateItem(),
+						horizontalAlignment = Alignment.CenterHorizontally
 					) {
-						source.context.icon?.let { icon ->
-							if(icon is PlatformImage) {
-								Image(
-									modifier = Modifier
-										.size(42.dp)
-										.clip(RoundedCornerShape(8.dp)),
-									painter = icon.rememberPainter(),
-									contentDescription = null
-								)
-								
-								Spacer(Modifier.width(10.dp))
-							}
-						}
-						
 						Text(
-							style = MaterialTheme.typography.bodyLarge,
-							text = source.context.name ?: source.context.id
+							style = MaterialTheme.typography.headlineSmall,
+							text = stringResource(Res.string.nothing_found)
+						)
+							
+						Text(
+							modifier = Modifier.padding(8.dp),
+							textAlign = TextAlign.Center,
+							text = stringResource(Res.string.no_media_found)
 						)
 					}
 				}
-				
-				if(foundSources.isEmpty()) {
-					item("empty") {
-						Column(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(32.dp, 64.dp)
-								.animateItemPlacement(),
-							horizontalAlignment = Alignment.CenterHorizontally
-						) {
-							Text(
-								style = MaterialTheme.typography.headlineSmall,
-								text = stringResource(Res.string.nothing_found)
-							)
-							
-							Text(
-								modifier = Modifier.padding(8.dp),
-								textAlign = TextAlign.Center,
-								text = stringResource(Res.string.no_media_found)
-							)
-						}
-					}
-				}
-			} 
-		}
+			}
+		} 
 	}
 }
 
-private class SearchScreenModel(savedState: SavedStateHandle): ScreenModel {
+class SearchRouteViewModel(savedState: SavedStateHandle): ViewModel() {
 	val query by savedState.saveable(saver = TextFieldState.Saver) { TextFieldState() }
 }

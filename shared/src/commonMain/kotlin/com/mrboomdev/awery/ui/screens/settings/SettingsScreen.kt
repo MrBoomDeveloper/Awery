@@ -39,29 +39,31 @@ val <T> ThreePaneScaffoldNavigator<T>.historyState
 	} else throw UnsupportedOperationException("This navigator is not an DefaultThreePaneScaffoldNavigator!")
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun getTitleHeaderColors() = TopAppBarColors(
-	containerColor = Color.Transparent,
-	scrolledContainerColor = Color.Transparent,
-	navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-	titleContentColor = MaterialTheme.colorScheme.onSurface,
-	actionIconContentColor = MaterialTheme.colorScheme.onSurface
-)
+internal val titleHeaderColors
+	@Composable
+	get() = TopAppBarColors(
+		containerColor = Color.Transparent,
+		scrolledContainerColor = Color.Transparent,
+		navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+		titleContentColor = MaterialTheme.colorScheme.onSurface,
+		actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+		subtitleContentColor = Color.Unspecified
+	)
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
 fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	screen: Setting,
 	navigator: ThreePaneScaffoldNavigator<Setting> = rememberListDetailPaneScaffoldNavigator<Setting>()
 ) {
 	val history = remember { navigator.historyState }
-
+	
 	ListDetailPaneScaffold(
 		modifier = modifier,
 		directive = navigator.scaffoldDirective,
 		value = navigator.scaffoldValue,
-
+		
 		listPane = {
 			AnimatedPane {
 				if(screen is ComposableSetting) {
@@ -72,11 +74,11 @@ fun SettingsScreen(
 				SettingScreen(
 					modifier = Modifier.padding(horizontal = 8.dp),
 					screen = screen,
-					selected = history.mapNotNull { it.content },
+					selected = history.mapNotNull { it.contentKey },
 					
 					header = {
 						LargeTopAppBar(
-							colors = getTitleHeaderColors(),
+							colors = titleHeaderColors,
 							title = {
 								Text(
 									text = screen.title?.let { title ->
@@ -89,10 +91,10 @@ fun SettingsScreen(
 				)
 			}
 		},
-
+		
 		detailPane = {
 			AnimatedPane {
-				navigator.currentDestination?.content?.let { currentScreen ->
+				navigator.currentDestination?.contentKey?.let { currentScreen ->
 					if(currentScreen is ComposableSetting) {
 						currentScreen.Content()
 						return@let
@@ -104,7 +106,7 @@ fun SettingsScreen(
 						
 						header = {
 							LargeTopAppBar(
-								colors = getTitleHeaderColors(),
+								colors = titleHeaderColors,
 								title = {
 									Text(
 										text = currentScreen.title?.let { title ->

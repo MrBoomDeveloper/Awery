@@ -21,6 +21,26 @@ value class GlobalId(val value: String) {
 	val managerId get() = parse(value)[0]
 	val sourceId get() = parse(value).getOrNull(1)
 	val itemId get() = parse(value).getOrNull(2)
+	
+	override fun toString() = buildString { 
+		append("{ \"manager_id\": \"")
+		append(managerId)
+		append("\"")
+		
+		sourceId?.let {
+			append(", \"source_id\": \"")
+			append(it)
+			append("\"")
+		}
+		
+		itemId?.let {
+			append(", \"item_id\": \"")
+			append(it)
+			append("\"")
+		}
+		
+		append(" }")
+	}
 
 	companion object {
 		fun parse(globalId: String) = globalId.split(";;;").let {

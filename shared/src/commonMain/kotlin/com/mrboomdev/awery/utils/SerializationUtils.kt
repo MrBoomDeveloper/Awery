@@ -24,9 +24,14 @@ private data class JsonValueWrapper(
 	@Suppress("UNCHECKED_CAST")
 	fun <T> deserialize(): T {
 		val serializer = Class.forName(clazz).kotlin.serializerByReflection()
-		return Json.decodeFromString(serializer, json) as T
+		return Json.decodeFromString(serializer!!, json) as T
 	}
 }
+
+/**
+ * May be useful if we'll only know a real type at the runtime.
+ */
+inline fun <reified T : Any> reflectionSerializerOf(): KSerializer<T> = object : ReflectionSerializer<T>() {}
 
 abstract class ReflectionSerializer<T: Any>: KSerializer<T> {
 	override val descriptor: SerialDescriptor
@@ -43,7 +48,7 @@ abstract class ReflectionSerializer<T: Any>: KSerializer<T> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> KClass<T>.serializerByReflection(): KSerializer<T> {
+fun <T: Any> KClass<T>.serializerByReflection(): KSerializer<T>? {
 	try {
 		// Is this class directly marked as serializable?
 		companionObjectInstance?.serializer?.also {
@@ -54,11 +59,12 @@ fun <T: Any> KClass<T>.serializerByReflection(): KSerializer<T> {
 	for(superType in supertypes) {
 		// Maybe one of it's parents is serializable?
 		try {
-			return superType.jvmErasure.serializerByReflection() as KSerializer<T>
+			val serializer = superType.jvmErasure.serializerByReflection()
+			if(serializer != null) return serializer as KSerializer<T>
 		} catch(_: IllegalStateException) { }
 	}
 	
-	throw IllegalStateException("$qualifiedName and it's super types aren't serializable!")
+	return null
 }
 
 private val Any.serializer get() = this::class.java.let { clazz ->

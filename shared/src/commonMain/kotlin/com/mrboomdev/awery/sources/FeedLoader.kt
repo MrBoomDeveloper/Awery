@@ -11,6 +11,7 @@ import com.mrboomdev.awery.ext.source.module.CatalogModule
 import com.mrboomdev.awery.ext.util.GlobalId
 import com.mrboomdev.awery.ext.util.exceptions.ZeroResultsException
 import com.mrboomdev.awery.utils.createLogger
+import com.mrboomdev.awery.utils.returnOnNull
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.channelFlow
 
@@ -33,6 +34,7 @@ suspend fun List<CatalogFeed>.processFeeds(): List<CatalogFeed> = flatMap { feed
 			AweryAppFilters.FEED_AUTOGENERATE -> 
 				ExtensionsManager.getAllModules<CatalogModule>()
 					.flatMap { module -> module.createFeeds() }
+					.shuffled()
 				
 //			AweryAppFilters.FEED_BOOKMARKS -> 
 //			AweryAppFilters.FEED_CONTINUE ->
@@ -87,32 +89,29 @@ fun List<CatalogFeed>.loadAll() = channelFlow {
 
 @Suppress("ConvertCallChainIntoSequence")
 private suspend fun CatalogFeed.load(channel: SendChannel<LoadedFeed>) {
-	if(managerId == null) {
-		return channel.send(
-			LoadedFeed(
+	val globalId = GlobalId(
+		managerId = managerId.returnOnNull {
+			return channel.send(LoadedFeed(
 				feed = this,
 				throwable = UnsupportedOperationException(
 					"The feed cannot be loaded because no managerId was specified!")
-			)
-		)
-	}
-	
-	if(sourceId == null) {
-		return channel.send(
-			LoadedFeed(
+			))
+		},
+		
+		sourceId = sourceId.returnOnNull {
+			return channel.send(LoadedFeed(
 				feed = this,
 				throwable = UnsupportedOperationException(
 					"The feed cannot be loaded because no sourceId was specified!")
-			)
-		)
-	}
-	
-	val source = ExtensionsManager.getSource(GlobalId(managerId!!, sourceId!!)).let {
-		it ?: return channel.send(
-			LoadedFeed(
-				feed = this,
-				throwable = ZeroResultsException("Source isn't installed! $it")
 			))
+		}
+	)
+	
+	val source = ExtensionsManager.getSource(globalId).returnOnNull {
+		return channel.send(LoadedFeed(
+			feed = this,
+			throwable = ZeroResultsException("Source isn't installed! $globalId")
+		))
 	}
 	
 	if(source !is Source) {

@@ -60,12 +60,16 @@ kotlin {
 	jvm("desktop")
 	
 	compilerOptions {
-		freeCompilerArgs = listOf("-Xexpect-actual-classes")
+		freeCompilerArgs = listOf(
+			"-Xexpect-actual-classes"
+		)
 	}
 
 	sourceSets {
 		all {
-			languageSettings.optIn("androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi")
+			languageSettings.optIn(
+				"androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi"
+			)
 		}
 		
 		commonMain {
@@ -95,14 +99,8 @@ kotlin {
 				implementation(libs.compose.runtime)
 				implementation(libs.compose.ui)
 				implementation(libs.compose.foundation)
-				api(compose.components.resources)
-				
-				// Navigation
 				implementation(libs.androidx.navigation)
-				api(libs.voyager.navigator)
-				api(libs.voyager.screenmodel)
-				api(libs.voyager.tab.navigator)
-				api(libs.voyager.transitions)
+				api(compose.components.resources)
 				
 				// Adaptive layout
 				implementation(libs.adaptive)
