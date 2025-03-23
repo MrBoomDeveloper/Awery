@@ -17,12 +17,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,16 +54,16 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-sealed interface CatalogPaneLoadingState {
-	data object Loading: CatalogPaneLoadingState
-	data object End: CatalogPaneLoadingState
+sealed interface FeedsPaneLoadingState {
+	data object Loading: FeedsPaneLoadingState
+	data object End: FeedsPaneLoadingState
 }
 
-class CatalogPaneState(
+class FeedsPaneState(
 	val loadedFeeds: SnapshotStateList<Pair<Long, LoadedFeed>> = mutableStateListOf(),
 	private val coroutineScope: CoroutineScope
 ) {
-	val loadingState = mutableStateOf<CatalogPaneLoadingState>(CatalogPaneLoadingState.Loading)
+	val loadingState = mutableStateOf<FeedsPaneLoadingState>(FeedsPaneLoadingState.Loading)
 	internal val isRefreshing = mutableStateOf(false)
 	internal var listState: LazyListState? = null
 	private val idGenerator = UniqueIdGenerator.loopLong()
@@ -85,14 +84,14 @@ class CatalogPaneState(
 			feeds.processFeeds()
 				.loadAll()
 				.buffer(3)
-				.onStart { loadingState.value = CatalogPaneLoadingState.Loading }
+				.onStart { loadingState.value = FeedsPaneLoadingState.Loading }
 				.onEach { loadedFeed ->
 					if(isRefreshing.value) isRefreshing.value = false
 					loadedFeeds += idGenerator.long to loadedFeed
 					listState?.also { scrollFixer.fix(it) }
 				}.onCompletion {
 					if(isRefreshing.value) isRefreshing.value = false
-					loadingState.value = CatalogPaneLoadingState.End 
+					loadingState.value = FeedsPaneLoadingState.End 
 				}.collect()
 		}
 	}
@@ -100,14 +99,14 @@ class CatalogPaneState(
 
 /**
  * Please note that this composable does not load any data automatically.
- * You have to manually call [CatalogPaneState.load] to show any content.
+ * You have to manually call [FeedsPaneState.load] to show any content.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogPane(
+fun FeedsPane(
 	modifier: Modifier = Modifier,
 	contentPadding: PaddingValues = PaddingValues(),
-	state: CatalogPaneState,
+	state: FeedsPaneState,
 	onSectionClick: (feed: CatalogFeed, results: CatalogSearchResults<CatalogMedia>) -> Unit,
 	onMediaClick: (CatalogMedia) -> Unit,
 	onReload: (() -> Unit)? = null
@@ -182,9 +181,7 @@ fun CatalogPane(
 							items = feed.items,
 							key = { it.globalId.value }
 						) { media ->
-							CompositionLocalProvider(
-								LocalTextStyle provides MaterialTheme.typography.bodyMedium
-							) {
+							ProvideTextStyle(MaterialTheme.typography.bodyMedium) {
 								SmallCard(
 									image = media.extras[CatalogMedia.EXTRA_POSTER],
 									title = media.title,
@@ -202,40 +199,27 @@ fun CatalogPane(
 				Column(
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(36.dp)
+						.padding(64.dp)
 						.animateItem(),
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
-					when(val mState = state.loadingState.value) {
-						CatalogPaneLoadingState.Loading -> CircularProgressIndicator()
+					when(state.loadingState.value) {
+						FeedsPaneLoadingState.Loading -> CircularProgressIndicator()
 						
-						CatalogPaneLoadingState.End -> {
+						FeedsPaneLoadingState.End -> {
 							Text(
-								style = MaterialTheme.typography.headlineSmall,
+								fontWeight = FontWeight.SemiBold,
+								textAlign = TextAlign.Center,
+								style = MaterialTheme.typography.headlineMedium,
 								text = stringResource(Res.string.you_reached_end)
 							)
 							
 							Text(
-								modifier = Modifier.padding(8.dp),
+								modifier = Modifier.padding(12.dp),
 								textAlign = TextAlign.Center,
 								text = stringResource(Res.string.you_reached_end_description)
 							)
 						}
-
-//						is CatalogPaneLoadingState.Failed -> {
-//							val explained = remember(state) { mState.throwable.explain() }
-//							
-//							Text(
-//								style = MaterialTheme.typography.headlineSmall,
-//								text = explained.title
-//							)
-//							
-//							Text(
-//								modifier = Modifier.padding(8.dp),
-//								textAlign = TextAlign.Center,
-//								text = explained.message
-//							)
-//						}
 					}
 				}
 			}

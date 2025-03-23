@@ -17,6 +17,8 @@ import com.mrboomdev.awery.ext.util.Image
 import com.mrboomdev.awery.ext.util.PendingTask
 import com.mrboomdev.awery.ext.util.Progress
 import com.mrboomdev.awery.ext.util.exceptions.ExtensionInstallException
+import com.mrboomdev.awery.ext.util.exceptions.ExtensionLoadException
+import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.platform.Platform.toast
 import com.mrboomdev.awery.platform.PlatformImage
@@ -143,6 +145,17 @@ abstract class YomiManager<S>(
 		val packageInfo = Platform.packageManager.getPackageInfo(
 			packageName, PackageManager.GET_CONFIGURATIONS or PackageManager.GET_META_DATA
 		)
+		
+		val isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1
+		
+		if(isNsfw && init && AwerySettings.ADULT_MODE.value.let {
+			it != AwerySettings.AdultModeValue.ENABLED && it != AwerySettings.AdultModeValue.ONLY
+		}) { // Adult content is disabled, so we may just skip this source load
+			throw ExtensionLoadException(
+				message = "Nsfw is blocked, source load skipped.",
+				reason = ExtensionLoadException.REASON_NSFW_BLOCKED
+			)
+		}
 
 		val sources = if(!init) null else try {
 			checkSupportedVersionBounds(packageInfo.versionName!!)
@@ -153,7 +166,7 @@ abstract class YomiManager<S>(
 		}
 
 		return createSourceWrapper(
-			isNsfw = packageInfo.applicationInfo!!.metaData.getInt(nsfwMeta, 0) == 1,
+			isNsfw = isNsfw,
 			packageInfo = packageInfo,
 			sources = sources,
 			exception = t,
@@ -275,31 +288,42 @@ abstract class YomiManager<S>(
 				}
 				
 				PackageInstaller.STATUS_FAILURE_BLOCKED -> result = ExtensionInstallException(
-					"The install has been blocked by your device!", IllegalStateException(message)
+					"The install has been blocked by your device!", IllegalStateException(message), 0
 				)
 				
 				PackageInstaller.STATUS_FAILURE_CONFLICT -> result = ExtensionInstallException(
-					"An conflict has occurred while trying to install!", IllegalStateException(message)
+					"An conflict has occurred while trying to install!", IllegalStateException(message), 0
 				)
 				
 				PackageInstaller.STATUS_FAILURE_INCOMPATIBLE -> result = ExtensionInstallException(
-					"Sorry, but your device isn't compatible with this extension!", IllegalStateException(message)
+					message = "Sorry, but your device isn't compatible with this extension!",
+					cause = IllegalStateException(message),
+					reason = ExtensionInstallException.REASON_UNSUPPORTED
 				)
 				
 				PackageInstaller.STATUS_FAILURE_INVALID -> result = ExtensionInstallException(
-					"Extension file appears to be invalid!", IllegalStateException(message)
+					message = "Extension file appears to be invalid!", 
+					cause = IllegalStateException(message),
+					reason = ExtensionInstallException.REASON_INVALID
 				)
 				
 				PackageInstaller.STATUS_FAILURE_STORAGE -> result = ExtensionInstallException(
-					"You don't have enough space!", IllegalStateException(message)
+					message = "You don't have enough space!", 
+					cause = IllegalStateException(message),
+					reason = ExtensionInstallException.REASON_LOW_STORAGE
 				)
 				
 				PackageInstaller.STATUS_FAILURE_TIMEOUT -> result = ExtensionInstallException(
-					"Your device just got tired and cancelled an install!", IllegalStateException(message)
+					"Your device just got tired and cancelled an install!", IllegalStateException(message), 0
 				)
 				
 				PackageInstaller.STATUS_FAILURE_ABORTED -> result = CancellationException()
-				else -> result = ExtensionInstallException("Failed to install an extension!", IllegalStateException(message))
+				
+				else -> result = ExtensionInstallException(
+					message = "Failed to install an extension!", 
+					cause = IllegalStateException(message),
+					reason = ExtensionInstallException.REASON_OTHER
+				)
 			}
 		}
 

@@ -38,6 +38,9 @@ adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-n
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
+coil-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coil" }
 
 # Compose
 compose-bom = { module = "androidx.compose:compose-bom", version = "2025.03.00" }
@@ -94,6 +97,8 @@ okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "4.12
 okhttp-dnsoverhttps = { module = "com.squareup.okhttp3:okhttp-dnsoverhttps", version.ref = "okhttp" }
 
 [bundles]
+coil = ["coil-compose", "coil-gif", "coil-svg", "coil-video", "coil-network-okhttp"]
+
 okhttp = ["okhttp", "okhttp-brotli", "okhttp-dnsoverhttps", "okhttp-logging"]
 
 exoplayer = ["media3-exoplayer", "media3-exoplayer-dash", "media3-exoplayer-hls", 

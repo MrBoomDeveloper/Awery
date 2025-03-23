@@ -48,13 +48,19 @@ open class JvmManager(
 			val classLoader = createClassLoader(File(dir, INSTALLED_FILE))
 
 			entry = (classLoader.getResourceAsStream(ENTRY_FILE) ?: run {
-				throw ExtensionLoadException("Extension entry file is missing!")
+				throw ExtensionLoadException(
+					message = "Extension entry file is missing!",
+					reason = ExtensionLoadException.REASON_INVALID
+				)
 			}).use {
 				it.readBytes().decodeToString()
 			}.let { Json.decodeFromString<JvmEntry>(it) }
 
 			val mainClass = classLoader.loadClass(entry.main) ?: run {
-				throw ExtensionLoadException("Missing main class!")
+				throw ExtensionLoadException(
+					message = "Missing main class!",
+					reason = ExtensionLoadException.REASON_INVALID
+				)
 			}
 
 			val context = when(entry.type) {
@@ -97,7 +103,11 @@ open class JvmManager(
 					isAccessible = true
 				}
 			} catch(e: NoSuchMethodException) {
-				throw ExtensionLoadException("No constructor with an context was found!")
+				throw ExtensionLoadException(
+					message = "No constructor with an context was found!",
+					reason = ExtensionLoadException.REASON_INVALID,
+					cause = e
+				)
 			}
 
 			main = constructor.newInstance(context) as AbstractSource
@@ -184,6 +194,5 @@ open class JvmManager(
 		const val ID = "JvmManager"
 		const val ENTRY_FILE = "awery_extension_entry.json"
 		const val INSTALLED_FILE = "installed.jar"
-		const val INSTALLED_DATA_DIR = "data"
 	}
 }

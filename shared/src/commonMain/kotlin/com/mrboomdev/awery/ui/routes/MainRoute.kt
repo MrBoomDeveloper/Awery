@@ -46,8 +46,8 @@ import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.ui.navigation.LocalNavHostController
 import com.mrboomdev.awery.ui.navigation.NavigationRoute
 import com.mrboomdev.awery.ui.navigation.NavigationTemplates
-import com.mrboomdev.awery.ui.pane.CatalogPane
-import com.mrboomdev.awery.ui.pane.CatalogPaneState
+import com.mrboomdev.awery.ui.pane.FeedsPane
+import com.mrboomdev.awery.ui.pane.FeedsPaneState
 import com.mrboomdev.awery.ui.utils.WINDOW_SIZE_MEDIUM
 import com.mrboomdev.awery.ui.utils.compareTo
 import com.mrboomdev.awery.ui.utils.navigate2
@@ -201,21 +201,25 @@ fun DefaultMainRouteContent(viewModel: MainRouteViewModel = viewModel()) {
 		) {
 			when(val route = viewModel.experience.navigationBar.getOrNull(viewModel.currentTab)?.route) {
 				is NavigationRoute.Feeds -> {
-					val basePadding = PaddingValues(top = 64.dp, bottom = 32.dp, start = 8.dp, end = 4.dp)
-						
 					val padding = if(windowSizeClass >= WINDOW_SIZE_MEDIUM) {
 						WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
 					} else {
-						WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-					}.asPaddingValues() + basePadding
+						WindowInsets.safeDrawing.only(
+							WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+					}.asPaddingValues() + PaddingValues(
+						start = 8.dp,
+						top = 64.dp,
+						end = 4.dp,
+						bottom = 128.dp
+					)
 						
-					val state = viewModel.catalogPaneStates.getOrPut(route) {
-						CatalogPaneState(coroutineScope = viewModel.viewModelScope).apply {
+					val state = viewModel.feedsPaneStates.getOrPut(route) {
+						FeedsPaneState(coroutineScope = viewModel.viewModelScope).apply {
 							load(route.feeds)
 						}
 					}
 						
-					CatalogPane(
+					FeedsPane(
 						modifier = Modifier.fillMaxSize(),
 						contentPadding = padding,
 						state = state,
@@ -254,7 +258,7 @@ fun DefaultMainRouteContent(viewModel: MainRouteViewModel = viewModel()) {
 class MainRouteViewModel(handle: SavedStateHandle): ViewModel() {
 	val experience = NavigationTemplates.AWERY.experience
 	var currentTab by handle.saveable { mutableIntStateOf(0) }
-	val catalogPaneStates = mutableStateMapOf<NavigationRoute, CatalogPaneState>()
+	val feedsPaneStates = mutableStateMapOf<NavigationRoute, FeedsPaneState>()
 	
 	@OptIn(ExperimentalResourceApi::class, ExperimentalSerializationApi::class)
 	val appSettings by lazy {

@@ -15,6 +15,7 @@ expect object Platform {
 	val USER_AGENT: String
 	val CACHE_DIRECTORY: File
 	val TV: Boolean
+	val SUPPORTS_SHARE: Boolean
 	fun exitApp()
 	fun restartApp()
 	fun isRequirementMet(requirement: String): Boolean
@@ -24,6 +25,10 @@ expect object Platform {
 	 * @return true if an system popup just appeared or false otherwise.
 	 */
 	fun copyToClipboard(string: String): Boolean
+	
+	fun openUrl(string: String)
+	
+	fun share(string: String)
 	
 	/**
 	 * Initialize platform-related stuff

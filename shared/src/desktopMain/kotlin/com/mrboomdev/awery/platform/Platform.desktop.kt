@@ -1,17 +1,32 @@
 package com.mrboomdev.awery.platform
 
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.request.crossfade
+import coil3.svg.SvgDecoder
 import com.mrboomdev.awery.SharedPreferences
+import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
+import java.net.URI
 import kotlin.system.exitProcess
 
 actual object Platform {
 	actual val NAME = "Desktop"
 	actual val TV = false
+	actual val SUPPORTS_SHARE = false
 	
 	actual val CACHE_DIRECTORY: File
 		get() = TODO("Not yet implemented")
+	
+	actual fun share(string: String) {
+		throw UnsupportedOperationException()
+	}
+	
+	actual fun openUrl(string: String) {
+		Desktop.getDesktop().browse(URI.create(string))
+	}
 
 	actual fun isRequirementMet(requirement: String): Boolean {
 		return false
@@ -43,5 +58,14 @@ actual object Platform {
 	/**
 	 * Initialize platform-related stuff
 	 */
-	internal actual suspend fun platformInit() {}
+	internal actual suspend fun platformInit() {
+		SingletonImageLoader.setSafe {
+			ImageLoader.Builder(it)
+				.components { 
+					add(SvgDecoder.Factory())
+				}
+				.crossfade(true)
+				.build()
+		}
+	}
 }

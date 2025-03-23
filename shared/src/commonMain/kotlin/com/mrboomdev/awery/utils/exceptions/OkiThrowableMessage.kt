@@ -37,8 +37,8 @@ class OkiThrowableMessage(
 		get() = (when(unwrapped) {
 			is SocketTimeoutException -> i18n(Res.string.timed_out)
 			is SSLHandshakeException -> i18n(Res.string.failed_handshake)
-			is SocketException -> unwrapped.message
-			is UnknownHostException -> unwrapped.message
+			is SocketException -> unwrapped.localizedMessage
+			is UnknownHostException -> unwrapped.localizedMessage
 			is BotSecurityBypassException -> i18n(Res.string.failed_to_bypass, unwrapped.blocker)
 			is ExtensionInstallException -> i18n(Res.string.extension_installed_failed)
 			is ExtensionLoadException -> i18n(Res.string.extension_load_failed)
@@ -72,7 +72,7 @@ class OkiThrowableMessage(
 			is BotSecurityBypassException -> i18n(Res.string.failed_bypass_detailed, unwrapped.blocker)
 			is SocketException -> i18n(Res.string.failed_to_connect_to_server)
 			is SSLHandshakeException -> i18n(Res.string.failed_to_connect_to_server)
-			is NotImplementedError -> unwrapped.message
+			is NotImplementedError -> unwrapped.localizedMessage
 			
 			is HttpException -> "(${unwrapped.code}) " + when(unwrapped.code) {
 				400, 422 -> i18n(Res.string.request_invalid_detailed)

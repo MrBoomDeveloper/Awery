@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -18,7 +19,15 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ShareCompat.IntentBuilder
 import androidx.core.content.getSystemService
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
+import coil3.request.crossfade
+import coil3.svg.SvgDecoder
+import coil3.video.VideoFrameDecoder
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.shared.BuildConfig
 import com.mrboomdev.awery.utils.SerializableRequired
@@ -33,6 +42,7 @@ private const val TAG = "Platform.android"
 
 actual object Platform: ContextWrapper(null) {
 	actual val NAME = "Android ${Build.VERSION.RELEASE}"
+	actual val SUPPORTS_SHARE = true
 	
 	val MIUI by lazy {
 		getSystemProperty("ro.miui.ui.version.name")?.isNotEmpty() ?: false // MIUI
@@ -112,6 +122,25 @@ actual object Platform: ContextWrapper(null) {
 		super.attachBaseContext(base)
 	}
 	
+	actual fun openUrl(string: String) {
+		startActivity(Intent().apply {
+			action = Intent.ACTION_VIEW
+			data = Uri.parse(string)
+			addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+		})
+	}
+	
+	actual fun share(string: String) {
+		IntentBuilder(this)
+			.setType("text/plain")
+			.setText(string)
+			.createChooserIntent()
+			.apply { 
+				addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+				startActivity(this)
+			}
+	}
+	
 	/**
 	 * @return true if an system popup just appeared or false otherwise.
 	 */
@@ -151,5 +180,21 @@ actual object Platform: ContextWrapper(null) {
 		// A lot of extensions do violate StrictMode, so we simply disable it.
 		StrictMode.setThreadPolicy(ThreadPolicy.LAX)
 		StrictMode.setVmPolicy(VmPolicy.LAX)
+		
+		SingletonImageLoader.setSafe {
+			ImageLoader.Builder(it)
+				.components { 
+					add(if(Build.VERSION.SDK_INT >= 28) {
+						AnimatedImageDecoder.Factory()
+					} else {
+						GifDecoder.Factory()
+					})
+						
+					add(SvgDecoder.Factory())
+					add(VideoFrameDecoder.Factory())
+				}
+				.crossfade(true)
+				.build()
+		}
 	}
 }

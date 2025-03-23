@@ -1,5 +1,8 @@
 package com.mrboomdev.awery.utils
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -9,6 +12,17 @@ import kotlinx.serialization.json.Json
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.jvm.jvmErasure
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Enum<T>> enumStateSaver() = Saver<MutableState<T>, String>(
+	save = { "${it.value::class.qualifiedName}.${it.value.name}" },
+	restore = {
+		val className = it.substringBeforeLast(".")
+		val value = it.substringAfterLast(".")
+		val clazz = Class.forName(className) as Class<out Enum<*>>
+		mutableStateOf(java.lang.Enum.valueOf(clazz, value) as T)
+	}
+)
 
 @Serializable
 private data class JsonValueWrapper(
