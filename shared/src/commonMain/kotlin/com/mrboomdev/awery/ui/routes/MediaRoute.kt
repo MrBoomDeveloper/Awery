@@ -515,6 +515,4 @@ private fun LazyListScope.MediaRouteContent(
 	}
 }
 
-class MediaRouteViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
-	
-}
+class MediaRouteViewModel(savedStateHandle: SavedStateHandle): ViewModel()
