@@ -8,6 +8,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,22 +32,23 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,20 +63,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.saveable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.mrboomdev.awery.ext.data.CatalogMedia
+import com.mrboomdev.awery.ext.data.CatalogVideoFile
 import com.mrboomdev.awery.generated.*
 import com.mrboomdev.awery.platform.Platform
 import com.mrboomdev.awery.ui.components.ButtonWithIcon
 import com.mrboomdev.awery.ui.components.ExpandableText
+import com.mrboomdev.awery.ui.components.StateBox
 import com.mrboomdev.awery.ui.navigation.LocalNavHostController
 import com.mrboomdev.awery.ui.utils.WINDOW_SIZE_MEDIUM
 import com.mrboomdev.awery.ui.utils.compareTo
 import com.mrboomdev.awery.ui.utils.plus
+import com.mrboomdev.awery.ui.utils.viewModelFactory
+import com.mrboomdev.awery.utils.ageRatingLocalized
 import com.mrboomdev.awery.utils.bannerOrPoster
 import com.mrboomdev.awery.utils.enumStateSaver
+import com.mrboomdev.awery.utils.episodesLocalized
+import com.mrboomdev.awery.utils.genres
+import com.mrboomdev.awery.utils.limit
 import com.mrboomdev.awery.utils.posterOrBanner
+import com.mrboomdev.awery.utils.statusLocalized
+import com.mrboomdev.awery.utils.tags
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -95,11 +108,10 @@ data class MediaRoute(
 @Composable
 fun MediaRoute.Companion.Content(
 	args: MediaRoute,
-	viewModel: MediaRouteViewModel = viewModel()
+	viewModel: MediaRouteViewModel = viewModel(factory = viewModelFactory { MediaRouteViewModel(args, it) })
 ) {
 	val navigation = LocalNavHostController.current
 	val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-	val currentTab = rememberSaveable(saver = enumStateSaver()) { mutableStateOf(args.initialTab) }
 	var didLoadBackgroundImage by remember { mutableStateOf(false) }
 	val backgroundColor by animateColorAsState(if(didLoadBackgroundImage) Color.Black else Color.Transparent)
 	
@@ -189,11 +201,11 @@ fun MediaRoute.Companion.Content(
 						.weight(1f),
 					contentPadding = WindowInsets.safeContent.only(
 						WindowInsetsSides.Top + WindowInsetsSides.Right + WindowInsetsSides.Bottom
-					).asPaddingValues() + PaddingValues(top = 16.dp, bottom = 16.dp)
+					).asPaddingValues() + PaddingValues(top = 16.dp, bottom = 64.dp)
 				) {
 					MediaRouteContent(
 						args = args,
-						currentTab = currentTab
+						viewModel = viewModel
 					)
 				}
 			}
@@ -201,9 +213,10 @@ fun MediaRoute.Companion.Content(
 	} else {
 		LazyColumn(
 			modifier = Modifier
-				.fillMaxSize()
+				.fillMaxSize(),
+			contentPadding = PaddingValues(bottom = 64.dp)
 		) {
-			if(currentTab.value != MediaRouteTab.INFO) {
+			if(viewModel.currentTab != MediaRouteTab.INFO) {
 				item("compactHero") {
 					Row(
 						modifier = Modifier
@@ -340,19 +353,19 @@ fun MediaRoute.Companion.Content(
 			
 			MediaRouteContent(
 				args = args,
-				currentTab = currentTab
+				viewModel = viewModel
 			)
 		}
 	}
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
 @Suppress("FunctionName")
 private fun LazyListScope.MediaRouteContent(
 	args: MediaRoute,
-	currentTab: MutableState<MediaRouteTab>
+	viewModel: MediaRouteViewModel
 ) {
-	if(currentTab.value == MediaRouteTab.INFO) {
+	if(viewModel.currentTab == MediaRouteTab.INFO) {
 		item("main_meta") {
 			Column(
 				modifier = Modifier
@@ -373,8 +386,11 @@ private fun LazyListScope.MediaRouteContent(
 					args.media.extras.also { extras ->
 						extras[CatalogMedia.EXTRA_COUNTRY]?.also { add(it) }
 						extras[CatalogMedia.EXTRA_AGE_RATING]?.also { add(it) }
+						args.media.statusLocalized?.also { add(it) }
+						args.media.ageRatingLocalized?.also { add(it) }
+						args.media.episodesLocalized?.also { add(it) }
 					}
-				}.also {
+				}.limit(3).also {
 					if(it.isNotEmpty()) {
 						Text(it.joinToString(" • "))
 					}
@@ -394,9 +410,7 @@ private fun LazyListScope.MediaRouteContent(
 						iconSize = 26.dp,
 						icon = painterResource(Res.drawable.ic_play_filled),
 						text = stringResource(Res.string.watch_now),
-						onClick = {
-							currentTab.value = MediaRouteTab.PLAY
-						}
+						onClick = { viewModel.currentTab = MediaRouteTab.PLAY }
 					)
 					
 					FilledIconButton(
@@ -452,13 +466,13 @@ private fun LazyListScope.MediaRouteContent(
 			SecondaryScrollableTabRow(
 				modifier = Modifier.fillMaxWidth(),
 				edgePadding = 16.dp,
-				selectedTabIndex = currentTab.value.ordinal,
+				selectedTabIndex = viewModel.currentTab.ordinal,
 				containerColor = Color.Transparent
 			) {
 				MediaRouteTab.entries.forEach { tab ->
 					Tab(
-						selected = currentTab.value == tab,
-						onClick = { currentTab.value = tab }
+						selected = viewModel.currentTab == tab,
+						onClick = { viewModel.currentTab = tab }
 					) {
 						Text(
 							modifier = Modifier.padding(
@@ -479,13 +493,46 @@ private fun LazyListScope.MediaRouteContent(
 		}
 	}
 	
-	when(currentTab.value) {
-		MediaRouteTab.INFO -> item("info") {
+	when(viewModel.currentTab) {
+		MediaRouteTab.INFO -> MediaRouteInfo(args, viewModel)
+		
+		MediaRouteTab.PLAY -> {
+			item {
+				Text("Watching episodes is not available at the time.")
+			}
+		}
+		
+		MediaRouteTab.COMMENTS -> {
+			item {
+				Text("Comments are not available at the time.")
+			}
+		}
+		
+		MediaRouteTab.RELATIONS -> {
+			item {
+				Text("Relations are not available at the time.")
+			}
+		}
+	}
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Suppress("FunctionName")
+fun LazyListScope.MediaRouteInfo(args: MediaRoute, viewModel: MediaRouteViewModel) {
+	item("info") {
+		var isThereAnyInfo = false
+		
+		Column(
+			verticalArrangement = Arrangement.spacedBy(8.dp)
+		) {
 			args.media.extras[CatalogMedia.EXTRA_DESCRIPTION]?.also { description ->
+				isThereAnyInfo = true
+				
 				ExpandableText(
 					modifier = Modifier
 						.fillMaxWidth()
 						.padding(16.dp)
+						.padding(top = 8.dp)
 						.animateItem(),
 					maxLines = 5,
 					text = description,
@@ -499,22 +546,108 @@ private fun LazyListScope.MediaRouteContent(
 					}
 				}
 			}
+			
+			args.media.genres?.also { genres ->
+				if(genres.isEmpty()) return@also
+				isThereAnyInfo = true
+				
+				Text(
+					modifier = Modifier.padding(horizontal = 16.dp),
+					style = MaterialTheme.typography.titleLarge,
+					fontWeight = FontWeight.SemiBold,
+					text = stringResource(Res.string.genres)
+				)
+				
+				FlowRow(
+					modifier = Modifier
+						.padding(horizontal = 16.dp)
+						.fillMaxWidth(),
+					horizontalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					for(genre in genres) {
+						SuggestionChip(
+							onClick = { /* TODO: Launch search screen with this genre as query */ },
+							label = { Text(genre) }
+						)
+					}
+				}
+			}
+			
+			args.media.tags?.also { tags ->
+				if(tags.isEmpty()) return@also
+				isThereAnyInfo = true
+				
+				Text(
+					modifier = Modifier.padding(horizontal = 16.dp),
+					style = MaterialTheme.typography.titleLarge,
+					fontWeight = FontWeight.SemiBold,
+					text = stringResource(Res.string.tags)
+				)
+				
+				FlowRow(
+					modifier = Modifier
+						.padding(horizontal = 16.dp)
+						.fillMaxWidth(),
+					horizontalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					var areThereSpoilers = false
+					
+					for(tag in tags) {
+						var showTag = !tag.isSpoiler
+						
+						if(tag.isSpoiler) {
+							areThereSpoilers = true
+							
+							if(viewModel.showSpoilers) {
+								showTag = true
+							}
+						}
+						
+						SuggestionChip(
+							onClick = { /* TODO: Launch search screen with this tag as query */ },
+							label = { Text(tag.name) }
+						)
+					}
+					
+					if(areThereSpoilers && !viewModel.showSpoilers) {
+						ElevatedAssistChip(
+							onClick = { viewModel.showSpoilers = true },
+							label = { Text(stringResource(Res.string.show_spoilers)) }
+						)
+					}
+				}
+			}
 		}
 		
-		MediaRouteTab.PLAY -> {
-			
-		}
-		
-		MediaRouteTab.COMMENTS -> {
-			
-		}
-		
-		MediaRouteTab.RELATIONS -> {
-			
+		if(!isThereAnyInfo) {
+			NoInfo()
 		}
 	}
 }
 
-class MediaRouteViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
+@Composable
+fun NoInfo() {
+	StateBox(
+		modifier = Modifier
+			.padding(horizontal = 32.dp, vertical = 64.dp)
+			.fillMaxWidth(),
+		title = stringResource(Res.string.nothing_found),
+		message = "There is no info that can be shown. Maybe after some time something will appear here. Or maybe not. Who knows."
+	)
+}
+
+class MediaRouteViewModel(
+	args: MediaRoute, 
+	savedStateHandle: SavedStateHandle
+): ViewModel() {
+	val episodes = mutableStateListOf<CatalogVideoFile>()
 	
+	var showSpoilers by savedStateHandle.saveable(
+		key = "showSpoilers"
+	) { mutableStateOf(false) }
+	
+	var currentTab by savedStateHandle.saveable(
+		key = "currentTab", 
+		saver = enumStateSaver()
+	) { mutableStateOf(args.initialTab) }
 }

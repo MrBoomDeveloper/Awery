@@ -4,6 +4,8 @@ import com.mrboomdev.awery.ext.data.CatalogMedia
 import com.mrboomdev.awery.ext.util.createGlobalId
 import com.mrboomdev.awery.sources.yomi.YomiSource
 import com.mrboomdev.awery.utils.arrayOfNotNull
+import com.mrboomdev.awery.utils.genres
+import com.mrboomdev.awery.utils.status
 import eu.kanade.tachiyomi.animesource.model.SAnime
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 

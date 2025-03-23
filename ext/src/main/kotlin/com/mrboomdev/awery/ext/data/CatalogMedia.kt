@@ -1,5 +1,11 @@
 package com.mrboomdev.awery.ext.data
 import com.mrboomdev.awery.ext.constants.AgeRating
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_BANNER
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_DESCRIPTION
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_EPISODES
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_POSTER
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_RATINGS
+import com.mrboomdev.awery.ext.data.CatalogMedia.Companion.EXTRA_TYPE
 import com.mrboomdev.awery.ext.util.GlobalId
 import kotlinx.serialization.json.Json
 import java.io.Serial
@@ -46,39 +52,6 @@ class CatalogMedia(
 	enum class Type {
 		MUSIC, VIDEO, POST, MOVIE, BOOK
 	}
-	
-	inline val status: Status?
-		get() = extras[EXTRA_STATUS]?.uppercase()?.let {
-			try { Status.valueOf(it) } catch(_: Throwable) { null } 
-		}
-	
-	inline val type: Type?
-		get() = when(extras[EXTRA_TYPE]?.lowercase()) {
-			"movie", "tv" -> Type.MOVIE
-			"book", "comic" -> Type.BOOK
-			"post" -> Type.POST
-			"video" -> Type.VIDEO
-			"music" -> Type.MUSIC
-			else -> null
-		}
-	
-	inline val authors: Array<String>?
-		get() = extras[EXTRA_AUTHORS]?.let {
-			Json.decodeFromString(it)
-		}
-	
-	inline val tags: Array<CatalogTag>?
-		get() = extras[EXTRA_TAGS]?.let {
-			Json.decodeFromString(it)
-		}
-	
-	inline val genres: Array<String>?
-		get() = extras[EXTRA_GENRES]?.let { 
-			Json.decodeFromString(it)
-		}
-	
-	inline val ageRating: AgeRating?
-		get() = extras[EXTRA_AGE_RATING]?.let { AgeRating.match(it) }
 
 	companion object {
 		@Serial

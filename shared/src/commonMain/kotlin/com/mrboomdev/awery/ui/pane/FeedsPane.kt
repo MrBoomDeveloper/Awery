@@ -29,7 +29,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mrboomdev.awery.ext.data.CatalogFeed
@@ -40,6 +39,7 @@ import com.mrboomdev.awery.sources.LoadedFeed
 import com.mrboomdev.awery.sources.loadAll
 import com.mrboomdev.awery.sources.processFeeds
 import com.mrboomdev.awery.ui.components.SmallCard
+import com.mrboomdev.awery.ui.components.StateBox
 import com.mrboomdev.awery.ui.utils.ScrollFixer
 import com.mrboomdev.awery.ui.utils.only
 import com.mrboomdev.awery.utils.UniqueIdGenerator
@@ -207,17 +207,10 @@ fun FeedsPane(
 						FeedsPaneLoadingState.Loading -> CircularProgressIndicator()
 						
 						FeedsPaneLoadingState.End -> {
-							Text(
-								fontWeight = FontWeight.SemiBold,
-								textAlign = TextAlign.Center,
-								style = MaterialTheme.typography.headlineMedium,
-								text = stringResource(Res.string.you_reached_end)
-							)
-							
-							Text(
-								modifier = Modifier.padding(12.dp),
-								textAlign = TextAlign.Center,
-								text = stringResource(Res.string.you_reached_end_description)
+							StateBox(
+								modifier = Modifier.fillMaxWidth(),
+								title = stringResource(Res.string.you_reached_end),
+								message = stringResource(Res.string.you_reached_end_description)
 							)
 						}
 					}

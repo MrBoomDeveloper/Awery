@@ -5,25 +5,16 @@ fun <E> List<E>.limit(max: Int): List<E> {
 		return emptyList()
 	}
 	
-	val list = if(size > max) {
-		ArrayList<E>(max)
-	} else {
-		return ArrayList(this)
+	if(max >= size) {
+		return toList()
 	}
 	
-	var index = 0
-	
-	for(item in this) {
-		list.add(item)
-		
-		index++
-		
-		if(index >= max) {
-			break
+	return buildList(max) {
+		for(item in this) {
+			add(item)
+			if(size >= max) break
 		}
 	}
-	
-	return list
 }
 
 /**
