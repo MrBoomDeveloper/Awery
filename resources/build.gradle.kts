@@ -4,18 +4,9 @@ plugins {
 	alias(libs.plugins.compose.compiler)
 }
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
-}
-
 kotlin {
-	jvmToolchain(17)
 	applyDefaultHierarchyTemplate()
-	
-	jvm {
-		withJava()
-	}
+	jvm()
 	
 	sourceSets {
 		commonMain.dependencies {
@@ -27,6 +18,6 @@ kotlin {
 }
 
 compose.resources {
-	packageOfResClass = "com.mrboomdev.awery.generated"
+	packageOfResClass = "com.mrboomdev.awery.resources"
 	publicResClass = true
 }

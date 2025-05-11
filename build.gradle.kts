@@ -1,13 +1,3 @@
-import com.mrboomdev.awery.gradle.ProjectVersion.generateVersionCode
-import com.mrboomdev.awery.gradle.ProjectVersion.getGitCommitHash
-
-buildscript {
-    repositories {
-		mavenCentral()
-        google()
-    }
-}
-
 plugins {
 	alias(libs.plugins.android.app) apply false
 	alias(libs.plugins.android.library) apply false
@@ -19,5 +9,12 @@ plugins {
 	alias(libs.plugins.buildkonfig) apply false
 }
 
-ext["versionCode"] = generateVersionCode().toString()
-ext["versionName"] = "${properties["awery.app.version"]}-${getGitCommitHash(project)}"
+fun getGitCommitHash(): String {
+	return project.providers.exec {
+		commandLine("git", "rev-parse", "--short", "HEAD")
+	}.standardOutput.asText.get().trim()
+}
+
+ext["gitCommitHash"] = getGitCommitHash().toString()
+ext["versionCode"] = properties["awery.app.versionCode"]!!.toString()
+ext["versionName"] = "${properties["awery.app.versionName"]!!}-${getGitCommitHash()}"
