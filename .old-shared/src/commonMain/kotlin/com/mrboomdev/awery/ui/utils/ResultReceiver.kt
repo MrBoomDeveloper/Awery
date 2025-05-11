@@ -10,9 +10,7 @@ import androidx.compose.runtime.remember
 
 private val requests = mutableStateMapOf<ResultReceiverRequest<*>, MutableList<ResultRequester<*>>>()
 
-class ResultReceiverRequest<T> {
-	
-}
+class ResultReceiverRequest<T>
 
 interface ResultRequester<T> {
 	var result: T?

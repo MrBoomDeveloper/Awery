@@ -1,4 +1,3 @@
 package com.mrboomdev.awery.core
 
-object Awery {
-}
+object Awery
