@@ -1,3 +1,3 @@
 package android.content
 
-abstract class Context {}
+abstract class Context
