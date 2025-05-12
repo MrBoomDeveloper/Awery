@@ -9,9 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun MainScreen(
+expect fun MainScreen(
     viewModel: MainScreenViewModel = viewModel()
-) = DefaultMainScreen(viewModel)
+)
 
 @Composable
 internal fun DefaultMainScreen(

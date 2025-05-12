@@ -1,4 +1,6 @@
 import com.android.build.api.dsl.androidLibrary
+import com.sun.jna.internal.ReflectionUtils.isDefault
+import org.codehaus.groovy.runtime.ArrayTypeUtils.dimension
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -12,6 +14,7 @@ kotlin {
     applyDefaultHierarchyTemplate()
     jvm("desktop")
 
+    @Suppress("UnstableApiUsage")
     androidLibrary {
         namespace = "com.mrboomdev.awery.ui"
         compileSdk = 35
@@ -20,8 +23,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.resources)
+            implementation(projects.core)
             implementation(projects.data)
+            implementation(projects.resources)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.compose.runtime)
             implementation(libs.compose.ui)
@@ -45,17 +49,14 @@ kotlin {
             implementation(libs.bundles.exoplayer)
             implementation(libs.accompanist.drawablepainter)
 
+            // Android TV
+            implementation(libs.compose.tv.foundation)
+            implementation(libs.compose.tv.material)
+
             // These artifacts are only supported on Android
             implementation(libs.coil.gif)
             implementation(libs.coil.video)
         }
-
-//        invokeWhenCreated("androidTv") {
-//            dependencies {
-//                implementation(libs.compose.tv.foundation)
-//                implementation(libs.compose.tv.material)
-//            }
-//        }
 
         val desktopMain by getting {
             dependencies {

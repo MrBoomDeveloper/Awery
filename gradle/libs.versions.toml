@@ -98,9 +98,6 @@ okhttp = ["okhttp", "okhttp-brotli", "okhttp-dnsoverhttps", "okhttp-logging"]
 exoplayer = ["media3-exoplayer", "media3-exoplayer-dash", "media3-exoplayer-hls", 
     "media3-datasource-okhttp", "media3-ui", "media3-session"]
 
-yomi = ["quickjs-android", "rx-java", "rx-android", "injekt", "jsoup", "ksoup",
-    "kotlinx-serialization-json", "kotlinx-serialization-json-okio", "kotlinx-coroutines-core"]
-
 [plugins]
 room = { id = "androidx.room", version.ref = "room" }
 android-app = { id = "com.android.application", version.ref = "agp" }

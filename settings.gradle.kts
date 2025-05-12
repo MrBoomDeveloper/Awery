@@ -50,5 +50,6 @@ include(
 include(
     ":extension:core-api",
     ":extension:platform-api",
-    ":extension:loaders"
+    ":extension:loaders",
+    ":extension:loaders:android-compat"
 )

@@ -27,8 +27,11 @@ kotlin {
             dependencies {
                 implementation(projects.core)
                 implementation(projects.ui)
-                implementation(projects.data)
                 implementation(projects.extension.loaders)
+
+                // Idk why, but gradle does not want to sync if these projects
+                // aren't declared here ._.
+                implementation(projects.data)
             }
         }
 
@@ -85,20 +88,7 @@ android {
         compose = true
     }
 
-    flavorDimensions += listOf("platform")
-
-    productFlavors {
-        register("mobile") {
-            isDefault = true
-            dimension = "platform"
-        }
-
-        register("tv") {
-            dimension = "platform"
-        }
-    }
-
-    @Suppress("UnstableApiUsage")
+    @Suppress("UnstableApiUsage", "WrongGradleMethod")
     androidResources {
         generateLocaleConfig = true
         localeFilters += rootProject.projectDir.resolve(

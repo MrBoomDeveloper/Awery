@@ -7,11 +7,15 @@ plugins {
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    jvm()
+    jvm("desktop")
 
     androidLibrary {
-        namespace = "com.mrboomdev.awery.extension.api"
+        namespace = "com.mrboomdev.awery.extension.loaders.androidcompat"
         compileSdk = 35
         minSdk = 25
+    }
+
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xexpect-actual-classes")
     }
 }
