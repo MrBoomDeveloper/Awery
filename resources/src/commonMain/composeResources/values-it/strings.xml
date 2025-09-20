@@ -206,12 +206,8 @@
     <string name="type_parent">Genitore</string>
     <string name="type_alternative">Alternativo</string>
     <string name="type_contains">Contiene</string>
-    <string name="read_on_dantotsu">Leggi su Awery</string>
-    <string name="watch_on_dantotsu">Guarda su Awery</string>
     <string name="continue_episode">"Continua: Episodio "</string>
     <string name="continue_chapter">"Continua: "</string>
-    <string name="episode">Episodio</string>
-    <string name="episodes">Episodi</string>
     <string name="just_released">- appena rilasciato!</string>
     <string name="checking_subscriptions_title">Controllo Abbonamenti</string>
     <string name="speed">Velocità</string>
@@ -375,8 +371,6 @@
     <string name="confirm">Conferma</string>
     <string name="subscribed_notification">Iscritto! Riceverai notifiche quando nuovi episodi vengono rilasciati su %1$s.</string>
     <string name="unsubscribed_notification">Disiscritto, non riceverai notifiche.</string>
-    <string name="episode_plural">Episodi</string>
-    <string name="episode_singular">Episodio</string>
     <string name="variant">Variante</string>
     <string name="purple">Viola</string>
     <string name="red">Rosso</string>

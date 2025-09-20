@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="episodes">एपिसोड्स</string>
     <string name="completed">पूर्ण झालेले</string>
     <string name="copy">कॉपी</string>
     <string name="empty_library_title">पुस्तकालय रिक्त आहे</string>
     <string name="empty_library_message">कॅटलॉग ब्राउझ करायला सुरू करा आणि नवीन गोष्टी येथे दिसू लागतील!</string>
     <string name="login">लॉगिन</string>
     <string name="logout">लॉगआउट</string>
-    <string name="english">इंग्रजी</string>
-    <string name="russian">रशियन</string>
-    <string name="japanese">जपानी</string>
-    <string name="chinese">चिनी</string>
-    <string name="korean">कोरियन</string>
-    <string name="us">यूएसए</string>
-    <string name="russia">रशिया</string>
-    <string name="japan">जपान</string>
-    <string name="china">चायना</string>
-    <string name="korea">कोरिया</string>
     <string name="global_excluded_tags">वैश्विक वगळलेले टॅग</string>
     <string name="back">मागे</string>
     <string name="home">मुख्यपृष्ठ</string>
-    <string name="anime">अ‍ॅनिमे</string>
-    <string name="manga">मंगा</string>
     <string name="info">माहिती</string>
     <string name="no_episodes_found">कोणतेही एपिसोड आढळले नाहीत. कृपया आपल्या क्वेरी आणि फिल्टर्स बदलून पाहा.</string>
     <string name="no_extensions_found">कोणत्याही एक्स्टेन्शन्स आढळले नाहीत. कृपया आपल्या क्वेरी आणि फिल्टर्स बदलून पाहा.</string>
@@ -224,11 +211,8 @@
     <string name="type_other">इतर</string>
     <string name="type_source">स्त्रोत</string>
     <string name="type_contains">असते</string>
-    <string name="read_on_dantotsu">अवेरि मध्ये वाचा</string>
-    <string name="watch_on_dantotsu">अवेरि मध्ये पाहा</string>
     <string name="continue_episode">"सतत : एपिसोड "</string>
     <string name="continue_chapter">"सतत : "</string>
-    <string name="episode">एपिसोड</string>
     <string name="duration">कालावधी</string>
     <string name="just_released">- नुकतेच रिलीज झाले!</string>
     <string name="checking_subscriptions_title">सदस्यत्व तपासत आहे</string>
@@ -262,17 +246,8 @@
     <string name="no_description_available">वर्णन उपलब्ध नाही</string>
     <string name="selected">निवडलेले</string>
     <string name="found">सापडले</string>
-    <string name="age">वय</string>
-    <string name="birthday">जन्मतारीख</string>
-    <string name="gender">लिंग</string>
-    <string name="male">पुरुष</string>
-    <string name="female">महिला</string>
     <string name="subscribed_notification">सदस्य झाले! नवीन एपिसोड रिलीज झाल्यावर सूचना मिळवता आहात %1$s वर.</string>
     <string name="unsubscribed_notification">सदस्यता रद्द केली, आपल्याला कोणत्याही सूचनांची प्राप्ती होणार नाही.</string>
-    <string name="episode_plural">एपिसोड्स</string>
-    <string name="episode_singular">एपिसोड</string>
-    <string name="chapter_singular">अध्याय</string>
-    <string name="chapter_plural">अध्याय</string>
     <string name="search_by_image">प्रतिमेने शोधा</string>
     <string name="similarity_text">सारखेपण: %1$s %%</string>
     <string name="time_range">%1$s पासून %2$s पर्यंत</string>

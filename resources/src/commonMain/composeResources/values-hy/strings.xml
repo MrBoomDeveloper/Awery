@@ -16,7 +16,6 @@
     <string name="no">Ոչ</string>
     <string name="confirm">Հաստատել</string>
     <string name="found">Գտնված</string>
-    <string name="chapter_plural">Գլուխներ</string>
     <string name="read_more">Կարդալ ավելին</string>
     <string name="read_less">Կարդալ պակաս</string>
     <string name="second_short">վ</string>
@@ -244,8 +243,6 @@
     <string name="list_updated">Ցուցակը թարմացվել է</string>
     <string name="deleted_from_list">Ցուցակից հեռացված է</string>
     <string name="type_contains">Բովանդակություն</string>
-    <string name="read_on_dantotsu">Կարդալ Awery-ում</string>
-    <string name="watch_on_dantotsu">Դիտել Awery-ում</string>
     <string name="continue_episode">"Շարունակել : Էպիզոդ "</string>
     <string name="continue_chapter">"Շարունակել : "</string>
     <string name="checking_for_update">Թարմացում ստուգում</string>
@@ -272,8 +269,6 @@
     <string name="type_summary">Նկարագրություն</string>
     <string name="type_other">Այլ</string>
     <string name="type_source">Ուղղված</string>
-    <string name="episode">Էպիզոդ</string>
-    <string name="episodes">Էպիզոդներ</string>
     <string name="duration">Տևողություն</string>
     <string name="just_released">- հենց նոր թողարկվել է!</string>
     <string name="checking_subscriptions_title">Ստուգում բաժանորդագրությունները</string>
@@ -304,16 +299,8 @@
     <string name="lets_go">Գնանք</string>
     <string name="no_description_available">Նկարագրություն չկա</string>
     <string name="selected">Ընտրված</string>
-    <string name="age">Տարիք</string>
-    <string name="birthday">Ծննդյան օր</string>
-    <string name="gender">Սեռ</string>
-    <string name="male">Արական</string>
-    <string name="female">Իգական</string>
     <string name="subscribed_notification">Բաժանորդագրված է! Ստանում եք ծանուցումներ, երբ նոր էպիզոդներ են թողարկվում %1$s-ում:</string>
     <string name="unsubscribed_notification">Ամփոփված է, դուք չեք ստանա ծանուցումներ:</string>
-    <string name="episode_plural">Սերիաներ</string>
-    <string name="episode_singular">Սերիա</string>
-    <string name="chapter_singular">Գլուխ</string>
     <string name="search_by_image">Փնտրել լուսանկարի միջոցով</string>
     <string name="similarity_text">Համապատասխանություն: %1$s %%</string>
     <string name="time_range">%1$s-ից %2$s</string>

@@ -285,12 +285,8 @@
     <string name="type_other">અન્ય</string>
     <string name="type_source">સ્રોત</string>
     <string name="type_contains">સમાવિષ્ટ</string>
-    <string name="read_on_dantotsu">એવરીમાં વાંચો</string>
-    <string name="watch_on_dantotsu">એવરીમાં જુઓ</string>
     <string name="continue_episode">"ચાલુ રાખો : એપિસોડ "</string>
     <string name="continue_chapter">"ચાલુ રાખો : "</string>
-    <string name="episode">એપિસોડ</string>
-    <string name="episodes">એપિસોડ્સ</string>
     <string name="duration">સમય</string>
     <string name="just_released">- હમણાં જ રિલીઝ થયું!</string>
     <string name="checking_subscriptions_title">સબ્સ્ક્રિપ્શન તપાસી રહ્યા છે</string>
@@ -328,10 +324,6 @@
     <string name="female">સ્ત્રી</string>
     <string name="subscribed_notification">સબ્સ્ક્રાઇબ કર્યું! %1$s પર નવા એપિસોડ્સ પ્રકાશિત થાય ત્યારે સૂચનાઓ પ્રાપ્ત કરી રહ્યા છો.</string>
     <string name="unsubscribed_notification">સબ્સ્ક્રાઇબ રદ કરવામાં આવ્યું, તમે કોઈ સૂચનાઓ પ્રાપ્ત નહીં કરો.</string>
-    <string name="episode_plural">અપિસોડો</string>
-    <string name="episode_singular">અપિસોડ</string>
-    <string name="chapter_singular">અધ્યાય</string>
-    <string name="chapter_plural">અધ્યાયો</string>
     <string name="search_by_image">છબી દ્વારા શોધો</string>
     <string name="similarity_text">સામાન્યતા: %1$s %%</string>
     <string name="time_range">%1$s થી %2$s</string>

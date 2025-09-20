@@ -3,20 +3,56 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.app)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
+    alias(composeLibs.plugins.multiplatform)
+    alias(composeLibs.plugins.compiler)
+    alias(composeLibs.plugins.hotReload)
+    alias(androidLibs.plugins.app)
+}
+
+fun getLocales(): Collection<String> {
+    return rootProject.projectDir.resolve(
+        "resources/src/commonMain/composeResources"
+    ).list()!!
+        .filter { it.startsWith("values") }
+        .map {
+            if(it == "values") "en"
+            else it.substringAfter("values-")
+        }
+}
+
+val generateAndroidLocaleConfig by tasks.registering {
+    val outputDir = layout.projectDirectory.dir("src/androidMain/res/xml")
+    val outputFile = outputDir.file("awery_generated_locales_config.xml")
+    val locales = getLocales()
+
+    // For task caching
+    inputs.property("locales", locales)
+    outputs.file(outputFile)
+
+    doLast {
+        outputDir.asFile.mkdirs()
+        outputFile.asFile.writeText(buildString {
+            appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
+            appendLine("""<locale-config xmlns:android="http://schemas.android.com/apk/res/android">""")
+
+            for(locale in locales) {
+                appendLine("""    <locale android:name="$locale" />""")
+            }
+
+            appendLine("""</locale-config>""")
+        })
+    }
 }
 
 kotlin {
-    applyDefaultHierarchyTemplate()
     jvm("desktop")
 
     androidTarget {
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget = JvmTarget.JVM_1_8
+                    jvmTarget = JvmTarget.JVM_11
                 }
             }
         }
@@ -29,33 +65,82 @@ kotlin {
                 implementation(projects.ui)
                 implementation(projects.extension.loaders)
 
-                // Idk why, but gradle does not want to sync if these projects
-                // aren't declared here ._.
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.filekit.core)
+                implementation(libs.filekit.dialogs)
+                implementation(libs.filekit.coil)
+                implementation(composeLibs.coil.compose)
+
+                // IDK why, but gradle don't want to sync
+                // if these projects aren't used here ._.
                 implementation(projects.data)
+                implementation(projects.resources)
+                implementation(projects.extension.sdk)
+                implementation(projects.extension.loaders.androidCompat)
             }
         }
 
         androidMain.dependencies {
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.splashscreen)
-            implementation(libs.compose.activity)
+            implementation(androidLibs.core)
+            implementation(androidLibs.appcompat)
+            implementation(androidLibs.splashscreen)
+            implementation(androidLibs.compose.activity)
+            implementation(androidLibs.material)
+            implementation("androidx.work:work-runtime-ktx:2.10.4")
         }
 
         val desktopMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
+                implementation(composeLibs.navigation.jetpack)
+                implementation(libs.kotlinx.coroutines.desktop)
+
+                implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.30.0-252.26252")
+                implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.30.0-252.26252")
+                
+                implementation(composeLibs.desktop.get().let { 
+                    "${it.group}:${it.name}:${it.version}"
+                }) {
+                    exclude(group = "org.jetbrains.compose.material")
+                }
+
+                // Native dialogs
+                implementation("com.github.milchreis:uibooster:1.21.1")
+                implementation("com.formdev:flatlaf-intellij-themes:3.6")
+                
+                // Just let's fix it. This is very fucked up.
+                runtimeOnly("org.jetbrains.compose.ui:ui-util-desktop:1.10.0-alpha01")
+
+                // For some fucking reason skiko isn't loaded by default
+                val osName = System.getProperty("os.name")
+                val osArch = System.getProperty("os.arch")
+
+                val targetOs = when {
+                    osName == "Mac OS X" -> "macos"
+                    osName.startsWith("Win") -> "windows"
+                    osName.startsWith("Linux") -> "linux"
+                    else -> throw UnsupportedOperationException("Unsupported platform $osName!")
+                }
+
+                val targetArch = when(osArch) {
+                    "x86_64", "amd64" -> "x64"
+                    "aarch64" -> "arm64"
+                    else -> throw UnsupportedOperationException("Unsupported cpu acrhitecture $osArch!")
+                }
+
+                runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-$targetOs-$targetArch:0.9.4.2")
             }
         }
     }
 }
 
 android {
-    namespace = properties["awery.packageName"].toString()
+    namespace = "com.mrboomdev.awery"
     compileSdk = properties["awery.sdk.target"].toString().toInt()
 
     defaultConfig {
-        applicationId = namespace
+        versionName = properties["awery.app.versionName"].toString()
+        versionCode = properties["awery.app.versionCode"].toString().toInt()
+        
         targetSdk = properties["awery.sdk.target"].toString().toInt()
         minSdk = properties["awery.sdk.min"].toString().toInt()
     }
@@ -66,10 +151,12 @@ android {
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            manifestPlaceholders["APP_NAME"] = "Awery Debug"
         }
 
         release {
             versionNameSuffix = "-release"
+            manifestPlaceholders["APP_NAME"] = "Awery"
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -78,7 +165,6 @@ android {
 
     buildFeatures {
         aidl = false
-        buildConfig = false
         dataBinding = false
         mlModelBinding = false
         prefab = false
@@ -86,30 +172,25 @@ android {
         shaders = false
         viewBinding = false
         compose = true
+
+        // Used to check whatever we are in the debug build or not
+        buildConfig = true
     }
 
-    @Suppress("UnstableApiUsage", "WrongGradleMethod")
+    @Suppress("UnstableApiUsage")
     androidResources {
-        generateLocaleConfig = true
-        localeFilters += rootProject.projectDir.resolve(
-            "resources/src/commonMain/composeResources"
-        ).list()
-            .filter { it.startsWith("values") }
-            .map {
-                if(it == "values") "en"
-                else it.substringAfter("values-")
-            }
+        localeFilters += getLocales()
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 compose.desktop {
     application {
-        mainClass = "com.mrboomdev.awery.MainKt"
+        mainClass = "com.mrboomdev.awery.app.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Msi)
@@ -126,4 +207,8 @@ compose.desktop {
             }
         }
     }
+}
+
+tasks.named("preBuild") {
+    dependsOn(generateAndroidLocaleConfig)
 }

@@ -271,12 +271,8 @@
     <string name="type_other">Inne</string>
     <string name="type_source">Źródło</string>
     <string name="type_contains">Zawiera</string>
-    <string name="read_on_dantotsu">Czytaj w Awery</string>
-    <string name="watch_on_dantotsu">Oglądaj w Awery</string>
     <string name="continue_episode">"Kontynuuj: Odcinek "</string>
     <string name="continue_chapter">"Kontynuuj: "</string>
-    <string name="episode">Odcinek</string>
-    <string name="episodes">Odcinki</string>
     <string name="duration">Czas trwania</string>
     <string name="just_released">- właśnie wydane!</string>
     <string name="checking_subscriptions_title">Sprawdzanie subskrypcji</string>
@@ -311,10 +307,6 @@
     <string name="female">Kobieta</string>
     <string name="subscribed_notification">Subskrybowano! Otrzymasz powiadomienia o nowych odcinkach na %1$s.</string>
     <string name="unsubscribed_notification">Wypisano, nie będziesz otrzymywać żadnych powiadomień.</string>
-    <string name="episode_plural">Odcinki</string>
-    <string name="episode_singular">Odcinek</string>
-    <string name="chapter_singular">Rozdział</string>
-    <string name="chapter_plural">Rozdziały</string>
     <string name="search_by_image">Szukaj według obrazu</string>
     <string name="similarity_text">Podobieństwo: %1$s %%</string>
     <string name="time_range">Od %1$s do %2$s</string>

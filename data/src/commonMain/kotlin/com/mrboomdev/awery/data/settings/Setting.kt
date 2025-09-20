@@ -1,17 +1,20 @@
 package com.mrboomdev.awery.data.settings
 
+import androidx.compose.runtime.FloatState
 import androidx.compose.runtime.IntState
+import androidx.compose.runtime.LongState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.mrboomdev.awery.core.utils.toEnumOrNull
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.set
 
-internal expect fun platformSettings(): ObservableSettings
-
 @PublishedApi
-internal val settingsImpl by lazy { platformSettings() }
+internal val settings by lazy { createSettings() }
+internal expect fun createSettings(): ObservableSettings
 
 sealed interface Setting<T> {
     val key: String
@@ -27,10 +30,10 @@ class EnumSetting<T: Enum<T>>(
     private val _state = mutableStateOf(value)
     override val state: State<T> = _state
 
-    override var value: T
-        get() = settingsImpl.getString(key, initialValue.name).toEnumOrNull(initialValue::class) ?: initialValue
+    override var value
+        get() = settings.getString(key, initialValue.name).toEnumOrNull(initialValue::class) ?: initialValue
         set(value) {
-            settingsImpl[key] = value.name
+            settings[key] = value.name
             _state.value = value
         }
 }
@@ -42,10 +45,10 @@ class StringSetting(
     private val _state = mutableStateOf(value)
     override val state: State<String> = _state
 
-    override var value: String
-        get() = settingsImpl.getString(key, initialValue)
+    override var value
+        get() = settings.getString(key, initialValue)
         set(value) {
-            settingsImpl[key] = value
+            settings[key] = value
             _state.value = value
         }
 }
@@ -57,12 +60,16 @@ class BooleanSetting(
     private val _state = mutableStateOf(value)
     override val state: State<Boolean> = _state
 
-    override var value: Boolean
-        get() = settingsImpl.getBoolean(key, initialValue)
+    override var value
+        get() = settings.getBoolean(key, initialValue)
         set(value) {
-            settingsImpl[key] = value
+            settings[key] = value
             _state.value = value
         }
+    
+    fun toggle() {
+        value = !value
+    }
 }
 
 class IntSetting(
@@ -72,10 +79,25 @@ class IntSetting(
     private val _state = mutableIntStateOf(value)
     override val state: IntState = _state
 
-    override var value: Int
-        get() = settingsImpl.getInt(key, initialValue)
+    override var value
+        get() = settings.getInt(key, initialValue)
         set(value) {
-            settingsImpl[key] = value
+            settings[key] = value
             _state.intValue = value
+        }
+}
+
+class LongSetting(
+    override val key: String,
+    override val initialValue: Long
+): Setting<Long> {
+    private val _state = mutableLongStateOf(value)
+    override val state: LongState = _state
+
+    override var value
+        get() = settings.getLong(key, initialValue)
+        set(value) {
+            settings[key] = value
+            _state.longValue = value
         }
 }

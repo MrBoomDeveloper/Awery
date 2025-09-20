@@ -1,0 +1,38 @@
+package com.mrboomdev.awery.ui.utils
+
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.runtime.Composable
+
+/**
+ * Adds a single item to the [LazyListScope].
+ *
+ * This is a convenience function that simplifies adding a single item with a key.
+ * The `key` is used for both the item's key and its content type.
+ *
+ * @param key A stable and unique key representing the item.
+ * @param content The composable content of the item.
+ */
+fun LazyListScope.singleItem(
+    key: String,
+    content: @Composable LazyItemScope.() -> Unit = {}
+) = item(key, key, content)
+
+/**
+ * Adds a single item to the [LazyGridScope].
+ *
+ * This is a convenience function that simplifies adding a single item with a specific key.
+ *
+ * @param key A stable and unique key representing the item.
+ * @param span A lambda to define the span of the item. Defaults to occupying the maximum line span.
+ * @param content The composable content of the item.
+ */
+fun LazyGridScope.singleItem(
+    key: String,
+    span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
+    content: @Composable LazyGridItemScope.() -> Unit = {}
+) = item(key, span, key, content)

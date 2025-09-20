@@ -54,7 +54,6 @@
     <string name="outline_sub_color">Outline na Kulay ng Subtitle</string>
     <string name="male">Lalaki</string>
     <string name="female">Babae</string>
-    <string name="episode_plural">Mga Episode</string>
     <string name="android12_requires">Kailangan ang Android 12+</string>
     <string name="create">Lumikha</string>
     <string name="create_list">Lumikha ng bagong listahan</string>
@@ -280,10 +279,6 @@
     <string name="continue_episode">"Ipagpatuloy : Episode "</string>
     <string name="continue_chapter">"Ipagpatuloy : "</string>
     <string name="type_contains">Naglalaman ng</string>
-    <string name="episode">Episode</string>
-    <string name="read_on_dantotsu">Basahin sa Awery</string>
-    <string name="watch_on_dantotsu">Panuorin sa Awery</string>
-    <string name="episodes">Mga Episode</string>
     <string name="duration">Tagal</string>
     <string name="just_released">- bagong labas!</string>
     <string name="speed">Bilis</string>
@@ -319,9 +314,6 @@
     <string name="gender">Kasarian</string>
     <string name="subscribed_notification">Nakasuha! Tumanggap ng mga notification kapag may mga bagong episode na inilabas sa %1$s.</string>
     <string name="unsubscribed_notification">Nag-unsubscribe, hindi ka na makakatanggap ng mga notification.</string>
-    <string name="episode_singular">Kabanata</string>
-    <string name="chapter_singular">Kabanata</string>
-    <string name="chapter_plural">Mga Kabanata</string>
     <string name="search_by_image">Maghanap sa Larawan</string>
     <string name="similarity_text">Pagkakatulad: %1$s %%</string>
     <string name="time_range">Mula %1$s hanggang %2$s</string>

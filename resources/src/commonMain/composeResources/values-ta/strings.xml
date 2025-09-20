@@ -109,7 +109,6 @@
     <string name="rate_limited_detailed">You have exceed the rate limit, please try again later.</string>
     <string name="select_tracker">Select a tracker</string>
     <string name="no_update_found">புதுப்பிப்பு எதுவும் கிடைக்கவில்லை</string>
-    <string name="read_on_dantotsu">Read in Awery</string>
     <string name="error_loading_data">Error loading data %1$s</string>
     <string name="unsubscribed_notification">Unsubscribed, you will not receive any notifications.</string>
     <string name="adult_content_description">Not safe for kids.</string>
@@ -162,7 +161,6 @@
     <string name="second_short">s</string>
     <string name="secondary_sub_outline_type_select">Subtitle Outline Type</string>
     <string name="fast_forward">Fast Forward</string>
-    <string name="chapter_plural">அத்தியாயங்கள்</string>
     <string name="secondary_sub_color_select">Subtitle Outline Color</string>
     <string name="failed_to_bypass">Failed to bypass %s</string>
     <string name="select_title">Select a title</string>
@@ -251,7 +249,6 @@
     <string name="incognito_will_not_update">Incognito mode will still ignore progress.</string>
     <string name="aspect_ratio">Aspect Ratio</string>
     <string name="fit">Fit</string>
-    <string name="watch_on_dantotsu">Watch in Awery</string>
     <string name="immersive_mode_info">Requires App restart to fully apply.</string>
     <string name="version">பதிப்பு</string>
     <string name="searching_for">%s ஐத் தேடுங்கள்</string>
@@ -275,7 +272,6 @@
     <string name="other">மற்றொன்று</string>
     <string name="something_went_wrong">Something just went wrong!</string>
     <string name="previous_season">Previous Season</string>
-    <string name="episode_singular">அத்தியாயம்</string>
     <string name="account">கணக்கு</string>
     <string name="no_access_detailed">You have no access to this resource, try logging into your account and try again.</string>
     <string name="gesture_mode">Gesture Mode</string>
@@ -322,7 +318,6 @@
     <string name="recently_updated">சமீபத்தில் புதுப்பிக்கப்பட்டது</string>
     <string name="read">படிக்க</string>
     <string name="bookmark">அடையாளக்குறி</string>
-    <string name="episode">அத்தியாயம்</string>
     <string name="show_only_it">Show only it</string>
     <string name="telegram_group">தந்தி குழு</string>
     <string name="extension_load_failed">Failed to load an extension!</string>
@@ -452,7 +447,6 @@
     <string name="always_continue">Always Continue from where you left off</string>
     <string name="list_name">List name</string>
     <string name="gestures">Volume &amp; Brightness Gestures</string>
-    <string name="episode_plural">அத்தியாயங்கள்</string>
     <string name="planning_read">Planned to read</string>
     <string name="connection_error">Connection error has occurred, please try again later</string>
     <string name="share">பங்கு</string>
@@ -488,7 +482,6 @@
     <string name="skip_time">Skip Time</string>
     <string name="no_title">No title</string>
     <string name="repository_url">களஞ்சிய முகவரி</string>
-    <string name="episodes">அத்தியாயங்கள்</string>
     <string name="dropped">Dropped</string>
     <string name="subtitles">வசன வரிகள்</string>
     <string name="behaviour">நடத்தை</string>

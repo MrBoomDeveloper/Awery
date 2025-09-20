@@ -250,12 +250,8 @@
     <string name="type_other">Andere</string>
     <string name="type_source">Quelle</string>
     <string name="type_contains">Enthält</string>
-    <string name="read_on_dantotsu">In Awery lesen</string>
-    <string name="watch_on_dantotsu">In Awery ansehen</string>
     <string name="continue_episode">"„Fortsetzen: Episode “ "</string>
     <string name="continue_chapter">"„Fortsetzen: “ "</string>
-    <string name="episode">Episode</string>
-    <string name="episodes">Episoden</string>
     <string name="duration">Dauer</string>
     <string name="just_released">- gerade veröffentlicht!</string>
     <string name="checking_subscriptions_title">Abonnements prüfen</string>
@@ -288,17 +284,8 @@
     <string name="no_description_available">„Keine Beschreibung verfügbar“</string>
     <string name="selected">Ausgewählt</string>
     <string name="found">Gefunden</string>
-    <string name="age">Alter</string>
-    <string name="birthday">Geburtstag</string>
-    <string name="gender">Geschlecht</string>
-    <string name="male">Männlich</string>
-    <string name="female">Weiblich</string>
     <string name="subscribed_notification">Abonniert! Erhält Benachrichtigungen, wenn neue Episoden auf %1$s veröffentlicht werden.</string>
     <string name="unsubscribed_notification">Abbestellt, Sie erhalten keine Benachrichtigungen mehr.</string>
-    <string name="episode_plural">Episoden</string>
-    <string name="episode_singular">Episode</string>
-    <string name="chapter_singular">Kapitel</string>
-    <string name="chapter_plural">Kapitel</string>
     <string name="search_by_image">Suche nach Bild</string>
     <string name="similarity_text">Ähnlichkeit: %1$s %%</string>
     <string name="time_range">Von %1$s bis %2$s</string>
@@ -491,11 +478,6 @@
     <string name="download">Herunterladen</string>
     <string name="welcome_to_app_description">Die perfekte App, in der Sie alles anpassen können, mit Tonnen von Features und einem stilvollen Look.</string>
     <string name="analytics_title">Analytik</string>
-    <string name="generic_message">In dieser Beta-Version können Sie Erweiterungen nicht direkt über die App installieren :(\nDerzeit können Sie sie auf unserer:\nDiscord Server: %1$s\nTelegrammkanal: %2$s</string>
-    <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">Die Dantotsu Vorlage erfordert einige Erweiterungen zu arbeiten.\nIn dieser Beta-Version können Sie Erweiterungen nicht direkt über die App installieren :(\nDerzeit können Sie sie auf unserer:\nDiscord Server: %1$s\nTelegrammkanal: %2$s</string>
-    <string name="existing_custom_tabs_title">Benutzerdefinierte Registerkarten gefunden</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
     <string name="automatically_send_reports">Crashberichte automatisch senden</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>

@@ -1,1 +1,0 @@
--dontwarn java.beans.*

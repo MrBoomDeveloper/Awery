@@ -34,8 +34,6 @@
     <string name="started_downloading">ডাউনলোড শুরু হয়েছে\n%1$s</string>
     <string name="loading_image_failed">ইমেজ লোড করতে ব্যর্থ</string>
     <string name="type_contains">অন্তর্ভুক্ত</string>
-    <string name="read_on_dantotsu">অ্যাওরিতে পড়ুন</string>
-    <string name="watch_on_dantotsu">অ্যাওরিতে দেখুন</string>
     <string name="available">উপলব্ধ</string>
     <string name="lets_go">চলুন</string>
     <string name="zoom">জুম</string>
@@ -271,8 +269,6 @@
     <string name="type_source">সূত্র</string>
     <string name="continue_episode">"চালিয়ে যান : পর্ব "</string>
     <string name="continue_chapter">"চালিয়ে যান : "</string>
-    <string name="episode">পর্ব</string>
-    <string name="episodes">পর্বগুলি</string>
     <string name="duration">মেয়াদ</string>
     <string name="just_released">- সদ্য মুক্তি পেয়েছে!</string>
     <string name="checking_subscriptions_title">সাবস্ক্রিপশন যাচাই করা হচ্ছে</string>
@@ -304,17 +300,8 @@
     <string name="no_description_available">বর্ণনা উপলব্ধ নয়</string>
     <string name="selected">নির্বাচিত</string>
     <string name="found">মেলেছে</string>
-    <string name="age">বয়স</string>
-    <string name="birthday">জন্মদিন</string>
-    <string name="gender">লিঙ্গ</string>
-    <string name="male">পুরুষ</string>
-    <string name="female">মহিলা</string>
     <string name="subscribed_notification">সাবস্ক্রাইব করা হয়েছে! %1$s-এ নতুন পর্ব মুক্তির সময় বিজ্ঞপ্তি পাবেন।</string>
     <string name="unsubscribed_notification">অসাবস্ক্রাইব করা হয়েছে, আপনি আর কোনো বিজ্ঞপ্তি পাবেন না।</string>
-    <string name="episode_plural">পর্বগুলি</string>
-    <string name="episode_singular">পর্ব</string>
-    <string name="chapter_singular">অধ্যায়</string>
-    <string name="chapter_plural">অধ্যায়গুলি</string>
     <string name="search_by_image">চিত্র দ্বারা অনুসন্ধান</string>
     <string name="similarity_text">সামঞ্জস্য: %1$s %%</string>
     <string name="time_range">%1$s থেকে %2$s</string>

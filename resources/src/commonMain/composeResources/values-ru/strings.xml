@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="chapters">
+        <!-- TODO: Протестить все варианты -->
+        <item quantity="one">%1$d Глава</item>
+        <item quantity="two">%1$d Главы</item>
+        <item quantity="other">%1$d Глав</item>
+    </plurals>
+
+    <plurals name="episodes">
+        <!-- TODO: Протестить все варианты -->
+        <item quantity="one">%1$d Эпизод</item>
+        <item quantity="two">%1$d Эпизода</item>
+        <item quantity="other">%1$d Эпизодов</item>
+    </plurals>
+    
     <string name="empty_library_title">Библиотека пуста</string>
     <string name="empty_library_message">Начните просматривать каталог, и новые элементы появятся здесь!</string>
     <string name="no_comment_extensions">У вас нет установленных расширений для комментариев. Загрузите их, чтобы увидеть что-то новое!</string>
@@ -11,20 +25,8 @@
     <string name="back">Назад</string>
     <string name="logout">Выйти</string>
     <string name="global_excluded_tags">Глобально исключенные теги</string>
-    <string name="english">Английский</string>
-    <string name="russian">Русский</string>
-    <string name="japanese">Японский</string>
-    <string name="chinese">Китайский</string>
-    <string name="korean">Корейский</string>
-    <string name="us">США</string>
-    <string name="russia">Россия</string>
-    <string name="japan">Япония</string>
-    <string name="china">Китай</string>
-    <string name="korea">Корея</string>
     <string name="content">Контент</string>
     <string name="home">Главная</string>
-    <string name="anime">Аниме</string>
-    <string name="manga">Манга</string>
     <string name="info">Информация</string>
     <string name="watch">Смотреть</string>
     <string name="watch_now">Смотреть сейчас</string>
@@ -253,12 +255,8 @@
     <string name="type_other">Другое</string>
     <string name="type_source">Источник</string>
     <string name="type_contains">Содержит</string>
-    <string name="read_on_dantotsu">Читать в Awery</string>
-    <string name="watch_on_dantotsu">Смотреть в Awery</string>
     <string name="continue_episode">"Продолжить: Эпизод "</string>
     <string name="continue_chapter">"Продолжить: "</string>
-    <string name="episode">Эпизод</string>
-    <string name="episodes">Эпизоды</string>
     <string name="duration">Продолжительность</string>
     <string name="just_released">- только что вышло!</string>
     <string name="checking_subscriptions_title">Проверка подписок</string>
@@ -283,9 +281,6 @@
     <string name="no_description_available">Описание недоступно</string>
     <string name="selected">Выбрано</string>
     <string name="found">Найдено</string>
-    <string name="age">Возраст</string>
-    <string name="birthday">День рождения</string>
-    <string name="gender">Пол</string>
     <string name="not_implemented">Функция не реализована!</string>
     <string name="timed_out">Время подключения истекло!</string>
     <string name="failed_handshake">Не удалось подключиться к серверу!</string>
@@ -294,14 +289,8 @@
     <string name="too_much_requests">Слишком много запросов!</string>
     <string name="something_went_wrong">Что-то пошло не так!</string>
     <string name="not_found_detailed">Запрашиваемый ресурс не существует!</string>
-    <string name="male">Мужской</string>
-    <string name="female">Женский</string>
     <string name="subscribed_notification">Подписано! Получаете уведомления о новых эпизодах на %1$s.</string>
     <string name="unsubscribed_notification">Отписано, вы не будете получать уведомления.</string>
-    <string name="episode_plural">Эпизоды</string>
-    <string name="episode_singular">Эпизод</string>
-    <string name="chapter_singular">Глава</string>
-    <string name="chapter_plural">Главы</string>
     <string name="search_by_image">Поиск по изображению</string>
     <string name="similarity_text">Сходство: %1$s %%</string>
     <string name="time_range">С %1$s по %2$s</string>

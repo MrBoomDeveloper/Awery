@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="japanese">ญี่ปุ่น</string>
-    <string name="chinese">จีน</string>
-    <string name="korean">เกาหลี</string>
-    <string name="us">สหรัฐอเมริกา</string>
-    <string name="russia">รัสเซีย</string>
-    <string name="japan">ญี่ปุ่น</string>
-    <string name="china">จีน</string>
-    <string name="korea">เกาหลี</string>
     <string name="global_excluded_tags">แท็กที่ยกเว้นทั่วโลก</string>
     <string name="back">กลับ</string>
     <string name="home">หน้าหลัก</string>
-    <string name="anime">อนิเมะ</string>
-    <string name="manga">มังงะ</string>
     <string name="info">ข้อมูล</string>
     <string name="watch">ดู</string>
     <string name="watch_now">ดูเดี๋ยวนี้</string>
@@ -206,16 +196,8 @@
     <string name="no_description_available">ไม่มีคำอธิบาย</string>
     <string name="selected">เลือกแล้ว</string>
     <string name="found">พบ</string>
-    <string name="age">อายุ</string>
-    <string name="birthday">วันเกิด</string>
-    <string name="gender">เพศ</string>
-    <string name="male">ชาย</string>
-    <string name="female">หญิง</string>
     <string name="subscribed_notification">สมัครสมาชิกแล้ว! รับการแจ้งเตือนเมื่อมีตอนใหม่วางจำหน่ายบน %1$s.</string>
     <string name="unsubscribed_notification">ยกเลิกการสมัครสมาชิกแล้ว คุณจะไม่รับการแจ้งเตือนอีกต่อไป</string>
-    <string name="episode_plural">ตอน</string>
-    <string name="episode_singular">ตอน</string>
-    <string name="chapter_singular">บท</string>
     <string name="default_video_quality">คุณภาพวิดีโอเริ่มต้น</string>
     <string name="nothing_found">ไม่พบอะไร</string>
     <string name="tried_all_titles">ลองทุกชื่อสื่อแล้ว ไม่พบ!</string>
@@ -381,12 +363,8 @@
     <string name="type_other">อื่นๆ</string>
     <string name="type_source">แหล่งที่มา</string>
     <string name="type_contains">มี</string>
-    <string name="read_on_dantotsu">อ่านใน Awery</string>
-    <string name="watch_on_dantotsu">ดูใน Awery</string>
     <string name="continue_episode">"ดำเนินการต่อ : ตอน "</string>
     <string name="continue_chapter">"ดำเนินการต่อ : "</string>
-    <string name="episode">ตอน</string>
-    <string name="episodes">ตอน</string>
     <string name="duration">ระยะเวลา</string>
     <string name="just_released">- เพิ่งวางจำหน่าย!</string>
     <string name="checking_subscriptions_title">กำลังตรวจสอบการสมัครสมาชิก</string>

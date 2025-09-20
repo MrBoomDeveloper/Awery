@@ -5,43 +5,42 @@ import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.buildkonfig)
+    alias(androidLibs.plugins.library)
 }
 
 kotlin {
-    applyDefaultHierarchyTemplate()
     jvm("desktop")
 
+    @Suppress("UnstableApiUsage")
     androidLibrary {
         namespace = "com.mrboomdev.awery.core"
         compileSdk = 35
         minSdk = 25
     }
+
+    compilerOptions {
+        freeCompilerArgs = listOf(
+            "-Xexpect-actual-classes"
+        )
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlin.reflect)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+
+            api(libs.ktor.client.core)
+            implementation(libs.filekit.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.encoding)
+
+            implementation(libs.fileKache)
+        }
+
+        androidMain.dependencies {
+            implementation(androidLibs.core)
+            implementation(androidLibs.browser)
+        }
+    }
 }
-
-buildkonfig {
-    packageName = "com.mrboomdev.awery.generated"
-    exposeObjectWithName = "BuildKonfig"
-
-    defaultConfigs {
-        field("CHANNEL", "STABLE")
-        field("GIT_COMMIT", rootProject.ext["gitCommitHash"]!!.toString())
-        field("VERSION_NAME", rootProject.ext["versionName"]!!.toString())
-        field("VERSION_CODE", rootProject.ext["versionCode"]!!.toString().toInt())
-    }
-
-    defaultConfigs("alpha") {
-        field("CHANNEL", "ALPHA")
-    }
-
-    defaultConfigs("beta") {
-        field("CHANNEL", "BETA")
-    }
-}
-
-fun TargetConfigDsl.field(name: String, value: String) =
-    buildConfigField(STRING, name, value, const = true)
-
-fun TargetConfigDsl.field(name: String, value: Int) =
-    buildConfigField(INT, name, value.toString(), const = true)

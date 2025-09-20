@@ -285,12 +285,8 @@
     <string name="type_contains">अन्तर्भूतम्</string>
     <string name="type_other">अन्यत्</string>
     <string name="type_source">स्रोतः</string>
-    <string name="read_on_dantotsu">आवेरी मध्ये पठतु</string>
-    <string name="watch_on_dantotsu">आवेरी मध्ये पश्यतु</string>
     <string name="continue_episode">"यथावत् : एपिसोडः "</string>
     <string name="continue_chapter">"यथावत् : "</string>
-    <string name="episode">एपिसोडः</string>
-    <string name="episodes">एपिसोडः</string>
     <string name="duration">कालावधिः</string>
     <string name="just_released">- अभी प्रकाश्यम्!</string>
     <string name="checking_subscriptions_title">सदस्यताम् जाँचयति</string>
@@ -316,17 +312,8 @@
     <string name="no_description_available">विवरणम् न उपलब्धम्</string>
     <string name="selected">चयितम्</string>
     <string name="found">लभ्यते</string>
-    <string name="age">वयः</string>
-    <string name="birthday">जन्मदिवसः</string>
-    <string name="gender">लिङ्गः</string>
-    <string name="male">पुंस</string>
-    <string name="female">स्त्री</string>
     <string name="subscribed_notification">सदस्यः! नूतनपद्यम् प्रकाशिते सूचनाः प्राप्नोति %1$s.</string>
     <string name="unsubscribed_notification">सदस्यत्वं न अस्ति, सूचनाः न प्राप्स्यसि.</string>
-    <string name="episode_plural">एपिसोडाः</string>
-    <string name="episode_singular">अध्यायः</string>
-    <string name="chapter_singular">अध्यायः</string>
-    <string name="chapter_plural">अध्यायाः</string>
     <string name="search_by_image">छायया शोधय</string>
     <string name="similarity_text">समानता: %1$s %%</string>
     <string name="time_range">%1$s तः %2$s यावत्</string>
@@ -492,10 +479,7 @@
     <string name="app_name" translatable="false">Awery</string>
     <string name="existing_custom_tabs_title">विद्यमानानि कस्टम टॅब्स् मिलितानि</string>
     <string name="existing_custom_tabs_message">एकां रूपरेखां उपयोगितुं, अस्मिन वयं सर्वेण सह तव कस्टम टॅब्स् फीड्स् च विलोपयितुम् अर्हामः। यदा त्वं तत् न इच्छसि, तर्हि \'नैकं\' चयनय।</string>
-    <string name="analytics_message">TODO</string>
     <string name="analytics_title">विश्लेषणम्</string>
-    <string name="generic_message">अस्मिन बीटा संस्करणे, त्वं अनुप्रयोगेण विस्तारकाणि प्रत्यक्षतया स्थापयितुम् अर्हसि न। :(\nवर्तमानकाले त्वं तान् अद्यतनं कर्तुं अस्मिनः:\nDiscord सर्वरः: %1$s\nTelegram चॅनेलः: %2$s</string>
-    <string name="dantotsu_message">Dantotsu रूपरेखा कार्य करने हेतु किञ्चित् विस्तारकाणि आवश्यकानि सन्ति।\nअस्मिन् बीटा संस्करणे, त्वं अनुप्रयोगेण विस्तारकानि प्रत्यक्षतया स्थापयितुम् अर्हसि न। :(\nवर्तमानकाले त्वं तान् अद्यतनं कर्तुं अस्मिनः:\nDiscord सर्वरः: %1$s\nTelegram चॅनेलः: %2$s</string>
     <string name="automatically_send_reports">स्वचालितं दुर्घटनासंस्कारवृत्तान्तानि प्रेषय</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>

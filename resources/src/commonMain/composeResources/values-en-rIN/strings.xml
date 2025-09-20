@@ -332,8 +332,6 @@
     <string name="watch_on_dantotsu">Awery mein Dekho</string>
     <string name="continue_episode">"Continue karo : Episode "</string>
     <string name="continue_chapter">"Continue karo : "</string>
-    <string name="episode">Episode</string>
-    <string name="episodes">Episodes</string>
     <string name="duration">Avadhi</string>
     <string name="just_released">- abhi release hua!</string>
     <string name="checking_subscriptions_title">Subscription jaanche</string>
@@ -361,10 +359,6 @@
     <string name="gender">Ling</string>
     <string name="subscribed_notification">Subscribed! Naye episodes jab %1$s par aayenge, tab suuchna milegi.</string>
     <string name="unsubscribed_notification">Unsubscribed, ab aapko suuchna nahi milegi.</string>
-    <string name="episode_plural">Episodes</string>
-    <string name="episode_singular">Episode</string>
-    <string name="chapter_singular">Adhyaay</string>
-    <string name="chapter_plural">Adhyaay</string>
     <string name="search_by_image">Chhavi ke anusaar khojein</string>
     <string name="similarity_text">Samanata: %1$s %%</string>
     <string name="time_range">%1$s se lekar %2$s tak</string>

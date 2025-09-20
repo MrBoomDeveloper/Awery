@@ -255,12 +255,8 @@
     <string name="type_other">Overig</string>
     <string name="type_source">Bron</string>
     <string name="type_contains">Bevat</string>
-    <string name="read_on_dantotsu">Lees in Awery</string>
-    <string name="watch_on_dantotsu">Kijk in Awery</string>
     <string name="continue_episode">"Doorgaan: Aflevering "</string>
     <string name="continue_chapter">"Doorgaan: "</string>
-    <string name="episode">Aflevering</string>
-    <string name="episodes">Afleveringen</string>
     <string name="duration">Duur</string>
     <string name="just_released">- net uitgebracht!</string>
     <string name="checking_subscriptions_title">Abonnementen Controleren</string>
@@ -294,17 +290,8 @@
     <string name="no_description_available">Geen Beschrijving Beschikbaar</string>
     <string name="selected">Geselecteerd</string>
     <string name="found">Gevonden</string>
-    <string name="age">Leeftijd</string>
-    <string name="birthday">Verjaardag</string>
-    <string name="gender">Geslacht</string>
-    <string name="male">Man</string>
-    <string name="female">Vrouw</string>
     <string name="subscribed_notification">Geabonneerd! Ontvang meldingen wanneer nieuwe afleveringen worden uitgebracht op %1$s.</string>
     <string name="unsubscribed_notification">U bent uitgeschreven, u ontvangt geen meldingen meer.</string>
-    <string name="episode_plural">Afleveringen</string>
-    <string name="episode_singular">Aflevering</string>
-    <string name="chapter_singular">Hoofdstuk</string>
-    <string name="chapter_plural">Hoofdstukken</string>
     <string name="search_by_image">Zoeken op Afbeelding</string>
     <string name="similarity_text">Vergelijkbaarheid: %1$s %%</string>
     <string name="time_range">Van %1$s tot %2$s</string>
@@ -495,7 +482,6 @@
     <string name="existing_custom_tabs_title">Vermijden van gebruikstafels gevonden</string>
     <string name="existing_custom_tabs_message">Als u een sjabloon wilt gebruiken, moeten we al uw aangepaste tabbladen met feeds verwijderen. Als u dat niet wilt, selecteert u eenvoudigweg Geen.</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">De Dantotsu templade vereist verlenging.\nIn deze beta versie, kun je geen verlengingen rechtstreeks door de app plaatsen.\nMomenteel kun je ze op onze:\nDiscordserver: %1$s\nTelegram kanaal: %2$s</string>
     <string name="automatically_send_reports">Automatisch verstuurd verslagen</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>

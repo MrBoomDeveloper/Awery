@@ -17,6 +17,7 @@ pluginManagement {
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google {
             mavenContent {
@@ -29,6 +30,17 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://packages.jetbrains.team/maven/p/kpm/public/")
+    }
+
+    versionCatalogs {
+        create("androidLibs") {
+            from(files("gradle/android.versions.toml"))
+        }
+
+        create("composeLibs") {
+            from(files("gradle/compose.versions.toml"))
+        }
     }
 }
 
@@ -48,8 +60,8 @@ include(
 )
 
 include(
-    ":extension:core-api",
-    ":extension:platform-api",
+    ":extension:sdk",
     ":extension:loaders",
-    ":extension:loaders:android-compat"
+    ":extension:loaders:android-compat",
+    ":extension:bundled"
 )

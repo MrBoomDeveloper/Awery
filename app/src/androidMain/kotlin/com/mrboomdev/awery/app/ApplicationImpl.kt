@@ -7,5 +7,11 @@ import com.mrboomdev.awery.core.context
 class ApplicationImpl: Application() {
     init {
         Awery.context = this
+        setupCrashHandler()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Awery.initEverything()
     }
 }

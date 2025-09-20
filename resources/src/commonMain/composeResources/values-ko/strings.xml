@@ -251,12 +251,8 @@
     <string name="type_other">기타</string>
     <string name="type_source">출처</string>
     <string name="type_contains">포함됨</string>
-    <string name="read_on_dantotsu">Awery에서 읽기</string>
-    <string name="watch_on_dantotsu">Awery에서 보기</string>
     <string name="continue_episode">"계속: 에피소드 "</string>
     <string name="continue_chapter">"계속: "</string>
-    <string name="episode">에피소드</string>
-    <string name="episodes">에피소드들</string>
     <string name="duration">지속 시간</string>
     <string name="just_released">- 방금 출시됨!</string>
     <string name="checking_subscriptions_title">구독 확인 중</string>
@@ -296,10 +292,6 @@
     <string name="female">여성</string>
     <string name="subscribed_notification">구독됨! %1$s에서 새 에피소드가 출시되면 알림을 받습니다.</string>
     <string name="unsubscribed_notification">구독 취소됨, 알림을 받지 않습니다.</string>
-    <string name="episode_plural">에피소드들</string>
-    <string name="episode_singular">에피소드</string>
-    <string name="chapter_singular">챕터</string>
-    <string name="chapter_plural">챕터들</string>
     <string name="search_by_image">이미지로 검색</string>
     <string name="similarity_text">유사도: %1$s %%</string>
     <string name="time_range">%1$s부터 %2$s까지</string>

@@ -1,11 +1,19 @@
 <resources>
-    <string name="anime">Anime</string>
-    <string name="manga">Manga</string>
+    <plurals name="chapters">
+        <item quantity="one">%1$d Chapter</item>
+        <item quantity="other">%1$d Chapters</item>
+    </plurals>
+
+    <plurals name="episodes">
+        <item quantity="one">%1$d Episode</item>
+        <item quantity="other">%1$d Episodes</item>
+    </plurals>
+    
+    <string name="apply">Apply</string>
     <string name="empty_library_title">Library is empty</string>
     <string name="awery_updated_title">Awery has been updated!</string>
     <string name="were_done">We've done!</string>
     <string name="database_corrupted">Database corrupted!</string>
-    <string name="checking_database">Checking the database</string>
     <string name="bad_request">Bad request</string>
     <string name="failed_to_bypass">Failed to bypass %1$s</string>
     <string name="extension_load_failed">Failed to load an extension!</string>
@@ -62,7 +70,7 @@
     <string name="hide_library_entries">Hide Library Entries</string>
     <string name="hide_library_entries_description">Do not show these entries outside of the library</string>
     <string name="list_editor">List Editor</string>
-    <string name="notifications">Notifications</string>
+    <string name="notifications">Updates</string>
     <string name="progress">Progress</string>
     <string name="score">Score</string>
     <string name="started_at">Started at</string>
@@ -73,14 +81,12 @@
     <string name="name">Name</string>
     <string name="format">Format</string>
     <string name="status_title">Status</string>
-    <string name="ep_duration">Average Duration</string>
     <string name="season">Season</string>
     <string name="source">Source</string>
     <string name="genres">Genres</string>
     <string name="description">Description</string>
     <string name="relations">Relations</string>
     <string name="details">Details</string>
-    <string name="play_yt">Play on YouTube</string>
     <string name="filler">Filler</string>
     <string name="tag">Tag</string>
     <string name="tags">Tags</string>
@@ -135,7 +141,6 @@
     <string name="always_minimize_info">Requires PiP to be enabled, makes the player behave like Youtube Player but better.\nAlso hides the PiP button.</string>
     <string name="immersive_mode">Hide Status Bar</string>
     <string name="startUpTab">Default Start Up Tab</string>
-    <string name="animations">Animations</string>
     <string name="restart_app">Restart the app?</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
@@ -143,7 +148,6 @@
     <string name="none">None</string>
     <string name="keep_screen_on">Keep Screen On</string>
     <string name="general">General</string>
-    <string name="show_system_bars">Show Status &amp; Navigation Bars</string>
     <string name="reload">Reload</string>
     <string name="share">Share</string>
     <string name="skip">Skip</string>
@@ -155,7 +159,6 @@
     <string name="check_app_updates">Auto check for App Updates</string>
     <string name="author">Author</string>
     <string name="account">Account</string>
-    <string name="subscriptions_info">Amount of time for Awery to periodically check for new Episodes/Chapters\n(Less time will cause more battery consumption)</string>
     <string name="grid">Grid</string>
     <string name="error_loading_data">Error loading data %1$s</string>
     <string name="saved_to_path">Saved to:\n%1$s</string>
@@ -170,18 +173,13 @@
     <string name="downloading_update">Downloading Update %1$s</string>
     <string name="permission_required">Please give permission to access Files &amp; Folders from Settings, &amp; Try again.</string>
     <string name="started_downloading">Started Downloading %1$s</string>
-    <string name="episode_release_countdown">Episode %1$d will be released in</string>
-    <string name="time_format">%1$d days %2$d hrs %3$d mins %4$d secs</string>
     <string name="status_finished">Finished</string>
     <string name="status_releasing">Releasing</string>
     <string name="status_not_yet_released">Not yet released</string>
     <string name="status_cancelled">Cancelled</string>
     <string name="status_hiatus">Delayed</string>
-    <string name="episode">Episode</string>
-    <string name="episodes">Episodes</string>
     <string name="duration">Duration</string>
     <string name="just_released">- just got released!</string>
-    <string name="checking_subscriptions_title">Checking Subscriptions</string>
     <string name="speed">Speed</string>
     <string name="auto_update">Auto Update progress for %1$s?</string>
     <string name="continue_from">Continue from %1$s?</string>
@@ -200,7 +198,6 @@
     <string name="no">No</string>
     <string name="confirm">Confirm</string>
     <string name="close">Close</string>
-    <string name="no_chapter">No Chapter</string>
     <string name="available">Available</string>
     <string name="lets_go">Let's Go</string>
     <string name="selected">Selected</string>
@@ -224,11 +221,6 @@
     <string name="dark_theme">Dark Theme</string>
     <string name="hide">Hide</string>
     <string name="color_palette">Color Palette</string>
-    <string name="red">Red</string>
-    <string name="pink">Pink</string>
-    <string name="purple">Purple</string>
-    <string name="blue">Blue</string>
-    <string name="green">Green</string>
     <string name="monochrome">Monochrome</string>
     <string name="dark_theme_description">I'm Batman!</string>
     <string name="amoled_theme_description">I'm darker than the night!</string>
@@ -267,18 +259,12 @@
     <string name="create_list">Create a new list</string>
     <string name="list_name">List name</string>
     <string name="no_title">No title</string>
-    <string name="popular">Popular</string>
-    <string name="trending">Trending</string>
-    <string name="top_rated">Top Rated</string>
-    <string name="movies">Movies</string>
-    <string name="most_favourited">Most Favourited</string>
     <string name="dropped">Dropped</string>
     <string name="cancelled">Cancelled</string>
     <string name="completed">Completed</string>
     <string name="planning_watch">Planned to watch</string>
     <string name="planning_read">Planned to read</string>
-    <string name="currently_watching">Currenlty watching</string>
-    <string name="favorite">Favorite</string>
+    <string name="currently_watching">Currently watching</string>
     <string name="please_report_bug_app">Please send the following text to the app developers!</string>
     <string name="please_report_bug_extension">Please send the following text to the extension developers!</string>
     <string name="manual_search">Manual search</string>
@@ -287,18 +273,12 @@
     <string name="adult_content">Adult Content</string>
     <string name="extension_installed_successfully">Extension installed successfully!</string>
     <string name="extension_installed_failed">Failed to install an extension!</string>
-    <string name="select_template">Select a template</string>
-    <string name="custom_tabs">Custom tabs</string>
-    <string name="tab_name_empty_error">The tab name cannot be empty!</string>
     <string name="select_icon">Select an icon</string>
-    <string name="create_tab">Create a tab</string>
     <string name="media_columns_count_land">Media columns count in landscape</string>
     <string name="clear_images_cache">Clear images cache</string>
     <string name="media_columns_count_port">Media columns count in portrait</string>
-    <string name="tabs">Tabs</string>
     <string name="discord_server">Discord Server</string>
     <string name="storage">Storage</string>
-    <string name="dim_screen">Dim screen</string>
     <string name="clear_webview_cache">Clear WebView cache</string>
     <string name="clear_network_cache">Clear network cache</string>
     <string name="telegram_group">Telegram Group</string>
@@ -308,10 +288,7 @@
     <string name="share_crash_report">Share crash report</string>
     <string name="crash_report">Crash report</string>
     <string name="copy">Copy</string>
-    <string name="something_terrible_happened">Something REALLY TERRIBLE has happened 0_0</string>
-    <string name="app_not_responding_restart">Awery isn't responding. Trying to restart ._.</string>
     <string name="delayed">Delayed</string>
-    <string name="favourites">Favourites</string>
     <string name="finish">Finish</string>
     <string name="welcome_to_app">Welcome to Awery</string>
     <string name="restore_backup">Restore backup</string>
@@ -328,7 +305,7 @@
     <string name="this_not_number">This is not a number!</string>
     <string name="continue_action">Continue</string>
     <string name="restart">Restart</string>
-    <string name="restart_to_apply_settings">To apply the settings, you must restart the application</string>
+    <string name="restart_to_apply_settings">To apply the settings, you must restart the app</string>
     <string name="clear">Clear</string>
     <string name="done">Done</string>
     <string name="select_tracker">Select a tracker</string>
@@ -366,11 +343,5 @@
     <string name="rate_limited_detailed">You have exceed the rate limit, please try again later.</string>
     <string name="welcome_to_app_description">The perfect app where you can customize everything, with tons of features and a stylish look.</string>
     <string name="setup_finished_description">Now you can go watch your favorite shows. We hope you enjoy this app! If you want, you can send us a review with what you liked :)</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
-    <string name="analytics_title">Analytics</string>
-    <string name="analytics_message" translatable="false">TODO</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
-    <string name="existing_custom_tabs_title">Existing custom tabs found</string>
-    <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don't want that, then simply select "None".</string>
 </resources>

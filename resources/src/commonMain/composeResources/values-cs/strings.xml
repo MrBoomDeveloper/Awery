@@ -79,8 +79,6 @@
     <string name="type_other">Jiné</string>
     <string name="type_source">Zdroj</string>
     <string name="type_contains">Obsahuje</string>
-    <string name="read_on_dantotsu">Číst v Awery</string>
-    <string name="watch_on_dantotsu">Sledovat v Awery</string>
     <string name="continue_from">Pokračovat od %1$s?</string>
     <string name="title_update_progress">Aktualizovat pokrok na AniListu?</string>
     <string name="incognito_will_not_update">Režim inkognito stále ignoruje pokrok.</string>
@@ -103,15 +101,8 @@
     <string name="confirm">Potvrdit</string>
     <string name="close">Zavřít</string>
     <string name="no_chapter">Žádná kapitola</string>
-    <string name="birthday">Datum narození</string>
-    <string name="male">Muž</string>
-    <string name="female">Žena</string>
     <string name="subscribed_notification">Přihlášeno k odběru! Budete dostávat oznámení, když budou vydány nové epizody na %1$s.</string>
     <string name="unsubscribed_notification">Odhlášeno, nebudete dostávat žádná oznámení.</string>
-    <string name="episode_plural">Epizody</string>
-    <string name="episode_singular">Epizoda</string>
-    <string name="chapter_singular">Kapitola</string>
-    <string name="chapter_plural">Kapitoly</string>
     <string name="search_by_image">Vyhledat podle obrázku</string>
     <string name="similarity_text">Podobnost: %1$s %%</string>
     <string name="time_range">Od %1$s do %2$s</string>
@@ -403,8 +394,6 @@
     <string name="type_alternative">Alternativa</string>
     <string name="continue_episode">"Pokračovat : Epizoda "</string>
     <string name="continue_chapter">"Pokračovat : "</string>
-    <string name="episode">Epizoda</string>
-    <string name="episodes">Epizody</string>
     <string name="duration">Doba trvání</string>
     <string name="just_released">- právě vydáno!</string>
     <string name="checking_subscriptions_title">Kontrola předplatného</string>

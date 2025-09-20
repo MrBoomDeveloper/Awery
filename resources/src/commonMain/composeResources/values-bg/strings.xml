@@ -83,12 +83,8 @@
     <string name="episode_not_found">Не успяхме да намерим епизод: %1$s</string>
     <string name="downloading_update">Изтегляне на актуализация %1$s</string>
     <string name="type_contains">Съдържа</string>
-    <string name="read_on_dantotsu">Чети в Awery</string>
-    <string name="watch_on_dantotsu">Гледай в Awery</string>
     <string name="continue_episode">"Продължи: Епизод "</string>
     <string name="continue_chapter">"Продължи: "</string>
-    <string name="episode">Епизод</string>
-    <string name="episodes">Епизоди</string>
     <string name="duration">Продължителност</string>
     <string name="just_released">- току-що издаден!</string>
     <string name="checking_subscriptions_title">Проверка на абонаменти</string>
@@ -101,16 +97,8 @@
     <string name="no_description_available">Няма налично описание</string>
     <string name="selected">Избран</string>
     <string name="found">Намерено</string>
-    <string name="age">Възраст</string>
-    <string name="birthday">Рожден ден</string>
-    <string name="gender">Пол</string>
-    <string name="male">Мъжки</string>
-    <string name="female">Женски</string>
     <string name="subscribed_notification">Абониран! Получавате уведомления, когато нови епизоди излизат на %1$s.</string>
     <string name="unsubscribed_notification">Отменено абонамента, няма да получавате уведомления.</string>
-    <string name="episode_plural">Епизоди</string>
-    <string name="episode_singular">Епизод</string>
-    <string name="chapter_singular">Глава</string>
     <string name="time_range">От %1$s до %2$s</string>
     <string name="invalid_url">Невалиден URL</string>
     <string name="extension_specific_dns">DNS, специфичен за разширението</string>
@@ -366,7 +354,6 @@
     <string name="no">Не</string>
     <string name="confirm">Потвърди</string>
     <string name="close">Затвори</string>
-    <string name="chapter_plural">Глави</string>
     <string name="search_by_image">Търсене по изображение</string>
     <string name="similarity_text">Сходство: %1$s %%</string>
     <string name="android12_requires">Изисква Android 12+</string>
@@ -491,11 +478,9 @@
     <string name="loading_extensions">Loading extensions</string>
     <string name="mark_not_watched">Премахване от гледани</string>
     <string name="analytics_title">Аналитични данни</string>
-    <string name="generic_message">In this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="existing_custom_tabs_title">Existing custom tabs found</string>
     <string name="existing_custom_tabs_message">To use a template, we have to delete all your custom tabs with feeds. If you don\'t want that, then simply select None.</string>
     <string name="analytics_message">TODO</string>
-    <string name="dantotsu_message">The Dantotsu template requires some extensions to work.\nIn this beta version, you cannot install extensions directly through the app :(\nCurrently you can download them on our:\nDiscord server: %1$s\nTelegram channel: %2$s</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
     <string name="telegram_link" translatable="false">https://t.me/mrboomdev_awery</string>
     <string name="discord_link" translatable="false">https://discord.com/invite/yspVzD4Kbm</string>
