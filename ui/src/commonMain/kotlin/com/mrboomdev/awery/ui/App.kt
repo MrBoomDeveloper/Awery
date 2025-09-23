@@ -13,39 +13,64 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailDefaults
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailDefaults
+import androidx.compose.material3.WideNavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
-import com.mrboomdev.awery.core.utils.Log.e
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
 import com.mrboomdev.awery.extension.sdk.Video
+import com.mrboomdev.awery.resources.Res
+import com.mrboomdev.awery.resources.ic_settings_outlined
+import com.mrboomdev.awery.resources.settings
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.Toaster
 import com.mrboomdev.awery.ui.components.ToasterContainer
@@ -55,12 +80,15 @@ import com.mrboomdev.awery.ui.screens.extension.ExtensionScreen
 import com.mrboomdev.awery.ui.screens.extension.ExtensionSearchScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
+import com.mrboomdev.awery.ui.screens.main.HomePage
 import com.mrboomdev.awery.ui.screens.main.MainScreen
 import com.mrboomdev.awery.ui.screens.media.MediaScreen
 import com.mrboomdev.awery.ui.screens.player.PlayerScreen
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.theme.AweryTheme
+import com.mrboomdev.awery.ui.theme.isAmoledTheme
+import com.mrboomdev.awery.ui.utils.WindowInsets
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.navigation.core.Navigation
@@ -72,109 +100,11 @@ import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-
-val Navigation = TypeSafeNavigation<Routes>()
-
-sealed interface Routes {
-    @Serializable
-    data object Main: Routes {
-        @Composable
-        override fun Content() = MainScreen()
-    }
-
-    @Serializable
-    data class Settings(
-        val initialPage: SettingsPages = SettingsPages.Main()
-    ): Routes {
-        @Composable
-        override fun Content() = SettingsScreen(initialPage)
-    }
-
-    @Serializable
-    data class Media(
-        val extensionId: String,
-        val extensionName: String?,
-        val media: com.mrboomdev.awery.extension.sdk.Media
-    ): Routes {
-        @Composable
-        override fun Content() = MediaScreen(this)
-    }
-
-    @Serializable
-    data class Player(
-        val video: Video,
-        val title: String = video.title ?: video.url
-    ): Routes {
-        @Composable
-        override fun Content() = PlayerScreen(this)
-    }
-
-    @Serializable
-    data class Extension(
-        val extensionId: String,
-        val extensionName: String
-    ): Routes {
-        @Composable
-        override fun Content() = ExtensionScreen(this)
-    }
-
-    @Serializable
-    data class ExtensionFeed(
-        val extensionId: String,
-        val extensionName: String,
-        val feedId: String,
-        val feedName: String
-    ): Routes {
-        @Composable
-        override fun Content() = ExtensionFeedScreen(this)
-    }
-
-    @Serializable
-    data class ExtensionSearch(
-        val extensionId: String,
-        val extensionName: String
-    ): Routes {
-        @Composable
-        override fun Content() = ExtensionSearchScreen(this)
-    }
-
-    @Serializable
-    data class Intro(
-		val step: IntroStep,
-		val singleStep: Boolean
-    ): Routes {
-        @Composable
-        override fun Content() = IntroScreen(this)
-    }
-
-    @Serializable
-    data class Browser(
-        val url: String
-    ): Routes {
-        @Composable
-        override fun Content() = BrowserScreen(url)
-    }
-
-    @Composable
-    fun Content()
-}
-
-private fun getInitialRoute(): Routes {
-    if(!AwerySettings.introDidWelcome.value) {
-        return Routes.Intro(IntroStep.Welcome, singleStep = false)
-    }
-    
-    if(!AwerySettings.introDidTheme.value) {
-        return Routes.Intro(IntroStep.Theme, singleStep = false) 
-    }
-
-    if(AwerySettings.username.value.isBlank()) {
-        return Routes.Intro(IntroStep.UserCreation, singleStep = false)
-    }
-    
-    return Routes.Main
-}
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 interface App {
     fun reloadWallpaper()
@@ -191,12 +121,15 @@ fun App(
         rememberJetpackNavigation(initialRoute)
     }
 ) {
+    val windowSize = currentWindowSize()
+    val navigation = navigation()
+    val backStack by navigation.currentBackStack.collectAsState(null)
+    
     AweryTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val windowSize = currentWindowSize()
             val toaster = remember { Toaster(maxItems = 3) }
 
             val context = LocalPlatformContext.current
@@ -246,46 +179,145 @@ fun App(
                     }
                 }
             ) {
-                Column {
-                    val installing by ExtensionInstaller.observeInstalling().collectAsState()
-
-                    AnimatedVisibility(installing.isNotEmpty()) {
-                        Row(
+                Row {
+                    if(windowSize.width >= WindowSizeType.Large && false) {
+                        Column(
                             modifier = Modifier
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .background(MaterialTheme.colorScheme.surface.let {
+                                    if(isAmoledTheme()) it.copy(alpha = .75f) else it
+                                }).fillMaxHeight()
+                                .windowInsetsPadding(WindowInsets.safeDrawing.only(
+                                    WindowInsetsSides.Start + WindowInsetsSides.Vertical))
+                                .padding(horizontal = 8.dp)
+                                .verticalScroll(rememberScrollState()),
+                            
+                            verticalArrangement = Arrangement.spacedBy(
+                                if(AwerySettings.showNavigationLabels.state.value 
+                                    == AwerySettings.NavigationLabels.SHOW) 16.dp else 0.dp
+                            )
                         ) {
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                text = "Installing ${installing.size} extensions"
-                            )
+                            val currentTab = backStack?.lastOrNull { currentTab ->
+                                MainRoutes.entries.any { tab ->
+                                    tab.route == currentTab
+                                } || currentTab is Routes.Settings
+                            }
+                            
+                            @Composable
+                            fun Tab(tab: MainRoutes) {
+                                WideNavigationRailItem(
+                                    railExpanded = false,
+                                    selected = tab.route == currentTab || 
+                                            (tab == MainRoutes.SETTINGS && currentTab is Routes.Settings),
 
-                            CircularProgressIndicator(
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                                    icon = {
+                                        if(tab == MainRoutes.PROFILE) {
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .clip(CircleShape)
+                                                    .size(24.dp),
+
+                                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                                    .addLastModifiedToFileCacheKey(true)
+                                                    .data(FileKit.filesDir / "avatar.png")
+                                                    .build(),
+
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop
+                                            )
+
+                                            return@WideNavigationRailItem
+                                        }
+
+                                        Icon(
+                                            modifier = Modifier.size(24.dp),
+                                            imageVector = vectorResource(tab.getIcon(tab.route == currentTab)),
+                                            contentDescription = null
+                                        )
+                                    },
+
+                                    label = if(AwerySettings.showNavigationLabels.state.value 
+                                        != AwerySettings.NavigationLabels.HIDE
+                                    ) {label@{
+                                        if(tab == MainRoutes.PROFILE) {
+                                            Text(
+                                                text = AwerySettings.username.state.value,
+                                                fontSize = 11.sp
+                                            )
+
+                                            return@label
+                                        }
+
+                                        Text(
+                                            text = stringResource(tab.title),
+                                            fontSize = 11.sp
+                                        )
+                                    }} else null,
+
+                                    onClick = {
+                                        navigation.clear()
+                                        navigation.push(tab.route)
+                                    }
+                                )
+                            }
+                            
+                            for(tab in MainRoutes.entries.filter { !it.desktopOnly }) {
+                                Tab(tab)
+                            }
+
+                            Spacer(Modifier.weight(1f))
+
+                            for(tab in MainRoutes.entries.filter { it.desktopOnly }) {
+                                Tab(tab)
+                            }
                         }
                     }
                     
-                    JetpackNavigationHost(
-                        modifier = Modifier.fillMaxSize(),
-                        navigation = navigation(),
-                        graph = remember { sealedNavigationGraph { it.Content() } },
+                    Column {
+                        val installing by ExtensionInstaller.observeInstalling().collectAsState()
 
-                        enterTransition = {
-                            fadeIn(tween(500)) +
-                                    slideInHorizontally(tween(350)) { it / 2 } +
-                                    scaleIn(tween(250), initialScale = .95f)
-                        },
+                        AnimatedVisibility(installing.isNotEmpty()) {
+                            Row(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    text = "Installing ${installing.size} extensions"
+                                )
 
-                        exitTransition = {
-                            fadeOut(tween(500)) +
-                                    slideOutHorizontally(tween(350)) +
-                                    scaleOut(tween(250), targetScale = .95f)
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
                         }
-                    )
+
+                        JetpackNavigationHost(
+                            modifier = Modifier.fillMaxSize(),
+                            navigation = navigation,
+
+                            enterTransition = {
+                                fadeIn(tween(500)) +
+                                        slideInHorizontally(tween(350)) { it / 2 } +
+                                        scaleIn(tween(250), initialScale = .95f)
+                            },
+
+                            exitTransition = {
+                                fadeOut(tween(500)) +
+                                        slideOutHorizontally(tween(350)) +
+                                        scaleOut(tween(250), targetScale = .95f)
+                            },
+
+                            graph = remember {
+                                sealedNavigationGraph {
+                                    it.Content(PaddingValues.Zero) 
+                                } 
+                            }
+                        )
+                    }
                 }
             }
 

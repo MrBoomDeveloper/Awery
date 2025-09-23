@@ -47,7 +47,7 @@ fun FeedRow(
         Spacer(Modifier.height(16.dp))
 
         LazyRow(
-            modifier = modifier,
+            modifier = Modifier.fillMaxWidth(),
             contentPadding = paddingValues,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

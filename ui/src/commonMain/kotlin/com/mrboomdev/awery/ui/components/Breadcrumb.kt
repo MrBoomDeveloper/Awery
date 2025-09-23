@@ -31,7 +31,7 @@ import kotlin.contracts.contract
 @Composable
 fun Breadcrumb(
 	modifier: Modifier = Modifier,
-	contentPadding: PaddingValues = PaddingValues(0.dp),
+	contentPadding: PaddingValues = PaddingValues.Zero,
 	scrollState: ScrollState = rememberScrollState(),
 	separator: @Composable () -> Unit = {
 		Text(" > ")

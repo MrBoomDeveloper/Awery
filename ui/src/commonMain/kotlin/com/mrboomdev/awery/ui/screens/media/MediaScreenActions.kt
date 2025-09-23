@@ -345,7 +345,7 @@ internal fun ColumnScope.MediaScreenActions(
             }
         } else {
             AlertDialog(
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues.Zero,
                 onDismissRequest = { cancelJob() }
             ) {
                 LazyColumn(

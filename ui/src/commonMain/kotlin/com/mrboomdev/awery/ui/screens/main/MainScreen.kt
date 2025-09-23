@@ -89,6 +89,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -116,6 +117,7 @@ import com.mrboomdev.awery.resources.logo_awery
 import com.mrboomdev.awery.resources.notifications
 import com.mrboomdev.awery.resources.search
 import com.mrboomdev.awery.resources.settings
+import com.mrboomdev.awery.ui.MainRoutes
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
@@ -125,6 +127,7 @@ import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
+import com.mrboomdev.awery.ui.utils.WindowInsets
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.add
 import com.mrboomdev.awery.ui.utils.bottom
@@ -154,37 +157,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import java.util.WeakHashMap
 
-enum class MainScreenTabs(
-    val title: StringResource,
-    val icon: DrawableResource,
-    val activeIcon: DrawableResource = icon
-) {
-    HOME(
-        title = Res.string.home,
-        icon = Res.drawable.ic_home_outlined,
-        activeIcon = Res.drawable.ic_home_filled
-    ),
-
-    SEARCH(
-        title = Res.string.search,
-        icon = Res.drawable.ic_search
-    ),
-
-    NOTIFICATIONS(
-        title = Res.string.notifications,
-        icon = Res.drawable.ic_notifications_outlined,
-        activeIcon = Res.drawable.ic_notifications_filled
-    ),
-
-    LIBRARY(
-        title = Res.string.library,
-        icon = Res.drawable.ic_collections_bookmark_outlined,
-        activeIcon = Res.drawable.ic_collections_bookmark_filled
-    );
-
-    fun getIcon(isActive: Boolean) = if(isActive) activeIcon else icon
-}
-
 @Composable
 expect fun MainScreen(
     viewModel: MainScreenViewModel = viewModel(::MainScreenViewModel)
@@ -198,20 +170,19 @@ internal fun DefaultMainScreen(
     val coroutineScope = rememberCoroutineScope()
     val searchQuery = rememberTextFieldState()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val bottomBarBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     
     var onTabReClick by remember { 
         mutableStateOf({})
     }
 
-    val pagerState = rememberPagerState(MainScreenTabs.entries.indexOf(
+    val pagerState = rememberPagerState(MainRoutes.entries.indexOf(
         when(AwerySettings.defaultMainTab.value) {
-            AwerySettings.MainTab.HOME -> MainScreenTabs.HOME
-            AwerySettings.MainTab.SEARCH -> MainScreenTabs.SEARCH
-            AwerySettings.MainTab.NOTIFICATIONS -> MainScreenTabs.NOTIFICATIONS
-            AwerySettings.MainTab.LIBRARY -> MainScreenTabs.LIBRARY
+            AwerySettings.MainTab.HOME -> MainRoutes.HOME
+            AwerySettings.MainTab.SEARCH -> MainRoutes.SEARCH
+            AwerySettings.MainTab.NOTIFICATIONS -> MainRoutes.NOTIFICATIONS
+            AwerySettings.MainTab.LIBRARY -> MainRoutes.LIBRARY
         }
-    )) { MainScreenTabs.entries.count() }
+    )) { MainRoutes.entries.count() }
 
     val focusManager = LocalFocusManager.current
     val windowSize = currentWindowSize()
@@ -237,15 +208,17 @@ internal fun DefaultMainScreen(
                         NavigationRail(
                             modifier = Modifier.fillMaxHeight(),
                             windowInsets = WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Start + WindowInsetsSides.Vertical),
+                                WindowInsetsSides.Start + WindowInsetsSides.Vertical).add(WindowInsets(horizontal = 16.dp)),
                             
                             containerColor = NavigationRailDefaults.ContainerColor.let {
-                                if(isAmoledTheme()) it.copy(alpha = .9f) else it
+                                if(isAmoledTheme()) it.copy(alpha = .75f) else it
                             }
                         ) {
                             Spacer(Modifier.weight(.75f))
-                            
-                            MainScreenTabs.entries.forEachIndexed { index, tab ->
+
+                            MainRoutes.entries.forEachIndexed { index, tab ->
+                                if(tab.desktopOnly) return@forEachIndexed
+                                
                                 NavigationRailItem(
                                     selected = index == pagerState.currentPage,
                                     
@@ -262,7 +235,12 @@ internal fun DefaultMainScreen(
 
                                     label = if(AwerySettings.showNavigationLabels.state.value !=
                                         AwerySettings.NavigationLabels.HIDE
-                                    ) {{ Text(stringResource(tab.title)) }} else null,
+                                    ) {{ 
+                                        Text(
+                                            text = stringResource(tab.title),
+                                            fontSize = 11.sp
+                                        ) 
+                                    }} else null,
                                     
                                     onClick = { 
                                         coroutineScope.launch { 
@@ -286,8 +264,7 @@ internal fun DefaultMainScreen(
                         modifier = Modifier
                             .weight(1f)
                             .thenIf(useRail) { consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start)) }
-                            .nestedScroll(topBarBehavior.nestedScrollConnection)
-                            .nestedScroll(bottomBarBehavior.nestedScrollConnection),
+                            .nestedScroll(topBarBehavior.nestedScrollConnection),
                         
                         containerColor = Color.Transparent,
                         contentWindowInsets = WindowInsets.safeDrawing,
@@ -394,15 +371,15 @@ internal fun DefaultMainScreen(
                                                                     .weight(1f)
                                                                     .padding(start = 12.dp, top = 12.dp, bottom = 12.dp)
                                                             ) {
-                                                                query?.also { text ->
-                                                                    innerTextField()
-                                                                } ?: run {
+                                                                if(query == null) {
                                                                     Text(
                                                                         style = MaterialTheme.typography.bodyLarge,
                                                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                                         text = "Search anything"
                                                                     )
                                                                 }
+                                                                
+                                                                innerTextField()
                                                             }
 
                                                             if(query != null) {
@@ -484,13 +461,13 @@ internal fun DefaultMainScreen(
                             if(useRail) return@Scaffold
 
                             FlexibleBottomAppBar(
-                                scrollBehavior = bottomBarBehavior,
-                                
                                 containerColor = BottomAppBarDefaults.containerColor.let {
                                     if(isAmoledTheme()) it.copy(alpha = .9f) else it
                                 }
                             ) {
-                                MainScreenTabs.entries.forEachIndexed { index, tab ->
+                                MainRoutes.entries.forEachIndexed { index, tab ->
+                                    if(tab.desktopOnly) return@forEachIndexed
+                                    
                                     NavigationBarItem(
                                         selected = index == pagerState.currentPage,
 

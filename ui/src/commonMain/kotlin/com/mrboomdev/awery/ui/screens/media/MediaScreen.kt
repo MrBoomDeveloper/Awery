@@ -96,6 +96,14 @@ enum class MediaScreenTabs {
     abstract fun getTitle(media: Media): String
     
     abstract fun isVisible(media: Media): Boolean
+    
+    companion object {
+        fun getVisibleFor(media: Media): List<MediaScreenTabs> {
+            return MediaScreenTabs.entries.filter { tab ->
+                tab.isVisible(media)
+            }
+        }
+    }
 }
 
 @Composable

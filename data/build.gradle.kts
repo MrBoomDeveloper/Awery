@@ -91,7 +91,9 @@ afterEvaluate {
         afterEvaluate {
             // Task generateBuildKonfig is being registered after a little delay,
             // so we do this magic to link all this shit together.
-            tasks.getByName("kspKotlinDesktop").dependsOn(tasks.getByName("generateBuildKonfig"))
+            for(task in arrayOf(/*"kspKotlinAndroid", */"kspKotlinDesktop")) {
+                tasks.getByName(task).dependsOn(tasks.getByName("generateBuildKonfig"))
+            }
         }
     }
 }

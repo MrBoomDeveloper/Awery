@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.utils
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -38,8 +39,8 @@ val WindowInsets.right
     }
 
 enum class WindowSizeType(
-    internal val widthAtLeast: Dp,
-    internal val heightAtLeast: Dp
+    val widthAtLeast: Dp,
+    val heightAtLeast: Dp
 ) {
     Small(
         widthAtLeast = 0.dp,
@@ -68,6 +69,16 @@ data class WindowSize(
 )
 
 @Composable
+fun currentWindowHeight() = with(LocalDensity.current) {
+    LocalWindowInfo.current.containerSize.height.toDp()
+}
+
+@Composable
+fun currentWindowWidth() = with(LocalDensity.current) {
+    LocalWindowInfo.current.containerSize.width.toDp()
+}
+
+@Composable
 fun currentWindowSize(): WindowSize {
     val size = LocalWindowInfo.current.containerSize
     val density = LocalDensity.current
@@ -86,3 +97,11 @@ fun currentWindowSize(): WindowSize {
         }
     }
 }
+
+@Stable
+fun WindowInsets(horizontal: Dp = 0.dp, vertical: Dp = 0.dp) = WindowInsets(
+    left = horizontal,
+    top= vertical,
+    right = horizontal,
+    bottom = vertical
+)

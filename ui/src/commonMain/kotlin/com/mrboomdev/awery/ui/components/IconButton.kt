@@ -65,22 +65,25 @@ fun IconButton(
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(color = colors.containerColor(enabled))
-            .clickable(
-                onClick = onClick,
-                enabled = enabled,
-                role = Role.Button,
-                interactionSource = interactionSource,
-                indication = LocalIndication.current
-            )
-            .padding(padding),
-        contentAlignment = Alignment.Center
+    CompositionLocalProvider(
+        LocalContentColor provides colors.contentColor(enabled)
     ) {
-        val contentColor = colors.contentColor(enabled)
-        CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
+        Box(
+            modifier = modifier
+                .clip(CircleShape)
+                .background(color = colors.containerColor(enabled))
+                .clickable(
+                    onClick = onClick,
+                    enabled = enabled,
+                    role = Role.Button,
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current
+                )
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
     }
 }
 

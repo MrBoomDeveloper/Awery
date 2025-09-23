@@ -155,7 +155,7 @@ sealed interface IntroStep {
             }
         ) { contentPadding ->
             Box(Modifier.padding(contentPadding)) {
-                ChildContent(PaddingValues(0.dp))
+                ChildContent(PaddingValues.Zero)
             }
         }
         

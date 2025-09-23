@@ -53,6 +53,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter.State.Empty.painter
+import com.mrboomdev.awery.core.Awery
+import com.mrboomdev.awery.core.Platform
 import com.mrboomdev.awery.core.utils.launchTrying
 import com.mrboomdev.awery.core.utils.runIfNull
 import com.mrboomdev.awery.data.settings.AwerySettings
@@ -288,7 +291,7 @@ internal fun HomePage(
                 FeedRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .thenIf(media.hasNextPage) { clickable {
+                        .thenIf(media.hasNextPage && Awery.platform != Platform.DESKTOP) { clickable {
                             navigation.push(Routes.ExtensionFeed(
                                 extensionId = extension.id,
                                 extensionName = extension.name,
@@ -308,12 +311,21 @@ internal fun HomePage(
                     
                     actions = {
                         if(media.hasNextPage) {
-                            Icon(
+                            IconButton(
                                 modifier = Modifier
                                     .size(16.dp)
                                     .scale(scaleX = -2f, scaleY = 2f),
+                                padding = 0.dp,
                                 painter = painterResource(Res.drawable.ic_back),
-                                contentDescription = null
+                                contentDescription = null,
+                                onClick = {
+                                    navigation.push(Routes.ExtensionFeed(
+                                        extensionId = extension.id,
+                                        extensionName = extension.name,
+                                        feedId = feed.id,
+                                        feedName = feed.name
+                                    ))
+                                }
                             )
                         }
                     },

@@ -82,6 +82,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.HorizontalRuler
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -107,6 +108,7 @@ import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.cachedModules
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getLargePoster
+import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.loaders.watch.VariantWatcher
 import com.mrboomdev.awery.extension.loaders.watch.WatcherNode
 import com.mrboomdev.awery.extension.sdk.Extension
@@ -131,6 +133,7 @@ import com.mrboomdev.awery.ui.theme.SeedAweryTheme
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.add
 import com.mrboomdev.awery.ui.utils.collapse
+import com.mrboomdev.awery.ui.utils.currentWindowHeight
 import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.awery.ui.utils.exclude
 import com.mrboomdev.awery.ui.utils.only
@@ -162,17 +165,14 @@ internal fun DefaultMediaScreen(
 	viewModel: MediaScreenViewModel
 ) {
 	val topBarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-	val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-		snapAnimationSpec = null)
+	val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null)
 	val coroutineScope = rememberCoroutineScope()
 	val windowSize = currentWindowSize()
 	val toaster = LocalToaster.current
 	val navigation = Navigation.current()
 
 	val tabs = remember(viewModel.media) {
-		MediaScreenTabs.entries.filter { tab ->
-			tab.isVisible(viewModel.media)
-		}
+		MediaScreenTabs.getVisibleFor(viewModel.media)
 	}
 
 	val pagerState = rememberPagerState { tabs.count() }
@@ -265,12 +265,12 @@ internal fun DefaultMediaScreen(
 						)
 					) {
 						Box {
-							var didFailToLoadPoster by remember(viewModel.media) {
+							var didFailToLoadPoster by remember(viewModel.media.getPoster()) {
 								mutableStateOf(viewModel.media.getLargePoster() == null)
 							}
 
-							var didLoadPoster by remember(viewModel.media) { mutableStateOf(false) }
-							var isPosterFuckedUp by remember(viewModel.media) { mutableStateOf(false) }
+							var didLoadPoster by remember(viewModel.media.getPoster()) { mutableStateOf(false) }
+							var isPosterFuckedUp by remember(viewModel.media.getPoster()) { mutableStateOf(false) }
 
 							viewModel.media.getBanner()?.also { banner ->
 								Box(Modifier.matchParentSize()) {
@@ -314,7 +314,7 @@ internal fun DefaultMediaScreen(
 									didFailToLoadPoster -> 56.dp
 									else -> 16.dp
 								}, tween()).value))
-
+								
 								viewModel.media.getLargePoster()?.also { poster ->
 									if(isPosterFuckedUp) {
 										AsyncImage(
@@ -333,8 +333,9 @@ internal fun DefaultMediaScreen(
 
 									AsyncImage(
 										modifier = Modifier
-											.padding(horizontal = 56.dp)
 											.clip(RoundedCornerShape(16.dp))
+											.padding(horizontal = 56.dp)
+											.heightIn(max = currentWindowHeight() - 250.dp)
 											.fillMaxWidth()
 											.animateContentSize(),
 
@@ -343,17 +344,23 @@ internal fun DefaultMediaScreen(
 												.placeholderMemoryCacheKey(it)
 												.memoryCacheKey(it)
 												.data(it)
-												.build()
+												.build() 
 										},
 
 										contentDescription = null,
-										onError = { didFailToLoadPoster = true },
+										
+										onError = {
+											didFailToLoadPoster = true 
+										},
+										
+										onLoading = { 
+											isPosterFuckedUp = false 
+											didFailToLoadPoster = false
+										},
+										
 										onSuccess = { (_, result) ->
 											didLoadPoster = true
-
-											if(result.image.let { it.width / it.height } >= 1) {
-												isPosterFuckedUp = true
-											}
+											isPosterFuckedUp = result.image.let { it.width / it.height } >= 1
 										}
 									)
 								}
@@ -410,7 +417,8 @@ internal fun DefaultMediaScreen(
 						.padding(contentPadding.exclude(bottom = true))
 				) {
 					MediaScreenContent(
-						viewModel = viewModel,
+						media = viewModel.media,
+						watcher = viewModel.watcher,
 						pagerState = pagerState,
 						tabs = tabs,
 						coroutineScope = coroutineScope,
@@ -475,7 +483,7 @@ internal fun DefaultMediaScreen(
 
 					var showPoster by remember(viewModel.media) { mutableStateOf(true) }
 					viewModel.media.getLargePoster()?.also { poster ->
-						if(!showPoster) return@also
+						if(!showPoster || windowSize.width <= WindowSizeType.Medium) return@also
 
 						Box(
 							modifier = Modifier
@@ -500,7 +508,7 @@ internal fun DefaultMediaScreen(
 								onSuccess = { state ->
 									if(state.result.image.let { it.width / it.height } >= 1) {
 										// THIS IS A FUCKING BANNER! NOT AN POSTER!
-										// THIS SHIT SIMPLY WONT FIT IN THE LAYOUT!
+										// THIS SHIT SIMPLY WON'T FIT IN THE LAYOUT!
 										showPoster = false
 									}
 								}
@@ -555,7 +563,8 @@ internal fun DefaultMediaScreen(
 							).value))
 
 							MediaScreenContent(
-								viewModel = viewModel,
+								media = viewModel.media,
+								watcher = viewModel.watcher,
 								pagerState = pagerState,
 								tabs = tabs,
 								coroutineScope = coroutineScope,
@@ -581,8 +590,9 @@ internal fun DefaultMediaScreen(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun ColumnScope.MediaScreenContent(
-	viewModel: MediaScreenViewModel,
+internal fun ColumnScope.MediaScreenContent(
+	media: Media,
+	watcher: WatcherNode,
 	pagerState: PagerState,
 	tabs: List<MediaScreenTabs>,
 	coroutineScope: CoroutineScope,
@@ -614,7 +624,7 @@ private fun ColumnScope.MediaScreenContent(
 			) {
 				Text(
 					modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
-					text = tab.getTitle(viewModel.media)
+					text = tab.getTitle(media)
 				)
 			}
 		}
@@ -657,7 +667,7 @@ private fun ColumnScope.MediaScreenContent(
 					.padding(top = if(tabs.size > 1) 20.dp else 8.dp, bottom = 16.dp),
 				verticalArrangement = Arrangement.spacedBy(16.dp)
 			) {
-				viewModel.media.description?.also { description ->
+				media.description?.also { description ->
 					if(description.isBlank()) return@also
 					var isExpanded by remember { mutableStateOf(false) }
 
@@ -676,7 +686,7 @@ private fun ColumnScope.MediaScreenContent(
 					}
 				}
 
-				viewModel.media.tags?.also { tags ->
+				media.tags?.also { tags ->
 					if(tags.isEmpty()) return@also
 
 					Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -713,8 +723,8 @@ private fun ColumnScope.MediaScreenContent(
 				
 				val currentRoutes by remember { 
 					derivedStateOf {
-						buildList { 
-							var currentNode: WatcherNode = viewModel.watcher
+						buildList {
+							var currentNode: WatcherNode = watcher
 							add(currentNode)
 							
 							currentRoute.iterateMutable { path ->
@@ -813,8 +823,8 @@ private fun ColumnScope.MediaScreenContent(
 							 * @return Ratio from 0 to 100
 							 */
 							fun WatcherNode.getSamenessRatio(): Int {
-								return listOf(viewModel.media.title, *viewModel.media.alternativeTitles.toTypedArray())
-									.map { FuzzySearch.ratio(title, viewModel.media.title) }
+								return listOf(media.title, *media.alternativeTitles.toTypedArray())
+									.map { FuzzySearch.ratio(title, media.title) }
 									.maxBy { it }
 							}
 							
@@ -975,7 +985,7 @@ private fun ColumnScope.MediaScreenContent(
 										throwable = error,
 										actions = {
 											action("Try again") {
-												viewModel.viewModelScope.launch(Dispatchers.Default) {
+												coroutineScope.launch(Dispatchers.Default) {
 													route.load()
 												}
 											}
