@@ -1,55 +1,15 @@
 package com.mrboomdev.awery.ui
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailDefaults
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.WideNavigationRail
-import androidx.compose.material3.WideNavigationRailDefaults
-import androidx.compose.material3.WideNavigationRailItem
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -67,32 +28,13 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
-import com.mrboomdev.awery.extension.sdk.Video
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.ic_settings_outlined
-import com.mrboomdev.awery.resources.settings
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.Toaster
 import com.mrboomdev.awery.ui.components.ToasterContainer
-import com.mrboomdev.awery.ui.screens.browser.BrowserScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionFeedScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionSearchScreen
-import com.mrboomdev.awery.ui.screens.intro.IntroScreen
-import com.mrboomdev.awery.ui.screens.intro.IntroStep
-import com.mrboomdev.awery.ui.screens.main.HomePage
-import com.mrboomdev.awery.ui.screens.main.MainScreen
-import com.mrboomdev.awery.ui.screens.media.MediaScreen
-import com.mrboomdev.awery.ui.screens.player.PlayerScreen
-import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
-import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.theme.AweryTheme
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
-import com.mrboomdev.awery.ui.utils.WindowInsets
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.currentWindowSize
-import com.mrboomdev.navigation.core.Navigation
-import com.mrboomdev.navigation.core.TypeSafeNavigation
 import com.mrboomdev.navigation.core.sealedNavigationGraph
 import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
@@ -100,9 +42,6 @@ import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 
@@ -180,7 +119,9 @@ fun App(
                 }
             ) {
                 Row {
-                    if(windowSize.width >= WindowSizeType.Large && false) {
+                    val useRail = windowSize.width >= WindowSizeType.Large && false
+                    
+                    if(useRail) {
                         Column(
                             modifier = Modifier
                                 .background(MaterialTheme.colorScheme.surface.let {
@@ -279,18 +220,25 @@ fun App(
                             Row(
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.primaryContainer)
+                                    .windowInsetsPadding(WindowInsets.safeDrawing.only(
+                                        WindowInsetsSides.Top + if(useRail) {
+                                            WindowInsetsSides.Right
+                                        } else WindowInsetsSides.Horizontal
+                                    ))
                                     .padding(16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(24.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                
                                 Text(
                                     modifier = Modifier.weight(1f),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.SemiBold,
                                     text = "Installing ${installing.size} extensions"
-                                )
-
-                                CircularProgressIndicator(
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                         }

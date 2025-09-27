@@ -1,17 +1,16 @@
 package com.mrboomdev.awery.ui.screens.main
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.utils.CacheStorage
 import com.mrboomdev.awery.core.utils.NothingFoundException
+import com.mrboomdev.awery.core.utils.collection.MutableStateListFlow
+import com.mrboomdev.awery.core.utils.collection.minusAssign
+import com.mrboomdev.awery.core.utils.collection.plusAssign
+import com.mrboomdev.awery.core.utils.collection.replace
 import com.mrboomdev.awery.core.utils.launchTryingSupervise
-import com.mrboomdev.awery.core.utils.replace
 import com.mrboomdev.awery.data.AgeRating
 import com.mrboomdev.awery.data.database.database
 import com.mrboomdev.awery.data.database.entity.toMedia
@@ -26,11 +25,11 @@ import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.cacheDir
 import io.github.vinceglb.filekit.div
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
@@ -38,10 +37,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
 import java.lang.System.currentTimeMillis
+import kotlin.collections.emptyList
+import kotlin.collections.filter
+import kotlin.collections.filterNotNull
+import kotlin.collections.first
+import kotlin.collections.map
+import kotlin.collections.mutableListOf
+import kotlin.collections.plusAssign
+import kotlin.collections.zip
 
 private val feedsCache by lazy {
     runBlocking {
@@ -58,11 +62,17 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
     private var receiveResultsAfter = currentTimeMillis()
     private var job: Job? = null
     
-    var isReloading by mutableStateOf(false)
-        private set
+    private val _loadedFeeds = MutableStateListFlow<Triple<Extension, Feed, Results<Media>>>()
+    val loadedFeeds = _loadedFeeds.asStateFlow()
+
+    private val _failedFeeds = MutableStateListFlow<Triple<Extension, Feed, Throwable>>()
+    val failedFeeds = _failedFeeds.asStateFlow()
     
-    val loadedFeeds = mutableStateListOf<Triple<Extension, Feed, Results<Media>>>()
-    val failedFeeds = mutableStateListOf<Triple<Extension, Feed, Throwable>>()
+    private val _isLoadingFeeds = MutableStateFlow(true)
+    val isLoadingFeeds = _isLoadingFeeds.asStateFlow()
+
+    private val _isReloadingFeeds = MutableStateFlow(true)
+    val isReloadingFeeds = _isReloadingFeeds.asStateFlow()
     
     val isNoLists = Awery.database.lists.observeCount()
         .map { it == 0 }
@@ -93,22 +103,18 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
         .observeLatest(25)
         .map { all ->
             all.map { watchProgress ->
-                val media = Awery.database.media.get(watchProgress.extensionId, watchProgress.mediaId)
+				val media = Awery.database.media.get(
+                    extensionId = watchProgress.extensionId, 
+                    id = watchProgress.mediaId
+                ) ?: return@map null
 
-                if(media == null) {
-                    return@map null
-                }
-
-                watchProgress to media.toMedia()
+				watchProgress to media.toMedia()
             }.filterNotNull()
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
-
-    private val _isLoadingFeeds = mutableStateOf(true)
-    val isLoadingFeeds by _isLoadingFeeds
     
     init {
         loadFeeds(useCache = true)
@@ -116,7 +122,11 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
     
     fun reloadFeeds() {
         receiveResultsAfter = currentTimeMillis()
-        isReloading = true
+        
+        runBlocking { 
+            _isReloadingFeeds.emit(true)
+        }
+        
         loadFeeds(useCache = false)
     }
 
@@ -125,15 +135,19 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
         _isLoadingFeeds.value = true
         job?.cancel()
         
-        fun cleanupStuffIfNeeded() {
-            if(isReloading) {
-                loadedFeeds.clear()
-                failedFeeds.clear()
-                isReloading = false
+        suspend fun cleanupStuffIfNeeded() {
+            if(_isReloadingFeeds.value) {
+                _loadedFeeds.emit(emptyList())
+                _failedFeeds.clear()
+                _isReloadingFeeds.emit(false)
             }
         }
         
-        job = viewModelScope.launch(Dispatchers.Default) {
+        job = viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+            t.printStackTrace()
+        }) {
+            _loadedFeeds.clear()
+            
             Extensions.getAll<CatalogModule>(enabled = true)
                 .filter { extension ->
                     when(AwerySettings.adultContent.value) {
@@ -150,7 +164,8 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
                         try {
                             if(useCache) {
                                 feedsCache["${extension.id}:${feed.id}"]?.also {
-                                    loadedFeeds += Triple(extension, feed, it)
+                                    mutableListOf<String>() += ""
+                                    _loadedFeeds += Triple(extension, feed, it)
                                     return@map
                                 }
                             }
@@ -173,44 +188,47 @@ class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
                             
                             if(startTime >= receiveResultsAfter) {
                                 cleanupStuffIfNeeded()
-                                loadedFeeds += Triple(extension, feed, loadedMedia)
+                                _loadedFeeds += Triple(extension, feed, loadedMedia)
 								feedsCache["${extension.id}:${feed.id}"] = loadedMedia
                             }
                         } catch(t: Throwable) {
                             if(startTime >= receiveResultsAfter) {
                                 cleanupStuffIfNeeded()
-                                failedFeeds += Triple(extension, feed, t)
+                                _failedFeeds += Triple(extension, feed, t)
                             }
                         }
                     }
                 }.collect()
-
-            isReloading = false
+            
+            _isReloadingFeeds.emit(false)
             _isLoadingFeeds.value = false
         }
     }
 
     /**
-     * @param onResult feedIndex is null if failed to reload an feed.
+     * @param onResult feedIndex is null if failed to reload a feed.
      */
     fun reloadFeed(
         extension: Extension,
         feed: Feed,
         onResult: (feedIndex: Int?) -> Unit
     ) {
-        val key = failedFeeds.first { it.first == extension && it.second == feed }
+        val key = _failedFeeds.first { it.first == extension && it.second == feed }
         
         viewModelScope.launchTryingSupervise(Dispatchers.Default, onCatch = {
-            failedFeeds.replace(key, Triple(extension, feed, it))
+            runBlocking {
+                _failedFeeds.replace(key, Triple(extension, feed, it))
+            }
+            
             onResult(null)
         }) {
             val results = extension.get<CatalogModule>()!!.loadFeed(feed).apply {
                 if(items.isEmpty()) throw NothingFoundException("Feed loaded with 0 results.")
             }
             
-            val index = loadedFeeds.size
-            loadedFeeds.add(index, Triple(extension, feed, results))
-            failedFeeds -= key
+            val index = _loadedFeeds.size
+            _loadedFeeds.add(index, Triple(extension, feed, results))
+            _failedFeeds -= key
             onResult(index)
         }
     }

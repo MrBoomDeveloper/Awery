@@ -6,31 +6,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -39,39 +17,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -81,16 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.HorizontalRuler
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter.State.Empty.painter
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.kmpalette.loader.rememberNetworkLoader
@@ -98,11 +41,9 @@ import com.kmpalette.rememberDominantColorState
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.utils.Log
 import com.mrboomdev.awery.core.utils.await
-import com.mrboomdev.awery.core.utils.iterate
-import com.mrboomdev.awery.core.utils.iterateIndexed
-import com.mrboomdev.awery.core.utils.iterateMutable
-import com.mrboomdev.awery.core.utils.removeAll
-import com.mrboomdev.awery.core.utils.removeAllNext
+import com.mrboomdev.awery.core.utils.collection.iterateIndexed
+import com.mrboomdev.awery.core.utils.collection.iterateMutable
+import com.mrboomdev.awery.core.utils.collection.removeAll
 import com.mrboomdev.awery.core.utils.retryUntilSuccess
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.cachedModules
@@ -111,52 +52,27 @@ import com.mrboomdev.awery.extension.loaders.getLargePoster
 import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.loaders.watch.VariantWatcher
 import com.mrboomdev.awery.extension.loaders.watch.WatcherNode
-import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.extension.sdk.WatchVariant
 import com.mrboomdev.awery.extension.sdk.modules.WatchModule
-import com.mrboomdev.awery.resources.AweryFonts
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.resources.ic_block
 import com.mrboomdev.awery.resources.ic_share_filled
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
-import com.mrboomdev.awery.ui.components.Breadcrumb
-import com.mrboomdev.awery.ui.components.ExpandableText
-import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
-import com.mrboomdev.awery.ui.components.InfoBox
-import com.mrboomdev.awery.ui.components.LocalToaster
-import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.theme.SeedAweryTheme
-import com.mrboomdev.awery.ui.utils.WindowSizeType
-import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.collapse
-import com.mrboomdev.awery.ui.utils.currentWindowHeight
-import com.mrboomdev.awery.ui.utils.currentWindowSize
-import com.mrboomdev.awery.ui.utils.exclude
-import com.mrboomdev.awery.ui.utils.only
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.stateListSaver
-import com.mrboomdev.awery.ui.utils.top
+import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.navigation.core.safePop
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
-import eu.kanade.tachiyomi.source.model.Page
-import io.ktor.http.Url
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filter
+import io.ktor.http.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import org.jetbrains.compose.resources.painterResource
-import java.awt.SystemColor.text
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -730,6 +646,15 @@ internal fun ColumnScope.MediaScreenContent(
 							currentRoute.iterateMutable { path ->
 								if(currentNode is WatcherNode.Variants) {
 									currentNode.children.firstOrNull { it.id == path }?.also { selected ->
+										if(selected !is WatcherNode.Variants) {
+											Log.w("DefaultMediaScreen",
+												"Path node \"${currentNode.id}\" is not a list, " +
+														"so we cannot navigate to \"$path\".")
+
+											removeAll()
+											return@iterateMutable
+										}
+										
 										add(selected)
 										currentNode = selected
 									} ?: run {

@@ -65,9 +65,9 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.BOOLEAN, name, value.toString(), const = true)
 
     defaultConfigs {
-        field("appVersion", properties["awery.app.versionName"].toString())
-        field("appVersionCode", properties["awery.app.versionCode"].toString().toInt())
-        field("extVersion", properties["VERSION_NAME"].toString())
+        field("appVersion", property("awery.app.versionName").toString())
+        field("appVersionCode", property("awery.app.versionCode").toString().toInt())
+        field("extVersion", property("VERSION_NAME").toString())
         field("debug", false)
     }
     
@@ -91,7 +91,7 @@ afterEvaluate {
         afterEvaluate {
             // Task generateBuildKonfig is being registered after a little delay,
             // so we do this magic to link all this shit together.
-            for(task in arrayOf(/*"kspKotlinAndroid", */"kspKotlinDesktop")) {
+            for(task in arrayOf("kspAndroidMain", "kspKotlinDesktop")) {
                 tasks.getByName(task).dependsOn(tasks.getByName("generateBuildKonfig"))
             }
         }

@@ -9,19 +9,12 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.materialkolor.Contrast
-import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicMaterialThemeState
-import com.mrboomdev.awery.core.utils.launchGlobal
-import com.mrboomdev.awery.core.utils.next
 import com.mrboomdev.awery.data.settings.AwerySettings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 
 @Composable
 expect fun SeedAweryTheme(

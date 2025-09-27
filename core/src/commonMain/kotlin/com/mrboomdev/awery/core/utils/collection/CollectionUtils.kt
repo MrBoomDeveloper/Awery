@@ -1,6 +1,4 @@
-package com.mrboomdev.awery.core.utils
-
-import kotlin.enums.enumEntries
+package com.mrboomdev.awery.core.utils.collection
 
 fun MutableIterator<*>.removeAll() {
     remove()

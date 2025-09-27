@@ -1,3 +1,5 @@
+import android.databinding.tool.ext.joinToCamelCase
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -19,30 +21,6 @@ fun getLocales(): Collection<String> {
             if(it == "values") "en"
             else it.substringAfter("values-")
         }
-}
-
-val generateAndroidLocaleConfig by tasks.registering {
-    val outputDir = layout.projectDirectory.dir("src/androidMain/res/xml")
-    val outputFile = outputDir.file("awery_generated_locales_config.xml")
-    val locales = getLocales()
-
-    // For task caching
-    inputs.property("locales", locales)
-    outputs.file(outputFile)
-
-    doLast {
-        outputDir.asFile.mkdirs()
-        outputFile.asFile.writeText(buildString {
-            appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
-            appendLine("""<locale-config xmlns:android="http://schemas.android.com/apk/res/android">""")
-
-            for(locale in locales) {
-                appendLine("""    <locale android:name="$locale" />""")
-            }
-
-            appendLine("""</locale-config>""")
-        })
-    }
 }
 
 kotlin {
@@ -92,10 +70,9 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(composeLibs.navigation.jetpack)
+                implementation(composeLibs.jewel.standalone)
+                implementation(composeLibs.jewel.window)
                 implementation(libs.kotlinx.coroutines.desktop)
-
-                implementation("org.jetbrains.jewel:jewel-int-ui-standalone:0.30.0-252.26252")
-                implementation("org.jetbrains.jewel:jewel-int-ui-decorated-window:0.30.0-252.26252")
                 
                 implementation(composeLibs.desktop.get().let { 
                     "${it.group}:${it.name}:${it.version}"
@@ -135,14 +112,13 @@ kotlin {
 
 android {
     namespace = "com.mrboomdev.awery"
-    compileSdk = properties["awery.sdk.target"].toString().toInt()
+    compileSdk = property("awery.sdk.target").toString().toInt()
 
     defaultConfig {
-        versionName = properties["awery.app.versionName"].toString()
-        versionCode = properties["awery.app.versionCode"].toString().toInt()
-        
-        targetSdk = properties["awery.sdk.target"].toString().toInt()
-        minSdk = properties["awery.sdk.min"].toString().toInt()
+        versionName = property("awery.app.versionName").toString()
+        versionCode = property("awery.app.versionCode").toString().toInt()
+        targetSdk = property("awery.sdk.target").toString().toInt()
+        minSdk = property("awery.sdk.min").toString().toInt()
     }
 
     buildTypes {
@@ -188,27 +164,131 @@ android {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.mrboomdev.awery.app.MainKt"
+enum class DesktopTarget(
+    val os: String,
+    val arch: String,
+    val targetFormat: TargetFormat
+) {
+//    WINDOWS_AARCH64(
+//        os = "windows",
+//        arch = "aarch64",
+//        targetFormat = TargetFormat.Exe
+//    ),
+    
+    WINDOWS_X64(
+        os = "windows",
+        arch = "x64",
+        targetFormat = TargetFormat.Exe
+    ),
 
-        nativeDistributions {
-            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Msi)
-            packageName = "com.mrboomdev.awery"
-            packageVersion = properties["awery.app.versionName"].toString()
+//    WINDOWS_X86(
+//        os = "windows",
+//        arch = "x86",
+//        targetFormat = TargetFormat.Exe
+//    ),
+//    
+//    LINUX_AARCH64(
+//        os = "linux",
+//        arch = "aarch64",
+//        targetFormat = TargetFormat.Deb
+//    ),
+//
+//    LINUX_X64(
+//        os = "linux",
+//        arch = "x64",
+//        targetFormat = TargetFormat.Deb
+//    )
+}
 
-            windows {
-                console = true
-                perUserInstall = true
-                menu = true
-                menuGroup = "Awery"
-                includeAllModules = true
-                upgradeUuid = "6a7f9795-c323-4c10-a73a-55ac5506af01"
+DesktopTarget.values().map { target ->
+    target to tasks.register(listOf("download", target.os, target.arch, "jre").joinToCamelCase()) {
+        val version = property("awery.jre.version").toString()
+        val variant = property("awery.jre.variant").toString()
+        
+        inputs.property("jreVersion", version)
+        inputs.property("jreVariant", variant)
+        
+        doLast {
+            val url = buildString { 
+                
             }
+            
+            // TODO: Download jre at build time and cache it for each target
         }
     }
 }
 
-tasks.named("preBuild") {
-    dependsOn(generateAndroidLocaleConfig)
+compose.desktop {
+    application {
+        mainClass = "com.mrboomdev.awery.app.MainKt"
+        javaHome = rootProject.layout.projectDirectory.dir("jre/windows-x64").asFile.absolutePath
+
+        nativeDistributions {
+            targetFormats = DesktopTarget.values().map { it.targetFormat }.toSet()
+            packageName = "Awery"
+            packageVersion = property("awery.app.versionName").toString()
+            includeAllModules = true
+
+            windows {
+                iconFile = rootProject.file("app_icon.ico")
+                shortcut = true
+                menu = true
+                menuGroup = "Awery"
+                perUserInstall = true
+            }
+
+            // This block finds each packaging task (packageMsi, packageDmg, etc.)
+            // and configures it to depend on and use the correct JBR.
+//            tasks.withType<AbstractJPackageTask>().configureEach {
+//                javaHome = when(targetFormat) {
+//					else -> ""
+//				}
+//                
+//                val task = this
+//                
+//                DesktopTarget.values().find {
+//                    it.targetFormat.name.equals(task.targetFormat.name, ignoreCase = true) 
+//                }?.let { config ->
+//                    val jbrTargetDir = layout.buildDirectory.file("jbr/${config.os}-${config.arch}").get().asFile
+//                    val setupTaskName = "setupJbr_${config.os}_${config.arch}"
+//                    println("Configuring task ${task.name} to use JBR from ${jbrTargetDir.path}")
+//
+//                    // Set the correct javaHome path for this specific task
+//                    val macOsHome = jbrTargetDir.resolve("jbr_home/Contents/Home")
+//                    val otherHome = jbrTargetDir.resolve("jbr_home")
+//                    
+//                    task.javaHome = (if(config.os == "osx" && macOsHome.exists()) {
+//                        macOsHome
+//                    } else otherHome).absolutePath
+//
+//                    // Make this packaging task depend on its specific download task
+//                    task.dependsOn(/*setupTaskName*/ "downloadJbr")
+//                }
+//            }
+        }
+    }
 }
+
+tasks.register("generateAndroidLocaleConfig") {
+    val outputDir = layout.projectDirectory.dir("src/androidMain/res/xml")
+    val outputFile = outputDir.file("awery_generated_locales_config.xml")
+    val locales = getLocales()
+
+    // For task caching
+    inputs.property("locales", locales)
+    outputs.file(outputFile)
+
+    doLast {
+        outputDir.asFile.mkdirs()
+        outputFile.asFile.writeText(buildString {
+            appendLine("""<?xml version="1.0" encoding="utf-8"?>""")
+            appendLine("""<locale-config xmlns:android="http://schemas.android.com/apk/res/android">""")
+
+            for(locale in locales) {
+                appendLine("""    <locale android:name="$locale" />""")
+            }
+
+            appendLine("""</locale-config>""")
+        })
+    }
+}.let { tasks.named("preBuild").dependsOn(it) }

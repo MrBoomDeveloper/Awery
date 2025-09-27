@@ -1,35 +1,9 @@
 package com.mrboomdev.awery.ui.screens.main
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -37,42 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FlexibleBottomAppBar
-import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.HorizontalFloatingToolbar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailDefaults
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -84,7 +24,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.LayoutDirection
@@ -95,67 +34,25 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.mrboomdev.awery.data.settings.AwerySettings
-import com.mrboomdev.awery.resources.AweryFonts
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.extensions
-import com.mrboomdev.awery.resources.home
-import com.mrboomdev.awery.resources.ic_account_outlined
-import com.mrboomdev.awery.resources.ic_bookmarks_outlined
-import com.mrboomdev.awery.resources.ic_close
-import com.mrboomdev.awery.resources.ic_collections_bookmark_filled
-import com.mrboomdev.awery.resources.ic_collections_bookmark_outlined
-import com.mrboomdev.awery.resources.ic_edit_outlined
-import com.mrboomdev.awery.resources.ic_extension_outlined
-import com.mrboomdev.awery.resources.ic_home_filled
-import com.mrboomdev.awery.resources.ic_home_outlined
-import com.mrboomdev.awery.resources.ic_notifications_filled
-import com.mrboomdev.awery.resources.ic_notifications_outlined
-import com.mrboomdev.awery.resources.ic_search
-import com.mrboomdev.awery.resources.ic_settings_outlined
-import com.mrboomdev.awery.resources.library
-import com.mrboomdev.awery.resources.logo_awery
-import com.mrboomdev.awery.resources.notifications
-import com.mrboomdev.awery.resources.search
-import com.mrboomdev.awery.resources.settings
+import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.MainRoutes
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
-import com.mrboomdev.awery.ui.screens.intro.IntroDefaults.navigation
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
-import com.mrboomdev.awery.ui.utils.WindowInsets
-import com.mrboomdev.awery.ui.utils.WindowSizeType
-import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.bottom
-import com.mrboomdev.awery.ui.utils.collapse
-import com.mrboomdev.awery.ui.utils.currentWindowSize
-import com.mrboomdev.awery.ui.utils.expand
-import com.mrboomdev.awery.ui.utils.none
-import com.mrboomdev.awery.ui.utils.right
-import com.mrboomdev.awery.ui.utils.thenIf
-import com.mrboomdev.awery.ui.utils.thenIfElse
-import com.mrboomdev.awery.ui.utils.viewModel
-import dev.chrisbanes.haze.HazeDefaults
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.mrboomdev.awery.ui.utils.*
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
-import java.util.WeakHashMap
 
 @Composable
 expect fun MainScreen(
@@ -208,7 +105,8 @@ internal fun DefaultMainScreen(
                         NavigationRail(
                             modifier = Modifier.fillMaxHeight(),
                             windowInsets = WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Start + WindowInsetsSides.Vertical).add(WindowInsets(horizontal = 16.dp)),
+                                WindowInsetsSides.Start + WindowInsetsSides.Vertical
+                            ).add(WindowInsets(horizontal = 16.dp)),
                             
                             containerColor = NavigationRailDefaults.ContainerColor.let {
                                 if(isAmoledTheme()) it.copy(alpha = .75f) else it
@@ -263,7 +161,8 @@ internal fun DefaultMainScreen(
                     Scaffold(
                         modifier = Modifier
                             .weight(1f)
-                            .thenIf(useRail) { consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start)) }
+                            .thenIf(useRail) { 
+                                consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start)) }
                             .nestedScroll(topBarBehavior.nestedScrollConnection),
                         
                         containerColor = Color.Transparent,
@@ -283,7 +182,9 @@ internal fun DefaultMainScreen(
                             ) {
                                 Row(
                                     modifier = Modifier
-                                        .thenIfElse(useRail, { padding(horizontal = 16.dp) }, { padding(start = 16.dp, end = 8.dp) })
+                                        .thenIfElse(useRail, {
+                                            padding(horizontal = 16.dp)
+                                        }, { padding(start = 16.dp, end = 8.dp) })
                                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top +
                                                 if(useRail) WindowInsetsSides.End else WindowInsetsSides.Horizontal)),
                                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -350,7 +251,8 @@ internal fun DefaultMainScreen(
                                                     Box(
                                                         modifier = Modifier
                                                             .clip(RoundedCornerShape(32.dp))
-                                                            .background(MaterialTheme.colorScheme.surfaceContainerHighest.let {
+                                                            .background(
+                                                                MaterialTheme.colorScheme.surfaceContainerHighest.let {
                                                                 if(isAmoledTheme()) it.copy(alpha = .5f) else it
                                                             })
                                                     ) {
@@ -411,47 +313,62 @@ internal fun DefaultMainScreen(
                                         }
                                     }
                                     
-                                    if(windowSize.width >= WindowSizeType.Large) {
-                                        Text(
-                                            modifier = Modifier.padding(end = 2.dp),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontFamily = AweryFonts.poppins,
-                                            fontWeight = FontWeight.Normal,
-                                            text = AwerySettings.username.state.value
-                                        )
-                                    }
-
-                                    FilledIconButton(
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = .5f),
-                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                        ),
+                                    Row(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(32.dp))
+                                            .clickable { 
+                                                coroutineScope.launch { 
+                                                    drawerState.open() 
+                                                } 
+                                            }.thenIf(windowSize.width >= WindowSizeType.Large) {
+                                                padding(start = 16.dp)
+                                            },
                                         
-                                        onClick = {
-                                            coroutineScope.launch { 
-                                                drawerState.open() 
-                                            } 
-                                        }
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            modifier = Modifier.padding(6.dp),
-                                            painter = painterResource(Res.drawable.ic_account_outlined),
-                                            contentDescription = null
-                                        )
+                                        if(windowSize.width >= WindowSizeType.Large) {
+                                            Text(
+                                                modifier = Modifier.padding(end = 2.dp),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontFamily = AweryFonts.poppins,
+                                                fontWeight = FontWeight.Normal,
+                                                text = AwerySettings.username.state.value
+                                            )
+                                        }
 
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .clip(CircleShape)
-                                                .fillMaxSize(),
+                                        FilledIconButton(
+                                            colors = IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = .5f),
+                                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                            ),
 
-                                            model = ImageRequest.Builder(LocalPlatformContext.current)
-                                                .addLastModifiedToFileCacheKey(true)
-                                                .data(FileKit.filesDir / "avatar.png")
-                                                .build(),
+                                            onClick = {
+                                                coroutineScope.launch {
+                                                    drawerState.open()
+                                                }
+                                            }
+                                        ) {
+                                            Icon(
+                                                modifier = Modifier.padding(6.dp),
+                                                painter = painterResource(Res.drawable.ic_account_outlined),
+                                                contentDescription = null
+                                            )
 
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop
-                                        )
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .clip(CircleShape)
+                                                    .fillMaxSize(),
+
+                                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                                    .addLastModifiedToFileCacheKey(true)
+                                                    .data(FileKit.filesDir / "avatar.png")
+                                                    .build(),
+
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -516,11 +433,10 @@ internal fun DefaultMainScreen(
                             key = { it }
                         ) { page ->
                             fuck[page] = when(page) {
-                                0 -> HomePage(viewModel, contentPadding)
                                 1 -> SearchPage(viewModel, contentPadding, searchQuery.text.toString())
                                 2 -> NotificationsPage(contentPadding).let {{}}
                                 3 -> LibraryPage(viewModel, contentPadding)
-                                else -> throw IllegalStateException()
+                                else -> HomePage(viewModel, contentPadding)
                             }
                         }
 

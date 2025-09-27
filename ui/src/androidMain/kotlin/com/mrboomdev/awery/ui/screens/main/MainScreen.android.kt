@@ -2,14 +2,7 @@ package com.mrboomdev.awery.ui.screens.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,11 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.IconButtonDefaults
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Tab
-import androidx.tv.material3.TabRow
-import androidx.tv.material3.Text
+import androidx.tv.material3.*
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -45,6 +34,7 @@ import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_account_outlined
 import com.mrboomdev.awery.resources.ic_settings_outlined
 import com.mrboomdev.awery.resources.logo_awery
+import com.mrboomdev.awery.ui.MainRoutes
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
@@ -70,7 +60,7 @@ actual fun MainScreen(viewModel: MainScreenViewModel) {
 @Composable
 private fun TvMainScreen(viewModel: MainScreenViewModel) { 
 	val topBarBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-	val pagerState = rememberPagerState { MainScreenTabs.entries.size } 
+	val pagerState = rememberPagerState { MainRoutes.entries.size } 
 	val coroutineScope = rememberCoroutineScope()
     val navigation = Navigation.current() 
 	val toaster = LocalToaster.current
@@ -121,7 +111,9 @@ private fun TvMainScreen(viewModel: MainScreenViewModel) {
 							.focusRestorer(initialTabFocusRequester),
 						selectedTabIndex = pagerState.currentPage
 					) {
-						MainScreenTabs.entries.forEachIndexed { index, tab ->
+						MainRoutes.entries.forEachIndexed { index, tab ->
+							if(tab.desktopOnly) return@forEachIndexed
+							
 							key(index) {
 								Tab(
 									modifier = itemModifier

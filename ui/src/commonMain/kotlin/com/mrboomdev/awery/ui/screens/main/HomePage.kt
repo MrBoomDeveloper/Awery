@@ -1,92 +1,39 @@
 package com.mrboomdev.awery.ui.screens.main
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.Platform
-import com.mrboomdev.awery.core.utils.launchTrying
-import com.mrboomdev.awery.core.utils.runIfNull
 import com.mrboomdev.awery.data.settings.AwerySettings
-import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.resources.ic_language
 import com.mrboomdev.awery.resources.ic_refresh
-import com.mrboomdev.awery.resources.poster_no_image
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.ExpandableText
 import com.mrboomdev.awery.ui.components.FeedRow
 import com.mrboomdev.awery.ui.components.IconButton
-import com.mrboomdev.awery.ui.components.LocalToaster
-import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.effects.PostLaunchedEffect
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
-import com.mrboomdev.awery.ui.utils.WindowSizeType
-import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.bottom
-import com.mrboomdev.awery.ui.utils.classify
-import com.mrboomdev.awery.ui.utils.currentWindowSize
-import com.mrboomdev.awery.ui.utils.exclude
+import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.awery.ui.utils.pagination.InfiniteScroll
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.thenIf
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
@@ -100,6 +47,11 @@ internal fun HomePage(
     val navigation = Navigation.current()
     val windowSize = currentWindowSize()
     val lazyListState = rememberLazyListState()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val loadedFeeds by viewModel.loadedFeeds.collectAsState()
+    val failedFeeds by viewModel.failedFeeds.collectAsState()
+    val isLoading by viewModel.isLoadingFeeds.collectAsState()
+    val isReloading by viewModel.isReloadingFeeds.collectAsState()
     
     InfiniteScroll(lazyListState, 5) {
 		viewModel.loadMoreFeeds()
@@ -108,23 +60,9 @@ internal fun HomePage(
     PostLaunchedEffect(AwerySettings.adultContent.state.value) {
         viewModel.reloadFeeds()
     }
-
-    val pullToRefreshState = rememberPullToRefreshState()
     
-    PullToRefreshBox(
-        modifier = Modifier.fillMaxSize(),
-        state = pullToRefreshState,
-        isRefreshing = viewModel.isReloading,
-        onRefresh = { viewModel.reloadFeeds() },
-        indicator = {
-            Indicator(
-                modifier = Modifier.align(Alignment.TopCenter),
-                isRefreshing = viewModel.isReloading,
-                state = pullToRefreshState,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    ) {
+    @Composable
+    fun Content() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding
@@ -132,7 +70,7 @@ internal fun HomePage(
                 .add(bottom = 16.dp),
             state = lazyListState
         ) {
-            if(viewModel.loadedFeeds.isEmpty()) {
+            if(loadedFeeds.isEmpty()) {
                 singleItem("welcome") {
                     Box(
                         modifier = Modifier
@@ -171,110 +109,110 @@ internal fun HomePage(
                     }
                 }
             }
-            
+
             // TODO: Make this section visible once we'll be able to restore a video from a DBWatchProgress
-//            if(continueWatching.isNotEmpty().let { false }) {
-//                singleItem("continueWatching") {
-//                    FeedRow(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .animateItem(),
-//                        title = "Continue watching"
-//                    ) { contentPadding ->
-//                        Spacer(Modifier.height(16.dp))
-//
-//                        LazyRow(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            contentPadding = contentPadding,
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                        ) {
-//                            items(
-//                                items = continueWatching,
-//                                key = { it.first.extensionId + it.first.mediaId + it.first.variantId }
-//                            ) { (watchProgress, media) ->
-//                                val coroutineScope = rememberCoroutineScope()
-//                                var isLoading by remember { mutableStateOf(false) }
-//                                var job by remember { mutableStateOf<Job?>(null) }
-//
-//                                if(isLoading) {
-//                                    Dialog(onDismissRequest = {
-//                                        job?.cancel()
-//                                        isLoading = false
-//                                    }) {
-//                                        CircularProgressIndicator()
-//                                    }
-//                                }
-//
-//                                Column(
-//                                    modifier = Modifier
-//                                        .clip(RoundedCornerShape(2.dp))
-//                                        .clickable {
-//                                            isLoading = true
-//
-//                                            job = coroutineScope.launchTrying(
-//                                                Dispatchers.Default, onCatch = { t ->
-//                                                    if(t is CancellationException) return@launchTrying
-//                                                    toaster.toast("Failed to play a video")
-//                                                    isLoading = false
-//                                                }
-//                                            ) {
-//                                                val extension = Extensions[watchProgress.extensionId]
-//                                                    .runIfNull {
-//                                                        toaster.toast("Source extension isn't installed!")
-//                                                        return@launchTrying
-//                                                    }
-//
-//
-//
-//                                                toaster.toast("You shouldn't be able to get here!")
-//                                                isLoading = false
-//                                            }
-//                                        },
-//                                    verticalArrangement = Arrangement.spacedBy(12.dp)
-//                                ) {
-//                                    Box(
-//                                        modifier = Modifier
-//                                            .clip(RoundedCornerShape(2.dp))
-//                                            .height(150.dp)
-//                                            .aspectRatio(16f / 9f)
-//                                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-//                                    ) {
-//                                        AsyncImage(
-//                                            modifier = Modifier.fillMaxSize(),
-//                                            model = watchProgress.thumbnail ?: media.banner ?: media.poster,
-//                                            error = painterResource(Res.drawable.poster_no_image),
-//                                            contentScale = ContentScale.Crop,
-//                                            contentDescription = null
-//                                        )
-//
-//                                        if(watchProgress.maxProgress != null) {
-//                                            LinearProgressIndicator(
-//                                                modifier = Modifier
-//                                                    .fillMaxWidth()
-//                                                    .align(Alignment.BottomCenter),
-//                                                progress = {
-//                                                    (watchProgress.progress / watchProgress.maxProgress!!).toFloat()
-//                                                }
-//                                            )
-//                                        }
-//                                    }
-//
-//                                    Text(
-//                                        style = MaterialTheme.typography.bodyMedium,
-//                                        overflow = TextOverflow.Ellipsis,
-//                                        minLines = 2,
-//                                        maxLines = 2,
-//                                        text = media.title
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            //            if(continueWatching.isNotEmpty().let { false }) {
+            //                singleItem("continueWatching") {
+            //                    FeedRow(
+            //                        modifier = Modifier
+            //                            .fillMaxWidth()
+            //                            .animateItem(),
+            //                        title = "Continue watching"
+            //                    ) { contentPadding ->
+            //                        Spacer(Modifier.height(16.dp))
+            //
+            //                        LazyRow(
+            //                            modifier = Modifier.fillMaxWidth(),
+            //                            contentPadding = contentPadding,
+            //                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            //                        ) {
+            //                            items(
+            //                                items = continueWatching,
+            //                                key = { it.first.extensionId + it.first.mediaId + it.first.variantId }
+            //                            ) { (watchProgress, media) ->
+            //                                val coroutineScope = rememberCoroutineScope()
+            //                                var isLoading by remember { mutableStateOf(false) }
+            //                                var job by remember { mutableStateOf<Job?>(null) }
+            //
+            //                                if(isLoading) {
+            //                                    Dialog(onDismissRequest = {
+            //                                        job?.cancel()
+            //                                        isLoading = false
+            //                                    }) {
+            //                                        CircularProgressIndicator()
+            //                                    }
+            //                                }
+            //
+            //                                Column(
+            //                                    modifier = Modifier
+            //                                        .clip(RoundedCornerShape(2.dp))
+            //                                        .clickable {
+            //                                            isLoading = true
+            //
+            //                                            job = coroutineScope.launchTrying(
+            //                                                Dispatchers.Default, onCatch = { t ->
+            //                                                    if(t is CancellationException) return@launchTrying
+            //                                                    toaster.toast("Failed to play a video")
+            //                                                    isLoading = false
+            //                                                }
+            //                                            ) {
+            //                                                val extension = Extensions[watchProgress.extensionId]
+            //                                                    .runIfNull {
+            //                                                        toaster.toast("Source extension isn't installed!")
+            //                                                        return@launchTrying
+            //                                                    }
+            //
+            //
+            //
+            //                                                toaster.toast("You shouldn't be able to get here!")
+            //                                                isLoading = false
+            //                                            }
+            //                                        },
+            //                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+            //                                ) {
+            //                                    Box(
+            //                                        modifier = Modifier
+            //                                            .clip(RoundedCornerShape(2.dp))
+            //                                            .height(150.dp)
+            //                                            .aspectRatio(16f / 9f)
+            //                                            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            //                                    ) {
+            //                                        AsyncImage(
+            //                                            modifier = Modifier.fillMaxSize(),
+            //                                            model = watchProgress.thumbnail ?: media.banner ?: media.poster,
+            //                                            error = painterResource(Res.drawable.poster_no_image),
+            //                                            contentScale = ContentScale.Crop,
+            //                                            contentDescription = null
+            //                                        )
+            //
+            //                                        if(watchProgress.maxProgress != null) {
+            //                                            LinearProgressIndicator(
+            //                                                modifier = Modifier
+            //                                                    .fillMaxWidth()
+            //                                                    .align(Alignment.BottomCenter),
+            //                                                progress = {
+            //                                                    (watchProgress.progress / watchProgress.maxProgress!!).toFloat()
+            //                                                }
+            //                                            )
+            //                                        }
+            //                                    }
+            //
+            //                                    Text(
+            //                                        style = MaterialTheme.typography.bodyMedium,
+            //                                        overflow = TextOverflow.Ellipsis,
+            //                                        minLines = 2,
+            //                                        maxLines = 2,
+            //                                        text = media.title
+            //                                    )
+            //                                }
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
 
             items(
-                items = viewModel.loadedFeeds,
+                items = loadedFeeds,
                 key = { "feed_${it.first.id}_${it.second.id}" },
                 contentType = { "feed" }
             ) { (extension, feed, media) ->
@@ -287,7 +225,7 @@ internal fun HomePage(
                         onDismissRequest = { showActionsDialog = null }
                     )
                 }
-                
+
                 FeedRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -300,15 +238,15 @@ internal fun HomePage(
                             ))
                         } }
                         .animateItem(),
-                    
+
                     contentPadding = WindowInsets.safeDrawing
                         .only(WindowInsetsSides.End)
                         .asPaddingValues()
                         .add(horizontal = 16.dp, vertical = 8.dp),
-                    
+
                     title = "${extension.name} - ${feed.name}",
                     items = media.items,
-                    
+
                     actions = {
                         if(media.hasNextPage) {
                             IconButton(
@@ -329,11 +267,11 @@ internal fun HomePage(
                             )
                         }
                     },
-                    
+
                     onMediaLongClick = { media ->
                         showActionsDialog = media
                     },
-                    
+
                     onMediaSelected = {
                         navigation.push(Routes.Media(
                             extensionId = extension.id,
@@ -344,7 +282,7 @@ internal fun HomePage(
                 )
             }
 
-            if(viewModel.isLoadingFeeds) {
+            if(isLoading) {
                 singleItem("loadingIndicator") {
                     Box(
                         modifier = Modifier
@@ -359,12 +297,12 @@ internal fun HomePage(
             }
 
             items(
-                items = viewModel.failedFeeds,
+                items = failedFeeds,
                 key = { "failedFeed_${it.first.id}_${it.second.id}" },
                 contentType = { "failedFeed" }
             ) { (extension, feed, throwable) ->
                 var isReloading by remember { mutableStateOf(false) }
-                
+
                 FeedRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -373,7 +311,7 @@ internal fun HomePage(
                     title = "${extension.name} - ${feed.name}",
                     actions = {
                         if(isReloading) return@FeedRow
-                        
+
                         extension.webpage?.also { webpage ->
                             IconButton(
                                 modifier = Modifier.size(42.dp),
@@ -383,17 +321,17 @@ internal fun HomePage(
                                 onClick = { navigation.push(Routes.Browser(webpage)) }
                             )
                         }
-                        
+
                         IconButton(
                             modifier = Modifier.size(42.dp),
                             painter = painterResource(Res.drawable.ic_refresh),
                             contentDescription = null,
                             onClick = {
                                 isReloading = true
-                                
+
                                 viewModel.reloadFeed(extension, feed) { feedIndex ->
                                     isReloading = false
-                                    
+
                                     if(feedIndex != null) {
                                         coroutineScope.launch {
                                             lazyListState.animateScrollToItem(feedIndex)
@@ -412,13 +350,13 @@ internal fun HomePage(
                                     .padding(contentPadding)
                                     .padding(top = 32.dp, bottom = 16.dp)
                             )
-                            
+
                             return@Crossfade
                         }
 
                         SelectionContainer {
                             var expand by remember { mutableStateOf(false) }
-                            
+
                             ExpandableText(
                                 modifier = Modifier
                                     .padding(contentPadding)
@@ -433,6 +371,27 @@ internal fun HomePage(
                 }
             }
         }
+    }
+    
+    if(Awery.platform == Platform.DESKTOP) {
+        // PullToRefreshBox gestures doesn't work correctly with mouse
+        Content()
+    } else {
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            state = pullToRefreshState,
+            isRefreshing = isReloading,
+            onRefresh = { viewModel.reloadFeeds() },
+            content = { Content() },
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = isReloading,
+                    state = pullToRefreshState,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        )
     }
     
     return {
