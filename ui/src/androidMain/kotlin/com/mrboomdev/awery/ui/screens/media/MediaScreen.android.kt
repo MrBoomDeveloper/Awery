@@ -1,51 +1,19 @@
 package com.mrboomdev.awery.ui.screens.media
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -68,17 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.tv.material3.Button
-import androidx.tv.material3.ButtonDefaults
-import androidx.tv.material3.Card
-import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.ExperimentalTvMaterial3Api
-import androidx.tv.material3.Icon
-import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.SuggestionChip
-import androidx.tv.material3.Surface
-import androidx.tv.material3.Text
-import androidx.tv.material3.darkColorScheme
+import androidx.tv.material3.*
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import be.digitalia.compose.htmlconverter.htmlToString
 import coil3.compose.AsyncImage
@@ -89,44 +47,29 @@ import com.mrboomdev.awery.core.utils.toCalendar
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getLargePoster
 import com.mrboomdev.awery.extension.sdk.Media
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.bookmark
-import com.mrboomdev.awery.resources.chapters
-import com.mrboomdev.awery.resources.episodes
-import com.mrboomdev.awery.resources.ic_book_filled
-import com.mrboomdev.awery.resources.ic_bookmark_filled
-import com.mrboomdev.awery.resources.ic_play_filled
-import com.mrboomdev.awery.resources.read_now
-import com.mrboomdev.awery.resources.tags
-import com.mrboomdev.awery.resources.watch_now
+import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.popups.BookmarkMediaDialog
-import com.mrboomdev.awery.ui.utils.CustomBringIntoViewSpec
-import com.mrboomdev.awery.ui.utils.classify
-import com.mrboomdev.awery.ui.utils.formatAsCountry
-import com.mrboomdev.awery.ui.utils.handleDPadKeyEvents
-import com.mrboomdev.awery.ui.utils.singleItem
+import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import nl.jacobras.humanreadable.HumanReadable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import java.util.Calendar
-import kotlin.time.Duration.Companion.milliseconds
+import java.util.*
 
 private val SHADOW_COLOR = Color(0xee000000)
 
 @Composable
 actual fun MediaScreen(
     destination: Routes.Media,
-    viewModel: MediaScreenViewModel
+    viewModel: MediaScreenViewModel,
+    contentPadding: PaddingValues
 ) {
     if(Awery.isTv) TvMediaScreen(destination, viewModel)
-    else DefaultMediaScreen(destination, viewModel)
+    else DefaultMediaScreen(destination, viewModel, contentPadding)
 }
 
 @Composable
@@ -136,11 +79,12 @@ private fun TvMediaScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState { 2 }
+	val media by viewModel.media.collectAsState()
     
     Box(Modifier.fillMaxSize()) {
         AsyncImage(
             modifier = Modifier.matchParentSize(),
-            model = viewModel.media.getBanner(),
+            model = media.getBanner(),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
@@ -212,6 +156,7 @@ private fun MainPage(
     val windowHeight = LocalWindowInfo.current.containerSize.height
     val mainSectionHeight = with(LocalDensity.current) { (windowHeight * .9f).toDp() }
     val spaceHeight = with(LocalDensity.current) { (windowHeight * .2f).toDp() }
+	val media by viewModel.media.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val toaster = LocalToaster.current
     
@@ -233,23 +178,23 @@ private fun MainPage(
                 maxFontSize = 57.sp
             ),
 
-            text = viewModel.media.title
+            text = media.title
         )
 
         listOfNotNull(
             destination.extensionName,
-            viewModel.media.ageRating,
-            viewModel.media.releaseDate?.toCalendar()?.get(Calendar.YEAR),
-            viewModel.media.country?.formatAsCountry(),
+            media.ageRating,
+            media.releaseDate?.toCalendar()?.get(Calendar.YEAR),
+            media.country?.formatAsCountry(),
 
-            viewModel.media.episodes?.let { episodes ->
-                pluralStringResource(when(viewModel.media.type) {
+            media.episodes?.let { episodes ->
+                pluralStringResource(when(media.type) {
                     Media.Type.WATCHABLE -> Res.plurals.episodes
                     Media.Type.READABLE -> Res.plurals.chapters
                 }, episodes, episodes)
             },
 
-            viewModel.media.tags?.takeIf { it.isNotEmpty() }?.joinToString(", ")
+            media.tags?.takeIf { it.isNotEmpty() }?.joinToString(", ")
         ).joinToString(" • ").takeIf { it.isNotBlank() }?.also { meta ->
             Text(
                 modifier = Modifier
@@ -262,7 +207,7 @@ private fun MainPage(
             )
         }
 
-        viewModel.media.description?.also { description ->
+        media.description?.also { description ->
             var expand by remember { mutableStateOf(false) }
 
             if(expand) {
@@ -342,7 +287,7 @@ private fun MainPage(
         if(showBookmarkDialog) {
             BookmarkMediaDialog(
                 extensionId = destination.extensionId,
-                media = viewModel.media,
+                media = media,
                 onDismissRequest = { showBookmarkDialog = false }
             )
         }
@@ -362,7 +307,7 @@ private fun MainPage(
                 modifier = Modifier.focusRequester(focusRequester),
 
                 onClick = {
-                    if(viewModel.media.type == Media.Type.READABLE) {
+                    if(media.type == Media.Type.READABLE) {
                         toaster.toast("Reading isn't supported yet!")
                         return@Button
                     }
@@ -373,7 +318,7 @@ private fun MainPage(
                 Icon(
                     modifier = Modifier.size(ButtonDefaults.IconSize),
                     contentDescription = null,
-                    painter = painterResource(when(viewModel.media.type) {
+                    painter = painterResource(when(media.type) {
                         Media.Type.WATCHABLE -> Res.drawable.ic_play_filled
                         Media.Type.READABLE -> Res.drawable.ic_book_filled
                     })
@@ -381,7 +326,7 @@ private fun MainPage(
 
                 Spacer(Modifier.width(ButtonDefaults.IconSpacing))
 
-                Text(stringResource(when(viewModel.media.type) {
+                Text(stringResource(when(media.type) {
                     Media.Type.WATCHABLE -> Res.string.watch_now
                     Media.Type.READABLE -> Res.string.read_now
                 }))
@@ -403,7 +348,7 @@ private fun MainPage(
     
     @Composable
     fun MoreInfoSection() {
-        viewModel.media.tags?.also { tags ->
+        media.tags?.also { tags ->
             Column(
                 modifier = Modifier
                     .background(SHADOW_COLOR)
@@ -469,8 +414,8 @@ private fun MainPage(
                         .onFocusChanged { isHeroFocused = it.hasFocus },
                     horizontalArrangement = Arrangement.spacedBy(32.dp)
                 ) {
-                    val noBannerButPoster = viewModel.media.banner == null && 
-                            (viewModel.media.poster != null || viewModel.media.largePoster != null)
+                    val noBannerButPoster = media.banner == null && 
+                            (media.poster != null || media.largePoster != null)
                     
                     Column(
                         modifier = Modifier
@@ -500,13 +445,13 @@ private fun MainPage(
                                         .clip(RoundedCornerShape(16.dp))
                                         .animateContentSize(),
 
-                                    model = viewModel.media.getLargePoster(),
+                                    model = media.getLargePoster(),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     onSuccess = { state ->
                                         if(state.result.image.let { it.width / it.height } >= 1) {
                                             // THIS IS A FUCKING BANNER! NOT A POSTER!
-                                            // THIS SHIT SIMPLY WONT FIT IN THE LAYOUT!
+                                            // THIS SHIT SIMPLY WON'T FIT IN THE LAYOUT!
                                             showPoster = false
                                         }
                                     }
@@ -535,13 +480,7 @@ private fun EpisodesPage(
     viewModel: MediaScreenViewModel,
     onBack: () -> Unit
 ) {
-    val windowWidth = LocalWindowInfo.current.containerSize.width
-    val windowWidthDp = with(LocalDensity.current) { windowWidth.toDp() }
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadEpisodes()
-    }
+	val status by viewModel.episodesLoadingStatus.collectAsState()
     
     BackEffect(onBack)
 
@@ -614,7 +553,7 @@ private fun EpisodesPage(
 //                }
 //            }
             
-            when(val status = viewModel.episodesLoadingStatus) {
+            when(status) {
 				is LoadingStatus.Failed -> {
                     singleItem("failed") { 
                         Column(
@@ -635,7 +574,7 @@ private fun EpisodesPage(
                             
                             Text(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                text = status.throwable.classify().message
+                                text = (status as LoadingStatus.Failed).throwable.classify().message
                             )
                             
                             val focusRequester = remember { FocusRequester() }
@@ -646,7 +585,7 @@ private fun EpisodesPage(
                             
                             Button(
                                 modifier = Modifier.focusRequester(focusRequester),
-                                onClick = { viewModel.loadEpisodes() }
+                                onClick = { viewModel.reloadEpisodes() }
                             ) {
                                 Text("Try again")
                             }

@@ -43,13 +43,13 @@ class MutableStateListFlow<T> private constructor(
 	override suspend fun emit(value: List<T>) {
 		list.clear()
 		list += value
-		mutableStateFlow.emit(value)
+		mutableStateFlow.emit(value.toList())
 	}
 
 	override fun tryEmit(value: List<T>): Boolean {
 		list.clear()
 		list += value
-		return mutableStateFlow.tryEmit(value)
+		return mutableStateFlow.tryEmit(value.toList())
 	}
 
 	@ExperimentalCoroutinesApi
@@ -58,61 +58,43 @@ class MutableStateListFlow<T> private constructor(
 	}
 
 	override suspend fun add(element: T): Boolean {
-		return list.add(element).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.add(element).apply { update() }
 	}
 
 	override suspend fun remove(element: T): Boolean {
-		return list.remove(element).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.remove(element).apply { update() }
 	}
 
 	override suspend fun addAll(elements: Collection<T>): Boolean {
-		return list.addAll(elements).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.addAll(elements).apply { update() }
 	}
 
 	override suspend fun addAll(index: Int, elements: Collection<T>): Boolean {
-		return list.addAll(index, elements).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.addAll(index, elements).apply { update() }
 	}
 
 	override suspend fun removeAll(elements: Collection<T>): Boolean {
-		return list.removeAll(elements).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.removeAll(elements).apply { update() }
 	}
 
 	override suspend fun retainAll(elements: Collection<T>): Boolean {
-		return list.retainAll(elements).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.retainAll(elements).apply { update() }
 	}
 
 	override suspend fun clear() {
-		list.clear()
-		mutableStateFlow.emit(list)
+		list.clear().apply { update() }
 	}
 
 	override suspend fun set(index: Int, element: T): T {
-		return list.set(index, element).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.set(index, element).apply { update() }
 	}
 
 	override suspend fun add(index: Int, element: T) {
-		list.add(index, element)
-		mutableStateFlow.emit(list)
+		list.add(index, element).apply { update() }
 	}
 
 	override suspend fun removeAt(index: Int): T {
-		return list.removeAt(index).apply { 
-			mutableStateFlow.emit(list)
-		}
+		return list.removeAt(index).apply { update() }
 	}
 
 	override fun listIterator(): /*Mutable*/ListIterator<T> {
@@ -156,5 +138,10 @@ class MutableStateListFlow<T> private constructor(
 
 	override fun iterator(): /*Mutable*/Iterator<T> {
 		return list.iterator()
+	}
+	
+	private suspend inline fun update() {
+		// We do prevent race conditions by this magic trick!
+		mutableStateFlow.emit(list.toList())
 	}
 }

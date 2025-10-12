@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import javax.swing.Spring.height
 
 private val noneImpl = WindowInsets(0, 0, 0, 0)
 val WindowInsets.Companion.none get() = noneImpl
@@ -105,3 +104,14 @@ fun WindowInsets(horizontal: Dp = 0.dp, vertical: Dp = 0.dp) = WindowInsets(
     right = horizontal,
     bottom = vertical
 )
+
+@Composable
+fun niceSideInset(): Dp {
+	val windowSize = currentWindowSize()
+	
+	return when {
+		windowSize.width >= WindowSizeType.ExtraLarge -> 64.dp
+		windowSize.width >= WindowSizeType.Large -> 32.dp
+		else -> 16.dp
+	}
+}

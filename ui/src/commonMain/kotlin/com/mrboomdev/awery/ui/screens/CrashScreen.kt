@@ -1,25 +1,15 @@
 package com.mrboomdev.awery.ui.screens
 
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.ui.theme.AweryTheme
-import com.mrboomdev.awery.ui.utils.add
 import com.mrboomdev.awery.ui.utils.plus
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +24,8 @@ fun CrashScreen(
 			contentWindowInsets = WindowInsets.safeContent,
 			topBar = {
 				TopAppBar(
-					windowInsets = WindowInsets.safeContent,
+					windowInsets = WindowInsets.safeContent.only(
+						WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
 					title = { Text("Awery has crashed!") },
 					colors = TopAppBarDefaults.topAppBarColors(
 						containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,

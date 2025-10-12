@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.data.settings.AwerySettings
-import kotlinx.serialization.json.JsonNull.content
+import com.mrboomdev.awery.data.settings.collectAsState
 
 @Composable
 expect fun isMaterialYouAvailable(): Boolean
@@ -31,7 +31,7 @@ expect fun aweryColorScheme(dark: Boolean = isDarkTheme()): ColorScheme
 @Composable
 fun isDarkTheme(): Boolean {
     // Tv must be always in a dark theme.
-    return Awery.isTv || when(AwerySettings.darkTheme.state.value) {
+    return Awery.isTv || when(AwerySettings.darkTheme.collectAsState().value) {
         AwerySettings.DarkTheme.AUTO -> isSystemInDarkTheme()
         AwerySettings.DarkTheme.ON -> true
         AwerySettings.DarkTheme.OFF -> false
@@ -40,7 +40,7 @@ fun isDarkTheme(): Boolean {
 
 @Composable
 fun isAmoledTheme(): Boolean {
-    return isDarkTheme() && AwerySettings.amoledTheme.state.value
+    return isDarkTheme() && AwerySettings.amoledTheme.collectAsState().value
 }
 
 internal fun ColorScheme.toAmoledColorScheme() = copy(

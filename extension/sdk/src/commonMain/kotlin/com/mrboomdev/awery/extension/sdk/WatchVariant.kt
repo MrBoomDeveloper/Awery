@@ -8,6 +8,6 @@ data class WatchVariant(
     val releaseDate: Long? = null
 ) {
     enum class Type {
-        LOCALE, SEASON, QUALITY, DUB, EPISODE
+        LOCALE, SEASON, QUALITY, EPISODE
     }
 }

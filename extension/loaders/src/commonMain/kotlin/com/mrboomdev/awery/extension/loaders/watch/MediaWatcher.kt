@@ -5,15 +5,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.mrboomdev.awery.core.utils.NothingFoundException
 import com.mrboomdev.awery.extension.loaders.Extensions.get
-import com.mrboomdev.awery.extension.sdk.Either
 import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Media
-import com.mrboomdev.awery.extension.sdk.Video
 import com.mrboomdev.awery.extension.sdk.get
 import com.mrboomdev.awery.extension.sdk.modules.WatchModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 
 class MediaWatcher(

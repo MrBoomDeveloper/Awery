@@ -5,31 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -44,42 +22,20 @@ import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.data.settings.AwerySettings
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.amoled
-import com.mrboomdev.awery.resources.amoled_theme_description
-import com.mrboomdev.awery.resources.back
-import com.mrboomdev.awery.resources.color_palette
-import com.mrboomdev.awery.resources.color_palette_description
-import com.mrboomdev.awery.resources.dark_theme
-import com.mrboomdev.awery.resources.dark_theme_description
-import com.mrboomdev.awery.resources.finish
-import com.mrboomdev.awery.resources.ic_awesome_filled
-import com.mrboomdev.awery.resources.ic_contrast
-import com.mrboomdev.awery.resources.ic_dark_mode_outlined
-import com.mrboomdev.awery.resources.ic_done
-import com.mrboomdev.awery.resources.ic_mood_outlined
-import com.mrboomdev.awery.resources.ic_palette_outlined
-import com.mrboomdev.awery.resources.lets_begin
-import com.mrboomdev.awery.resources.logo_awery
-import com.mrboomdev.awery.resources.setup_finished_description
-import com.mrboomdev.awery.resources.status_finished
-import com.mrboomdev.awery.resources.theme
-import com.mrboomdev.awery.resources.username
-import com.mrboomdev.awery.resources.welcome_to_app
-import com.mrboomdev.awery.resources.welcome_to_app_description
+import com.mrboomdev.awery.data.settings.collectAsState
+import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.LocalApp
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FilePicker
+import com.mrboomdev.awery.ui.getInitialRoute
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
-import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults.item
 import com.mrboomdev.awery.ui.screens.settings.itemSetting
 import com.mrboomdev.awery.ui.theme.isDarkTheme
 import com.mrboomdev.awery.ui.theme.isMaterialYouAvailable
 import com.mrboomdev.awery.ui.theme.materialYouColorScheme
 import com.mrboomdev.awery.ui.theme.seedColorScheme
 import com.mrboomdev.awery.ui.utils.end
-import com.mrboomdev.awery.ui.utils.exclude
 import com.mrboomdev.awery.ui.utils.start
 import com.mrboomdev.awery.ui.utils.top
 import com.mrboomdev.navigation.core.safePop
@@ -96,6 +52,7 @@ import io.github.vinceglb.filekit.copyTo
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -107,25 +64,29 @@ sealed interface IntroStep {
     @Serializable
     data object Welcome: IntroStep {
         @Composable
-        override fun Content(singleStep: Boolean) = IntroDefaults.page(
-            icon = { 
-                Image(
-                    modifier = Modifier.size(IntroDefaults.iconSize),
-                    painter = painterResource(Res.drawable.logo_awery), 
-                    contentDescription = null
-                ) 
-            },
-            
+        override fun Content(
+            singleStep: Boolean,
+            contentPadding: PaddingValues
+        ) = IntroDefaults.page(
+            contentPadding = contentPadding,
             title = stringResource(Res.string.welcome_to_app),
             description = stringResource(Res.string.welcome_to_app_description),
+
+            icon = {
+                Image(
+                    modifier = Modifier.size(IntroDefaults.iconSize),
+                    painter = painterResource(Res.drawable.logo_awery),
+                    contentDescription = null
+                )
+            },
             
             actions = {
                 val navigation = IntroDefaults.navigation.current()
                 
                 Spacer(Modifier.weight(1f))
                 
-                Button(onClick = { 
-                    AwerySettings.introDidWelcome.value = true
+                Button(onClick = {
+					runBlocking { AwerySettings.introDidWelcome.set(true) }
                     navigation.push(Theme)
                 }) {
                     Text(stringResource(Res.string.lets_begin))
@@ -137,7 +98,14 @@ sealed interface IntroStep {
     @Serializable
     data object Theme: IntroStep {
         @Composable
-        override fun Content(singleStep: Boolean) = IntroDefaults.page(
+        override fun Content(
+            singleStep: Boolean,
+            contentPadding: PaddingValues
+        ) = IntroDefaults.page(
+            contentPadding = contentPadding,
+            title = stringResource(Res.string.color_palette),
+            description = stringResource(Res.string.color_palette_description),
+
             icon = {
                 Icon(
                     modifier = Modifier.size(IntroDefaults.iconSize),
@@ -147,10 +115,8 @@ sealed interface IntroStep {
                 )
             },
             
-            title = stringResource(Res.string.color_palette),
-            description = stringResource(Res.string.color_palette_description),
-            nextStep = { 
-                AwerySettings.introDidTheme.value = true
+            nextStep = {
+                runBlocking { AwerySettings.introDidTheme.set(true) }
                 return@page UserCreation 
             }
         ) { contentPadding ->
@@ -178,7 +144,7 @@ sealed interface IntroStep {
                     for(primaryColor in listOfNotNull(
                         // All stolen from Dartotsu.
                         // Copying every single one property would be pain in as to maintain,
-                        // so instead we do just generate a whole palette based of an primary color.
+                        // so instead we do just generate a whole palette based of a primary color.
                         materialYou.takeIf { isMaterialYouAvailable() },
                         0xFF00658E, // Blue
                         0xFF426916, // Green
@@ -203,10 +169,12 @@ sealed interface IntroStep {
                             ),
 
                             onClick = {
-                                AwerySettings.primaryColor.value = primaryColor
+								runBlocking {
+									AwerySettings.primaryColor.set(primaryColor)
+								}
                             }
                         ) {
-                            if(AwerySettings.primaryColor.state.value.let {
+                            if(AwerySettings.primaryColor.collectAsState().value.let {
                                 it == primaryColor || (primaryColor == materialYou && it < 0L)
                             }) {
                                 Icon(
@@ -269,7 +237,16 @@ sealed interface IntroStep {
     @Serializable
     data object UserCreation: IntroStep {
         @Composable
-        override fun Content(singleStep: Boolean) = IntroDefaults.page(
+        override fun Content(
+            singleStep: Boolean,
+            contentPadding: PaddingValues
+        ) = IntroDefaults.page(
+            contentPadding = contentPadding,
+            title = "Customize experience",
+            description = "Some inspirational text will appear here soon. if i'll won't forget about it.",
+            canOpenNextStep = AwerySettings.username.collectAsState().value.isNotBlank(),
+            nextStep = { End }.takeUnless { singleStep },
+
             icon = {
                 Icon(
                     modifier = Modifier.size(IntroDefaults.iconSize),
@@ -277,12 +254,7 @@ sealed interface IntroStep {
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = null
                 )
-            },
-
-            title = "Customize experience",
-            description = "Some inspirational text will appear here soon. if i'll won't forget about it.",
-            canOpenNextStep = AwerySettings.username.state.value.isNotBlank(),
-            nextStep = { End }.takeUnless { singleStep }
+            }
         ) { contentPadding ->
             Column(
                 modifier = Modifier.padding(contentPadding),
@@ -290,8 +262,8 @@ sealed interface IntroStep {
             ) {
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = AwerySettings.username.state.value,
-                    onValueChange = { AwerySettings.username.value = it },
+                    value = AwerySettings.username.collectAsState().value,
+                    onValueChange = { runBlocking { AwerySettings.username.set(it) } },
                     label = { Text(stringResource(Res.string.username)) },
                     singleLine = true
                 )
@@ -369,8 +341,8 @@ sealed interface IntroStep {
 
                 Slider(
                     modifier = Modifier.fillMaxWidth(),
-                    value = AwerySettings.wallpaperOpacity.state.value / 100f,
-                    onValueChange = { AwerySettings.wallpaperOpacity.value = (it * 100).roundToInt() }
+                    value = AwerySettings.wallpaperOpacity.collectAsState().value / 100f,
+                    onValueChange = { runBlocking { AwerySettings.wallpaperOpacity.set((it * 100).roundToInt()) } }
                 )
             }
         }
@@ -398,7 +370,10 @@ sealed interface IntroStep {
         )
         
         @Composable
-        override fun Content(singleStep: Boolean) {
+        override fun Content(
+            singleStep: Boolean,
+            contentPadding: PaddingValues
+        ) {
             ConfettiKit(
                 modifier = Modifier.fillMaxSize(),
                 parties = listOf(
@@ -409,6 +384,10 @@ sealed interface IntroStep {
             )
             
             IntroDefaults.page(
+                contentPadding = contentPadding,
+                title = stringResource(Res.string.status_finished),
+                description = stringResource(Res.string.setup_finished_description),
+
                 icon = {
                     Icon(
                         modifier = Modifier.size(IntroDefaults.iconSize),
@@ -417,9 +396,6 @@ sealed interface IntroStep {
                         contentDescription = null
                     )
                 },
-
-                title = stringResource(Res.string.status_finished),
-                description = stringResource(Res.string.setup_finished_description),
 
                 actions = {
                     val introNavigation = IntroDefaults.navigation.current()
@@ -434,7 +410,7 @@ sealed interface IntroStep {
 
                     Button(onClick = { 
                         appNavigation.clear()
-                        appNavigation.push(Routes.Main)
+                        appNavigation.push(getInitialRoute())
                     }) {
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),
@@ -447,11 +423,14 @@ sealed interface IntroStep {
     }
     
     @Composable
-    fun Content(singleStep: Boolean)
+    fun Content(singleStep: Boolean, contentPadding: PaddingValues)
 }
 
 @Composable
-fun IntroScreen(destination: Routes.Intro) {
+fun IntroScreen(
+    destination: Routes.Intro,
+    contentPadding: PaddingValues
+) {
     JetpackNavigationHost(
         modifier = Modifier.fillMaxSize(),
         navigation = rememberJetpackNavigation(destination.step),
@@ -459,7 +438,10 @@ fun IntroScreen(destination: Routes.Intro) {
         exitTransition = { slideOutHorizontally(tween(500)) { -it } },
         graph = remember {
             sealedNavigationGraph {
-                it.Content(destination.singleStep)
+                it.Content(
+                    singleStep = destination.singleStep,
+                    contentPadding = contentPadding
+                )
             }
         }
     )

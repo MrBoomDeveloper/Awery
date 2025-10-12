@@ -6,14 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
-import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.extension.sdk.modules.WatchModule
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.extensions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -42,7 +40,7 @@ class ExtensionsWatcher(
 		_isLoading.value = true
 		
 		Extensions.getAll<WatchModule>(enabled = true).filter {
-			when(AwerySettings.adultContent.state.value) {
+			when(AwerySettings.adultContent.value) {
 				AwerySettings.AdultContent.SHOW -> true
 				AwerySettings.AdultContent.HIDE -> !it.isNsfw
 				AwerySettings.AdultContent.ONLY -> it.isNsfw

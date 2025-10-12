@@ -1,103 +1,63 @@
 package com.mrboomdev.awery.data.settings
 
-import androidx.compose.runtime.FloatState
-import androidx.compose.runtime.IntState
-import androidx.compose.runtime.LongState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.mrboomdev.awery.core.utils.toEnumOrNull
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.set
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @PublishedApi
 internal val settings by lazy { createSettings() }
 internal expect fun createSettings(): ObservableSettings
 
-sealed interface Setting<T> {
-    val key: String
-    val initialValue: T
-    var value: T
-    val state: State<T>
+sealed class Setting<T>(
+	val key: String,
+	val initialValue: T
+) {
+	internal val state by lazy {
+		MutableStateFlow(value)
+	}
+	
+	val stateFlow get() = state.asStateFlow()
+	
+	val value: T get() = readValue() ?: initialValue
+	
+	suspend fun set(value: T) {
+		saveValue(value)
+		state.emit(value)
+	}
+	
+	protected abstract fun saveValue(value: T)
+	protected abstract fun readValue(): T?
 }
 
-class EnumSetting<T: Enum<T>>(
-    override val key: String,
-    override val initialValue: T
-): Setting<T> {
-    private val _state = mutableStateOf(value)
-    override val state: State<T> = _state
+@Composable
+fun <T> Setting<T>.collectAsState() = stateFlow.collectAsState()
 
-    override var value
-        get() = settings.getString(key, initialValue.name).toEnumOrNull(initialValue::class) ?: initialValue
-        set(value) {
-            settings[key] = value.name
-            _state.value = value
-        }
+class EnumSetting<T: Enum<T>>(key: String, initialValue: T): Setting<T>(key, initialValue) {
+	override fun readValue() = settings.getStringOrNull(key)?.toEnumOrNull(initialValue::class)
+	override fun saveValue(value: T) = settings.set(key, value.name)
 }
 
-class StringSetting(
-    override val key: String,
-    override val initialValue: String
-): Setting<String> {
-    private val _state = mutableStateOf(value)
-    override val state: State<String> = _state
-
-    override var value
-        get() = settings.getString(key, initialValue)
-        set(value) {
-            settings[key] = value
-            _state.value = value
-        }
+class StringSetting(key: String, initialValue: String): Setting<String>(key, initialValue) {
+	override fun readValue() = settings.getStringOrNull(key)
+	override fun saveValue(value: String) = settings.set(key, value)
 }
 
-class BooleanSetting(
-    override val key: String,
-    override val initialValue: Boolean
-): Setting<Boolean> {
-    private val _state = mutableStateOf(value)
-    override val state: State<Boolean> = _state
-
-    override var value
-        get() = settings.getBoolean(key, initialValue)
-        set(value) {
-            settings[key] = value
-            _state.value = value
-        }
-    
-    fun toggle() {
-        value = !value
-    }
+class BooleanSetting(key: String, initialValue: Boolean): Setting<Boolean>(key, initialValue) {
+	override fun readValue() = settings.getBooleanOrNull(key)
+	override fun saveValue(value: Boolean) = settings.set(key, value)
+    suspend fun toggle() = set(!value)
 }
 
-class IntSetting(
-    override val key: String,
-    override val initialValue: Int
-): Setting<Int> {
-    private val _state = mutableIntStateOf(value)
-    override val state: IntState = _state
-
-    override var value
-        get() = settings.getInt(key, initialValue)
-        set(value) {
-            settings[key] = value
-            _state.intValue = value
-        }
+class IntSetting(key: String, initialValue: Int): Setting<Int>(key, initialValue) {
+	override fun readValue() = settings.getIntOrNull(key)
+	override fun saveValue(value: Int) = settings.set(key, value)
 }
 
-class LongSetting(
-    override val key: String,
-    override val initialValue: Long
-): Setting<Long> {
-    private val _state = mutableLongStateOf(value)
-    override val state: LongState = _state
-
-    override var value
-        get() = settings.getLong(key, initialValue)
-        set(value) {
-            settings[key] = value
-            _state.longValue = value
-        }
+class LongSetting(key: String, initialValue: Long): Setting<Long>(key, initialValue) {
+	override fun readValue() = settings.getLongOrNull(key)
+	override fun saveValue(value: Long) = settings.set(key, value)
 }

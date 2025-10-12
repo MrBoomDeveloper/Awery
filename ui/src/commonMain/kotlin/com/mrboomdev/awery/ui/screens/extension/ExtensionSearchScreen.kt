@@ -2,20 +2,7 @@ package com.mrboomdev.awery.ui.screens.extension
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -24,26 +11,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.clearText
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -57,22 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mrboomdev.awery.core.utils.LoadingStatus
-import com.mrboomdev.awery.core.utils.NothingFoundException
 import com.mrboomdev.awery.core.utils.launchTryingSupervise
 import com.mrboomdev.awery.data.AgeRating
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
-import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.Media
+import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.StringPreference
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.ic_back
-import com.mrboomdev.awery.resources.ic_close
-import com.mrboomdev.awery.resources.ic_filter_outlined
-import com.mrboomdev.awery.resources.no_media_found
-import com.mrboomdev.awery.resources.nothing_found
+import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
@@ -82,13 +47,11 @@ import com.mrboomdev.awery.ui.components.MediaCard
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
 import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.classify
 import com.mrboomdev.awery.ui.utils.pagination.InfiniteScroll
 import com.mrboomdev.awery.ui.utils.singleItem
 import com.mrboomdev.awery.ui.utils.thenIf
 import com.mrboomdev.awery.ui.utils.viewModel
 import com.mrboomdev.navigation.core.safePop
-import io.ktor.client.utils.EmptyContent.status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -102,7 +65,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ExtensionSearchScreen(
     destination: Routes.ExtensionSearch,
-    viewModel: ExtensionSearchScreenViewModel = viewModel { ExtensionSearchScreenViewModel(destination) }
+    viewModel: ExtensionSearchScreenViewModel = viewModel { 
+		ExtensionSearchScreenViewModel(destination) 
+	},
+	contentPadding: PaddingValues
 ) {
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showFiltersDialog by remember { mutableStateOf(false) }
@@ -118,7 +84,7 @@ fun ExtensionSearchScreen(
             onDismissRequest = { showFiltersDialog = false }
         )
     }
-
+	
 	InfiniteScroll(
 		state = lazyGridState,
 		buffer = 1,
@@ -246,7 +212,7 @@ fun ExtensionSearchScreen(
     ) { contentPadding ->
         val media by viewModel.media.map { media ->
 			media.filter { mediaItem ->
-                when(AwerySettings.adultContent.state.value) {
+                when(AwerySettings.adultContent.value) {
                     AwerySettings.AdultContent.SHOW -> true
 
                     AwerySettings.AdultContent.ONLY ->
@@ -352,7 +318,7 @@ class ExtensionSearchScreenViewModel(
     private var module: CatalogModule? = null
     private var job: Job? = null
     
-    private val _filters = MutableStateFlow<List<Preference<*>>?>(null)
+    private val _filters = MutableStateFlow(destination.filters)
     val filters = _filters.asStateFlow()
     
     private val _loadingStatus = MutableStateFlow<LoadingStatus>(LoadingStatus.NotInitialized)

@@ -254,3 +254,16 @@ suspend fun <E> SuspendMutableList<E>.replace(oldElement: E, newElement: E) {
 		add(newElement)
 	}
 }
+
+/**
+ * Removes a range of elements from this list.
+ * @param from the start of the range to remove (inclusive).
+ * @param to the end of the range to remove (exclusive).
+ */
+suspend fun SuspendMutableList<*>.removeRange(from: Int, to: Int) {
+    if (from > to) throw IllegalArgumentException("from must not be greater than to.")
+
+    for (i in (to - 1) downTo from) {
+        removeAt(i)
+    }
+}

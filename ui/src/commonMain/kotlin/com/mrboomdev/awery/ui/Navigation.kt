@@ -3,37 +3,26 @@ package com.mrboomdev.awery.ui
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.Video
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.account
-import com.mrboomdev.awery.resources.home
-import com.mrboomdev.awery.resources.ic_account_outlined
-import com.mrboomdev.awery.resources.ic_collections_bookmark_filled
-import com.mrboomdev.awery.resources.ic_collections_bookmark_outlined
-import com.mrboomdev.awery.resources.ic_home_filled
-import com.mrboomdev.awery.resources.ic_home_outlined
-import com.mrboomdev.awery.resources.ic_notifications_filled
-import com.mrboomdev.awery.resources.ic_notifications_outlined
-import com.mrboomdev.awery.resources.ic_search
-import com.mrboomdev.awery.resources.ic_settings_outlined
-import com.mrboomdev.awery.resources.library
-import com.mrboomdev.awery.resources.notifications
-import com.mrboomdev.awery.resources.search
-import com.mrboomdev.awery.resources.settings
+import com.mrboomdev.awery.resources.*
+import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.screens.browser.BrowserScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionFeedScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionScreen
-import com.mrboomdev.awery.ui.screens.extension.ExtensionSearchScreen
+import com.mrboomdev.awery.ui.screens.extension.*
+import com.mrboomdev.awery.ui.screens.home.HomeScreen
+import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
-import com.mrboomdev.awery.ui.screens.main.HomePage
-import com.mrboomdev.awery.ui.screens.main.LibraryPage
-import com.mrboomdev.awery.ui.screens.main.MainScreen
-import com.mrboomdev.awery.ui.screens.main.MainScreenViewModel
-import com.mrboomdev.awery.ui.screens.main.NotificationsPage
-import com.mrboomdev.awery.ui.screens.main.SearchPage
+import com.mrboomdev.awery.ui.screens.library.LibraryScreen
+import com.mrboomdev.awery.ui.screens.library.LibraryViewModel
 import com.mrboomdev.awery.ui.screens.media.MediaScreen
+import com.mrboomdev.awery.ui.screens.media.MediaScreenViewModel
+import com.mrboomdev.awery.ui.screens.notifications.NotificationsScreen
+import com.mrboomdev.awery.ui.screens.notifications.NotificationsViewModel
 import com.mrboomdev.awery.ui.screens.player.PlayerScreen
+import com.mrboomdev.awery.ui.screens.player.PlayerScreenViewModel
+import com.mrboomdev.awery.ui.screens.search.SearchScreen
+import com.mrboomdev.awery.ui.screens.search.SearchViewModel
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.utils.viewModel
@@ -44,43 +33,42 @@ import org.jetbrains.compose.resources.StringResource
 
 val Navigation = TypeSafeNavigation<Routes>()
 
+@Serializable
 sealed interface Routes {
 	@Serializable
 	data object Home: Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) {
-			HomePage(viewModel(::MainScreenViewModel), contentPadding)
-		}
+		fun Content(
+			viewModel: HomeViewModel = viewModel { HomeViewModel() }, 
+			contentPadding: PaddingValues
+		) = HomeScreen(viewModel, contentPadding)
 	}
 
 	@Serializable
 	data object Search: Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) {
-			SearchPage(viewModel(::MainScreenViewModel), contentPadding, "")
-		}
+		fun Content(
+			viewModel: SearchViewModel = viewModel { SearchViewModel() },
+			contentPadding: PaddingValues
+		) = SearchScreen(viewModel, contentPadding)
 	}
 
 	@Serializable
 	data object Notifications: Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) {
-			NotificationsPage(contentPadding)
-		}
+		fun Content(
+			viewModel: NotificationsViewModel = viewModel { NotificationsViewModel() },
+			contentPadding: PaddingValues
+		) = NotificationsScreen(viewModel, contentPadding)
 	}
 
 	@Serializable
 	data object Library: Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) {
-			LibraryPage(viewModel(::MainScreenViewModel), contentPadding)
-		}
-	}
-	
-	@Serializable
-	data object Main: Routes {
-		@Composable
-		override fun Content(contentPadding: PaddingValues) = MainScreen()
+		fun Content(
+			viewModel: LibraryViewModel = viewModel { LibraryViewModel() },
+			contentPadding: PaddingValues
+		) = LibraryScreen(viewModel, contentPadding)
 	}
 
 	@Serializable
@@ -88,7 +76,7 @@ sealed interface Routes {
 		val initialPage: SettingsPages = SettingsPages.Main()
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = SettingsScreen(initialPage)
+		fun Content(contentPadding: PaddingValues) = SettingsScreen(initialPage)
 	}
 
 	@Serializable
@@ -98,7 +86,10 @@ sealed interface Routes {
 		val media: com.mrboomdev.awery.extension.sdk.Media
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = MediaScreen(this)
+		fun Content(
+			viewModel: MediaScreenViewModel = viewModel { MediaScreenViewModel(this) },
+			contentPadding: PaddingValues
+		) = MediaScreen(this, viewModel, contentPadding)
 	}
 
 	@Serializable
@@ -107,7 +98,17 @@ sealed interface Routes {
 		val title: String = video.title ?: video.url
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = PlayerScreen(this)
+		fun Content(
+			viewModel: PlayerScreenViewModel = run {
+				val navigation = Navigation.current()
+				val toaster = LocalToaster.current
+				
+				viewModel {
+					PlayerScreenViewModel(this@Player, navigation, toaster, it)
+				}
+			},
+			contentPadding: PaddingValues
+		) = PlayerScreen(this, viewModel)
 	}
 
 	@Serializable
@@ -116,7 +117,10 @@ sealed interface Routes {
 		val extensionName: String
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = ExtensionScreen(this)
+		fun Content(
+			viewModel: ExtensionScreenViewModel = viewModel { ExtensionScreenViewModel(extensionId) },
+			contentPadding: PaddingValues
+		) = ExtensionScreen(this, viewModel, contentPadding)
 	}
 
 	@Serializable
@@ -127,16 +131,28 @@ sealed interface Routes {
 		val feedName: String
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = ExtensionFeedScreen(this)
+		fun Content(
+			viewModel: ExtensionFeedScreenViewModel = run {
+				val navigation = Navigation.current()
+				val toaster = LocalToaster.current
+				
+				viewModel { ExtensionFeedScreenViewModel(this@ExtensionFeed, toaster, navigation) }
+			},
+			contentPadding: PaddingValues
+		) = ExtensionFeedScreen(this, viewModel, contentPadding)
 	}
 
 	@Serializable
 	data class ExtensionSearch(
 		val extensionId: String,
-		val extensionName: String
+		val extensionName: String,
+		val filters: List<Preference<*>>? = null
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = ExtensionSearchScreen(this)
+		fun Content(
+			viewModel: ExtensionSearchScreenViewModel = viewModel { ExtensionSearchScreenViewModel(this) },
+			contentPadding: PaddingValues
+		) = ExtensionSearchScreen(this, viewModel, contentPadding)
 	}
 
 	@Serializable
@@ -145,7 +161,9 @@ sealed interface Routes {
 		val singleStep: Boolean
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = IntroScreen(this)
+		fun Content(
+			contentPadding: PaddingValues
+		) = IntroScreen(this, contentPadding)
 	}
 
 	@Serializable
@@ -153,11 +171,8 @@ sealed interface Routes {
 		val url: String
 	): Routes {
 		@Composable
-		override fun Content(contentPadding: PaddingValues) = BrowserScreen(url)
+		fun Content(contentPadding: PaddingValues) = BrowserScreen(url)
 	}
-
-	@Composable
-	fun Content(contentPadding: PaddingValues)
 }
 
 enum class MainRoutes(
@@ -211,7 +226,7 @@ enum class MainRoutes(
 	fun getIcon(isActive: Boolean) = if(isActive) activeIcon else icon
 }
 
-internal fun getInitialRoute(): Routes {
+fun getInitialRoute(): Routes {
 	if(!AwerySettings.introDidWelcome.value) {
 		return Routes.Intro(IntroStep.Welcome, singleStep = false)
 	}
@@ -224,5 +239,10 @@ internal fun getInitialRoute(): Routes {
 		return Routes.Intro(IntroStep.UserCreation, singleStep = false)
 	}
 
-	return Routes.Main
+	return when(AwerySettings.defaultMainTab.value) {
+		AwerySettings.MainTab.HOME -> Routes.Home
+		AwerySettings.MainTab.SEARCH -> Routes.Search
+		AwerySettings.MainTab.NOTIFICATIONS -> Routes.Notifications
+		AwerySettings.MainTab.LIBRARY -> Routes.Library
+	}
 }

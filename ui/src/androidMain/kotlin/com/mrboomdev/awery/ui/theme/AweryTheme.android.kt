@@ -2,39 +2,27 @@ package com.mrboomdev.awery.ui.theme
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialExpressiveTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.expressiveLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.material.color.DynamicColors
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.data.settings.AwerySettings
-import com.mrboomdev.awery.data.settings.AwerySettings.darkTheme
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
+import com.mrboomdev.awery.data.settings.collectAsState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 actual fun aweryColorScheme(dark: Boolean): ColorScheme {
+	val amoled by AwerySettings.amoledTheme.collectAsState()
+	val primary by AwerySettings.primaryColor.collectAsState()
     val context = LocalContext.current
     
-    if(AwerySettings.primaryColor.state.longValue >= 0L) {
-        return seedColorScheme(
-            seedColor = Color(AwerySettings.primaryColor.state.longValue)
-        ).let {
-            if(AwerySettings.amoledTheme.state.value || Awery.isTv) {
-                it.toAmoledColorScheme()
-            } else it
+    if(primary >= 0L) {
+        return seedColorScheme(seedColor = Color(primary)).let {
+            if(amoled || Awery.isTv) it.toAmoledColorScheme() else it
         }
     }
     
@@ -42,9 +30,7 @@ actual fun aweryColorScheme(dark: Boolean): ColorScheme {
         true -> (if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             dynamicDarkColorScheme(context)
         } else darkColorScheme()).let {
-            if(AwerySettings.amoledTheme.state.value || Awery.isTv) {
-                it.toAmoledColorScheme()
-            } else it
+            if(amoled || Awery.isTv) it.toAmoledColorScheme() else it
         }
         
         else -> if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

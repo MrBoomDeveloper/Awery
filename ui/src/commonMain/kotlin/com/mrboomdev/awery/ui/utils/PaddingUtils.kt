@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @get:Composable
@@ -95,6 +94,17 @@ fun PaddingValues.exclude(
     top = vertical,
     end = horizontal,
     bottom = vertical
+)
+
+@Composable
+fun PaddingValues.only(
+	horizontal: Boolean = false,
+	vertical: Boolean = false
+) = only(
+	start = horizontal,
+	top = vertical,
+	end = horizontal,
+	bottom = vertical
 )
 
 @Composable

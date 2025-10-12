@@ -1,16 +1,7 @@
 package com.mrboomdev.awery.ui.screens.settings.pages
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.InlineTextContent
@@ -20,15 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -47,6 +30,7 @@ import com.mrboomdev.awery.data.database.entity.DBRepository
 import com.mrboomdev.awery.data.repo.Repositories
 import com.mrboomdev.awery.data.repo.Repository
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.resources.Res
@@ -54,7 +38,6 @@ import com.mrboomdev.awery.resources.adult_content
 import com.mrboomdev.awery.resources.ic_download
 import com.mrboomdev.awery.resources.ic_explict_outlined
 import com.mrboomdev.awery.ui.components.DefaultExtImage
-import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.components.InfoBox
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
@@ -68,7 +51,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -273,7 +255,7 @@ fun SettingsRepositoryPage(
 										}
 									}
 
-									if(AwerySettings.showIds.state.value) {
+									if(AwerySettings.showIds.collectAsState().value) {
 										append(extension.id)
 									}
 								}

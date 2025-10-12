@@ -1,19 +1,19 @@
 package com.mrboomdev.awery.core.utils
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.measureTimedValue
 
 /**
  * Launches a new coroutine in the [GlobalScope] without blocking the current thread and returns a reference to the coroutine as a [Job].
@@ -82,4 +82,17 @@ fun <T> CoroutineScope.asyncTryingSupervise(
     block: suspend CoroutineScope.() -> T
 ) = asyncTrying(context, start, onCatch) {
     supervisorScope(block)
+}
+
+suspend inline fun <T> runForAtLeast(
+	block: () -> T,
+	durationInMillis: Long
+): T {
+	val (result, executionDuration) = measureTimedValue(block)
+	
+	if(executionDuration >= durationInMillis.milliseconds) {
+		delay(durationInMillis.milliseconds - executionDuration)
+	}
+	
+	return result
 }

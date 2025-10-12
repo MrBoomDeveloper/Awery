@@ -34,11 +34,14 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.addLastModifiedToFileCacheKey
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.MainRoutes
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
+import com.mrboomdev.awery.ui.screens.home.HomeScreen
+import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
@@ -82,7 +85,8 @@ internal fun DefaultMainScreen(
     )) { MainRoutes.entries.count() }
 
     val focusManager = LocalFocusManager.current
-    val windowSize = currentWindowSize()
+    val windowSize = currentWindowSize() 
+	val showNavLabels by AwerySettings.showNavigationLabels.collectAsState()
     val useRail = windowSize.width >= WindowSizeType.Large
 
     val topBarBehavior = if(useRail && windowSize.height >= WindowSizeType.Medium) {
@@ -119,9 +123,7 @@ internal fun DefaultMainScreen(
                                 
                                 NavigationRailItem(
                                     selected = index == pagerState.currentPage,
-                                    
-                                    alwaysShowLabel = AwerySettings.showNavigationLabels.state.value == 
-                                            AwerySettings.NavigationLabels.SHOW,
+                                    alwaysShowLabel = showNavLabels == AwerySettings.NavigationLabels.SHOW,
                                     
                                     icon = {
                                         Icon(
@@ -131,9 +133,7 @@ internal fun DefaultMainScreen(
                                         )
                                     },
 
-                                    label = if(AwerySettings.showNavigationLabels.state.value !=
-                                        AwerySettings.NavigationLabels.HIDE
-                                    ) {{ 
+                                    label = if(showNavLabels != AwerySettings.NavigationLabels.HIDE) {{ 
                                         Text(
                                             text = stringResource(tab.title),
                                             fontSize = 11.sp
@@ -333,7 +333,7 @@ internal fun DefaultMainScreen(
                                                 style = MaterialTheme.typography.bodyLarge,
                                                 fontFamily = AweryFonts.poppins,
                                                 fontWeight = FontWeight.Normal,
-                                                text = AwerySettings.username.state.value
+                                                text = AwerySettings.username.collectAsState().value
                                             )
                                         }
 
@@ -387,9 +387,7 @@ internal fun DefaultMainScreen(
                                     
                                     NavigationBarItem(
                                         selected = index == pagerState.currentPage,
-
-                                        alwaysShowLabel = AwerySettings.showNavigationLabels.state.value ==
-                                                AwerySettings.NavigationLabels.SHOW,
+                                        alwaysShowLabel = showNavLabels == AwerySettings.NavigationLabels.SHOW,
                                         
                                         icon = {
                                             Icon(
@@ -399,9 +397,9 @@ internal fun DefaultMainScreen(
                                             )
                                         },
                                         
-                                        label = if(AwerySettings.showNavigationLabels.state.value != 
-                                            AwerySettings.NavigationLabels.HIDE
-                                        ) {{ Text(stringResource(tab.title)) }} else null,
+                                        label = if(showNavLabels != AwerySettings.NavigationLabels.HIDE) {{
+											Text(stringResource(tab.title))
+										}} else null,
                                         
                                         onClick = {
                                             coroutineScope.launch {
@@ -436,7 +434,7 @@ internal fun DefaultMainScreen(
                                 1 -> SearchPage(viewModel, contentPadding, searchQuery.text.toString())
                                 2 -> NotificationsPage(contentPadding).let {{}}
                                 3 -> LibraryPage(viewModel, contentPadding)
-                                else -> HomePage(viewModel, contentPadding)
+                                else -> HomeScreen(viewModel { HomeViewModel() }, contentPadding).let {{}}
                             }
                         }
 
@@ -544,7 +542,7 @@ private fun DrawerContent(
                             Text(
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onBackground,
-                                text = AwerySettings.username.state.value
+                                text = AwerySettings.username.collectAsState().value
                             )
                         }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -39,21 +41,20 @@ import coil3.request.ImageRequest
 import com.kmpalette.loader.rememberNetworkLoader
 import com.kmpalette.rememberDominantColorState
 import com.mrboomdev.awery.core.Awery
-import com.mrboomdev.awery.core.utils.Log
 import com.mrboomdev.awery.core.utils.await
 import com.mrboomdev.awery.core.utils.collection.iterateIndexed
-import com.mrboomdev.awery.core.utils.collection.iterateMutable
-import com.mrboomdev.awery.core.utils.collection.removeAll
+import com.mrboomdev.awery.core.utils.launchTrying
 import com.mrboomdev.awery.core.utils.retryUntilSuccess
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.cachedModules
+import com.mrboomdev.awery.extension.loaders.Extensions.get
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getLargePoster
 import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.loaders.watch.VariantWatcher
 import com.mrboomdev.awery.extension.loaders.watch.WatcherNode
-import com.mrboomdev.awery.extension.sdk.Media
-import com.mrboomdev.awery.extension.sdk.WatchVariant
+import com.mrboomdev.awery.extension.sdk.*
+import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import com.mrboomdev.awery.extension.sdk.modules.WatchModule
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
@@ -78,23 +79,26 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 internal fun DefaultMediaScreen(
 	destination: Routes.Media,
-	viewModel: MediaScreenViewModel
+	viewModel: MediaScreenViewModel,
+	contentPadding: PaddingValues
 ) {
 	val topBarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-	val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null)
+	val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+		snapAnimationSpec = null)
 	val coroutineScope = rememberCoroutineScope()
+	val media by viewModel.media.collectAsState()
 	val windowSize = currentWindowSize()
 	val toaster = LocalToaster.current
 	val navigation = Navigation.current()
 
-	val tabs = remember(viewModel.media) {
-		MediaScreenTabs.getVisibleFor(viewModel.media)
+	val tabs = remember(media) {
+		MediaScreenTabs.getVisibleFor(media)
 	}
 
 	val pagerState = rememberPagerState { tabs.count() }
 
-	val defaultColor = remember(viewModel.media) {
-		if(viewModel.media.getLargePoster() == null) return@remember null
+	val defaultColor = remember(media) {
+		if(media.getLargePoster() == null) return@remember null
 
 		runBlocking {
 			colorsCache[destination.extensionId + destination.media.id]
@@ -108,7 +112,7 @@ internal fun DefaultMediaScreen(
 	)
 	
 	fun openWatchPage() {
-		if(viewModel.media.type == Media.Type.READABLE) {
+		if(media.type == Media.Type.READABLE) {
 			toaster.toast("Reading isn't supported yet!")
 			return
 		}
@@ -124,8 +128,8 @@ internal fun DefaultMediaScreen(
 		}
 	}
 
-	LaunchedEffect(viewModel.media) {
-		viewModel.media.getLargePoster()?.also { poster ->
+	LaunchedEffect(media) {
+		media.getLargePoster()?.also { poster ->
 			dominantColorState.updateFrom(Url(poster))
 			
 			colorsCache[destination.extensionId + destination.media.id] = 
@@ -181,16 +185,23 @@ internal fun DefaultMediaScreen(
 						)
 					) {
 						Box {
-							var didFailToLoadPoster by remember(viewModel.media.getPoster()) {
-								mutableStateOf(viewModel.media.getLargePoster() == null)
+							var didFailToLoadPoster by remember(media.getPoster()) {
+								mutableStateOf(media.getLargePoster() == null)
 							}
 
-							var didLoadPoster by remember(viewModel.media.getPoster()) { mutableStateOf(false) }
-							var isPosterFuckedUp by remember(viewModel.media.getPoster()) { mutableStateOf(false) }
+							var didLoadPoster by remember(media.getPoster()) { 
+								mutableStateOf(false) 
+							}
+							
+							var isPosterFuckedUp by remember(media.getPoster()) {
+								mutableStateOf(false) 
+							}
 
-							viewModel.media.getBanner()?.also { banner ->
+							media.getBanner()?.also { banner ->
 								Box(Modifier.matchParentSize()) {
-									val alpha by animateFloatAsState(if(isPosterFuckedUp) .5f else .25f)
+									val alpha by animateFloatAsState(if(isPosterFuckedUp) {
+										.5f
+									} else .25f)
 
 									AsyncImage(
 										modifier = Modifier
@@ -222,8 +233,7 @@ internal fun DefaultMediaScreen(
 								modifier = Modifier
 									.fillMaxWidth()
 									.padding(horizontal = 16.dp, vertical = 8.dp)
-									.windowInsetsPadding(WindowInsets.safeDrawing.only(
-										WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+									.padding(contentPadding.only(top = true, start = true, end = true))
 							) {
 								Spacer(Modifier.height(animateDpAsState(when {
 									didLoadPoster && isPosterFuckedUp -> 48.dp
@@ -231,7 +241,7 @@ internal fun DefaultMediaScreen(
 									else -> 16.dp
 								}, tween()).value))
 								
-								viewModel.media.getLargePoster()?.also { poster ->
+								media.getLargePoster()?.also { poster ->
 									if(isPosterFuckedUp) {
 										AsyncImage(
 											modifier = Modifier
@@ -276,7 +286,9 @@ internal fun DefaultMediaScreen(
 										
 										onSuccess = { (_, result) ->
 											didLoadPoster = true
-											isPosterFuckedUp = result.image.let { it.width / it.height } >= 1
+											isPosterFuckedUp = result.image.let {
+												it.width / it.height
+											} >= 1
 										}
 									)
 								}
@@ -309,7 +321,7 @@ internal fun DefaultMediaScreen(
 						},
 
 						actions = {
-							viewModel.media.url?.also { url ->
+							media.url?.also { url ->
 								TopButton(
 									modifier = Modifier.padding(end = 8.dp),
 									padding = 9.dp,
@@ -326,19 +338,20 @@ internal fun DefaultMediaScreen(
 						)
 					)
 				}
-			) { contentPadding ->
+			) { scaffoldContentPadding ->
 				Column(
 					modifier = Modifier
 						.fillMaxSize()
-						.padding(contentPadding.exclude(bottom = true))
+						.padding(scaffoldContentPadding.exclude(bottom = true))
 				) {
 					MediaScreenContent(
-						media = viewModel.media,
-						watcher = viewModel.watcher,
+						media = media,
+						extensionId = destination.extensionId,
+						watcher = viewModel.watcher.collectAsState().value,
 						pagerState = pagerState,
 						tabs = tabs,
 						coroutineScope = coroutineScope,
-						contentPadding = contentPadding.only(bottom = true)
+						contentPadding = scaffoldContentPadding.only(bottom = true)
 					)
 				}
 			}
@@ -347,7 +360,7 @@ internal fun DefaultMediaScreen(
 		@Composable
 		fun Landscape() {
 			Box(Modifier.fillMaxSize()) {
-				viewModel.media.getBanner().also { banner ->
+				media.getBanner().also { banner ->
 					Canvas(Modifier.fillMaxSize()) {
 						drawRect(Color.Black)
 					}
@@ -379,8 +392,7 @@ internal fun DefaultMediaScreen(
 					Column(
 						modifier = Modifier
 							.padding(8.dp)
-							.windowInsetsPadding(WindowInsets.safeDrawing.only(
-								WindowInsetsSides.Vertical + WindowInsetsSides.Start)),
+							.padding(contentPadding.only(start = true, top = true, bottom = true)),
 						verticalArrangement = Arrangement.spacedBy(8.dp)
 					) {
 						TopButton(
@@ -388,7 +400,7 @@ internal fun DefaultMediaScreen(
 							onClick = { navigation.safePop() }
 						)
 
-						viewModel.media.url?.also { url ->
+						media.url?.also { url ->
 							TopButton(
 								padding = 9.dp,
 								painter = painterResource(Res.drawable.ic_share_filled),
@@ -397,14 +409,14 @@ internal fun DefaultMediaScreen(
 						}
 					}
 
-					var showPoster by remember(viewModel.media) { mutableStateOf(true) }
-					viewModel.media.getLargePoster()?.also { poster ->
+					var showPoster by remember(media) { mutableStateOf(true) }
+					media.getLargePoster()?.also { poster ->
 						if(!showPoster || windowSize.width <= WindowSizeType.Medium) return@also
 
 						Box(
 							modifier = Modifier
-								.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical))
 								.padding(top = 8.dp, bottom = 16.dp)
+								.padding(contentPadding.only(vertical = true))
 						) {
 							AsyncImage(
 								modifier = Modifier
@@ -448,10 +460,9 @@ internal fun DefaultMediaScreen(
 							) {
 								Column(
 									modifier = Modifier
-										.windowInsetsPadding(WindowInsets.safeDrawing.only(
-											WindowInsetsSides.Top + WindowInsetsSides.End))
 										.padding(horizontal = 16.dp)
 										.padding(top = 16.dp)
+										.padding(contentPadding.only(top = true, end = true))
 								) {
 									MediaScreenActions(
 										destination = destination,
@@ -465,26 +476,28 @@ internal fun DefaultMediaScreen(
 						},
 
 						containerColor = Color.Transparent
-					) { contentPadding ->
+					) { scaffoldContentPadding ->
 						Column(
 							modifier = Modifier
-								.padding(contentPadding.exclude(start = true, end = true, bottom = true))
+								.padding(scaffoldContentPadding.exclude(
+									start = true, end = true, bottom = true))
 								.fillMaxSize()
 						) {
 							Spacer(Modifier.height(animateDpAsState(
-								if(infoHeaderBehavior.state.let { it.heightOffset <= it.heightOffsetLimit }) {
-									WindowInsets.safeDrawing.top
-								} else 8.dp,
+								if(infoHeaderBehavior.state.let { 
+									it.heightOffset <= it.heightOffsetLimit 
+								}) contentPadding.top else 8.dp,
 								animationSpec = tween(500)
 							).value))
 
 							MediaScreenContent(
-								media = viewModel.media,
-								watcher = viewModel.watcher,
+								media = media,
+								extensionId = destination.extensionId,
+								watcher = viewModel.watcher.collectAsState().value,
 								pagerState = pagerState,
 								tabs = tabs,
 								coroutineScope = coroutineScope,
-								contentPadding = contentPadding.only(end = true, bottom = true)
+								contentPadding = scaffoldContentPadding.only(end = true, bottom = true)
 							)
 						}
 					}
@@ -493,9 +506,9 @@ internal fun DefaultMediaScreen(
 		}
 
 		Box(Modifier.fillMaxSize()) {
-			if(windowSize.width >= WindowSizeType.Large || windowSize.height <= WindowSizeType.Small) {
-				Landscape()
-			} else Portrait()
+			if(windowSize.width >= WindowSizeType.Large 
+				|| windowSize.height <= WindowSizeType.Small
+			) Landscape() else Portrait()
 			
 			if(viewModel.isUpdatingMedia.collectAsState().value) {
 				LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -512,7 +525,8 @@ internal fun ColumnScope.MediaScreenContent(
 	pagerState: PagerState,
 	tabs: List<MediaScreenTabs>,
 	coroutineScope: CoroutineScope,
-	contentPadding: PaddingValues
+	contentPadding: PaddingValues,
+	extensionId: String
 ) {
 	val navigation = Navigation.current()
 	
@@ -536,7 +550,9 @@ internal fun ColumnScope.MediaScreenContent(
 		tabs.forEachIndexed { index, tab ->
 			Tab(
 				selected = index == pagerState.currentPage,
-				onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } }
+				onClick = { coroutineScope.launch {
+					pagerState.animateScrollToPage(index)
+				} }
 			) {
 				Text(
 					modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
@@ -616,8 +632,121 @@ internal fun ColumnScope.MediaScreenContent(
 							horizontalArrangement = Arrangement.spacedBy(12.dp)
 						) {
 							tags.forEach { tag ->
+								var isLoading by remember { mutableStateOf(false) }
+								val coroutineScope = rememberCoroutineScope()
+								val toaster = LocalToaster.current
+								
+								if(isLoading) {
+									Dialog(onDismissRequest = {}) {
+										CircularProgressIndicator()
+									}
+								}
+								
 								SuggestionChip(
-									onClick = {},
+									onClick = {
+										isLoading = true
+										
+										coroutineScope.launchTrying(Dispatchers.Default, onCatch = {
+											toaster.toast("Failed to search by a tag")
+											isLoading = false
+										}) { 
+											Extensions[extensionId]?.also scope@{ extension ->
+												extension.get<CatalogModule>()?.also { catalogModule ->
+													val filters = catalogModule.getDefaultFilters()
+													
+													fun List<Preference<*>>.findPref(
+														predicate: (Preference<*>) -> Boolean
+													): Preference<*>? = firstOrNull { preference ->
+														if(predicate(preference)) {
+															return@firstOrNull true
+														}
+														
+														if(preference is PreferenceGroup) {
+															preference.items.findPref(predicate)?.also { child ->
+																return child
+															}
+														}
+														
+														false
+													}
+
+													filters.findPref {
+														it.name.equals(tag, ignoreCase = true)
+													}?.also { 
+														when(it) {
+															is BooleanPreference -> {
+																it.value = true
+															}
+
+															is TriStatePreference -> {
+																it.value = TriStatePreference.State.INCLUDED
+															}
+															
+															is IntPreference, 
+															is LongPreference,
+															is SelectPreference,
+															is LabelPreference,
+															is PreferenceGroup,
+															is StringPreference -> {
+																toaster.toast(
+																	title = "Failed to search",
+																	message = "Cannot apply an filter of type ${it::class.qualifiedName}",
+																	duration = 5_000
+																)
+
+																return@scope	
+															}
+														}
+													} ?: filters.findPref { 
+														it.role == Preference.Role.QUERY
+													}?.also { 
+														if(it is StringPreference) {
+															it.value = tag
+														} else {
+															toaster.toast(
+																title = "Failed to search",
+																message = "Invalid extension filter type! Contact extension developer so that he can fix it.",
+																duration = 5_000
+															)
+															
+															return@scope
+														}
+													} ?: run {
+														toaster.toast(
+															title = "Unable to perform search",
+															message = "Source extension doesn't support search.",
+															duration = 5_000
+														)
+
+														return@scope
+													}
+													
+													launch(Dispatchers.Main) {
+														navigation.push(Routes.ExtensionSearch(
+															extensionId = extensionId,
+															extensionName = extension.name,
+															filters = filters
+														))
+													}
+												} ?: run {
+													toaster.toast(
+														title = "Search isn't supported!",
+														message = "Source extension doesn't support search.",
+														duration = 5_000
+													)
+												}
+											} ?: run {
+												toaster.toast(
+													title = "Extension isn't installed!",
+													message = "It is missing and is required to search by an tag. Install it to perform the search.",
+													duration = 5_000
+												)
+											}
+											
+											isLoading = false
+										}
+									},
+									
 									label = { Text(tag) }
 								)
 							}
@@ -627,53 +756,33 @@ internal fun ColumnScope.MediaScreenContent(
 			}
 
 			MediaScreenTabs.EPISODES -> {
-				val currentRoute = rememberSaveable(
-					saver = stateListSaver()
-				) { mutableStateListOf<String>() }
-				
-				if(currentRoute.isNotEmpty()) {
-					BackEffect { 
-						currentRoute.removeLastOrNull()
-					}
-				}
-				
-				val currentRoutes by remember { 
-					derivedStateOf {
-						buildList {
-							var currentNode: WatcherNode = watcher
-							add(currentNode)
+				val path = rememberSaveable(watcher, saver = listSaver(
+					save = { mutableStateList ->
+						mutableStateList.map { node ->
+							node.id
+						}
+					},
+					
+					restore = { savedIds ->
+						mutableStateListOf<WatcherNode.Variants>().apply {
+							var currentNode = watcher as WatcherNode.Variants
 							
-							currentRoute.iterateMutable { path ->
-								if(currentNode is WatcherNode.Variants) {
-									currentNode.children.firstOrNull { it.id == path }?.also { selected ->
-										if(selected !is WatcherNode.Variants) {
-											Log.w("DefaultMediaScreen",
-												"Path node \"${currentNode.id}\" is not a list, " +
-														"so we cannot navigate to \"$path\".")
-
-											removeAll()
-											return@iterateMutable
-										}
-										
-										add(selected)
-										currentNode = selected
-									} ?: run {
-										Log.w("DefaultMediaScreen", "Path node \"$path\" cannot be found in " +
-												"\"${currentNode.id}\", so we strip the path.")
-										
-										removeAll()
-										return@iterateMutable
-									}
-								} else {
-									Log.w("DefaultMediaScreen", 
-										"Path node \"${currentNode.id}\" is not a list, " +
-												"so we cannot navigate to \"$path\".")
-									
-									removeAll()
-									return@iterateMutable
-								}
+							savedIds.forEachIndexed { index, id ->
+								if(index == 0) return@forEachIndexed
+								
+								currentNode = currentNode.children.find {
+									it.id == id
+								} as? WatcherNode.Variants ?: return@apply
+								
+								add(currentNode)
 							}
 						}
+					}
+				)) { mutableStateListOf(watcher as WatcherNode.Variants) }
+				
+				if(path.size > 1) {
+					BackEffect {
+						path.removeLastOrNull()
 					}
 				}
 				
@@ -707,7 +816,7 @@ internal fun ColumnScope.MediaScreenContent(
 						contentPadding = contentPadding.exclude(bottom = true),
 						scrollState = scrollState
 					) {
-						currentRoutes.iterateIndexed { index, node ->
+						path.iterateIndexed { index, node ->
 							item(
 								title = {
 									Text(
@@ -717,9 +826,7 @@ internal fun ColumnScope.MediaScreenContent(
 								},
 								
 								onClick = {
-									if(currentRoute.isNotEmpty()) {
-										currentRoute.removeRange(index, currentRoute.size)
-									}
+									path.removeRange(index + 1, path.size)
 								}
 							)
 							
@@ -729,14 +836,14 @@ internal fun ColumnScope.MediaScreenContent(
 						}
 					}
 					
-					val pagerState = rememberPagerState { currentRoutes.size }
+					val pagerState = rememberPagerState { path.size }
 					
 					HorizontalPager(
 						modifier = Modifier.fillMaxSize(),
 						state = pagerState,
 						userScrollEnabled = false
 					) { page ->
-						val route = currentRoutes[page] as WatcherNode.Variants
+						val route = path[page]
 						
 						LazyColumn(
 							modifier = Modifier.fillMaxSize(),
@@ -764,51 +871,50 @@ internal fun ColumnScope.MediaScreenContent(
 										val wasSize = pagerState.pageCount
 										
 										fun onClick(node: WatcherNode) {
-											if(node is WatcherNode.Video) {
-												navigation.push(Routes.Player(
-													video = node.video,
-													title = currentRoutes.mapNotNull {
-														it as? VariantWatcher
-													}.lastOrNull {
-														it.variant.type == WatchVariant.Type.EPISODE
-													}?.variant?.title ?: node.video.let {
-														it.title ?: it.url
+											when(val node = node) {
+												is WatcherNode.Variants -> {
+													path += node
+													
+													if(node.isLoading || node.children.isEmpty()) return
+													
+													if(node.children.size == 1) {
+														onClick(node.children[0])
+														return
 													}
-												))
+
+													node.children.maxBy {
+														it.getSamenessRatio()
+													}.also { child ->
+														if(child.getSamenessRatio() > 80) {
+															// Just like in Dantotsu
+															onClick(child)
+														}
+													}
+												}
 												
-												return
-											}
-											
-											currentRoute += node.id
-
-											if(node is WatcherNode.Variants && !node.isLoading && node.children.size == 1) {
-												val firstNode = node.children.firstOrNull() ?: return
-												currentRoute += firstNode.id
-												onClick(firstNode)
-												return
-											}
-
-											(node as? WatcherNode.Variants)?.children?.map { 
-												it to it.getSamenessRatio()
-											}?.sortedByDescending { 
-												it.second
-											}?.firstOrNull {
-												// Just like in Dantotsu
-												it.second > 80 
-											}?.also { sameNode ->
-												currentRoute += sameNode.first.id
-												onClick(sameNode.first)
+												is WatcherNode.Video -> {
+													navigation.push(Routes.Player(
+														video = node.video,
+														title = path.mapNotNull {
+															it as? VariantWatcher
+														}.lastOrNull {
+															it.variant.type == WatchVariant.Type.EPISODE
+														}?.variant?.title ?: node.video.let {
+															it.title ?: it.url
+														}
+													))
+												}
 											}
 										}
 										
 										onClick(node)
-										
+
 										if(pagerState.pageCount > wasSize) {
 											coroutineScope.launch(Dispatchers.IO) {
 												await { pagerState.canScrollForward }
-												
+
 												withContext(Dispatchers.Main) {
-													pagerState.animateScrollToPage(currentRoute.size + 1)
+													pagerState.animateScrollToPage(Int.MAX_VALUE)
 													scrollState.animateScrollTo(Int.MAX_VALUE)
 												}
 											}

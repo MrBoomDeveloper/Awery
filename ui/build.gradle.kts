@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.humanReadable)
             implementation("io.github.z4kn4fein:semver:3.0.0")
             implementation("me.xdrop:fuzzywuzzy:1.4.0")
+			implementation("com.eygraber:compose-placeholder-material3:1.0.12")
 
             // Projects
             implementation(projects.core)

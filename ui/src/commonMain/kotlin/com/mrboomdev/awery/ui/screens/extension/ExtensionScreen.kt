@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,7 +55,9 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ExtensionScreen(
     destination: Routes.Extension,
-    viewModel: ExtensionScreenViewModel = viewModel { ExtensionScreenViewModel(destination.extensionId) }
+    viewModel: ExtensionScreenViewModel = viewModel {
+		ExtensionScreenViewModel(destination.extensionId) },
+	contentPadding: PaddingValues
 ) {
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val navigation = Navigation.current()
@@ -63,16 +67,13 @@ fun ExtensionScreen(
             .fillMaxSize()
             .nestedScroll(topBarBehavior.nestedScrollConnection),
         
-        contentWindowInsets = WindowInsets.safeDrawing,
+        contentWindowInsets = WindowInsets.none,
         containerColor = Color.Transparent,
 
         topBar = {
             TopAppBar(
                 scrollBehavior = topBarBehavior,
-
-                windowInsets = WindowInsets.safeDrawing.only(
-                    WindowInsetsSides.Horizontal + WindowInsetsSides.Top
-                ),
+                windowInsets = WindowInsets.none,
 
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
@@ -107,7 +108,7 @@ fun ExtensionScreen(
                 }
             )
         }
-    ) { contentPadding ->
+    ) { scaffoldContentPadding ->
         val state = rememberLazyListState()
         
         InfiniteScroll(state, 2) {
@@ -116,7 +117,8 @@ fun ExtensionScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = contentPadding.exclude(horizontal = true).add(bottom = 16.dp),
+            contentPadding = scaffoldContentPadding.only(vertical = true)
+				.plus(contentPadding.only(vertical = true)).add(bottom = 16.dp),
             verticalArrangement = if(viewModel.feeds.isEmpty()) {
                 Arrangement.Center
             } else Arrangement.Top
@@ -130,11 +132,11 @@ fun ExtensionScreen(
                 key = { "feed_${it.id}" },
                 contentType = { "feed" }
             ) { feed -> 
-                val result = viewModel.loadedFeeds[feed]
+				val result = viewModel.loadedFeeds[feed]
 				
-                if(result?.isSuccess == true) {
-                    var showActionsDialog by remember { mutableStateOf<Media?>(null) }
+				if(result?.isSuccess == true) {
 					val results = result.getOrThrow()
+					var showActionsDialog by remember { mutableStateOf<Media?>(null) }
                     
                     showActionsDialog?.also { media ->
                         MediaActionsDialog(
@@ -163,13 +165,13 @@ fun ExtensionScreen(
                                 } else this
                             },
                         
-                        contentPadding = contentPadding.exclude(vertical = true)
+                        contentPadding = contentPadding.only(horizontal = true)
                             .add(horizontal = 18.dp, vertical = 8.dp),
                         
                         title = feed.name,
                         
                         items = results.items.filter { mediaItem ->
-                            when(AwerySettings.adultContent.state.value) {
+                            when(AwerySettings.adultContent.value) {
                                 AwerySettings.AdultContent.SHOW -> true
 
                                 AwerySettings.AdultContent.ONLY ->
@@ -216,23 +218,26 @@ fun ExtensionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItem(),
-                    
-                    contentPadding = WindowInsets.safeDrawing.only(
-                        WindowInsetsSides.Horizontal).asPaddingValues()
-                        .add(horizontal = 18.dp, vertical = 8.dp),
+
+					contentPadding = contentPadding.only(horizontal = true)
+						.add(horizontal = 18.dp, vertical = 8.dp),
                     
                     title = feed.name
                 ) { contentPadding ->
                     if(result?.isFailure == true) {
-                        SelectionContainer {
-                            Text(
-                                modifier = Modifier
-                                    .padding(contentPadding)
-                                    .padding(top = 6.dp),
-                                maxLines = 5,
-                                text = result.exceptionOrNull()!!.classify().message
-                            )
-                        }
+						val error = remember(result) {
+							result.exceptionOrNull()!!.classify().message
+						}
+						
+                        Text(
+							modifier = Modifier
+								.clip(RoundedCornerShape(8.dp))
+								.combinedClickable(onLongClick = { Awery.copyToClipboard(error) })
+								.padding(contentPadding)
+								.padding(top = 6.dp),
+							maxLines = 5,
+							text = error
+						)
 
                         return@FeedRow
                     }

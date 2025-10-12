@@ -1,52 +1,21 @@
 package com.mrboomdev.awery.ui.screens.settings.pages
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumFloatingActionButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,51 +30,24 @@ import com.mrboomdev.awery.core.utils.Log
 import com.mrboomdev.awery.core.utils.isValidUrl
 import com.mrboomdev.awery.core.utils.launchGlobal
 import com.mrboomdev.awery.core.utils.toInt
-import com.mrboomdev.awery.data.repo.InvalidRepositoryException
-import com.mrboomdev.awery.data.repo.Repositories
 import com.mrboomdev.awery.data.database.database
+import com.mrboomdev.awery.data.repo.Repositories
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.has
 import com.mrboomdev.awery.extension.sdk.modules.ManageableModule
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.adult_content
-import com.mrboomdev.awery.resources.cancel
-import com.mrboomdev.awery.resources.confirm
-import com.mrboomdev.awery.resources.copy_link_to_clipboard
-import com.mrboomdev.awery.resources.extensions
-import com.mrboomdev.awery.resources.ic_add
-import com.mrboomdev.awery.resources.ic_back
-import com.mrboomdev.awery.resources.ic_explict_outlined
-import com.mrboomdev.awery.resources.ic_more_vertical
-import com.mrboomdev.awery.resources.ic_sd_card_outlined
-import com.mrboomdev.awery.resources.invalid_url
-import com.mrboomdev.awery.resources.remove
-import com.mrboomdev.awery.resources.repository_url
-import com.mrboomdev.awery.ui.components.AlertDialog
-import com.mrboomdev.awery.ui.components.DefaultExtImage
-import com.mrboomdev.awery.ui.components.DropdownMenu
-import com.mrboomdev.awery.ui.components.DropdownMenuItem
-import com.mrboomdev.awery.ui.components.ExtImage
-import com.mrboomdev.awery.ui.components.IconButton
-import com.mrboomdev.awery.ui.components.LocalToaster
-import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.resources.*
+import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
-import com.mrboomdev.awery.ui.utils.classify
-import com.mrboomdev.awery.ui.utils.formatAsLanguage
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.thenIf
-import com.mrboomdev.awery.ui.utils.viewModel
+import com.mrboomdev.awery.ui.utils.*
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.extension
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -142,6 +84,7 @@ fun SettingsExtensionsPage(
 	val repositories by viewModel.repositories.collectAsState()
 	val extensions by viewModel.extensions.collectAsState()
 	val isLoading by Extensions.observeIsLoading().collectAsState()
+	val showRepos by AwerySettings.expandRepositoriesList.collectAsState()
 	var showRepoCreateDialog by remember { mutableStateOf(false) }
 	
 	if(showRepoCreateDialog) {
@@ -326,7 +269,7 @@ fun SettingsExtensionsPage(
 						Row(
 							modifier = Modifier
 								.fillMaxWidth()
-								.clickable { AwerySettings.expandRepositoriesList.toggle() }
+								.clickable { launchGlobal(Dispatchers.Default) { AwerySettings.expandRepositoriesList.toggle() } }
 								.padding(horizontal = 18.dp),
 							verticalAlignment = Alignment.CenterVertically
 						) {
@@ -340,8 +283,7 @@ fun SettingsExtensionsPage(
 							)
 							
 							val iconDegree by animateFloatAsState(
-								90f + 180 * (1 - 
-										AwerySettings.expandRepositoriesList.state.value.toInt())
+								90f + 180 * (1 - AwerySettings.expandRepositoriesList.collectAsState().value.toInt())
 							)
 							
 							Icon(
@@ -359,10 +301,7 @@ fun SettingsExtensionsPage(
 				}
 				
 				items(
-					items = if(AwerySettings.expandRepositoriesList.state.value) {
-						repositories
-					} else emptyList(),
-					
+					items = if(showRepos) repositories else emptyList(),
 					key = { it.url },
 					contentType = { "repo" }
 				) { repo ->
@@ -413,7 +352,7 @@ fun SettingsExtensionsPage(
 					}
 				}
 				
-				if(repositories.isNotEmpty() && !AwerySettings.expandRepositoriesList.state.value) {
+				if(repositories.isNotEmpty() && !showRepos) {
 					singleItem("collapsedReposSpace") {
 						Spacer(Modifier.height(8.dp).animateItem())
 					}
@@ -492,7 +431,7 @@ fun SettingsExtensionsPage(
 										append(extension.version)
 										append(" ")
 
-										if(AwerySettings.showIds.state.value) {
+										if(AwerySettings.showIds.collectAsState().value) {
 											append(" ")
 											append(extension.id)
 										}

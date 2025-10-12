@@ -15,6 +15,7 @@ import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicMaterialThemeState
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 
 @Composable
 expect fun SeedAweryTheme(
@@ -32,7 +33,7 @@ fun seedColorScheme(
     return rememberDynamicMaterialThemeState(
         seedColor = seedColor,
         isDark = isDark,
-        isAmoled = AwerySettings.amoledTheme.state.value,
+        isAmoled = AwerySettings.amoledTheme.collectAsState().value,
         style = style,
         contrastLevel = contrastLevel,
         specVersion = ColorSpec.SpecVersion.SPEC_2025
@@ -54,7 +55,7 @@ internal fun SeedAweryThemeImpl(
 
     val colorScheme = seedColorScheme(seedColor).let { colorScheme ->
         // Their amoled is not so black as we want so we do apply our own effects
-        if(isDarkTheme() && AwerySettings.amoledTheme.state.value) {
+        if(isDarkTheme() && AwerySettings.amoledTheme.collectAsState().value) {
             colorScheme.toAmoledColorScheme()
         } else colorScheme
     }.let { colorScheme ->

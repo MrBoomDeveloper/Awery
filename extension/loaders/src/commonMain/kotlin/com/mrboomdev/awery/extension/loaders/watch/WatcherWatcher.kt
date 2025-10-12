@@ -15,13 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.jsoup.select.Collector.collect
-import javax.management.Query.value
 
 class WatcherWatcher(
 	private val ogExtension: String,

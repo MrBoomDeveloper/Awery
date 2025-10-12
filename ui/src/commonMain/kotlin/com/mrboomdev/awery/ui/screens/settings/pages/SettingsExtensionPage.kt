@@ -3,16 +3,7 @@ package com.mrboomdev.awery.ui.screens.settings.pages
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
@@ -20,23 +11,8 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -51,35 +27,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.mrboomdev.awery.core.utils.Log
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
-import com.mrboomdev.awery.extension.sdk.BooleanPreference
-import com.mrboomdev.awery.extension.sdk.Extension
-import com.mrboomdev.awery.extension.sdk.LabelPreference
-import com.mrboomdev.awery.extension.sdk.Preference
-import com.mrboomdev.awery.extension.sdk.PreferenceGroup
-import com.mrboomdev.awery.extension.sdk.SelectPreference
-import com.mrboomdev.awery.extension.sdk.StringPreference
+import com.mrboomdev.awery.extension.sdk.*
 import com.mrboomdev.awery.extension.sdk.modules.ManageableModule
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.adult_content
-import com.mrboomdev.awery.resources.cancel
-import com.mrboomdev.awery.resources.ic_explict_outlined
-import com.mrboomdev.awery.resources.ok
-import com.mrboomdev.awery.ui.components.AlertDialog
-import com.mrboomdev.awery.ui.components.BottomSheetDialog
-import com.mrboomdev.awery.ui.components.DefaultExtImage
-import com.mrboomdev.awery.ui.components.ExtImage
-import com.mrboomdev.awery.ui.components.LocalToaster
-import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.resources.*
+import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemDialog
-import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.bottom
-import com.mrboomdev.awery.ui.utils.classify
-import com.mrboomdev.awery.ui.utils.end
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.start
+import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -195,7 +152,7 @@ fun SettingsExtensionPage(
 									
 									append(state.extension.version)
 									
-									if(AwerySettings.showIds.state.value) {
+									if(AwerySettings.showIds.collectAsState().value) {
 										append(" ")
 										append(state.extension.id)
 									}

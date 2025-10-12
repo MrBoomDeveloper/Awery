@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.material3.*
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -29,6 +30,7 @@ import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.utils.singleItem
 import com.mrboomdev.awery.ui.utils.thenIf
 import org.jetbrains.compose.resources.painterResource
@@ -40,7 +42,8 @@ internal fun TvHomePage(
 	contentPadding: PaddingValues
 ) {
 	val navigation = Navigation.current()
-	val loadedFeeds by viewModel.loadedFeeds.collectAsState()
+	val viewModel = viewModel { HomeViewModel() }
+	val isLoading by viewModel.isLoading.collectAsState()
 	
 	LazyColumn(
 		contentPadding = contentPadding
@@ -48,7 +51,7 @@ internal fun TvHomePage(
 		singleItem("scrollFixer")
 		
 		items(
-			items = loadedFeeds,
+			items = viewModel.loadedFeeds,
 			key = { it.first.id + it.second.id }
 		) { (extension, feed, mediaResults) ->
 			Column(Modifier.animateItem()) {
@@ -164,7 +167,7 @@ internal fun TvHomePage(
 			}
 		}
 		
-		if(viewModel.isLoadingFeeds) {
+		if(isLoading) {
 			singleItem("loadingIndicator") {
 				CircularProgressIndicator(
 					modifier = Modifier

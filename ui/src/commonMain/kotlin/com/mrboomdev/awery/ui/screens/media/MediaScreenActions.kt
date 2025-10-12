@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewModelScope
 import com.mrboomdev.awery.core.Awery
+import com.mrboomdev.awery.core.Platform
 import com.mrboomdev.awery.core.utils.Log
 import com.mrboomdev.awery.core.utils.collection.replace
 import com.mrboomdev.awery.core.utils.launchGlobal
@@ -38,7 +39,6 @@ import com.mrboomdev.awery.ui.components.AlertDialog
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.popups.BookmarkMediaDialog
-import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.awery.ui.utils.formatAsCountry
 import com.mrboomdev.awery.ui.utils.thenIf
@@ -61,8 +61,9 @@ internal fun ColumnScope.MediaScreenActions(
     onWatch: () -> Unit
 ) {
     val navigation = Navigation.current()
-    val toaster = LocalToaster.current
-    val windowSize = currentWindowSize()
+    val toaster = LocalToaster.current 
+	val windowSize = currentWindowSize() 
+	val media by viewModel.media.collectAsState()
 
     var showEpisodesDialog by remember { mutableStateOf(false) }
     var showBookmarkDialog by remember { mutableStateOf(false) }
@@ -74,24 +75,24 @@ internal fun ColumnScope.MediaScreenActions(
             maxLines = 5,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
-            text = viewModel.media.title
+            text = media.title
         )
     }
 
     listOfNotNull(
         destination.extensionName,
-        viewModel.media.ageRating,
-        viewModel.media.releaseDate?.toCalendar()?.get(Calendar.YEAR),
-        viewModel.media.country?.formatAsCountry(),
+        media.ageRating,
+        media.releaseDate?.takeIf { it > 0L }?.toCalendar()?.get(Calendar.YEAR),
+        media.country?.formatAsCountry(),
 
-        viewModel.media.episodes?.let { episodes ->
-            pluralStringResource(when(viewModel.media.type) {
+        media.episodes?.let { episodes ->
+            pluralStringResource(when(media.type) {
                 Media.Type.WATCHABLE -> Res.plurals.episodes
                 Media.Type.READABLE -> Res.plurals.chapters
             }, episodes, episodes)
         },
 
-        viewModel.media.tags?.takeIf { it.isNotEmpty() }?.joinToString(", ")
+        media.tags?.takeIf { it.isNotEmpty() }?.joinToString(", ")
     ).joinToString(" • ").takeIf { it.isNotBlank() }?.also { meta ->
         Spacer(Modifier.height(8.dp))
 
@@ -110,98 +111,71 @@ internal fun ColumnScope.MediaScreenActions(
 
     Spacer(Modifier.height(12.dp))
 
-    if(windowSize.width >= WindowSizeType.Small) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Button(
-                modifier = Modifier.thenIf(stretchButtons) { weight(1f) },
-                onClick = onWatch
-            ) {
-                Icon(
-                    modifier = Modifier.size(26.dp),
-                    contentDescription = null,
-                    painter = painterResource(when(viewModel.media.type) {
-                        Media.Type.WATCHABLE -> Res.drawable.ic_play_filled
-                        Media.Type.READABLE -> Res.drawable.ic_book_filled
-                    })
-                )
+	Row(
+		modifier = Modifier.fillMaxWidth(),
+		horizontalArrangement = Arrangement.spacedBy(8.dp)
+	) {
+		Button(
+			modifier = Modifier.thenIf(stretchButtons) { weight(1f) },
+			onClick = onWatch
+		) {
+			Icon(
+				modifier = Modifier.size(26.dp),
+				contentDescription = null,
+				painter = painterResource(when(media.type) {
+					Media.Type.WATCHABLE -> Res.drawable.ic_play_filled
+					Media.Type.READABLE -> Res.drawable.ic_book_filled
+				})
+			)
 
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 12.dp),
-                    text = stringResource(when(viewModel.media.type) {
-                        Media.Type.WATCHABLE -> Res.string.watch_now
-                        Media.Type.READABLE -> Res.string.read_now
-                    })
-                )
-            }
+			Text(
+				modifier = Modifier.padding(start = 8.dp, end = 12.dp),
+				text = stringResource(when(media.type) {
+					Media.Type.WATCHABLE -> Res.string.watch_now
+					Media.Type.READABLE -> Res.string.read_now
+				})
+			)
+		}
 
-            FilledTonalButton(
-                modifier = Modifier.thenIf(stretchButtons) { weight(1f) },
-                onClick = { showBookmarkDialog = true }
-            ) {
-                Icon(
-                    modifier = Modifier.size(22.dp),
-                    painter = painterResource(Res.drawable.ic_bookmark_filled),
-                    contentDescription = null
-                )
+		FilledTonalButton(
+			modifier = Modifier.thenIf(stretchButtons) { weight(1f) },
+			onClick = { showBookmarkDialog = true }
+		) {
+			Icon(
+				modifier = Modifier.size(22.dp),
+				painter = painterResource(Res.drawable.ic_bookmark_filled),
+				contentDescription = null
+			)
 
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    text = stringResource(Res.string.bookmark)
-                )
-            }
-        }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onWatch
-            ) {
-                Icon(
-                    modifier = Modifier.size(26.dp),
-                    contentDescription = null,
-                    painter = painterResource(when(viewModel.media.type) {
-                        Media.Type.WATCHABLE -> Res.drawable.ic_play_filled
-                        Media.Type.READABLE -> Res.drawable.ic_book_filled
-                    })
-                )
-
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 12.dp),
-                    text = stringResource(when(viewModel.media.type) {
-                        Media.Type.WATCHABLE -> Res.string.watch
-                        Media.Type.READABLE -> Res.string.read
-                    })
-                )
-            }
-
-            FilledTonalButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { showBookmarkDialog = true }
-            ) {
-                Icon(
-                    modifier = Modifier.size(22.dp),
-                    painter = painterResource(Res.drawable.ic_bookmark_filled),
-                    contentDescription = null
-                )
-
-                Text(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    text = stringResource(Res.string.bookmark)
-                )
-            }
-        }
-    }
+			Text(
+				modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+				text = stringResource(Res.string.bookmark)
+			)
+		}
+		
+		media.url?.also { url ->
+			if(Awery.platform != Platform.DESKTOP) return@also
+			val toaster = LocalToaster.current
+			
+			FilledTonalIconButton(
+				onClick = {
+					Awery.copyToClipboard(url)
+					toaster.toast("Link copied to the clipboard!")
+				}
+			) {
+				Icon(
+					modifier = Modifier.size(22.dp),
+					painter = painterResource(Res.drawable.ic_link),
+					contentDescription = null
+				)
+			}
+		}
+	}
 
     if(showBookmarkDialog) {
         BookmarkMediaDialog(
 			extensionId = destination.extensionId,
-			media = viewModel.media
+			media = media
 		) { showBookmarkDialog = false }
 	}
 
@@ -281,7 +255,7 @@ internal fun ColumnScope.MediaScreenActions(
                 }
 
                 try {
-                    module!!.watch(viewModel.media, 0).get(::watch) { variants ->
+                    module!!.watch(media, 0).get(::watch) { variants ->
                         watchVariants.clear()
                         watchVariants.addAll(variants.items.map {
                             it to Awery.database.progress.get(
@@ -330,7 +304,6 @@ internal fun ColumnScope.MediaScreenActions(
                                     val value = progress?.progress ?: 0
                                     (value > 0 || value == -1L) &&
                                             (variant.type != WatchVariant.Type.QUALITY &&
-                                                    variant.type != WatchVariant.Type.DUB &&
                                                     variant.type != WatchVariant.Type.LOCALE)
                                 }) { alpha(.5f) }
                                 .clickable {
@@ -340,7 +313,7 @@ internal fun ColumnScope.MediaScreenActions(
                                             mediaId = destination.media.id,
                                             variantId = variant.id,
                                             progress = -1L,
-                                            title = viewModel.media.title + " " + variant.title
+                                            title = media.title + " " + variant.title
                                         )
 
                                         launchGlobal { Awery.database.progress.add(newProgress) }

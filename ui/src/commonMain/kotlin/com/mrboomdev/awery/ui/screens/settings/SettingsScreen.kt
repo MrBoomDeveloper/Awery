@@ -5,27 +5,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.mrboomdev.awery.core.Awery
+import com.mrboomdev.awery.core.Platform
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
@@ -35,13 +23,12 @@ import com.mrboomdev.navigation.core.safePop
 import com.mrboomdev.navigation.core.sealedNavigationGraph
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
 import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
-import kotlinx.serialization.json.Json
 
 @Composable
 fun SettingsScreen(initialPage: SettingsPages) {
 	val appNavigation = Navigation.current()
 	val settingsNavigation = rememberJetpackNavigation(initialPage)
-	val settingsBackStack by settingsNavigation.currentBackStack.collectAsState(emptyList())
+	val settingsBackStack by settingsNavigation.currentBackStackFlow.collectAsState(emptyList())
 	
 	val windowSize = currentWindowSize()
 	val isLandscape = windowSize.width >= WindowSizeType.Large 
@@ -89,8 +76,19 @@ fun SettingsScreen(initialPage: SettingsPages) {
 			JetpackNavigationHost(
 				modifier = Modifier.fillMaxSize(),
 				navigation = settingsNavigation,
-				enterTransition = { slideInHorizontally(tween(500)) { it / 2 } + fadeIn(tween(250)) },
-				exitTransition = { slideOutHorizontally(tween(500)) { -it / 2 } + fadeOut(tween(250)) },
+				
+				enterTransition = {
+					if(Awery.platform == Platform.DESKTOP) {
+						return@JetpackNavigationHost fadeIn(tween(200))
+					}
+					
+					slideInHorizontally(tween(500)) { it / 2 } + fadeIn(tween(250)) 
+				},
+				
+				exitTransition = { 
+					slideOutHorizontally(tween(500)) { -it / 2 } + fadeOut(tween(250)) 
+				},
+				
 				graph = remember {
 					sealedNavigationGraph { page ->
 						if(page is SettingsPages.Main) {

@@ -221,7 +221,7 @@ DesktopTarget.values().map { target ->
 compose.desktop {
     application {
         mainClass = "com.mrboomdev.awery.app.MainKt"
-        javaHome = rootProject.layout.projectDirectory.dir("jre/windows-x64").asFile.absolutePath
+//        javaHome = rootProject.layout.projectDirectory.dir("jre/windows-x64").asFile.absolutePath
 
         nativeDistributions {
             targetFormats = DesktopTarget.values().map { it.targetFormat }.toSet()
