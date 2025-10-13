@@ -1,5 +1,6 @@
 package com.mrboomdev.awery.ui.utils
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -100,9 +101,17 @@ fun currentWindowSize(): WindowSize {
 @Stable
 fun WindowInsets(horizontal: Dp = 0.dp, vertical: Dp = 0.dp) = WindowInsets(
     left = horizontal,
-    top= vertical,
+    top = vertical,
     right = horizontal,
     bottom = vertical
+)
+
+@Composable
+fun PaddingValues.asWindowInsets() = WindowInsets(
+    left = left,
+    top = top,
+    right = end,
+    bottom = bottom
 )
 
 @Composable

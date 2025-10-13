@@ -23,6 +23,7 @@ import com.mrboomdev.awery.data.AgeRating
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
+import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Feed
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
@@ -33,16 +34,15 @@ import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
-import com.mrboomdev.awery.ui.utils.add
-import com.mrboomdev.awery.ui.utils.classify
+import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.awery.ui.utils.pagination.InfiniteScroll
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.viewModel
 import com.mrboomdev.navigation.core.Navigation
 import com.mrboomdev.navigation.core.safePop
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 
@@ -76,7 +76,7 @@ fun ExtensionFeedScreen(
             .fillMaxSize()
             .nestedScroll(topBarBehavior.nestedScrollConnection),
         
-        contentWindowInsets = WindowInsets.safeDrawing,
+        contentWindowInsets = contentPadding.asWindowInsets(),
         containerColor = Color.Transparent,
         
         topBar = {
@@ -105,7 +105,7 @@ fun ExtensionFeedScreen(
                 },
                 
                 title = {
-                    Text(destination.extensionName + " - " + destination.feedName)
+                    Text((destination.extensionName ?: viewModel.extension.collectAsState().value?.name ?: "Loading...") + " - " + destination.feedName)
                 }
             )
         }
@@ -188,6 +188,9 @@ class ExtensionFeedScreenViewModel(
     private val toaster: Toaster,
     private val navigation: Navigation<Routes>
 ): ViewModel() {
+    private val _extension = MutableStateFlow<Extension?>(null)
+    val extension = _extension.asStateFlow()
+    
     private val feed = Feed(destination.feedId, destination.feedName)
     private var module: CatalogModule? = null
     private var currentPage = 0
@@ -207,7 +210,9 @@ class ExtensionFeedScreenViewModel(
             Log.e("ExtensionFeedScreen", "Failed to load an feed!", it)
         }) {
             if(module == null) {
-                module = Extensions[destination.extensionId]?.get<CatalogModule>() ?: run { 
+                module = Extensions[destination.extensionId]?.also {
+                    _extension.emit(it)
+                }?.get<CatalogModule>() ?: run { 
                     toaster.toast("Extension is no longer installed!")
                     withContext(Dispatchers.Main) { navigation.safePop() }
                     return@asyncTryingSupervise

@@ -29,10 +29,12 @@ object AwerySettings {
     val darkTheme by setting(DarkTheme.AUTO)
     val primaryColor by setting(-1L)
     val amoledTheme by setting(false)
+    val libraryStyle by setting(LibraryStyle.TABBED)
     val adultContent by setting(AdultContent.HIDE)
     val defaultPlayerFitMode by setting(PlayerFitMode.FIT)
     val playerDoubleTapSeek by setting(15)
-    val defaultMainTab by setting(MainTab.HOME)
+    val mainDefaultTab by setting(MainTab.HOME)
+    val libraryDefaultTab by setting(-1L)
     val showIds by setting(false)
     val username by setting("")
     val expandRepositoriesList by setting(true)
@@ -64,5 +66,10 @@ object AwerySettings {
     
     enum class AdultContent {
         SHOW, HIDE, ONLY/*, STRICT*/
+    }
+    
+    enum class LibraryStyle {
+        TABBED,
+        COLUMN
     }
 }

@@ -16,6 +16,7 @@ import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
 import com.mrboomdev.awery.extension.loaders.watch.ExtensionsWatcher
 import com.mrboomdev.awery.extension.loaders.watch.WatcherNode
+import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import com.mrboomdev.awery.resources.*
@@ -118,6 +119,9 @@ internal val colorsCache = runBlocking {
 class MediaScreenViewModel(
     private val destination: Routes.Media
 ): ViewModel() {
+    private val _extension = MutableStateFlow<Extension?>(null)
+    val extension = _extension.asStateFlow()
+    
     private val _watcher = MutableStateFlow<WatcherNode.Variants>(
         object : WatcherNode.Variants {
             override val children = emptyList<WatcherNode>()
@@ -126,7 +130,6 @@ class MediaScreenViewModel(
             override val id = "loading"
         }
     )
-	
     val watcher = _watcher.asStateFlow()
     
     private val _isUpdatingMedia = MutableStateFlow(true)
@@ -147,7 +150,9 @@ class MediaScreenViewModel(
             Log.e("MediaScreen", "Failed to update media!", it)
             reloadEpisodes()
         }) {
-            val catalogModule = Extensions[destination.extensionId]!!.get<CatalogModule>()
+            val catalogModule = Extensions[destination.extensionId]!!.also {
+                _extension.emit(it)
+            }.get<CatalogModule>()
             
             if(catalogModule != null) {
                 _media.emit(catalogModule.updateMedia(destination.media).also { updated ->

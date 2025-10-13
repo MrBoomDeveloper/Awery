@@ -2,45 +2,23 @@ package com.mrboomdev.awery.ui.screens.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import com.mrboomdev.awery.data.settings.BooleanSetting
-import com.mrboomdev.awery.data.settings.EnumSetting
-import com.mrboomdev.awery.data.settings.IntSetting
-import com.mrboomdev.awery.data.settings.Setting
-import com.mrboomdev.awery.data.settings.StringSetting
+import com.mrboomdev.awery.data.settings.*
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
 import com.mrboomdev.awery.ui.utils.thenIf
-import kotlinx.serialization.json.JsonNull.content
 import org.jetbrains.compose.resources.painterResource
 import kotlin.enums.enumEntries
 
@@ -104,6 +82,7 @@ object SettingsDefaults {
 		step: Int = 1,
 		checked: Boolean = false,
 		dialog: (@Composable DialogScope.() -> Unit)? = null,
+		content: @Composable () -> Unit = {},
 		setting: Setting<*>? = null
 	) {
 		if(setting != null) {
@@ -182,7 +161,9 @@ object SettingsDefaults {
 							text = it
 						) 
 					}}
-				)
+				) {
+					content()
+				}
 			}
 		}
 	}
@@ -317,6 +298,7 @@ fun SettingsDefaults.itemDialog(
 	title: String,
 	description: String? = null,
 	contentPadding: PaddingValues = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
+	content: @Composable () -> Unit = {},
 	dialog: @Composable SettingsDefaults.DialogScope.() -> Unit
 ) = item(
 	modifier = modifier,
@@ -324,5 +306,6 @@ fun SettingsDefaults.itemDialog(
 	title = title,
 	description = description,
 	contentPadding = contentPadding,
+	content = content,
 	dialog = dialog
 )

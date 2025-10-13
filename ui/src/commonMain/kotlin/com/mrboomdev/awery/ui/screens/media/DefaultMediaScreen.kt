@@ -352,6 +352,7 @@ internal fun DefaultMediaScreen(
 						tabs = tabs,
 						coroutineScope = coroutineScope,
 						contentPadding = scaffoldContentPadding.only(bottom = true)
+							.plus(contentPadding.only(bottom = true))
 					)
 				}
 			}

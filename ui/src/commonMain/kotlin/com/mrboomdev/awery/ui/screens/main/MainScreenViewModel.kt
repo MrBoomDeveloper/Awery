@@ -4,55 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mrboomdev.awery.core.Awery
-import com.mrboomdev.awery.core.utils.CacheStorage
 import com.mrboomdev.awery.data.database.database
 import com.mrboomdev.awery.data.database.entity.toMedia
-import com.mrboomdev.awery.extension.sdk.Media
-import com.mrboomdev.awery.extension.sdk.Results
-import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.cacheDir
-import io.github.vinceglb.filekit.div
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-private val feedsCache by lazy {
-    runBlocking {
-        CacheStorage<Results<Media>>(
-            directory = FileKit.cacheDir / "feeds",
-            maxSize = 5 * 1024 * 1024 * 8, // 5 mb
-            maxAge = 24 * 60 * 60 * 1000 // 1 day
-        )
-    }
-}
-
+// TODO: Delete this file once tv will use separate screen
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainScreenViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
-    val isNoLists = Awery.database.lists.observeCount()
-        .map { it == 0 }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
-        )
-    
-    val lists = Awery.database.lists.observeAll()
-        .flatMapLatest { lists ->
-            combine(lists.map { list ->
-                Awery.database.lists.observeMediaInList(list.id)
-            }) { lists.zip(it) { list, mediaList ->
-                list to mediaList.map { media ->
-                    media to media.toMedia()
-                }
-            } }
-        }
-        .map { true to it }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false to emptyList()
-        )
-
     val continueWatching = Awery.database.progress
         .observeLatest(25)
         .map { all ->

@@ -25,10 +25,10 @@ import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.LocalApp
+import com.mrboomdev.awery.ui.MainRoutes
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.FilePicker
-import com.mrboomdev.awery.ui.getInitialRoute
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemSetting
 import com.mrboomdev.awery.ui.theme.isDarkTheme
@@ -410,7 +410,7 @@ sealed interface IntroStep {
 
                     Button(onClick = { 
                         appNavigation.clear()
-                        appNavigation.push(getInitialRoute())
+                        appNavigation.push(MainRoutes.entries[AwerySettings.mainDefaultTab.value.ordinal].route)
                     }) {
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp),

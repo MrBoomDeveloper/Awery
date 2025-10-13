@@ -3,6 +3,7 @@ package com.mrboomdev.awery.ui
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import com.mrboomdev.awery.data.settings.AwerySettings
+import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.Video
 import com.mrboomdev.awery.resources.*
@@ -13,7 +14,8 @@ import com.mrboomdev.awery.ui.screens.home.HomeScreen
 import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
-import com.mrboomdev.awery.ui.screens.library.LibraryScreen
+import com.mrboomdev.awery.ui.screens.library.LibraryColumnScreen
+import com.mrboomdev.awery.ui.screens.library.LibraryTabbedScreen
 import com.mrboomdev.awery.ui.screens.library.LibraryViewModel
 import com.mrboomdev.awery.ui.screens.media.MediaScreen
 import com.mrboomdev.awery.ui.screens.media.MediaScreenViewModel
@@ -68,7 +70,10 @@ sealed interface Routes {
 		fun Content(
 			viewModel: LibraryViewModel = viewModel { LibraryViewModel() },
 			contentPadding: PaddingValues
-		) = LibraryScreen(viewModel, contentPadding)
+		) = when(AwerySettings.libraryStyle.collectAsState().value) {
+			AwerySettings.LibraryStyle.TABBED -> LibraryTabbedScreen(viewModel, contentPadding)
+			AwerySettings.LibraryStyle.COLUMN -> LibraryColumnScreen(viewModel, contentPadding)
+		}
 	}
 
 	@Serializable
@@ -126,7 +131,7 @@ sealed interface Routes {
 	@Serializable
 	data class ExtensionFeed(
 		val extensionId: String,
-		val extensionName: String,
+		val extensionName: String?,
 		val feedId: String,
 		val feedName: String
 	): Routes {
@@ -224,25 +229,4 @@ enum class MainRoutes(
 	);
 
 	fun getIcon(isActive: Boolean) = if(isActive) activeIcon else icon
-}
-
-fun getInitialRoute(): Routes {
-	if(!AwerySettings.introDidWelcome.value) {
-		return Routes.Intro(IntroStep.Welcome, singleStep = false)
-	}
-
-	if(!AwerySettings.introDidTheme.value) {
-		return Routes.Intro(IntroStep.Theme, singleStep = false)
-	}
-
-	if(AwerySettings.username.value.isBlank()) {
-		return Routes.Intro(IntroStep.UserCreation, singleStep = false)
-	}
-
-	return when(AwerySettings.defaultMainTab.value) {
-		AwerySettings.MainTab.HOME -> Routes.Home
-		AwerySettings.MainTab.SEARCH -> Routes.Search
-		AwerySettings.MainTab.NOTIFICATIONS -> Routes.Notifications
-		AwerySettings.MainTab.LIBRARY -> Routes.Library
-	}
 }

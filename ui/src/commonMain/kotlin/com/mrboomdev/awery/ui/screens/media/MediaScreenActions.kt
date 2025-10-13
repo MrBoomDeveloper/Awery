@@ -39,7 +39,6 @@ import com.mrboomdev.awery.ui.components.AlertDialog
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.popups.BookmarkMediaDialog
-import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.awery.ui.utils.formatAsCountry
 import com.mrboomdev.awery.ui.utils.thenIf
 import kotlinx.coroutines.Dispatchers
@@ -60,9 +59,8 @@ internal fun ColumnScope.MediaScreenActions(
     stretchButtons: Boolean,
     onWatch: () -> Unit
 ) {
-    val navigation = Navigation.current()
-    val toaster = LocalToaster.current 
-	val windowSize = currentWindowSize() 
+    val navigation = Navigation.current() 
+	val toaster = LocalToaster.current
 	val media by viewModel.media.collectAsState()
 
     var showEpisodesDialog by remember { mutableStateOf(false) }
@@ -80,7 +78,7 @@ internal fun ColumnScope.MediaScreenActions(
     }
 
     listOfNotNull(
-        destination.extensionName,
+        destination.extensionName ?: viewModel.extension.collectAsState().value?.name,
         media.ageRating,
         media.releaseDate?.takeIf { it > 0L }?.toCalendar()?.get(Calendar.YEAR),
         media.country?.formatAsCountry(),

@@ -53,6 +53,10 @@ import com.mrboomdev.navigation.core.sealedNavigationGraph
 import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
 import com.mrboomdev.navigation.jetpack.bringToTop
+import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
@@ -97,11 +101,32 @@ fun App() {
 			val wallpaperOpacity = AwerySettings.wallpaperOpacity.collectAsState().value / 100f
 			val windowSize = currentWindowSize()
 
+			val topAppBarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+			val tabContentOffsets = rememberSaveable { mutableMapOf<Int, Float>() }
 			val coroutineScope = rememberCoroutineScope()
 			val drawerState = rememberDrawerState(DrawerValue.Closed)
 			val toaster = remember { Toaster(maxItems = 3) }
 			val navigationMap = rememberNavigationMap()
-			var currentTab by rememberSaveable { mutableStateOf(0) }
+			
+			var currentTab by rememberSaveable { 
+				mutableStateOf(run {
+					when {
+						!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
+						!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
+						AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
+						else -> null
+					}?.also { 
+						navigationMap[0].apply { 
+							clear()
+							push(it)
+						}
+						
+						return@run 0
+					}
+					
+					AwerySettings.mainDefaultTab.value.ordinal
+				}) 
+			}
 			
 			val currentNavigation = navigationMap[currentTab]
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
@@ -134,6 +159,17 @@ fun App() {
                 
                 contentScale = ContentScale.Crop
             )
+			
+			fun onOpenTab(index: Int, route: Routes) {
+				tabContentOffsets[currentTab] = topAppBarBehavior.state.contentOffset
+				topAppBarBehavior.state.contentOffset = tabContentOffsets[index] ?: 0f
+
+				if(index == currentTab) {
+					currentNavigation.bringToTop(route)
+				} else {
+					currentTab = index
+				}
+			}
 
             Image(
                 modifier = Modifier
@@ -189,19 +225,13 @@ fun App() {
 										},
 										
 										currentTab = currentTab,
-										onOpenTab = { index, route ->
-											if(index == currentTab) {
-												currentNavigation.bringToTop(route)
-											} else {
-												currentTab = index
-											}
-										}
+										onOpenTab = ::onOpenTab
 									)
 								}
 
 								Column {
 									val installing by ExtensionInstaller.observeInstalling().collectAsState()
-									val topAppBarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+									val hazeState = rememberHazeState()
 
 									AnimatedVisibility(installing.isNotEmpty()) {
 										Row(
@@ -255,23 +285,24 @@ fun App() {
 
 										bottomBar = {
 											AnimatedVisibility(!useRail && showNavigation) {
-												AweryBottomBar(
-													currentTab = currentTab,
-													onOpenTab = { index, route ->
-														if(index == currentTab) {
-															currentNavigation.bringToTop(route)
-														} else {
-															currentTab = index
-														}
-													}
-												)
+												Box(Modifier.hazeEffect(state = hazeState, style = HazeDefaults.style(
+													blurRadius = 4.dp,
+													backgroundColor = MaterialTheme.colorScheme.surface
+												))) {
+													AweryBottomBar(
+														currentTab = currentTab,
+														onOpenTab = ::onOpenTab
+													)
+												}
 											}
 										}
 									) { contentPadding ->
-										AweryNavHost(
-											navigation = currentNavigation,
-											contentPadding = contentPadding
-										)
+										Box(Modifier.hazeSource(state = hazeState)) {
+											AweryNavHost(
+												navigation = currentNavigation,
+												contentPadding = contentPadding
+											)
+										}
 									}
 								}
 							}
@@ -496,11 +527,11 @@ private fun AweryTopBar(
 				Row(
 					modifier = Modifier
 						.padding(horizontal = spacing)
-						.clip(RoundedCornerShape(12.dp))
+						.clip(RoundedCornerShape(48.dp))
 						.background(MaterialTheme.colorScheme.surfaceContainerHighest.let {
 							if(AwerySettings.amoledTheme.collectAsState().value) it.copy(alpha = .75f) else it
 						})
-						.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(12.dp))
+						.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(48.dp))
 						.widthIn(max = 400.dp)
 						.fillMaxWidth()
 						.height(48.dp)
@@ -561,7 +592,7 @@ private fun AweryTopBar(
 									) {
 										IconButton(
 											modifier = Modifier
-												.heightIn(max = 42.dp)
+												.heightIn(max = 40.dp)
 												.fillMaxHeight()
 												.aspectRatio(1f)
 												.offset(x = 10.dp),

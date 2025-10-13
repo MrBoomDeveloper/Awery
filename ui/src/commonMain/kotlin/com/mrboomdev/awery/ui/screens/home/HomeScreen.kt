@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -360,14 +358,14 @@ fun HomeScreen(
 			isRefreshing = isReloading,
 			onRefresh = { viewModel.reload() },
 			content = { Content() },
-			indicator = {
-				Indicator(
-					state = rememberPullToRefreshState(),
-					modifier = Modifier.align(Alignment.TopCenter),
-					color = MaterialTheme.colorScheme.primary,
-					isRefreshing = isReloading
-				)
-			}
+//			indicator = {
+//				Indicator(
+//					state = rememberPullToRefreshState(),
+//					modifier = Modifier.align(Alignment.TopCenter),
+//					color = MaterialTheme.colorScheme.primary,
+//					isRefreshing = isReloading
+//				)
+//			}
 		)
 	}
 }

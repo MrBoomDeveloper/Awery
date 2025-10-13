@@ -20,6 +20,12 @@ val PaddingValues.start get() = calculateStartPadding(LocalLayoutDirection.curre
 @get:Composable
 val PaddingValues.end get() = calculateEndPadding(LocalLayoutDirection.current)
 
+@get:Composable
+val PaddingValues.left get() = calculateLeftPadding(LocalLayoutDirection.current)
+
+@get:Composable
+val PaddingValues.right get() = calculateRightPadding(LocalLayoutDirection.current)
+
 @Composable
 operator fun PaddingValues.plus(padding: PaddingValues) = add(
     start = padding.start,

@@ -73,7 +73,7 @@ fun ExtensionScreen(
         topBar = {
             TopAppBar(
                 scrollBehavior = topBarBehavior,
-                windowInsets = WindowInsets.none,
+                windowInsets = contentPadding.exclude(bottom = true).asWindowInsets(),
 
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
@@ -118,7 +118,8 @@ fun ExtensionScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = scaffoldContentPadding.only(vertical = true)
-				.plus(contentPadding.only(vertical = true)).add(bottom = 16.dp),
+                .plus(contentPadding.only(bottom = true))
+                .add(bottom = 16.dp),
             verticalArrangement = if(viewModel.feeds.isEmpty()) {
                 Arrangement.Center
             } else Arrangement.Top

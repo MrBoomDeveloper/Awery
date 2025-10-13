@@ -1,46 +1,49 @@
 package com.mrboomdev.awery.ui.screens.search
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.Extensions
-import com.mrboomdev.awery.extension.sdk.Media
+import com.mrboomdev.awery.extension.loaders.Extensions.has
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
-import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
+import com.mrboomdev.awery.ui.App
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchViewModel: ViewModel() {
-	private var job: Job? = null
-	
-	private val _items = mutableStateListOf<Media>()
-	val items: List<Media> = _items
-	
-	private val _error = mutableStateOf<Throwable?>(null)
-	val error by _error
-	
-	private val _extension = mutableStateOf<SettingsPages.Extension?>(null)
-	val extension by _extension
-	
-	val feeds = Extensions.getAll<CatalogModule>(enabled = true).map { 
-		
-	}
-	
-	fun reload() {
-		job?.cancel()
-		
-		job = viewModelScope.launch(Dispatchers.Default) { 
-			load(page = 0)
+	private val _extensionsFound = combine(
+		App.searchQuery,
+		Extensions.observeAll(enabled = true),
+		AwerySettings.adultContent.stateFlow
+	) { query, extensions, adultContentMode ->
+		extensions.filter { extension ->
+			extension.name.lowercase().contains(query.lowercase()) && extension.has<CatalogModule>() && when(adultContentMode) {
+				AwerySettings.AdultContent.SHOW -> true
+				AwerySettings.AdultContent.HIDE -> !extension.isNsfw
+				AwerySettings.AdultContent.ONLY -> extension.isNsfw
+			}
 		}
 	}
 	
-	private suspend fun load(page: Int) {
-		if(page == 0) {
-			
+	val extensionsFound = _extensionsFound.map { extensions ->
+		extensions.sortedBy { extension ->
+			extension.name.lowercase()
+		}
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5_000),
+		initialValue = null
+	)
+	
+	init {
+		viewModelScope.launch(Dispatchers.Default) { 
+			_extensionsFound.collect { extensions ->
+				
+			}
 		}
 	}
 }

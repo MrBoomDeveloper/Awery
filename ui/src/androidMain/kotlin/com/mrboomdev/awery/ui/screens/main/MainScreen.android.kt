@@ -198,12 +198,7 @@ private fun TvMainScreen(viewModel: MainScreenViewModel) {
 				state = pagerState,
 				userScrollEnabled = false
 			) { page ->
-				when(page) {
-					0 -> TvHomePage(viewModel, contentPadding)
-					1 -> SearchPage(viewModel, contentPadding, "")
-					2 -> NotificationsPage(contentPadding)
-					3 -> LibraryPage(viewModel, contentPadding)
-				}
+				TvHomePage(viewModel, contentPadding)
 			}
 		}
 	}
