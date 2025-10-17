@@ -59,6 +59,7 @@ fun ExtensionScreen(
 		ExtensionScreenViewModel(destination.extensionId) },
 	contentPadding: PaddingValues
 ) {
+    val contentPadding = contentPadding.add(horizontal = niceSideInset())
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val navigation = Navigation.current()
 

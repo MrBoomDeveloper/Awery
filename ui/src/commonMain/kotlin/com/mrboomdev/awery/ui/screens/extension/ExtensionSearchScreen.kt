@@ -46,11 +46,8 @@ import com.mrboomdev.awery.ui.components.InfoBox
 import com.mrboomdev.awery.ui.components.MediaCard
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
-import com.mrboomdev.awery.ui.utils.add
+import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.awery.ui.utils.pagination.InfiniteScroll
-import com.mrboomdev.awery.ui.utils.singleItem
-import com.mrboomdev.awery.ui.utils.thenIf
-import com.mrboomdev.awery.ui.utils.viewModel
 import com.mrboomdev.navigation.core.safePop
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -70,6 +67,7 @@ fun ExtensionSearchScreen(
 	},
 	contentPadding: PaddingValues
 ) {
+    val contentPadding = contentPadding.add(horizontal = niceSideInset())
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showFiltersDialog by remember { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -84,8 +82,8 @@ fun ExtensionSearchScreen(
             onDismissRequest = { showFiltersDialog = false }
         )
     }
-	
-	InfiniteScroll(
+    
+    InfiniteScroll(
 		state = lazyGridState,
 		buffer = 1,
 		loadMore = { viewModel.loadMore() }
@@ -96,7 +94,7 @@ fun ExtensionSearchScreen(
             .fillMaxSize()
             .nestedScroll(topBarBehavior.nestedScrollConnection),
 
-        contentWindowInsets = WindowInsets.safeDrawing,
+        contentWindowInsets = contentPadding.asWindowInsets(),
         containerColor = Color.Transparent,
 
         topBar = {
@@ -111,8 +109,8 @@ fun ExtensionSearchScreen(
             ) {
                 Row(
                     modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.safeDrawing.only(
-                            WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+                        .padding(contentPadding.only(
+                            top = true, start = true, end = true))
                         .padding(horizontal = 4.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically

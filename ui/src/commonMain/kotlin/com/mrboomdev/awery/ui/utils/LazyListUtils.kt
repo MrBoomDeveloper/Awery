@@ -7,6 +7,29 @@ import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
+import com.mrboomdev.awery.core.utils.Log
+import com.mrboomdev.awery.core.utils.retryUntilSuccess
+
+inline fun <T> LazyListScope.safeItems(
+    items: List<T>,
+    noinline key: ((item: T) -> Any)? = null,
+    noinline contentType: (item: T) -> Any? = { null },
+    crossinline itemContent: @Composable LazyItemScope.(item: T) -> Unit,
+) {
+    retryUntilSuccess(
+        onFailure = {
+            Log.d("LazyListUtils", "Failed to render LazyListScope.items, so rerender!")
+        }
+    ) {
+        items(
+            count = items.size,
+            key = if(key != null) { index: Int -> key(items[index]) } else null,
+            contentType = { index: Int -> contentType(items[index]) },
+        ) {
+            itemContent(items[it])
+        }
+    }
+}
 
 /**
  * Adds a single item to the [LazyListScope].

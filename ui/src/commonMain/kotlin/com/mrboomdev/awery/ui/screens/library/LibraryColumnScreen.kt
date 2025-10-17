@@ -37,8 +37,8 @@ fun LibraryColumnScreen(
 	val navigation = Navigation.current()
 
 	Crossfade(when {
-		!didLoadLists -> LibraryStatus.LOADING
 		isNoLists -> LibraryStatus.EMPTY
+		!didLoadLists -> LibraryStatus.LOADING
 		else -> LibraryStatus.LOADED
 	}) { status ->
 		when(status) {

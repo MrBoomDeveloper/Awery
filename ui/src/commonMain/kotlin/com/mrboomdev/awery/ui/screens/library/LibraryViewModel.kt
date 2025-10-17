@@ -7,6 +7,7 @@ import com.mrboomdev.awery.data.database.database
 import com.mrboomdev.awery.data.database.entity.toMedia
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 
 class LibraryViewModel: ViewModel() {
 	val isNoLists = Awery.database.lists.observeCount()
@@ -14,7 +15,9 @@ class LibraryViewModel: ViewModel() {
 		.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
+			initialValue = runBlocking { 
+				Awery.database.lists.count() == 0
+			}
 		)
 
 	@OptIn(ExperimentalCoroutinesApi::class)

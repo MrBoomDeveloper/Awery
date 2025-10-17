@@ -1,7 +1,5 @@
 package com.mrboomdev.awery.core.utils
 
-import com.mrboomdev.awery.core.utils.Log.e
-import java.io.Closeable
 import java.lang.AutoCloseable
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -55,13 +53,15 @@ inline fun await(block: () -> Boolean) {
     while(!block()) {}
 }
 
-inline fun <T> retryUntilSuccess(block: () -> T): T {
+inline fun <T> retryUntilSuccess(onFailure: (Throwable) -> Unit = {}, block: () -> T): T {
     var result: T? = null
 
     while(result == null) {
         try {
             result = block()
-        } catch(t: Throwable) {}
+        } catch(t: Throwable) {
+            onFailure(t)
+        }
     }
 
     return result

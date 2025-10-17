@@ -1,12 +1,6 @@
 package com.mrboomdev.awery.data.database.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.*
 import com.mrboomdev.awery.data.database.entity.DBList
 import com.mrboomdev.awery.data.database.entity.DBMedia
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +20,9 @@ interface ListDao {
     
     @Query("SELECT COUNT(*) FROM DBList")
     fun observeCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM DBList")
+    suspend fun count(): Int
 
     @Transaction
     suspend fun updateLists(collection: Collection<DBList>) {

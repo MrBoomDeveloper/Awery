@@ -1,5 +1,7 @@
 package com.mrboomdev.awery.core.utils
 
+import com.mrboomdev.awery.core.utils.collection.iterate
+
 private const val DEFAULT_TAG = "Awery"
 private const val DISALLOWED_CLASS_NAME_PREFIX = "com.mrboomdev.awery.core.utils.Log"
 
@@ -22,7 +24,7 @@ expect object Log {
      *        the class or activity where the log call occurs.
      * @param message The message you would like logged.
      */
-    fun i(tag: String, message: String)
+    fun i(tag: String = DEFAULT_TAG, message: String)
 
     /**
      * Sends a debug message to the log.
@@ -31,7 +33,7 @@ expect object Log {
      *        the class or activity where the log call occurs.
      * @param message The message to log.
      */
-    fun d(tag: String, message: String)
+    fun d(tag: String = DEFAULT_TAG, message: String)
 
     /**
      * Sends a warning log message.
@@ -40,7 +42,7 @@ expect object Log {
      *        the class or activity where the log call occurs.
      * @param message The message you would like logged.
      */
-    fun w(tag: String, message: String)
+    fun w(tag: String = DEFAULT_TAG, message: String)
 
     /**
      * Sends an error log message.
@@ -49,7 +51,7 @@ expect object Log {
      * @param message The message you would like logged.
      * @param throwable An exception to log.
      */
-    fun e(tag: String, message: String, throwable: Throwable? = null)
+    fun e(tag: String = DEFAULT_TAG, message: String, throwable: Throwable? = null)
 }
 
 class Logger internal constructor(val tag: String) {
@@ -99,3 +101,25 @@ fun logger() = LoggerDelegate()
  * @param tag The tag for the logger.
  */
 fun logger(tag: String) = Logger(tag)
+
+fun Log.debug(vararg variables: Pair<String, Any>) = d(
+    tag = "AweryDebug",
+    message = buildString { 
+        if(variables.isEmpty()) {
+            append("{}")
+            return@buildString
+        }
+        
+        append("{")
+        
+        variables.toList().iterate { (key, value) ->
+            append("\n\t\"${key}\": \"${value}\"")
+            
+            if(hasNext()) {
+                append(",")
+            }
+        }
+        
+        append("\n}")
+    }
+)

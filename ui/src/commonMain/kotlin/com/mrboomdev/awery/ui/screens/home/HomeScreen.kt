@@ -165,8 +165,7 @@ fun HomeScreen(
 								feedId = feed.id,
 								feedName = feed.name
 							))
-						} }
-						.animateItem(),
+						} }.animateItem(),
 
 					contentPadding = contentPadding.only(horizontal = true)
 						.add(horizontal = niceSideInset(), vertical = 8.dp),
@@ -319,7 +318,8 @@ fun HomeScreen(
 						)
 
 						LazyRow(
-							horizontalArrangement = Arrangement.spacedBy(8.dp)
+							horizontalArrangement = Arrangement.spacedBy(8.dp),
+							userScrollEnabled = false
 						) { 
 							items(99) {
 								Column(

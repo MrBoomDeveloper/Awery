@@ -4,6 +4,9 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -61,6 +64,7 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.filesDir
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -108,27 +112,32 @@ fun App() {
 			val toaster = remember { Toaster(maxItems = 3) }
 			val navigationMap = rememberNavigationMap()
 			
-			var currentTab by rememberSaveable { 
-				mutableStateOf(run {
-					when {
-						!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
-						!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
-						AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
-						else -> null
-					}?.also { 
-						navigationMap[0].apply { 
+			val pagerState = rememberPagerState(
+				initialPage = when(AwerySettings.mainDefaultTab.value) {
+					AwerySettings.MainTab.HOME -> MainRoutes.HOME
+					AwerySettings.MainTab.SEARCH -> MainRoutes.SEARCH
+					AwerySettings.MainTab.NOTIFICATIONS -> MainRoutes.NOTIFICATIONS
+					AwerySettings.MainTab.LIBRARY -> MainRoutes.LIBRARY
+				}.ordinal
+			) { MainRoutes.entries.size }
+			
+			RememberLaunchedEffect(Unit) {
+				when {
+					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
+					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
+					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
+					else -> null
+				}?.also {
+					coroutineScope.launch(Dispatchers.Main) {
+						navigationMap[0].apply {
 							clear()
 							push(it)
 						}
-						
-						return@run 0
 					}
-					
-					AwerySettings.mainDefaultTab.value.ordinal
-				}) 
+				}
 			}
 			
-			val currentNavigation = navigationMap[currentTab]
+			val currentNavigation = navigationMap[pagerState.currentPage]
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
 			
 			val showNavigation = when(val currentRoute = currentRoute) {
@@ -147,8 +156,8 @@ fun App() {
 				is Routes.ExtensionSearch -> false
 				else -> true
 			}
-            
-            val wallpaperPainter = rememberAsyncImagePainter(
+			
+			val wallpaperPainter = rememberAsyncImagePainter(
                 filterQuality = FilterQuality.High,
                 model = remember {
                     ImageRequest.Builder(context)
@@ -161,13 +170,15 @@ fun App() {
             )
 			
 			fun onOpenTab(index: Int, route: Routes) {
-				tabContentOffsets[currentTab] = topAppBarBehavior.state.contentOffset
+				tabContentOffsets[pagerState.currentPage] = topAppBarBehavior.state.contentOffset
 				topAppBarBehavior.state.contentOffset = tabContentOffsets[index] ?: 0f
 
-				if(index == currentTab) {
-					currentNavigation.bringToTop(route)
+				if(index == pagerState.currentPage) {
+					navigationMap[index].bringToTop(route)
 				} else {
-					currentTab = index
+					coroutineScope.launch { 
+						pagerState.animateScrollToPage(index)
+					}
 				}
 			}
 
@@ -224,7 +235,7 @@ fun App() {
 											else -> true
 										},
 										
-										currentTab = currentTab,
+										currentTab = pagerState.currentPage,
 										onOpenTab = ::onOpenTab
 									)
 								}
@@ -290,18 +301,39 @@ fun App() {
 													backgroundColor = MaterialTheme.colorScheme.surface
 												))) {
 													AweryBottomBar(
-														currentTab = currentTab,
+														currentTab = pagerState.currentPage,
 														onOpenTab = ::onOpenTab
 													)
 												}
 											}
 										}
 									) { contentPadding ->
-										Box(Modifier.hazeSource(state = hazeState)) {
-											AweryNavHost(
-												navigation = currentNavigation,
-												contentPadding = contentPadding
-											)
+										if(useRail)  {
+											VerticalPager(
+												modifier = Modifier
+													.fillMaxSize()
+													.hazeSource(state = hazeState),
+												userScrollEnabled = false,
+												state = pagerState
+											) { index ->
+												AweryNavHost(
+													navigation = navigationMap[index],
+													contentPadding = contentPadding
+												)
+											}
+										} else {
+											HorizontalPager(
+												modifier = Modifier
+													.fillMaxSize()
+													.hazeSource(state = hazeState),
+												userScrollEnabled = false,
+												state = pagerState
+											) { index ->
+												AweryNavHost(
+													navigation = navigationMap[index],
+													contentPadding = contentPadding
+												)
+											}
 										}
 									}
 								}
@@ -516,106 +548,110 @@ private fun AweryTopBar(
 			}
 
 			Box(Modifier.weight(1f)) {
-				if(!showSearch) return@Box
-
 				val spacing = when {
 					windowSize.width >= WindowSizeType.Large -> 32.dp
 					windowSize.width >= WindowSizeType.Medium -> 16.dp
 					else -> 8.dp
 				}
 
-				Row(
-					modifier = Modifier
-						.padding(horizontal = spacing)
-						.clip(RoundedCornerShape(48.dp))
-						.background(MaterialTheme.colorScheme.surfaceContainerHighest.let {
-							if(AwerySettings.amoledTheme.collectAsState().value) it.copy(alpha = .75f) else it
-						})
-						.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(48.dp))
-						.widthIn(max = 400.dp)
-						.fillMaxWidth()
-						.height(48.dp)
+				this@Row.AnimatedVisibility(
+					visible = showSearch,
+					enter = fadeIn(),
+					exit = fadeOut()
 				) {
-					val focusRequester = remember { FocusRequester() }
-					val query by App.searchQuery.collectAsState()
-
-					BasicTextField(
+					Row(
 						modifier = Modifier
-							.fillMaxSize()
-							.padding(horizontal = 16.dp)
-							.focusRequester(focusRequester),
-						value = query,
-						singleLine = true,
-						cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+							.padding(horizontal = spacing)
+							.clip(RoundedCornerShape(48.dp))
+							.background(MaterialTheme.colorScheme.surfaceContainerHighest.let {
+								if(AwerySettings.amoledTheme.collectAsState().value) it.copy(alpha = .75f) else it
+							})
+							.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(48.dp))
+							.widthIn(max = 400.dp)
+							.fillMaxWidth()
+							.height(48.dp)
+					) {
+						val focusRequester = remember { FocusRequester() }
+						val query by App.searchQuery.collectAsState()
 
-						onValueChange = {
-							coroutineScope.launch {
-								App.searchQuery.emit(it)
-							}
-						},
+						BasicTextField(
+							modifier = Modifier
+								.fillMaxSize()
+								.padding(horizontal = 20.dp)
+								.focusRequester(focusRequester),
+							value = query,
+							singleLine = true,
+							cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
 
-						textStyle = MaterialTheme.typography.bodyMedium.copy(
-							color = MaterialTheme.colorScheme.onBackground
-						),
-
-						keyboardOptions = KeyboardOptions(
-							imeAction = ImeAction.Search
-						),
-
-						decorationBox = {
-							Box(
-								modifier = Modifier
-									.fillMaxSize()
-									.wrapContentWidth(Alignment.Start),
-								contentAlignment = Alignment.Center
-							) {
-								if(query.isEmpty()) {
-									Text(
-										style = MaterialTheme.typography.bodyMedium,
-										color = MaterialTheme.colorScheme.onSurfaceVariant,
-										text = "Search"
-									)
+							onValueChange = {
+								coroutineScope.launch {
+									App.searchQuery.emit(it)
 								}
-							}
+							},
 
-							Row(
-								modifier = Modifier.fillMaxSize(),
-								verticalAlignment = Alignment.CenterVertically
-							) {
-								Box(Modifier.weight(1f)) {
-									it()
-								}
+							textStyle = MaterialTheme.typography.bodyMedium.copy(
+								color = MaterialTheme.colorScheme.onBackground
+							),
 
-								if(query.isNotEmpty()) {
-									CompositionLocalProvider(
-										LocalContentColor provides Color.White
-									) {
-										IconButton(
-											modifier = Modifier
-												.heightIn(max = 40.dp)
-												.fillMaxHeight()
-												.aspectRatio(1f)
-												.offset(x = 10.dp),
+							keyboardOptions = KeyboardOptions(
+								imeAction = ImeAction.Search
+							),
 
-											painter = painterResource(Res.drawable.ic_close),
-											contentDescription = null,
-
-											colors = IconButtonDefaults.iconButtonColors(
-												contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-											),
-
-											onClick = {
-												coroutineScope.launch {
-													focusRequester.requestFocus()
-													App.searchQuery.emit("")
-												}
-											}
+							decorationBox = {
+								Box(
+									modifier = Modifier
+										.fillMaxSize()
+										.wrapContentWidth(Alignment.Start),
+									contentAlignment = Alignment.Center
+								) {
+									if(query.isEmpty()) {
+										Text(
+											style = MaterialTheme.typography.bodyMedium,
+											color = MaterialTheme.colorScheme.onSurfaceVariant,
+											text = "Search"
 										)
 									}
 								}
+
+								Row(
+									modifier = Modifier.fillMaxSize(),
+									verticalAlignment = Alignment.CenterVertically
+								) {
+									Box(Modifier.weight(1f)) {
+										it()
+									}
+
+									if(query.isNotEmpty()) {
+										CompositionLocalProvider(
+											LocalContentColor provides Color.White
+										) {
+											IconButton(
+												modifier = Modifier
+													.heightIn(max = 40.dp)
+													.fillMaxHeight()
+													.aspectRatio(1f)
+													.offset(x = 10.dp),
+
+												painter = painterResource(Res.drawable.ic_close),
+												contentDescription = null,
+
+												colors = IconButtonDefaults.iconButtonColors(
+													contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+												),
+
+												onClick = {
+													coroutineScope.launch {
+														focusRequester.requestFocus()
+														App.searchQuery.emit("")
+													}
+												}
+											)
+										}
+									}
+								}
 							}
-						}
-					)
+						)
+					}
 				}
 			}
 

@@ -29,6 +29,7 @@ import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.min
 
 @Composable
 fun LibraryTabbedScreen(
@@ -40,7 +41,6 @@ fun LibraryTabbedScreen(
 	val defaultTab by AwerySettings.libraryDefaultTab.collectAsState()
 	val coroutineScope = rememberCoroutineScope()
 	val navigation = Navigation.current()
-
 	val pagerState = rememberPagerState { lists.size }
 
 	RememberLaunchedEffect(lists) {
@@ -55,11 +55,16 @@ fun LibraryTabbedScreen(
 		modifier = Modifier.fillMaxSize()
 	) {
 		AnimatedVisibility(lists.isNotEmpty()) {
+			if(lists.isEmpty()) {
+				// Then whole thing crashes while transitioning to fewer tabs when there were more.
+				return@AnimatedVisibility
+			}
+			
 			PrimaryScrollableTabRow(
 				modifier = Modifier
 					.padding(contentPadding.exclude(bottom = true)),
 				containerColor = Color.Transparent,
-				selectedTabIndex = pagerState.currentPage,
+				selectedTabIndex = min(lists.size, pagerState.currentPage),
 				edgePadding = niceSideInset() - 16.dp,
 				minTabWidth = 75.dp,
 				divider = {}
@@ -103,8 +108,8 @@ fun LibraryTabbedScreen(
 		HorizontalDivider()
 		
 		Crossfade(when {
-			!didLoadLists -> LibraryStatus.LOADING
 			isNoLists -> LibraryStatus.EMPTY
+			!didLoadLists -> LibraryStatus.LOADING
 			else -> LibraryStatus.LOADED
 		}) { status ->
 			when(status) {

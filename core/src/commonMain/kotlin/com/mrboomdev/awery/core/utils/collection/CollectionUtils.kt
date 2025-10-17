@@ -35,13 +35,14 @@ inline fun <T> Iterable<T>.iterateIndexed(block: Iterator<T>.(Int, T) -> Unit) {
     }
 }
 
-inline fun <T> Iterable<T>.iterate(block: Iterator<T>.(T) -> Unit) {
-    val iterator = iterator()
-    
-    while(iterator.hasNext()) {
-        block(iterator, iterator.next())
+inline fun <T> Iterator<T>.iterate(block: Iterator<T>.(T) -> Unit) {
+    while(hasNext()) {
+        block(this, next())
     }
 }
+
+inline fun <T> Iterable<T>.iterate(block: Iterator<T>.(T) -> Unit) = iterator().iterate(block)
+inline fun <T> Array<T>.iterate(block: Iterator<T>.(T) -> Unit) = iterator().iterate(block)
 
 fun <T> List<T>.next(after: T): T {
     val index = indexOf(after)
@@ -57,4 +58,8 @@ fun <E> MutableList<E>.replace(oldElement: E, newElement: E) {
     } else {
         add(newElement)
     }
+}
+
+fun <T> List<T>.limit(maxSize: Int): List<T> {
+    return if(size <= maxSize) toList() else subList(0, maxSize)
 }

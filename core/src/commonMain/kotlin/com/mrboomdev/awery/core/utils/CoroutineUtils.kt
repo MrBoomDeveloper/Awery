@@ -49,6 +49,14 @@ fun CoroutineScope.launchTrying(
     block = block
 )
 
+fun CoroutineScope.launchSupervise(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+) = launch(context, start) {
+    supervisorScope(block)
+}
+
 /**
  * Useful for view models.
  */

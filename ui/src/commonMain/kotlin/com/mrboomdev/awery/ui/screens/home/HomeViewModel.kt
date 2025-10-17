@@ -54,7 +54,9 @@ class HomeViewModel: ViewModel() {
 			// Fix initial lag on app launch
 			delay(100)
 			
-			load(useCache = true)
+			withContext(Dispatchers.Default) {
+				load(useCache = true)
+			}
 		}
 	}
 	

@@ -31,7 +31,7 @@ fun SAnime.toMedia(
         tags = getGenres(),
         url = (source as? AnimeHttpSource)?.let { concatYomiUrl(it.baseUrl, url) },
         ageRating = if(isNsfw) "NSFW" else null,
-        extras = mapOf("SAnime" to Base64.encode(serialize()))
+        extras = mapOf("SAnime" to Base64.encodeToByteArray(serialize()).decodeToString())
     )
 }
 
@@ -40,7 +40,7 @@ fun Media.toSAnime(): SAnime {
     extras["SAnime"]?.also { anime ->
         // If this media came from this source, then we will be able
         // to restore an original form without any problem!
-        return Base64.decode(anime).deserialize() as SAnime
+        return Base64.decode(anime.encodeToByteArray()).deserialize() as SAnime
     }
 
     return SAnime.create().apply {
