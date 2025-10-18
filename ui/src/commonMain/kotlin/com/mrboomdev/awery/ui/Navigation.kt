@@ -81,7 +81,7 @@ sealed interface Routes {
 		val initialPage: SettingsPages = SettingsPages.Main()
 	): Routes {
 		@Composable
-		fun Content(contentPadding: PaddingValues) = SettingsScreen(initialPage)
+		fun Content(contentPadding: PaddingValues) = SettingsScreen(initialPage, contentPadding)
 	}
 
 	@Serializable

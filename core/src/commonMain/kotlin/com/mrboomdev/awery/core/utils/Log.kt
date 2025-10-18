@@ -102,7 +102,7 @@ fun logger() = LoggerDelegate()
  */
 fun logger(tag: String) = Logger(tag)
 
-fun Log.debug(vararg variables: Pair<String, Any>) = d(
+fun Log.debug(vararg variables: Pair<String, Any?>) = d(
     tag = "AweryDebug",
     message = buildString { 
         if(variables.isEmpty()) {

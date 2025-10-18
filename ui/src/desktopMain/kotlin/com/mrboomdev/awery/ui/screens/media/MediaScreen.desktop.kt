@@ -2,6 +2,7 @@ package com.mrboomdev.awery.ui.screens.media
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,11 +10,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getPoster
@@ -21,6 +25,7 @@ import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.ui.screens.GalleryScreen
 import com.mrboomdev.awery.ui.utils.collapse
 import kotlinx.coroutines.launch
 
@@ -46,6 +51,7 @@ private fun DesktopMediaScreen(
     val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null)
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState { tabs.count() }
+	var showGallery by rememberSaveable { mutableStateOf(false) }
     val toaster = LocalToaster.current
 
     fun openWatchPage() {
@@ -64,6 +70,24 @@ private fun DesktopMediaScreen(
             }
         }
     }
+
+	if(showGallery) {
+		Dialog(
+			onDismissRequest = { showGallery = false },
+			properties = DialogProperties(
+				usePlatformDefaultWidth = false
+			)
+		) {
+			GalleryScreen(
+				onDismissRequest = { showGallery = false },
+				elements = listOfNotNull(
+					media.largePoster,
+					media.poster,
+					media.banner
+				)
+			)
+		}
+	}
     
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -95,6 +119,7 @@ private fun DesktopMediaScreen(
 						modifier = Modifier
 							.clip(RoundedCornerShape(16.dp))
 							.fillMaxWidth(.3f)
+							.clickable { showGallery = true }
 							.animateContentSize(),
 						model = poster,
 						contentDescription = null,

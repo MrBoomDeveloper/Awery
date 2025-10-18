@@ -2,10 +2,13 @@ package com.mrboomdev.awery.ui.utils
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAll
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -58,6 +61,20 @@ inline fun Modifier.thenIfElse(
     val result = if(run) scopeIf() else scopeElse()
     return if(result == Modifier) this else result
 }
+
+fun Modifier.padding(
+	horizontal: Dp? = null,
+	vertical: Dp? = null,
+	start: Dp = 0.dp,
+	end: Dp = 0.dp,
+	top: Dp = 0.dp,
+	bottom: Dp = 0.dp
+) = padding(
+	start = horizontal ?: start, 
+	end = horizontal ?: end, 
+	top = vertical ?: top, 
+	bottom = vertical ?: bottom
+)
 
 /**
  * Detects events that open a context menu (mouse right-clicks).

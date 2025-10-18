@@ -46,6 +46,7 @@ kotlin {
             implementation(libs.kotlin.reflect)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
+            implementation("org.jetbrains.kotlinx:kotlinx-io-okio:0.8.0")
 
             // ViewModel
             implementation(libs.lifecycle.viewmodel)
@@ -66,6 +67,7 @@ kotlin {
             implementation(composeLibs.confetti)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
+            implementation("me.saket.telephoto:zoomable:0.18.0")
 
             // Navigation
             implementation(composeLibs.navigation.jetpack)

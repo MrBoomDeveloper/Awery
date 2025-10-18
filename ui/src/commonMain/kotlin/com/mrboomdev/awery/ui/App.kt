@@ -567,7 +567,9 @@ private fun AweryTopBar(
 				contentDescription = null
 			)
 
-			if(!showSearch || windowSize.width >= WindowSizeType.Large) {
+			AnimatedVisibility(
+				visible = !showSearch || windowSize.width >= WindowSizeType.Large
+			) {
 				Text(
 					style = MaterialTheme.typography.titleLarge,
 					text = "Awery"

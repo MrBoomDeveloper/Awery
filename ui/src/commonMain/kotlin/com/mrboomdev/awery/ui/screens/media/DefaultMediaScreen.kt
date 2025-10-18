@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -64,6 +66,7 @@ import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.BackEffect
+import com.mrboomdev.awery.ui.screens.GalleryScreen
 import com.mrboomdev.awery.ui.theme.SeedAweryTheme
 import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.navigation.core.safePop
@@ -95,6 +98,7 @@ internal fun DefaultMediaScreen(
 		MediaScreenTabs.getVisibleFor(media)
 	}
 
+	var showGallery by rememberSaveable { mutableStateOf(false) }
 	val pagerState = rememberPagerState { tabs.count() }
 
 	val defaultColor = remember(media) {
@@ -125,6 +129,24 @@ internal fun DefaultMediaScreen(
 			launch {
 				infoHeaderBehavior.collapse()
 			}
+		}
+	}
+
+	if(showGallery) {
+		Dialog(
+			onDismissRequest = { showGallery = false },
+			properties = DialogProperties(
+				usePlatformDefaultWidth = false
+			)
+		) {
+			GalleryScreen(
+				onDismissRequest = { showGallery = false },
+				elements = listOfNotNull(
+					media.largePoster,
+					media.poster,
+					media.banner
+				)
+			)
 		}
 	}
 
@@ -242,15 +264,28 @@ internal fun DefaultMediaScreen(
 								}, tween()).value))
 								
 								media.getLargePoster()?.also { poster ->
+									val context = LocalPlatformContext.current
+									
+									val model = remember(poster) {
+										poster.let {
+											ImageRequest.Builder(context)
+												.placeholderMemoryCacheKey(it)
+												.memoryCacheKey(it)
+												.data(it)
+												.build()
+										}
+									}
+									
 									if(isPosterFuckedUp) {
 										AsyncImage(
 											modifier = Modifier
-												.padding(top = 8.dp, bottom = 16.dp)
-												.padding(horizontal = 8.dp)
+												.padding(top = 8.dp, bottom = 16.dp, horizontal = 8.dp)
 												.clip(RoundedCornerShape(16.dp))
 												.fillMaxWidth()
+												.clickable { showGallery = true }
 												.animateContentSize(),
-											model = poster,
+											
+											model = model,
 											contentDescription = null
 										)
 
@@ -263,16 +298,10 @@ internal fun DefaultMediaScreen(
 											.padding(horizontal = 56.dp)
 											.heightIn(max = currentWindowHeight() - 250.dp)
 											.fillMaxWidth()
+											.clickable { showGallery = true }
 											.animateContentSize(),
 
-										model = poster.let {
-											ImageRequest.Builder(LocalPlatformContext.current)
-												.placeholderMemoryCacheKey(it)
-												.memoryCacheKey(it)
-												.data(it)
-												.build() 
-										},
-
+										model = model,
 										contentDescription = null,
 										
 										onError = {
@@ -423,7 +452,8 @@ internal fun DefaultMediaScreen(
 								modifier = Modifier
 									.clip(RoundedCornerShape(16.dp))
 									.fillMaxHeight()
-									.animateContentSize(),
+									.animateContentSize()
+									.clickable { showGallery = true },
 
 								model = poster.let {
 									ImageRequest.Builder(LocalPlatformContext.current)

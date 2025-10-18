@@ -25,7 +25,10 @@ import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
 import com.mrboomdev.navigation.jetpack.rememberJetpackNavigation
 
 @Composable
-fun SettingsScreen(initialPage: SettingsPages) {
+fun SettingsScreen(
+	initialPage: SettingsPages,
+	contentPadding: PaddingValues
+) {
 	val appNavigation = Navigation.current()
 	val settingsNavigation = rememberJetpackNavigation(initialPage)
 	val settingsBackStack by settingsNavigation.currentBackStackFlow.collectAsState(emptyList())
@@ -49,7 +52,11 @@ fun SettingsScreen(initialPage: SettingsPages) {
 			}
 		}
 		
-		Row(Modifier.fillMaxSize()) {
+		Row(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(contentPadding)
+		) {
 			primaryPane.Content(
 				modifier = Modifier
 					.fillMaxHeight()
@@ -119,7 +126,9 @@ fun SettingsScreen(initialPage: SettingsPages) {
 		}
 	} else {
 		JetpackNavigationHost(
-			modifier = Modifier.fillMaxSize(),
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(contentPadding),
 			navigation = settingsNavigation,
 			enterTransition = { slideInHorizontally(tween(500)) { it } },
 			exitTransition = { slideOutHorizontally(tween(500)) { -it } },
