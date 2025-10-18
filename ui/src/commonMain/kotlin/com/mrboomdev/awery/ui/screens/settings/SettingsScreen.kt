@@ -18,6 +18,7 @@ import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.utils.WindowSizeType
+import com.mrboomdev.awery.ui.utils.asWindowInsets
 import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.navigation.core.safePop
 import com.mrboomdev.navigation.core.sealedNavigationGraph
@@ -52,18 +53,14 @@ fun SettingsScreen(
 			}
 		}
 		
-		Row(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(contentPadding)
-		) {
+		Row(Modifier.fillMaxSize()) {
 			primaryPane.Content(
 				modifier = Modifier
 					.fillMaxHeight()
 					.widthIn(max = 300.dp)
 					.fillMaxWidth(),
 				
-				windowInsets = WindowInsets.safeDrawing.only(
+				windowInsets = contentPadding.asWindowInsets().only(
 					WindowInsetsSides.Vertical + WindowInsetsSides.Start
 				),
 				
@@ -101,7 +98,7 @@ fun SettingsScreen(
 						if(page is SettingsPages.Main) {
 							return@sealedNavigationGraph SettingsPages.Appearance.Content(
 								modifier = Modifier.fillMaxSize(),
-								windowInsets = WindowInsets.safeDrawing,
+								windowInsets = contentPadding.asWindowInsets(),
 								onOpenPage = { settingsNavigation.push(it) },
 								onBack = null
 							)
@@ -110,7 +107,7 @@ fun SettingsScreen(
 						page.Content(
 							modifier = Modifier.fillMaxSize(),
 
-							windowInsets = WindowInsets.safeDrawing.only(
+							windowInsets = contentPadding.asWindowInsets().only(
 								WindowInsetsSides.Vertical + WindowInsetsSides.End
 							).add(WindowInsets(left = 16.dp)),
 
@@ -126,9 +123,7 @@ fun SettingsScreen(
 		}
 	} else {
 		JetpackNavigationHost(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(contentPadding),
+			modifier = Modifier.fillMaxSize(),
 			navigation = settingsNavigation,
 			enterTransition = { slideInHorizontally(tween(500)) { it } },
 			exitTransition = { slideOutHorizontally(tween(500)) { -it } },
@@ -140,7 +135,7 @@ fun SettingsScreen(
 
 					page.Content(
 						modifier = Modifier.fillMaxSize(),
-						windowInsets = WindowInsets.safeDrawing,
+						windowInsets = contentPadding.asWindowInsets(),
 						onOpenPage = { settingsNavigation.push(it) },
 						onBack = {
 							if(settingsBackStack.size <= 1) {
