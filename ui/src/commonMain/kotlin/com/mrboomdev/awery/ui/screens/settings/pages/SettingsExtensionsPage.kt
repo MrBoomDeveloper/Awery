@@ -322,30 +322,19 @@ fun SettingsExtensionsPage(
 								contentDescription = null,
 								onClick = { showDropdown = true }
 							)
-
-							DropdownMenu(
-								expanded = showDropdown,
+							
+							ContextMenu(
+								isVisible = showDropdown,
 								onDismissRequest = { showDropdown = false }
 							) {
-								DropdownMenuItem(
-									text = { 
-										Text(stringResource(Res.string.copy_link_to_clipboard)) 
-									},
-									
-									onClick = {
-										Awery.copyToClipboard(repo.url)
-										showDropdown = false
-									}
+								item(
+									text = runBlocking { getString(Res.string.copy_link_to_clipboard) },
+									onClick = { Awery.copyToClipboard(repo.url) }
 								)
 
-								DropdownMenuItem(
-									text = { Text(stringResource(Res.string.remove)) },
-									onClick = {
-										runBlocking {
-											Awery.database.repositories.delete(repo)
-											showDropdown = false
-										}
-									}
+								item(
+									text = runBlocking { getString(Res.string.remove) },
+									onClick = { runBlocking { Awery.database.repositories.delete(repo) } }
 								)
 							}
 						}

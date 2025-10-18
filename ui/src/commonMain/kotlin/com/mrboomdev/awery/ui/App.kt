@@ -52,6 +52,7 @@ import com.mrboomdev.awery.ui.theme.AweryTheme
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
 import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.navigation.core.Navigation
+import com.mrboomdev.navigation.core.safePop
 import com.mrboomdev.navigation.core.sealedNavigationGraph
 import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import com.mrboomdev.navigation.jetpack.JetpackNavigationHost
@@ -94,7 +95,7 @@ private fun showNavLabel(isActive: Boolean): Boolean {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App() {
+fun App(onNavigate: (NavigationState) -> Unit = {}) {
     AweryTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -120,22 +121,6 @@ fun App() {
 					AwerySettings.MainTab.LIBRARY -> MainRoutes.LIBRARY
 				}.ordinal
 			) { MainRoutes.entries.size }
-			
-			RememberLaunchedEffect(Unit) {
-				when {
-					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
-					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
-					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
-					else -> null
-				}?.also {
-					coroutineScope.launch(Dispatchers.Main) {
-						navigationMap[0].apply {
-							clear()
-							push(it)
-						}
-					}
-				}
-			}
 			
 			val currentNavigation = navigationMap[pagerState.currentPage]
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
@@ -175,9 +160,51 @@ fun App() {
 
 				if(index == pagerState.currentPage) {
 					navigationMap[index].bringToTop(route)
+					onNavigate(NavigationState(route, null))
 				} else {
 					coroutineScope.launch { 
 						pagerState.animateScrollToPage(index)
+						onNavigate(NavigationState(
+							route = route,
+							goBack = navigationMap[index].let { navigation ->
+								if(navigation.canPop) {{
+									navigation.safePop()
+								}} else null
+							}
+						))
+					}
+				}
+			}
+
+			LaunchedEffect(currentNavigation) {
+				currentNavigation.currentBackStackFlow.collect { backStack ->
+					onNavigate(NavigationState(
+						route = backStack.lastOrNull() ?: Routes.Home,
+						goBack = if(backStack.size > 1) {{
+							currentNavigation.safePop()
+						}} else null
+					))
+				}
+			}
+
+			RememberLaunchedEffect(Unit) {
+				when {
+					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
+					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
+					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
+					else -> null
+				}.also {
+					if(it == null) {
+						onNavigate(NavigationState(currentNavigation.currentDestination, null))
+						return@also
+					}
+
+					coroutineScope.launch(Dispatchers.Main) {
+						currentNavigation.apply {
+							clear()
+							push(it)
+							onNavigate(NavigationState(it, null))
+						}
 					}
 				}
 			}
@@ -219,7 +246,7 @@ fun App() {
 					ModalNavigationDrawer(
 						modifier = Modifier.fillMaxSize(),
 						drawerState = drawerState,
-						gesturesEnabled = showNavigation,
+						gesturesEnabled = showNavigation && Awery.platform != Platform.DESKTOP,
 						drawerContent = { AweryDrawerContent(currentNavigation, drawerState, coroutineScope) }
 					) {
 						CompositionLocalProvider(
