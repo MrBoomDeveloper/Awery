@@ -85,7 +85,7 @@ kotlin {
                 implementation("com.formdev:flatlaf-intellij-themes:3.6")
                 
                 // Just let's fix it. This is very fucked up.
-                runtimeOnly("org.jetbrains.compose.ui:ui-util-desktop:1.10.0-alpha01")
+//                runtimeOnly("org.jetbrains.compose.ui:ui-util-desktop:1.10.0-alpha01")
 
                 // For some fucking reason skiko isn't loaded by default
                 val osName = System.getProperty("os.name")
@@ -103,8 +103,8 @@ kotlin {
                     "aarch64" -> "arm64"
                     else -> throw UnsupportedOperationException("Unsupported cpu acrhitecture $osArch!")
                 }
-
-                runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-$targetOs-$targetArch:0.9.4.2")
+                
+                runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-$targetOs-$targetArch:0.9.27")
             }
         }
     }
@@ -193,11 +193,11 @@ enum class DesktopTarget(
 //        targetFormat = TargetFormat.Deb
 //    ),
 //
-//    LINUX_X64(
-//        os = "linux",
-//        arch = "x64",
-//        targetFormat = TargetFormat.Deb
-//    )
+    LINUX_X64(
+        os = "linux",
+        arch = "x64",
+        targetFormat = TargetFormat.Deb
+    )
 }
 
 DesktopTarget.values().map { target ->

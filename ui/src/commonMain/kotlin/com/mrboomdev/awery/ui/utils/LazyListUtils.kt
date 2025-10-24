@@ -59,3 +59,8 @@ fun LazyGridScope.singleItem(
     span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
     content: @Composable LazyGridItemScope.() -> Unit = {}
 ) = item(key, span, key, content)
+
+fun LazyListScope.singleStickyHeader(
+    key: String,
+    content: @Composable LazyItemScope.(Int) -> Unit = {}
+) = stickyHeader(key, key, content)

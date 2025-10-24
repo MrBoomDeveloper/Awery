@@ -2,7 +2,7 @@
 compose = "1.9.0"
 coil = "3.3.0"
 navigation = "1.4.0"
-jewel = "0.30.0-252.26252"
+jewel = "0.31.0-252.27409"
 
 [libraries]
 runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
@@ -19,7 +19,7 @@ jewel-window = { group = "org.jetbrains.jewel", name = "jewel-int-ui-decorated-w
 confetti = { module = "io.github.vinceglb:confettikit", version = "0.6.0" }
 html = { module = "be.digitalia.compose.htmlconverter:htmlconverter", version = "1.1.0" }
 haze = { module = "dev.chrisbanes.haze:haze", version = "1.6.10" }
-materialKolor = { module = "com.materialkolor:material-kolor", version = "3.0.1" }
+materialKolor = { module = "com.materialkolor:material-kolor", version = "4.0.1" }
 tv-material = { module = "androidx.tv:tv-material", version = "1.0.1" }
 
 # Navigation
@@ -37,4 +37,4 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 [plugins]
 multiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
 compiler = { id = "org.jetbrains.kotlin.plugin.compose", version = "2.2.20" }
-hotReload = { id = "org.jetbrains.compose.hot-reload", version = "1.0.0-beta08"}
+hotReload = { id = "org.jetbrains.compose.hot-reload", version = "1.0.0-rc02"}

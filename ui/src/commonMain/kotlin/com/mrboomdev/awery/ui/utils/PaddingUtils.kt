@@ -125,3 +125,18 @@ fun PaddingValues.only(
     end = !end,
     bottom = !bottom
 )
+
+@Composable
+fun PaddingValues.only(
+    horizontal: Boolean? = null,
+    vertical: Boolean? = null,
+    start: Boolean = false,
+    top: Boolean = false,
+    end: Boolean = false,
+    bottom: Boolean = false
+) = only(
+    start = horizontal ?: start,
+    top = vertical ?: top,
+    end = horizontal ?: end,
+    bottom = vertical ?: bottom
+)

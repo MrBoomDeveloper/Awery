@@ -68,6 +68,7 @@ kotlin {
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)
             implementation("me.saket.telephoto:zoomable:0.18.0")
+            implementation("com.cheonjaeung.compose.grid:grid:2.5.0")
 
             // Navigation
             implementation(composeLibs.navigation.jetpack)

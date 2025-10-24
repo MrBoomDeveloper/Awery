@@ -7,27 +7,20 @@ import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.Video
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.components.LocalToaster
+import com.mrboomdev.awery.ui.screens.auth.AuthScreen
 import com.mrboomdev.awery.ui.screens.browser.BrowserScreen
 import com.mrboomdev.awery.ui.screens.extension.*
 import com.mrboomdev.awery.ui.screens.home.HomeScreen
-import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroStep
 import com.mrboomdev.awery.ui.screens.library.LibraryColumnScreen
 import com.mrboomdev.awery.ui.screens.library.LibraryTabbedScreen
-import com.mrboomdev.awery.ui.screens.library.LibraryViewModel
 import com.mrboomdev.awery.ui.screens.media.MediaScreen
-import com.mrboomdev.awery.ui.screens.media.MediaScreenViewModel
 import com.mrboomdev.awery.ui.screens.notifications.NotificationsScreen
-import com.mrboomdev.awery.ui.screens.notifications.NotificationsViewModel
 import com.mrboomdev.awery.ui.screens.player.PlayerScreen
-import com.mrboomdev.awery.ui.screens.player.PlayerScreenViewModel
 import com.mrboomdev.awery.ui.screens.search.SearchScreen
-import com.mrboomdev.awery.ui.screens.search.SearchViewModel
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
-import com.mrboomdev.awery.ui.utils.viewModel
 import com.mrboomdev.navigation.core.TypeSafeNavigation
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
@@ -37,42 +30,41 @@ val Navigation = TypeSafeNavigation<Routes>()
 
 @Serializable
 sealed interface Routes {
+	@Composable
+	fun Content(contentPadding: PaddingValues)
+	
 	@Serializable
 	data object Home: Routes {
 		@Composable
-		fun Content(
-			viewModel: HomeViewModel = viewModel { HomeViewModel() }, 
+		override fun Content(
 			contentPadding: PaddingValues
-		) = HomeScreen(viewModel, contentPadding)
+		) = HomeScreen(contentPadding = contentPadding)
 	}
 
 	@Serializable
 	data object Search: Routes {
 		@Composable
-		fun Content(
-			viewModel: SearchViewModel = viewModel { SearchViewModel() },
+		override fun Content(
 			contentPadding: PaddingValues
-		) = SearchScreen(viewModel, contentPadding)
+		) = SearchScreen(contentPadding = contentPadding)
 	}
 
 	@Serializable
 	data object Notifications: Routes {
 		@Composable
-		fun Content(
-			viewModel: NotificationsViewModel = viewModel { NotificationsViewModel() },
+		override fun Content(
 			contentPadding: PaddingValues
-		) = NotificationsScreen(viewModel, contentPadding)
+		) = NotificationsScreen(contentPadding = contentPadding)
 	}
 
 	@Serializable
 	data object Library: Routes {
 		@Composable
-		fun Content(
-			viewModel: LibraryViewModel = viewModel { LibraryViewModel() },
+		override fun Content(
 			contentPadding: PaddingValues
 		) = when(AwerySettings.libraryStyle.collectAsState().value) {
-			AwerySettings.LibraryStyle.TABBED -> LibraryTabbedScreen(viewModel, contentPadding)
-			AwerySettings.LibraryStyle.COLUMN -> LibraryColumnScreen(viewModel, contentPadding)
+			AwerySettings.LibraryStyle.TABBED -> LibraryTabbedScreen(contentPadding = contentPadding)
+			AwerySettings.LibraryStyle.COLUMN -> LibraryColumnScreen(contentPadding = contentPadding)
 		}
 	}
 
@@ -81,7 +73,9 @@ sealed interface Routes {
 		val initialPage: SettingsPages = SettingsPages.Main()
 	): Routes {
 		@Composable
-		fun Content(contentPadding: PaddingValues) = SettingsScreen(initialPage, contentPadding)
+		override fun Content(
+			contentPadding: PaddingValues
+		) = SettingsScreen(initialPage, contentPadding)
 	}
 
 	@Serializable
@@ -91,10 +85,9 @@ sealed interface Routes {
 		val media: com.mrboomdev.awery.extension.sdk.Media
 	): Routes {
 		@Composable
-		fun Content(
-			viewModel: MediaScreenViewModel = viewModel { MediaScreenViewModel(this) },
+		override fun Content(
 			contentPadding: PaddingValues
-		) = MediaScreen(this, viewModel, contentPadding)
+		) = MediaScreen(this, contentPadding = contentPadding)
 	}
 
 	@Serializable
@@ -103,17 +96,9 @@ sealed interface Routes {
 		val title: String = video.title ?: video.url
 	): Routes {
 		@Composable
-		fun Content(
-			viewModel: PlayerScreenViewModel = run {
-				val navigation = Navigation.current()
-				val toaster = LocalToaster.current
-				
-				viewModel {
-					PlayerScreenViewModel(this@Player, navigation, toaster, it)
-				}
-			},
+		override fun Content(
 			contentPadding: PaddingValues
-		) = PlayerScreen(this, viewModel)
+		) = PlayerScreen(this)
 	}
 
 	@Serializable
@@ -122,10 +107,9 @@ sealed interface Routes {
 		val extensionName: String
 	): Routes {
 		@Composable
-		fun Content(
-			viewModel: ExtensionScreenViewModel = viewModel { ExtensionScreenViewModel(extensionId) },
+		override fun Content(
 			contentPadding: PaddingValues
-		) = ExtensionScreen(this, viewModel, contentPadding)
+		) = ExtensionScreen(this, contentPadding = contentPadding)
 	}
 
 	@Serializable
@@ -136,15 +120,9 @@ sealed interface Routes {
 		val feedName: String
 	): Routes {
 		@Composable
-		fun Content(
-			viewModel: ExtensionFeedScreenViewModel = run {
-				val navigation = Navigation.current()
-				val toaster = LocalToaster.current
-				
-				viewModel { ExtensionFeedScreenViewModel(this@ExtensionFeed, toaster, navigation) }
-			},
+		override fun Content(
 			contentPadding: PaddingValues
-		) = ExtensionFeedScreen(this, viewModel, contentPadding)
+		) = ExtensionFeedScreen(this, contentPadding = contentPadding)
 	}
 
 	@Serializable
@@ -154,10 +132,9 @@ sealed interface Routes {
 		val filters: List<Preference<*>>? = null
 	): Routes {
 		@Composable
-		fun Content(
-			viewModel: ExtensionSearchScreenViewModel = viewModel { ExtensionSearchScreenViewModel(this) },
+		override fun Content(
 			contentPadding: PaddingValues
-		) = ExtensionSearchScreen(this, viewModel, contentPadding)
+		) = ExtensionSearchScreen(this, contentPadding = contentPadding)
 	}
 
 	@Serializable
@@ -166,7 +143,7 @@ sealed interface Routes {
 		val singleStep: Boolean
 	): Routes {
 		@Composable
-		fun Content(
+		override fun Content(
 			contentPadding: PaddingValues
 		) = IntroScreen(this, contentPadding)
 	}
@@ -176,7 +153,17 @@ sealed interface Routes {
 		val url: String
 	): Routes {
 		@Composable
-		fun Content(contentPadding: PaddingValues) = BrowserScreen(url)
+		override fun Content(
+			contentPadding: PaddingValues
+		) = BrowserScreen(url)
+	}
+	
+	@Serializable
+	data object Auth: Routes {
+		@Composable
+		override fun Content(
+			contentPadding: PaddingValues
+		) = AuthScreen(contentPadding = contentPadding)
 	}
 }
 

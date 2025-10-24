@@ -923,35 +923,25 @@ private fun AweryNavHost(
 
 		graph = remember {
 			sealedNavigationGraph { route ->
-				when(val route = route) {
-					Routes.Home -> Routes.Home.Content(contentPadding = contentPadding)
-					Routes.Search -> Routes.Search.Content(contentPadding = contentPadding)
-					Routes.Notifications -> Routes.Notifications.Content(contentPadding = contentPadding)
-					Routes.Library -> Routes.Library.Content(contentPadding = contentPadding)
-					is Routes.Browser -> route.Content(contentPadding = contentPadding)
-					is Routes.Extension -> route.Content(contentPadding = contentPadding)
-					is Routes.ExtensionFeed -> route.Content(contentPadding	= contentPadding)
-					is Routes.ExtensionSearch -> route.Content(contentPadding = contentPadding)
-					
-					is Routes.Intro -> route.Content(
-						contentPadding = contentPadding.let { 
-							if(!route.singleStep ) {
-								it.add(32.dp)
-							} else if(!useRail) {
-								it.add(
-									vertical = 16.dp,
-									horizontal = niceSideInset()
-								)
-							} else {
-								it.add(top = 16.dp)
-							}
-						}
-					)
-					
-					is Routes.Media -> route.Content(contentPadding = contentPadding)
-					is Routes.Player -> route.Content(contentPadding = contentPadding)
-					is Routes.Settings -> route.Content(contentPadding = contentPadding)
+				if(route !is Routes.Intro) {
+					route.Content(contentPadding)
+					return@sealedNavigationGraph
 				}
+				
+				route.Content(
+					contentPadding = contentPadding.let {
+						if(!route.singleStep) {
+							WindowInsets.safeDrawing.asPaddingValues().add(32.dp)
+						} else if(!useRail) {
+							it.add(
+								vertical = 16.dp,
+								horizontal = niceSideInset()
+							)
+						} else {
+							it.add(top = 16.dp)
+						}
+					}
+				)
 			}
 		}
 	)

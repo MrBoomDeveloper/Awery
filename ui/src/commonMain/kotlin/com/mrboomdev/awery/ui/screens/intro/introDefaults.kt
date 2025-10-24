@@ -47,7 +47,7 @@ internal object IntroDefaults {
 						.fillMaxHeight()
 						.weight(1f)
 						.verticalScroll(rememberScrollState())
-						.padding(contentPadding.only(top = true, bottom = true, start = true))
+						.padding(contentPadding.only(top = true, horizontal = true))
 						.padding(start = niceSideInset()),
 					verticalArrangement = Arrangement.spacedBy(8.dp)
 				) {
@@ -123,8 +123,7 @@ internal object IntroDefaults {
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(contentPadding.only(start = true, end = true, bottom = false))
-						.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
+						.padding(contentPadding.only(horizontal = true, bottom = true)),
 					horizontalArrangement = Arrangement.SpaceBetween
 				) { 
 					actions()

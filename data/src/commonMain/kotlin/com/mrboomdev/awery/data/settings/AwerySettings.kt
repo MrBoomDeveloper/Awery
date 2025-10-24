@@ -26,6 +26,7 @@ object AwerySettings {
         settings[EXTENSION_IS_ENABLED_PREFIX + id] = isEnabled
     }
     
+    val aweryServerToken by setting("")
     val darkTheme by setting(DarkTheme.AUTO)
     val primaryColor by setting(-1L)
     val amoledTheme by setting(false)
