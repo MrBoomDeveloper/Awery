@@ -156,8 +156,8 @@ fun LibraryTabbedScreen(
 										modifier = Modifier.fillMaxSize(),
 
 										contentPadding = contentPadding.only(
-											horizontal = true
-										).add(start = niceSideInset(), end = niceSideInset(), bottom = 16.dp),
+											horizontal = true, bottom = true
+										).add(start = niceSideInset(), end = niceSideInset()),
 
 										columns = GridCells.Adaptive(100.dp),
 										horizontalArrangement = Arrangement.spacedBy(8.dp),

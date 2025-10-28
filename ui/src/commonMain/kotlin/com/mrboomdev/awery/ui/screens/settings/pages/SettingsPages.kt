@@ -1,10 +1,6 @@
 package com.mrboomdev.awery.ui.screens.settings.pages
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -15,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.data.database.entity.DBRepository
-import com.mrboomdev.awery.ui.screens.intro.IntroStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroThemeStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.utils.add
 import kotlinx.serialization.Serializable
@@ -61,7 +57,7 @@ sealed interface SettingsPages {
 					.verticalScroll(rememberScrollState())
 					.padding(contentPadding)
 			) {
-				IntroStep.Theme.ChildContent(
+				IntroThemeStep.ChildContent(
 					PaddingValues(horizontal = 18.dp).add(top = 8.dp)
 				)
 			}

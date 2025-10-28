@@ -35,6 +35,14 @@ operator fun PaddingValues.plus(padding: PaddingValues) = add(
 )
 
 @Composable
+operator fun PaddingValues.times(multiplier: Float) = PaddingValues(
+    start = start * multiplier,
+    top = top * multiplier,
+    end = end * multiplier,
+    bottom = bottom * multiplier
+)
+
+@Composable
 operator fun PaddingValues.plus(dp: Dp) = add(dp)
 
 /**

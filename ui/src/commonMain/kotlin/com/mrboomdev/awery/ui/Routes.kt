@@ -7,12 +7,14 @@ import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.Video
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.screens.auth.AuthScreen
 import com.mrboomdev.awery.ui.screens.browser.BrowserScreen
-import com.mrboomdev.awery.ui.screens.extension.*
+import com.mrboomdev.awery.ui.screens.extension.ExtensionFeedScreen
+import com.mrboomdev.awery.ui.screens.extension.ExtensionScreen
+import com.mrboomdev.awery.ui.screens.extension.ExtensionSearchScreen
 import com.mrboomdev.awery.ui.screens.home.HomeScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
-import com.mrboomdev.awery.ui.screens.intro.IntroStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroUserStep
 import com.mrboomdev.awery.ui.screens.library.LibraryColumnScreen
 import com.mrboomdev.awery.ui.screens.library.LibraryTabbedScreen
 import com.mrboomdev.awery.ui.screens.media.MediaScreen
@@ -157,14 +159,6 @@ sealed interface Routes {
 			contentPadding: PaddingValues
 		) = BrowserScreen(url)
 	}
-	
-	@Serializable
-	data object Auth: Routes {
-		@Composable
-		override fun Content(
-			contentPadding: PaddingValues
-		) = AuthScreen(contentPadding = contentPadding)
-	}
 }
 
 enum class MainRoutes(
@@ -211,7 +205,7 @@ enum class MainRoutes(
 	PROFILE(
 		title = Res.string.account,
 		icon = Res.drawable.ic_account_outlined,
-		route = Routes.Intro(IntroStep.UserCreation, true),
+		route = Routes.Intro(IntroUserStep, true),
 		desktopOnly = true
 	);
 

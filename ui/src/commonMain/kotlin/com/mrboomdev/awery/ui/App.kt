@@ -44,7 +44,9 @@ import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.components.*
-import com.mrboomdev.awery.ui.screens.intro.IntroStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroThemeStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroUserStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroWelcomeStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
@@ -189,9 +191,9 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 
 			RememberLaunchedEffect(Unit) {
 				when {
-					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroStep.Welcome, singleStep = false)
-					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroStep.Theme, singleStep = false)
-					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroStep.UserCreation, singleStep = false)
+					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroWelcomeStep, singleStep = false)
+					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroThemeStep, singleStep = false)
+					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroUserStep, singleStep = false)
 					else -> null
 				}.also {
 					if(it == null) {
@@ -478,7 +480,7 @@ private fun AweryDrawerContent(
 							contentDescription = null,
 							onClick = {
 								navigation.push(Routes.Intro(
-									step = IntroStep.UserCreation,
+									step = IntroUserStep,
 									singleStep = true
 								))
 								

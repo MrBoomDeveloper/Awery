@@ -13,7 +13,7 @@ import com.mrboomdev.awery.resources.ic_folder_open_outlined
 import com.mrboomdev.awery.resources.storage
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
-import com.mrboomdev.awery.ui.screens.intro.IntroStep
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroWelcomeStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
 import com.mrboomdev.awery.ui.screens.settings.itemSetting
@@ -52,7 +52,7 @@ fun SettingsAdvancedPage(
 					title = "Launch onboarding",
 					onClick = { 
 						navigation.push(Routes.Intro(
-							step = IntroStep.Welcome,
+							step = IntroWelcomeStep,
 							singleStep = false
 						)) 
 					}

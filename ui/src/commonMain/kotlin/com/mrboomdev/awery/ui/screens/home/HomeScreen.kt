@@ -73,9 +73,7 @@ fun HomeScreen(
 	fun Content() {
 		LazyColumn(
 			modifier = Modifier.fillMaxSize(),
-			contentPadding = contentPadding
-				.only(vertical = true)
-				.add(bottom = 32.dp),
+			contentPadding = contentPadding.only(vertical = true),
 			state = lazyListState,
 			userScrollEnabled = !showShimmer
 		) { 

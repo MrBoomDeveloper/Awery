@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.back
 import com.mrboomdev.awery.resources.continue_action
+import com.mrboomdev.awery.ui.screens.intro.steps.IntroStep
 import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.navigation.core.TypeSafeNavigation
 import com.mrboomdev.navigation.core.safePop
@@ -23,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 internal object IntroDefaults {
 	val navigation = TypeSafeNavigation<IntroStep>()
 	val iconSize = 48.dp
-	private val spaceBetweenActions = 16.dp
+	val spaceBetweenActions = 16.dp
 //	private val contentPaddingDp = 32.dp
 	
 	@Composable
