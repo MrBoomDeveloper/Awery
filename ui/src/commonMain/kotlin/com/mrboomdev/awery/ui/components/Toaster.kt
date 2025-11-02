@@ -3,29 +3,11 @@ package com.mrboomdev.awery.ui.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.exclude
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -74,13 +56,13 @@ fun ToasterContainer(
 
                 SwipeToDismissBox(
                     modifier = Modifier.animateItem(),
+                    backgroundContent = {},
                     state = rememberSwipeToDismissBoxState(confirmValueChange = {
                         if(it != SwipeToDismissBoxValue.Settled) {
                             state.toasts -= item
                             true
                         } else false
-                    }),
-                    backgroundContent = {},
+                    })
                 ) {
                     Row(
                         modifier = Modifier
@@ -93,6 +75,7 @@ fun ToasterContainer(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(
+                            modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
@@ -110,14 +93,18 @@ fun ToasterContainer(
                             }
                         }
 
-                        Spacer(Modifier.weight(1f))
-
                         toast.actionText?.also { action ->
-                            Text(
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                text = action
-                            )
+                            TextButton(
+                                onClick = { 
+                                    toast.onClick!!()
+                                    state.dismiss(toast)
+                                }
+                            ) {
+                                Text(
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = action
+                                )
+                            }
                         }
                     }
                 }
@@ -139,6 +126,9 @@ fun ToasterContainer(
 class Toaster(private val maxItems: Int = DEFAULT_MAX_ITEMS) {
     internal val toasts = mutableStateListOf<Pair<Toast, String>>()
 
+    /**
+     * Shows a toast message for a time specified in it and then automatically dismisses it.
+     */
     @OptIn(ExperimentalUuidApi::class)
     fun toast(toast: Toast) {
         if(toasts.size + 1 > maxItems) {
@@ -156,6 +146,13 @@ class Toaster(private val maxItems: Int = DEFAULT_MAX_ITEMS) {
             }
         }
     }
+
+    /**
+     * Dismisses all messages fired with this [toast]
+     */
+    fun dismiss(toast: Toast) {
+        toasts.removeAll { it.first == toast }
+    }
 }
 
 data class Toast(
@@ -166,6 +163,13 @@ data class Toast(
     val duration: Long
 )
 
+/**
+ * Shows a toast message for a time specified in it and then automatically dismisses it.
+ *
+ * @param title The title of the toast message.
+ * @param message The message of the toast message. If null, the toast won't show a message.
+ * @param duration The duration of the toast message in milliseconds. Defaults to 5000.
+ */
 fun Toaster.toast(
     title: String,
     message: String? = null,
@@ -178,6 +182,15 @@ fun Toaster.toast(
     duration = duration
 ))
 
+/**
+ * Shows a toast message for a time specified in it and then automatically dismisses it.
+ *
+ * @param title The title of the toast message.
+ * @param message The message of the toast message. If null, the toast won't show any message.
+ * @param actionText The text of the action button of the toast message. If null, the toast won't show any action button.
+ * @param onClick The action to be performed when the action button is clicked. If null, the toast won't show any action button.
+ * @param duration The duration of the toast message in milliseconds. Defaults to 5000 (5 seconds).
+ */
 fun Toaster.toast(
     title: String,
     message: String? = null,

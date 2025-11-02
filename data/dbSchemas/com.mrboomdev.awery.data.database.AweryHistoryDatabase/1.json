@@ -1,0 +1,50 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "196537c54da78e4fd3cd9024fec712d6",
+    "entities": [
+      {
+        "tableName": "history_media",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`extension_id` TEXT NOT NULL, `media_id` TEXT NOT NULL, `date` INTEGER NOT NULL, `media` TEXT NOT NULL, PRIMARY KEY(`extension_id`, `media_id`))",
+        "fields": [
+          {
+            "fieldPath": "extensionId",
+            "columnName": "extension_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "media_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "media",
+            "columnName": "media",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "extension_id",
+            "media_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '196537c54da78e4fd3cd9024fec712d6')"
+    ]
+  }
+}

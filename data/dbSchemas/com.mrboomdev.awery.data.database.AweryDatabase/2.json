@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "3a4f8bd906afa0f3b9e3efec414982d5",
+    "entities": [
+      {
+        "tableName": "DBMedia",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`extensionId` TEXT NOT NULL, `id` TEXT NOT NULL, `json` TEXT NOT NULL, PRIMARY KEY(`extensionId`, `id`))",
+        "fields": [
+          {
+            "fieldPath": "extensionId",
+            "columnName": "extensionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "json",
+            "columnName": "json",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "extensionId",
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "DBList",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `orderIndex` INTEGER NOT NULL, `hidden` INTEGER NOT NULL, `autoUpdateItems` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hidden",
+            "columnName": "hidden",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "autoUpdateItems",
+            "columnName": "autoUpdateItems",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "DBListMediaCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mediaExtensionId` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `listId` INTEGER NOT NULL, PRIMARY KEY(`mediaExtensionId`, `mediaId`, `listId`), FOREIGN KEY(`mediaExtensionId`, `mediaId`) REFERENCES `DBMedia`(`extensionId`, `id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`listId`) REFERENCES `DBList`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "mediaExtensionId",
+            "columnName": "mediaExtensionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "mediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "listId",
+            "columnName": "listId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "mediaExtensionId",
+            "mediaId",
+            "listId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_DBListMediaCrossRef_mediaExtensionId_mediaId_listId",
+            "unique": false,
+            "columnNames": [
+              "mediaExtensionId",
+              "mediaId",
+              "listId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_DBListMediaCrossRef_mediaExtensionId_mediaId_listId` ON `${TABLE_NAME}` (`mediaExtensionId`, `mediaId`, `listId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "DBMedia",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "mediaExtensionId",
+              "mediaId"
+            ],
+            "referencedColumns": [
+              "extensionId",
+              "id"
+            ]
+          },
+          {
+            "table": "DBList",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "listId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DBWatchProgress",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`extensionId` TEXT NOT NULL, `mediaId` TEXT NOT NULL, `variantId` TEXT NOT NULL, `progress` INTEGER NOT NULL, `maxProgress` INTEGER, `title` TEXT NOT NULL, `thumbnail` TEXT, PRIMARY KEY(`extensionId`, `mediaId`, `variantId`))",
+        "fields": [
+          {
+            "fieldPath": "extensionId",
+            "columnName": "extensionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "mediaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "variantId",
+            "columnName": "variantId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxProgress",
+            "columnName": "maxProgress",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnail",
+            "columnName": "thumbnail",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "extensionId",
+            "mediaId",
+            "variantId"
+          ]
+        }
+      },
+      {
+        "tableName": "DBRepository",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`extensionId` TEXT NOT NULL, `name` TEXT NOT NULL, `url` TEXT NOT NULL, PRIMARY KEY(`extensionId`, `url`))",
+        "fields": [
+          {
+            "fieldPath": "extensionId",
+            "columnName": "extensionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "extensionId",
+            "url"
+          ]
+        }
+      },
+      {
+        "tableName": "blacklisted_media",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`extension_id` TEXT NOT NULL, `media_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`extension_id`, `media_id`))",
+        "fields": [
+          {
+            "fieldPath": "extensionId",
+            "columnName": "extension_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaId",
+            "columnName": "media_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "extension_id",
+            "media_id"
+          ]
+        }
+      },
+      {
+        "tableName": "blacklisted_keyword",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3a4f8bd906afa0f3b9e3efec414982d5')"
+    ]
+  }
+}

@@ -1,32 +1,31 @@
 package com.mrboomdev.awery.data.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.mrboomdev.awery.core.Awery
-import com.mrboomdev.awery.data.database.dao.ListDao
-import com.mrboomdev.awery.data.database.dao.MediaDao
-import com.mrboomdev.awery.data.database.dao.RepositoryDao
-import com.mrboomdev.awery.data.database.dao.WatchProgressDao
-import com.mrboomdev.awery.data.database.entity.DBList
-import com.mrboomdev.awery.data.database.entity.DBListMediaCrossRef
-import com.mrboomdev.awery.data.database.entity.DBMedia
-import com.mrboomdev.awery.data.database.entity.DBRepository
-import com.mrboomdev.awery.data.database.entity.DBWatchProgress
+import com.mrboomdev.awery.data.database.dao.*
+import com.mrboomdev.awery.data.database.entity.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
 
 @Database(
-    version = 1,
+    version = 2,
+    
     entities = [
         DBMedia::class,
         DBList::class,
         DBListMediaCrossRef::class,
         DBWatchProgress::class,
-        DBRepository::class
+        DBRepository::class,
+        DBBlacklistedMedia::class,
+        DBBlacklistedKeyword::class
+    ],
+    
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
     ]
 )
 @TypeConverters(DBTypeConverters::class)
@@ -35,6 +34,9 @@ abstract class AweryDatabase: RoomDatabase() {
     abstract val lists: ListDao
     abstract val progress: WatchProgressDao
     abstract val repositories: RepositoryDao
+    abstract val mediaBlacklist: MediaBlacklistDao
+    abstract val keywordBlacklist: KeywordBlacklistDao
+    companion object {}
 }
 
 val Awery.database: AweryDatabase by lazy {

@@ -1,6 +1,5 @@
 package com.mrboomdev.awery.extension.loaders.yomi
 
-import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -8,26 +7,13 @@ import com.mrboomdev.awery.android.AndroidUtils
 import com.mrboomdev.awery.android.getItems
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.context
-import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.AndroidPreferences
 import com.mrboomdev.awery.extension.loaders.Extensions
-import com.mrboomdev.awery.extension.sdk.BooleanPreference
-import com.mrboomdev.awery.extension.sdk.Extension
-import com.mrboomdev.awery.extension.sdk.ExtensionLoadException
-import com.mrboomdev.awery.extension.sdk.Image
-import com.mrboomdev.awery.extension.sdk.IntPreference
-import com.mrboomdev.awery.extension.sdk.LabelPreference
-import com.mrboomdev.awery.extension.sdk.Preference
-import com.mrboomdev.awery.extension.sdk.PreferenceGroup
-import com.mrboomdev.awery.extension.sdk.Preferences
-import com.mrboomdev.awery.extension.sdk.StringPreference
+import com.mrboomdev.awery.extension.sdk.*
 import com.mrboomdev.awery.extension.sdk.modules.ManageableModule
 import com.mrboomdev.awery.extension.sdk.modules.ManagerModule
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.SharedPreferencesSettings
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource
 import eu.kanade.tachiyomi.source.ConfigurableSource
-import eu.kanade.tachiyomi.source.preferenceKey
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.asFlow
 import ru.solrudev.ackpine.session.Session
@@ -125,7 +111,7 @@ open class YomiExtension(
                             it.setupPreferenceScreen(this)
                         }
                     }
-                        
+                    
                     is TachiyomiSource -> childSource.source.let {
                         if(it !is ConfigurableSource) {
                             return@let null

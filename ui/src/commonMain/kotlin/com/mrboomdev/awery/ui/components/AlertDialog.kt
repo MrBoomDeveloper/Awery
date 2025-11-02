@@ -1,21 +1,7 @@
 package com.mrboomdev.awery.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -73,19 +59,26 @@ fun AlertDialog(
         contentPadding = PaddingValues(top = 24.dp, bottom = 12.dp)
     ) {
         CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.headlineMedium
+            LocalTextStyle provides MaterialTheme.typography.headlineMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground
+            )
         ) {
             Box(Modifier.padding(horizontal = 24.dp)) {
                 title()
             }
         }
 
-        Column(
-            modifier = Modifier
-                .padding(contentPadding)
-                .weight(1f, false),
-            content = content
-        )
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyLarge
+                .copy(color = MaterialTheme.colorScheme.onSurface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .weight(1f, false),
+                content = content
+            )
+        }
 
         Row(
             modifier = Modifier

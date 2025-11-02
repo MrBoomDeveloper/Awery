@@ -3,12 +3,14 @@ package com.mrboomdev.awery.ui.screens.home
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.utils.CacheStorage
 import com.mrboomdev.awery.core.utils.NothingFoundException
 import com.mrboomdev.awery.core.utils.collection.iterateMutable
 import com.mrboomdev.awery.core.utils.collection.replace
 import com.mrboomdev.awery.core.utils.launchTrying
 import com.mrboomdev.awery.data.AgeRating
+import com.mrboomdev.awery.data.database.database
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.loaders.Extensions.get
@@ -57,6 +59,76 @@ class HomeViewModel: ViewModel() {
 			withContext(Dispatchers.Default) {
 				load(useCache = true)
 			}
+		}
+	}
+	
+	/**
+	 * Hide a media item in the given feed.
+	 * @param feed the feed to hide the media item from
+	 * @param media the media item to hide
+	 * @return a pair containing the index of the feed and the index of the media item
+	 */
+	fun hideMedia(feed: Feed, media: Media): Pair<Int, Int> {
+		val feedIndex = _loadedFeeds.indexOfFirst {
+			it.second == feed 
+		}
+		
+		_loadedFeeds[feedIndex].also { og ->
+			val mediaIndex = og.third.items.indexOfFirst { 
+				it == media 
+			}
+			
+			_loadedFeeds[feedIndex] = og.copy(
+				third = og.third.copy(
+					items = og.third.items.filter { 
+						it != media
+					}.also { filtered ->
+						if(filtered.isEmpty()) {
+							_loadedFeeds.remove(og)
+							return feedIndex to mediaIndex
+						}
+					}
+				)
+			)
+			
+			return feedIndex to mediaIndex
+		}
+	}
+	
+	fun addMedia(
+		extension: Extension,
+		feed: Feed,
+		media: Media,
+		feedIndex: Int,
+		mediaIndex: Int
+	) {
+		val feedKey = _loadedFeeds.indexOfFirst {
+			it.second == feed
+		}.takeUnless { it == -1 }
+		
+		if(feedKey == null) {
+			_loadedFeeds.add(
+				feedIndex, Triple(
+					extension, 
+					feed, 
+					Results(
+						items = listOf(media), 
+						hasNextPage = false
+					)
+				)
+			)
+			
+			return
+		}
+		
+		_loadedFeeds[feedKey].also { og ->
+			_loadedFeeds[feedKey] = og.copy(
+				third = og.third.copy(
+					items = og.third.items.toMutableList().apply { 
+						add(mediaIndex, media)
+					}
+				)
+			)
 		}
 	}
 	
@@ -132,28 +204,41 @@ class HomeViewModel: ViewModel() {
 			}.flatMapMerge { (extension, feedsModule, feeds) ->
 				feeds.asFlow().map { feed ->
 					try {
+						suspend fun List<Media>.filterMedia() = filter { media ->
+							when(AwerySettings.adultContent.value) {
+								AwerySettings.AdultContent.SHOW -> true
+
+								AwerySettings.AdultContent.HIDE ->
+									media.ageRating?.let { AgeRating.of(it) } != AgeRating.NSFW
+
+								AwerySettings.AdultContent.ONLY ->
+									media.ageRating?.let { AgeRating.of(it) } == AgeRating.NSFW
+							} && !Awery.database.mediaBlacklist.isBlacklisted(
+								extensionId = extension.id,
+								mediaId = media.id
+							)
+						}
+						
 						if(useCache) {
 							feedsCache["${extension.id}:${feed.id}"]?.also {
 								cleanupStuffIfNeeded()
-								_loadedFeeds += Triple(extension, feed, it)
+								
+								_loadedFeeds += Triple(
+									extension, 
+									feed, 
+									it.copy(items = it.items.filterMedia())
+								)
+								
 								return@map
 							}
 						}
 
 						val loadedMedia = feedsModule.loadFeed(feed).let { og ->
-							og.copy(items = og.items.filter { media ->
-								when(AwerySettings.adultContent.value) {
-									AwerySettings.AdultContent.SHOW -> true
-
-									AwerySettings.AdultContent.HIDE ->
-										media.ageRating?.let { AgeRating.of(it) } != AgeRating.NSFW
-
-									AwerySettings.AdultContent.ONLY ->
-										media.ageRating?.let { AgeRating.of(it) } == AgeRating.NSFW
-								}
-							})
+							og.copy(items = og.items.filterMedia())
 						}.apply {
-							if(items.isEmpty()) throw NothingFoundException("Feed loaded with 0 results.")
+							if(items.isEmpty()) {
+								throw NothingFoundException("Feed loaded with 0 results.")
+							}
 						}
 
 						cleanupStuffIfNeeded()

@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -146,7 +147,12 @@ data object IntroAccountStep: IntroStep {
         val isLoading by viewModel.isLoading.collectAsState()
         
         if(isLoading) {
-            Dialog({}) {
+            Dialog(
+                onDismissRequest = {},
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false
+                )
+            ) {
                 CircularProgressIndicator()
             }
         }

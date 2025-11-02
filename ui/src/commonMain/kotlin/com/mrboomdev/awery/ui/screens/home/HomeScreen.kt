@@ -10,7 +10,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -31,9 +34,7 @@ import com.mrboomdev.awery.resources.ic_language
 import com.mrboomdev.awery.resources.ic_refresh
 import com.mrboomdev.awery.ui.Navigation
 import com.mrboomdev.awery.ui.Routes
-import com.mrboomdev.awery.ui.components.ExpandableText
-import com.mrboomdev.awery.ui.components.FeedRow
-import com.mrboomdev.awery.ui.components.IconButton
+import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.PostLaunchedEffect
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.utils.*
@@ -42,12 +43,14 @@ import org.jetbrains.compose.resources.painterResource
 import java.util.*
 import kotlin.time.ExperimentalTime
 
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
 	viewModel: HomeViewModel = viewModel { HomeViewModel() },
 	contentPadding: PaddingValues
 ) {
+	val toaster = LocalToaster.current
 	val isReloading by viewModel.isReloading.collectAsState()
 	val isLoading by viewModel.isLoading.collectAsState()
 	val username by AwerySettings.username.collectAsState()
@@ -77,6 +80,46 @@ fun HomeScreen(
 			state = lazyListState,
 			userScrollEnabled = !showShimmer
 		) { 
+			singleItem("cats") {
+				return@singleItem
+				
+				LazyRow(
+					contentPadding = contentPadding.only(horizontal = true)
+						.add(horizontal = niceSideInset()),
+					horizontalArrangement = Arrangement.spacedBy(8.dp)
+				) { 
+					fun cat(
+						active: Boolean = false,
+						id: String,
+						title: @Composable () -> String
+					) {
+						item(
+							key = id,
+							contentType = "cat"
+						) {
+							FilterChip(
+								selected = active,
+								
+								label = {
+									Text(title())
+								},
+								
+								onClick = {
+									if(active) return@FilterChip
+									toaster.toast("Not available at the moment...")
+								}
+							)
+						}
+					}
+					
+					cat(active = true, id = "all", title = { "All" })
+					cat(id = "videos", title = { "Watch" })
+					cat(id = "books", title = { "Read" })
+					cat(id = "imageboard", title = { "Imageboard" })
+					cat(id = "news", title = { "News" })
+				}
+			}
+			
 			singleItem("header") {
 				Column(
 					modifier = Modifier
@@ -96,7 +139,7 @@ fun HomeScreen(
 					Text(
 						modifier = Modifier.padding(horizontal = niceSideInset()),
 						color = MaterialTheme.colorScheme.secondary,
-						text = remember {
+						text = rememberSaveable {
 							@OptIn(ExperimentalTime::class)
 							val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 							
@@ -146,10 +189,29 @@ fun HomeScreen(
 				var showActionsDialog by remember { mutableStateOf<Media?>(null) }
 
 				showActionsDialog?.also { media ->
+					var hideFromVMResult by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+					
 					MediaActionsDialog(
 						extensionId = extension.id,
 						media = media,
-						onDismissRequest = { showActionsDialog = null }
+						onDismissRequest = { showActionsDialog = null },
+						
+						onHide = {
+							hideFromVMResult = viewModel.hideMedia(feed, media)
+							showActionsDialog = null
+						},
+						
+						onCancelledHide = {
+							hideFromVMResult?.also {
+								viewModel.addMedia(
+									extension,
+									feed, 
+									media, 
+									it.first, 
+									it.second
+								)
+							}
+						}
 					)
 				}
 
@@ -351,19 +413,23 @@ fun HomeScreen(
 	if(Awery.platform == Platform.DESKTOP) {
 		Content()
 	} else {
+		val pullToRefreshState = rememberPullToRefreshState()
+		
 		PullToRefreshBox(
 			modifier = Modifier.fillMaxSize(),
 			isRefreshing = isReloading,
 			onRefresh = { viewModel.reload() },
+			state = pullToRefreshState,
 			content = { Content() },
-//			indicator = {
-//				Indicator(
-//					state = rememberPullToRefreshState(),
-//					modifier = Modifier.align(Alignment.TopCenter),
-//					color = MaterialTheme.colorScheme.primary,
-//					isRefreshing = isReloading
-//				)
-//			}
+			indicator = {
+				PullToRefreshDefaults.Indicator(
+					modifier = Modifier.align(Alignment.TopCenter),
+					color = MaterialTheme.colorScheme.primary,
+					isRefreshing = isReloading,
+					state = pullToRefreshState,
+					maxDistance = PullToRefreshDefaults.IndicatorMaxDistance + contentPadding.top
+				)
+			}
 		)
 	}
 }
