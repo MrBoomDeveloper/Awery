@@ -19,6 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
+import com.mrboomdev.awery.core.Awery
+import com.mrboomdev.awery.data.database.database
+import com.mrboomdev.awery.data.database.entity.DBHistoryItem
+import com.mrboomdev.awery.data.database.history
+import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.sdk.Media
@@ -26,8 +31,13 @@ import com.mrboomdev.awery.ui.Routes
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.screens.GalleryScreen
+import com.mrboomdev.awery.ui.utils.RememberLaunchedEffect
 import com.mrboomdev.awery.ui.utils.collapse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 actual fun MediaScreen(
@@ -36,7 +46,7 @@ actual fun MediaScreen(
 	contentPadding: PaddingValues
 ) = DesktopMediaScreen(destination, viewModel)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 private fun DesktopMediaScreen(
     destination: Routes.Media,
@@ -49,8 +59,8 @@ private fun DesktopMediaScreen(
     }
 
     val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null)
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState { tabs.count() }
+    val coroutineScope = rememberCoroutineScope() 
+	val pagerState = rememberPagerState { tabs.count() } 
 	var showGallery by rememberSaveable { mutableStateOf(false) }
     val toaster = LocalToaster.current
 
@@ -86,6 +96,19 @@ private fun DesktopMediaScreen(
 					media.banner
 				)
 			)
+		}
+	}
+
+	RememberLaunchedEffect(Unit) {
+		if(AwerySettings.mediaHistory.value) {
+			launch(Dispatchers.IO) {
+				Awery.database.history.media.add(DBHistoryItem(
+					extensionId = destination.extensionId,
+					mediaId = destination.media.id,
+					media = Json.encodeToString(destination.media),
+					date = Clock.System.now().toEpochMilliseconds()
+				))
+			}
 		}
 	}
     

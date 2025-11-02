@@ -6,11 +6,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun RememberLaunchedEffect(
 	key1: Any?,
-	block: suspend () -> Unit
+	block: suspend CoroutineScope.() -> Unit
 ) {
 	var didExecute by rememberSaveable(key1) { mutableStateOf(false) }
 	

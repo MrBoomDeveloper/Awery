@@ -68,8 +68,12 @@ fun ToasterContainer(
                         modifier = Modifier
                             .padding(4.dp)
                             .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(8.dp))
-                            .thenIf(toast.onClick != null) { clickable(onClick = toast.onClick!!) }
-                            .fillMaxWidth()
+                            .thenIf(toast.onClick != null) {
+                                clickable(onClick = {
+                                    toast.onClick!!
+                                    state.dismiss(toast)
+                                }) 
+                            }.fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically

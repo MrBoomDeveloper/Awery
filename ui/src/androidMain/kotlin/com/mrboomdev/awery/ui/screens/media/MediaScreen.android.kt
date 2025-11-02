@@ -44,6 +44,10 @@ import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.utils.LoadingStatus
 import com.mrboomdev.awery.core.utils.replaceAll
 import com.mrboomdev.awery.core.utils.toCalendar
+import com.mrboomdev.awery.data.database.database
+import com.mrboomdev.awery.data.database.entity.DBHistoryItem
+import com.mrboomdev.awery.data.database.history
+import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getLargePoster
 import com.mrboomdev.awery.extension.sdk.Media
@@ -54,20 +58,38 @@ import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.popups.BookmarkMediaDialog
 import com.mrboomdev.awery.ui.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import java.util.*
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 private val SHADOW_COLOR = Color(0xee000000)
 
+@OptIn(ExperimentalTime::class)
 @Composable
 actual fun MediaScreen(
     destination: Routes.Media,
     viewModel: MediaScreenViewModel,
     contentPadding: PaddingValues
 ) {
+    RememberLaunchedEffect(Unit) {
+        if(AwerySettings.mediaHistory.value) {
+            launch(Dispatchers.IO) {
+                Awery.database.history.media.add(DBHistoryItem(
+                    extensionId = destination.extensionId,
+                    mediaId = destination.media.id,
+                    media = Json.encodeToString(destination.media),
+                    date = Clock.System.now().toEpochMilliseconds()
+                ))
+            }
+        }
+    }
+    
     if(Awery.isTv) TvMediaScreen(destination, viewModel)
     else DefaultMediaScreen(destination, viewModel, contentPadding)
 }
@@ -77,9 +99,9 @@ private fun TvMediaScreen(
     destination: Routes.Media,
     viewModel: MediaScreenViewModel
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState { 2 }
-	val media by viewModel.media.collectAsState()
+    val coroutineScope = rememberCoroutineScope() 
+    val pagerState = rememberPagerState { 2 } 
+    val media by viewModel.media.collectAsState()
     
     Box(Modifier.fillMaxSize()) {
         AsyncImage(

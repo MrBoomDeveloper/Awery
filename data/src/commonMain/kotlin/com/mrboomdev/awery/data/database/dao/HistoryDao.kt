@@ -5,7 +5,7 @@ import com.mrboomdev.awery.data.database.entity.DBHistoryItem
 
 @Dao
 interface HistoryDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(media: DBHistoryItem)
 
     @Delete

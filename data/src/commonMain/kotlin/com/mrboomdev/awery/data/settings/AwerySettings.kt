@@ -28,6 +28,7 @@ object AwerySettings {
     
     val aweryServerInstance by setting("http://awery.mrboomdev.ru:80")
     val aweryServerToken by setting("")
+    val mediaHistory by setting(true)
     val darkTheme by setting(DarkTheme.AUTO)
     val primaryColor by setting(-1L)
     val amoledTheme by setting(false)
