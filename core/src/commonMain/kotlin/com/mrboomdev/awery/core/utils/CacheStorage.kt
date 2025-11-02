@@ -6,12 +6,23 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.readString
 import io.github.vinceglb.filekit.writeString
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import java.lang.System.currentTimeMillis
 
+/**
+ * Creates a new instance of [CacheStorage].
+ *
+ * @param directory The directory in which the cache files will be stored.
+ * @param maxSize The maximum size of the cache in bytes.
+ * @param strategy The strategy to use when storing and retrieving cache values.
+ * If not specified, defaults to [CacheStorage.Strategy.LRU].
+ * @param maxAge The maximum age of a cache value in milliseconds.
+ * If not specified, defaults to [Long.MAX_VALUE].
+ *
+ * @return A new instance of [CacheStorage].
+ */
 suspend inline fun <reified T> CacheStorage(
     directory: PlatformFile,
     maxSize: Long,

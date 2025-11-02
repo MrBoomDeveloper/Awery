@@ -1,19 +1,34 @@
 package com.mrboomdev.awery.core
 
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.compression.ContentEncoding
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
 
 /**
  * Main object, that stores all the global variables and functions.
  * Also, this object is a bridge to the platform-specific code.
  */
 expect object Awery {
+    /**
+     * Copies the given text to the clipboard.
+     *
+     * @param text The text to copy.
+     */
     fun copyToClipboard(text: String)
+    
+    /**
+     * Opens the given URL in the default browser of the device.
+     *
+     * @param url The URL to open.
+     */
     fun openUrl(url: String)
 
+    /**
+     * Shares the given text to the default sharing app of the device.
+     *
+     * @param text The text to share.
+     */
     fun share(text: String)
 
     /**

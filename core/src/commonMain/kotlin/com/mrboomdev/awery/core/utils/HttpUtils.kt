@@ -1,20 +1,22 @@
 package com.mrboomdev.awery.core.utils
 
 import io.github.vinceglb.filekit.PlatformFile
-import io.ktor.client.call.body
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.HttpStatement
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.bodyAsText
-import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.core.remaining
+import io.ktor.client.statement.*
+import io.ktor.utils.io.core.*
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
 import kotlinx.io.RawSink
-import kotlinx.serialization.json.Json
 import kotlinx.io.asSink
+import kotlinx.serialization.json.Json
 import java.io.FileOutputStream
 
+/**
+ * Downloads the content of the HTTP response to the specified file.
+ *
+ * This function will suspend until the download is complete.
+ *
+ * @param targetFile The file to download the content to.
+ */
 suspend fun HttpStatement.download(targetFile: PlatformFile) {
     execute { httpResponse ->
         val stream: RawSink = FileOutputStream(targetFile.toJavaFile()).asSink()
