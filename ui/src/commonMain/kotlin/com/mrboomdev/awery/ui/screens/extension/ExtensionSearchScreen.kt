@@ -38,12 +38,14 @@ import com.mrboomdev.awery.extension.sdk.Preference
 import com.mrboomdev.awery.extension.sdk.StringPreference
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.components.InfoBox
 import com.mrboomdev.awery.ui.components.MediaCard
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
 import com.mrboomdev.awery.ui.utils.*
@@ -74,7 +76,17 @@ fun ExtensionSearchScreen(
     val lazyGridState = rememberLazyGridState()
     val navigation = Navigation.current()
     val filters by viewModel.filters.collectAsState()
+
+    RouteInfoEffect(
+        displayHeader = false
+    )
     
+    InfiniteScroll(
+		state = lazyGridState,
+		buffer = 1,
+		loadMore = { viewModel.loadMore() }
+	)
+
     if(showFiltersDialog && filters != null) {
         FiltersDialog(
             filters = filters!!,
@@ -82,12 +94,6 @@ fun ExtensionSearchScreen(
             onDismissRequest = { showFiltersDialog = false }
         )
     }
-    
-    InfiniteScroll(
-		state = lazyGridState,
-		buffer = 1,
-		loadMore = { viewModel.loadMore() }
-	)
 
     Scaffold(
         modifier = Modifier

@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import java.awt.SystemColor.text
 
 class SettingsExtensionsPageViewModel: ViewModel() {
 	val repositories = Awery.database.repositories.observeAll().stateIn(
@@ -328,12 +329,14 @@ fun SettingsExtensionsPage(
 								onDismissRequest = { showDropdown = false }
 							) {
 								item(
-									text = runBlocking { getString(Res.string.copy_link_to_clipboard) },
+									icon = { painterResource(Res.drawable.ic_link) },
+									text = { stringResource(Res.string.copy_link_to_clipboard) },
 									onClick = { Awery.copyToClipboard(repo.url) }
 								)
 
 								item(
-									text = runBlocking { getString(Res.string.remove) },
+									icon = { painterResource(Res.drawable.ic_delete_outlined) },
+									text = { stringResource(Res.string.remove) },
 									onClick = { runBlocking { Awery.database.repositories.delete(repo) } }
 								)
 							}

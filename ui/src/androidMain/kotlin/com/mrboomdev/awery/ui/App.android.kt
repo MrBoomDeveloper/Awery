@@ -7,6 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
+import com.mrboomdev.awery.ui.navigation.MainRoutes
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.navigation.core.InternalNavigationApi
 import com.mrboomdev.navigation.core.currentNavigationOrNull
 import com.mrboomdev.navigation.jetpack.JetpackNavigation

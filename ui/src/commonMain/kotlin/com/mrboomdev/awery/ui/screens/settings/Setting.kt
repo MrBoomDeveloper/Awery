@@ -185,6 +185,10 @@ fun Setting(
                     role = Role.Button,
                     onClick = { showDialog = true }
                 )
+                
+                is SerializableSetting<*> -> {
+                    throw UnsupportedOperationException("SerializableSetting cannot be rendered correctly!")
+                }
             }),
 
         contentPadding = contentPadding,
@@ -219,6 +223,10 @@ fun Setting(
                         color = MaterialTheme.colorScheme.primary,
                         text = enumValues!!.first { it.first == setting.collectAsState().value }.second
                     )
+                }
+                
+                is SerializableSetting<*> -> {
+                    throw UnsupportedOperationException("SerializableSetting cannot be rendered!")
                 }
             }
         }

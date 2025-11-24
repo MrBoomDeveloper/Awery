@@ -20,7 +20,8 @@ import com.mrboomdev.awery.extension.sdk.Extension
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.utils.ColorSerializer
 import com.mrboomdev.awery.ui.utils.viewModel
 import io.github.vinceglb.filekit.FileKit

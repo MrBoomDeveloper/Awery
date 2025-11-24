@@ -32,10 +32,12 @@ import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.resources.ic_language
 import com.mrboomdev.awery.resources.ic_refresh
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.PostLaunchedEffect
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.launch
@@ -63,6 +65,10 @@ fun HomeScreen(
 	PostLaunchedEffect(AwerySettings.adultContent.collectAsState().value) {
 		viewModel.reload()
 	}
+
+//	RouteInfoEffect(
+//		
+//	)
 	
 	@Composable
 	fun Modifier.shimmer() = placeholder(

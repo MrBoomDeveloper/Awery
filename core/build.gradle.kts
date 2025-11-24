@@ -1,7 +1,4 @@
 import com.android.build.api.dsl.androidLibrary
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -36,6 +33,7 @@ kotlin {
             implementation(libs.ktor.client.encoding)
 
             implementation(libs.fileKache)
+            implementation(composeLibs.runtime)
         }
 
         androidMain.dependencies {

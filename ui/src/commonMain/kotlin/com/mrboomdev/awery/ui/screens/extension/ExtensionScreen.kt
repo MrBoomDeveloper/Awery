@@ -36,11 +36,13 @@ import com.mrboomdev.awery.extension.sdk.modules.CatalogModule
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.resources.ic_search
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.FeedRow
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.components.InfoBox
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.theme.isAmoledTheme
 import com.mrboomdev.awery.ui.utils.*
@@ -62,6 +64,10 @@ fun ExtensionScreen(
     val contentPadding = contentPadding.add(horizontal = niceSideInset())
     val topBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val navigation = Navigation.current()
+
+    RouteInfoEffect(
+        displayHeader = false
+    )
 
     Scaffold(
         modifier = Modifier

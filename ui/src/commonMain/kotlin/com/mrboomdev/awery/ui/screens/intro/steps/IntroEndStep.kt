@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.MainRoutes
-import com.mrboomdev.awery.ui.Navigation
+import com.mrboomdev.awery.ui.navigation.MainRoutes
+import com.mrboomdev.awery.ui.navigation.Navigation
 import com.mrboomdev.awery.ui.screens.intro.IntroDefaults
 import com.mrboomdev.navigation.core.safePop
 import io.github.vinceglb.confettikit.compose.ConfettiKit

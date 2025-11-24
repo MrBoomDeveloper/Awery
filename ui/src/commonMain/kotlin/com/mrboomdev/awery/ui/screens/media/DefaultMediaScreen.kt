@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -61,15 +62,19 @@ import com.mrboomdev.awery.extension.sdk.modules.WatchModule
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_back
 import com.mrboomdev.awery.resources.ic_block
+import com.mrboomdev.awery.resources.ic_copy_outlined
+import com.mrboomdev.awery.resources.ic_search
 import com.mrboomdev.awery.resources.ic_share_filled
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.BackEffect
 import com.mrboomdev.awery.ui.screens.GalleryScreen
 import com.mrboomdev.awery.ui.theme.SeedAweryTheme
 import com.mrboomdev.awery.ui.utils.*
+import com.mrboomdev.navigation.core.ResultContract
 import com.mrboomdev.navigation.core.safePop
+import com.mrboomdev.navigation.jetpack.setResult
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import io.ktor.http.*
@@ -552,6 +557,7 @@ internal fun DefaultMediaScreen(
 @Composable
 internal fun ColumnScope.MediaScreenContent(
 	media: Media,
+	//contract: ResultContract<Routes.Media, Routes.Media.Companion.Result>,
 	watcher: WatcherNode,
 	pagerState: PagerState,
 	tabs: List<MediaScreenTabs>,
@@ -663,9 +669,114 @@ internal fun ColumnScope.MediaScreenContent(
 							horizontalArrangement = Arrangement.spacedBy(12.dp)
 						) {
 							tags.forEach { tag ->
-								var isLoading by remember { mutableStateOf(false) }
+								var showTagActionsDialog by remember(tag) { mutableStateOf(false) }
+								var isLoading by remember(tag) { mutableStateOf(false) }
 								val coroutineScope = rememberCoroutineScope()
 								val toaster = LocalToaster.current
+
+								fun onClick() {
+									isLoading = true
+
+									coroutineScope.launchTrying(Dispatchers.Default, onCatch = {
+										toaster.toast("Failed to search by a tag")
+										isLoading = false
+									}) {
+										Extensions[extensionId]?.also scope@{ extension ->
+											extension.get<CatalogModule>()?.also { catalogModule ->
+												val filters = catalogModule.getDefaultFilters()
+
+												fun List<Preference<*>>.findPref(
+													predicate: (Preference<*>) -> Boolean
+												): Preference<*>? = firstOrNull { preference ->
+													if(predicate(preference)) {
+														return@firstOrNull true
+													}
+
+													if(preference is PreferenceGroup) {
+														preference.items.findPref(predicate)?.also { child ->
+															return child
+														}
+													}
+
+													false
+												}
+
+												filters.findPref {
+													it.name.equals(tag, ignoreCase = true)
+												}?.also {
+													when(it) {
+														is BooleanPreference -> {
+															it.value = true
+														}
+
+														is TriStatePreference -> {
+															it.value = TriStatePreference.State.INCLUDED
+														}
+
+														is IntPreference,
+														is LongPreference,
+														is SelectPreference,
+														is LabelPreference,
+														is PreferenceGroup,
+														is StringPreference -> {
+															toaster.toast(
+																title = "Failed to search",
+																message = "Cannot apply an filter of type ${it::class.qualifiedName}",
+																duration = 5_000
+															)
+
+															return@scope
+														}
+													}
+												} ?: filters.findPref {
+													it.role == Preference.Role.QUERY
+												}?.also {
+													if(it is StringPreference) {
+														it.value = tag
+													} else {
+														toaster.toast(
+															title = "Failed to search",
+															message = "Invalid extension filter type! Contact extension developer so that he can fix it.",
+															duration = 5_000
+														)
+
+														return@scope
+													}
+												} ?: run {
+													toaster.toast(
+														title = "Unable to perform search",
+														message = "Source extension doesn't support search.",
+														duration = 5_000
+													)
+
+													return@scope
+												}
+
+												launch(Dispatchers.Main) {
+													navigation.push(Routes.ExtensionSearch(
+														extensionId = extensionId,
+														extensionName = extension.name,
+														filters = filters
+													))
+												}
+											} ?: run {
+												toaster.toast(
+													title = "Search isn't supported!",
+													message = "Source extension doesn't support search.",
+													duration = 5_000
+												)
+											}
+										} ?: run {
+											toaster.toast(
+												title = "Extension isn't installed!",
+												message = "It is missing and is required to search by an tag. Install it to perform the search.",
+												duration = 5_000
+											)
+										}
+
+										isLoading = false
+									}
+								}
 								
 								if(isLoading) {
 									Dialog(onDismissRequest = {}) {
@@ -673,111 +784,43 @@ internal fun ColumnScope.MediaScreenContent(
 									}
 								}
 								
-								SuggestionChip(
-									onClick = {
-										isLoading = true
-										
-										coroutineScope.launchTrying(Dispatchers.Default, onCatch = {
-											toaster.toast("Failed to search by a tag")
-											isLoading = false
-										}) { 
-											Extensions[extensionId]?.also scope@{ extension ->
-												extension.get<CatalogModule>()?.also { catalogModule ->
-													val filters = catalogModule.getDefaultFilters()
-													
-													fun List<Preference<*>>.findPref(
-														predicate: (Preference<*>) -> Boolean
-													): Preference<*>? = firstOrNull { preference ->
-														if(predicate(preference)) {
-															return@firstOrNull true
-														}
-														
-														if(preference is PreferenceGroup) {
-															preference.items.findPref(predicate)?.also { child ->
-																return child
-															}
-														}
-														
-														false
-													}
+								ContextMenu(
+									isVisible = showTagActionsDialog,
+									onDismissRequest = { showTagActionsDialog = false }
+								) {
+									item(
+										icon = { painterResource(Res.drawable.ic_copy_outlined) },
+										text = { "Copy to clipboard" },
+										onClick = { Awery.copyToClipboard(tag) }
+									)
 
-													filters.findPref {
-														it.name.equals(tag, ignoreCase = true)
-													}?.also { 
-														when(it) {
-															is BooleanPreference -> {
-																it.value = true
-															}
-
-															is TriStatePreference -> {
-																it.value = TriStatePreference.State.INCLUDED
-															}
-															
-															is IntPreference, 
-															is LongPreference,
-															is SelectPreference,
-															is LabelPreference,
-															is PreferenceGroup,
-															is StringPreference -> {
-																toaster.toast(
-																	title = "Failed to search",
-																	message = "Cannot apply an filter of type ${it::class.qualifiedName}",
-																	duration = 5_000
-																)
-
-																return@scope	
-															}
-														}
-													} ?: filters.findPref { 
-														it.role == Preference.Role.QUERY
-													}?.also { 
-														if(it is StringPreference) {
-															it.value = tag
-														} else {
-															toaster.toast(
-																title = "Failed to search",
-																message = "Invalid extension filter type! Contact extension developer so that he can fix it.",
-																duration = 5_000
-															)
-															
-															return@scope
-														}
-													} ?: run {
-														toaster.toast(
-															title = "Unable to perform search",
-															message = "Source extension doesn't support search.",
-															duration = 5_000
-														)
-
-														return@scope
-													}
-													
-													launch(Dispatchers.Main) {
-														navigation.push(Routes.ExtensionSearch(
-															extensionId = extensionId,
-															extensionName = extension.name,
-															filters = filters
-														))
-													}
-												} ?: run {
-													toaster.toast(
-														title = "Search isn't supported!",
-														message = "Source extension doesn't support search.",
-														duration = 5_000
-													)
-												}
-											} ?: run {
-												toaster.toast(
-													title = "Extension isn't installed!",
-													message = "It is missing and is required to search by an tag. Install it to perform the search.",
-													duration = 5_000
-												)
-											}
-											
-											isLoading = false
-										}
-									},
+									item(
+										icon = { painterResource(Res.drawable.ic_search) },
+										text = { "Search for it" },
+										onClick = ::onClick
+									)
 									
+									item(
+										icon = { painterResource(Res.drawable.ic_block) },
+										text = { "Blacklist keyword" },
+										onClick = {
+											//navigation.setResult(contract(false, true))
+//											navigation.safePop()
+											toaster.toast("This action isn't done yet!")
+										}
+									)
+								}
+								
+								SuggestionChip(
+									modifier = Modifier
+										.combinedClickable(
+											onClick = ::onClick,
+											onLongClick = {
+												showTagActionsDialog = true
+											}
+										),
+									
+									onClick = ::onClick,
 									label = { Text(tag) }
 								)
 							}

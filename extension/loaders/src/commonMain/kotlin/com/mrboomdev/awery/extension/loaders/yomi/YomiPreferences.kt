@@ -5,7 +5,6 @@ import com.mrboomdev.awery.android.ListPreference
 import com.mrboomdev.awery.android.MultiSelectListPreference
 import com.mrboomdev.awery.android.SharedPreferences
 import com.mrboomdev.awery.android.TwoStatePreference
-import com.mrboomdev.awery.core.utils.notImplemented
 import com.mrboomdev.awery.extension.sdk.BooleanPreference
 import com.mrboomdev.awery.extension.sdk.IntPreference
 import com.mrboomdev.awery.extension.sdk.LabelPreference

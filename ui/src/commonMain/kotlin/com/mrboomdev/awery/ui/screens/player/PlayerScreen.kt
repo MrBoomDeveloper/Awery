@@ -30,13 +30,15 @@ import com.mrboomdev.awery.core.utils.formatTime
 import com.mrboomdev.awery.core.utils.next
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.*
 import com.mrboomdev.awery.ui.effects.InsetsController
 import com.mrboomdev.awery.ui.effects.KeepScreenOn
 import com.mrboomdev.awery.ui.effects.RequestScreenOrientation
 import com.mrboomdev.awery.ui.effects.ScreenOrientation
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.utils.enumStateSaver
 import com.mrboomdev.awery.ui.utils.saveable
 import com.mrboomdev.awery.ui.utils.viewModel
@@ -104,9 +106,14 @@ fun PlayerScreen(
     }
 
     RequestScreenOrientation(ScreenOrientation.LANDSCAPE)
-    InsetsController(hideBars = !showControls)
     if(!viewModel.player.isPaused) KeepScreenOn()
     dialogs.forEach { it() }
+
+    RouteInfoEffect(
+        displayHeader = false,
+        displayNavigationBar = false,
+        fullscreen = true
+    )
 
     Box(
         modifier = Modifier

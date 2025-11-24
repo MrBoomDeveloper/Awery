@@ -52,10 +52,12 @@ import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getLargePoster
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
 import com.mrboomdev.awery.ui.effects.BackEffect
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.popups.BookmarkMediaDialog
 import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -83,12 +85,16 @@ actual fun MediaScreen(
                 Awery.database.history.media.add(DBHistoryItem(
                     extensionId = destination.extensionId,
                     mediaId = destination.media.id,
-                    media = Json.encodeToString(destination.media),
+                    media = destination.media,
                     date = Clock.System.now().toEpochMilliseconds()
                 ))
             }
         }
     }
+
+    RouteInfoEffect(
+        displayHeader = false
+    )
     
     if(Awery.isTv) TvMediaScreen(destination, viewModel)
     else DefaultMediaScreen(destination, viewModel, contentPadding)

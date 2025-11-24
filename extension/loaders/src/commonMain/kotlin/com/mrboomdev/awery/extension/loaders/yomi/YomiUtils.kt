@@ -6,10 +6,14 @@ import com.mrboomdev.awery.core.utils.tryOr
 import com.mrboomdev.awery.extension.sdk.Media
 import eu.kanade.tachiyomi.animesource.AnimeSource
 import eu.kanade.tachiyomi.animesource.model.SAnime
+import eu.kanade.tachiyomi.animesource.model.SerializableSAnime
+import eu.kanade.tachiyomi.animesource.model.toSAnime
+import eu.kanade.tachiyomi.animesource.model.toSerializable
 import eu.kanade.tachiyomi.animesource.online.AnimeHttpSource
 import eu.kanade.tachiyomi.source.MangaSource
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
+import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -31,7 +35,7 @@ fun SAnime.toMedia(
         tags = getGenres(),
         url = (source as? AnimeHttpSource)?.let { concatYomiUrl(it.baseUrl, url) },
         ageRating = if(isNsfw) "NSFW" else null,
-        extras = mapOf("SAnime" to Base64.encodeToByteArray(serialize()).decodeToString())
+        extras = mapOf("SAnime" to Json.encodeToString(toSerializable()))
     )
 }
 
@@ -40,7 +44,7 @@ fun Media.toSAnime(): SAnime {
     extras["SAnime"]?.also { anime ->
         // If this media came from this source, then we will be able
         // to restore an original form without any problem!
-        return Base64.decode(anime.encodeToByteArray()).deserialize() as SAnime
+        return Json.decodeFromString<SerializableSAnime>(anime).toSAnime()
     }
 
     return SAnime.create().apply {

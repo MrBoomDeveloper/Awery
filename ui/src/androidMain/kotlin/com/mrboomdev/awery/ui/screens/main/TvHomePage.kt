@@ -28,8 +28,8 @@ import coil3.request.ImageRequest
 import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.screens.home.HomeViewModel
 import com.mrboomdev.awery.ui.utils.singleItem
 import com.mrboomdev.awery.ui.utils.thenIf

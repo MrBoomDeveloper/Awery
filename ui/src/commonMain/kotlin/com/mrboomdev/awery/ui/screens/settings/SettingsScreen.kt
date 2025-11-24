@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.Platform
-import com.mrboomdev.awery.ui.Navigation
+import com.mrboomdev.awery.ui.navigation.Navigation
 import com.mrboomdev.awery.ui.effects.BackEffect
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.asWindowInsets
@@ -37,6 +39,10 @@ fun SettingsScreen(
 	val windowSize = currentWindowSize()
 	val isLandscape = windowSize.width >= WindowSizeType.Large 
 			|| windowSize.height <= WindowSizeType.Small
+
+	RouteInfoEffect(
+		displayHeader = false
+	)
 	
 	if(isLandscape) {
 		val primaryPane = remember { SettingsPages.Main() }

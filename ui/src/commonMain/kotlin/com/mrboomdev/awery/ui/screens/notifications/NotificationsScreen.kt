@@ -20,11 +20,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_notifications_outlined
 import com.mrboomdev.awery.resources.reload
 import com.mrboomdev.awery.ui.components.InfoBox
+import com.mrboomdev.awery.ui.navigation.RouteInfo
 import com.mrboomdev.awery.ui.utils.niceSideInset
 import com.mrboomdev.awery.ui.utils.viewModel
 import org.jetbrains.compose.resources.painterResource
@@ -93,7 +95,8 @@ fun NotificationsScreen(
 								verticalArrangement = Arrangement.spacedBy(4.dp)
 							) {
 								Text(
-									style = MaterialTheme.typography.titleMedium,
+									style = MaterialTheme.typography.titleLarge,
+									fontWeight = FontWeight.Normal,
 									text = item.title
 								)
 								

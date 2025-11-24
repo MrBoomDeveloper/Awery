@@ -1,4 +1,4 @@
-package com.mrboomdev.awery.ui
+package com.mrboomdev.awery.ui.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -11,6 +11,7 @@ import com.mrboomdev.awery.ui.screens.browser.BrowserScreen
 import com.mrboomdev.awery.ui.screens.extension.ExtensionFeedScreen
 import com.mrboomdev.awery.ui.screens.extension.ExtensionScreen
 import com.mrboomdev.awery.ui.screens.extension.ExtensionSearchScreen
+import com.mrboomdev.awery.ui.screens.history.HistoryScreen
 import com.mrboomdev.awery.ui.screens.home.HomeScreen
 import com.mrboomdev.awery.ui.screens.intro.IntroScreen
 import com.mrboomdev.awery.ui.screens.intro.steps.IntroStep
@@ -23,6 +24,7 @@ import com.mrboomdev.awery.ui.screens.player.PlayerScreen
 import com.mrboomdev.awery.ui.screens.search.SearchScreen
 import com.mrboomdev.awery.ui.screens.settings.SettingsScreen
 import com.mrboomdev.awery.ui.screens.settings.pages.SettingsPages
+import com.mrboomdev.navigation.core.ResultContract
 import com.mrboomdev.navigation.core.TypeSafeNavigation
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
@@ -33,7 +35,9 @@ val Navigation = TypeSafeNavigation<Routes>()
 @Serializable
 sealed interface Routes {
 	@Composable
-	fun Content(contentPadding: PaddingValues)
+	fun Content(
+		contentPadding: PaddingValues
+	)
 	
 	@Serializable
 	data object Home: Routes {
@@ -41,6 +45,14 @@ sealed interface Routes {
 		override fun Content(
 			contentPadding: PaddingValues
 		) = HomeScreen(contentPadding = contentPadding)
+	}
+	
+	@Serializable
+	data object History: Routes {
+		@Composable
+		override fun Content(
+			contentPadding: PaddingValues
+		) = HistoryScreen(contentPadding)
 	}
 
 	@Serializable
@@ -64,9 +76,16 @@ sealed interface Routes {
 		@Composable
 		override fun Content(
 			contentPadding: PaddingValues
-		) = when(AwerySettings.libraryStyle.collectAsState().value) {
-			AwerySettings.LibraryStyle.TABBED -> LibraryTabbedScreen(contentPadding = contentPadding)
-			AwerySettings.LibraryStyle.COLUMN -> LibraryColumnScreen(contentPadding = contentPadding)
+		) {
+			when(AwerySettings.libraryStyle.collectAsState().value) {
+				AwerySettings.LibraryStyle.TABBED -> LibraryTabbedScreen(contentPadding = contentPadding)
+				AwerySettings.LibraryStyle.COLUMN -> LibraryColumnScreen(contentPadding = contentPadding)
+			}
+
+			RouteInfoEffect(
+				title = "Library",
+				displayHeader = true
+			)
 		}
 	}
 
@@ -90,6 +109,15 @@ sealed interface Routes {
 		override fun Content(
 			contentPadding: PaddingValues
 		) = MediaScreen(this, contentPadding = contentPadding)
+		
+		companion object {
+			val contract = ResultContract<Media, Result>()
+			
+			data class Result(
+				val didBookmark: Boolean,
+				val didBlacklist: Boolean
+			)
+		}
 	}
 
 	@Serializable

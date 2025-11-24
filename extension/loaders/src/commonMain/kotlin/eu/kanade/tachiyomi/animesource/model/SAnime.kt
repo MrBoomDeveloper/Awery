@@ -81,3 +81,43 @@ private class SAnimeImpl: SAnime {
     override var initialized: Boolean = false
     override var update_strategy: AnimeUpdateStrategy = AnimeUpdateStrategy.ALWAYS_UPDATE
 }
+
+@kotlinx.serialization.Serializable
+data class SerializableSAnime(
+    val url: String,
+    val title: String,
+    val artist: String? = null,
+    val author: String? = null,
+    val description: String? = null,
+    val genre: String? = null,
+    val status: Int = 0,
+    val thumbnail_url: String? = null,
+    val initialized: Boolean = false,
+    val update_strategy: AnimeUpdateStrategy = AnimeUpdateStrategy.ALWAYS_UPDATE
+)
+
+fun SAnime.toSerializable() = SerializableSAnime(
+    url = url,
+    title = title,
+    artist = artist,
+    author = author,
+    description = description,
+    genre = genre,
+    status = status,
+    thumbnail_url = thumbnail_url,
+    initialized = initialized,
+    update_strategy = update_strategy
+)
+
+fun SerializableSAnime.toSAnime(): SAnime = SAnimeImpl().also { anime ->
+    anime.url = url
+    anime.title = title
+    anime.artist = artist
+    anime.author = author
+    anime.description = description
+    anime.genre = genre
+    anime.status = status
+    anime.thumbnail_url = thumbnail_url
+    anime.initialized = initialized
+    anime.update_strategy = update_strategy
+}

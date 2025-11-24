@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.InfoBox
 import com.mrboomdev.awery.ui.components.MediaCard
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog

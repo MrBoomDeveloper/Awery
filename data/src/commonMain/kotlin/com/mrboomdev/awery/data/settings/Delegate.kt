@@ -2,6 +2,7 @@
 
 package com.mrboomdev.awery.data.settings
 
+import kotlinx.serialization.serializer
 import kotlin.reflect.KProperty
 
 interface SettingDelegate<T, E: Setting<T>> {
@@ -13,6 +14,7 @@ fun setting(initialValue: Boolean) = setting { BooleanSetting(it, initialValue) 
 fun setting(initialValue: Int) = setting { IntSetting(it, initialValue) }
 fun setting(initialValue: Long) = setting { LongSetting(it, initialValue) }
 inline fun <reified T: Enum<T>> setting(initialValue: T) = setting { EnumSetting(it, initialValue) }
+inline fun <reified T> setting(initialValue: T) = setting { SerializableSetting(it, serializer<T>(), initialValue) }
 
 fun <T, E: Setting<T>> setting(
     factory: (key: String) -> E

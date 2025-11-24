@@ -8,7 +8,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.core.activity
 import com.mrboomdev.awery.ui.App
-import com.mrboomdev.awery.ui.Routes
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
 

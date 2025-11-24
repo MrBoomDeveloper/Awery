@@ -18,8 +18,8 @@ import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.empty_library_message
 import com.mrboomdev.awery.resources.empty_library_title
 import com.mrboomdev.awery.resources.ic_collections_bookmark_outlined
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.FeedRow
 import com.mrboomdev.awery.ui.components.InfoBox
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog

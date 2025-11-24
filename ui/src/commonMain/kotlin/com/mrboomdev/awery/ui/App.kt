@@ -44,6 +44,8 @@ import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.loaders.ExtensionInstaller
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.components.*
+import com.mrboomdev.awery.ui.effects.InsetsController
+import com.mrboomdev.awery.ui.navigation.*
 import com.mrboomdev.awery.ui.screens.intro.steps.IntroThemeStep
 import com.mrboomdev.awery.ui.screens.intro.steps.IntroUserStep
 import com.mrboomdev.awery.ui.screens.intro.steps.IntroWelcomeStep
@@ -69,6 +71,7 @@ import io.github.vinceglb.filekit.filesDir
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -127,22 +130,20 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 			val currentNavigation = navigationMap[pagerState.currentPage]
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
 			
-			val showNavigation = when(val currentRoute = currentRoute) {
-				is Routes.Intro -> currentRoute.singleStep
-				is Routes.Player,
-				is Routes.Browser -> false
-				else -> true
+			var currentRouteInfo by remember { 
+				mutableStateOf(
+					RouteInfo(
+                        title = null,
+                        displayHeader = true,
+                        displayNavigationBar = true,
+                        fullscreen = false
+                    )
+				)
 			}
 
-			val showTopBar = showNavigation && when(currentRoute) {
-				// TODO: Add labels to each route so that they don't have to maintain their own topbar
-				is Routes.Settings, 
-				is Routes.Media, 
-				is Routes.Extension, 
-				is Routes.ExtensionFeed, 
-				is Routes.ExtensionSearch -> false
-				else -> true
-			}
+			InsetsController(
+				hideBars = currentRouteInfo.fullscreen
+			)
 			
 			val wallpaperPainter = rememberAsyncImagePainter(
                 filterQuality = FilterQuality.High,
@@ -166,10 +167,12 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 				} else {
 					coroutineScope.launch { 
 						pagerState.animateScrollToPage(index)
-						onNavigate(NavigationState(
+						
+						onNavigate(
+							NavigationState(
 							route = route,
 							goBack = navigationMap[index].let { navigation ->
-								if(navigation.canPop) {{
+								if (navigation.canPop) {{
 									navigation.safePop()
 								}} else null
 							}
@@ -180,12 +183,14 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 
 			LaunchedEffect(currentNavigation) {
 				currentNavigation.currentBackStackFlow.collect { backStack ->
-					onNavigate(NavigationState(
-						route = backStack.lastOrNull() ?: Routes.Home,
-						goBack = if(backStack.size > 1) {{
-							currentNavigation.safePop()
-						}} else null
-					))
+					onNavigate(
+						NavigationState(
+							route = backStack.lastOrNull() ?: Routes.Home,
+							goBack = if (backStack.size > 1) {{
+								currentNavigation.safePop()
+							}} else null
+						)
+					)
 				}
 			}
 
@@ -234,135 +239,163 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 
             CompositionLocalProvider(
                 LocalToaster provides toaster,
+				LocalLayoutDirection provides LayoutDirection.Rtl,
+				
                 LocalApp provides remember { 
                     object : App {
                         override fun reloadWallpaper() {
                             wallpaperPainter.restart()
                         }
                     }
-                }
-            ) {
-				CompositionLocalProvider(
-					LocalLayoutDirection provides LayoutDirection.Rtl
-				) {
-					ModalNavigationDrawer(
-						modifier = Modifier.fillMaxSize(),
-						drawerState = drawerState,
-						gesturesEnabled = showNavigation && Awery.platform != Platform.DESKTOP,
-						drawerContent = { AweryDrawerContent(currentNavigation, drawerState, coroutineScope) }
-					) {
-						CompositionLocalProvider(
-							LocalLayoutDirection provides LayoutDirection.Ltr
-						) {
-							Row {
-								val useRail = windowSize.width >= WindowSizeType.Large
+                },
 
-								AnimatedVisibility(useRail && showNavigation) {
-									AwerySideBar(
-										translucent = when(currentRoute) {
-											is Routes.Media -> false
-											else -> true
-										},
+				LocalRouteInfoCollector provides remember {
+					object : RouteInfoCollector {
+						val items = mutableListOf<RouteInfo>()
+						
+						init {
+							updateCurrentRouteInfo()
+						}
+						
+						override fun add(routeInfo: RouteInfo) {
+							items += routeInfo
+							updateCurrentRouteInfo()
+						}
+
+						override fun remove(routeInfo: RouteInfo) {
+							items -= routeInfo
+							updateCurrentRouteInfo()
+						}
+						
+						fun updateCurrentRouteInfo() {
+							currentRouteInfo = items.lastOrNull() ?: RouteInfo(
+                                title = null,
+                                displayHeader = true,
+                                displayNavigationBar = true,
+                                fullscreen = false
+                            )
+						}
+					}
+				}
+            ) {
+				ModalNavigationDrawer(
+					modifier = Modifier.fillMaxSize(),
+					drawerState = drawerState,
+					gesturesEnabled = currentRouteInfo.displayHeader && Awery.platform != Platform.DESKTOP,
+					drawerContent = { AweryDrawerContent(currentNavigation, drawerState, coroutineScope) }
+				) {
+					CompositionLocalProvider(
+						LocalLayoutDirection provides LayoutDirection.Ltr
+					) {
+						Row {
+							val useRail = windowSize.width >= WindowSizeType.Large
+
+							AnimatedVisibility(useRail && currentRouteInfo.displayNavigationBar) {
+								AwerySideBar(
+									translucent = when(currentRoute) {
+										is Routes.Media -> false
+										else -> true 
+									},
 										
-										currentTab = pagerState.currentPage,
-										onOpenTab = ::onOpenTab
-									)
+									currentTab = pagerState.currentPage,
+									onOpenTab = ::onOpenTab
+								)
+							}
+
+							Column {
+								val installing by ExtensionInstaller.observeInstalling().collectAsState()
+								val hazeState = rememberHazeState()
+
+								AnimatedVisibility(installing.isNotEmpty()) {
+									Row(
+										modifier = Modifier
+											.background(MaterialTheme.colorScheme.primaryContainer)
+											.windowInsetsPadding(WindowInsets.safeDrawing.only(
+												WindowInsetsSides.Top + if(useRail) {
+													WindowInsetsSides.Right
+												} else WindowInsetsSides.Horizontal
+											)).padding(16.dp),
+										horizontalArrangement = Arrangement.spacedBy(24.dp),
+										verticalAlignment = Alignment.CenterVertically
+									) {
+										CircularProgressIndicator(
+											modifier = Modifier.size(16.dp),
+											color = MaterialTheme.colorScheme.onPrimaryContainer
+										)
+
+										Text(
+											modifier = Modifier.weight(1f),
+											color = MaterialTheme.colorScheme.onPrimaryContainer,
+											fontWeight = FontWeight.SemiBold,
+											text = "Installing ${installing.size} extensions"
+										)
+									}
 								}
 
-								Column {
-									val installing by ExtensionInstaller.observeInstalling().collectAsState()
-									val hazeState = rememberHazeState()
+								Scaffold(
+									modifier = Modifier
+										.fillMaxSize()
+										.nestedScroll(topAppBarBehavior.nestedScrollConnection),
+										
+									containerColor = Color.Transparent,
+									contentWindowInsets = WindowInsets.safeDrawing.only(
+										WindowInsetsSides.Vertical + when(useRail) {
+											true -> WindowInsetsSides.Right
+											false -> WindowInsetsSides.Horizontal
+										}
+									),
 
-									AnimatedVisibility(installing.isNotEmpty()) {
-										Row(
-											modifier = Modifier
-												.background(MaterialTheme.colorScheme.primaryContainer)
-												.windowInsetsPadding(WindowInsets.safeDrawing.only(
-													WindowInsetsSides.Top + if(useRail) {
-														WindowInsetsSides.Right
-													} else WindowInsetsSides.Horizontal
-												))
-												.padding(16.dp),
-											horizontalArrangement = Arrangement.spacedBy(24.dp),
-											verticalAlignment = Alignment.CenterVertically
-										) {
-											CircularProgressIndicator(
-												modifier = Modifier.size(16.dp),
-												color = MaterialTheme.colorScheme.onPrimaryContainer
+									topBar = {
+										AnimatedVisibility(currentRouteInfo.displayHeader && Awery.platform != Platform.DESKTOP) {
+											AweryTopBar(
+												topAppBarBehavior = topAppBarBehavior,
+												showSearch = currentRoute == Routes.Search,
+												onOpenDrawer = { drawerState.open() },
+												currentRouteInfo = currentRouteInfo,
+												navigation = currentNavigation
 											)
+										}
+									},
 
-											Text(
-												modifier = Modifier.weight(1f),
-												color = MaterialTheme.colorScheme.onPrimaryContainer,
-												fontWeight = FontWeight.SemiBold,
-												text = "Installing ${installing.size} extensions"
-											)
+									bottomBar = {
+										AnimatedVisibility(!useRail && currentRouteInfo.displayNavigationBar) {
+											Box(Modifier.hazeEffect(state = hazeState, style = HazeDefaults.style(
+												blurRadius = 4.dp,
+												backgroundColor = MaterialTheme.colorScheme.surface
+											))) {
+												AweryBottomBar(
+													currentTab = pagerState.currentPage,
+													onOpenTab = ::onOpenTab
+												)
+											}
 										}
 									}
-
-									Scaffold(
-										modifier = Modifier
-											.fillMaxSize()
-											.nestedScroll(topAppBarBehavior.nestedScrollConnection),
-										
-										containerColor = Color.Transparent,
-										contentWindowInsets = WindowInsets.safeDrawing.only(
-											WindowInsetsSides.Vertical + when(useRail) {
-												true -> WindowInsetsSides.Right
-												false -> WindowInsetsSides.Horizontal
-											}
-										),
-
-										topBar = {
-											AnimatedVisibility(showTopBar && Awery.platform != Platform.DESKTOP) {
-												AweryTopBar(
-													topAppBarBehavior = topAppBarBehavior,
-													showSearch = currentRoute == Routes.Search,
-													onOpenDrawer = { drawerState.open() }
-												)
-											}
-										},
-
-										bottomBar = {
-											AnimatedVisibility(!useRail && showNavigation) {
-												Box(Modifier.hazeEffect(state = hazeState, style = HazeDefaults.style(
-													blurRadius = 4.dp,
-													backgroundColor = MaterialTheme.colorScheme.surface
-												))) {
-													AweryBottomBar(
-														currentTab = pagerState.currentPage,
-														onOpenTab = ::onOpenTab
-													)
-												}
-											}
+								) { contentPadding ->
+									if(useRail)  {
+										VerticalPager(
+											modifier = Modifier
+												.fillMaxSize()
+												.hazeSource(state = hazeState),
+											userScrollEnabled = false,
+											state = pagerState
+										) { index ->
+											AweryNavHost(
+												navigation = navigationMap[index],
+												contentPadding = contentPadding
+											)
 										}
-									) { contentPadding ->
-										if(useRail)  {
-											VerticalPager(
-												modifier = Modifier
-													.fillMaxSize()
-													.hazeSource(state = hazeState),
-												userScrollEnabled = false,
-												state = pagerState
-											) { index ->
-												AweryNavHost(
-													navigation = navigationMap[index],
-													contentPadding = contentPadding
-												)
-											}
-										} else {
-											HorizontalPager(
-												modifier = Modifier
-													.fillMaxSize()
-													.hazeSource(state = hazeState),
-												userScrollEnabled = false,
-												state = pagerState
-											) { index ->
-												AweryNavHost(
-													navigation = navigationMap[index],
-													contentPadding = contentPadding
-												)
-											}
+									} else {
+										HorizontalPager(
+											modifier = Modifier
+												.fillMaxSize()
+												.hazeSource(state = hazeState),
+											userScrollEnabled = false,
+											state = pagerState
+										) { index ->
+											AweryNavHost(
+												navigation = navigationMap[index],
+												contentPadding = contentPadding
+											)
 										}
 									}
 								}
@@ -479,7 +512,8 @@ private fun AweryDrawerContent(
 							painter = painterResource(Res.drawable.ic_edit_outlined),
 							contentDescription = null,
 							onClick = {
-								navigation.push(Routes.Intro(
+								navigation.push(
+									Routes.Intro(
 									step = IntroUserStep,
 									singleStep = true
 								))
@@ -507,6 +541,21 @@ private fun AweryDrawerContent(
 						navigation.push(Routes.Settings(SettingsPages.Lists))
 					}
 				)
+				
+				if(AwerySettings.mediaHistory.collectAsState().value) {
+					SettingsDefaults.itemClickable(
+						contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+						icon = painterResource(Res.drawable.ic_history),
+						title = "History",
+						onClick = {
+							navigation.push(Routes.History)
+							
+							coroutineScope.launch { 
+								drawerState.close()
+							}
+						}
+					)
+				}
 
 				SettingsDefaults.itemClickable(
 					contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
@@ -539,7 +588,9 @@ private fun AweryDrawerContent(
 private fun AweryTopBar(
 	topAppBarBehavior: TopAppBarScrollBehavior,
 	showSearch: Boolean,
-	onOpenDrawer: suspend () -> Unit
+	onOpenDrawer: suspend () -> Unit,
+	currentRouteInfo: RouteInfo?,
+	navigation: Navigation<*>
 ) {
 	val coroutineScope = rememberCoroutineScope()
 	val windowSize = currentWindowSize()
@@ -563,19 +614,41 @@ private fun AweryTopBar(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.spacedBy(12.dp)
 		) {
-			Image(
-				modifier = Modifier.size(36.dp),
-				painter = painterResource(Res.drawable.logo_awery),
-				contentDescription = null
-			)
+			val canPop by navigation.currentBackStackFlow.map { backStack ->
+				backStack.size > 1
+			}.collectAsState(navigation.currentBackStack.size > 1)
+			
+			Crossfade(canPop) { showBackButton ->
+				if(showBackButton) {
+					IconButton(
+						modifier = Modifier.size(36.dp),
+						padding = 3.dp,
+						painter = painterResource(Res.drawable.ic_back),
+						contentDescription = null,
+						onClick = {
+                            navigation.safePop()
+						}
+					)
+					
+					return@Crossfade
+				}
+				
+				Image(
+					modifier = Modifier.size(36.dp),
+					painter = painterResource(Res.drawable.logo_awery),
+					contentDescription = null
+				)
+			}
 
 			AnimatedVisibility(
 				visible = !showSearch || windowSize.width >= WindowSizeType.Large
 			) {
-				Text(
-					style = MaterialTheme.typography.titleLarge,
-					text = "Awery"
-				)
+				Crossfade(currentRouteInfo?.title ?: "Awery") { title ->
+					Text(
+						style = MaterialTheme.typography.titleLarge,
+						text = title
+					)
+				}
 			}
 
 			Box(Modifier.weight(1f)) {

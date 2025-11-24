@@ -25,9 +25,10 @@ import com.mrboomdev.awery.extension.loaders.Extensions
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.App
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.*
+import com.mrboomdev.awery.ui.navigation.RouteInfo
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.utils.*
 import com.mrboomdev.navigation.core.plusAssign

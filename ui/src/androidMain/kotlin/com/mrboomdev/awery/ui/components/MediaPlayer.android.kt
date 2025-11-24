@@ -1,27 +1,18 @@
 package com.mrboomdev.awery.ui.components
 
 import android.content.Context
-import android.util.Rational
-import android.view.SurfaceView
-import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -35,16 +26,8 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.rememberPresentationState
-import com.mrboomdev.awery.core.utils.Log
-import com.mrboomdev.awery.core.utils.launchGlobal
-import com.mrboomdev.awery.core.utils.toActivity
-import com.mrboomdev.awery.resources.Res
-import com.mrboomdev.awery.resources.buffering_video
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.navigation.jetpack.JetpackNavigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 

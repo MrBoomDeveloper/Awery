@@ -2,6 +2,7 @@ package com.mrboomdev.awery.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.mrboomdev.awery.data.database.dao.HistoryDao
 import com.mrboomdev.awery.data.database.entity.DBHistoryItem
@@ -14,6 +15,7 @@ import kotlinx.coroutines.IO
         DBHistoryItem::class
     ]
 )
+@TypeConverters(DBTypeConverters::class)
 abstract class AweryHistoryDatabase: RoomDatabase() {
     abstract val media: HistoryDao
 }

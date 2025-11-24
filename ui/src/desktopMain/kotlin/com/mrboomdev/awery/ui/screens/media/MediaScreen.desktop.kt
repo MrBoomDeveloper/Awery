@@ -27,9 +27,11 @@ import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.extension.loaders.getBanner
 import com.mrboomdev.awery.extension.loaders.getPoster
 import com.mrboomdev.awery.extension.sdk.Media
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.ui.navigation.RouteInfo
+import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.screens.GalleryScreen
 import com.mrboomdev.awery.ui.utils.RememberLaunchedEffect
 import com.mrboomdev.awery.ui.utils.collapse
@@ -81,6 +83,23 @@ private fun DesktopMediaScreen(
         }
     }
 
+	RememberLaunchedEffect(Unit) {
+		if(AwerySettings.mediaHistory.value) {
+			launch(Dispatchers.IO) {
+				Awery.database.history.media.add(DBHistoryItem(
+					extensionId = destination.extensionId,
+					mediaId = destination.media.id,
+					media = destination.media,
+					date = Clock.System.now().toEpochMilliseconds()
+				))
+			}
+		}
+	}
+
+	RouteInfoEffect(
+		displayHeader = false
+	)
+
 	if(showGallery) {
 		Dialog(
 			onDismissRequest = { showGallery = false },
@@ -96,19 +115,6 @@ private fun DesktopMediaScreen(
 					media.banner
 				)
 			)
-		}
-	}
-
-	RememberLaunchedEffect(Unit) {
-		if(AwerySettings.mediaHistory.value) {
-			launch(Dispatchers.IO) {
-				Awery.database.history.media.add(DBHistoryItem(
-					extensionId = destination.extensionId,
-					mediaId = destination.media.id,
-					media = Json.encodeToString(destination.media),
-					date = Clock.System.now().toEpochMilliseconds()
-				))
-			}
 		}
 	}
     

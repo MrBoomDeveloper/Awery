@@ -7,11 +7,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_bookmarks_outlined
 import com.mrboomdev.awery.resources.library
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
+import com.mrboomdev.awery.ui.screens.settings.itemDialog
+import com.mrboomdev.awery.ui.screens.settings.itemSetting
 import com.mrboomdev.awery.ui.utils.add
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +41,21 @@ fun SettingsLibraryPage(
 					icon = painterResource(Res.drawable.ic_bookmarks_outlined),
 					title = "Lists",
 					onClick = { onOpenPage(SettingsPages.Lists) }
+				)
+			}
+			
+			item("autoBookmark") {
+				SettingsDefaults.itemDialog(
+					title = "Auto-bookmark"
+				) {
+					
+				}
+			}
+			
+			item("enableHistory") {
+				SettingsDefaults.itemSetting(
+					setting = AwerySettings.mediaHistory,
+					title = "Enable history"
 				)
 			}
 		}

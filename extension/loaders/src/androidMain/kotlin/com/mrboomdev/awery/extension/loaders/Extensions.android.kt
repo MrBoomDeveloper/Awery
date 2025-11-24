@@ -42,7 +42,7 @@ actual suspend fun ProducerScope<Extension>.loadAllImpl() {
 
     Awery.context.packageManager.getInstalledPackages(
         Extensions.PACKAGE_MANAGER_FLAGS
-    ).forEach { pkg ->
+    ).toList().forEach { pkg ->
         pkg.reqFeatures?.forEach { feature ->
             when(feature.name) {
                 AniyomiLoader.requiredFeature, /*TachiyomiLoader.requiredFeature*/ -> {

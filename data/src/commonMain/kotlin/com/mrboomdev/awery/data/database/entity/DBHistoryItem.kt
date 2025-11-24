@@ -2,6 +2,7 @@ package com.mrboomdev.awery.data.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import com.mrboomdev.awery.extension.sdk.Media
 
 @Entity(
     tableName = "history_media",
@@ -13,5 +14,5 @@ data class DBHistoryItem(
     @ColumnInfo(name = "media_id")
     val mediaId: String,
     val date: Long,
-    val media: String
+    val media: Media
 )

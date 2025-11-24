@@ -33,8 +33,8 @@ import com.mrboomdev.awery.extension.sdk.WatchVariant
 import com.mrboomdev.awery.extension.sdk.get
 import com.mrboomdev.awery.extension.sdk.modules.WatchModule
 import com.mrboomdev.awery.resources.*
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.AlertDialog
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast

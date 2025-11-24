@@ -7,6 +7,8 @@ import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.Json
 
 @PublishedApi
 internal val settings by lazy { createSettings() }
@@ -33,9 +35,6 @@ sealed class Setting<T>(
 	protected abstract fun readValue(): T?
 }
 
-@Composable
-fun <T> Setting<T>.collectAsState() = stateFlow.collectAsState()
-
 class EnumSetting<T: Enum<T>>(key: String, initialValue: T): Setting<T>(key, initialValue) {
 	override fun readValue() = settings.getStringOrNull(key)?.toEnumOrNull(initialValue::class)
 	override fun saveValue(value: T) = settings.set(key, value.name)
@@ -60,4 +59,22 @@ class IntSetting(key: String, initialValue: Int): Setting<Int>(key, initialValue
 class LongSetting(key: String, initialValue: Long): Setting<Long>(key, initialValue) {
 	override fun readValue() = settings.getLongOrNull(key)
 	override fun saveValue(value: Long) = settings.set(key, value)
+}
+
+class SerializableSetting<T>(
+	key: String, 
+	private val serializer: KSerializer<T>, 
+	initialValue: T
+): Setting<T>(key, initialValue) {
+	override fun readValue() = settings.getStringOrNull(key)?.let { Json.decodeFromString(serializer, it) }
+	override fun saveValue(value: T) = settings.set(key, Json.encodeToString(serializer, value))
+}
+
+@Composable
+fun <T> Setting<T>.collectAsState() = stateFlow.collectAsState()
+
+suspend inline fun <T> Setting<T>.update(block: (T) -> T): T {
+	return block(value).also { newValue ->
+		set(newValue)
+	}
 }

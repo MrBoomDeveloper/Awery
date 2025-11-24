@@ -23,6 +23,7 @@ import com.mrboomdev.awery.extension.sdk.*
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.components.AlertDialog
 import com.mrboomdev.awery.ui.components.BottomSheetDialog
+import com.mrboomdev.awery.ui.components.ContextMenu
 import com.mrboomdev.awery.ui.utils.scaleX
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -145,22 +146,16 @@ private fun FilterGroup(
 						}
 					}
 				}
-
-				DropdownMenu(
-					expanded = showDialog && filter is SelectPreference,
+				
+				ContextMenu(
+					isVisible = showDialog && filter is SelectPreference,
 					onDismissRequest = { showDialog = false }
 				) {
-					if(filter !is SelectPreference) return@DropdownMenu
+					if(filter !is SelectPreference) return@ContextMenu
 
 					filter.values.forEach {
-						DropdownMenuItem(
-							text = {
-								Text(
-									modifier = Modifier.padding(horizontal = 8.dp),
-									text = it.name
-								)
-							},
-
+						item(
+							text = { it.name },
 							onClick = {
 								updateValue(it.key)
 								showDialog = false

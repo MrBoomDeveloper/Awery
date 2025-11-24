@@ -38,8 +38,8 @@ import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.App
-import com.mrboomdev.awery.ui.NavigationState
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.NavigationState
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.ContextMenu
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.theme.AweryTheme
@@ -373,13 +373,14 @@ private object AweryContextMenu: TextContextMenu {
 				onDismissRequest = { state.status = ContextMenuState.Status.Closed }
 			) {
 				listOf(
-					textManager.cut to "Cut",
-					textManager.copy to "Copy",
-					textManager.paste to "Paste",
-					textManager.selectAll to "Select all"
-				).filter { it.first != null }.forEach { (onClick, text) ->
+					Triple(textManager.cut, Res.drawable.ic_cut_outlined, "Cut"),
+					Triple(textManager.copy, Res.drawable.ic_copy_outlined, "Copy"),
+					Triple(textManager.paste, Res.drawable.ic_paste_outlined, "Paste"),
+					Triple(textManager.selectAll, Res.drawable.ic_select_all, "Select all")
+				).filter { it.first != null }.forEach { (onClick, icon, text) ->
 					item(
-						text = text,
+						icon = { painterResource(icon) },
+						text = { text },
 						onClick = onClick!!
 					)
 				}

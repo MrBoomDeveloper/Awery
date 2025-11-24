@@ -34,9 +34,9 @@ import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.ic_account_outlined
 import com.mrboomdev.awery.resources.ic_settings_outlined
 import com.mrboomdev.awery.resources.logo_awery
-import com.mrboomdev.awery.ui.MainRoutes
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.MainRoutes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.FlexibleTopAppBar
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.TvIconButton

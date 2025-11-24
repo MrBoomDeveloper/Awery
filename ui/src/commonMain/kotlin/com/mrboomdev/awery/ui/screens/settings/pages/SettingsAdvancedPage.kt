@@ -11,8 +11,8 @@ import com.mrboomdev.awery.resources.Res
 import com.mrboomdev.awery.resources.advanced
 import com.mrboomdev.awery.resources.ic_folder_open_outlined
 import com.mrboomdev.awery.resources.storage
-import com.mrboomdev.awery.ui.Navigation
-import com.mrboomdev.awery.ui.Routes
+import com.mrboomdev.awery.ui.navigation.Navigation
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.screens.intro.steps.IntroWelcomeStep
 import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults
 import com.mrboomdev.awery.ui.screens.settings.itemClickable
