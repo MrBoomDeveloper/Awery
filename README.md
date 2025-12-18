@@ -87,5 +87,9 @@ Your efforts are invaluable.
   <img src="https://contrib.rocks/image?repo=MrBoomDeveloper/Awery" alt="Contributors">
 </a>
 
+# Stats
+
+![Alt](https://repobeats.axiom.co/api/embed/15d3278c39e3b8c22ca65595e3cad024a8275f1a.svg "Repobeats analytics image")
+
 ## License
 Awery is licensed under the Unabandon Public License (UPL). Learn more [here](LICENSE.md).
