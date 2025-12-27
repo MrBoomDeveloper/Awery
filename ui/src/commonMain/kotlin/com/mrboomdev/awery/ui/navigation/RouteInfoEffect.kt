@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.mrboomdev.navigation.core.currentNavigation
+import com.mrboomdev.navigation.jetpack.LocalRouteInfo
 
 val LocalRouteInfoCollector = 
     staticCompositionLocalOf<RouteInfoCollector> {
@@ -24,6 +25,7 @@ fun RouteInfoEffect(
 ) {
     val collector = LocalRouteInfoCollector.current
     val navigation = currentNavigation()
+    val routeInfo = LocalRouteInfo.current
     
     DisposableEffect(
         title,
@@ -34,6 +36,7 @@ fun RouteInfoEffect(
         collector
     ) {
         val info = RouteInfo(
+            route = routeInfo.destination as Routes,
             title,
             displayHeader,
             displayNavigationBar,

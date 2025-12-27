@@ -4,6 +4,7 @@ package com.mrboomdev.awery.ui.navigation
  * Used for the host component to know what decorations in should to apply to the screen.
  */
 data class RouteInfo(
+    val route: Routes,
     val title: String?,
     val displayHeader: Boolean,
     val displayNavigationBar: Boolean,

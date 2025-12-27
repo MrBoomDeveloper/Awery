@@ -130,16 +130,21 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 			val currentNavigation = navigationMap[pagerState.currentPage]
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
 			
-			var currentRouteInfo by remember { 
-				mutableStateOf(
+			val routeInfos = remember { 
+				mutableStateListOf(
 					RouteInfo(
-                        title = null,
-                        displayHeader = true,
-                        displayNavigationBar = true,
-                        fullscreen = false
-                    )
+						route = Routes.Home,
+						title = null,
+						displayHeader = true,
+						displayNavigationBar = true,
+						fullscreen = false
+					)
 				)
 			}
+			
+			val currentRouteInfo = routeInfos.lastOrNull { routeInfo ->
+				routeInfo.route == currentRoute
+			} ?: routeInfos.last()
 
 			InsetsController(
 				hideBars = currentRouteInfo.fullscreen
@@ -251,29 +256,13 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 
 				LocalRouteInfoCollector provides remember {
 					object : RouteInfoCollector {
-						val items = mutableListOf<RouteInfo>()
-						
-						init {
-							updateCurrentRouteInfo()
-						}
 						
 						override fun add(routeInfo: RouteInfo) {
-							items += routeInfo
-							updateCurrentRouteInfo()
+							routeInfos += routeInfo
 						}
 
 						override fun remove(routeInfo: RouteInfo) {
-							items -= routeInfo
-							updateCurrentRouteInfo()
-						}
-						
-						fun updateCurrentRouteInfo() {
-							currentRouteInfo = items.lastOrNull() ?: RouteInfo(
-                                title = null,
-                                displayHeader = true,
-                                displayNavigationBar = true,
-                                fullscreen = false
-                            )
+							routeInfos -= routeInfo
 						}
 					}
 				}

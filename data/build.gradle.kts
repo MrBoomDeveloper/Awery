@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.androidLibrary
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -17,13 +18,22 @@ room {
 }
 
 kotlin {
+    jvmToolchain(properties["awery.java.desktop"].toString().toInt())
     jvm("desktop")
 
     @Suppress("UnstableApiUsage")
     androidLibrary {
         namespace = "com.mrboomdev.awery.data"
-        compileSdk = 35
-        minSdk = 25
+        compileSdk = properties["awery.sdk.target"].toString().toInt()
+        minSdk = properties["awery.sdk.min"].toString().toInt()
+
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget = JvmTarget.fromTarget(properties["awery.java.android"].toString())
+                }
+            }
+        }
     }
 
     sourceSets {

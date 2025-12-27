@@ -1,23 +1,23 @@
 [versions]
-androidx-lifecycle = "2.9.4"
+androidx-lifecycle = "2.9.6"
 file-kache = "2.1.1"
 kotlinx-serialization = "1.9.0"
-kotlin = "2.2.20"
+kotlin = "2.3.0"
 multiplatform-settings = "1.3.0"
-room = "2.8.0"
-okhttp = "5.1.0"
-sqlite = "2.6.0"
-ktor = "3.3.0"
-filekit = "0.11.0"
+room = "2.8.4"
+okhttp = "5.3.2"
+sqlite = "2.6.2"
+ktor = "3.3.3"
+filekit = "0.12.0"
 
 [libraries]
 fileKache = { module = "com.mayakapps.kache:file-kache", version.ref = "file-kache" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.2" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.10.2" }
 kotlinx-coroutines-desktop = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version = "1.10.2" }
-humanReadable = { module = "nl.jacobras:Human-Readable", version = "1.12.0" }
+humanReadable = { module = "nl.jacobras:Human-Readable", version = "1.12.3" }
 
 # File picker
 filekit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "filekit" }
@@ -56,7 +56,7 @@ quickjs-desktop = { module = "wang.harlon.quickjs:wrapper-java", version = "3.2.
 rx-android = { module = "io.reactivex:rxandroid", version = "1.2.1" }
 rx-java = { module = "io.reactivex:rxjava", version = "1.3.8" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "5.1.0" }
+okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "5.3.2" }
 okhttp-dnsoverhttps = { module = "com.squareup.okhttp3:okhttp-dnsoverhttps", version.ref = "okhttp" }
 
 [bundles]
@@ -68,4 +68,4 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version = "0.17.1" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.3" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

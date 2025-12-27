@@ -1,15 +1,15 @@
 [versions]
-agp = "8.11.2"
-media3 = "1.8.0"
-ackpine = "0.15.3"
+agp = "8.12.3"
+media3 = "1.9.0"
+ackpine = "0.18.5"
 
 [libraries]
 core = { group = "androidx.core", name = "core-ktx", version = "1.17.0" }
-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
+splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.2.0" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.1" }
 browser = { module = "androidx.browser:browser", version = "1.9.0" }
 preference = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
-webkit = { module = "androidx.webkit:webkit", version = "1.14.0" }
+webkit = { module = "androidx.webkit:webkit", version = "1.15.0" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
 
 # Ackpine
@@ -26,7 +26,7 @@ media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "medi
 media3-ui-compose = { group = "androidx.media3", name = "media3-ui-compose", version.ref = "media3" }
 
 # Compose
-compose-activity = { group = "androidx.activity", name = "activity-compose", version = "1.11.0" }
+compose-activity = { group = "androidx.activity", name = "activity-compose", version = "1.12.2" }
 compose-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version = "0.37.3" }
 
 [bundles]

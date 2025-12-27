@@ -38,10 +38,10 @@ import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
 import com.mrboomdev.awery.core.Awery
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.App
-import com.mrboomdev.awery.ui.navigation.NavigationState
-import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.ContextMenu
 import com.mrboomdev.awery.ui.components.IconButton
+import com.mrboomdev.awery.ui.navigation.NavigationState
+import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.theme.AweryTheme
 import com.mrboomdev.awery.ui.theme.aweryColorScheme
 import com.mrboomdev.awery.ui.utils.WindowSizeType
@@ -97,7 +97,7 @@ fun main() {
         IntUiTheme(
             theme = JewelTheme.darkThemeDefinition(
                 colors = GlobalColors.dark(
-                    paneBackground = colorScheme.background
+                    panelBackground = colorScheme.background
                 ),
                 
                 disabledAppearanceValues = DisabledAppearanceValues.dark()

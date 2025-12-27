@@ -24,13 +24,14 @@ fun getLocales(): Collection<String> {
 }
 
 kotlin {
+    jvmToolchain(properties["awery.java.desktop"].toString().toInt())
     jvm("desktop")
 
     androidTarget {
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
-                    jvmTarget = JvmTarget.JVM_11
+                    jvmTarget = JvmTarget.fromTarget(properties["awery.java.android"].toString())
                 }
             }
         }
@@ -112,13 +113,13 @@ kotlin {
 
 android {
     namespace = "com.mrboomdev.awery"
-    compileSdk = property("awery.sdk.target").toString().toInt()
+    compileSdk = properties["awery.sdk.target"].toString().toInt()
 
     defaultConfig {
-        versionName = property("awery.app.versionName").toString()
-        versionCode = property("awery.app.versionCode").toString().toInt()
-        targetSdk = property("awery.sdk.target").toString().toInt()
-        minSdk = property("awery.sdk.min").toString().toInt()
+        versionName = properties["awery.app.versionName"].toString()
+        versionCode = properties["awery.app.versionCode"].toString().toInt()
+        targetSdk = properties["awery.sdk.target"].toString().toInt()
+        minSdk = properties["awery.sdk.min"].toString().toInt()
     }
 
     buildTypes {
@@ -202,8 +203,8 @@ enum class DesktopTarget(
 
 DesktopTarget.values().map { target ->
     target to tasks.register(listOf("download", target.os, target.arch, "jre").joinToCamelCase()) {
-        val version = property("awery.jre.version").toString()
-        val variant = property("awery.jre.variant").toString()
+        val version = properties["awery.jre.version"].toString()
+        val variant = properties["awery.jre.variant"].toString()
         
         inputs.property("jreVersion", version)
         inputs.property("jreVariant", variant)
@@ -226,7 +227,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats = DesktopTarget.values().map { it.targetFormat }.toSet()
             packageName = "Awery"
-            packageVersion = property("awery.app.versionName").toString()
+            packageVersion = properties["awery.app.versionName"].toString()
             includeAllModules = true
 
             windows {

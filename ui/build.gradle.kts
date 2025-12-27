@@ -9,14 +9,14 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(properties["awery.java.desktop"].toString().toInt())
     jvm("desktop")
 
     @Suppress("UnstableApiUsage")
     androidLibrary {
         namespace = "com.mrboomdev.awery.ui"
-        compileSdk = 35
-        minSdk = 25
+        compileSdk = properties["awery.sdk.target"].toString().toInt()
+        minSdk = properties["awery.sdk.min"].toString().toInt()
     }
 
     compilerOptions {
