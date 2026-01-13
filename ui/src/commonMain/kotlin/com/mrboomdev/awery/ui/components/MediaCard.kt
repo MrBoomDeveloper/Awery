@@ -37,6 +37,7 @@ import com.mrboomdev.awery.resources.logo_aniyomi
 import com.mrboomdev.awery.resources.logo_awery
 import com.mrboomdev.awery.resources.poster_no_image
 import com.mrboomdev.awery.ui.popups.MediaActionsDialog
+import com.mrboomdev.awery.ui.utils.contextMenuOpenDetector
 import dev.chrisbanes.haze.HazeDefaults.style
 import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
 import org.jetbrains.compose.resources.painterResource
@@ -51,7 +52,9 @@ fun MediaCard(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .combinedClickable(
+            .contextMenuOpenDetector {
+                onLongClick?.invoke()
+            }.combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
             ),

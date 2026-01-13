@@ -100,7 +100,9 @@ private fun showNavLabel(isActive: Boolean): Boolean {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(onNavigate: (NavigationState) -> Unit = {}) {
+fun App(
+	navigationState: AweryNavigationState = rememberAweryNavigationState()
+) {
     AweryTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -116,8 +118,9 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 			val coroutineScope = rememberCoroutineScope()
 			val drawerState = rememberDrawerState(DrawerValue.Closed)
 			val toaster = remember { Toaster(maxItems = 3) }
-			val navigationMap = rememberNavigationMap()
 			
+			// DO NOT SELECT TAB DIRECTLY TO THIS STATE
+			// BECAUSE IT'LL BREAK GLOBAL APP STATE!
 			val pagerState = rememberPagerState(
 				initialPage = when(AwerySettings.mainDefaultTab.value) {
 					AwerySettings.MainTab.HOME -> MainRoutes.HOME
@@ -126,10 +129,17 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 					AwerySettings.MainTab.LIBRARY -> MainRoutes.LIBRARY
 				}.ordinal
 			) { MainRoutes.entries.size }
+
+			LaunchedEffect(navigationState) {
+				navigationState.currentTabIndex.collect {
+					pagerState.animateScrollToPage(it)
+				}
+			}
 			
-			val currentNavigation = navigationMap[pagerState.currentPage]
+			val currentNavigation by navigationState.observeCurrentNavigation()
 			val currentRoute by currentNavigation.currentDestinationFlow.collectAsState(null)
 			
+			// TODO: Move to AweryNavigationState
 			val routeInfos = remember { 
 				mutableStateListOf(
 					RouteInfo(
@@ -145,10 +155,6 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 			val currentRouteInfo = routeInfos.lastOrNull { routeInfo ->
 				routeInfo.route == currentRoute
 			} ?: routeInfos.last()
-
-			InsetsController(
-				hideBars = currentRouteInfo.fullscreen
-			)
 			
 			val wallpaperPainter = rememberAsyncImagePainter(
                 filterQuality = FilterQuality.High,
@@ -165,61 +171,19 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 			fun onOpenTab(index: Int, route: Routes) {
 				tabContentOffsets[pagerState.currentPage] = topAppBarBehavior.state.contentOffset
 				topAppBarBehavior.state.contentOffset = tabContentOffsets[index] ?: 0f
-
-				if(index == pagerState.currentPage) {
-					navigationMap[index].bringToTop(route)
-					onNavigate(NavigationState(route, null))
+				
+				if(index == navigationState.currentTabIndex.value) {
+					currentNavigation.bringToTop(route)
 				} else {
-					coroutineScope.launch { 
-						pagerState.animateScrollToPage(index)
-						
-						onNavigate(
-							NavigationState(
-							route = route,
-							goBack = navigationMap[index].let { navigation ->
-								if (navigation.canPop) {{
-									navigation.safePop()
-								}} else null
-							}
-						))
+					coroutineScope.launch {
+						navigationState.selectTab(index)
 					}
 				}
 			}
 
-			LaunchedEffect(currentNavigation) {
-				currentNavigation.currentBackStackFlow.collect { backStack ->
-					onNavigate(
-						NavigationState(
-							route = backStack.lastOrNull() ?: Routes.Home,
-							goBack = if (backStack.size > 1) {{
-								currentNavigation.safePop()
-							}} else null
-						)
-					)
-				}
-			}
-
-			RememberLaunchedEffect(Unit) {
-				when {
-					!AwerySettings.introDidWelcome.value -> Routes.Intro(IntroWelcomeStep, singleStep = false)
-					!AwerySettings.introDidTheme.value -> Routes.Intro(IntroThemeStep, singleStep = false)
-					AwerySettings.username.value.isBlank() -> Routes.Intro(IntroUserStep, singleStep = false)
-					else -> null
-				}.also {
-					if(it == null) {
-						onNavigate(NavigationState(currentNavigation.currentDestination, null))
-						return@also
-					}
-
-					coroutineScope.launch(Dispatchers.Main) {
-						currentNavigation.apply {
-							clear()
-							push(it)
-							onNavigate(NavigationState(it, null))
-						}
-					}
-				}
-			}
+			InsetsController(
+				hideBars = currentRouteInfo.fullscreen
+			)
 
             Image(
                 modifier = Modifier
@@ -369,7 +333,7 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 											state = pagerState
 										) { index ->
 											AweryNavHost(
-												navigation = navigationMap[index],
+												navigation = navigationState.getNavigation(index),
 												contentPadding = contentPadding
 											)
 										}
@@ -382,7 +346,7 @@ fun App(onNavigate: (NavigationState) -> Unit = {}) {
 											state = pagerState
 										) { index ->
 											AweryNavHost(
-												navigation = navigationMap[index],
+												navigation = navigationState.getNavigation(index),
 												contentPadding = contentPadding
 											)
 										}
@@ -850,29 +814,31 @@ private fun AwerySideBar(
 				selected = index == currentTab,
 
 				icon = {
-					if(tab == MainRoutes.PROFILE) {
-						AsyncImage(
-							modifier = Modifier
-								.clip(CircleShape)
-								.size(24.dp),
-
-							model = ImageRequest.Builder(LocalPlatformContext.current)
-								.addLastModifiedToFileCacheKey(true)
-								.data(FileKit.filesDir / "avatar.png")
-								.build(),
-
-							contentDescription = null,
-							contentScale = ContentScale.Crop
+					Box {
+						Icon(
+							modifier = Modifier.size(24.dp),
+							imageVector = vectorResource(tab.getIcon(index == currentTab)),
+							contentDescription = null
 						)
 
-						return@WideNavigationRailItem
-					}
+						if(tab == MainRoutes.PROFILE) {
+							AsyncImage(
+								modifier = Modifier
+									.clip(CircleShape)
+									.size(24.dp),
 
-					Icon(
-						modifier = Modifier.size(24.dp),
-						imageVector = vectorResource(tab.getIcon(index == currentTab)),
-						contentDescription = null
-					)
+								model = ImageRequest.Builder(LocalPlatformContext.current)
+									.addLastModifiedToFileCacheKey(true)
+									.data(FileKit.filesDir / "avatar.png")
+									.build(),
+
+								contentDescription = null,
+								contentScale = ContentScale.Crop
+							)
+
+							return@WideNavigationRailItem
+						}
+					}
 				},
 
 				label = if(showNavLabel(index == currentTab)) {label@{
@@ -1010,10 +976,3 @@ private fun AweryNavHost(
 		}
 	)
 }
-
-internal interface NavigationMap {
-	operator fun get(index: Int): JetpackNavigation<Routes>
-}
-
-@Composable
-internal expect fun rememberNavigationMap(): NavigationMap

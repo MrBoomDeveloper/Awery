@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -107,13 +108,21 @@ fun ContextMenu(
 				.padding(vertical = 2.dp)
 		) {
 			scope.items.iterate { (icon, text, onClick) ->
-				CompositionLocalProvider(
-					LocalContentColor provides MaterialTheme.colorScheme.primary
+				Surface(
+					color = Color.Transparent,
+					contentColor = MaterialTheme.colorScheme.primary,
+					onClick = {
+						onClick()
+						onDismissRequest()
+					}
 				) {
 					Row(
-						modifier = Modifier.fillMaxWidth(),
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(horizontal = 16.dp),
+						
 						verticalAlignment = Alignment.CenterVertically,
-						horizontalArrangement = Arrangement.spacedBy(12.dp)
+						horizontalArrangement = Arrangement.spacedBy(16.dp)
 					) {
 						if(icon != null) {
 							Icon(
@@ -126,10 +135,7 @@ fun ContextMenu(
 						Text(
 							modifier = Modifier
 								.clip(RoundedCornerShape(4.dp))
-								.clickable(onClick = {
-									onClick()
-									onDismissRequest()
-								}).padding(horizontal = 16.dp, vertical = 10.dp)
+								.padding(vertical = 10.dp)
 								.fillMaxWidth(),
 							fontFamily = AweryFonts.poppins,
 							style = MaterialTheme.typography.bodySmall,

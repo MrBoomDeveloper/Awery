@@ -36,20 +36,29 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme
 import com.mrboomdev.awery.core.Awery
+import com.mrboomdev.awery.core.utils.Log
+import com.mrboomdev.awery.core.utils.launchGlobal
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.App
 import com.mrboomdev.awery.ui.components.ContextMenu
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.navigation.NavigationState
 import com.mrboomdev.awery.ui.navigation.Routes
+import com.mrboomdev.awery.ui.navigation.observeCanPop
+import com.mrboomdev.awery.ui.navigation.observeCurrentNavigation
+import com.mrboomdev.awery.ui.navigation.rememberAweryNavigationState
 import com.mrboomdev.awery.ui.theme.AweryTheme
 import com.mrboomdev.awery.ui.theme.aweryColorScheme
 import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.currentWindowSize
+import com.mrboomdev.awery.ui.utils.rememberFlowOfState
+import com.mrboomdev.awery.ui.utils.thenIf
 import de.milchreis.uibooster.UiBooster
 import de.milchreis.uibooster.model.UiBoosterOptions
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonNull.content
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.DisabledAppearanceValues
 import org.jetbrains.jewel.foundation.GlobalColors
@@ -80,18 +89,9 @@ fun main() {
     ComposeFoundationFlags.isNewContextMenuEnabled = false
     ComposeFoundationFlags.isTextFieldDpadNavigationEnabled = true
     ComposeFoundationFlags.isSmartSelectionEnabled = true
-    
-//    val windowState = FileKit.filesDir.resolve("window.json").takeIf { it.exists() }?.let {
-//        try {
-//            Json.decodeFromString<SavedWindowState>(it.readString()).restoreState()
-//        } catch(e: Exception) {
-//            Log.e("Main", "Failed to restore window state!", e)
-//            null
-//        }
-//    } ?: WindowState()
 
-    application(exitProcessOnExit = false) {
-		var currentNavigationState by remember { mutableStateOf(NavigationState(Routes.Home, null)) }
+    application(exitProcessOnExit = true) {
+		val navigationState = rememberAweryNavigationState()
         val colorScheme = aweryColorScheme()
         
         IntUiTheme(
@@ -115,7 +115,6 @@ fun main() {
                 icon = painterResource(Res.drawable.logo_awery),
                 title = "Awery",
                 onCloseRequest = ::exitApplication,
-//                state = windowState,
                 
                 state = rememberWindowState(
                     size = DpSize(
@@ -125,7 +124,10 @@ fun main() {
                 ),
                 
                 content = {
-                    TitleBar(
+					val windowSize = currentWindowSize()
+					val coroutineScope = rememberCoroutineScope()
+					
+					TitleBar(
                         modifier = Modifier.newFullscreenControls(),
                         style = TitleBarStyle.dark(
                             colors = TitleBarColors.dark(
@@ -144,20 +146,18 @@ fun main() {
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-								val windowSize = currentWindowSize()
-
 								Crossfade(
-									targetState = currentNavigationState.goBack,
+									targetState = navigationState.observeCanPop().value,
 									modifier = Modifier
 										.fillMaxHeight()
 										.aspectRatio(1f)
-								) { goBack ->
-									if(goBack != null) {
+								) { canPop ->
+									if(canPop) {
 										IconButton(
 											padding = 5.dp,
 											painter = painterResource(Res.drawable.ic_back),
 											contentDescription = null,
-											onClick = goBack,
+											onClick = navigationState::pop,
 											colors = IconButtonDefaults.iconButtonColors(
 												contentColor = colorScheme.onBackground
 											)
@@ -181,25 +181,23 @@ fun main() {
 									)
 								}
 
-								Box(
-									modifier = Modifier
-										.alpha(animateFloatAsState(if(
-											currentNavigationState.route == Routes.Search
-										) 1f else 0f).value),
-									content = { AwerySearchBar() }
+								AwerySearchBar(
+									onClick = if(navigationState.observeCurrentNavigation().value.let { navigation ->
+										navigation.currentDestinationFlow.collectAsState(null).value == Routes.Search
+									}.also { println(it) }) null else {{
+										coroutineScope.launch {
+											navigationState.selectTab(1)
+										}
+									}}
 								)
                             }
                         }
                     }
-                   
+					
 					CompositionLocalProvider(
 						LocalTextContextMenu provides AweryContextMenu
 					) {
-						App(
-							onNavigate = {
-								currentNavigationState = it
-							}
-						)
+						App(navigationState = navigationState)
 					}
 
                     LaunchedEffect(window) {
@@ -211,23 +209,19 @@ fun main() {
             )
         }
     }
-
-//    FileKit.filesDir.resolve("window.json").apply {
-//        writeString(Json.encodeToString(windowState.saveState()))
-//    }
-//    
-//    Log.i("Main", "Awery closed. Window state saved successfully!")
-    exitProcess(0)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AwerySearchBar() {
+private fun AwerySearchBar(
+	onClick: (() -> Unit)?,
+	focusRequester: FocusRequester = remember { FocusRequester() }
+) {
 	val windowSize = currentWindowSize()
 	val colorScheme = MaterialTheme.colorScheme
 	val typography = MaterialTheme.typography
-
-	SwingPanel(
+	
+	Box(
 		modifier = Modifier
 			.padding(start = when {
 				windowSize.width >= WindowSizeType.ExtraLarge -> 128.dp
@@ -239,116 +233,132 @@ private fun AwerySearchBar() {
 				windowSize.width >= WindowSizeType.Large -> 400.dp
 				windowSize.width >= WindowSizeType.Medium -> 350.dp
 				else -> 300.dp
-			}).fillMaxHeight(),
+			}).fillMaxHeight()
+	) {
+		// We need to wrap onClick parameter in the flow so that
+		// we can observe changes inside SwingPanel/ComposePanel.
+		// Some strange shit happens, because of which state changes aren't being observed correctly,
+		// sso we do this magic shit.
+		val onClickInner = rememberFlowOfState(onClick)
+		
+		// We do this type of shit because TextField isn't working correctly inside TitleBar,
+		// so we do create a separate canvas so that it works 100% correctly.
+		// (There are graphical glitches because of this workaround, but it is the only solution)
+		SwingPanel(
+			modifier = Modifier.fillMaxSize(),
+			factory = {
+				ComposePanel().apply {
+					setContent {
+						val onClick by onClickInner.collectAsState()
+						
+						
+						Row(
+							modifier = Modifier
+								.background(colorScheme.background)
+								.clip(RoundedCornerShape(4.dp))
+								.background(Color(0x11ffffff))
+								.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(4.dp))
+								.fillMaxSize()
+								.thenIf(onClick != null) { clickable { onClick!!() } }
+						) {
+							val coroutineScope = rememberCoroutineScope()
+							val query by App.searchQuery.collectAsState()
 
-		factory = {
-			ComposePanel().apply {
-				setContent {
-					Row(
-						modifier = Modifier
-							.background(colorScheme.background)
-							.clip(RoundedCornerShape(4.dp))
-							.background(Color(0x11ffffff))
-							.border(.5.dp, Color(0x22ffffff), RoundedCornerShape(4.dp))
-							.fillMaxSize()
-					) {
-						val coroutineScope = rememberCoroutineScope()
-						val focusRequester = remember { FocusRequester() }
-						val query by App.searchQuery.collectAsState()
-
-						AweryTheme {
-							CompositionLocalProvider(
-								LocalTextSelectionColors provides TextSelectionColors(
-									handleColor = colorScheme.onPrimaryContainer,
-									backgroundColor = colorScheme.primaryContainer
-								),
-
-								LocalTextContextMenu provides AweryContextMenu
-							) {
-								BasicTextField(
-									modifier = Modifier
-										.fillMaxSize()
-										.padding(horizontal = 16.dp)
-										.focusRequester(focusRequester),
-									value = query,
-									singleLine = true,
-									cursorBrush = SolidColor(colorScheme.onBackground),
-
-									onValueChange = {
-										runBlocking {
-											App.searchQuery.emit(it)
-										}
-									},
-
-									textStyle = typography.bodyMedium.copy(
-										color = colorScheme.onBackground
+							AweryTheme {
+								CompositionLocalProvider(
+									LocalTextSelectionColors provides TextSelectionColors(
+										handleColor = colorScheme.onPrimaryContainer,
+										backgroundColor = colorScheme.primaryContainer
 									),
 
-									keyboardOptions = KeyboardOptions(
-										imeAction = ImeAction.Search
-									),
+									LocalTextContextMenu provides AweryContextMenu
+								) {
+									BasicTextField(
+										modifier = Modifier
+											.fillMaxSize()
+											.padding(horizontal = 16.dp)
+											.focusRequester(focusRequester),
+										value = query,
+										singleLine = true,
+										cursorBrush = SolidColor(colorScheme.onBackground),
+										enabled = onClick == null,
 
-									decorationBox = {
-										Box(
-											modifier = Modifier
-												.fillMaxSize()
-												.wrapContentWidth(Alignment.Start),
-											contentAlignment = Alignment.Center
-										) {
-											if(query.isEmpty()) {
-												Text(
-													style = typography.bodyMedium,
-													color = colorScheme.onSurfaceVariant,
-													text = "Search"
-												)
+										onValueChange = {
+											runBlocking {
+												App.searchQuery.emit(it)
 											}
-										}
+										},
 
-										Row(
-											modifier = Modifier.fillMaxSize(),
-											verticalAlignment = Alignment.CenterVertically
-										) {
-											Box(Modifier.weight(1f)) {
-												it()
-											}
+										textStyle = typography.bodyMedium.copy(
+											color = colorScheme.onBackground
+										),
 
-											if(query.isNotEmpty()) {
-												CompositionLocalProvider(
-													LocalContentColor provides Color.White
-												) {
-													IconButton(
-														modifier = Modifier
-															.fillMaxHeight()
-															.aspectRatio(1f)
-															.offset(x = 10.dp)
-															.pointerHoverIcon(PointerIcon.Hand),
+										keyboardOptions = KeyboardOptions(
+											imeAction = ImeAction.Search
+										),
 
-														painter = painterResource(Res.drawable.ic_close),
-														contentDescription = null,
-
-														colors = IconButtonDefaults.iconButtonColors(
-															contentColor = colorScheme.onSurfaceVariant
-														),
-
-														onClick = {
-															coroutineScope.launch {
-																focusRequester.requestFocus()
-																App.searchQuery.emit("")
-															}
-														}
+										decorationBox = {
+											Box(
+												modifier = Modifier
+													.fillMaxSize()
+													.wrapContentWidth(Alignment.Start),
+												contentAlignment = Alignment.Center
+											) {
+												if(query.isEmpty()) {
+													Text(
+														style = typography.bodyMedium,
+														color = colorScheme.onSurfaceVariant,
+														text = "Search"
 													)
 												}
 											}
+
+											Row(
+												modifier = Modifier.fillMaxSize(),
+												verticalAlignment = Alignment.CenterVertically
+											) {
+												Box(Modifier.weight(1f)) {
+													it()
+												}
+
+												if(query.isNotEmpty()) {
+													CompositionLocalProvider(
+														LocalContentColor provides Color.White
+													) {
+														IconButton(
+															modifier = Modifier
+																.fillMaxHeight()
+																.aspectRatio(1f)
+																.offset(x = 10.dp)
+																.pointerHoverIcon(PointerIcon.Hand),
+
+															painter = painterResource(Res.drawable.ic_close),
+															contentDescription = null,
+
+															colors = IconButtonDefaults.iconButtonColors(
+																contentColor = colorScheme.onSurfaceVariant
+															),
+
+															onClick = {
+																coroutineScope.launch {
+																	focusRequester.requestFocus()
+																	App.searchQuery.emit("")
+																}
+															}
+														)
+													}
+												}
+											}
 										}
-									}
-								)
+									)
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-	)
+		)
+	}
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -390,8 +400,15 @@ private object AweryContextMenu: TextContextMenu {
 }
 
 private fun setupCrashHandler() {
-    Thread.setDefaultUncaughtExceptionHandler { _, t ->
-        t.printStackTrace()
+    Thread.setDefaultUncaughtExceptionHandler { _, t -> 
+		t.printStackTrace()
+		
+		if(t.message == "SkiaLayer is disposed") {
+			Log.i("Main", "Most likely user has closed window by an system hotkey, " +
+					"so we do finish app because there is no purpose to stay alive.")
+			
+			exitProcess(0)
+		}
 
         UiBooster(
             UiBoosterOptions(FlatOneDarkIJTheme(), null, null)

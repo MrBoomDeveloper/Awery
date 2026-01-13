@@ -306,8 +306,11 @@ fun SettingsExtensionsPage(
 					key = { it.url },
 					contentType = { "repo" }
 				) { repo ->
+					var showDropdown by remember { mutableStateOf(false) }
+					
 					SettingsDefaults.itemCustom(
 						modifier = Modifier
+							.contextMenuOpenDetector { showDropdown = true }
 							.clickable { onOpenPage(SettingsPages.Repository(repo)) }
 							.animateItem(),
 
@@ -315,8 +318,6 @@ fun SettingsExtensionsPage(
 						description = { Text(repo.url) }
 					) {
 						Box {
-							var showDropdown by remember { mutableStateOf(false) }
-
 							IconButton(
 								padding = 10.dp,
 								painter = painterResource(Res.drawable.ic_more_vertical),

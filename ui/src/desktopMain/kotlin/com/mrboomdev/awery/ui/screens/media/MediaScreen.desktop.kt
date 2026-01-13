@@ -34,7 +34,9 @@ import com.mrboomdev.awery.ui.navigation.RouteInfo
 import com.mrboomdev.awery.ui.navigation.RouteInfoEffect
 import com.mrboomdev.awery.ui.screens.GalleryScreen
 import com.mrboomdev.awery.ui.utils.RememberLaunchedEffect
+import com.mrboomdev.awery.ui.utils.WindowSizeType
 import com.mrboomdev.awery.ui.utils.collapse
+import com.mrboomdev.awery.ui.utils.currentWindowSize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -54,19 +56,18 @@ private fun DesktopMediaScreen(
     destination: Routes.Media,
     viewModel: MediaScreenViewModel
 ) {
+	val toaster = LocalToaster.current
+	val windowSize = currentWindowSize()
 	val media by viewModel.media.collectAsState()
-	
-    val tabs = remember(media) {
-        MediaScreenTabs.getVisibleFor(media)
-    }
-
-    val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null)
-    val coroutineScope = rememberCoroutineScope() 
-	val pagerState = rememberPagerState { tabs.count() } 
+    
+    val infoHeaderBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(snapAnimationSpec = null) 
+	val coroutineScope = rememberCoroutineScope()
 	var showGallery by rememberSaveable { mutableStateOf(false) }
-    val toaster = LocalToaster.current
 
-    fun openWatchPage() {
+	val tabs = remember(media) { MediaScreenTabs.getVisibleFor(media) }
+	val pagerState = rememberPagerState { tabs.count() }
+
+	fun openWatchPage() {
         if(media.type == Media.Type.READABLE) {
             toaster.toast("Reading isn't supported yet!")
             return
@@ -126,9 +127,10 @@ private fun DesktopMediaScreen(
 			modifier = Modifier
 				.background(MaterialTheme.colorScheme.background)
 				.fillMaxSize(),
+			
 			model = media.getBanner(),
 			contentScale = ContentScale.Crop,
-			alpha = .15f,
+			alpha = .1f,
 			contentDescription = null
 		)
 		
@@ -144,6 +146,8 @@ private fun DesktopMediaScreen(
 				horizontalArrangement = Arrangement.spacedBy(32.dp)
 			) {
 				media.getPoster()?.also { poster ->
+					if(windowSize.width <= WindowSizeType.Small) return@also
+					
 					AsyncImage(
 						modifier = Modifier
 							.clip(RoundedCornerShape(16.dp))

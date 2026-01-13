@@ -1,9 +1,11 @@
 package com.mrboomdev.awery.ui.screens.media
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -58,9 +60,9 @@ internal fun ColumnScope.MediaScreenActions(
     alignAtCenter: Boolean,
     stretchButtons: Boolean,
     onWatch: () -> Unit
-) {
+) { 
     val navigation = Navigation.current() 
-	val toaster = LocalToaster.current
+    val toaster = LocalToaster.current
 	val media by viewModel.media.collectAsState()
 
     var showEpisodesDialog by remember { mutableStateOf(false) }
@@ -110,7 +112,10 @@ internal fun ColumnScope.MediaScreenActions(
     Spacer(Modifier.height(12.dp))
 
 	Row(
-		modifier = Modifier.fillMaxWidth(),
+		modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        
 		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
 		Button(

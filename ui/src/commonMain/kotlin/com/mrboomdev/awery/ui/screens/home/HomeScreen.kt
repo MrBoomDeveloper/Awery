@@ -29,9 +29,14 @@ import com.mrboomdev.awery.data.settings.AwerySettings
 import com.mrboomdev.awery.data.settings.collectAsState
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.Res
+import com.mrboomdev.awery.resources.bookmark
 import com.mrboomdev.awery.resources.ic_back
+import com.mrboomdev.awery.resources.ic_block
+import com.mrboomdev.awery.resources.ic_collections_bookmark_outlined
 import com.mrboomdev.awery.resources.ic_language
 import com.mrboomdev.awery.resources.ic_refresh
+import com.mrboomdev.awery.resources.ic_share_filled
+import com.mrboomdev.awery.resources.share
 import com.mrboomdev.awery.ui.navigation.Navigation
 import com.mrboomdev.awery.ui.navigation.Routes
 import com.mrboomdev.awery.ui.components.*
@@ -42,6 +47,8 @@ import com.mrboomdev.awery.ui.popups.MediaActionsDialog
 import com.mrboomdev.awery.ui.utils.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import java.awt.SystemColor.text
 import java.util.*
 import kotlin.time.ExperimentalTime
 
@@ -53,12 +60,15 @@ fun HomeScreen(
 	contentPadding: PaddingValues
 ) {
 	val toaster = LocalToaster.current
+	val navigation = Navigation.current()
+	val windowSize = currentWindowSize()
+	
 	val isReloading by viewModel.isReloading.collectAsState()
 	val isLoading by viewModel.isLoading.collectAsState()
 	val username by AwerySettings.username.collectAsState()
+	
 	val coroutineScope = rememberCoroutineScope()
 	val lazyListState = rememberLazyListState()
-	val navigation = Navigation.current()
 	
 	val showShimmer = isLoading && !isReloading && viewModel.loadedFeeds.isEmpty()
 
@@ -193,85 +203,87 @@ fun HomeScreen(
 				contentType = { "feed" }
 			) { (extension, feed, media) ->
 				var showActionsDialog by remember { mutableStateOf<Media?>(null) }
+				
+				Box {
+					showActionsDialog?.also { media ->
+						var hideFromVMResult by remember { mutableStateOf<Pair<Int, Int>?>(null) }
 
-				showActionsDialog?.also { media ->
-					var hideFromVMResult by remember { mutableStateOf<Pair<Int, Int>?>(null) }
-					
-					MediaActionsDialog(
-						extensionId = extension.id,
-						media = media,
-						onDismissRequest = { showActionsDialog = null },
-						
-						onHide = {
-							hideFromVMResult = viewModel.hideMedia(feed, media)
-							showActionsDialog = null
-						},
-						
-						onCancelledHide = {
-							hideFromVMResult?.also {
-								viewModel.addMedia(
-									extension,
-									feed, 
-									media, 
-									it.first, 
-									it.second
+						MediaActionsDialog(
+							extensionId = extension.id,
+							media = media,
+							onDismissRequest = { showActionsDialog = null },
+
+							onHide = {
+								hideFromVMResult = viewModel.hideMedia(feed, media)
+								showActionsDialog = null
+							},
+
+							onCancelledHide = {
+								hideFromVMResult?.also {
+									viewModel.addMedia(
+										extension,
+										feed,
+										media,
+										it.first,
+										it.second
+									)
+								}
+							}
+						)
+					}
+
+					FeedRow(
+						modifier = Modifier
+							.fillMaxWidth()
+							.thenIf(media.hasNextPage && Awery.platform != Platform.DESKTOP) { clickable {
+								navigation.push(Routes.ExtensionFeed(
+									extensionId = extension.id,
+									extensionName = extension.name,
+									feedId = feed.id,
+									feedName = feed.name
+								))
+							} }.animateItem(),
+
+						contentPadding = contentPadding.only(horizontal = true)
+							.add(horizontal = niceSideInset(), vertical = 8.dp),
+
+						title = "${extension.name} - ${feed.name}",
+						items = media.items,
+
+						actions = {
+							if(media.hasNextPage) {
+								IconButton(
+									modifier = Modifier
+										.size(16.dp)
+										.scale(scaleX = -2f, scaleY = 2f),
+									padding = 0.dp,
+									painter = painterResource(Res.drawable.ic_back),
+									contentDescription = null,
+									onClick = {
+										navigation.push(Routes.ExtensionFeed(
+											extensionId = extension.id,
+											extensionName = extension.name,
+											feedId = feed.id,
+											feedName = feed.name
+										))
+									}
 								)
 							}
+						},
+
+						onMediaLongClick = { media ->
+							showActionsDialog = media
+						},
+
+						onMediaSelected = {
+							navigation.push(Routes.Media(
+								extensionId = extension.id,
+								extensionName = extension.name,
+								media = it
+							))
 						}
 					)
 				}
-
-				FeedRow(
-					modifier = Modifier
-						.fillMaxWidth()
-						.thenIf(media.hasNextPage && Awery.platform != Platform.DESKTOP) { clickable {
-							navigation.push(Routes.ExtensionFeed(
-								extensionId = extension.id,
-								extensionName = extension.name,
-								feedId = feed.id,
-								feedName = feed.name
-							))
-						} }.animateItem(),
-
-					contentPadding = contentPadding.only(horizontal = true)
-						.add(horizontal = niceSideInset(), vertical = 8.dp),
-
-					title = "${extension.name} - ${feed.name}",
-					items = media.items,
-
-					actions = {
-						if(media.hasNextPage) {
-							IconButton(
-								modifier = Modifier
-									.size(16.dp)
-									.scale(scaleX = -2f, scaleY = 2f),
-								padding = 0.dp,
-								painter = painterResource(Res.drawable.ic_back),
-								contentDescription = null,
-								onClick = {
-									navigation.push(Routes.ExtensionFeed(
-										extensionId = extension.id,
-										extensionName = extension.name,
-										feedId = feed.id,
-										feedName = feed.name
-									))
-								}
-							)
-						}
-					},
-
-					onMediaLongClick = { media ->
-						showActionsDialog = media
-					},
-
-					onMediaSelected = {
-						navigation.push(Routes.Media(
-							extensionId = extension.id,
-							extensionName = extension.name,
-							media = it
-						))
-					}
-				)
 			}
 
 			if(!showShimmer && isLoading) {

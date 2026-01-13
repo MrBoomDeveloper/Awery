@@ -3,13 +3,17 @@ package com.mrboomdev.awery.ui.utils
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAll
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -77,31 +81,24 @@ fun Modifier.padding(
 )
 
 /**
- * Detects events that open a context menu (mouse right-clicks).
- *
- * @param key The pointer input handling coroutine will be cancelled and **re-started** when
- * [contextMenuOpenDetector] is recomposed with a different [key].
- * @param enabled Whether to enable the detection.
- * @param onOpen Invoked when a context menu opening event is detected, with the local offset it
- * should be opened at.
+ * Detects events that open a context menu (mouse right-clicks)
+ * @param onOpen Invoked when a context menu opening event is detected
  */
 fun Modifier.contextMenuOpenDetector(
-	key: Any? = Unit,
-	enabled: Boolean = true,
-	onOpen: (Offset) -> Unit
-): Modifier {
-	return if (enabled) {
-		this.pointerInput(key) {
-			awaitEachGesture {
-				val event = awaitEventFirstDown()
-				if (event.buttons.isSecondaryPressed) {
-					event.changes.forEach { it.consume() }
-					onOpen(event.changes[0].position)
+	onOpen: () -> Unit
+) = composed {
+	val blockState = rememberUpdatedState(onOpen)
+
+	pointerInput(Unit) {
+		while(currentCoroutineContext().isActive) {
+			awaitPointerEventScope {
+				val event = awaitPointerEvent(PointerEventPass.Initial)
+
+				if(event.buttons.isSecondaryPressed) {
+					blockState.value()
 				}
 			}
 		}
-	} else {
-		this
 	}
 }
 

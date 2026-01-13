@@ -43,10 +43,9 @@ fun FeedRow(
             ) { media ->
                 MediaCard(
                     modifier = Modifier
-						.contextMenuOpenDetector {
-							onMediaLongClick?.let {{ it(media) }}
-						}.width(115.dp)
+						.width(115.dp)
                         .animateItem(),
+                    
                     media = media,
                     onClick = { onMediaSelected(media) },
                     onLongClick = onMediaLongClick?.let {{ it(media) }}

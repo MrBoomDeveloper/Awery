@@ -24,9 +24,13 @@ import com.mrboomdev.awery.data.database.entity.DBBlacklistedMedia
 import com.mrboomdev.awery.extension.sdk.Media
 import com.mrboomdev.awery.resources.*
 import com.mrboomdev.awery.ui.components.BottomSheetDialog
+import com.mrboomdev.awery.ui.components.ContextMenu
 import com.mrboomdev.awery.ui.components.IconButton
 import com.mrboomdev.awery.ui.components.LocalToaster
 import com.mrboomdev.awery.ui.components.toast
+import com.mrboomdev.awery.ui.screens.settings.SettingsDefaults.item
+import com.mrboomdev.awery.ui.utils.WindowSizeType
+import com.mrboomdev.awery.ui.utils.currentWindowSize
 import com.mrboomdev.awery.ui.utils.only
 import com.mrboomdev.awery.ui.utils.padding
 import com.mrboomdev.awery.ui.utils.start
@@ -46,7 +50,40 @@ fun MediaActionsDialog(
 	onDismissRequest: () -> Unit
 ) {
 	val toaster = LocalToaster.current
+	val windowSize = currentWindowSize()
 	var showBookmarkDialog by remember { mutableStateOf(false) }
+	
+	if(windowSize.width >= WindowSizeType.Large) {
+//		ContextMenu(onDismissRequest = onDismissRequest) {
+//			item(
+//				icon = { painterResource(Res.drawable.ic_collections_bookmark_outlined) },
+//				text = { stringResource(Res.string.bookmark) },
+//				onClick = {
+//
+//				}
+//			)
+//
+//			media.url?.also { url ->
+//				item(
+//					icon = { painterResource(Res.drawable.ic_share_filled) },
+//					text = { stringResource(Res.string.share) },
+//					onClick = {
+//
+//					}
+//				)
+//			}
+//
+//			item(
+//				icon = { painterResource(Res.drawable.ic_block) },
+//				text = { "Hide" },
+//				onClick = {
+//
+//				}
+//			)
+//		}
+//		
+//		return
+	}
 
 	BottomSheetDialog(onDismissRequest) {
 		val contentPadding = WindowInsets.safeContent.only(
