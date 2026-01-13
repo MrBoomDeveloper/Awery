@@ -1,14 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="chapters">
         <item quantity="one">%1$d Chapter</item>
         <item quantity="other">%1$d Chapters</item>
     </plurals>
-
     <plurals name="episodes">
         <item quantity="one">%1$d Episode</item>
         <item quantity="other">%1$d Episodes</item>
     </plurals>
-    
     <string name="apply">Apply</string>
     <string name="empty_library_title">Library is empty</string>
     <string name="awery_updated_title">Awery has been updated!</string>
