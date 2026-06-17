@@ -238,7 +238,7 @@
     <string name="cancelled">Anulat</string>
     <string name="completed">Finalizat</string>
     <string name="planning_watch">Planificat să vizionezi</string>
-    <string name="currently_watching">Vizionare în curs</string>
+    <string name="currently_watching">Vizionează în prezent</string>
     <string name="please_report_bug_app">Te rugăm să trimiți următorul text dezvoltatorilor aplicației!</string>
     <string name="please_report_bug_extension">Te rugăm să trimiți următorul text dezvoltatorilor extensiei!</string>
     <string name="manual_search">Căutare manuală</string>
@@ -336,13 +336,13 @@
     <string name="selected_s">Selectate: %s</string>
     <string name="automatically_send_reports">Automatically send crash reports</string>
     <plurals name="episodes">
-        <item quantity="one">%1$d Episode</item>
-        <item quantity="few">%1$d Episodes</item>
-        <item quantity="other">%1$d Episodes</item>
+        <item quantity="one">%1$d Episod</item>
+        <item quantity="few">%1$d Episoade</item>
+        <item quantity="other">%1$d Episoade</item>
     </plurals>
     <plurals name="chapters">
-        <item quantity="one">%1$d Chapter</item>
-        <item quantity="few">%1$d Chapters</item>
-        <item quantity="other">%1$d Chapters</item>
+        <item quantity="one">%1$d Capitol</item>
+        <item quantity="few">%1$d Capitole</item>
+        <item quantity="other">%1$d Capitole</item>
     </plurals>
 </resources>
