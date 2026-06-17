@@ -89,7 +89,7 @@
     <string name="update_progress">Actualizar Progreso</string>
     <string name="ask_update_progress_info_ep">Desactivar hará que siempre se actualice automáticamente el progreso cuando se vea el episodio.</string>
     <string name="watch_complete_percentage">Porcentaje de Actualización de Visualización</string>
-    <string name="watch_complete_percentage_info">El porcentaje en el que tu progreso debe ser actualizado después de ver un episodio.\nEsto también establece el %s para cuando hay que precargar los enlaces para el siguiente episodio.</string>
+    <string name="watch_complete_percentage_info">El porcentaje en el que tu progreso debe ser actualizado después de ver un episodio.\nEsto también establece el %1$s para cuando hay que precargar los enlaces para el siguiente episodio.</string>
     <string name="behaviour">Comportamiento</string>
     <string name="always_continue">Siempre Continuar desde donde lo dejaste</string>
     <string name="pause_video_focus">Pausar cuando no está en Foco</string>
@@ -128,7 +128,7 @@
     <string name="account">Cuenta</string>
     <string name="grid">Cuadrícula</string>
     <string name="error_loading_data">Error cargando datos %1$s</string>
-    <string name="saved_to_path">Guardado en:\n%s</string>
+    <string name="saved_to_path">Guardado en:\n%1$s</string>
     <string name="setting_progress">Configurando el progreso a %1$d</string>
     <string name="back_to_exit">Por favor, regrese para salir</string>
     <string name="no_internet_connection">Sin Conexión a Internet</string>
@@ -297,21 +297,21 @@
     <string name="database_corrupted">¡Base de datos corrupta!</string>
     <string name="awery_updated_title">¡Awery ha sido actualizado!</string>
     <string name="bad_request">Solicitud incorrecta</string>
-    <string name="failed_bypass_detailed">Tu solicitud ha sido bloqueada por %s. Intenta completar un captcha y actualizar para resolver este problema.</string>
+    <string name="failed_bypass_detailed">Tu solicitud ha sido bloqueada por %1$s. Intenta completar un captcha y actualizar para resolver este problema.</string>
     <string name="update_available">¡Actualización disponible!</string>
     <string name="checking_if_crash_occurred">Comprobar si se ha producido un error</string>
     <string name="color_palette_description">Los colores favoritos te levantan el ánimo :)</string>
     <string name="built_at">Desarrollado en</string>
-    <string name="loading_extensions_n">Cargando extensiones %d/%d</string>
+    <string name="loading_extensions_n">Cargando extensiones %1$d/%2$d</string>
     <string name="buffering_video">Vídeo en búfer</string>
     <string name="size">Tamaño</string>
     <string name="open_link_externally">Abrir en un navegador externo</string>
-    <string name="selected_s">Seleccionado %s</string>
+    <string name="selected_s">Seleccionado %1$s</string>
     <string name="were_done">¡Ya está!</string>
     <string name="see_error">Ver el error</string>
     <string name="download">Descargar</string>
     <string name="show_spoilers">Mostrar spoilers</string>
-    <string name="failed_to_bypass">Error en el bypass %s</string>
+    <string name="failed_to_bypass">Incorrecto en el bypass %1$s</string>
     <string name="extension_load_failed">¡Error al cargar una extensión!</string>
     <string name="failed_to_connect_to_server">¡No se ha podido conectar con el servidor!</string>
     <string name="server_internal_error">Se ha producido un error interno en el servidor, inténtelo de nuevo más tarde.</string>
@@ -319,9 +319,9 @@
     <string name="unknown_net_error">Error desconocido de la red</string>
     <string name="loading_extensions">Cargando extensiones</string>
     <string name="awery_updated_description">¡Tenemos algunas cosas nuevas y fabulosas para configurar!</string>
-    <string name="searching_episodes_for">Buscando episodios para %s</string>
+    <string name="searching_episodes_for">Buscando episodios para %1$s</string>
     <string name="mark_watched">Marcar como visto</string>
-    <string name="delete_confirmation">¿Borrar %s?</string>
+    <string name="delete_confirmation">¿Borrar %1$s?</string>
     <string name="mark_not_watched">Quitar de vistos</string>
     <string name="copy_link_to_clipboard">Copiar enlace al portapapeles</string>
     <string name="backup_success">¡Copia de seguridad creada correctamente!</string>
@@ -329,20 +329,20 @@
     <string name="select_language">Seleccionar idioma</string>
     <string name="version">Versión</string>
     <string name="wallpaper_based_colors">¡El color de la aplicación se basará en tu fondo de pantalla!</string>
-    <string name="searching_for">Buscando %s</string>
+    <string name="searching_for">Buscando %1$s</string>
     <string name="loading_videos_list">Cargando lista de vídeos</string>
     <string name="restore_success">¡Copia de seguridad restaurada correctamente!</string>
     <string name="welcome_to_app_description">La aplicación perfecta donde puedes personalizar todo, con un montón de funciones y una apariencia elegante.</string>
     <string name="setup_finished_description">Ahora puedes ir a ver tus programas favoritos. ¡Esperamos que disfrutes de esta aplicación! Si quieres, puedes enviarnos una reseña con lo que te ha gustado :)</string>
     <string name="automatically_send_reports">Enviar informes de fallos automáticamente</string>
     <plurals name="episodes">
-        <item quantity="one">Episodio</item>
-        <item quantity="many"></item>
-        <item quantity="other">Episodios</item>
+        <item quantity="one">%1$d Episodio</item>
+        <item quantity="many">%1$d Episodios</item>
+        <item quantity="other">%1$d Episodios</item>
     </plurals>
     <plurals name="chapters">
         <item quantity="one">%1$d Capítulo</item>
-        <item quantity="many"></item>
+        <item quantity="many">%1$d Capítulos</item>
         <item quantity="other">%1$d Capítulos</item>
     </plurals>
 </resources>

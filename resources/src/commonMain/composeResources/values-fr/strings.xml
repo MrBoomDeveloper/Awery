@@ -62,10 +62,10 @@
     <string name="downloads">Téléchargements</string>
     <string name="settings">Paramètres</string>
     <string name="extensions">Extensions</string>
-    <string name="player_settings">Paramètres du lecteur</string>
+    <string name="player_settings">Paramètres lecteur</string>
     <string name="player">Lecteur</string>
     <string name="reader">Lecteur</string>
-    <string name="reader_settings">Paramètres du lecteur</string>
+    <string name="reader_settings">Paramètres lecture</string>
     <string name="default_source">Source par défaut</string>
     <string name="ui">Interface utilisateur</string>
     <string name="common">Commun</string>
@@ -89,7 +89,7 @@
     <string name="update_progress">Mettre à jour les progrès</string>
     <string name="ask_update_progress_info_ep">Désactiver mettra toujours automatiquement à jour les progrès lorsque l\'épisode est regardé.</string>
     <string name="watch_complete_percentage">Pourcentage de mise à jour de la visualisation</string>
-    <string name="watch_complete_percentage_info">Le pourcentage auquel vos progrès doivent être mis à jour après avoir regardé un épisode.\nCela définit également le %s pour précharger les liens pour le prochain épisode.</string>
+    <string name="watch_complete_percentage_info">Le pourcentage auquel vos progrès doivent être mis à jour après avoir regardé un épisode.\nCela définit également le %1$s pour précharger les liens pour le prochain épisode.</string>
     <string name="behaviour">Comportement</string>
     <string name="always_continue">Continuer toujours depuis où vous vous êtes arrêté</string>
     <string name="pause_video_focus">Mettre en pause lorsqu\'il n\'est pas en focus</string>
@@ -128,7 +128,7 @@
     <string name="account">Compte</string>
     <string name="grid">Grille</string>
     <string name="error_loading_data">Erreur de chargement des données %1$s</string>
-    <string name="saved_to_path">Enregistré à :\n%s</string>
+    <string name="saved_to_path">Enregistré vers :\n%1$s</string>
     <string name="setting_progress">Définir la progression à %1$d</string>
     <string name="back_to_exit">Veuillez revenir en arrière pour quitter</string>
     <string name="no_internet_connection">Pas de Connexion Internet</string>
@@ -308,9 +308,9 @@
     <string name="size">Taille</string>
     <string name="download">Télécharger</string>
     <string name="awery_updated_title">Awery a été mis à jour !</string>
-    <string name="failed_bypass_detailed">Votre demande a été bloquée par %s. Essayez de remplir un captcha et rafraîchissant pour résoudre ce problème.</string>
-    <string name="failed_to_bypass">Échec du contournement de %s</string>
-    <string name="searching_for">Recherche pour %s</string>
+    <string name="failed_bypass_detailed">Votre demande a été bloquée par %1$s. Essayez de remplir un captcha puis rafraîchir pour résoudre ce problème.</string>
+    <string name="failed_to_bypass">Échec du contournement de %1$s</string>
+    <string name="searching_for">Recherche pour %1$s</string>
     <string name="mark_not_watched">Retirer de la vue</string>
     <string name="unknown_net_error">Erreur réseau inconnue</string>
     <string name="database_corrupted">Base de données corrompue !</string>
@@ -322,27 +322,27 @@
     <string name="welcome_to_app_description">L\'application parfaite où vous pouvez personnaliser tout, avec des tonnes de fonctionnalités et un look élégant.</string>
     <string name="awery_updated_description">On a de nouvelles choses géniales à mettre en place !</string>
     <string name="server_unavailable">Le serveur est actuellement indisponible, veuillez réessayer plus tard.</string>
-    <string name="delete_confirmation">Supprimer %s ?</string>
+    <string name="delete_confirmation">Supprimer %1$s ?</string>
     <string name="buffering_video">Vidéo de mise en mémoire tampon</string>
     <string name="see_error">Voir erreur</string>
     <string name="setup_finished_description">Vous pouvez désormais aller regarder vos émissions préférées. Nous espérons que vous apprécierez cette application ! Si vous le souhaitez, vous pouvez nous envoyer un avis avec ce que vous avez aimé :)</string>
-    <string name="searching_episodes_for">Recherche d\'épisodes pour %s</string>
+    <string name="searching_episodes_for">Recherche d\'épisodes pour %1$s</string>
     <string name="bad_request">Requête invalide</string>
     <string name="color_palette_description">Couleurs préférées soulever vos esprits :)</string>
     <string name="loading_videos_list">Liste des vidéos de chargement</string>
     <string name="loading_extensions">Extensions de chargement</string>
-    <string name="selected_s">Sélectionné %s</string>
+    <string name="selected_s">Sélectionné %1$s</string>
     <string name="failed_to_connect_to_server">Échec de la connexion au serveur !</string>
-    <string name="loading_extensions_n">Extensions de chargement %d/%d</string>
+    <string name="loading_extensions_n">Chargement des extensions %1$d/%2$d</string>
     <string name="automatically_send_reports">Envoyez automatiquement les rapports de crash</string>
     <plurals name="episodes">
-        <item quantity="one"></item>
-        <item quantity="many"></item>
-        <item quantity="other">%1$d Episodes</item>
+        <item quantity="one">%1$d Épisode</item>
+        <item quantity="many">%1$d Épisodes</item>
+        <item quantity="other">%1$d Épisodes</item>
     </plurals>
     <plurals name="chapters">
-        <item quantity="one"></item>
-        <item quantity="many"></item>
+        <item quantity="one">%1$d Chapitre</item>
+        <item quantity="many">%1$d Chapitres</item>
         <item quantity="other">%1$d Chapitres</item>
     </plurals>
 </resources>
